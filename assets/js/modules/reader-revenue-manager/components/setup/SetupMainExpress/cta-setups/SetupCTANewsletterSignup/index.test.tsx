@@ -17,23 +17,23 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModuleRegistrations,
+	provideModules,
 	provideSiteInfo,
 	provideUserInfo,
 	render,
@@ -48,11 +48,11 @@ jest.mock(
 
 const STEP_CONTENT = {
 	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
-		'RRM express setup placeholder: publication setup step.',
+		'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
 	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
-		'RRM express setup placeholder: terms of service step.',
+		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
-		'RRM express setup placeholder: publication policies step.',
+		'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
 	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
 		'RRM express setup placeholder: newsletter CTA setup step.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
@@ -80,14 +80,14 @@ describe( 'SetupCTANewsletterSignup', () => {
 	// This is needed for `navigateTo` to work in the test.
 	mockLocation();
 
-	let registry: WPDataRegistry;
+	let registry: Registry;
 
 	function setupRegistry( {
 		ctas = [ NEWSLETTER_CTA ],
 		snippetMode = 'sitewide',
 		postTypes = [] as string[],
 	} = {} ) {
-		registry = createTestRegistry();
+		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
 		provideUserInfo( registry );
 
@@ -103,6 +103,23 @@ describe( 'SetupCTANewsletterSignup', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetCTAs( { ctas, params: {} } );
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
 	}
 
 	beforeEach( () => {
@@ -118,17 +135,16 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 5 );
+		).toHaveLength( 4 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
@@ -136,7 +152,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )
@@ -153,9 +171,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		const { getByText, queryByText } = render(
 			<SetupCTANewsletterSignup />,
-			{
-				registry,
-			}
+			{ registry }
 		);
 
 		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();

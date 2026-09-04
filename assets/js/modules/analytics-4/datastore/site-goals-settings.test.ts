@@ -29,8 +29,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	provideModules,
 	subscribeUntil,
 	untilResolved,
 } from '@tests/js/utils';
@@ -60,6 +62,14 @@ describe( 'modules/analytics-4 site goals settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
 	} );
 
 	describe( 'actions', () => {
@@ -150,6 +160,32 @@ describe( 'modules/analytics-4 site goals settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSiteGoalsSettings', () => {
+			it( 'should not fetch the settings when Analytics is not connected', async () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: false,
+						connected: false,
+					},
+				] );
+
+				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
+
+				expect( fetchMock ).not.toHaveFetched(
+					getSiteGoalsSettingsEndpoint
+				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsSettings()
+				).toBeUndefined();
+			} );
+
 			it( 'should fetch the settings from the endpoint when not yet loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
 					body: {

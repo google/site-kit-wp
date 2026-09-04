@@ -104,12 +104,33 @@ class Email_Report_Data_Section_Part {
 	private $dimension_values = array();
 
 	/**
+	 * Groups the section shows its values under, each holding a `label` and its `metrics`.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @var array
+	 */
+	private $groups = array();
+
+	/**
+	 * Prompt the section shows, holding a `text` and a `link_text`.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @var array
+	 */
+	private $prompt = array();
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.167.0
+	 * @since 1.187.0 Added the `groups` and the `prompt` to the section data.
 	 *
 	 * @param string $section_key  Unique section key.
-	 * @param array  $section_data Section data (title, labels, values, optional trends, date_range, dashboard_link).
+	 * @param array  $section_data Section data. Requires title, labels and values. Takes
+	 *                             optional trends, event_names, date_range, dashboard_link,
+	 *                             dimensions, dimension_values, groups and prompt.
 	 *
 	 * @throws InvalidArgumentException When validation fails.
 	 */
@@ -131,6 +152,8 @@ class Email_Report_Data_Section_Part {
 		$this->set_dashboard_link( $section_data['dashboard_link'] ?? null );
 		$this->set_dimensions( $section_data['dimensions'] ?? null );
 		$this->set_dimension_values( $section_data['dimension_values'] ?? null );
+		$this->set_groups( $section_data['groups'] ?? null );
+		$this->set_prompt( $section_data['prompt'] ?? null );
 
 		$this->section_key = $section_key;
 	}
@@ -243,6 +266,28 @@ class Email_Report_Data_Section_Part {
 	 */
 	public function get_dimension_values() {
 		return $this->dimension_values;
+	}
+
+	/**
+	 * Gets the groups the section shows its values under.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @return array Groups, each holding a `label` and its `metrics`. Empty for a section that shows one flat list of values.
+	 */
+	public function get_groups() {
+		return $this->groups;
+	}
+
+	/**
+	 * Gets the prompt the section shows.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @return array Prompt holding a `text` and a `link_text`. Empty for a section that asks the reader nothing.
+	 */
+	public function get_prompt() {
+		return $this->prompt;
 	}
 
 	/**
@@ -447,6 +492,50 @@ class Email_Report_Data_Section_Part {
 		}
 
 		$this->dimension_values = $dimension_values;
+	}
+
+	/**
+	 * Validates and assigns the groups.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @param array|null $groups Groups the section shows its values under. Null leaves the section with no group.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_groups( $groups ) {
+		if ( null === $groups ) {
+			$this->groups = array();
+			return;
+		}
+
+		if ( ! is_array( $groups ) ) {
+			throw new InvalidArgumentException( 'groups must be an array' );
+		}
+
+		$this->groups = $groups;
+	}
+
+	/**
+	 * Validates and assigns the prompt.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @param array|null $prompt Prompt the section shows. Null leaves the section with no prompt.
+	 *
+	 * @throws InvalidArgumentException When validation fails.
+	 */
+	private function set_prompt( $prompt ) {
+		if ( null === $prompt ) {
+			$this->prompt = array();
+			return;
+		}
+
+		if ( ! is_array( $prompt ) ) {
+			throw new InvalidArgumentException( 'prompt must be an array' );
+		}
+
+		$this->prompt = $prompt;
 	}
 
 	/**

@@ -183,7 +183,9 @@
 // Email Reporting
 @import "components/email-reporting/googlesitekit-user-settings-selection-panel";
 @import "components/email-reporting/googlesitekit-frequency-selector";
+@import "components/email-reporting/googlesitekit-user-list";
 @import "components/email-reporting/googlesitekit-invite-others-to-subscribe";
+@import "components/email-reporting/googlesitekit-subscriber-management";
 
 // PDF Generation
 @import "components/pdf-export/googlesitekit-pdf-download-panel";
@@ -242,6 +244,9 @@
 // Notice
 @import "components/notice/googlesitekit-notice";
 
+// Email reporting
+@import "components/email-reporting/googlesitekit-email-reporting-introduction-overlay";
+
 // PDF export
 @import "components/pdf-export/googlesitekit-pdf-introduction-overlay";
 @import "components/pdf-export/googlesitekit-pdf-report-error-snackbar";
@@ -263,6 +268,7 @@
 @import "widgets/widgets";
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
+@import "widgets/googlesitekit-widget-analyticsTrafficOverview";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-analyticsPopularPages";
 @import "widgets/googlesitekit-widget-error-handler";

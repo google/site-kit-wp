@@ -29,6 +29,7 @@ import DisplaySetting from '@/js/components/DisplaySetting';
 import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	PolicyViolationSettingsNotice,
 	PublicationOnboardingStateNotice,
@@ -39,14 +40,29 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
+	getConfiguredCTAList,
 	getPostTypesString,
 	getProductIDLabel,
 } from '@/js/modules/reader-revenue-manager/utils/settings';
 
 export default function SettingsView() {
+	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
+	const configuredCTAs = useSelect( ( select ) => {
+		if ( ! rrmExpressSetupEnabled ) {
+			return '';
+		}
+
+		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		return getConfiguredCTAList( settings?.configuredCTAs )
+			.map( ( { label } ) => label )
+			.join( ', ' );
+	} );
 
 	const productID = useSelect( ( select ) => {
 		const id = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
@@ -175,6 +191,24 @@ export default function SettingsView() {
 					</div>
 				) }
 			</div>
+
+			{ !! configuredCTAs && (
+				<div className="googlesitekit-settings-module__meta-items">
+					<div className="googlesitekit-settings-module__meta-item">
+						<Typography
+							as="h5"
+							size="medium"
+							type="label"
+							className="googlesitekit-settings-module__meta-item-type"
+						>
+							{ __( 'CTAs', 'google-site-kit' ) }
+						</Typography>
+						<p className="googlesitekit-settings-module__meta-item-data">
+							<DisplaySetting value={ configuredCTAs } />
+						</p>
+					</div>
+				</div>
+			) }
 		</div>
 	);
 }

@@ -19,14 +19,50 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
-import { render } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideModuleRegistrations,
+	provideModules,
+	render,
+} from '@tests/js/test-utils';
 import SetupMainExpress from './index';
 
 jest.mock( './PoweredBy', () => () => null );
 
 describe( 'SetupMainExpress', () => {
 	mockLocation();
+
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		const moduleData = [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: true,
+				connected: false,
+			},
+		];
+
+		provideModules( registry, moduleData );
+		provideModuleRegistrations( registry, moduleData );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
+	} );
 
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', () => {
 		global.location.href =
@@ -39,21 +75,17 @@ describe( 'SetupMainExpress', () => {
 				'RRM express setup placeholder: newsletter CTA setup step.'
 			)
 		).toBeInTheDocument();
-		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders the default express setup when no CTA is specified', () => {
 		global.location.href = 'http://example.com/?step=connect-publication';
 
 		const { getByText, queryByText, container } = render(
-			<SetupMainExpress />
+			<SetupMainExpress />,
+			{ registry }
 		);
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();
@@ -66,13 +98,11 @@ describe( 'SetupMainExpress', () => {
 		global.location.href =
 			'http://example.com/?cta=unknown-cta&step=connect-publication';
 
-		const { getByText, queryByText } = render( <SetupMainExpress /> );
+		const { getByText, queryByText } = render( <SetupMainExpress />, {
+			registry,
+		} );
 
-		expect(
-			getByText(
-				'RRM express setup placeholder: publication setup step.'
-			)
-		).toBeInTheDocument();
+		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();

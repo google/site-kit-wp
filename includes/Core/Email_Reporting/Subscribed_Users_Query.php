@@ -149,6 +149,7 @@ class Subscribed_Users_Query {
 	 * Retrieves a paginated, searchable list of subscribed users.
 	 *
 	 * @since 1.185.0
+	 * @since 1.187.0 Added the $exclude_user_id parameter.
 	 *
 	 * @param array $args {
 	 *     Optional. Arguments to filter and paginate subscribed users.
@@ -157,6 +158,8 @@ class Subscribed_Users_Query {
 	 *     @type int    $per_page Results per page. Default self::PER_PAGE.
 	 *     @type string $search   Search term for display name, email or role. Default ''.
 	 * }
+	 * @param int   $exclude_user_id Optional. User ID to leave out of the listing, e.g. the
+	 *                               viewing admin managing everyone else's subscription. Default 0 (none).
 	 * @return array {
 	 *     Shaped subscribed users and the total number of matches.
 	 *
@@ -164,12 +167,12 @@ class Subscribed_Users_Query {
 	 *     @type int     $total Total number of matching subscribed users.
 	 * }
 	 */
-	public function get_subscribed_users( array $args = array() ) {
+	public function get_subscribed_users( array $args = array(), int $exclude_user_id = 0 ) {
 		$page     = isset( $args['page'] ) ? max( 1, (int) $args['page'] ) : 1;
 		$per_page = isset( $args['per_page'] ) ? max( 1, min( self::MAX_PER_PAGE, (int) $args['per_page'] ) ) : self::PER_PAGE;
 		$search   = isset( $args['search'] ) ? sanitize_text_field( (string) $args['search'] ) : '';
 
-		$users = $this->get_matching_subscribed_users( $search );
+		$users = $this->get_matching_subscribed_users( $search, $exclude_user_id );
 
 		// Paginate after merging/deduplicating admin, shared-role and super-admin results
 		// (and subscription/access filtering) so page boundaries and totals are based on
@@ -187,11 +190,13 @@ class Subscribed_Users_Query {
 	 * Gets all subscribed users matching the given search term.
 	 *
 	 * @since 1.185.0
+	 * @since 1.187.0 Added the $exclude_user_id parameter.
 	 *
-	 * @param string $search Search term for display name, email or role.
+	 * @param string $search          Search term for display name, email or role.
+	 * @param int    $exclude_user_id Optional. User ID to leave out of the results. Default 0 (none).
 	 * @return WP_User[] Matching subscribed users, ordered by display name.
 	 */
-	private function get_matching_subscribed_users( $search ) {
+	private function get_matching_subscribed_users( $search, $exclude_user_id = 0 ) {
 		$meta_key = $this->email_reporting_settings->get_meta_key();
 
 		$user_ids = array_merge(
@@ -234,7 +239,11 @@ class Subscribed_Users_Query {
 		return array_values(
 			array_filter(
 				$users,
-				function ( WP_User $user ) use ( $meta_key, $search ) {
+				function ( WP_User $user ) use ( $meta_key, $search, $exclude_user_id ) {
+					if ( $exclude_user_id && (int) $user->ID === $exclude_user_id ) {
+						return false;
+					}
+
 					if ( ! $this->user_has_email_reporting_access( $user->ID ) ) {
 						return false;
 					}

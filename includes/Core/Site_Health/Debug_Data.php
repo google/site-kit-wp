@@ -15,7 +15,9 @@ namespace Google\Site_Kit\Core\Site_Health;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings as Site_Email_Reporting_Settings;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Site_Health;
 use Google\Site_Kit\Core\Email_Reporting\Subscribed_Users_Query;
@@ -202,6 +204,7 @@ class Debug_Data {
 		);
 
 		$fields = array_merge( $fields, $this->get_active_conversion_event_provider_fields() );
+		$fields = array_merge( $fields, $this->get_content_events_fields() );
 		$fields = array_merge( $fields, $this->get_consent_mode_fields() );
 		$fields = array_merge( $fields, $this->get_module_sharing_settings_fields() );
 		$fields = array_merge( $fields, $this->get_key_metrics_fields() );
@@ -647,6 +650,35 @@ class Debug_Data {
 			'active_conversion_event_providers' => array(
 				'label' => __( 'Active conversion event providers', 'google-site-kit' ),
 				'value' => $value,
+			),
+		);
+	}
+
+	/**
+	 * Gets the content events fields.
+	 *
+	 * Answers the two questions a triager has when someone reports a content event
+	 * not firing: whether the feature is on at all, and whether the event applies to
+	 * the page they are looking at.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @return array
+	 */
+	private function get_content_events_fields() {
+		$is_conversion_tracking_enabled = ( new Conversion_Tracking_Settings( $this->options ) )->is_conversion_tracking_enabled();
+
+		return array(
+			'content_events'      => array(
+				'label' => __( 'Content events', 'google-site-kit' ),
+				'value' => ( new Content_Events( $this->context ) )->get_eligible_events(),
+			),
+			'conversion_tracking' => array(
+				'label' => __( 'Conversion Tracking', 'google-site-kit' ),
+				'value' => $is_conversion_tracking_enabled
+					? __( 'Enabled (requires a Google Analytics or Google Ads web tag on the page)', 'google-site-kit' )
+					: __( 'Disabled', 'google-site-kit' ),
+				'debug' => $is_conversion_tracking_enabled ? 'enabled' : 'disabled',
 			),
 		);
 	}

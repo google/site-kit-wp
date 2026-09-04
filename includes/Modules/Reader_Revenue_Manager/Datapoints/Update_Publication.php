@@ -96,13 +96,13 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 			$update_mask[] = 'rrmProduct.tosAcceptance.userAccepted';
 		}
 
-		if ( array_key_exists( 'publicationTosURL', $publication_data ) ) {
-			$publication->setPublicationTosUrl( $publication_data['publicationTosURL'] );
+		if ( array_key_exists( 'publicationTosUrl', $publication_data ) ) {
+			$publication->setPublicationTosUrl( $publication_data['publicationTosUrl'] );
 			$update_mask[] = 'publicationTosUrl';
 		}
 
-		if ( array_key_exists( 'publicationPrivacyPolicyURL', $publication_data ) ) {
-			$publication->setPublicationPrivacyPolicyUrl( $publication_data['publicationPrivacyPolicyURL'] );
+		if ( array_key_exists( 'publicationPrivacyPolicyUrl', $publication_data ) ) {
+			$publication->setPublicationPrivacyPolicyUrl( $publication_data['publicationPrivacyPolicyUrl'] );
 			$update_mask[] = 'publicationPrivacyPolicyUrl';
 		}
 
