@@ -34,7 +34,6 @@ import {
 import StepSetupComplete from './StepSetupComplete';
 
 describe( 'StepSetupComplete', () => {
-	// This is needed for `navigateTo` to work in the test.
 	mockLocation();
 
 	let registry: WPDataRegistry;

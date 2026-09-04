@@ -59,25 +59,7 @@ const STEP_CONTENT = {
 		'Your newsletter signup form is ready!',
 };
 
-const ORGANIZATION_ID = 'ABCD1234';
-const PUBLICATION_ID = 'ABCD_123-4';
-
-const PRE_EXISTING_CTA = {
-	name: `organizations/${ ORGANIZATION_ID }/publications/${ PUBLICATION_ID }/ctas/1`,
-	type: CTA_TYPES.NEWSLETTER_SIGNUP,
-};
-
-const NEWSLETTER_CTA = {
-	name: `organizations/${ ORGANIZATION_ID }/publications/${ PUBLICATION_ID }/ctas/5`,
-	type: CTA_TYPES.NEWSLETTER_SIGNUP,
-};
-
-const SETUP_COMPLETE_URL = `http://example.com/?cta=newsletter-signup&step=${ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }`;
-
-const searchEndpoint = new RegExp( '^/wp/v2/search' );
-
 describe( 'SetupCTANewsletterSignup', () => {
-	// This is needed for `navigateTo` to work in the test.
 	mockLocation();
 
 	let registry: Registry;
@@ -161,10 +143,27 @@ describe( 'SetupCTANewsletterSignup', () => {
 	} );
 
 	describe( 'setup complete step', () => {
+		const organizationID = 'ABCD1234';
+		const publicationID = 'ABCD_123-4';
+
+		const preExistingCTA = {
+			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/1`,
+			type: CTA_TYPES.NEWSLETTER_SIGNUP,
+		};
+
+		const newsletterCTA = {
+			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/5`,
+			type: CTA_TYPES.NEWSLETTER_SIGNUP,
+		};
+
+		const setupCompleteURL = `http://example.com/?cta=newsletter-signup&step=${ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }`;
+
+		const searchEndpoint = new RegExp( '^/wp/v2/search' );
+
 		let originalHref: string;
 
 		function setupRegistry( {
-			ctas = [ NEWSLETTER_CTA ],
+			ctas = [ newsletterCTA ],
 			snippetMode = 'sitewide',
 			postTypes = [] as string[],
 		} = {} ) {
@@ -175,8 +174,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
-					organizationID: ORGANIZATION_ID,
-					publicationID: PUBLICATION_ID,
+					organizationID,
+					publicationID,
 					snippetMode,
 					postTypes,
 				} );
@@ -194,7 +193,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		beforeEach( () => {
 			originalHref = global.location.href;
-			global.location.href = SETUP_COMPLETE_URL;
+			global.location.href = setupCompleteURL;
 		} );
 
 		afterEach( () => {
@@ -215,7 +214,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		} );
 
 		it( 'renders correctly with pre-existing CTAs', () => {
-			setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
+			setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
 
 			const { container, getByText } = render(
 				<SetupCTANewsletterSignup />,
@@ -231,7 +230,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		describe( 'links', () => {
 			it( 'links the display order detail to the Publisher Center overview', () => {
-				setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
+				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
 
 				const { getAllByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
@@ -254,7 +253,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					'/reader-revenue-manager/content-access/overview'
 				);
 				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
-					PUBLICATION_ID
+					publicationID
 				);
 			} );
 
@@ -277,7 +276,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					'/reader-revenue-manager/content-access/ctas/newsletter/5'
 				);
 				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
-					PUBLICATION_ID
+					publicationID
 				);
 			} );
 
@@ -370,7 +369,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			it( 'is not rendered when the publication has pre-existing CTAs', () => {
-				setupRegistry( { ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ] } );
+				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
 
 				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
