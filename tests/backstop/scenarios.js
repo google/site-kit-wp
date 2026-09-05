@@ -31,6 +31,7 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
+const viewports = require( './viewports' );
 
 // Use HTTP server instead of file:// URLs to support ES modules in modern Storybook.
 // See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#dropped-support-for-file-urls.
@@ -146,6 +147,38 @@ function processSelectors( scenarioObj ) {
 	return processedScenario;
 }
 
+/**
+ * Limits a scenario to the one viewport its `viewportLabel` names.
+ *
+ * Without `viewportLabel`, Backstop captures the scenario at every viewport
+ * `viewports.js` defines.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} scenario The scenario, which might hold a `viewportLabel`.
+ * @return {Object} The scenario, which holds `viewports` when `viewportLabel`
+ *                  named a viewport.
+ */
+function applyViewportLabel( scenario ) {
+	const { viewportLabel, ...rest } = scenario;
+
+	if ( ! viewportLabel ) {
+		return rest;
+	}
+
+	const namedViewports = viewports.filter(
+		( { label } ) => label === viewportLabel
+	);
+
+	if ( ! namedViewports.length ) {
+		throw new Error(
+			`Scenario "${ scenario.label }" names the viewport "${ viewportLabel }", which viewports.js does not define.`
+		);
+	}
+
+	return { ...rest, viewports: namedViewports };
+}
+
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';
 
@@ -154,7 +187,7 @@ module.exports = csfScenarios.map( ( scenario ) => {
 		: backstopReadySelector;
 
 	return {
-		...processSelectors( scenario ),
+		...processSelectors( applyViewportLabel( scenario ) ),
 		readySelector,
 	};
 } );

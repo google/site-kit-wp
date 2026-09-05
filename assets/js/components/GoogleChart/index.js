@@ -477,7 +477,8 @@ GoogleChart.propTypes = {
 	// the charts currently used in our codebase here, and only ones that we have
 	// explicit support/styles/handling for.
 	// See: https://github.com/google/site-kit-wp/pull/2916#discussion_r626620601
-	chartType: PropTypes.oneOf( [ 'LineChart', 'PieChart' ] ).isRequired,
+	chartType: PropTypes.oneOf( [ 'AreaChart', 'LineChart', 'PieChart' ] )
+		.isRequired,
 	data: PropTypes.array,
 	dateMarkers: PropTypes.arrayOf(
 		PropTypes.shape( {
