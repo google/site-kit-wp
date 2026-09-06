@@ -31,7 +31,7 @@ import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publi
 /**
  * Provides publications to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @private
  *
  * @param {Registry|WPDataRegistry} registry     Data registry.

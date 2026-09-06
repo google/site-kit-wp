@@ -57,6 +57,8 @@ import { type ReaderRevenueManagerSettings } from './types';
 export interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 	publicationId: string;
+	publicationPrivacyPolicyUrl?: string;
+	publicationTosUrl?: string;
 	organizationId?: string;
 	/* eslint-enable sitekit/acronym-case */
 	onboardingState: string;
@@ -186,7 +188,7 @@ function syncConnectedPublicationSettings(
 /**
  * Resolves the publication ID for a request, falling back to the saved setting.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} state            Store state.
  * @param {Object} [state.settings] Module settings.
@@ -204,7 +206,7 @@ export function getSelectedPublicationID(
  * Resolves module settings when no publication ID was passed and settings
  * are not already in the store.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} registry               Data registry.
  * @param {Object} [params]               Optional publication parameters.

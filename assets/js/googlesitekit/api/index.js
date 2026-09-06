@@ -110,7 +110,7 @@ export function dispatchAPIError( error ) {
  * Makes a request to a WP REST API Site Kit endpoint.
  *
  * @since 1.5.0
- * @since n.e.x.t Normalizes falsy errors returned by the API fetch implementation.
+ * @since 1.187.0 Normalizes falsy errors returned by the API fetch implementation.
  * @private
  *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.

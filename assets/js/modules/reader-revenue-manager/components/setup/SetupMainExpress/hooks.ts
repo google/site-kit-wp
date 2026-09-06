@@ -65,7 +65,7 @@ const PREREQUISITE_STEPS: Step[] = [
  * wherever the current step is read, and is idempotent so that calling this
  * hook from more than one component is harmless.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Array} Value and setter tuple.
  */

@@ -84,6 +84,11 @@ export const enum EXPRESS_SETUP_STEPS {
 	SETUP_COMPLETE = 'setup-complete',
 }
 
+export const enum PUBLICATION_POLICIES_FORM {
+	TERMS_OF_SERVICE_URL = 'publicationTosUrl',
+	PRIVACY_POLICY_URL = 'publicationPrivacyPolicyUrl',
+}
+
 export const enum TERMS_OF_SERVICE_FORM {
 	PUBLICATION_TYPE = 'publicationType',
 	EMAIL_OPT_IN = 'emailOptIn',
