@@ -527,9 +527,11 @@ class Report_Options extends Base_Report_Options {
 	private function with_discovery_range( $options ) {
 		$end_date = $this->get_current_range_values()['endDate'];
 
+		// `gmdate()` formats in UTC, so the subtraction has to happen there too. Without
+		// the timezone the site's own would shift the start date back a day.
 		$options['startDate'] = gmdate(
 			'Y-m-d',
-			strtotime( sprintf( '%s -%d days', $end_date, self::SITE_GOALS_DISCOVERY_DAYS ) )
+			strtotime( sprintf( '%s -%d days UTC', $end_date, self::SITE_GOALS_DISCOVERY_DAYS ) )
 		);
 		$options['endDate']   = $end_date;
 		$options['orderby']   = array(

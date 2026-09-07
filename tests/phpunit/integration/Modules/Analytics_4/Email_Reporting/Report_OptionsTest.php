@@ -468,6 +468,29 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_discovery_options__start_on_the_same_day_whatever_timezone_php_runs_in() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+
+		// WordPress runs on UTC, but a plugin can move PHP's default timezone. A timezone
+		// ahead of UTC used to push the start date back a day.
+		// phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set
+		$original_timezone = date_default_timezone_get();
+
+		try {
+			// phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set
+			date_default_timezone_set( 'Asia/Tokyo' );
+
+			$this->assertSame(
+				'2023-10-09',
+				$builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER )['startDate'],
+				'get_online_store_discovery_options() should start its discovery days on the same date whatever timezone PHP runs in.'
+			);
+		} finally {
+			// phpcs:ignore WordPress.DateTime.RestrictedFunctions.timezone_change_date_default_timezone_set
+			date_default_timezone_set( $original_timezone );
+		}
+	}
+
 	public function test_get_discovery_options__order_the_biggest_key_action_count_first() {
 		$builder = $this->create_builder_with_events( array( 'purchase', 'contact' ) );
 
