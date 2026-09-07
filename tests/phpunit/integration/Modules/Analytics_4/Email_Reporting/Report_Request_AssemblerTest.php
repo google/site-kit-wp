@@ -221,6 +221,51 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$this->assertArrayHasKey( 'popular_content', $requests, 'build_requests() should still register the popular content report alongside the Site Goals reports.' );
 	}
 
+	public function test_build_requests__registers_the_store_discovery_report_when_the_event_provider_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'purchase' ), $this->breakdown_dimension_availability() );
+
+		$this->assertArrayHasKey(
+			'site_goals_online_store_discovery',
+			$requests,
+			'build_requests() should register the store discovery report when the event provider dimension has data.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
+			$requests['site_goals_online_store_discovery'],
+			'build_requests() should register the store discovery report under site_goals_online_store_discovery.'
+		);
+	}
+
+	public function test_build_requests__registers_the_lead_discovery_report_when_the_form_id_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'contact' ), $this->breakdown_dimension_availability() );
+
+		$this->assertArrayHasKey(
+			'site_goals_lead_discovery',
+			$requests,
+			'build_requests() should register the lead discovery report when the form ID dimension has data.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
+			$requests['site_goals_lead_discovery'],
+			'build_requests() should register the lead discovery report under site_goals_lead_discovery.'
+		);
+	}
+
+	public function test_build_requests__registers_no_discovery_report_when_neither_breakdown_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayNotHasKey(
+			'site_goals_online_store_discovery',
+			$requests,
+			'build_requests() should ask Analytics for no store discovery report when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_lead_discovery',
+			$requests,
+			'build_requests() should ask Analytics for no lead discovery report when the card shows one group.'
+		);
+	}
+
 	public function test_build_requests__registers_every_site_goals_request_key_and_no_other() {
 		$site_wide_keys = $this->request_keys_starting_with(
 			$this->build_requests_for_events( array( 'purchase', 'contact' ) ),
@@ -234,8 +279,10 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$site_goals_keys = array(
 			'site_goals_online_store_primary',
 			'site_goals_online_store_primary_by_provider',
+			'site_goals_online_store_discovery',
 			'site_goals_lead_primary',
 			'site_goals_lead_primary_by_form',
+			'site_goals_lead_discovery',
 			'site_goals_engagement',
 			'site_goals_engagement_by_provider',
 			'site_goals_engagement_by_form',
