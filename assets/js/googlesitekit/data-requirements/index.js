@@ -27,6 +27,7 @@ import { SITE_KIT_VIEW_ONLY_CONTEXTS } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 /**
  * Returns a function that checks if the current user has the given scope.
@@ -594,5 +595,22 @@ export function requireQueryArg( name, value ) {
 		const queryArg = getQueryArg( location.href, name );
 
 		return undefined === value ? !! queryArg : queryArg === value;
+	};
+}
+
+/**
+ * Returns a function that checks if the site's home URL uses HTTPS.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the home URL uses HTTPS or not.
+ */
+export function requireHomeURLUsingHTTPS() {
+	return async ( { select, resolveSelect } ) => {
+		// The getHomeURL() selector relies on the resolution of the
+		// getSiteInfo() resolver.
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		return isURLUsingHTTPS( select( CORE_SITE ).getHomeURL() );
 	};
 }
