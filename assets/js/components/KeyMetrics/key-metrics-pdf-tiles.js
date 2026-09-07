@@ -80,6 +80,7 @@ import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
@@ -2513,7 +2514,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2559,7 +2560,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2605,7 +2606,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2651,7 +2652,7 @@ export const KEY_METRICS_PDF_TILES = {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -2669,35 +2670,57 @@ export const KEY_METRICS_PDF_TILES = {
 				const detectedLeadEvents = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getDetectedLeadEvents();
+				// `context: GOAL_TYPES.LEAD` keeps this reportID distinct
+				// from the equivalent Selling products tile, which requests
+				// the same shape of report (same `top-authors` suffix) for
+				// a different primary event.
 				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 					GOAL_DRIVER_IDS.TOP_AUTHORS
 				]( {
 					dates: pdfTableDates( dates ),
 					primaryEvent: detectedLeadEvents,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					context: GOAL_TYPES.LEAD,
+				} );
+				// The percentage shown is each author's share of every
+				// matching event site-wide, not just the ranked authors
+				// above - see `buildGoalDriverTotalReportOptions`.
+				const totalOptions = buildGoalDriverTotalReportOptions( {
+					dates: pdfTableDates( dates ),
+					primaryEvent: detectedLeadEvents,
+					context: GOAL_TYPES.LEAD,
+					reportIDSuffix: 'top-authors',
 				} );
 
-				if ( ! options ) {
+				if ( ! options || ! totalOptions ) {
 					return [];
 				}
 
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+				return [
+					{ moduleStore: MODULES_ANALYTICS_4, options },
+					{
+						moduleStore: MODULES_ANALYTICS_4,
+						options: totalOptions,
+					},
+				];
 			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.TOP_AUTHORS
-				]( report?.rows || [] );
+			( [ report, totalReport ] ) => {
+				const rows = report?.rows || [];
 
 				if ( ! rows.length ) {
 					return null;
 				}
 
+				const mappedRows = makeShareOfExplicitTotalMapper(
+					getGoalDriverTotalCount( totalReport )
+				)( rows );
+
 				return {
-					rows: rows.map( ( row ) => ( {
+					rows: mappedRows.map( ( row ) => ( {
 						primary: row.label,
 						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),

@@ -36,12 +36,16 @@ import {
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
 	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
 	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
+	buildGoalDriverTotalReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -78,6 +82,10 @@ const columns = [
 /**
  * Gets the report options for the Top Authors Driving Leads widget.
  *
+ * Passes `context: GOAL_TYPES.LEAD` so this reportID stays distinct from
+ * the equivalent Selling products tile, which requests the same shape of
+ * report (same `top-authors` suffix) for a different primary event.
+ *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
@@ -88,6 +96,29 @@ function getTopAuthorsDrivingLeadsReportOptions( select: Select ) {
 		dates: select( CORE_USER ).getDateRangeDates(),
 		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		context: GOAL_TYPES.LEAD,
+	} );
+}
+
+/**
+ * Gets the site-wide total report options for the Top Authors Driving Leads widget.
+ *
+ * The percentage shown is each author's share of every matching event
+ * site-wide, not just the ranked authors above - see
+ * `buildGoalDriverTotalReportOptions`. Passes `context: GOAL_TYPES.LEAD`
+ * for the same reason as the ranked report options above.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getTopAuthorsDrivingLeadsTotalReportOptions( select: Select ) {
+	return buildGoalDriverTotalReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		context: GOAL_TYPES.LEAD,
+		reportIDSuffix: 'top-authors',
 	} );
 }
 
@@ -96,6 +127,10 @@ const TopAuthorsDrivingLeadsWidget: FC<
 > = ( { Widget } ) => {
 	const reportOptions = useSelect(
 		getTopAuthorsDrivingLeadsReportOptions,
+		[]
+	);
+	const totalReportOptions = useSelect(
+		getTopAuthorsDrivingLeadsTotalReportOptions,
 		[]
 	);
 
@@ -107,43 +142,51 @@ const TopAuthorsDrivingLeadsWidget: FC<
 		[ reportOptions ]
 	);
 
+	const totalReport = useInViewSelect(
+		( select: Select ) =>
+			totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport( totalReportOptions )
+				: undefined,
+		[ totalReportOptions ]
+	);
+
 	const error = useSelect(
 		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
 				  )
 				: undefined,
-		[ reportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 
 	const loading = useSelect(
 		( select: Select ) => {
-			if ( ! reportOptions ) {
+			if ( ! reportOptions || ! totalReportOptions ) {
 				return true;
 			}
 
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
+			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				reportOptions,
+				totalReportOptions
 			);
 		},
-		[ reportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 
-	const rows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ](
-		report?.rows || []
-	);
+	const rows = makeShareOfExplicitTotalMapper(
+		getGoalDriverTotalCount( totalReport )
+	)( report?.rows || [] );
 
 	return (
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS }
 			loading={ loading }
-			rows={ rows as unknown as Record< string, unknown >[] }
+			rows={ rows }
 			columns={ columns }
-			limit={ 3 }
+			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"

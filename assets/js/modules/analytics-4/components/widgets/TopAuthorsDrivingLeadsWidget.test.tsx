@@ -96,7 +96,25 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 			],
 			limit: 6,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-authors',
+			reportID: 'analytics-4_goal-driver-reports_top-authors_lead',
+		};
+	}
+
+	function getTotalReportOptions() {
+		return {
+			...registry.select( CORE_USER ).getDateRangeDates(),
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			reportID: 'analytics-4_goal-driver-reports_top-authors-total_lead',
 		};
 	}
 
@@ -140,8 +158,10 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
-		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( reportEndpoint );
+		// Freeze the report fetch to keep the widget in loading state. Two
+		// reports are requested (the ranked list and the site-wide total),
+		// so this must match twice.
+		freezeFetch( reportEndpoint, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
@@ -216,10 +236,14 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 
 	it( 'should render the zero data state when the report has no rows', async () => {
 		const reportOptions = getReportOptions();
+		const totalReportOptions = getTotalReportOptions();
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( {}, { options: reportOptions } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( {}, { options: totalReportOptions } );
 
 		const { container, getByText, waitForRegistry } = render(
 			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
@@ -237,8 +261,9 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( "should render each author's share of the total as a percentage", async () => {
+	it( "should render each author's share of the site-wide total as a percentage", async () => {
 		const reportOptions = getReportOptions();
+		const totalReportOptions = getTotalReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -259,6 +284,15 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 			},
 			{ options: reportOptions }
 		);
+		// The site-wide total (200) is larger than the sum of the ranked
+		// rows above (100), so the percentages below only match if the
+		// widget divides by this total rather than by the visible rows.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [ { metricValues: [ { value: '200' } ] } ],
+			},
+			{ options: totalReportOptions }
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
@@ -267,11 +301,11 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		await waitForRegistry();
 
 		expect( getByText( 'Jane Doe' ) ).toBeInTheDocument();
-		expect( getByText( '50%' ) ).toBeInTheDocument();
+		expect( getByText( '25%' ) ).toBeInTheDocument();
 		expect( getByText( 'John Smith' ) ).toBeInTheDocument();
-		expect( getByText( '30%' ) ).toBeInTheDocument();
+		expect( getByText( '15%' ) ).toBeInTheDocument();
 		expect( getByText( 'Alex Lee' ) ).toBeInTheDocument();
-		expect( getByText( '20%' ) ).toBeInTheDocument();
+		expect( getByText( '10%' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render the missing custom dimension error when the required custom dimension is not available', async () => {
