@@ -174,14 +174,29 @@ class Create_Account_TicketTest extends TestCase {
 		);
 		$this->assertEquals( 'test account name', $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( 'US', $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
-		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
-		$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
+		$redirect_uri = $account_ticket_request->getRedirectUri();
+
+		$expected_query_args = array(
+			'gatoscallback'   => '1',
+			'service_version' => 'v3',
+			'nonce'           => wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+		);
 
 		if ( $show_progress_params['expected'] ) {
-			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+			$expected_query_args['show_progress'] = '1';
 		}
 
-		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should include service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
+		// Compare the query arguments rather than the whole URI, as their order is
+		// not significant. `assertEquals` matches associative arrays by key, so
+		// the expected order below does not have to match the URI.
+		parse_str( wp_parse_url( $redirect_uri, PHP_URL_QUERY ), $actual_query_args );
+
+		$this->assertEquals(
+			admin_url( 'index.php' ),
+			strtok( $redirect_uri, '?' ),
+			'Redirect URI should point at the admin callback URL.'
+		);
+		$this->assertEquals( $expected_query_args, $actual_query_args, 'Redirect URI should include the nonce, service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
 	}
 
 	public function test_create_request__without_setup_flow_refresh_feature_flag() {
@@ -207,7 +222,47 @@ class Create_Account_TicketTest extends TestCase {
 		$redirect_uri = $account_ticket_request->getRedirectUri();
 		$this->assertStringNotContainsString( 'service_version=v3', $redirect_uri, 'Redirect URI should not include service_version when setupFlowRefresh is disabled.' );
 		$this->assertStringNotContainsString( 'show_progress=1', $redirect_uri, 'Redirect URI should not include show_progress when setupFlowRefresh is disabled.' );
-		$this->assertEquals( $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'], $redirect_uri, 'Redirect URI should match the base analytics redirect URI when setupFlowRefresh is disabled.' );
+		$this->assertEquals(
+			add_query_arg(
+				'nonce',
+				wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+				$this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri']
+			),
+			$redirect_uri,
+			'Redirect URI should match the base analytics redirect URI plus the nonce when setupFlowRefresh is disabled.'
+		);
+	}
+
+	public function test_create_request__adds_a_verifiable_nonce_to_the_redirect_uri() {
+		$this->provision_account_ticket_request = null;
+
+		$data = array(
+			'displayName'    => 'test account name',
+			'regionCode'     => 'US',
+			'propertyName'   => 'test property name',
+			'dataStreamName' => 'test stream name',
+			'timezone'       => 'UTC',
+		);
+
+		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-account-ticket', $data );
+		$request      = $this->datapoint->create_request( $data_request );
+		$this->analytics->get_client()->execute( $request );
+
+		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
+			json_decode( $this->provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
+		);
+
+		$nonce = null;
+		parse_str( wp_parse_url( $account_ticket_request->getRedirectUri(), PHP_URL_QUERY ), $query_args );
+		if ( isset( $query_args['nonce'] ) ) {
+			$nonce = $query_args['nonce'];
+		}
+
+		$this->assertNotEmpty( $nonce, 'Redirect URI should carry a nonce.' );
+		$this->assertNotFalse(
+			wp_verify_nonce( $nonce, Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+			'The nonce on the redirect URI should verify for the current user.'
+		);
 	}
 
 	public function test_parse_response() {
