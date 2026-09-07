@@ -71,11 +71,6 @@
 	<arg name="extensions" value="php"/>
 	<file>.</file>
 
-	<!-- Temporarily disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -->
-	<rule ref="WordPress.Security.EscapeOutput">
-		<exclude name="WordPress.Security.EscapeOutput.ExceptionNotEscaped" />
-	</rule>
-
 	<!-- Test-specific exclusions -->
 	<rule ref="WordPress.DB.DirectDatabaseQuery">
 		<exclude-pattern>tests/*</exclude-pattern>

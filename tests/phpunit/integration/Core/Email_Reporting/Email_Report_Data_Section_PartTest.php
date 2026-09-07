@@ -66,6 +66,92 @@ class Email_Report_Data_Section_PartTest extends TestCase {
 		$this->assertTrue( $section->is_empty(), 'Section with empty values should be empty' );
 	}
 
+	public function test_get_groups__returns_the_groups_the_section_receives() {
+		$groups = array(
+			array(
+				'label'   => 'WooCommerce',
+				'metrics' => array(
+					array(
+						'label' => 'Total sales',
+						'value' => '116',
+						'trend' => 16.0,
+					),
+				),
+			),
+		);
+
+		$section = new Email_Report_Data_Section_Part(
+			'site_goals_online_store',
+			array(
+				'title'  => 'How is my online store performing?',
+				'labels' => array( 'Total sales' ),
+				'values' => array( '116' ),
+				'groups' => $groups,
+			)
+		);
+
+		$this->assertSame( $groups, $section->get_groups(), 'get_groups() should return the groups the section receives.' );
+	}
+
+	public function test_get_prompt__returns_the_prompt_the_section_receives() {
+		$prompt = array(
+			'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
+			'link_text' => 'enable data breakdown',
+		);
+
+		$section = new Email_Report_Data_Section_Part(
+			'site_goals_online_store',
+			array(
+				'title'  => 'How is my online store performing?',
+				'labels' => array( 'Total sales' ),
+				'values' => array( '116' ),
+				'prompt' => $prompt,
+			)
+		);
+
+		$this->assertSame( $prompt, $section->get_prompt(), 'get_prompt() should return the prompt the section receives.' );
+	}
+
+	public function test_construct__leaves_the_groups_and_the_prompt_empty_when_the_section_data_holds_neither() {
+		$section = new Email_Report_Data_Section_Part(
+			'total_visitors',
+			array(
+				'title'  => 'Total visitors',
+				'labels' => array( 'Total visitors' ),
+				'values' => array( '1256' ),
+			)
+		);
+
+		$this->assertSame( array(), $section->get_groups(), 'get_groups() should return an empty array for a section that shows one flat list of values.' );
+		$this->assertSame( array(), $section->get_prompt(), 'get_prompt() should return an empty array for a section that asks the reader nothing.' );
+	}
+
+	public function test_construct__rejects_groups_that_are_not_an_array() {
+		$this->expectException( InvalidArgumentException::class );
+		new Email_Report_Data_Section_Part(
+			'site_goals_online_store',
+			array(
+				'title'  => 'How is my online store performing?',
+				'labels' => array( 'Total sales' ),
+				'values' => array( '116' ),
+				'groups' => 'WooCommerce',
+			)
+		);
+	}
+
+	public function test_construct__rejects_a_prompt_that_is_not_an_array() {
+		$this->expectException( InvalidArgumentException::class );
+		new Email_Report_Data_Section_Part(
+			'site_goals_online_store',
+			array(
+				'title'  => 'How is my online store performing?',
+				'labels' => array( 'Total sales' ),
+				'values' => array( '116' ),
+				'prompt' => 'enable data breakdown',
+			)
+		);
+	}
+
 	public function test_compare_dates_must_be_provided_together() {
 		$this->expectException( InvalidArgumentException::class );
 		new Email_Report_Data_Section_Part(

@@ -46,7 +46,7 @@ export const BBPRESS_PAGINATION_SELECTOR =
  * `/N/` segment with them, bbPress emits `?paged=N` or `/page/N/`, and the
  * numbered link back to the first page carries no number in its href at all.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {HTMLAnchorElement} anchor Pagination anchor that was clicked.
  * @return {number} Destination page number; `1` when nothing yields one.
@@ -97,7 +97,7 @@ function getPageNumber( anchor: HTMLAnchorElement ): number {
  * One delegated listener on `document`, registered whatever the page is, so
  * pagination that renders after load is tracked too.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {ContentEventsConfig} config Content events configuration.
  * @return {void}

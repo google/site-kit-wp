@@ -30,13 +30,17 @@ import { EmailReportingPage } from './email-reporting-page';
 // `proxy-auth.php`), so the dashboard is view-only. Search Console is connected
 // (owned by the admin, ID 1) and shared with the editor role, which is one of the
 // two modules email reports draw data from. The editor has the shared-dashboard
-// splash pre-dismissed so it lands on the view-only dashboard directly.
+// splash pre-dismissed so it lands on the view-only dashboard directly, and the
+// setup overlay pre-dismissed so it does not cover the features menu.
 test.describe(
 	'Email Reporting (view-only with data access)',
 	{
 		annotation: [
 			asUser( 'editor', {
-				dismissedItems: [ 'shared_dashboard_splash' ],
+				dismissedItems: [
+					'shared_dashboard_splash',
+					'email_reports_setup_overlay_notification',
+				],
 			} ),
 			withPlugins( 'proxy-credentials.php' ),
 			withConnectedModules( {

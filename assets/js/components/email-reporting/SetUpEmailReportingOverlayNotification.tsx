@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
@@ -76,7 +77,10 @@ const SetUpEmailReportingOverlayNotification: FC<
 			<OverlayNotification
 				notificationID={ id }
 				className="googlesitekit-email-reporting-introduction-overlay"
-				anchorID={ `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }` }
+				// On mobile and tablet the email reports button collapses into
+				// the features menu, so the overlay anchors to whichever
+				// trigger exists.
+				anchorID={ `.${ MANAGE_EMAIL_REPORTS_BUTTON_CLASS }, .${ FEATURES_MENU_BUTTON_CLASS }` }
 				title={ __(
 					'Get site insights in your inbox',
 					'google-site-kit'
