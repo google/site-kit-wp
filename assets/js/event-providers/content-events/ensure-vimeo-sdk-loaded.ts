@@ -38,7 +38,7 @@ interface VimeoGlobal {
 /**
  * Reads the (untyped) `Vimeo` global as the narrow slice this loader needs.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Object|undefined} The `Vimeo` global, when present.
  */
@@ -52,14 +52,14 @@ function getVimeo(): VimeoGlobal | undefined {
  * Without this, a script that already failed to load before this code ran
  * would leave `ensureVimeoSDKLoaded()` pending forever.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  */
 export const EXISTING_SCRIPT_LOAD_TIMEOUT = 10000;
 
 /**
  * Waits for a script element to finish loading.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {HTMLScriptElement} script    The script element to wait on.
  * @param {number}            [timeout] Milliseconds to wait before giving up and rejecting.
@@ -77,7 +77,7 @@ function waitForScript(
 		 * Wraps a callback to clear the pending timeout before running it, so
 		 * only the first of `load`, `error`, or the timeout wins.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.187.0
 		 *
 		 * @param {Function} fn The callback to wrap.
 		 * @return {Function} The wrapped callback.
@@ -128,7 +128,7 @@ function waitForScript(
 /**
  * Loads the Vimeo Player SDK script, reusing one already on the page.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Promise<void>} Resolves once the SDK script has loaded.
  */
@@ -175,7 +175,7 @@ let loadPromise: Promise< VimeoPlayerConstructor > | null = null;
  * in the same page view do not re-fetch it. A failed load resets the cache so a later
  * call can retry.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Promise<VimeoPlayerConstructor>} Resolves with the `Vimeo.Player` constructor.
  */

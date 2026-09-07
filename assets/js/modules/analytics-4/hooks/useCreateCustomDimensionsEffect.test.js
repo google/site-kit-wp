@@ -73,6 +73,9 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 			postFrequency: { values: [], scope: 'user' },
 			goals: { values: [], scope: 'user' },
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [],

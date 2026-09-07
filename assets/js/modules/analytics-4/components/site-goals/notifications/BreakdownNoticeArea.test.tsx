@@ -95,6 +95,9 @@ describe( 'BreakdownNoticeArea', () => {
 			isWidgetHidden: false,
 		} );
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		// Mark the throttled availability sync as already done, so the mount
 		// effect doesn't schedule one (tests that need it clear this).
 		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );

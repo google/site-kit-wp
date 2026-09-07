@@ -942,5 +942,29 @@ describe( 'googlesitekit.api', () => {
 				expect( console ).not.toHaveErrored();
 			}
 		} );
+
+		it( 'should dispatch a truthy error when the request rejects with a falsy value', async () => {
+			// An error response with a body that parses to a falsy value, e.g.
+			// `false` or `0`, causes the underlying fetch implementation to
+			// reject with that falsy value rather than an error object.
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/core/modules/data/activation'
+				),
+				{ body: 'false', status: 500 }
+			);
+
+			await expect(
+				siteKitRequest( 'core', 'modules', 'activation', {
+					method: 'POST',
+					bodyParams: { slug: MODULE_SLUG_ANALYTICS_4, active: true },
+				} )
+			).rejects.toEqual( {
+				code: 'unknown_error',
+				message: 'An unknown error occurred.',
+			} );
+
+			expect( console ).toHaveErrored();
+		} );
 	} );
 } );

@@ -1857,6 +1857,9 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'advanced-data-breakdowns-settings',
+				'save-advanced-data-breakdowns-settings',
+				'form-metadata',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
@@ -1898,28 +1901,12 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'advanced-data-breakdowns-settings',
+				'save-advanced-data-breakdowns-settings',
+				'form-metadata',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'
-		);
-	}
-
-	public function test_get_datapoints__registers_advanced_data_breakdowns_when_site_goals_enabled() {
-		$this->enable_feature( 'siteGoals' );
-
-		$analytics = new Analytics_4( $this->context, $this->options, $this->user_options, $this->authentication );
-
-		$datapoints = $analytics->get_datapoints();
-
-		$this->assertContains(
-			'advanced-data-breakdowns-settings',
-			$datapoints,
-			'Enabling the siteGoals feature flag should register the advanced data breakdowns datapoint.'
-		);
-		$this->assertContains(
-			'save-advanced-data-breakdowns-settings',
-			$datapoints,
-			'Enabling the siteGoals feature flag should register the save advanced data breakdowns datapoint.'
 		);
 	}
 
@@ -1937,6 +1924,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_ads_linked',
 				'analytics_4_ads_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
+				'analytics_4_site_goals_widgets',
 			),
 			array_keys( $this->analytics->get_debug_fields() ),
 			'Analytics 4 module should expose the expected debug fields'
@@ -1956,6 +1944,7 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_web_data_stream_id',
 				'analytics_4_ads_linked',
 				'analytics_4_site_kit_audiences',
+				'analytics_4_site_goals_widgets',
 				'analytics_4_ads_linked_last_synced_at',
 			),
 			array_keys( $this->analytics->get_debug_fields() ),
@@ -1987,35 +1976,14 @@ class Analytics_4Test extends TestCase {
 				'analytics_4_adsense_linked',
 				'analytics_4_adsense_linked_last_synced_at',
 				'analytics_4_site_kit_audiences',
+				'analytics_4_site_goals_widgets',
 			),
 			array_keys( $this->analytics->get_debug_fields() ),
 			'Analytics 4 module should expose the expected debug fields when AdSense is enabled'
 		);
 	}
 
-	public function test_get_debug_fields__site_goals_widgets_absent_when_feature_disabled() {
-		$this->analytics->register();
-
-		$this->assertArrayNotHasKey(
-			'analytics_4_site_goals_widgets',
-			$this->analytics->get_debug_fields(),
-			'analytics_4_site_goals_widgets should not be present when the siteGoals feature flag is disabled'
-		);
-	}
-
-	public function test_get_debug_fields__site_goals_widgets_present_when_feature_enabled() {
-		$this->enable_feature( 'siteGoals' );
-		$this->analytics->register();
-
-		$this->assertArrayHasKey(
-			'analytics_4_site_goals_widgets',
-			$this->analytics->get_debug_fields(),
-			'analytics_4_site_goals_widgets should be present when the siteGoals feature flag is enabled'
-		);
-	}
-
 	public function test_get_debug_fields__site_goals_widgets_none_when_empty() {
-		$this->enable_feature( 'siteGoals' );
 		$this->analytics->register();
 
 		$debug_fields = $this->analytics->get_debug_fields();
@@ -2027,7 +1995,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__site_goals_widgets_ecommerce() {
-		$this->enable_feature( 'siteGoals' );
 		$this->analytics->register();
 
 		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
@@ -2041,7 +2008,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__site_goals_widgets_lead() {
-		$this->enable_feature( 'siteGoals' );
 		$this->analytics->register();
 
 		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );
@@ -2055,7 +2021,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_get_debug_fields__site_goals_widgets_both() {
-		$this->enable_feature( 'siteGoals' );
 		$this->analytics->register();
 
 		$site_goals_site_settings = new Site_Goals_Site_Settings( $this->options );

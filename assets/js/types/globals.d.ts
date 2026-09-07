@@ -62,6 +62,13 @@ declare global {
 
 	var googlesitekit: Record< string, unknown >;
 
+	// Replaced by Webpack's DefinePlugin at build time.
+	var GOOGLESITEKIT_VERSION: string;
+
+	var _googlesitekitTrackingData:
+		| Partial< import('@/js/util/tracking/createTracking').TrackingConfig >
+		| undefined;
+
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitLegacyData: {
 		admin: {
@@ -74,6 +81,7 @@ declare global {
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekitBaseData: {
 		assetsURL: string;
+		wpPrivacyURL?: string;
 		enabledFeatures?: string[];
 	};
 

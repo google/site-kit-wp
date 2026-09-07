@@ -20,7 +20,7 @@
  * Creates a product, shaped the way `get_formatted_product()` writes it into
  * the page.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {number} price The price in minor units, such as 1234 for 12.34.
  * @return {Object} A product for `window._googlesitekit.wcdata`.
@@ -39,7 +39,7 @@ function createProduct( price ) {
  * Creates an order holding a single product, shaped the way
  * `get_formatted_order()` writes it into the order-received page.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {number} price The order total and the price of its one product, both in minor units.
  * @return {Object} An order for `window._googlesitekit.wcdata`.
@@ -64,7 +64,7 @@ function createOrder( price ) {
  * The script reads `global._googlesitekit` as it loads, and only then, so each
  * case has to import the module again.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} wcdata     The page data, as `window._googlesitekit.wcdata`.
  * @param {Object} [handlers] An object that receives every handler the script binds to `body`, keyed by event name.

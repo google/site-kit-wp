@@ -135,6 +135,20 @@ class Get_PublicationTest extends TestCase {
 		$this->assertSame( 'organization-1', $publication['organizationId'], 'WCP fields should be preserved.' );
 	}
 
+	public function test_parse_response__synchronizes_publication() {
+		$response = new Publication();
+		$response->setOrganizationId( 'organization-1' );
+		$response->setPublicationId( 'publication-setting' );
+
+		$this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
+
+		$this->assertSame(
+			'organization-1',
+			$this->module->get_settings()->get()['organizationID'],
+			'The publication response should be passed to publication synchronization.'
+		);
+	}
+
 	private function get_data_request( array $data ) {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'publication', $data );
 	}

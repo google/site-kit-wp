@@ -287,7 +287,10 @@
 				"webpack/*",
 				"**/__factories__/*",
 				"*.stories.js",
-				"*.test.js"
+				"*.stories.tsx",
+				"*.test.js",
+				"*.test.ts",
+				"*.test.tsx"
 			],
 			"rules": {
 				"sitekit/no-direct-date": "off"

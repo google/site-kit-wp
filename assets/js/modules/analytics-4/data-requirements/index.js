@@ -81,7 +81,7 @@ export function requireAudienceSegmentationSetupCompletedByUser() {
 /**
  * Returns a function that checks if AdSense is linked to the connected Analytics property.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether AdSense is linked or not.
  */
