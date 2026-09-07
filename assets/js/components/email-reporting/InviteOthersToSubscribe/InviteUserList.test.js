@@ -76,7 +76,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			getByText( 'No users are eligible to receive invitations.' )
+			getByText( /no users are eligible to receive invitations/i )
 		).toBeInTheDocument();
 	} );
 
@@ -91,8 +91,38 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			getByText( 'No users match your search.' )
+			getByText( /no users match your search/i )
 		).toBeInTheDocument();
+	} );
+
+	it( 'shows the noEligibleUsersIcon next to the no-eligible-users empty state', () => {
+		const { getByText, getByTestID } = render(
+			<InviteUserList
+				users={ [] }
+				onInviteResult={ mockOnInviteResult }
+				noEligibleUsersIcon={ <span data-testid="empty-icon" /> }
+			/>,
+			{ registry }
+		);
+
+		expect( getByTestID( 'empty-icon' ) ).toBeInTheDocument();
+		expect(
+			getByText( /no users are eligible to receive invitations/i )
+		).toBeInTheDocument();
+	} );
+
+	it( 'does not show the noEligibleUsersIcon in the no-search-matches empty state', () => {
+		const { queryByTestID } = render(
+			<InviteUserList
+				users={ [] }
+				searchTerm="john"
+				onInviteResult={ mockOnInviteResult }
+				noEligibleUsersIcon={ <span data-testid="empty-icon" /> }
+			/>,
+			{ registry }
+		);
+
+		expect( queryByTestID( 'empty-icon' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'shows loading state when isLoading is true', () => {
@@ -106,7 +136,7 @@ describe( 'InviteUserList', () => {
 		);
 
 		expect(
-			container.querySelector( '.googlesitekit-invite-user-row--loading' )
+			container.querySelector( '.googlesitekit-user-row--loading' )
 		).toBeInTheDocument();
 	} );
 
@@ -125,7 +155,7 @@ describe( 'InviteUserList', () => {
 			{ registry }
 		);
 
-		expect( getByText( 'Invitation sent' ) ).toBeInTheDocument();
-		expect( getByText( 'Failed to send invite.' ) ).toBeInTheDocument();
+		expect( getByText( /invitation sent/i ) ).toBeInTheDocument();
+		expect( getByText( /failed to send invite/i ) ).toBeInTheDocument();
 	} );
 } );

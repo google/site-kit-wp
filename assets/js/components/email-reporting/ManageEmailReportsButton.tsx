@@ -41,7 +41,6 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useIsInitialSetupFlow from '@/js/hooks/useIsInitialSetupFlow';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import EmailReportIcon from '@/svg/icons/email-report.svg';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from './SetUpEmailReportingOverlayNotification';
 
 const ManageEmailReportsButton: FC = () => {
 	const viewOnlyDashboard = useViewOnly();
@@ -69,26 +68,11 @@ const ManageEmailReportsButton: FC = () => {
 		[ viewOnlyDashboard ]
 	);
 
-	const isSetupTooltipVisible = useSelect( ( select: Select ) => {
-		const tooltip = select( CORE_UI ).getValue( 'admin-screen-tooltip' );
-
-		return (
-			!! tooltip?.isTooltipVisible &&
-			tooltip?.tooltipSlug === SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION
-		);
-	}, [] );
-
 	const { setValue } = useDispatch( CORE_UI );
 
 	const openPanel = useCallback( () => {
-		// The setup tooltip anchors to this button and renders above the panel, so
-		// leaving it up would float it over the sheet pointing at a covered icon.
-		if ( isSetupTooltipVisible ) {
-			setValue( 'admin-screen-tooltip', undefined );
-		}
-
 		setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
-	}, [ isSetupTooltipVisible, setValue ] );
+	}, [ setValue ] );
 
 	const shouldRender = viewOnlyDashboard
 		? !! hasEmailReportingDataAccess

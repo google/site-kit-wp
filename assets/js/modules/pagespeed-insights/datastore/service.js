@@ -48,6 +48,9 @@ export const selectors = {
 			path: 'report',
 			query: {
 				url: currentReferenceURL,
+				form_factor: select(
+					MODULES_PAGESPEED_INSIGHTS
+				).getActiveTab(),
 			},
 		} );
 	} ),

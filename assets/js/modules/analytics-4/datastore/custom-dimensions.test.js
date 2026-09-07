@@ -25,7 +25,6 @@ import { times } from 'lodash';
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { enabledFeatures } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_POPULAR_AUTHORS,
@@ -262,21 +261,11 @@ describe( 'modules/analytics-4 custom-dimensions', () => {
 			};
 
 			beforeEach( () => {
-				// Turn the Site Goals feature flag on. The fold-in still only
-				// runs when the advanced data breakdowns setting is also on,
-				// which each test sets for itself, so the flag being on here is
-				// safe for the tests that leave the setting off.
-				enabledFeatures.add( 'siteGoals' );
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetAdvancedDataBreakdownsSettings( {
 						[ propertyID ]: false,
 					} );
-			} );
-
-			afterEach( () => {
-				enabledFeatures.delete( 'siteGoals' );
 			} );
 
 			it( 'does not make a network request if there are no missing custom dimensions', async () => {

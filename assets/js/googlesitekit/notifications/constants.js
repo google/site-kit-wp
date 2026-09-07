@@ -24,6 +24,12 @@ export const GTG_SETUP_CTA_BANNER_NOTIFICATION = 'gtg-setup-cta';
 export const SITE_KIT_SETUP_SUCCESS_NOTIFICATION =
 	'setup-success-notification-site-kit';
 
+export const ACTIVATE_ANALYTICS_NOTIFICATION =
+	'activate-analytics-notification';
+
+export const CONNECT_MORE_SERVICES_NOTIFICATION =
+	'connect-more-services-notification';
+
 export const PRIORITY = {
 	ERROR_HIGH: 30,
 	ERROR_LOW: 60,
@@ -37,6 +43,7 @@ export const PRIORITY = {
 	SETUP_CTA_WELCOME_MODAL: 130,
 	SETUP_CTA_SITE_GOALS_INTRO_MODAL: 140,
 	SETUP_CTA_HIGH: 150,
+	FEATURE_TOUR: 160,
 	SETUP_CTA_LOW: 200,
 };
 

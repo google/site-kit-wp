@@ -62,6 +62,7 @@ import Layout from './layout/Layout';
 import Link from './Link';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import OfflineNotification from './notifications/OfflineNotification';
+import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PageHeader from './PageHeader';
 import P from './Typography/P';
 import VisuallyHidden from './VisuallyHidden';
@@ -226,6 +227,8 @@ function DashboardEntityApp() {
 			</Header>
 
 			<div className="googlesitekit-page-content">
+				<SetupCTAOverlays />
+
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_TRAFFIC }
 					slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }

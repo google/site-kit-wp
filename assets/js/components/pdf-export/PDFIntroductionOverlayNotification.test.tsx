@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import {
 	PDF_DOWNLOAD_PANEL_OPENED_KEY,
@@ -174,5 +175,26 @@ describe( 'PDFIntroductionOverlayNotification', () => {
 		await waitForRegistry();
 
 		expect( queryByText( 'Export to PDF' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'anchors to the features menu button when the PDF download button is not rendered', async () => {
+		mockSurveyEndpoints();
+
+		const featuresMenuButton = document.createElement( 'button' );
+		featuresMenuButton.className = FEATURES_MENU_BUTTON_CLASS;
+		document.body.appendChild( featuresMenuButton );
+
+		const { container, waitForRegistry } = renderNotifications();
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).toBeInTheDocument();
+
+		featuresMenuButton.remove();
 	} );
 } );

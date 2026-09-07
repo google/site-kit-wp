@@ -232,6 +232,20 @@ class Subscribed_Users_QueryTest extends TestCase {
 		);
 	}
 
+	public function test_get_subscribed_users__excludes_given_user() {
+		$current_admin = $this->create_subscribed_admin( 'Current Admin', 'current-admin@example.com' );
+		$other_admin   = $this->create_subscribed_admin( 'Other Admin', 'other-admin@example.com' );
+
+		$results = $this->query->get_subscribed_users( array(), $current_admin );
+
+		$this->assertSame( 1, $results['total'], 'Total should not count the excluded user.' );
+		$this->assertSame(
+			array( $other_admin ),
+			wp_list_pluck( $results['users'], 'id' ),
+			'Subscribed users should exclude the given user ID.'
+		);
+	}
+
 	public function test_get_subscribed_users__honors_pagination() {
 		$user_ids = array();
 

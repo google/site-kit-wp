@@ -1,4 +1,5 @@
 [
+	"adsConversionTrackingIntent",
 	"googleTagGateway",
 	"gtagUserData",
 	"featureDiscoveryHub",
@@ -6,5 +7,5 @@
 	"rrmExpressSetup",
 	"setupFlowRefresh",
 	"setupFlowRefreshPhase4",
-	"siteGoals"
+	"trafficOverview"
 ]
