@@ -101,6 +101,8 @@ export interface FeatureSettings {
 	title: string;
 	shortDescription: string;
 	effort: FeatureEffort;
+	// The module whose service identity is presented on the feature card.
+	moduleSlug?: string;
 	// The modules the feature depends on but does not itself set up.
 	prerequisiteModules?: string[];
 	// In order, the first being the feature's primary category.
