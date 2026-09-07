@@ -64,9 +64,21 @@ const SetupCTANewsletterSignup: FC = () => {
 				}
 			/>
 		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: <StepTermsOfService />,
+		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
+			<StepTermsOfService
+				onComplete={ () =>
+					setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES )
+				}
+			/>
+		),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies />
+			<StepPublicationPolicies
+				description={ __(
+					'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
+					'google-site-kit'
+				) }
+				onComplete={ () => setStep( EXPRESS_SETUP_STEPS.SETUP_CTA ) }
+			/>
 		),
 		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
 		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: <StepSetupComplete />,

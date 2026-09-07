@@ -130,9 +130,9 @@ describe( 'TrafficOverviewPanel', () => {
 			'googlesitekit-traffic-overview__breakdown',
 		] );
 
-		// The chart and the breakdown land in later issues.
+		// The chart lands in a later issue; the breakdown has since arrived.
 		expect( sections[ 1 ] ).toBeEmptyDOMElement();
-		expect( sections[ 2 ] ).toBeEmptyDOMElement();
+		expect( sections[ 2 ] ).not.toBeEmptyDOMElement();
 	} );
 
 	it( 'builds the visitor total and its badge from the totals report', async () => {

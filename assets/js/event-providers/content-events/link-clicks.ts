@@ -1,0 +1,119 @@
+/**
+ * Link click engagement event tracking.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import classifyContactLink from './classify-contact-link';
+import classifyOutboundLink from './classify-outbound-link';
+
+/** The transport a link event is sent with, spread into its payload. */
+interface TransportProperties {
+	/** Set only when the click navigates away from the page. */
+	// eslint-disable-next-line camelcase
+	transport_type?: 'beacon';
+}
+
+/**
+ * Gets the transport properties a link's event is sent with.
+ *
+ * A web link navigates away, so its event has to survive the page unloading. An
+ * app-scheme link hands off to another application and leaves the page in place.
+ *
+ * @since n.e.x.t
+ *
+ * @param {URL} url Parsed link address.
+ * @return {Object} Transport properties to spread into the event payload.
+ */
+function getTransportProperties( url: URL ): TransportProperties {
+	return 'http:' === url.protocol || 'https:' === url.protocol
+		? { transport_type: 'beacon' }
+		: {};
+}
+
+/**
+ * Initializes link click tracking.
+ *
+ * Adds one click listener to the document. It finds the clicked anchor,
+ * classifies it, and emits at most one event, so a contact link that also has
+ * `rel="nofollow"` is not counted twice.
+ *
+ * Listening on the document also covers links added after the page loads, such
+ * as a floating chat button.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ */
+export function initializeLinkClicks(): void {
+	global.document.addEventListener( 'click', ( event: Event ) => {
+		// One failed click must not stop the listener handling later ones.
+		try {
+			if ( ! ( event.target instanceof Element ) ) {
+				return;
+			}
+
+			const anchor = event.target.closest(
+				'a[href]'
+			) as HTMLAnchorElement | null;
+
+			if ( ! anchor ) {
+				return;
+			}
+
+			let url: URL;
+
+			// Both classifiers read this same address, and a link the parser
+			// rejects is not tracked at all.
+			try {
+				url = new URL( anchor.href );
+			} catch {
+				return;
+			}
+
+			const linkType = classifyContactLink( url );
+
+			// A contact link's URL holds a real phone number or email address.
+			// Only `link_type` is sent below, and the anchor never reaches the
+			// outbound handler, which would send the whole URL to Analytics.
+			if ( linkType ) {
+				global._googlesitekit?.gtagEvent?.( 'contact_link_click', {
+					link_type: linkType,
+					...getTransportProperties( url ),
+				} );
+			} else {
+				const linkRel = classifyOutboundLink( anchor, url );
+
+				if ( linkRel ) {
+					global._googlesitekit?.gtagEvent?.( 'outbound_link_click', {
+						link_rel: linkRel,
+						link_url: url.href,
+						link_domain: url.hostname,
+						...getTransportProperties( url ),
+					} );
+				}
+			}
+		} catch ( error ) {
+			// eslint-disable-next-line no-console
+			console.error(
+				'Site Kit: failed to track this link click.',
+				error
+			);
+		}
+	} );
+}

@@ -31,9 +31,9 @@ import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/tra
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
 
 const TrafficOverviewPanel: FC = () => {
-	// `TrafficChart` and `TrafficBreakdown` are still placeholders, so only the
-	// totals report is read here. The call sends all five report requests.
-	const { totalsReport } = useTrafficOverviewReports();
+	// `TrafficChart` is still a placeholder, so its `graphReport` is left
+	// unread here. The call sends all five report requests.
+	const { totalsReport, breakdownReports } = useTrafficOverviewReports();
 
 	return (
 		<div
@@ -43,7 +43,7 @@ const TrafficOverviewPanel: FC = () => {
 		>
 			<TotalVisitors report={ totalsReport } />
 			<TrafficChart />
-			<TrafficBreakdown />
+			<TrafficBreakdown reports={ breakdownReports } />
 		</div>
 	);
 };

@@ -25,6 +25,7 @@ export interface ReaderRevenueManagerSettings {
 	paymentOption?: string;
 	productID?: string;
 	organizationID?: string;
+	configuredCTAs?: Record< string, string >;
 	contentPolicyState?: string;
 	policyInfoLink?: string;
 }

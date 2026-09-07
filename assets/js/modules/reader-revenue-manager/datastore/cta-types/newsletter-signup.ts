@@ -56,7 +56,7 @@ const SUPPORTED_FIELDS: string[] = [ ...STRING_FIELDS, ...BOOLEAN_FIELDS ];
 /**
  * Validates newsletter sign-up CTA configuration.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param  config CTA configuration.
  * @return {void}

@@ -53,7 +53,7 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 	 * Marks the given module's datastore as having resolved its sample report
 	 * with the given rows, which is what the zero data state is derived from.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {string} datastoreSlug Datastore slug.
 	 * @param {Array}  report        Sample report rows.
@@ -78,7 +78,7 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 	/**
 	 * Shares the given modules with a view-only user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Array.<string>} slugs Module slugs the view-only user can view.
 	 */

@@ -33,7 +33,7 @@ import { __ } from '@wordpress/i18n';
  * copy can't drift apart. Called at render time, since `__()` needs
  * translations to already be loaded.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {string} The empty-search message.
  */
