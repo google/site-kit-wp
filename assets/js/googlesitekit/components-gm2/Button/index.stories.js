@@ -93,6 +93,7 @@ DangerButtonFocus.parameters = {
 export const DisabledButton = Template.bind( {} );
 DisabledButton.storyName = 'Disabled Button';
 DisabledButton.args = {
+	...DefaultButton.args,
 	children: 'Disabled Button',
 	disabled: true,
 };
@@ -100,8 +101,8 @@ DisabledButton.args = {
 export const DisabledDangerButton = Template.bind( {} );
 DisabledDangerButton.storyName = 'Disabled Danger Button';
 DisabledDangerButton.args = {
+	...DangerButton.args,
 	children: 'Disabled Danger Button',
-	danger: true,
 	disabled: true,
 };
 
@@ -126,8 +127,8 @@ TertiaryButtonFocus.parameters = {
 export const DisabledTertiaryButton = Template.bind( {} );
 DisabledTertiaryButton.storyName = 'Disabled Tertiary Button';
 DisabledTertiaryButton.args = {
+	...TertiaryButton.args,
 	children: 'Disabled Tertiary Button',
-	tertiary: true,
 	disabled: true,
 };
 
@@ -153,9 +154,7 @@ IconButtonFocus.parameters = {
 export const DisabledIconButton = Template.bind( {} );
 DisabledIconButton.storyName = 'Disabled Icon Button';
 DisabledIconButton.args = {
-	icon: <HelpIcon width="20" height="20" />,
-	'aria-label': 'Help',
-	className: 'googlesitekit-button--icon',
+	...IconButton.args,
 	disabled: true,
 };
 
@@ -180,8 +179,8 @@ CalloutButtonFocus.parameters = {
 export const DisabledCalloutButton = Template.bind( {} );
 DisabledCalloutButton.storyName = 'Disabled Callout Button';
 DisabledCalloutButton.args = {
+	...CalloutButton.args,
 	children: 'Disabled Callout Button',
-	callout: true,
 	disabled: true,
 };
 
@@ -207,9 +206,8 @@ CalloutWarningButtonFocus.parameters = {
 export const DisabledCalloutWarningButton = Template.bind( {} );
 DisabledCalloutWarningButton.storyName = 'Disabled Callout Warning Button';
 DisabledCalloutWarningButton.args = {
+	...CalloutWarningButton.args,
 	children: 'Disabled Warning Callout Button',
-	callout: true,
-	calloutStyle: 'warning',
 	disabled: true,
 };
 
@@ -235,9 +233,8 @@ CalloutErrorButtonFocus.parameters = {
 export const DisabledCalloutErrorButton = Template.bind( {} );
 DisabledCalloutErrorButton.storyName = 'Disabled Callout Error Button';
 DisabledCalloutErrorButton.args = {
+	...CalloutErrorButton.args,
 	children: 'Disabled Error Callout Button',
-	callout: true,
-	calloutStyle: 'error',
 	disabled: true,
 };
 
