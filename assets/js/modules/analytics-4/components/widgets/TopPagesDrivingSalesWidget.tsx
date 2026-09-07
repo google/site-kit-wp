@@ -43,6 +43,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
 	GOAL_DRIVER_IDS,
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
@@ -50,7 +51,10 @@ import {
 	GOAL_DRIVER_ROW_MAPPERS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
@@ -59,11 +63,11 @@ interface TopPagesDrivingSalesWidgetProps {
 	Widget: ElementType;
 }
 
-interface GoalDriverPageRow {
+type GoalDriverPageRow = {
 	label: string;
 	value: string | number;
 	pagePath?: string;
-}
+};
 
 interface GoalDriverTileColumnProps {
 	row: Record< string, unknown >;
@@ -80,17 +84,16 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 		[]
 	);
 
-	const primaryEvent = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-		[]
-	);
-
+	// This tile is purchase-specific ("Top pages driving sales"), so the
+	// primary event is always `purchase` rather than
+	// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
+	// otherwise the tile would silently start showing add-to-cart data under
+	// a "sales" label.
 	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
 		GOAL_DRIVER_IDS.TOP_PAGES
 	]( {
 		dates,
-		primaryEvent,
+		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
@@ -218,9 +221,9 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_PAGES_DRIVING_SALES }
 			loading={ loading }
-			rows={ rows as unknown as Record< string, unknown >[] }
+			rows={ rows }
 			columns={ columns }
-			limit={ 3 }
+			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }
 			moduleSlug="analytics-4"

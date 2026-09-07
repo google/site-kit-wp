@@ -43,6 +43,7 @@ import {
 	provideUserAuthentication,
 	waitForDefaultTimeouts,
 } from '../../../../../../../tests/js/utils';
+import { GOAL_DRIVER_ROW_LIMIT_EXPANDED } from './constants';
 import TopAuthorsGoalDriver from './TopAuthorsGoalDriver';
 
 describe( 'TopAuthorsGoalDriver', () => {
@@ -177,6 +178,16 @@ describe( 'TopAuthorsGoalDriver', () => {
 				status: 200,
 			}
 		);
+		// Once the custom dimension is created, the driver becomes able to
+		// load its reports (the ranked list and the site-wide total) - their
+		// content isn't under test here, so an empty response is enough to
+		// avoid an unmatched-request console error.
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{ body: {}, status: 200 }
+		);
 
 		const { getByRole } = render(
 			<TopAuthorsGoalDriver
@@ -213,5 +224,135 @@ describe( 'TopAuthorsGoalDriver', () => {
 				.select( MODULES_ANALYTICS_4 )
 				.isCustomDimensionGatheringData( 'googlesitekit_post_author' )
 		).toBe( true );
+	} );
+
+	it( "renders each author's share of the site-wide total as a percentage", async () => {
+		const registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID: '12345',
+			availableCustomDimensions: [ 'googlesitekit_post_author' ],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsCustomDimensionGatheringData( {
+				customDimension: 'googlesitekit_post_author',
+				gatheringData: false,
+			} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperty(
+			{
+				createTime: '2014-10-02T15:01:23Z',
+			},
+			{ propertyID: '12345' }
+		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+		const authorsReportOptions = {
+			...dates,
+			dimensions: [
+				'customEvent:googlesitekit_post_author',
+				'eventName',
+			],
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ 'purchase' ],
+				},
+				'customEvent:googlesitekit_post_author': {
+					filterType: 'emptyFilter',
+					notExpression: true,
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			orderby: [
+				{
+					metric: { metricName: 'eventCount' },
+					desc: true,
+				},
+			],
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			keepEmptyRows: false,
+			reportID: 'analytics-4_goal-driver-reports_top-authors_ecommerce',
+		};
+		const totalReportOptions = {
+			...dates,
+			dimensionFilters: {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ 'purchase' ],
+				},
+			},
+			metrics: [ { name: 'eventCount' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: 'AuthorName1' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '305' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: 'AuthorName2' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '247' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: 'AuthorName3' },
+							{ value: 'purchase' },
+						],
+						metricValues: [ { value: '162' } ],
+					},
+				],
+			},
+			{ options: authorsReportOptions }
+		);
+		// The site-wide total (1,000) is larger than the sum of the ranked
+		// rows above (714), so the percentages below only match if the
+		// driver divides by this total rather than by the visible rows.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [ { metricValues: [ { value: '1000' } ] } ],
+			},
+			{ options: totalReportOptions }
+		);
+
+		const { getByText, waitForRegistry } = render(
+			<TopAuthorsGoalDriver
+				goalType="ecommerce"
+				title="Top authors driving sales"
+				primaryEvent="purchase"
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( 'AuthorName1' ) ).toBeInTheDocument();
+		expect( getByText( '30.5%' ) ).toBeInTheDocument();
+		expect( getByText( 'AuthorName2' ) ).toBeInTheDocument();
+		expect( getByText( '24.7%' ) ).toBeInTheDocument();
+		expect( getByText( 'AuthorName3' ) ).toBeInTheDocument();
+		expect( getByText( '16.2%' ) ).toBeInTheDocument();
 	} );
 } );

@@ -41,7 +41,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
@@ -57,11 +60,11 @@ const SalesRateWidget: FC< SalesRateWidgetProps > = ( { Widget } ) => {
 		[]
 	);
 
-	const primaryEvent = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-		[]
-	);
+	// This tile is purchase-specific ("Sales rate"), so the primary event is
+	// always `purchase` rather than `getPrimaryEcommerceEvent()`'s detected
+	// fallback to `add_to_cart` - otherwise the tile would silently start
+	// showing add-to-cart data under a "sales" label.
+	const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
 
 	const primaryEventReportOptions = buildPrimaryEventReportOptions(
 		dates,

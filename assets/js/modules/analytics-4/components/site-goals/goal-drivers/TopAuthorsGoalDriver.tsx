@@ -43,7 +43,9 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
+	buildGoalDriverTotalReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
@@ -75,9 +77,24 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 					primaryEvent,
 					breakdownFilter,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					context: goalType,
 				}
 			),
-		[ dates, primaryEvent, breakdownFilter ]
+		[ dates, primaryEvent, breakdownFilter, goalType ]
+	);
+	// The percentage shown is each author's share of every matching event
+	// site-wide, not just the ranked authors above - see
+	// `buildGoalDriverTotalReportOptions`.
+	const totalReportOptions = useMemo(
+		() =>
+			buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				context: goalType,
+				reportIDSuffix: 'top-authors',
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 	const {
 		hasCustomDimensions,
@@ -96,6 +113,13 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	const canLoadReports =
 		hasCustomDimensions === true && isGatheringData !== true;
 	const reportOptions = canLoadReports ? candidateReportOptions : undefined;
+	const enabledTotalReportOptions = canLoadReports
+		? totalReportOptions
+		: undefined;
+	const allReportOptions = [
+		enabledTotalReportOptions,
+		reportOptions,
+	].filter( Boolean );
 	const report = useSelect(
 		( select: Select ) =>
 			reportOptions
@@ -103,28 +127,33 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 				: undefined,
 		[ reportOptions ]
 	);
-	const reportError = useSelect(
+	const totalReport = useSelect(
 		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
+			enabledTotalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport(
+						enabledTotalReportOptions
 				  )
 				: undefined,
-		[ reportOptions ]
+		[ enabledTotalReportOptions ]
+	);
+	const reportError = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getFirstReportError(
+				...allReportOptions
+			),
+		[ allReportOptions ]
 	);
 	const reportLoading = useSelect(
 		( select: Select ) => {
-			if ( ! reportOptions ) {
+			if ( ! allReportOptions.length ) {
 				return false;
 			}
 
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
+			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				...allReportOptions
 			);
 		},
-		[ reportOptions ]
+		[ allReportOptions ]
 	);
 	const {
 		clearSelectorError,
@@ -202,8 +231,9 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	] );
 
 	const sourceRows = report?.rows || [];
+	const totalCount = getGoalDriverTotalCount( totalReport );
 	const mappedRows =
-		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ]( sourceRows );
+		makeShareOfExplicitTotalMapper( totalCount )( sourceRows );
 	const hasMissingCustomDimensions = hasCustomDimensions === false;
 	const rows = mappedRows;
 	const loading =

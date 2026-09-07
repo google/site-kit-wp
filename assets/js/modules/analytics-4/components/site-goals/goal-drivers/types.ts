@@ -33,12 +33,12 @@ export type GoalType = typeof GOAL_TYPES[ keyof typeof GOAL_TYPES ];
 export type BreakdownScope = GoalType | 'both';
 export type GoalDriverSelectionState = Record< GoalType, GoalDriverID[] >;
 
-export interface GoalDriverRow {
+export type GoalDriverRow = {
 	label: string;
 	value: string | number;
 	pagePath?: string;
 	url?: string;
-}
+};
 
 export interface GoalDriverComponentProps {
 	title?: string;

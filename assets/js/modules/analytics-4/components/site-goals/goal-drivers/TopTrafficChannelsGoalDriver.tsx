@@ -40,10 +40,14 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
+	buildGoalDriverTotalReportOptions,
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
+	parseMetricValue,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	title = '',
@@ -69,8 +73,23 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 				primaryEvent,
 				breakdownFilter,
 				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
 			} ),
-		[ dates, primaryEvent, breakdownFilter ]
+		[ dates, primaryEvent, breakdownFilter, goalType ]
+	);
+	// The percentage shown is each channel's share of every matching event
+	// site-wide, not just the ranked channels above - see
+	// `buildGoalDriverTotalReportOptions`.
+	const totalReportOptions = useMemo(
+		() =>
+			buildGoalDriverTotalReportOptions( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				context: goalType,
+				reportIDSuffix: 'top-traffic-channels',
+			} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 
 	const report = useSelect(
@@ -80,35 +99,46 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 				: undefined,
 		[ reportOptions ]
 	);
+	const totalReport = useSelect(
+		( select: Select ) =>
+			totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport( totalReportOptions )
+				: undefined,
+		[ totalReportOptions ]
+	);
 	const reportError = useSelect(
 		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
 				  )
 				: undefined,
-		[ reportOptions ]
+		[ reportOptions, totalReportOptions ]
 	);
 	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return false;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).areReportsLoading(
+						reportOptions,
+						totalReportOptions
+				  )
+				: false,
+		[ reportOptions, totalReportOptions ]
 	);
 
 	const sourceRows = report?.rows || [];
-	const mappedRows =
-		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS ](
-			sourceRows
+	// Falls back to summing the visible rows only if the total report hasn't
+	// resolved any usable count yet (e.g. still loading), so the tile shows a
+	// reasonable percentage rather than 0% while the true total is in flight.
+	const totalCount =
+		getGoalDriverTotalCount( totalReport ) ||
+		sourceRows.reduce(
+			( sum: number, row: ReportRow ) => sum + parseMetricValue( row ),
+			0
 		);
+	const mappedRows =
+		makeShareOfExplicitTotalMapper( totalCount )( sourceRows );
 
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
