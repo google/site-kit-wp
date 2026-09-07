@@ -62,21 +62,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Accelerate growth:', 'google-site-kit' ),
 						description: __(
-							'Reach your target audience instantly, bypassing organic wait times.',
+							'Reach your target audience instantly, bypassing organic wait times',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Drive quality traffic:', 'google-site-kit' ),
 						description: __(
-							'Send visitors directly to your most important pages.',
+							'Send visitors directly to your most important pages',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Scale results:', 'google-site-kit' ),
 						description: __(
-							'Boost conversions while keeping full control of your budget.',
+							'Boost conversions while keeping full control of your budget',
 							'google-site-kit'
 						),
 					},
@@ -84,21 +84,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details.',
+					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
 					'google-site-kit'
 				),
 				setupList: [
 					__(
-						'Create a new Ads account or use your existing account.',
+						'Create a new Ads account or use your existing account',
 						'google-site-kit'
 					),
-					__( 'Enter your Ads conversion ID.', 'google-site-kit' ),
+					__( 'Enter your Ads conversion ID', 'google-site-kit' ),
 					__(
-						'Enable plugin conversion tracking (optional).',
+						'Enable plugin conversion tracking (optional)',
 						'google-site-kit'
 					),
 					__(
-						'Enable Google tag gateway for advertisers (optional).',
+						'Enable Google tag gateway for advertisers (optional)',
 						'google-site-kit'
 					),
 				],
@@ -111,7 +111,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Ads settings page showing various configuration options.',
+						'Ads settings page showing various configuration options',
 						'google-site-kit'
 					),
 					width: 659,

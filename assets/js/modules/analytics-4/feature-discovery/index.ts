@@ -66,21 +66,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Decide with data:', 'google-site-kit' ),
 						description: __(
-							'Replace guesswork with clear insights. ',
+							'Replace guesswork with clear insights',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Track what works:', 'google-site-kit' ),
 						description: __(
-							'Pinpoint your most popular content and traffic sources.',
+							'Pinpoint your most popular content and traffic sources',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Boost performance:', 'google-site-kit' ),
 						description: __(
-							'Optimize your site based on real visitor behavior.',
+							'Optimize your site based on real visitor behavior',
 							'google-site-kit'
 						),
 					},
@@ -93,15 +93,15 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				setupList: [
 					__(
-						'Create a new Analytics account or use your existing account.',
+						'Create a new Analytics account or use your existing account',
 						'google-site-kit'
 					),
 					__(
-						'Select your preferred property and web data stream.',
+						'Select your preferred property and web data stream',
 						'google-site-kit'
 					),
 					__(
-						'Enable enhanced measurements (optional).',
+						'Enable enhanced measurements (optional)',
 						'google-site-kit'
 					),
 				],
@@ -114,7 +114,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 659,
@@ -168,35 +168,35 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Pin metrics:', 'google-site-kit' ),
 						description: __(
-							'Attach your most critical GA4 metrics directly to your main WordPress dashboard.',
+							'Attach your most critical GA4 metrics directly to your main WordPress dashboard',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Team alignment:', 'google-site-kit' ),
 						description: __(
-							'Keep everyone focused on core goals with a simplified performance view.',
+							'Keep everyone focused on core goals with a simplified performance view',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'At-a-glance data:', 'google-site-kit' ),
 						description: __(
-							'View vital performance stats immediately upon logging in.',
+							'View vital performance stats immediately upon logging in',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Save time:', 'google-site-kit' ),
 						description: __(
-							'Skip navigating through complex external Analytics menus.',
+							'Skip navigating through complex external Analytics menus',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Spot trends:', 'google-site-kit' ),
 						description: __(
-							'Instantly recognize traffic spikes, drops, and changing user patterns.',
+							'Instantly recognize traffic spikes, drops, and changing user patterns',
 							'google-site-kit'
 						),
 					},
@@ -204,7 +204,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for key metrics.',
+					'There are no service requirements for key metrics',
 					'google-site-kit'
 				),
 				setupList: [
@@ -222,7 +222,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: kmwWidgetScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -243,6 +243,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.114.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+			ctaLabel: __( 'Set up Key metrics', 'google-site-kit' ),
 		},
 	} );
 
@@ -266,28 +267,28 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Saves time:', 'google-site-kit' ),
 						description: __(
-							'Automates event tracking immediately with a single toggle.',
+							'Automates event tracking immediately with a single toggle',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Zero coding:', 'google-site-kit' ),
 						description: __(
-							'Tracks file downloads, video plays, and outbound clicks without developer help.',
+							'Tracks file downloads, video plays, and outbound clicks without developer help',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Immediate data:', 'google-site-kit' ),
 						description: __(
-							'Collects baseline user behavior data from the moment it is turned on.',
+							'Collects baseline user behavior data from the moment it is turned on',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'No Tag Manager needed:', 'google-site-kit' ),
 						description: __(
-							'Eliminates complex setup by running directly through your standard tracking.',
+							'Eliminates complex setup by running directly through your standard tracking',
 							'google-site-kit'
 						),
 					},
@@ -295,21 +296,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for enhanced measurement.',
+					'There are no service requirements for enhanced measurement',
 					'google-site-kit'
 				),
 				setupList: [
 					__(
-						'Enable enhanced measurement for Analytics.',
+						'Enable enhanced measurement for Analytics',
 						'google-site-kit'
 					),
 					__(
-						'View your enhanced measurement data in your Analytics account.',
+						'View your enhanced measurement data in your Analytics account',
 						'google-site-kit'
 					),
 				],
 				setupComplete: __(
-					'You are now tracking enhanced measurement data.',
+					'You are now tracking enhanced measurement data',
 					'google-site-kit'
 				),
 			},
@@ -317,7 +318,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -342,6 +343,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.113.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			ctaLabel: __( 'Enable enhanced measurements', 'google-site-kit' ),
 		},
 	} );
 
@@ -365,7 +367,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Segment traffic:', 'google-site-kit' ),
 						description: __(
-							'Group visitors by criteria like traffic source or new versus returning directly in WordPress.',
+							'Group visitors by criteria like traffic source or new versus returning directly in WordPress',
 							'google-site-kit'
 						),
 					},
@@ -375,28 +377,28 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'google-site-kit'
 						),
 						description: __(
-							'Easily compare key performance metrics across different audience segments simultaneously.',
+							'Easily compare key performance metrics across different audience segments simultaneously',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Identify top content:', 'google-site-kit' ),
 						description: __(
-							'Pinpoint exactly which posts and pages resonate best with specific audience types.',
+							'Pinpoint exactly which posts and pages resonate best with specific audience types',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Tailored insights:', 'google-site-kit' ),
 						description: __(
-							'Uncover deep audience behavior patterns to improve user engagement and retention.',
+							'Uncover deep audience behavior patterns to improve user engagement and retention',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Data-driven decisions:', 'google-site-kit' ),
 						description: __(
-							'Optimize your site strategy using segment-specific data without leaving your dashboard.',
+							'Optimize your site strategy using segment-specific data without leaving your dashboard',
 							'google-site-kit'
 						),
 					},
@@ -404,7 +406,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for visitor groups.',
+					'There are no service requirements for visitor groups',
 					'google-site-kit'
 				),
 				setupList: [
@@ -422,7 +424,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: visitorGroupsScreenshotURL,
 					alt: __(
-						'Visitor groups screenshot showing audiences tiles.',
+						'Visitor groups screenshot showing audiences tiles',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -446,6 +448,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.140.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			ctaLabel: __( 'Enable visitor groups', 'google-site-kit' ),
 		},
 	} );
 }

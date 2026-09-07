@@ -64,21 +64,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'google-site-kit'
 						),
 						description: __(
-							'Turn site traffic into reliable earnings.',
+							'Turn site traffic into reliable earnings',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Show relevant ads:', 'google-site-kit' ),
 						description: __(
-							'Display interest-based ads that maintain your professional look.',
+							'Display interest-based ads that maintain your professional look',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Save time:', 'google-site-kit' ),
 						description: __(
-							'Let automation handle ad management so you can focus on content.',
+							'Let automation handle ad management so you can focus on content',
 							'google-site-kit'
 						),
 					},
@@ -112,7 +112,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Top earning pages widget showing top pages and earnings data.',
+						'Top earning pages widget showing top pages and earnings data',
 						'google-site-kit'
 					),
 					width: 659,
@@ -161,35 +161,35 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Reclaims lost revenue:', 'google-site-kit' ),
 						description: __(
-							'Prompts ad-blocking visitors to whitelist your site or allow ads to recover earnings. ',
+							'Prompts ad-blocking visitors to whitelist your site or allow ads to recover earnings',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Zero custom coding:', 'google-site-kit' ),
 						description: __(
-							"Deploys easily via WordPress without altering your site's codebase.",
+							"Deploys easily via WordPress without altering your site's codebase",
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Flexible enforcement:', 'google-site-kit' ),
 						description: __(
-							'Customize your recovery messaging and rules directly inside AdSense.',
+							'Customize your recovery messaging and rules directly inside AdSense',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Seamless integration:', 'google-site-kit' ),
 						description: __(
-							'Works smoothly alongside your existing privacy and consent tools.',
+							'Works smoothly alongside your existing privacy and consent tools',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Error protection:', 'google-site-kit' ),
 						description: __(
-							'Includes fallback code to ensure messages appear even if ad blockers try to hide the prompt.',
+							'Includes fallback code to ensure messages appear even if ad blockers try to hide the prompt',
 							'google-site-kit'
 						),
 					},
@@ -197,13 +197,13 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for Ad blocking recovery.',
+					'There are no service requirements for Ad blocking recovery',
 					'google-site-kit'
 				),
 				setupList: [
-					__( 'Enable ad blocking recovery.', 'google-site-kit' ),
+					__( 'Enable ad blocking recovery', 'google-site-kit' ),
 					__(
-						'Create your ad blocking recovery message.',
+						'Create your ad blocking recovery message',
 						'google-site-kit'
 					),
 				],
@@ -216,7 +216,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -241,6 +241,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.107.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+			ctaLabel: __( 'Set up Ad blocking recovery', 'google-site-kit' ),
 		},
 	} );
 }

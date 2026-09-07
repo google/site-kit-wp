@@ -67,21 +67,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Reduce friction:', 'google-site-kit' ),
 						description: __(
-							'Eliminate long registration forms and password fatigue.',
+							'Eliminate long registration forms and password fatigue',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Boost conversions:', 'google-site-kit' ),
 						description: __(
-							'Make signing up a simple, one-click process.',
+							'Make signing up a simple, one-click process',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Grow your community:', 'google-site-kit' ),
 						description: __(
-							'Increase returning visitors and build deeper user connections.',
+							'Increase returning visitors and build deeper user connections',
 							'google-site-kit'
 						),
 					},
@@ -98,10 +98,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enter your Google Cloud project client ID',
 						'google-site-kit'
 					),
-					__( 'Enable one-tap (optional).', 'google-site-kit' ),
+					__( 'Enable one-tap (optional)', 'google-site-kit' ),
 				],
 				setupComplete: __(
-					'Users can now sign in with Google to your site.',
+					'Users can now sign in with Google to your site',
 					'google-site-kit'
 				),
 			},
@@ -109,7 +109,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Custom page showing Sign in with Google integration.',
+						'Custom page showing Sign in with Google integration',
 						'google-site-kit'
 					),
 					width: 659,

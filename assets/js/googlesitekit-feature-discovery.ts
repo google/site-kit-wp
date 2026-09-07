@@ -35,12 +35,11 @@ const FeatureDiscovery = createFeatureDiscovery( Data );
 // Register default features from core Site Kit.
 registerDefaults( FeatureDiscovery );
 
-// Export the API for use by modules and external callers.
-export default FeatureDiscovery;
-export { createFeatureDiscovery, registerStore };
-
-// Expose the API on the global object for third-party integrations.
-if ( ! global.googlesitekit ) {
+if ( typeof global.googlesitekit === 'undefined' ) {
 	global.googlesitekit = {};
 }
+
 global.googlesitekit.featureDiscovery = FeatureDiscovery;
+
+// This is only exported for Jest and is not used in production.
+export default FeatureDiscovery;

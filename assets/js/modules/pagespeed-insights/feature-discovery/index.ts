@@ -67,14 +67,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Boost rankings:', 'google-site-kit' ),
 						description: __(
-							'Improve search visibility and user satisfaction with faster load times.',
+							'Improve search visibility and user satisfaction with faster load times',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Retain visitors:', 'google-site-kit' ),
 						description: __(
-							'Reduce bounce rates by keeping your site snappy and responsive.',
+							'Reduce bounce rates by keeping your site snappy and responsive',
 							'google-site-kit'
 						),
 					},
@@ -84,7 +84,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'google-site-kit'
 						),
 						description: __(
-							'Quickly identify and resolve bottlenecks for a competitive edge.',
+							'Quickly identify and resolve bottlenecks for a competitive edge',
 							'google-site-kit'
 						),
 					},
@@ -92,12 +92,12 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for PageSpeed Insights.',
+					'There are no service requirements for PageSpeed Insights',
 					'google-site-kit'
 				),
 				setupList: [
 					__(
-						'Connect the PageSpeed Insights module.',
+						'Connect the PageSpeed Insights module',
 						'google-site-kit'
 					),
 				],
@@ -110,7 +110,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 659,

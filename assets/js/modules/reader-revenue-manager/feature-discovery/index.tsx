@@ -68,7 +68,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Earn money:', 'google-site-kit' ),
 						description: __(
-							'Flexible monetization lets you accept direct contributions or subscriptions from your readers.',
+							'Flexible monetization lets you accept direct contributions or subscriptions from your readers',
 							'google-site-kit'
 						),
 					},
@@ -78,21 +78,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'google-site-kit'
 						),
 						description: __(
-							'Build an engaged community using dedicated subscriber perks and newsletter signups.',
+							'Build an engaged community using dedicated subscriber perks and newsletter signups',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Easy setup:', 'google-site-kit' ),
 						description: __(
-							'Launch the entire platform directly onto your site with zero coding required.',
+							'Launch the entire platform directly onto your site with zero coding required',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Collect feedback:', 'google-site-kit' ),
 						description: __(
-							'Gather valuable audience insights by running quick, native surveys.',
+							'Gather valuable audience insights by running quick, native surveys',
 							'google-site-kit'
 						),
 					},
@@ -100,7 +100,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'Sites will be subject to Reader Revenue Manager approval processes, which can take from a few hours to a few days.',
+					'Sites will be subject to Reader Revenue Manager approval processes, which can take from a few hours to a few days',
 					'google-site-kit'
 				),
 				setupList: [
@@ -119,7 +119,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: splashScreenScreenshotURL,
 					alt: __(
-						'Reader Revenue Manager contribution prompt screenshot.',
+						'Reader Revenue Manager contribution prompt screenshot',
 						'google-site-kit'
 					),
 					width: 2285,
@@ -168,21 +168,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 								'google-site-kit'
 							),
 							description: __(
-								'Build a direct connection with your audience via email.',
+								'Build a direct connection with your audience via email',
 								'google-site-kit'
 							),
 						},
 						{
 							term: __( 'Boost engagement:', 'google-site-kit' ),
 							description: __(
-								'Keep readers coming back with timely updates and exclusive content.',
+								'Keep readers coming back with timely updates and exclusive content',
 								'google-site-kit'
 							),
 						},
 						{
 							term: __( 'Own your growth:', 'google-site-kit' ),
 							description: __(
-								'Reduce reliance on social media and search algorithms.',
+								'Reduce reliance on social media and search algorithms',
 								'google-site-kit'
 							),
 						},
@@ -192,7 +192,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 								'google-site-kit'
 							),
 							description: __(
-								'Use intelligent prompts to turn casual visitors into loyal subscribers.',
+								'Use intelligent prompts to turn casual visitors into loyal subscribers',
 								'google-site-kit'
 							),
 						},
@@ -200,7 +200,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 				requirements: {
 					serviceRequirements: __(
-						'A supported email service provider (e.g., Mailchimp, Substack, etc.) is required for the collected email data to be sent.',
+						'A supported email service provider (e.g., Mailchimp, Substack, etc.) is required for the collected email data to be sent',
 						'google-site-kit'
 					),
 					setupList: [
@@ -214,7 +214,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					],
 					setupComplete: __(
-						'Your newsletter sign-up form for Reader Revenue Manager is set up.',
+						'Your newsletter sign-up form for Reader Revenue Manager is set up',
 						'google-site-kit'
 					),
 				},
@@ -222,7 +222,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						src: splashScreenScreenshotURL,
 						alt: __(
-							'Reader Revenue Manager newsletter sign-up prompt screenshot.',
+							'Reader Revenue Manager newsletter sign-up prompt screenshot',
 							'google-site-kit'
 						),
 						width: 659,
@@ -231,7 +231,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						src: splashScreenScreenshotURL,
 						alt: __(
-							'Reader Revenue Manager newsletter sign-up form dashboard screenshot.',
+							'Reader Revenue Manager newsletter sign-up form dashboard screenshot',
 							'google-site-kit'
 						),
 						width: 659,

@@ -60,7 +60,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					'Dashboard sharing allows users with the Administrator user role to share a restricted view of the Site Kit dashboard, WordPress dashboard summary widget, and toolbar with other user roles, including non-administrators.',
+					'Dashboard sharing allows users with the Administrator user role to share a restricted view of the Site Kit dashboard, WordPress dashboard summary widget, and toolbar with other user roles, including non-administrators',
 					'google-site-kit'
 				),
 				whyUseHeading: __(
@@ -157,6 +157,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.89.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+			ctaLabel: __( 'Try it now', 'google-site-kit' ),
 		},
 	} );
 
@@ -216,7 +217,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'There are no service requirements for email reports.',
+					'There are no service requirements for email reports',
 					'google-site-kit'
 				),
 				setupList: [
@@ -242,7 +243,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: emailReportingScreenshotURL,
 					alt: __(
-						'Analytics 4 Key Metrics widget showing selected key metrics and trends.',
+						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -266,6 +267,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		addedInVersion: '1.177.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+			ctaLabel: __( 'Try it now', 'google-site-kit' ),
 		},
 	} );
 
@@ -290,21 +292,21 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						{
 							term: __( 'Easy download:', 'google-site-kit' ),
 							description: __(
-								'Save a clean, instant snapshot of your entire Site Kit dashboard with a single click.',
+								'Save a clean, instant snapshot of your entire Site Kit dashboard with a single click',
 								'google-site-kit'
 							),
 						},
 						{
 							term: __( 'Offline review:', 'google-site-kit' ),
 							description: __(
-								'Access and analyze your site’s performance data anywhere without needing an internet connection.',
+								'Access and analyze your site’s performance data anywhere without needing an internet connection',
 								'google-site-kit'
 							),
 						},
 						{
 							term: __( 'Simple sharing:', 'google-site-kit' ),
 							description: __(
-								'Print or email the generated PDF directly to clients, stakeholders, or team members.',
+								'Print or email the generated PDF directly to clients, stakeholders, or team members',
 								'google-site-kit'
 							),
 						},
@@ -312,7 +314,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 				requirements: {
 					serviceRequirements: __(
-						'There are no service requirements for PDF reports.',
+						'There are no service requirements for PDF reports',
 						'google-site-kit'
 					),
 					setupList: [
@@ -331,7 +333,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						src: splashScreenScreenshotURL,
 						alt: __(
-							'PDF report screenshot showing the full report with all selected metrics.',
+							'PDF report screenshot showing the full report with all selected metrics',
 							'google-site-kit'
 						),
 						width: 1488,
@@ -340,7 +342,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						src: splashScreenScreenshotURL,
 						alt: __(
-							'PDF report screenshot showing the export panel with selected metrics.',
+							'PDF report screenshot showing the export panel with selected metrics',
 							'google-site-kit'
 						),
 						width: 1488,
@@ -353,6 +355,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			addedInVersion: '1.184.0', // ToDo: Update to the correct version when released.
 			setup: {
 				type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+				ctaLabel: __( 'Try it now', 'google-site-kit' ),
 			},
 		} );
 	}
