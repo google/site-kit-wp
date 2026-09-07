@@ -136,7 +136,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			FEATURE_CATEGORIES.ENGAGEMENT,
 			FEATURE_CATEGORIES.PRIVACY,
 		],
-		addedInVersion: '1.54.0',
+		addedInVersion: '1.144.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Sign in with Google', 'google-site-kit' ),

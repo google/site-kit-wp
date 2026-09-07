@@ -133,7 +133,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
-		addedInVersion: '1.0.0',
+		addedInVersion: '1.78.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up AdSense', 'google-site-kit' ),
@@ -238,7 +238,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
 		prerequisiteModules: [ 'adsense' ],
-		addedInVersion: '1.49.0',
+		addedInVersion: '1.107.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 		},

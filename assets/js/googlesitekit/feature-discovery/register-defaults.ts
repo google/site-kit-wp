@@ -30,12 +30,10 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import dashboardSharingScreenshotURL from '@/svg/graphics/dashboard-sharing.svg?path';
 import emailReportingScreenshotURL from '@/svg/graphics/email-reporting.svg?path';
-import pdfReportFullScreenshotURL from '@/svg/graphics/pdf-report-full.svg?path';
-import pdfReportPanelScreenshotURL from '@/svg/graphics/pdf-report-panel.svg?path';
+import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
  * Registers default features from core Site Kit and modules.
@@ -73,35 +71,35 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Share data safely:', 'google-site-kit' ),
 						description: __(
-							'Grant access to Site Kit metrics without sharing your Google account login details.',
+							'Grant access to Site Kit metrics without sharing your Google account login details',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Role-based access:', 'google-site-kit' ),
 						description: __(
-							'Easily manage view-only permissions for specific WordPress roles like Editor or Author.',
+							'Easily manage view-only permissions for specific WordPress roles like Editor or Author',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Client reporting:', 'google-site-kit' ),
 						description: __(
-							'Show stakeholders real-time site performance data directly within their WordPress dashboard.',
+							'Show stakeholders real-time site performance data directly within their WordPress dashboard',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Protect settings:', 'google-site-kit' ),
 						description: __(
-							'Keep your connected Google service configurations safe from unauthorized changes.',
+							'Keep your connected Google service configurations safe from unauthorized changes',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Streamline reporting:', 'google-site-kit' ),
 						description: __(
-							'Empower your team with self-service access to insights on their own time.',
+							'Empower your team with self-service access to insights on their own time',
 							'google-site-kit'
 						),
 					},
@@ -109,7 +107,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			requirements: {
 				serviceRequirements: __(
-					'Dashboard sharing only works with WordPress user roles. This includes any custom user roles.',
+					'Dashboard sharing only works with WordPress user roles. This includes any custom user roles',
 					'google-site-kit'
 				),
 				setupList: [
@@ -124,7 +122,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 				],
 				setupComplete: __(
-					'You’re done! Other users can view the Site Kit dashboard in view-only mode.',
+					'You’re done! Other users can view the Site Kit dashboard in view-only mode',
 					'google-site-kit'
 				),
 			},
@@ -132,7 +130,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				{
 					src: dashboardSharingScreenshotURL,
 					alt: __(
-						'Dashboard sharing screenshot showing the dashboard sharing panel.',
+						'Dashboard sharing screenshot showing the dashboard sharing panel',
 						'google-site-kit'
 					),
 					width: 1488,
@@ -156,12 +154,9 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-		addedInVersion: '1.71.0',
+		addedInVersion: '1.89.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
-		},
-		checkRequirements: ( select ) => {
-			return select( CORE_SITE ).hasMultipleAdmins();
 		},
 	} );
 
@@ -185,35 +180,35 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					{
 						term: __( 'Automated delivery:', 'google-site-kit' ),
 						description: __(
-							"Get an overview of your site's performance sent to your inbox at your preferred frequency.",
+							"Get an overview of your site's performance sent to your inbox at your preferred frequency",
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Invite others:', 'google-site-kit' ),
 						description: __(
-							'Share the insights by easily inviting team members or clients to receive the emails.',
+							'Share the insights by easily inviting team members or clients to receive the emails',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'In-box monitoring:', 'google-site-kit' ),
 						description: __(
-							'Track how your site is doing across key metrics without needing to log into WordPress.',
+							'Track how your site is doing across key metrics without needing to log into WordPress',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Quick dashboard link:', 'google-site-kit' ),
 						description: __(
-							'Jump straight into deeper analysis with a convenient link back to Site Kit in every email.',
+							'Jump straight into deeper analysis with a convenient link back to Site Kit in every email',
 							'google-site-kit'
 						),
 					},
 					{
 						term: __( 'Easy opt-out:', 'google-site-kit' ),
 						description: __(
-							'Maintain complete control over your inbox with a simple unsubscribe option available at any time.',
+							'Maintain complete control over your inbox with a simple unsubscribe option available at any time',
 							'google-site-kit'
 						),
 					},
@@ -268,7 +263,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-		addedInVersion: '1.60.0',
+		addedInVersion: '1.177.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 		},
@@ -334,7 +329,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				},
 				screenshots: [
 					{
-						src: pdfReportFullScreenshotURL,
+						src: splashScreenScreenshotURL,
 						alt: __(
 							'PDF report screenshot showing the full report with all selected metrics.',
 							'google-site-kit'
@@ -343,7 +338,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						height: 608,
 					},
 					{
-						src: pdfReportPanelScreenshotURL,
+						src: splashScreenScreenshotURL,
 						alt: __(
 							'PDF report screenshot showing the export panel with selected metrics.',
 							'google-site-kit'
@@ -355,7 +350,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			effort: FEATURE_EFFORTS.LOW,
 			goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-			addedInVersion: '1.184.0',
+			addedInVersion: '1.184.0', // ToDo: Update to the correct version when released.
 			setup: {
 				type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 			},

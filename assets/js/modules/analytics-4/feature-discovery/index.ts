@@ -141,7 +141,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			FEATURE_CATEGORIES.PERFORMANCE,
 			FEATURE_CATEGORIES.PRODUCTIVITY,
 		],
-		addedInVersion: '1.0.0',
+		addedInVersion: '1.36.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Analytics', 'google-site-kit' ),
@@ -240,7 +240,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		prerequisiteModules: [ 'analytics-4' ],
-		addedInVersion: '1.65.0',
+		addedInVersion: '1.114.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 		},
@@ -339,7 +339,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		prerequisiteModules: [ 'analytics-4' ],
-		addedInVersion: '1.49.0',
+		addedInVersion: '1.113.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 		},
@@ -443,7 +443,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		prerequisiteModules: [ 'analytics-4' ],
-		addedInVersion: '1.127.0',
+		addedInVersion: '1.140.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 		},

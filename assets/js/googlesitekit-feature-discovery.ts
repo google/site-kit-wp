@@ -21,10 +21,8 @@
  */
 import Data from 'googlesitekit-data';
 import {
-	actions,
 	createFeatureDiscovery,
 	registerStore,
-	selectors,
 } from './googlesitekit/feature-discovery';
 import { registerDefaults } from './googlesitekit/feature-discovery/register-defaults';
 
@@ -39,7 +37,7 @@ registerDefaults( FeatureDiscovery );
 
 // Export the API for use by modules and external callers.
 export default FeatureDiscovery;
-export { actions, createFeatureDiscovery, registerStore, selectors };
+export { createFeatureDiscovery, registerStore };
 
 // Expose the API on the global object for third-party integrations.
 if ( ! global.googlesitekit ) {

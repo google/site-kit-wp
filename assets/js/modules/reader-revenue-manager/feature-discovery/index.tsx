@@ -30,10 +30,8 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
@@ -134,16 +132,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			FEATURE_CATEGORIES.AUDIENCE,
 			FEATURE_CATEGORIES.TRAFFIC,
 		],
-		addedInVersion: '1.66.0',
+		addedInVersion: '1.129.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Reader Revenue Manager', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
-		},
-		checkRequirements: ( select ) => {
-			// The site must use HTTPS to set up RRM.
-			const homeURL = select( CORE_SITE ).getHomeURL();
-			return homeURL ? homeURL.startsWith( 'https://' ) : false;
 		},
 	} );
 
@@ -263,40 +256,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			effort: FEATURE_EFFORTS.MEDIUM,
 			goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
 
-			addedInVersion: '1.96.0',
+			addedInVersion: 'n.e.x.t', // ToDo: Update with the version number when the feature is released.
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 				ctaLabel: __( 'Set up a sign-up form', 'google-site-kit' ),
-				getSetupURL: ( select ) => {
-					return select( CORE_SITE ).getAdminURL(
-						'googlesitekit-dashboard',
-						{
-							slug: MODULE_SLUG_READER_REVENUE_MANAGER,
-							reAuth: true,
-							expressSetup: true,
-							cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-						}
-					);
-				},
-				isEnabled: ( select ) => {
-					// Check if the newsletter CTA is configured.
-					const settings = select(
-						'modules/reader-revenue-manager'
-					).getSettings();
-
-					if ( ! settings || ! settings.configuredCTAs ) {
-						return false;
-					}
-
-					return Object.values( settings.configuredCTAs ).includes(
-						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-					);
-				},
-			},
-			checkRequirements: ( select ) => {
-				// The site must use HTTPS.
-				const homeURL = select( CORE_SITE ).getHomeURL();
-				return homeURL ? homeURL.startsWith( 'https://' ) : false;
 			},
 		} );
 	}

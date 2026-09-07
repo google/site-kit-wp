@@ -132,7 +132,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [ FEATURE_CATEGORIES.TRAFFIC ],
-		addedInVersion: '1.118.0',
+		addedInVersion: '1.125.0',
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Ads', 'google-site-kit' ),
