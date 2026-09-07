@@ -18,5 +18,7 @@
 // types and have no `@types/*` package installed, so `noImplicitAny` flags
 // every import. Declaring them keeps the modules usable (as `any`) until we
 // adopt proper types.
+declare module 'dompurify';
 declare module 'history';
+declare module 'md5';
 declare module 'react-router-dom';

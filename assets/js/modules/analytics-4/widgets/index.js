@@ -88,6 +88,8 @@ import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
 } from '@/js/modules/analytics-4/components/site-goals/widgets';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
@@ -166,6 +168,23 @@ export function registerWidgets( widgets ) {
 					getData: getAllTrafficPDFData,
 					label: __( 'Site traffic over time', 'google-site-kit' ),
 				},
+			},
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
+
+	if ( isFeatureEnabled( 'trafficOverview' ) ) {
+		widgets.registerWidget(
+			TRAFFIC_OVERVIEW_WIDGET_SLUG,
+			{
+				Component: TrafficOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

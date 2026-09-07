@@ -34,6 +34,7 @@ import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import {
 	PolicyViolationSettingsNotice,
 	PostTypesSelect,
@@ -43,13 +44,35 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/common';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { getProductIDLabel } from '@/js/modules/reader-revenue-manager/utils/settings';
+import {
+	getConfiguredCTAList,
+	getProductIDLabel,
+} from '@/js/modules/reader-revenue-manager/utils/settings';
 import ProductIDSettings from './ProductIDSettings';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
+
 	const publicationID = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getPublicationID()
 	);
+
+	const configuredCTAs = useSelect( ( select ) => {
+		if ( ! rrmExpressSetupEnabled ) {
+			return [];
+		}
+
+		const { getCTAEditLinkURL, getSettings } = select(
+			MODULES_READER_REVENUE_MANAGER
+		);
+
+		const ctas = getConfiguredCTAList( getSettings()?.configuredCTAs );
+
+		return ctas.map( ( cta ) => ( {
+			...cta,
+			editLinkURL: getCTAEditLinkURL( cta.ctaID ),
+		} ) );
+	} );
 
 	const productIDs = useSelect( ( select ) =>
 		select( MODULES_READER_REVENUE_MANAGER ).getCurrentProductIDs()
@@ -192,6 +215,48 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					<ProductIDSettings hasModuleAccess={ hasModuleAccess } />
 				) }
 			</div>
+			{ configuredCTAs.length > 0 && (
+				<div className="googlesitekit-settings-module__fields-group">
+					<Typography
+						as="h4"
+						size="small"
+						type="title"
+						className="googlesitekit-settings-module__fields-group-title"
+					>
+						{ __( 'CTAs', 'google-site-kit' ) }
+					</Typography>
+					<ul className="googlesitekit-rrm-settings-edit__ctas">
+						{ configuredCTAs.map(
+							( { ctaID, label, editLinkURL } ) => (
+								<li
+									key={ ctaID }
+									className="googlesitekit-rrm-settings-edit__cta"
+								>
+									<Typography
+										as="p"
+										size="medium"
+										type="body"
+									>
+										{ label }
+									</Typography>
+									<Typography
+										as="span"
+										size="small"
+										type="body"
+									>
+										<Link href={ editLinkURL } external>
+											{ __(
+												'Manage settings',
+												'google-site-kit'
+											) }
+										</Link>
+									</Typography>
+								</li>
+							)
+						) }
+					</ul>
+				</div>
+			) }
 			<div className="googlesitekit-settings-module__fields-group">
 				<Typography
 					as="h4"

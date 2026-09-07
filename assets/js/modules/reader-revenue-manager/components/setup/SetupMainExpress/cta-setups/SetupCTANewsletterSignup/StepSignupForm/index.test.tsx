@@ -25,12 +25,15 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -67,6 +70,14 @@ const createCTAEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
 );
 
+/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+const testPublication = {
+	...publications[ 0 ],
+	publicationTosUrl: 'https://example.com/terms',
+	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
+} as Publication;
+/* eslint-enable sitekit/acronym-case */
+
 function renderStepSignupForm(
 	formValues: Record< string, string | boolean > = {},
 	registry: Registry = createTestRegistry() as Registry
@@ -92,6 +103,12 @@ function renderStepSignupForm(
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.finishResolution( 'getSettings', [] );
 
+	providePublications( registry, [ testPublication ] );
+
+	registry
+		.dispatch( CORE_UI )
+		.setValue( EXPRESS_SETUP_STEP_UI_KEY, EXPRESS_SETUP_STEPS.SETUP_CTA );
+
 	registry
 		.dispatch( CORE_FORMS )
 		.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, formValues );
@@ -106,7 +123,7 @@ describe( 'StepSignupForm', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
-		global.location.href = 'http://example.com/';
+		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
 	} );
 
 	it( 'should disable publish when the display name is empty', () => {

@@ -233,11 +233,11 @@ class Notifications {
 		$decoded = json_decode( $body, true );
 
 		if ( json_last_error() ) {
-			throw new Exception( 'Error while decoding response: ' . json_last_error() );
+			throw new Exception( 'Error while decoding response: ' . json_last_error() ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		if ( ! empty( $decoded['error'] ) ) {
-			throw new Exception( $decoded['error'] );
+			throw new Exception( $decoded['error'] ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $decoded;

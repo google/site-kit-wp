@@ -37,7 +37,7 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
  * behind the welcome modal for a user who will never need it.
  *
  * @since 1.113.0
- * @since n.e.x.t Removed the on-demand tour trigger, which the notification queue now owns.
+ * @since 1.187.0 Removed the on-demand tour trigger, which the notification queue now owns.
  */
 export function useChangeMetricsFeatureTourEffect() {
 	const { dismissTour } = useDispatch( CORE_USER );

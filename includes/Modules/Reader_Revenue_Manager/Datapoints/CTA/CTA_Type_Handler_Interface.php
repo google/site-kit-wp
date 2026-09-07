@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta;
 /**
  * Interface for configuring a CTA model for a supported CTA type.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ interface CTA_Type_Handler_Interface {
 	/**
 	 * Gets the CTA type handled by this instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return string CTA type.
 	 */
@@ -33,7 +33,7 @@ interface CTA_Type_Handler_Interface {
 	/**
 	 * Validates and applies type-specific configuration to a CTA model.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param Cta   $cta    CTA model.
 	 * @param array $config Type-specific configuration.

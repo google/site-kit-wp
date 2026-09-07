@@ -111,6 +111,18 @@ WithoutModuleAccess.args = {
 };
 WithoutModuleAccess.scenario = {};
 
+export const WithConfiguredCTAs = Template.bind( {} );
+WithConfiguredCTAs.storyName = 'With Configured CTAs';
+WithConfiguredCTAs.args = {
+	configuredCTAs: {
+		'cta-1': 'newsletter-signup',
+	},
+};
+WithConfiguredCTAs.parameters = {
+	features: [ 'rrmExpressSetup' ],
+};
+WithConfiguredCTAs.scenario = {};
+
 export const WithPolicyViolationPending = Template.bind( {} );
 WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
 WithPolicyViolationPending.args = {
@@ -169,6 +181,10 @@ export default {
 					snippetMode: 'post_types',
 					postTypes: [ 'post' ],
 				};
+
+				if ( args?.configuredCTAs ) {
+					settings.configuredCTAs = args.configuredCTAs;
+				}
 
 				// Add content policy status if provided.
 				if ( args?.contentPolicyState ) {
