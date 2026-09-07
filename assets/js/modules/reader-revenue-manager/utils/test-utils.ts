@@ -31,7 +31,7 @@ import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publi
 /**
  * Provides publications to the given registry.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @private
  *
  * @param {Registry|WPDataRegistry} registry     Data registry.
@@ -49,4 +49,28 @@ export function providePublications(
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.finishResolution( 'getPublications', [] );
+}
+
+export function providePublication(
+	registry: Registry | WPDataRegistry,
+	publication: Publication
+) {
+	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
+		/* eslint-disable sitekit/acronym-case */
+		organizationID: publication.organizationId,
+		publicationID: publication.publicationId,
+		/* eslint-enable sitekit/acronym-case */
+	} );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getSettings', [] );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetPublication( publication );
+
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.finishResolution( 'getPublication', [] );
 }

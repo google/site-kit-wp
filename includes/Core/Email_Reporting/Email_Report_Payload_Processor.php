@@ -367,7 +367,7 @@ class Email_Report_Payload_Processor {
 	 * Computes the percentage change from the comparison value to the current one.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Method changed from private to public.
+	 * @since 1.187.0 Method changed from private to public.
 	 *
 	 * @param mixed $current    Current value.
 	 * @param mixed $comparison Comparison value.

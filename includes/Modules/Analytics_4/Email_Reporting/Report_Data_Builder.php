@@ -54,7 +54,7 @@ class Report_Data_Builder {
 	/**
 	 * Site Goals section builder instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var Site_Goals_Section_Builder
 	 */
 	protected $site_goals_builder;
@@ -63,7 +63,7 @@ class Report_Data_Builder {
 	 * Constructor.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the optional Site Goals section builder.
+	 * @since 1.187.0 Added the optional Site Goals section builder.
 	 *
 	 * @param Email_Report_Payload_Processor|null $report_processor     Optional. Report processor instance.
 	 * @param Report_Data_Processor|null          $data_processor       Optional. Analytics data processor.
@@ -91,7 +91,7 @@ class Report_Data_Builder {
 	 *
 	 * @since 1.170.0
 	 * @since 1.177.0 Removed conversion event handling.
-	 * @since n.e.x.t Added the Site Goals sections, each built from more than one report.
+	 * @since 1.187.0 Added the Site Goals sections, each built from more than one report.
 	 *
 	 * @param array $module_payload Module payload keyed by section slug.
 	 * @return array Section payloads.

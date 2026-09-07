@@ -201,6 +201,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
 				activeConversionEventProviders,
+				wpPrivacyURL,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -243,6 +244,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
 				activeConversionEventProviders,
+				wpPrivacyURL,
 			};
 			break;
 
@@ -341,6 +343,7 @@ export const resolvers = {
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
 			activeConversionEventProviders,
+			wpPrivacyURL,
 		} = baseData;
 
 		const {
@@ -390,6 +393,7 @@ export const resolvers = {
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
 			activeConversionEventProviders,
+			wpPrivacyURL,
 		} );
 	},
 };
@@ -1096,7 +1100,7 @@ export const selectors = {
 	/**
 	 * Gets the slug of every active conversion event provider plugin.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Array.<string>|undefined)} One slug for each active provider, such as `woocommerce`. Returns `undefined` if not yet loaded.
@@ -1128,6 +1132,16 @@ export const selectors = {
 	isKeyMetricsWidgetAreaHidden: ( state ) => {
 		return !! selectors.getKeyMetricsSetupIsWidgetAreaHidden( state );
 	},
+
+	/**
+	 * Gets a site's privacy policy URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The privacy policy URL.
+	 */
+	getPrivacyPolicyURL: getSiteInfoProperty( 'wpPrivacyURL' ),
 };
 
 export default {

@@ -219,6 +219,28 @@ MissingProductID.args = {
 	},
 };
 
+export const WithConfiguredCTAs = Template.bind( {} );
+WithConfiguredCTAs.storyName = 'With Configured CTAs';
+WithConfiguredCTAs.args = {
+	configuredCTAs: {
+		'cta-1': 'newsletter-signup',
+	},
+	setupRegistry: ( registry ) => {
+		setupPublicationsWithProduct( registry, 0, 'product-b' );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductID( 'product-b' );
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setProductIDs( [ 'product-a', 'product-b', 'product-c' ] );
+	},
+};
+WithConfiguredCTAs.parameters = {
+	features: [ 'rrmExpressSetup' ],
+};
+WithConfiguredCTAs.scenario = {};
+
 export const WithPolicyViolationPending = Template.bind( {} );
 WithPolicyViolationPending.storyName = 'With Policy Violation (Pending)';
 WithPolicyViolationPending.scenario = {};
@@ -323,6 +345,10 @@ export default {
 					productIDs: [ 'product-1', 'product-2' ],
 					snippetMode: 'post_types',
 				};
+
+				if ( args?.configuredCTAs ) {
+					settings.configuredCTAs = args.configuredCTAs;
+				}
 
 				registry
 					.dispatch( MODULES_READER_REVENUE_MANAGER )
