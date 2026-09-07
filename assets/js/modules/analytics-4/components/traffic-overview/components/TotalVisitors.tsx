@@ -38,6 +38,7 @@ import {
 	TYPE_BODY,
 	TYPE_DISPLAY,
 } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import { calculateChange, numFmt } from '@/js/util';
@@ -87,23 +88,23 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( { report } ) => {
 				{ __( 'Total visitors', 'google-site-kit' ) }
 			</Typography>
 			<div className="googlesitekit-traffic-overview__total-visitors-metric">
-				<Typography
-					as="div"
-					type={ TYPE_DISPLAY }
-					size={ SIZE_LARGE }
-					className="googlesitekit-traffic-overview__total-visitors-figure"
-				>
-					{ numFmt( currentValue ) }
-				</Typography>
+				<div className="googlesitekit-traffic-overview__total-visitors-figure">
+					{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
+					<Typography
+						as="span"
+						type={ TYPE_DISPLAY }
+						size={ SIZE_LARGE }
+					>
+						{ numFmt( currentValue ) }
+					</Typography>
+				</div>
 				{ hasChange && (
 					<div className="googlesitekit-traffic-overview__total-visitors-change">
 						<ChangeBadge
 							previousValue={ previousValue }
 							currentValue={ currentValue }
 						/>
-						<Typography
-							as="p"
-							type={ TYPE_BODY }
+						<P
 							size={ SIZE_SMALL }
 							className="googlesitekit-traffic-overview__total-visitors-comparison"
 						>
@@ -112,7 +113,7 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( { report } ) => {
 								__( 'Vs. prev. %d days', 'google-site-kit' ),
 								comparisonDays
 							) }
-						</Typography>
+						</P>
 					</div>
 				) }
 			</div>
