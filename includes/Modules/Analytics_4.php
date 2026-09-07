@@ -148,6 +148,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 	const PROVISION_ACCOUNT_TICKET_ID = 'googlesitekit_analytics_provision_account_ticket_id';
 
+	const PROVISION_ACCOUNT_TICKET_NONCE_ACTION = 'googlesitekit_analytics_provision_account_ticket';
+
 	const READONLY_SCOPE = 'https://www.googleapis.com/auth/analytics.readonly';
 	const EDIT_SCOPE     = 'https://www.googleapis.com/auth/analytics.edit';
 
@@ -1238,6 +1240,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.9.0
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
 	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
+	 * @since n.e.x.t Added nonce verification and required a stored account ticket ID.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -1259,9 +1262,20 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		// flag enabled, and is therefore present on the callback URL when applicable.
 		$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
 
-		// First check that the accountTicketId matches one stored for the user.
+		// Verify the nonce added to the provisioning redirect URI by
+		// `Create_Account_Ticket`, which confirms this user started the flow.
+		$nonce = $input->filter( INPUT_GET, 'nonce' ) ?? '';
+
+		if ( ! wp_verify_nonce( $nonce, self::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ) ) {
+			wp_safe_redirect(
+				$this->get_provisioning_callback_error_redirect_url( 'invalid_nonce', $show_progress )
+			);
+			exit;
+		}
+
+		// Next check that the accountTicketId matches one stored for the user.
 		// This is always provided, even in the event of an error.
-		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) );
+		$account_ticket_id = htmlspecialchars( $input->filter( INPUT_GET, 'accountTicketId' ) ?? '' );
 		// The create-account-ticket request stores the created account ticket in a transient before
 		// sending the user off to the terms of service page.
 		$account_ticket_transient_key = self::PROVISION_ACCOUNT_TICKET_ID . '::' . get_current_user_id();
@@ -1269,11 +1283,17 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$account_ticket               = new Account_Ticket( $account_ticket_params );
 
 		// Backwards compat for previous storage type which stored ID only.
-		if ( is_scalar( $account_ticket_params ) ) {
+		// Only a non-empty scalar value represents a stored ticket ID.
+		if ( is_scalar( $account_ticket_params ) && ! empty( $account_ticket_params ) ) {
 			$account_ticket->set_id( $account_ticket_params );
 		}
 
-		if ( $account_ticket->get_id() !== $account_ticket_id ) {
+		// The user must have a ticket in progress, and the given ID must match it.
+		if (
+			empty( $account_ticket_id )
+			|| empty( $account_ticket->get_id() )
+			|| $account_ticket->get_id() !== $account_ticket_id
+		) {
 			wp_safe_redirect(
 				$this->get_provisioning_callback_error_redirect_url( 'account_ticket_id_mismatch', $show_progress )
 			);
