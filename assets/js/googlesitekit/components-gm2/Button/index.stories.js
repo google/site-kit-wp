@@ -37,7 +37,21 @@ export const HoverButton = Template.bind( {} );
 HoverButton.storyName = 'Default Button Hover';
 HoverButton.args = {
 	children: 'Default Button Hover',
-	className: 'googlesitekit-button--hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+HoverButton.parameters = {
+	pseudo: { hover: true },
+};
+
+export const DefaultButtonFocus = Template.bind( {} );
+DefaultButtonFocus.storyName = 'Default Button Focus';
+DefaultButtonFocus.args = {
+	...DefaultButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+DefaultButtonFocus.parameters = {
+	pseudo: { focus: true },
 };
 
 export const LinkButton = Template.bind( {} );
@@ -47,6 +61,17 @@ LinkButton.args = {
 	href: '#',
 };
 
+export const LinkButtonFocus = Template.bind( {} );
+LinkButtonFocus.storyName = 'Default Button Link Focus';
+LinkButtonFocus.args = {
+	...LinkButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+LinkButtonFocus.parameters = {
+	pseudo: { focus: true },
+};
+
 export const DangerButton = Template.bind( {} );
 DangerButton.storyName = 'Danger Button';
 DangerButton.args = {
@@ -54,10 +79,29 @@ DangerButton.args = {
 	danger: true,
 };
 
+export const DangerButtonFocus = Template.bind( {} );
+DangerButtonFocus.storyName = 'Danger Button Focus';
+DangerButtonFocus.args = {
+	...DangerButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+DangerButtonFocus.parameters = {
+	pseudo: { focus: true },
+};
+
 export const DisabledButton = Template.bind( {} );
 DisabledButton.storyName = 'Disabled Button';
 DisabledButton.args = {
 	children: 'Disabled Button',
+	disabled: true,
+};
+
+export const DisabledDangerButton = Template.bind( {} );
+DisabledDangerButton.storyName = 'Disabled Danger Button';
+DisabledDangerButton.args = {
+	children: 'Disabled Danger Button',
+	danger: true,
 	disabled: true,
 };
 
@@ -68,6 +112,25 @@ TertiaryButton.args = {
 	tertiary: true,
 };
 
+export const TertiaryButtonFocus = Template.bind( {} );
+TertiaryButtonFocus.storyName = 'Tertiary Button Focus';
+TertiaryButtonFocus.args = {
+	...TertiaryButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+TertiaryButtonFocus.parameters = {
+	pseudo: { focus: true },
+};
+
+export const DisabledTertiaryButton = Template.bind( {} );
+DisabledTertiaryButton.storyName = 'Disabled Tertiary Button';
+DisabledTertiaryButton.args = {
+	children: 'Disabled Tertiary Button',
+	tertiary: true,
+	disabled: true,
+};
+
 export const IconButton = Template.bind( {} );
 IconButton.storyName = 'Icon Button with Tooltip';
 IconButton.args = {
@@ -76,11 +139,42 @@ IconButton.args = {
 	className: 'googlesitekit-button--icon',
 };
 
+export const IconButtonFocus = Template.bind( {} );
+IconButtonFocus.storyName = 'Icon Button Focus';
+IconButtonFocus.args = {
+	...IconButton.args,
+	className:
+		'googlesitekit-button--icon googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+IconButtonFocus.parameters = {
+	pseudo: { focus: true },
+};
+
+export const DisabledIconButton = Template.bind( {} );
+DisabledIconButton.storyName = 'Disabled Icon Button';
+DisabledIconButton.args = {
+	icon: <HelpIcon width="20" height="20" />,
+	'aria-label': 'Help',
+	className: 'googlesitekit-button--icon',
+	disabled: true,
+};
+
 export const CalloutButton = Template.bind( {} );
 CalloutButton.storyName = 'Callout Button';
 CalloutButton.args = {
 	children: 'Callout Button',
 	callout: true,
+};
+
+export const CalloutButtonFocus = Template.bind( {} );
+CalloutButtonFocus.storyName = 'Callout Button Focus';
+CalloutButtonFocus.args = {
+	...CalloutButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+CalloutButtonFocus.parameters = {
+	pseudo: { focus: true },
 };
 
 export const DisabledCalloutButton = Template.bind( {} );
@@ -97,6 +191,17 @@ CalloutWarningButton.args = {
 	children: 'Callout Warning',
 	callout: true,
 	calloutStyle: 'warning',
+};
+
+export const CalloutWarningButtonFocus = Template.bind( {} );
+CalloutWarningButtonFocus.storyName = 'Callout Warning Button Focus';
+CalloutWarningButtonFocus.args = {
+	...CalloutWarningButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+CalloutWarningButtonFocus.parameters = {
+	pseudo: { focus: true },
 };
 
 export const DisabledCalloutWarningButton = Template.bind( {} );
@@ -116,6 +221,17 @@ CalloutErrorButton.args = {
 	calloutStyle: 'error',
 };
 
+export const CalloutErrorButtonFocus = Template.bind( {} );
+CalloutErrorButtonFocus.storyName = 'Callout Error Button Focus';
+CalloutErrorButtonFocus.args = {
+	...CalloutErrorButton.args,
+	className:
+		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
+};
+CalloutErrorButtonFocus.parameters = {
+	pseudo: { focus: true },
+};
+
 export const DisabledCalloutErrorButton = Template.bind( {} );
 DisabledCalloutErrorButton.storyName = 'Disabled Callout Error Button';
 DisabledCalloutErrorButton.args = {
@@ -128,17 +244,29 @@ DisabledCalloutErrorButton.args = {
 export function VRTStory() {
 	const buttonStories = [
 		DefaultButton,
-		LinkButton,
-		DangerButton,
+		HoverButton,
+		DefaultButtonFocus,
 		DisabledButton,
+		LinkButton,
+		LinkButtonFocus,
+		DangerButton,
+		DangerButtonFocus,
+		DisabledDangerButton,
 		TertiaryButton,
+		TertiaryButtonFocus,
+		DisabledTertiaryButton,
 		CalloutButton,
-		CalloutWarningButton,
-		CalloutErrorButton,
+		CalloutButtonFocus,
 		DisabledCalloutButton,
+		CalloutWarningButton,
+		CalloutWarningButtonFocus,
 		DisabledCalloutWarningButton,
+		CalloutErrorButton,
+		CalloutErrorButtonFocus,
 		DisabledCalloutErrorButton,
 		IconButton,
+		IconButtonFocus,
+		DisabledIconButton,
 	];
 
 	return (
@@ -156,6 +284,12 @@ VRTStory.scenario = {
 	hoverSelector: '.googlesitekit-button--icon',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
+};
+VRTStory.parameters = {
+	pseudo: {
+		hover: [ '.googlesitekit-vrt-button-hover' ],
+		focus: [ '.googlesitekit-vrt-button-focus' ],
+	},
 };
 
 export default {
