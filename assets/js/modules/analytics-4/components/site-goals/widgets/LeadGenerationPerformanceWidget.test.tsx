@@ -860,6 +860,13 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect( getByText( 'Leads by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
+		// The site-wide total (100) is larger than the sum of the ranked
+		// rows above (54 + 23 + 16 = 93), so these percentages only match if
+		// "Top traffic channels" divides by that total rather than by the
+		// visible rows.
+		expect( getByText( '54%' ) ).toBeInTheDocument();
+		expect( getByText( '23%' ) ).toBeInTheDocument();
+		expect( getByText( '16%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
