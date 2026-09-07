@@ -87,6 +87,38 @@
 			}
 		}
 
+		// Every element below carries its own typography classes, so only the
+		// colors and the layout are set here.
+		.googlesitekit-traffic-overview__total-visitors-title {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-metric {
+			align-items: center;
+			display: flex;
+			gap: 14px;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-figure {
+			color: $c-surfaces-on-surface;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-change {
+			// The badge normally stacks under a figure, so it arrives with a
+			// top margin and takes the full width. Here it sits beside one,
+			// above a label wider than itself.
+			.googlesitekit-change-badge {
+				display: inline-block;
+				margin-top: 0;
+			}
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-comparison {
+			color: $c-surfaces-on-background-variant;
+			margin: 0;
+		}
+
 		.googlesitekit-traffic-overview__chart {
 			margin-top: 48px;
 		}
