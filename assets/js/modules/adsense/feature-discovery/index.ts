@@ -219,8 +219,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 659,
+					height: 577,
 				},
 			],
 		},

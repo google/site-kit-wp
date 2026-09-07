@@ -133,8 +133,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Dashboard sharing screenshot showing the dashboard sharing panel',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 620,
+					height: 441,
 				},
 			],
 		},
@@ -246,8 +246,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 620,
+					height: 462,
 				},
 			],
 		},
@@ -336,8 +336,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'PDF report screenshot showing the full report with all selected metrics',
 							'google-site-kit'
 						),
-						width: 1488,
-						height: 608,
+						width: 659,
+						height: 577,
 					},
 					{
 						src: splashScreenScreenshotURL,
@@ -345,8 +345,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'PDF report screenshot showing the export panel with selected metrics',
 							'google-site-kit'
 						),
-						width: 1488,
-						height: 608,
+						width: 659,
+						height: 577,
 					},
 				],
 			},

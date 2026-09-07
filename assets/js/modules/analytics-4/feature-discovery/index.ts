@@ -225,8 +225,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 620,
+					height: 540,
 				},
 			],
 		},
@@ -321,8 +321,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 659,
+					height: 577,
 				},
 			],
 		},
@@ -427,8 +427,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Visitor groups screenshot showing audiences tiles',
 						'google-site-kit'
 					),
-					width: 1488,
-					height: 608,
+					width: 620,
+					height: 382,
 				},
 			],
 		},

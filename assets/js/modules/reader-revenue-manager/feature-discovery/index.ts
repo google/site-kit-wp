@@ -122,8 +122,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Reader Revenue Manager contribution prompt screenshot',
 						'google-site-kit'
 					),
-					width: 2285,
-					height: 1705,
+					width: 659,
+					height: 577,
 				},
 			],
 		},
