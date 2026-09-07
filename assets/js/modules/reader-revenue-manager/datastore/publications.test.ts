@@ -732,6 +732,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 	describe( 'fetchGetPublications settings synchronization', () => {
 		beforeEach( () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+
 			const extraData = [
 				{
 					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -744,7 +746,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		it( 'should update settings in state when publications are fetched', async () => {
-			const publication = fixtures.publications[ 0 ];
+			const publication = {
+				...fixtures.publications[ 0 ],
+				organizationId: 'organization-1',
+			};
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -757,7 +762,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				} );
 
 			fetchMock.getOnce( publicationsEndpoint, {
-				body: fixtures.publications,
+				body: [ publication ],
 				status: 200,
 			} );
 
@@ -777,6 +782,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [ 'basic' ] );
 			expect( settings.paymentOption ).toEqual( 'subscriptions' );
+			expect( settings.organizationID ).toEqual(
+				publication.organizationId
+			);
 			expect( settings.contentPolicyState ).toEqual(
 				'CONTENT_POLICY_STATE_OK'
 			);
@@ -849,6 +857,65 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [] );
 			expect( settings.paymentOption ).toEqual( '' );
+		} );
+	} );
+
+	describe( 'fetchGetPublication settings synchronization', () => {
+		beforeEach( () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+		} );
+
+		it( 'should update settings and savedSettings when a publication is fetched', async () => {
+			const publication = {
+				...fixtures.publications[ 0 ],
+				organizationId: 'organization-1',
+			};
+			const params = {
+				organizationID: publication.organizationId,
+				publicationID: publication.publicationId,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+					organizationID: '',
+				} );
+
+			fetchMock.getOnce( publicationEndpoint, {
+				body: publication,
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublication( params );
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication( params );
+
+			const settings = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSettings();
+
+			expect( settings ).toMatchObject( {
+				publicationOnboardingState: publication.onboardingState,
+				productIDs: [ 'basic' ],
+				paymentOption: 'subscriptions',
+				organizationID: publication.organizationId,
+				contentPolicyState: 'CONTENT_POLICY_STATE_OK',
+			} );
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.haveSettingsChanged()
+			).toBe( false );
 		} );
 	} );
 

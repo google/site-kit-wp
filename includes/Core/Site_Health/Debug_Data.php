@@ -661,7 +661,7 @@ class Debug_Data {
 	 * not firing: whether the feature is on at all, and whether the event applies to
 	 * the page they are looking at.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return array
 	 */

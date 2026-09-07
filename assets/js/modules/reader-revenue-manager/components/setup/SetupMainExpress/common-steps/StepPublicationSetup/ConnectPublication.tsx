@@ -84,6 +84,14 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		[]
 	);
 
+	const hasResolvedSettings = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getSettings'
+			),
+		[]
+	);
+
 	const isDoingSubmitChanges = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).isDoingSubmitChanges(),
@@ -145,11 +153,19 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 			}
 		}
 
-		if ( publications && ! publicationID ) {
+		/**
+		 * Selecting a publication sets publication-related module settings.
+		 * This will cause settings to be defined, preventing the fetching of
+		 * default settings from the server, which can lead to
+		 * `canSubmitChanges` returning as `false` because settings are
+		 * incomplete if `publications` resolves before settings.
+		 */
+		if ( hasResolvedSettings && publications && ! publicationID ) {
 			autoSelectPublication();
 		}
 	}, [
 		findMatchedPublication,
+		hasResolvedSettings,
 		publicationID,
 		publications,
 		selectPublication,

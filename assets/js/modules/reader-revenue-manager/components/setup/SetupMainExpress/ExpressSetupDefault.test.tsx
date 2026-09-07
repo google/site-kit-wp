@@ -32,17 +32,19 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
 
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: /Let's get started!/,
+	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
+		'To use Reader Revenue Manager, you will need to create a publication.',
 	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
-		'RRM express setup placeholder: terms of service step.',
+		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
-		'RRM express setup placeholder: publication policies step.',
+		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
 		'RRM express setup placeholder: setup complete step.',
 };
@@ -81,11 +83,11 @@ describe( 'ExpressSetupDefault', () => {
 		global.location.href = 'http://example.com/';
 
 		const { getByText, queryByText, container } = render(
-			<ExpressSetupDefault />
+			<ExpressSetupDefault />,
+			{ registry }
 		);
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
 		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
 		expect(
@@ -93,12 +95,12 @@ describe( 'ExpressSetupDefault', () => {
 		).not.toBeInTheDocument();
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 4 );
+		).toHaveLength( 3 );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
 		'renders the %s step content',
-		( step, content ) => {
+		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			const { getByText, queryByText } = render(
@@ -106,7 +108,9 @@ describe( 'ExpressSetupDefault', () => {
 				{ registry }
 			);
 
-			expect( getByText( content ) ).toBeInTheDocument();
+			await waitFor( () => {
+				expect( getByText( content ) ).toBeInTheDocument();
+			} );
 
 			Object.entries( STEP_CONTENT )
 				.filter( ( [ otherStep ] ) => otherStep !== step )
@@ -121,7 +125,9 @@ describe( 'ExpressSetupDefault', () => {
 	it( 'renders no step content for an unknown step', () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
 
-		const { getByText, queryByText } = render( <ExpressSetupDefault /> );
+		const { getByText, queryByText } = render( <ExpressSetupDefault />, {
+			registry,
+		} );
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 

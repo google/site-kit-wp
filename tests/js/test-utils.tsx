@@ -267,6 +267,7 @@ function customRenderHook< Props, Result >(
 
 // Export our own test utils from this file.
 export * from './utils';
+export * from './feature-flag-utils';
 export * from './gathering-data-utils';
 
 // Export @testing-library/react as normal.
