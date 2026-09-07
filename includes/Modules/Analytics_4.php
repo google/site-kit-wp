@@ -1240,7 +1240,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.9.0
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
 	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
-	 * @since n.e.x.t Added nonce verification and required a stored account ticket ID.
+	 * @since 1.187.0 Added nonce verification and required a stored account ticket ID.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {

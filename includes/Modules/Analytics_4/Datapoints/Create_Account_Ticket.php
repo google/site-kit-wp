@@ -62,7 +62,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Added a nonce to the provisioning redirect URI.
+	 * @since 1.187.0 Added a nonce to the provisioning redirect URI.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
