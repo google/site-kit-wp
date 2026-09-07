@@ -364,6 +364,132 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assert_report_covers_both_periods( $options, 'get_lead_primary_options()' );
 	}
 
+	public function test_get_online_store_discovery_options__counts_both_store_events() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+		$options = $builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventCount' ) ),
+			$options['metrics'],
+			'get_online_store_discovery_options() should request the eventCount metric.'
+		);
+		$this->assertEquals(
+			array(
+				array( 'name' => 'eventName' ),
+				array( 'name' => 'customEvent:googlesitekit_event_provider' ),
+			),
+			$options['dimensions'],
+			'get_online_store_discovery_options() should group the count by event name and by event provider.'
+		);
+		$this->assertSame(
+			'inListFilter',
+			$options['dimensionFilters']['eventName']['filterType'],
+			'get_online_store_discovery_options() should filter the event name with an in-list filter.'
+		);
+		$this->assertSame(
+			array( 'purchase', 'add_to_cart' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_online_store_discovery_options() should count both store events, so a plugin that sends only one of them still gets a group.'
+		);
+	}
+
+	public function test_get_lead_discovery_options__counts_every_lead_event_the_site_sends() {
+		$builder = $this->create_builder_with_events( array( 'submit_lead_form', 'purchase', 'contact' ) );
+		$options = $builder->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$this->assertEquals(
+			array(
+				array( 'name' => 'eventName' ),
+				array( 'name' => 'customEvent:googlesitekit_form_id' ),
+			),
+			$options['dimensions'],
+			'get_lead_discovery_options() should group the count by event name and by form.'
+		);
+		$this->assertSame(
+			array( 'contact', 'submit_lead_form' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_discovery_options() should count every detected lead event, and leave the purchase event out.'
+		);
+	}
+
+	public function test_get_online_store_discovery_options__names_the_groups_from_the_ninety_days_before_the_report_period_ends() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+		$options = $builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_online_store_discovery_options()' );
+	}
+
+	public function test_get_lead_discovery_options__names_the_groups_from_the_ninety_days_before_the_report_period_ends() {
+		$builder = $this->create_builder_with_events( array( 'contact' ) );
+		$options = $builder->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_lead_discovery_options()' );
+	}
+
+	public function test_get_discovery_options__cover_the_same_days_whatever_the_report_period_covers() {
+		$weekly_builder = $this->create_builder_with_events( array( 'purchase', 'contact' ) );
+
+		// A monthly report, more than four times the length of the weekly one.
+		$monthly_builder = $this->create_builder(
+			array(
+				'startDate'        => '2023-12-01',
+				'endDate'          => '2023-12-31',
+				'compareStartDate' => '2023-11-01',
+				'compareEndDate'   => '2023-11-30',
+			)
+		);
+		$monthly_builder->set_detected_events( array( 'purchase', 'contact' ) );
+
+		// Both periods end their discovery days on their own last day, and both reach the
+		// same number of days back.
+		$this->assert_report_covers_discovery_days(
+			$weekly_builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
+			'2023-10-09',
+			'2024-01-07',
+			'get_online_store_discovery_options()'
+		);
+		$this->assert_report_covers_discovery_days(
+			$weekly_builder->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
+			'2023-10-09',
+			'2024-01-07',
+			'get_lead_discovery_options()'
+		);
+		$this->assert_report_covers_discovery_days(
+			$monthly_builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
+			'2023-10-02',
+			'2023-12-31',
+			'get_online_store_discovery_options()'
+		);
+		$this->assert_report_covers_discovery_days(
+			$monthly_builder->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
+			'2023-10-02',
+			'2023-12-31',
+			'get_lead_discovery_options()'
+		);
+	}
+
+	public function test_get_discovery_options__order_the_biggest_key_action_count_first() {
+		$builder = $this->create_builder_with_events( array( 'purchase', 'contact' ) );
+
+		$expected_orderby = array(
+			array(
+				'metric' => array( 'metricName' => 'eventCount' ),
+				'desc'   => true,
+			),
+		);
+
+		$this->assertEquals(
+			$expected_orderby,
+			$builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER )['orderby'],
+			'get_online_store_discovery_options() should order the plugin with the most key actions first.'
+		);
+		$this->assertEquals(
+			$expected_orderby,
+			$builder->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID )['orderby'],
+			'get_lead_discovery_options() should order the form with the most key actions first.'
+		);
+	}
+
 	public function test_get_engagement_options__requests_the_engagement_rate_and_sessions_for_the_whole_site() {
 		$builder = $this->create_builder();
 		$options = $builder->get_engagement_options();
@@ -453,6 +579,23 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertSame( '2024-01-07', $options['endDate'], sprintf( '%s should request the report period end date.', $builder_method ) );
 		$this->assertSame( '2023-12-25', $options['compareStartDate'], sprintf( '%s should request the previous period start date.', $builder_method ) );
 		$this->assertSame( '2023-12-31', $options['compareEndDate'], sprintf( '%s should request the previous period end date.', $builder_method ) );
+	}
+
+	/**
+	 * Asserts that a discovery report names its groups over the days that end on the report
+	 * period's last day, and that the previous period names none of its own.
+	 *
+	 * @param array  $options        Report request options.
+	 * @param string $start_date     First day the report covers.
+	 * @param string $end_date       Last day the report covers, which is the report period's.
+	 * @param string $builder_method Name of the builder method under test, with its
+	 *                               parentheses. For example, `get_lead_discovery_options()`.
+	 */
+	private function assert_report_covers_discovery_days( array $options, $start_date, $end_date, $builder_method ) {
+		$this->assertSame( $start_date, $options['startDate'], sprintf( '%s should request the day the discovery days start on.', $builder_method ) );
+		$this->assertSame( $end_date, $options['endDate'], sprintf( '%s should end its discovery days on the report period\'s last day.', $builder_method ) );
+		$this->assertArrayNotHasKey( 'compareStartDate', $options, sprintf( '%s should request no previous period, which would otherwise name a group the widget does not show.', $builder_method ) );
+		$this->assertArrayNotHasKey( 'compareEndDate', $options, sprintf( '%s should request no previous period end date.', $builder_method ) );
 	}
 
 	/**
