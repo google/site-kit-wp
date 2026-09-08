@@ -35,12 +35,16 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getDateString } from '@/js/util';
 import {
+	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 	RESOURCE_TYPES,
 	RESOURCE_TYPE_AUDIENCE,
 	RESOURCE_TYPE_CUSTOM_DIMENSION,
 	RESOURCE_TYPE_PROPERTY,
 } from './constants';
+
+const postTypeDimension =
+	CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
 
 const fetchSaveResourceDataAvailabilityDateStore = createFetchStore( {
 	baseName: 'saveResourceDataAvailabilityDate',
@@ -354,6 +358,100 @@ const baseSelectors = {
 				propertyID,
 				RESOURCE_TYPE_PROPERTY
 			)
+	),
+
+	/**
+	 * Gets whether the Partial data badge shows beside an audience tile's name.
+	 *
+	 * A tile shows one badge at most. The property's own partial data covers the whole
+	 * tile, so it clears this one, and a Site Kit audience never shows it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                Data store's state.
+	 * @param {string} audienceResourceName Audience resource name.
+	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined while loading.
+	 */
+	isAudienceTilePartialData: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+			const isSiteKitAudience =
+				select( MODULES_ANALYTICS_4 ).isSiteKitAudience(
+					audienceResourceName
+				);
+
+			if ( propertyID === undefined || isSiteKitAudience === undefined ) {
+				return undefined;
+			}
+
+			if ( isSiteKitAudience || ! propertyID ) {
+				return false;
+			}
+
+			const isPropertyPartialData =
+				select( MODULES_ANALYTICS_4 ).isPropertyPartialData(
+					propertyID
+				);
+
+			if ( isPropertyPartialData === undefined ) {
+				return undefined;
+			}
+
+			if ( isPropertyPartialData ) {
+				return false;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
+				audienceResourceName
+			);
+		}
+	),
+
+	/**
+	 * Gets whether the Partial data badge shows on an audience tile's top content list.
+	 *
+	 * The badge beside the audience name takes precedence, so this one only shows once
+	 * both the property and the audience have finished collecting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state                Data store's state.
+	 * @param {string} audienceResourceName Audience resource name.
+	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined while loading.
+	 */
+	isAudienceTileTopContentPartialData: createRegistrySelector(
+		( select ) => ( state, audienceResourceName ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+			const isTilePartialData =
+				select( MODULES_ANALYTICS_4 ).isAudienceTilePartialData(
+					audienceResourceName
+				);
+
+			if ( propertyID === undefined || isTilePartialData === undefined ) {
+				return undefined;
+			}
+
+			if ( ! propertyID ) {
+				return false;
+			}
+
+			const isPropertyPartialData =
+				select( MODULES_ANALYTICS_4 ).isPropertyPartialData(
+					propertyID
+				);
+
+			if ( isPropertyPartialData === undefined ) {
+				return undefined;
+			}
+
+			if ( isPropertyPartialData || isTilePartialData ) {
+				return false;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
+				postTypeDimension
+			);
+		}
 	),
 
 	/**
