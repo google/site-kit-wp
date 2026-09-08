@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -34,6 +29,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -51,6 +47,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'KeyMetricsBackNotice', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry: WPDataRegistry;
 
 	const viewContext = VIEW_CONTEXT_MAIN_DASHBOARD;
@@ -62,14 +59,11 @@ describe( 'KeyMetricsBackNotice', () => {
 	);
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 	} );
 
@@ -163,10 +157,7 @@ describe( 'KeyMetricsBackNotice', () => {
 
 		// Simulate the notice coming into view.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		await waitFor( () => {

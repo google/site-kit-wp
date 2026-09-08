@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * WordPress dependencies
  */
 import { addQueryArgs } from '@wordpress/url';
@@ -35,7 +30,10 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockIntersectionObserver,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -53,14 +51,13 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'SettingsCardAudiences SetupSuccess', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 	let dismissItemSpy;
 
 	mockLocation();
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 
 		provideSiteInfo( registry );
@@ -81,7 +78,6 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		dismissItemSpy.mockReset();
 		mockTrackEvent.mockClear();
 	} );
@@ -116,10 +112,7 @@ describe( 'SettingsCardAudiences SetupSuccess', () => {
 
 		// Simulate the CTA becoming visible.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections();
 		} );
 
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -30,6 +25,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -47,12 +43,11 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'AudienceSegmentationErrorWidget', () => {
+	const { simulateAllIntersections } = mockIntersectionObserver();
 	let registry;
 	let originalViewportWidth;
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -70,7 +65,6 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
@@ -149,10 +143,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections();
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -255,10 +246,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections();
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
