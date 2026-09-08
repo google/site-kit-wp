@@ -452,6 +452,45 @@ describe( 'AudienceTilesWidget', () => {
 			provideAudienceTilesMockReport( registry, configuredAudiences );
 		}
 
+		it( 'should keep the tiles loading until every badge has an answer', async () => {
+			provideConfiguredAudiences();
+
+			// Every date but the post type dimension's is in, so the badges cannot be
+			// worked out yet and a tile drawn now could show the wrong one.
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/report'
+				)
+			);
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
+					audience: {
+						[ configuredAudiences[ 0 ] ]: 20201220,
+						[ configuredAudiences[ 1 ] ]: 20201220,
+					},
+					customDimension: {},
+					property: { 12345: 20201218 },
+				},
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			const { container, waitForRegistry } = render(
+				<WidgetWithComponentProps />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
+
+			expect(
+				container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-loading'
+				)
+			).toBeInTheDocument();
+		} );
+
 		it( 'should show the top content rows and their badge in the same render', async () => {
 			provideConfiguredAudiences();
 
