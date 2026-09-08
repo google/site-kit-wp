@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,6 +31,8 @@ import { __ } from '@wordpress/i18n';
  */
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import { getNavigationalScrollTop } from '@/js/util/scroll';
 
 interface AnalyticsActivationErrorNotificationProps {
 	onRetry?: () => void;
@@ -39,9 +41,24 @@ interface AnalyticsActivationErrorNotificationProps {
 export const ANALYTICS_ACTIVATION_ERROR_NOTIFICATION =
 	'analytics-activation-error-notification';
 
+const ANALYTICS_ACTIVATION_ERROR_NOTIFICATION_SELECTOR =
+	'.googlesitekit-setup__analytics-activation-error-notification';
+
 const AnalyticsActivationErrorNotification: FC<
 	AnalyticsActivationErrorNotificationProps
 > = ( { onRetry }: AnalyticsActivationErrorNotificationProps ) => {
+	const breakpoint = useBreakpoint();
+
+	useEffect( () => {
+		global.scrollTo( {
+			top: getNavigationalScrollTop(
+				ANALYTICS_ACTIVATION_ERROR_NOTIFICATION_SELECTOR,
+				breakpoint
+			),
+			behavior: 'smooth',
+		} );
+	}, [ breakpoint ] );
+
 	return (
 		<Notice
 			className="googlesitekit-setup__analytics-activation-error-notification"
