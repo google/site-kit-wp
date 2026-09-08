@@ -344,6 +344,59 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Checks whether the Partial data badges on the audience tiles can still change.
+	 *
+	 * The three dates a badge weighs — the property's, the audience's and the post type
+	 * dimension's — are each looked up on demand, so badges would otherwise appear one by
+	 * one as the answers land.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}   state                 Data store's state.
+	 * @param {string[]} audienceResourceNames Resource names of the audiences on show.
+	 * @return {boolean} TRUE while a badge can still change, otherwise FALSE.
+	 */
+	isLoadingAudienceTilePartialData: createRegistrySelector(
+		( select ) => ( state, audienceResourceNames ) => {
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+
+			// The badges read all three of these before they read a single date.
+			if (
+				propertyID === undefined ||
+				select( MODULES_ANALYTICS_4 ).isGatheringData() === undefined ||
+				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences() ===
+					undefined
+			) {
+				return true;
+			}
+
+			const resources = [
+				[ propertyID, RESOURCE_TYPE_PROPERTY ],
+				[ postTypeDimension, RESOURCE_TYPE_CUSTOM_DIMENSION ],
+				...audienceResourceNames.map( ( audienceResourceName ) => [
+					audienceResourceName,
+					RESOURCE_TYPE_AUDIENCE,
+				] ),
+			];
+
+			function isDateStillComing( args ) {
+				return (
+					select(
+						MODULES_ANALYTICS_4
+					).getResourceDataAvailabilityDate( ...args ) ===
+						undefined &&
+					! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getResourceDataAvailabilityDate',
+						args
+					)
+				);
+			}
+
+			return resources.some( isDateStillComing );
+		}
+	),
+
+	/**
 	 * Gets whether the given property is in partial data state.
 	 *
 	 * @since 1.127.0
@@ -370,7 +423,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {string} audienceResourceName Audience resource name.
-	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined while loading.
+	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined when there is no answer yet.
 	 */
 	isAudienceTilePartialData: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
@@ -388,10 +441,9 @@ const baseSelectors = {
 				return false;
 			}
 
-			const isPropertyPartialData =
-				select( MODULES_ANALYTICS_4 ).isPropertyPartialData(
-					propertyID
-				);
+			const isPropertyPartialData = select(
+				MODULES_ANALYTICS_4
+			).isResourcePartialData( propertyID, RESOURCE_TYPE_PROPERTY );
 
 			if ( isPropertyPartialData === undefined ) {
 				return undefined;
@@ -401,8 +453,9 @@ const baseSelectors = {
 				return false;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-				audienceResourceName
+			return select( MODULES_ANALYTICS_4 ).isResourcePartialData(
+				audienceResourceName,
+				RESOURCE_TYPE_AUDIENCE
 			);
 		}
 	),
@@ -417,28 +470,28 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {string} audienceResourceName Audience resource name.
-	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined while loading.
+	 * @return {(boolean|undefined)} TRUE when the badge shows, FALSE when it does not, undefined when there is no answer yet.
 	 */
 	isAudienceTileTopContentPartialData: createRegistrySelector(
 		( select ) => ( state, audienceResourceName ) => {
-			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 			const isTilePartialData =
 				select( MODULES_ANALYTICS_4 ).isAudienceTilePartialData(
 					audienceResourceName
 				);
 
-			if ( propertyID === undefined || isTilePartialData === undefined ) {
+			if ( isTilePartialData === undefined ) {
 				return undefined;
 			}
+
+			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
 
 			if ( ! propertyID ) {
 				return false;
 			}
 
-			const isPropertyPartialData =
-				select( MODULES_ANALYTICS_4 ).isPropertyPartialData(
-					propertyID
-				);
+			const isPropertyPartialData = select(
+				MODULES_ANALYTICS_4
+			).isResourcePartialData( propertyID, RESOURCE_TYPE_PROPERTY );
 
 			if ( isPropertyPartialData === undefined ) {
 				return undefined;
@@ -448,8 +501,9 @@ const baseSelectors = {
 				return false;
 			}
 
-			return select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
-				postTypeDimension
+			return select( MODULES_ANALYTICS_4 ).isResourcePartialData(
+				postTypeDimension,
+				RESOURCE_TYPE_CUSTOM_DIMENSION
 			);
 		}
 	),
