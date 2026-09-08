@@ -1,5 +1,8 @@
 name: PHP Tests
 
+permissions:
+  contents: read
+
 on:
   push:
     branches:
