@@ -1258,8 +1258,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		// `show_progress` is set on the provisioning redirect URI by `Create_Account_Ticket`
-		// when the user is in the initial setup flow with the `setupFlowRefresh` feature
-		// flag enabled, and is therefore present on the callback URL when applicable.
+		// when the user is in the initial setup flow, and is therefore present on the callback
+		// URL when applicable.
 		$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
 
 		// Verify the nonce added to the provisioning redirect URI by
@@ -1330,24 +1330,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url(
-					'key-metrics-setup',
-					array(
-						'showProgress' => $show_progress ? 'true' : null,
-					)
-				)
-			);
-			exit;
-		}
-
 		wp_safe_redirect(
 			$this->context->admin_url(
-				'dashboard',
+				'key-metrics-setup',
 				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics-4',
+					'showProgress' => $show_progress ? 'true' : null,
 				)
 			)
 		);
@@ -1358,10 +1345,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Builds the redirect URL for an error encountered during the Analytics
 	 * account provisioning callback.
 	 *
-	 * When the `setupFlowRefresh` feature flag is enabled, the user is
-	 * redirected back to the Analytics setup screen so the error can be
-	 * surfaced inline. Otherwise, the legacy dashboard redirect with the
-	 * `error_code` query parameter is used.
+	 * The user is redirected back to the Analytics setup screen so the error can
+	 * be surfaced inline.
 	 *
 	 * @since 1.180.0
 	 *
@@ -1371,32 +1356,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return string The URL to redirect to.
 	 */
 	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			// If the account creation was triggered from the settings edit screen,
-			// redirect back to the settings edit screen with the error code.
-			if ( $this->is_connected() ) {
-				return add_query_arg(
-					array(
-						'accountCreationErrorCode' => $error_code,
-					),
-					$this->context->admin_url( 'settings' )
-				) . '#connected-services/analytics-4/edit';
-			}
-
-			$args = array(
-				'slug'                     => 'analytics-4',
-				'reAuth'                   => 'true',
-				'accountCreationErrorCode' => $error_code,
-			);
-
-			if ( $show_progress ) {
-				$args['showProgress'] = 'true';
-			}
-
-			return $this->context->admin_url( 'dashboard', $args );
+		// If the account creation was triggered from the settings edit screen,
+		// redirect back to the settings edit screen with the error code.
+		if ( $this->is_connected() ) {
+			return add_query_arg(
+				array(
+					'accountCreationErrorCode' => $error_code,
+				),
+				$this->context->admin_url( 'settings' )
+			) . '#connected-services/analytics-4/edit';
 		}
 
-		return $this->context->admin_url( 'dashboard', array( 'error_code' => $error_code ) );
+		$args = array(
+			'slug'                     => 'analytics-4',
+			'reAuth'                   => 'true',
+			'accountCreationErrorCode' => $error_code,
+		);
+
+		if ( $show_progress ) {
+			$args['showProgress'] = 'true';
+		}
+
+		return $this->context->admin_url( 'dashboard', $args );
 	}
 
 	/**
@@ -2072,10 +2053,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return string[] Refined array of requested scopes.
 	 */
 	private function get_refined_scopes( $scopes = array() ) {
-		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			return $scopes;
-		}
-
 		if ( ! $this->authentication->is_authenticated() ) {
 			$scopes[] = self::EDIT_SCOPE;
 			return $scopes;

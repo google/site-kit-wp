@@ -460,10 +460,6 @@ final class Screens {
 						}
 					},
 					'initialize_callback' => function () {
-						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-							return;
-						}
-
 						$is_view_only = ! $this->authentication->is_authenticated();
 
 						if ( ! $is_view_only ) {

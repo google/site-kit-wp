@@ -22,7 +22,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
@@ -658,10 +657,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @return string The value of the `notification` query param.
 	 */
 	private function get_notification_for_default_redirect_url() {
-		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			return 'authentication_success';
-		}
-
 		if ( $this->dismissed_items->is_dismissed( 'welcome-modal-gathering-data' ) ) {
 			return 'authentication_success';
 		}
