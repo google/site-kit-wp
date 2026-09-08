@@ -2354,6 +2354,12 @@ class Analytics_4Test extends TestCase {
 					// Provide dimension filters with single and multiple values.
 					'sessionDefaultChannelGrouping' => 'Organic Search',
 					'pageTitle'                     => array( 'Title Foo', 'Title Bar' ),
+					// Provide a between filter, which takes two bounds instead of a value.
+					'dateHour'                      => array(
+						'filterType' => 'betweenFilter',
+						'fromValue'  => array( 'int64Value' => 2022110215 ),
+						'toValue'    => array( 'int64Value' => 2022110414 ),
+					),
 				),
 				'metricFilters'    => array(
 					'total' => array(
@@ -2515,6 +2521,36 @@ class Analytics_4Test extends TestCase {
 								'fieldName'    => 'pageTitle',
 								'inListFilter' => array(
 									'values' => array( 'Title Foo', 'Title Bar' ),
+								),
+							),
+						),
+						// Verify the between dimension filter is sent as two numeric bounds,
+						// because the GA4 API rejects a between filter on a dimension.
+						array(
+							'andGroup' => array(
+								'expressions' => array(
+									array(
+										'filter' => array(
+											'fieldName' => 'dateHour',
+											'numericFilter' => array(
+												'operation' => 'GREATER_THAN_OR_EQUAL',
+												'value' => array(
+													'int64Value' => 2022110215,
+												),
+											),
+										),
+									),
+									array(
+										'filter' => array(
+											'fieldName' => 'dateHour',
+											'numericFilter' => array(
+												'operation' => 'LESS_THAN_OR_EQUAL',
+												'value' => array(
+													'int64Value' => 2022110414,
+												),
+											),
+										),
+									),
 								),
 							),
 						),

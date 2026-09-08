@@ -90,6 +90,26 @@ describe( 'Analytics 4 Reporting API validation', () => {
 				'a filter with expanded notation is used',
 				{ test: { filterType: 'inList', value: [ 'a', 'b', 'c' ] } },
 			],
+			[
+				'a between filter is passed',
+				{
+					dateHour: {
+						filterType: 'betweenFilter',
+						fromValue: { int64Value: 2026083115 },
+						toValue: { int64Value: 2026090114 },
+					},
+				},
+			],
+			[
+				'a between filter is passed with plain bounds',
+				{
+					dateHour: {
+						filterType: 'betweenFilter',
+						fromValue: 2026083115,
+						toValue: 2026090114,
+					},
+				},
+			],
 		] )( 'should return TRUE if %s', ( _, filters ) => {
 			expect( isValidDimensionFilters( filters ) ).toBe( true );
 		} );
@@ -107,6 +127,25 @@ describe( 'Analytics 4 Reporting API validation', () => {
 			[
 				'a filter with the expanded notation misses the value property',
 				{ test: { filterType: 'inList', values: [ 'a', 'b', 'c' ] } },
+			],
+			[
+				'a between filter misses the toValue property',
+				{
+					dateHour: {
+						filterType: 'betweenFilter',
+						fromValue: { int64Value: 2026083115 },
+					},
+				},
+			],
+			[
+				'a between filter bound object misses int64Value',
+				{
+					dateHour: {
+						filterType: 'betweenFilter',
+						fromValue: { int64Value: 2026083115 },
+						toValue: { value: 2026090114 },
+					},
+				},
 			],
 		] )( 'should return FALSE if %s', ( _, filters ) => {
 			expect( isValidDimensionFilters( filters ) ).toBe( false );

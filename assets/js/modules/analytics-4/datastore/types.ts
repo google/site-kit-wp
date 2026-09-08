@@ -28,7 +28,14 @@ export type ReportOptions = {
 	dimensions?: Array< string | { name: string } >;
 	dimensionFilters?: Record<
 		string,
-		string | string[] | { filterType?: string; value?: string | string[] }
+		| string
+		| string[]
+		| { filterType?: string; value?: string | string[] }
+		| {
+				filterType: 'betweenFilter';
+				fromValue: { int64Value: string | number };
+				toValue: { int64Value: string | number };
+		  }
 	>;
 	metricFilters?: Record<
 		string,

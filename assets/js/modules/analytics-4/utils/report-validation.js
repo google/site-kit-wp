@@ -121,24 +121,44 @@ export function isValidDimensionFilters( filters ) {
 		}
 
 		if ( isPlainObject( filters[ dimension ] ) ) {
-			const props = Object.keys( filters[ dimension ] );
-
-			if ( ! props.includes( 'filterType' ) ) {
-				return false;
-			}
-
-			if (
-				filters[ dimension ].filterType !== 'emptyFilter' &&
-				! props.includes( 'value' )
-			) {
-				return false;
-			}
-
-			return true;
+			return isValidDimensionFilterObject( filters[ dimension ] );
 		}
 
 		return false;
 	} );
+}
+
+/**
+ * Verifies a single object-shaped dimension filter.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} filter The dimension filter to check.
+ * @return {boolean} TRUE if the dimension filter is valid, otherwise FALSE.
+ */
+function isValidDimensionFilterObject( filter ) {
+	const props = Object.keys( filter );
+
+	if ( ! props.includes( 'filterType' ) ) {
+		return false;
+	}
+
+	// The between filter takes two bounds rather than a single value.
+	if ( filter.filterType === 'betweenFilter' ) {
+		return (
+			props.includes( 'fromValue' ) &&
+			props.includes( 'toValue' ) &&
+			[ filter.fromValue, filter.toValue ].every(
+				( bound ) => ! isPlainObject( bound ) || 'int64Value' in bound
+			)
+		);
+	}
+
+	if ( filter.filterType !== 'emptyFilter' && ! props.includes( 'value' ) ) {
+		return false;
+	}
+
+	return true;
 }
 
 /**

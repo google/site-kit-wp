@@ -370,6 +370,7 @@ class RequestHelpers {
 	 *
 	 * @since 1.106.0
 	 * @since 1.130.0 Moved into RequestHelpers for shared use in reports.
+	 * @since n.e.x.t Added support for the `betweenFilter` filter type, sent as two numeric bounds.
 	 *
 	 * @param string $dimension_name The dimension name.
 	 * @param mixed  $dimension_value The dimension fileter settings.
@@ -387,23 +388,59 @@ class RequestHelpers {
 			$filter_type = 'inListFilter';
 		}
 
-		if ( 'stringFilter' === $filter_type ) {
-			$filter_class = String_Filter::class;
-		} elseif ( 'inListFilter' === $filter_type ) {
-			$filter_class = In_List_Filter::class;
-			// Ensure that the 'inListFilter' is provided a flat array of values.
-			// Extract the actual values from the 'value' key if present.
-			if ( isset( $dimension_value['value'] ) ) {
-				$dimension_value = $dimension_value['value'];
+		if ( 'betweenFilter' === $filter_type ) {
+			// The between filter takes two bounds instead of a single value, so it cannot
+			// share the single-argument call that the other filter types use below.
+			if (
+				! isset( $dimension_value['fromValue']['int64Value'] ) ||
+				! isset( $dimension_value['toValue']['int64Value'] )
+			) {
+				return null;
 			}
-		} elseif ( 'emptyFilter' === $filter_type ) {
-			$filter_class = Empty_Filter::class;
-		} else {
-			return null;
-		}
 
-		$filter            = new $filter_class();
-		$filter_expression = $filter->parse_filter_expression( $dimension_name, $dimension_value );
+			// The GA4 API rejects a between filter on a dimension with the error
+			// "BetweenFilter cannot be used as dimension filter", but it does accept a
+			// numeric filter there. Express the range as two numeric bounds combined
+			// with AND, which returns the same rows as a native between filter would.
+			$numeric_filter = new Numeric_Filter();
+
+			$bounds = new Google_Service_AnalyticsData_FilterExpressionList();
+			$bounds->setExpressions(
+				array(
+					$numeric_filter->parse_filter_expression(
+						$dimension_name,
+						'GREATER_THAN_OR_EQUAL',
+						$dimension_value['fromValue']['int64Value']
+					),
+					$numeric_filter->parse_filter_expression(
+						$dimension_name,
+						'LESS_THAN_OR_EQUAL',
+						$dimension_value['toValue']['int64Value']
+					),
+				)
+			);
+
+			$filter_expression = new Google_Service_AnalyticsData_FilterExpression();
+			$filter_expression->setAndGroup( $bounds );
+		} else {
+			if ( 'stringFilter' === $filter_type ) {
+				$filter_class = String_Filter::class;
+			} elseif ( 'inListFilter' === $filter_type ) {
+				$filter_class = In_List_Filter::class;
+				// Ensure that the 'inListFilter' is provided a flat array of values.
+				// Extract the actual values from the 'value' key if present.
+				if ( isset( $dimension_value['value'] ) ) {
+					$dimension_value = $dimension_value['value'];
+				}
+			} elseif ( 'emptyFilter' === $filter_type ) {
+				$filter_class = Empty_Filter::class;
+			} else {
+				return null;
+			}
+
+			$filter            = new $filter_class();
+			$filter_expression = $filter->parse_filter_expression( $dimension_name, $dimension_value );
+		}
 
 		if ( ! empty( $dimension_value['notExpression'] ) ) {
 			$not_filter_expression = new Google_Service_AnalyticsData_FilterExpression();

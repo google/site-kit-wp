@@ -1,8 +1,8 @@
 <?php
 /**
- * Class Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter\Between_Filter
+ * Class Google\Site_Kit\Modules\Analytics_4\Report\Filters\Between_Filter
  *
- * @package   Google\Site_Kit\Modules\Analytics_4\Report\Metric_Filter
+ * @package   Google\Site_Kit\Modules\Analytics_4\Report\Filters
  * @copyright 2023 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
@@ -17,6 +17,9 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\NumericValue;
 
 /**
  * Class for parsing the metric between filter.
+ *
+ * The GA4 API accepts a between filter for metrics only. It rejects one used as a
+ * dimension filter, so this class is not used on the dimension path.
  *
  * @since 1.111.0
  * @access private
