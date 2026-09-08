@@ -89,12 +89,14 @@ export default function AdminBarWidgets() {
 			{ canViewSharedSearchConsole && (
 				<Fragment>
 					<Cell
+						smSize={ 2 }
 						lgSize={ searchConsoleSize.lg }
 						mdSize={ searchConsoleSize.md }
 					>
 						<AdminBarImpressionsWidget />
 					</Cell>
 					<Cell
+						smSize={ 2 }
 						lgSize={ searchConsoleSize.lg }
 						mdSize={ searchConsoleSize.md }
 					>
@@ -108,12 +110,14 @@ export default function AdminBarWidgets() {
 				canViewSharedAnalytics && (
 					<Fragment>
 						<Cell
+							smSize={ 2 }
 							lgSize={ analyticsSize.lg }
 							mdSize={ analyticsSize.md }
 						>
 							<AdminBarUniqueVisitorsGA4Widget />
 						</Cell>
 						<Cell
+							smSize={ 2 }
 							lgSize={ analyticsSize.lg }
 							mdSize={ analyticsSize.md }
 						>
