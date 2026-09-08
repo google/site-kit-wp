@@ -59,27 +59,6 @@ function hasZeroDataForAudience( report, dimensionName ) {
 	return totalUsers === 0;
 }
 
-/**
- * Checks whether every audience knows which Partial data badges its tile shows.
- *
- * @since n.e.x.t
- *
- * @param {Function} select                Registry select.
- * @param {Array}    audienceResourceNames Audiences the row shows.
- * @return {boolean} TRUE once every audience has answered both badge selectors.
- */
-function hasPartialDataBadges( select, audienceResourceNames ) {
-	return audienceResourceNames.every(
-		( audienceResourceName ) =>
-			select( MODULES_ANALYTICS_4 ).isAudienceTilePartialData(
-				audienceResourceName
-			) !== undefined &&
-			select( MODULES_ANALYTICS_4 ).isAudienceTileTopContentPartialData(
-				audienceResourceName
-			) !== undefined
-	);
-}
-
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const breakpoint = useBreakpoint();
 
@@ -273,8 +252,11 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	// A tile that renders before its badges are known shows the wrong one, so the row
 	// waits for every audience to answer.
-	const partialDataBadgesLoaded = useInViewSelect(
-		( select ) => hasPartialDataBadges( select, visibleAudiences ),
+	const partialDataBadgesLoading = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).isLoadingAudienceTilePartialData(
+				visibleAudiences
+			),
 		[ visibleAudiences ]
 	);
 
@@ -310,7 +292,7 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 			topCitiesReportsLoaded,
 			topContentReportsLoaded,
 			topContentPageTitlesReportsLoaded,
-			partialDataBadgesLoaded,
+			partialDataBadgesLoading === false,
 		].every( Boolean );
 
 	return (
