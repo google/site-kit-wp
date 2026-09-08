@@ -47,6 +47,7 @@ export const DefaultButtonFocus = Template.bind( {} );
 DefaultButtonFocus.storyName = 'Default Button Focus';
 DefaultButtonFocus.args = {
 	...DefaultButton.args,
+	children: 'Default Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -61,10 +62,22 @@ LinkButton.args = {
 	href: '#',
 };
 
+export const LinkButtonHover = Template.bind( {} );
+LinkButtonHover.storyName = 'Default Button Link Hover';
+LinkButtonHover.args = {
+	...LinkButton.args,
+	children: 'Default Button Link Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+LinkButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const LinkButtonFocus = Template.bind( {} );
 LinkButtonFocus.storyName = 'Default Button Link Focus';
 LinkButtonFocus.args = {
 	...LinkButton.args,
+	children: 'Default Button Link Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -79,10 +92,22 @@ DangerButton.args = {
 	danger: true,
 };
 
+export const DangerButtonHover = Template.bind( {} );
+DangerButtonHover.storyName = 'Danger Button Hover';
+DangerButtonHover.args = {
+	...DangerButton.args,
+	children: 'Danger Button Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+DangerButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const DangerButtonFocus = Template.bind( {} );
 DangerButtonFocus.storyName = 'Danger Button Focus';
 DangerButtonFocus.args = {
 	...DangerButton.args,
+	children: 'Danger Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -113,10 +138,22 @@ TertiaryButton.args = {
 	tertiary: true,
 };
 
+export const TertiaryButtonHover = Template.bind( {} );
+TertiaryButtonHover.storyName = 'Tertiary Button Hover';
+TertiaryButtonHover.args = {
+	...TertiaryButton.args,
+	children: 'Tertiary Button Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+TertiaryButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const TertiaryButtonFocus = Template.bind( {} );
 TertiaryButtonFocus.storyName = 'Tertiary Button Focus';
 TertiaryButtonFocus.args = {
 	...TertiaryButton.args,
+	children: 'Tertiary Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -138,6 +175,16 @@ IconButton.args = {
 	icon: <HelpIcon width="20" height="20" />,
 	'aria-label': 'Help',
 	className: 'googlesitekit-button--icon',
+};
+
+export const IconButtonHover = Template.bind( {} );
+IconButtonHover.storyName = 'Icon Button Hover';
+IconButtonHover.args = {
+	...IconButton.args,
+	className: 'googlesitekit-button--icon googlesitekit-vrt-button-hover',
+};
+IconButtonHover.parameters = {
+	pseudo: { hover: true },
 };
 
 export const IconButtonFocus = Template.bind( {} );
@@ -165,10 +212,22 @@ CalloutButton.args = {
 	callout: true,
 };
 
+export const CalloutButtonHover = Template.bind( {} );
+CalloutButtonHover.storyName = 'Callout Button Hover';
+CalloutButtonHover.args = {
+	...CalloutButton.args,
+	children: 'Callout Button Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+CalloutButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const CalloutButtonFocus = Template.bind( {} );
 CalloutButtonFocus.storyName = 'Callout Button Focus';
 CalloutButtonFocus.args = {
 	...CalloutButton.args,
+	children: 'Callout Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -192,10 +251,22 @@ CalloutWarningButton.args = {
 	calloutStyle: 'warning',
 };
 
+export const CalloutWarningButtonHover = Template.bind( {} );
+CalloutWarningButtonHover.storyName = 'Callout Warning Button Hover';
+CalloutWarningButtonHover.args = {
+	...CalloutWarningButton.args,
+	children: 'Callout Warning Button Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+CalloutWarningButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const CalloutWarningButtonFocus = Template.bind( {} );
 CalloutWarningButtonFocus.storyName = 'Callout Warning Button Focus';
 CalloutWarningButtonFocus.args = {
 	...CalloutWarningButton.args,
+	children: 'Callout Warning Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -219,10 +290,22 @@ CalloutErrorButton.args = {
 	calloutStyle: 'error',
 };
 
+export const CalloutErrorButtonHover = Template.bind( {} );
+CalloutErrorButtonHover.storyName = 'Callout Error Button Hover';
+CalloutErrorButtonHover.args = {
+	...CalloutErrorButton.args,
+	children: 'Callout Error Button Hover',
+	className: 'googlesitekit-vrt-button-hover',
+};
+CalloutErrorButtonHover.parameters = {
+	pseudo: { hover: true },
+};
+
 export const CalloutErrorButtonFocus = Template.bind( {} );
 CalloutErrorButtonFocus.storyName = 'Callout Error Button Focus';
 CalloutErrorButtonFocus.args = {
 	...CalloutErrorButton.args,
+	children: 'Callout Error Button Focus',
 	className:
 		'googlesitekit-vrt-button-focus mdc-ripple-upgraded--background-focused',
 };
@@ -245,23 +328,30 @@ export function VRTStory() {
 		DefaultButtonFocus,
 		DisabledButton,
 		LinkButton,
+		LinkButtonHover,
 		LinkButtonFocus,
 		DangerButton,
+		DangerButtonHover,
 		DangerButtonFocus,
 		DisabledDangerButton,
 		TertiaryButton,
+		TertiaryButtonHover,
 		TertiaryButtonFocus,
 		DisabledTertiaryButton,
 		CalloutButton,
+		CalloutButtonHover,
 		CalloutButtonFocus,
 		DisabledCalloutButton,
 		CalloutWarningButton,
+		CalloutWarningButtonHover,
 		CalloutWarningButtonFocus,
 		DisabledCalloutWarningButton,
 		CalloutErrorButton,
+		CalloutErrorButtonHover,
 		CalloutErrorButtonFocus,
 		DisabledCalloutErrorButton,
 		IconButton,
+		IconButtonHover,
 		IconButtonFocus,
 		DisabledIconButton,
 	];
@@ -278,7 +368,11 @@ export function VRTStory() {
 }
 VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
-	hoverSelector: '.googlesitekit-button--icon',
+	// Target only the base Icon Button: the hover/focus VRT stories share
+	// the icon class but must keep using CSS-forced pseudo-states, not the
+	// real pointer hover used to open the tooltip on the default variant.
+	hoverSelector:
+		'.googlesitekit-button--icon:not(.googlesitekit-vrt-button-hover):not(.googlesitekit-vrt-button-focus):not(:disabled)',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
 };
