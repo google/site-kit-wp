@@ -16,3 +16,5 @@ While we'd like to accept third-party code contributions, we are a large team wi
 
 * WordPress >= 5.2
 * PHP >= 7.4
+
+Test for Gemini Code Assist
