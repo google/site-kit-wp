@@ -15,16 +15,16 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher\Resource;
+namespace Google\Service\WebContentPublisher\Resource;
 
-use Google\Service\Webcontentpublisher\Cta;
-use Google\Service\Webcontentpublisher\ListCtasResponse;
+use Google\Service\WebContentPublisher\Cta;
+use Google\Service\WebContentPublisher\ListCtasResponse;
 
 /**
  * The "ctas" collection of methods.
  * Typical usage is:
  *  <code>
- *   $webcontentpublisherService = new Google\Service\Webcontentpublisher(...);
+ *   $webcontentpublisherService = new Google\Service\WebContentPublisher(...);
  *   $ctas = $webcontentpublisherService->organizations_publications_ctas;
  *  </code>
  */
@@ -34,11 +34,13 @@ class OrganizationsPublicationsCtas extends \Google\Service\Resource
    * Creates a CTA. (ctas.create)
    *
    * @param string $parent Required. The parent publication resource where this
-   * CTA will be created.
+   * CTA will be created. Format:
+   * `organizations/{organization}/publications/{publication}`.
    * @param Cta $postBody
    * @param array $optParams Optional parameters.
    *
-   * @opt_param string ctaId The unique identifier of the CTA to create.
+   * @opt_param string ctaId Optional. The unique identifier of the CTA to create.
+   * If not specified, the server will generate a random CTA ID.
    * @return Cta
    * @throws \Google\Service\Exception
    */
@@ -52,6 +54,7 @@ class OrganizationsPublicationsCtas extends \Google\Service\Resource
    * Gets a CTA. (ctas.get)
    *
    * @param string $name Required. The resource name of the CTA to retrieve.
+   * Format: `organizations/{organization}/publications/{publication}/ctas/{cta}`.
    * @param array $optParams Optional parameters.
    * @return Cta
    * @throws \Google\Service\Exception
@@ -65,12 +68,15 @@ class OrganizationsPublicationsCtas extends \Google\Service\Resource
   /**
    * Lists CTAs. (ctas.listOrganizationsPublicationsCtas)
    *
-   * @param string $parent Required. The parent publication resource whose CTAs
-   * to list.
+   * @param string $parent Required. The parent publication resource whose CTAs to
+   * list. Format: `organizations/{organization}/publications/{publication}`.
    * @param array $optParams Optional parameters.
    *
-   * @opt_param int pageSize The maximum number of CTAs to return.
-   * @opt_param string pageToken A page token from a previous request.
+   * @opt_param int pageSize Optional. The maximum number of CTAs to return. The
+   * service may return fewer than this value. If unspecified, at most 50 CTAs
+   * will be returned.
+   * @opt_param string pageToken Optional. A page token, received from a previous
+   * `ListCtas` call, to retrieve the next page.
    * @return ListCtasResponse
    * @throws \Google\Service\Exception
    */
@@ -80,6 +86,25 @@ class OrganizationsPublicationsCtas extends \Google\Service\Resource
     $params = array_merge($params, $optParams);
     return $this->call('list', [$params], ListCtasResponse::class);
   }
+  /**
+   * Updates a CTA. (ctas.patch)
+   *
+   * @param string $name Identifier. The resource name of the Cta. Format:
+   * organizations/{organization}/publications/{publication}/ctas/{cta}
+   * @param Cta $postBody
+   * @param array $optParams Optional parameters.
+   *
+   * @opt_param string updateMask Optional. The list of fields to update.
+   * @return Cta
+   * @throws \Google\Service\Exception
+   */
+  public function patch($name, Cta $postBody, $optParams = [])
+  {
+    $params = ['name' => $name, 'postBody' => $postBody];
+    $params = array_merge($params, $optParams);
+    return $this->call('patch', [$params], Cta::class);
+  }
 }
 
-class_alias(OrganizationsPublicationsCtas::class, 'Google_Service_Webcontentpublisher_Resource_OrganizationsPublicationsCtas');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(OrganizationsPublicationsCtas::class, 'Google_Service_WebContentPublisher_Resource_OrganizationsPublicationsCtas');

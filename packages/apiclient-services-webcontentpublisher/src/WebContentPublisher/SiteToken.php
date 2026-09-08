@@ -17,54 +17,54 @@
 
 namespace Google\Service\WebContentPublisher;
 
-class SlProduct extends \Google\Model
+class SiteToken extends \Google\Model
 {
   /**
-   * Optional. Whether the Subscription Linking product is enabled.
-   *
-   * @var bool
-   */
-  public $enabled;
-  /**
-   * Optional. The Google Cloud Project number associated with the publication.
+   * The domain scope this token is valid for.
    *
    * @var string
    */
-  public $gcpProjectNumber;
+  public $domain;
+  /**
+   * The domain-scoped secure token value (ESUT).
+   *
+   * @var string
+   */
+  public $token;
 
   /**
-   * Optional. Whether the Subscription Linking product is enabled.
+   * The domain scope this token is valid for.
    *
-   * @param bool $enabled
+   * @param string $domain
    */
-  public function setEnabled($enabled)
+  public function setDomain($domain)
   {
-    $this->enabled = $enabled;
-  }
-  /**
-   * @return bool
-   */
-  public function getEnabled()
-  {
-    return $this->enabled;
-  }
-  /**
-   * Optional. The Google Cloud Project number associated with the publication.
-   *
-   * @param string $gcpProjectNumber
-   */
-  public function setGcpProjectNumber($gcpProjectNumber)
-  {
-    $this->gcpProjectNumber = $gcpProjectNumber;
+    $this->domain = $domain;
   }
   /**
    * @return string
    */
-  public function getGcpProjectNumber()
+  public function getDomain()
   {
-    return $this->gcpProjectNumber;
+    return $this->domain;
+  }
+  /**
+   * The domain-scoped secure token value (ESUT).
+   *
+   * @param string $token
+   */
+  public function setToken($token)
+  {
+    $this->token = $token;
+  }
+  /**
+   * @return string
+   */
+  public function getToken()
+  {
+    return $this->token;
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(SlProduct::class, 'Google_Service_WebContentPublisher_SlProduct');
+class_alias(SiteToken::class, 'Google_Service_WebContentPublisher_SiteToken');

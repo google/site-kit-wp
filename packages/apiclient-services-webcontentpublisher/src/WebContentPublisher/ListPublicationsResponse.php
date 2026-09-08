@@ -15,13 +15,14 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class ListPublicationsResponse extends \Google\Collection
 {
   protected $collection_key = 'publications';
   /**
-   * The next page token.
+   * Output only. A token to retrieve the next page of results, or empty if
+   * there are no more results.
    *
    * @var string
    */
@@ -29,22 +30,40 @@ class ListPublicationsResponse extends \Google\Collection
   protected $publicationsType = Publication::class;
   protected $publicationsDataType = 'array';
 
+  /**
+   * Output only. A token to retrieve the next page of results, or empty if
+   * there are no more results.
+   *
+   * @param string $nextPageToken
+   */
   public function setNextPageToken($nextPageToken)
   {
     $this->nextPageToken = $nextPageToken;
   }
+  /**
+   * @return string
+   */
   public function getNextPageToken()
   {
     return $this->nextPageToken;
   }
+  /**
+   * Output only. The list of publications.
+   *
+   * @param Publication[] $publications
+   */
   public function setPublications($publications)
   {
     $this->publications = $publications;
   }
+  /**
+   * @return Publication[]
+   */
   public function getPublications()
   {
     return $this->publications;
   }
 }
 
-class_alias(ListPublicationsResponse::class, 'Google_Service_Webcontentpublisher_ListPublicationsResponse');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(ListPublicationsResponse::class, 'Google_Service_WebContentPublisher_ListPublicationsResponse');
