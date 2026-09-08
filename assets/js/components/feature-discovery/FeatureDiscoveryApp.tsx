@@ -56,7 +56,7 @@ const FeatureDiscoveryApp: FC = () => {
 		( { path } ) => path === location.pathname
 	);
 
-	const activeIndex = activeTabIndex > -1 ? activeTabIndex : 0;
+	const activeIndex = activeTabIndex > -1 ? activeTabIndex : undefined;
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
 
