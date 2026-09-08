@@ -122,24 +122,67 @@ class Setup {
 	 *
 	 * @since 1.81.0
 	 * @since 1.167.0 Added support for custom error codes.
+	 * @since n.e.x.t Added support for message-based error IDs.
 	 *
-	 * @param string|null $error_code The error code. Optional. Defaults to null.
+	 * @param WP_Error|null $error Optional. The proxy request error. Defaults to null.
 	 * @return string The get help link.
 	 */
-	private function get_oauth_proxy_failed_help_link( $error_code = null ) {
-		// Map `request_failed` to the error ID `request_to_auth_proxy_failed` for backwards compatibility.
-		if ( null === $error_code || 'request_failed' === $error_code ) {
-			$error_id = 'request_to_auth_proxy_failed';
-		} else {
-			$error_id = $error_code;
-		}
-
+	private function get_oauth_proxy_failed_help_link( $error = null ) {
 		return sprintf(
 			/* translators: 1: Support link URL. 2: Get help string. */
 			__( '<a href="%1$s" target="_blank">%2$s</a>', 'google-site-kit' ),
-			esc_url( add_query_arg( 'error_id', $error_id, $this->proxy_support_link_url ) ),
+			esc_url( add_query_arg( 'error_id', $this->get_oauth_proxy_failed_error_id( $error ), $this->proxy_support_link_url ) ),
 			esc_html__( 'Get help', 'google-site-kit' )
 		);
+	}
+
+	/**
+	 * Resolves the support error_id for a failed oAuth proxy request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Error|null $error Optional. The proxy request error. Defaults to null.
+	 * @return string The error_id query value for the support link.
+	 */
+	private function get_oauth_proxy_failed_error_id( $error = null ) {
+		if ( ! is_wp_error( $error ) ) {
+			return 'request_to_auth_proxy_failed';
+		}
+
+		$code    = (string) $error->get_error_code();
+		$message = (string) $error->get_error_message();
+
+		// Prefer message patterns for transport failures that share a generic code.
+		if ( false !== stripos( $message, 'cURL error 7' ) ) {
+			return 'curl-error-7-operation-timed-out';
+		}
+
+		if ( false !== stripos( $message, 'cURL error 28' ) ) {
+			return 'curl-error-28-operation-timed-out';
+		}
+
+		// WP core uses this code when WP_HTTP_BLOCK_EXTERNAL blocks the request.
+		if ( 'http_request_not_executed' === $code
+			|| false !== stripos( $message, 'User has blocked requests through HTTP' )
+		) {
+			return 'user-has-blocked-requests-through-http';
+		}
+
+		if ( false !== stripos( $message, 'A site with the given URL already exists' ) ) {
+			return 'a-site-with-the-given-url-already-exists';
+		}
+
+		if ( false !== stripos( $message, 'Unable to retrieve site connection' ) ) {
+			return 'unable-to-retrieve-site-connection-you-may-need-to-perform-a-plugin-reset';
+		}
+
+		// Map `request_failed` to the parent guide ID for backwards compatibility.
+		if ( '' === $code || 'request_failed' === $code ) {
+			return 'request_to_auth_proxy_failed';
+		}
+
+		// Pass through custom proxy error codes (e.g. site-not-found).
+		return $code;
 	}
 
 	/**
@@ -180,7 +223,7 @@ class Setup {
 					esc_html__( 'The request to the authentication proxy has failed with an error: %1$s %2$s.', 'google-site-kit' ),
 					esc_html( $error_message ),
 					wp_kses(
-						$this->get_oauth_proxy_failed_help_link( $oauth_setup_redirect->get_error_code() ),
+						$this->get_oauth_proxy_failed_help_link( $oauth_setup_redirect ),
 						array(
 							'a' => array(
 								'href'   => array(),
