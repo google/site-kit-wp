@@ -573,6 +573,258 @@ describe( 'modules/analytics-4 partial data', () => {
 			} );
 		} );
 
+		describe( 'isAudienceTilePartialData', () => {
+			// A date the audience started collecting on after the range starts, so the
+			// audience alone reads as partial data.
+			function providePartialAudience() {
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: Number(
+								getPreviousDate( startDate, -1 ).replace(
+									/-/g,
+									''
+								)
+							),
+						},
+						customDimension: {},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+			}
+
+			it( 'should return undefined until the audience list loads', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
+				providePartialAudience();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined until the audience start date loads', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBeUndefined();
+			} );
+
+			it( 'should show the badge once the property, the audience list and the start date have loaded', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				providePartialAudience();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBe( true );
+			} );
+
+			it( 'should show no badge for a Site Kit audience', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: [
+							{
+								...testAudience1,
+								audienceType: 'SITE_KIT_AUDIENCE',
+							},
+						],
+					} );
+				providePartialAudience();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBe( false );
+			} );
+
+			it( 'should show no badge while the property is still collecting data', () => {
+				// The property's own badge covers the whole tile.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( true );
+				providePartialAudience();
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isAudienceTileTopContentPartialData', () => {
+			// The property and the audience both finished collecting before the range
+			// starts, so only the custom dimension can raise a badge.
+			function provideLoadedTile( customDimensionDate ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: 20201220,
+						},
+						customDimension: {
+							[ testCustomDimension ]: customDimensionDate,
+						},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+			}
+
+			it( 'should return undefined until the audience badge answers', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBeUndefined();
+			} );
+
+			it( 'should return undefined while the audience list loads, even once the property has', () => {
+				// The property answers here, so only the unanswered audience badge can
+				// hold this one back.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {},
+						customDimension: {
+							[ testCustomDimension ]: 20201221,
+						},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isPropertyPartialData( testPropertyID )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBeUndefined();
+			} );
+
+			it( 'should show the badge while the post type dimension is still collecting data', () => {
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+
+				provideLoadedTile(
+					Number(
+						getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+					)
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBe( true );
+			} );
+
+			it( 'should show no badge once the post type dimension has finished collecting data', () => {
+				provideLoadedTile( 20201221 );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBe( false );
+			} );
+
+			it( 'should show no badge while the audience badge shows one', () => {
+				// One badge per tile, and the audience's takes precedence.
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+				const afterStart = Number(
+					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: afterStart,
+						},
+						customDimension: {
+							[ testCustomDimension ]: afterStart,
+						},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBe( false );
+			} );
+		} );
+
 		describe( 'isPropertyPartialData', () => {
 			it( 'returns whether the given property is in partial data', () => {
 				registry
