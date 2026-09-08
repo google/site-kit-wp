@@ -300,6 +300,27 @@ describe( 'Site Goals Goal Drivers reports', () => {
 				someDimension: 'someValue',
 			} );
 		} );
+
+		it( 'should return undefined for an empty array of primary events', () => {
+			expect(
+				buildPrimaryEventReportOptions( dates, [] )
+			).toBeUndefined();
+		} );
+
+		it( 'should filter the report to any of several primary events', () => {
+			const options = buildPrimaryEventReportOptions( dates, [
+				'submit_lead_form',
+				'contact',
+				'generate_lead',
+			] );
+
+			expect( options?.dimensionFilters ).toMatchObject( {
+				eventName: {
+					filterType: 'inListFilter',
+					value: [ 'submit_lead_form', 'contact', 'generate_lead' ],
+				},
+			} );
+		} );
 	} );
 
 	describe( 'buildEngagementReportOptions', () => {
