@@ -233,8 +233,7 @@ AudiencePartialData.args = {
 			propertyID: '12345',
 		} );
 
-		// The badge selectors read the audience list, so a Site Kit audience never shows
-		// the badge.
+		// The badge selectors read the audience list, so it has to hold this one.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [
 				{
@@ -281,8 +280,7 @@ TopContentPartialData.args = {
 			propertyID: '12345',
 		} );
 
-		// The badge selectors read the audience list, so a Site Kit audience never shows
-		// the badge.
+		// The badge selectors read the audience list, so it has to hold this one.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences: [
 				{
