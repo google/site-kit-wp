@@ -429,6 +429,80 @@ describe( 'AudienceTilesWidget', () => {
 		} );
 	} );
 
+	describe( 'partial data badges', () => {
+		const configuredAudiences = [
+			'properties/12345/audiences/1',
+			'properties/12345/audiences/2',
+		];
+
+		function provideConfiguredAudiences() {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiencesLastSyncedAt:
+						( Date.now() - 1000 ) / 1000,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setAvailableAudiences( availableAudiences );
+			registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
+				configuredAudiences,
+				isAudienceSegmentationWidgetHidden: false,
+			} );
+			provideAudienceTilesMockReport( registry, configuredAudiences );
+		}
+
+		it( 'should show the top content rows and their badge in the same render', async () => {
+			provideConfiguredAudiences();
+
+			const referenceDate = registry
+				.select( CORE_USER )
+				.getReferenceDate();
+
+			// The property and both audiences finished collecting long ago, and the post
+			// type dimension is still collecting.
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
+					audience: {
+						[ configuredAudiences[ 0 ] ]: 20201220,
+						[ configuredAudiences[ 1 ] ]: 20201220,
+					},
+					customDimension: {
+						googlesitekit_post_type: Number(
+							getPreviousDate( referenceDate, 1 ).replace(
+								/-/g,
+								''
+							)
+						),
+					},
+					property: { 12345: 20201218 },
+				},
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			const { container, waitForRegistry } = render(
+				<WidgetWithComponentProps />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+			await act( waitForDefaultTimeouts );
+
+			const topContent = container.querySelector(
+				'.googlesitekit-audience-segmentation-tile-metric--top-content'
+			);
+
+			// The rows and the partial-data notice land together, so the reader never
+			// sees the list without the caveat.
+			expect( topContent ).toHaveTextContent( 'Test Post 1' );
+			expect( topContent ).toHaveTextContent(
+				'Still collecting full data for this timeframe'
+			);
+		} );
+	} );
+
 	it( 'should render with no data in the comparison date range', async () => {
 		const configuredAudiences = [
 			'properties/12345/audiences/1',
