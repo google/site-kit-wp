@@ -59,6 +59,27 @@ function hasZeroDataForAudience( report, dimensionName ) {
 	return totalUsers === 0;
 }
 
+/**
+ * Checks whether every audience knows which Partial data badges its tile shows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select                Registry select.
+ * @param {Array}    audienceResourceNames Audiences the row shows.
+ * @return {boolean} TRUE once every audience has answered both badge selectors.
+ */
+function hasPartialDataBadges( select, audienceResourceNames ) {
+	return audienceResourceNames.every(
+		( audienceResourceName ) =>
+			select( MODULES_ANALYTICS_4 ).isAudienceTilePartialData(
+				audienceResourceName
+			) !== undefined &&
+			select( MODULES_ANALYTICS_4 ).isAudienceTileTopContentPartialData(
+				audienceResourceName
+			) !== undefined
+	);
+}
+
 export default function AudienceTiles( { Widget, widgetLoading } ) {
 	const breakpoint = useBreakpoint();
 
@@ -250,6 +271,13 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
 	);
 
+	// A tile that renders before its badges are known shows the wrong one, so the row
+	// waits for every audience to answer.
+	const partialDataBadgesLoaded = useInViewSelect(
+		( select ) => hasPartialDataBadges( select, visibleAudiences ),
+		[ visibleAudiences ]
+	);
+
 	// Ensure the active tile is always correctly selected.
 	const [ activeTile, setActiveTile ] = useState( visibleAudiences[ 0 ] );
 
@@ -274,13 +302,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	// Determine loading state.
 	const loading =
 		widgetLoading ||
-		! reportLoaded ||
-		! siteKitAudiencesReportLoaded ||
-		! totalPageviewsReportLoaded ||
-		! topCitiesReportsLoaded ||
-		! topContentReportsLoaded ||
-		! topContentPageTitlesReportsLoaded ||
-		isSyncingAvailableCustomDimensions;
+		isSyncingAvailableCustomDimensions ||
+		! [
+			reportLoaded,
+			siteKitAudiencesReportLoaded,
+			totalPageviewsReportLoaded,
+			topCitiesReportsLoaded,
+			topContentReportsLoaded,
+			topContentPageTitlesReportsLoaded,
+			partialDataBadgesLoaded,
+		].every( Boolean );
 
 	return (
 		<Fragment>
