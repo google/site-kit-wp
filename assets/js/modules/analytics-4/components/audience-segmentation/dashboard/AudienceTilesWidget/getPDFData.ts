@@ -239,17 +239,10 @@ export interface AudiencePartialDataFlags {
 }
 
 /**
- * Reads one audience's partial-data flags, mirroring the dashboard tile.
- *
- * The dashboard tile's `AudienceTile/index.js` derives the two flags from the
- * property, audience, and custom dimension partial-data selectors, in the same
- * order:
- *
- * - A partial-data property, or one still loading, clears both flags.
- * - A Site Kit audience clears `isAudiencePartialData`.
- * - A set `isAudiencePartialData` clears `isTopContentPartialData`.
+ * Reads one audience's partial-data flags from the selectors the dashboard tile reads.
  *
  * @since 1.185.0
+ * @since n.e.x.t Read both flags from the audience tile selectors.
  *
  * @param registry             WordPress data registry.
  * @param propertyID           The Analytics 4 property ID, or an empty string when none is set.
@@ -261,42 +254,23 @@ export function getAudiencePartialDataFlags(
 	propertyID: string,
 	audienceResourceName: string
 ): AudiencePartialDataFlags {
-	const isPropertyPartialData = propertyID
-		? registry
-				.select( MODULES_ANALYTICS_4 )
-				.isPropertyPartialData( propertyID )
-		: undefined;
-
-	// A property still loading its partial-data state clears both flags.
-	if ( isPropertyPartialData === undefined ) {
+	if ( ! propertyID ) {
 		return {
 			isAudiencePartialData: false,
 			isTopContentPartialData: false,
 		};
 	}
 
-	const isSiteKitAudience = registry
-		.select( MODULES_ANALYTICS_4 )
-		.isSiteKitAudience( audienceResourceName );
-
-	// A Site Kit audience, or a partial-data property, clears the header flag.
-	const isAudiencePartialData =
-		! isSiteKitAudience &&
-		! isPropertyPartialData &&
-		!! audienceResourceName &&
-		!! registry
+	// A selector still loading reads as no badge, because the PDF has no second render
+	// to correct it in.
+	return {
+		isAudiencePartialData: !! registry
 			.select( MODULES_ANALYTICS_4 )
-			.isAudiencePartialData( audienceResourceName );
-
-	// A partial-data property or audience clears the top content flag.
-	const isTopContentPartialData =
-		! isPropertyPartialData &&
-		! isAudiencePartialData &&
-		!! registry
+			.isAudienceTilePartialData( audienceResourceName ),
+		isTopContentPartialData: !! registry
 			.select( MODULES_ANALYTICS_4 )
-			.isCustomDimensionPartialData( postTypeDimension );
-
-	return { isAudiencePartialData, isTopContentPartialData };
+			.isAudienceTileTopContentPartialData( audienceResourceName ),
+	};
 }
 
 /**
@@ -432,6 +406,7 @@ export default async function getPDFData( {
 			.getPropertyID();
 
 		await Promise.all( [
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).isGatheringData(),
 			...( propertyID
 				? [
 						registry
