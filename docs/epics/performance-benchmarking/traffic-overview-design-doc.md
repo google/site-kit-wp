@@ -42,7 +42,7 @@ Five GA4 reports back it, all resolved in the browser through the module's exist
 
 **The old widget is removed in the same epic, behind the same flag.** With `trafficOverview` off the dashboard is exactly what it is today; with it on, `analyticsAllTrafficGA4` is not registered at all. The flag therefore selects between two widgets rather than adding one to a page that already has the other — see [Feature flag](#feature-flag).
 
-**One widget serves both dashboards.** Every report carries the entity URL when one is set, which is how the current widget serves the entity dashboard, and the panel renders identically in both contexts: on the entity dashboard the figures describe one URL.
+**One widget serves both dashboards, and the entity dashboard gets the same card.** Every report carries the entity URL when one is set — the mechanism the current widget already uses there — so the entity dashboard runs the same five reports filtered to that URL path and renders the same tab shell, the same three sections and the same states. Nothing in the panel is main-dashboard-specific: the only difference is what the figures describe, one URL rather than the whole site.
 
 **The PDF report's traffic section moves with the widget and is redrawn to match it.** That section exists only as a property of the widget registration that declares it, so it is re-registered under the new slug — and its three donuts become the three columns, because a printed report should be what the reader saw on screen.
 
@@ -172,6 +172,8 @@ The widget contributes a section to the PDF report through the `pdf` entry on it
 
 **The printed section shows what the reader saw on screen**, which is the rule that decides every question below. The tile and the chart stay, the donuts become the three columns, and the chart is drawn in the panel's line color. A report whose traffic pages still carried donuts would be the one place in the product where the removed control lives on.
 
+**That rule governs the layout and the derivation, not the figures.** The PDF's reporting period excludes the current day — `PDFExportOrchestrator` resolves the range against the day before the reference date, where the dashboard resolves it against the reference date itself — so the printed window is the same length shifted one day back. The printed total is therefore a different number from the panel's, the chart's last day is a different day, and where that day changes a dimension's ranking the rows can differ in order. The offset is the PDF export's own existing behavior, it applies to every section the report renders, and the report prints the range it used in its header; this epic neither introduces it nor changes it. **The claim below is that the printed rows are derived the same way from the same report, not that they carry the same values as the screen.**
+
 The PDF half is not coupled to the dashboard components — `getPDFData` resolves its own reports and `indexPDF.tsx` draws with `@react-pdf/renderer` — so the change is contained in those two files:
 
 * **The loader keeps its five reports and stops rendering donuts.** The totals, graph and three breakdown reports are the ones the panel resolves, built by the same builders; what goes is the donut half — the pie data table, its options and the three renders — leaving `lineChart` as the only entry in `chartImages`.  
@@ -272,12 +274,6 @@ If per-dimension filtering returns, it returns as an explicit control with its o
 Each column could be its own registered widget in the Traffic area, gated and loaded independently by the Widgets API, with its own report and its own error state.
 
 The design is one card with one tab bar, which the Widgets API cannot express across separate widgets: each registered widget renders in its own grid cell. Independent gating buys nothing either, since all three columns depend on the same module, the same date range and the same eligibility, and three independent error states in one row is a worse failure mode than one.
-
-### **Leaving the entity dashboard on the old widget**
-
-The new widget could register into the main dashboard only, with `analyticsAllTrafficGA4` staying on `AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY`. The entity dashboard is the less-visited surface and the narrower change is the safer one.
-
-We register into both. Keeping the old widget alive on one dashboard keeps its entire directory alive — the donut, the dimension tabs, the four `core/ui` keys and their tests — so the epic would end with two traffic widgets, two sets of breakdown behavior and no removal at all. Nothing in the panel is main-dashboard-specific: the reports take the entity URL the same way the current ones do, and a breakdown of channels, locations and devices for a single URL is the same question the donut answers there today.
 
 ## **Future Work**
 
@@ -388,10 +384,10 @@ Storybook stories cover the panel in loading, gathering-data, zero-data, error a
 
 Two cases are worth naming because they are easy to miss:
 
-1. **The entity dashboard.** The panel renders there with `url` on every report, and the reports it issues are not the ones the main dashboard issues. A test that dispatches an entity URL and asserts the report arguments is what catches a hook that drops it.  
+1. **The entity dashboard.** The panel is the one the main dashboard renders, issuing the same five reports with `url` added to each, so the argument is the only thing that can go missing. A test that dispatches an entity URL and asserts the report arguments is what catches a hook that drops it.  
 2. **The view-only dashboard**, where `canViewSharedModule()` is what decides whether the reports run at all, and where the property-creation marker is absent.
 
-The PDF section keeps the test files it has, edited rather than replaced: the assertions about the three donut renders go with the renders, and what is worth adding in their place is that the loader's rows for a report are the panel's rows for that same report. That equality is the whole claim the printed section rests on, and it is the thing that quietly stops being true the next time the cap or the ranking rule changes on one side only.
+The PDF section keeps the test files it has, edited rather than replaced: the assertions about the three donut renders go with the renders, and what is worth adding in their place is that the loader's rows for a report are the panel's rows for that same report. That equality is the whole claim the printed section rests on, and it is the thing that quietly stops being true the next time the cap or the ranking rule changes on one side only. The assertion belongs at helper level — the same report fixture in, the same rows out — rather than as a comparison of a rendered PDF against a rendered panel, which would fail on the one-day offset above even where the derivation is identical.
 
 The removal needs its own coverage: the welcome tour's traffic step must resolve its target, which is assertable against the rendered widget rather than only by running the tour.
 
