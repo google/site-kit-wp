@@ -30,6 +30,10 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getValueAxisGutter,
+	pickDateTicks,
+} from '@/js/components/pdf-export/chart-axis';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
@@ -80,6 +84,14 @@ const LINE_CHART_SCALE_FACTOR = 4;
  * chart's proportions at the larger render size.
  */
 const LINE_CHART_OPTION_SCALE = LINE_CHART_SCALE_FACTOR / 2;
+
+/**
+ * The value a chart with no data caps its axis at.
+ *
+ * A flat zero line needs a range of its own, and `getValueAxisGutter` measures
+ * the labels against the same cap.
+ */
+const EMPTY_AXIS_MAX_VALUE = 1;
 
 type Registry = WPDataRegistry & {
 	// `resolveSelect` exists on the runtime registry but is absent from the
@@ -204,28 +216,37 @@ interface MetricCardResult {
  * dotted line of the same color, mirroring the dashboard.
  *
  * @since 1.183.0
+ * @since n.e.x.t Fitted the value and date labels to the space they have.
  *
- * @param options         Options.
- * @param options.color   Series color for both lines.
- * @param options.ticks   Date ticks for the horizontal axis.
- * @param options.hasData Whether any data point is greater than zero.
+ * @param options          Options.
+ * @param options.color    Series color for both lines.
+ * @param options.dates    Every day in the range, in order.
+ * @param options.maxValue The highest value either line reaches.
  * @return Google Charts options object.
  */
 function getLineChartOptions( {
 	color,
-	ticks,
-	hasData,
+	dates,
+	maxValue,
 }: {
 	color: string;
-	ticks: Date[];
-	hasData: boolean;
+	dates: Date[];
+	maxValue: number;
 } ): object {
+	const fontSize = 14 * LINE_CHART_OPTION_SCALE;
+	const chartAreaLeft = 8 * LINE_CHART_OPTION_SCALE;
+	const hasData = maxValue > 0;
+	const valueAxisGutter = getValueAxisGutter(
+		hasData ? maxValue : EMPTY_AXIS_MAX_VALUE,
+		fontSize
+	);
+
 	return {
 		curveType: 'function',
 		colors: [ color ],
 		chartArea: {
-			left: 8 * LINE_CHART_OPTION_SCALE,
-			right: 40 * LINE_CHART_OPTION_SCALE,
+			left: chartAreaLeft,
+			right: valueAxisGutter,
 			top: 12 * LINE_CHART_OPTION_SCALE,
 			bottom: 22 * LINE_CHART_OPTION_SCALE,
 		},
@@ -240,26 +261,47 @@ function getLineChartOptions( {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14 * LINE_CHART_OPTION_SCALE,
+				fontSize,
 			},
-			ticks,
+			ticks: pickDateTicks(
+				dates,
+				LINE_CHART_WIDTH * LINE_CHART_SCALE_FACTOR -
+					valueAxisGutter -
+					chartAreaLeft,
+				fontSize
+			),
 		},
-		vAxis: {
-			gridlines: {
-				color: PDF_COLORS.SURFACES_SURFACE_1,
+		vAxes: {
+			// The series render against axis 1, so axis 0 draws nothing.
+			0: {
+				gridlines: {
+					color: 'transparent',
+				},
+				minorGridlines: {
+					color: 'transparent',
+				},
+				textPosition: 'none',
 			},
-			minorGridlines: {
-				color: PDF_COLORS.SURFACES_SURFACE,
-			},
-			textStyle: {
-				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
-				fontName: 'Google Sans Text',
-				fontSize: 14 * LINE_CHART_OPTION_SCALE,
-			},
-			viewWindow: {
-				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
-				...( hasData ? {} : { max: 1 } ),
+			1: {
+				// A large value shortens to a magnitude letter, so 58000 reads
+				// as `58K` and the label fits the width beside the plot.
+				format: 'short',
+				gridlines: {
+					color: PDF_COLORS.SURFACES_SURFACE_1,
+				},
+				minorGridlines: {
+					color: PDF_COLORS.SURFACES_SURFACE,
+				},
+				textStyle: {
+					color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+					fontName: 'Google Sans Text',
+					fontSize,
+				},
+				viewWindow: {
+					min: 0,
+					// Cap the empty-data axis so a flat zero line still reads well.
+					...( hasData ? {} : { max: EMPTY_AXIS_MAX_VALUE } ),
+				},
 			},
 		},
 		series: {
@@ -345,18 +387,23 @@ function renderMetricChart( {
 	color: string;
 	signal: AbortSignal;
 } ): Promise< string > {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's Search Funnel charts. The leading column is always
-	// the day `Date`.
-	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] as Date );
-	const hasData = dataRows.some(
-		( row ) => Number( row[ 2 ] ) > 0 || Number( row[ 3 ] ) > 0
+	// The leading column is always the day `Date`, and the current and previous
+	// values follow it.
+	const dates = dataRows.map( ( row ) => row[ 0 ] as Date );
+	const maxValue = dataRows.reduce(
+		( highest, row ) =>
+			Math.max(
+				highest,
+				Number( row[ 2 ] ) || 0,
+				Number( row[ 3 ] ) || 0
+			),
+		0
 	);
 
 	return renderGoogleChartToDataURI( {
 		chartType: 'LineChart',
 		dataTable: buildChartDataTable( dataRows, currentLabel ),
-		options: getLineChartOptions( { color, ticks, hasData } ),
+		options: getLineChartOptions( { color, dates, maxValue } ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
 		scaleFactor: LINE_CHART_SCALE_FACTOR,
