@@ -436,9 +436,8 @@ export default async function getPDFData( {
 		return propertyID;
 	}
 
-	// Fetch the reports and resolve the store data the per-card partial-data
-	// flags read in parallel, so the synchronous flag selectors below never read
-	// an `undefined` value.
+	// Fetch the reports and look up the dates the per-card partial-data flags read in
+	// parallel, so the flags below answer on the one render the PDF gets.
 	const [
 		propertyID,
 		{ mainResult, siteKitResult, totalPageviewsResult, cardResults },
