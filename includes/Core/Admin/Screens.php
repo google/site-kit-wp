@@ -157,6 +157,7 @@ final class Screens {
 				<style type="text/css">
 					#adminmenu .toplevel_page_googlesitekit-dashboard img {
 						width: 16px;
+						vertical-align: middle;
 					}
 					#adminmenu .toplevel_page_googlesitekit-dashboard.current img,
 					#adminmenu .toplevel_page_googlesitekit-dashboard.wp-has-current-submenu img {
