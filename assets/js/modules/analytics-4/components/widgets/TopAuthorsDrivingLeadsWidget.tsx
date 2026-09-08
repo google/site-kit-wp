@@ -22,6 +22,11 @@
 import { ElementType, FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { compose } from '@wordpress/compose';
+
+/**
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
@@ -194,12 +199,13 @@ const TopAuthorsDrivingLeadsWidget: FC<
 	);
 };
 
-export default whenActive( {
-	moduleName: MODULE_SLUG_ANALYTICS_4,
-	FallbackComponent: ConnectGA4CTATileWidget,
-} )(
+export default compose(
+	whenActive( {
+		moduleName: MODULE_SLUG_ANALYTICS_4,
+		FallbackComponent: ConnectGA4CTATileWidget,
+	} ),
 	withCustomDimensions( {
 		dimensions: TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 		reportOptions: getTopAuthorsDrivingLeadsReportOptions,
-	} )( TopAuthorsDrivingLeadsWidget )
-);
+	} )
+)( TopAuthorsDrivingLeadsWidget );

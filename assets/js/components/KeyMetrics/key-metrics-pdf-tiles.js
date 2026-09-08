@@ -259,6 +259,77 @@ async function resolvePrimaryEcommerceEvent( registry ) {
 }
 
 /**
+ * Resolves the detected lead events for a Generating leads PDF tile.
+ *
+ * `getDetectedLeadEvents` derives from `getDetectedEvents` but has no
+ * resolver of its own, so this resolves the detected events first and reads
+ * the derived value once they're in.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry WordPress data registry.
+ * @return {Promise<string[]|undefined>} The detected lead event names.
+ */
+async function getDetectedLeadEvents( registry ) {
+	await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+	return registry.select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+}
+
+/**
+ * Creates a `getTileData` loader for a goal driver's simple table PDF tile:
+ * one ranked report, mapped through the goal driver's own row mapper.
+ *
+ * Not suitable for goal drivers whose PDF tile needs more than the single
+ * ranked report (e.g. "Top authors" tiles also fetch a site-wide total
+ * report, and "Top pages" tiles also fetch a page-titles report) - those
+ * still define their own loader.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}   goalDriverID    One of `GOAL_DRIVER_IDS`.
+ * @param {Function} getPrimaryEvent Resolves the primary event(s) for the report, given the WordPress data registry; may return a promise.
+ * @return {function(Object): Promise<Object|null>} The `getTileData` loader for `KEY_METRICS_PDF_TILES`.
+ */
+function createGoalDriverPDFTileLoader( goalDriverID, getPrimaryEvent ) {
+	return createKeyMetricTileDataLoader(
+		async ( dates, registry ) => {
+			const primaryEvent = await getPrimaryEvent( registry );
+			const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ goalDriverID ](
+				{
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				}
+			);
+
+			if ( ! options ) {
+				return [];
+			}
+
+			return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+		},
+		( [ report ] ) => {
+			const rows = GOAL_DRIVER_ROW_MAPPERS[ goalDriverID ](
+				report?.rows || []
+			);
+
+			if ( ! rows.length ) {
+				return null;
+			}
+
+			return {
+				rows: rows.map( ( row ) => ( {
+					primary: row.label,
+					metric: row.value,
+				} ) ),
+				limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
+			};
+		}
+	);
+}
+
+/**
  * Maps ranked report rows to `PDFMetricTileTable` rows for a page-based tile:
  * resolves each row's page path to its Analytics report link (matching the
  * dashboard row's own link) and delegates the primary label and metric
@@ -2044,129 +2115,38 @@ export const KEY_METRICS_PDF_TILES = {
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Top traffic channels
-				// driving sales"), so the primary event is always `purchase`
-				// rather than `getPrimaryEcommerceEvent()`'s detected
-				// fallback to `add_to_cart` - otherwise the tile would
-				// silently start showing add-to-cart data under a "sales"
-				// label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		// This tile is purchase-specific ("Top traffic channels driving
+		// sales"), so the primary event is always `purchase` rather than
+		// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
+		// otherwise the tile would silently start showing add-to-cart data
+		// under a "sales" label.
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			() => ENUM_CONVERSION_EVENTS.PURCHASE
 		),
 	},
 	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Sales by visitor type"),
-				// so the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		// This tile is purchase-specific ("Sales by visitor type"), so the
+		// primary event is always `purchase` rather than
+		// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
+		// otherwise the tile would silently start showing add-to-cart data
+		// under a "sales" label.
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			() => ENUM_CONVERSION_EVENTS.PURCHASE
 		),
 	},
 	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Sales by countries"), so
-				// the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		// This tile is purchase-specific ("Sales by countries"), so the
+		// primary event is always `purchase` rather than
+		// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
+		// otherwise the tile would silently start showing add-to-cart data
+		// under a "sales" label.
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.COUNTRIES,
+			() => ENUM_CONVERSION_EVENTS.PURCHASE
 		),
 	},
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]: {
@@ -2310,15 +2290,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
+				const detectedLeadEvents = await getDetectedLeadEvents(
+					registry
+				);
 				const options = buildPrimaryEventReportOptions(
 					dates,
 					detectedLeadEvents
@@ -2357,15 +2331,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
+				const detectedLeadEvents = await getDetectedLeadEvents(
+					registry
+				);
 				const primaryEventOptions = buildPrimaryEventReportOptions(
 					dates,
 					detectedLeadEvents
@@ -2420,15 +2388,9 @@ export const KEY_METRICS_PDF_TILES = {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
+				const detectedLeadEvents = await getDetectedLeadEvents(
+					registry
+				);
 
 				// No detected lead events means no data, so fetch nothing and
 				// let the empty reports drop the tile.
@@ -2475,201 +2437,39 @@ export const KEY_METRICS_PDF_TILES = {
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
+			getDetectedLeadEvents
 		),
 	},
 	[ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.VISITOR_TYPE,
+			getDetectedLeadEvents
 		),
 	},
 	[ KM_ANALYTICS_LEADS_BY_COUNTRIES ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.COUNTRIES,
+			getDetectedLeadEvents
 		),
 	},
 	[ KM_ANALYTICS_LEADS_BY_DEVICE_TYPE ]: {
 		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.DEVICE_TYPE
-				]( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.DEVICE_TYPE
-				]( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+		getTileData: createGoalDriverPDFTileLoader(
+			GOAL_DRIVER_IDS.DEVICE_TYPE,
+			getDetectedLeadEvents
 		),
 	},
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			async ( dates, registry ) => {
-				// `getDetectedLeadEvents` derives from `getDetectedEvents` but
-				// has no resolver of its own, so resolve the detected events
-				// first and read the derived value once they're in.
-				await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const detectedLeadEvents = registry
-					.select( MODULES_ANALYTICS_4 )
-					.getDetectedLeadEvents();
+				const detectedLeadEvents = await getDetectedLeadEvents(
+					registry
+				);
 				// `context: GOAL_TYPES.LEAD` keeps this reportID distinct
 				// from the equivalent Selling products tile, which requests
 				// the same shape of report (same `top-authors` suffix) for
