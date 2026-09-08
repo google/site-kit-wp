@@ -233,6 +233,18 @@ AudiencePartialData.args = {
 			propertyID: '12345',
 		} );
 
+		// The badge selectors read the audience list, so a Site Kit audience never shows
+		// the badge.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [
+				{
+					name: audienceResourceName,
+					audienceType: 'USER_AUDIENCE',
+				},
+			],
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dataAvailabilityDate = Number(
@@ -269,6 +281,18 @@ TopContentPartialData.args = {
 			propertyID: '12345',
 		} );
 
+		// The badge selectors read the audience list, so a Site Kit audience never shows
+		// the badge.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
+			availableAudiences: [
+				{
+					name: audienceResourceName,
+					audienceType: 'USER_AUDIENCE',
+				},
+			],
+			availableAudiencesLastSyncedAt: ( Date.now() - 1000 ) / 1000,
+		} );
+
 		const { startDate } = registry.select( CORE_USER ).getDateRangeDates();
 
 		const dataAvailabilityDate = Number(
@@ -277,7 +301,9 @@ TopContentPartialData.args = {
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
 			resourceAvailabilityDates: {
-				audience: {},
+				audience: {
+					[ audienceResourceName ]: 20201220,
+				},
 				customDimension: {
 					googlesitekit_post_type: dataAvailabilityDate,
 				},
