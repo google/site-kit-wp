@@ -28,14 +28,14 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Hosts an embedded iframe's `src` belongs to for a YouTube video.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const YOUTUBE_EMBED_HOSTS = array( 'youtube.com', 'www.youtube.com', 'm.youtube.com' );
 
 	/**
 	 * Host an embedded iframe's `src` belongs to for a Vimeo video.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const VIMEO_EMBED_HOST = 'player.vimeo.com';
 
@@ -50,7 +50,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Flag indicating whether the current request has rendered a Vimeo embed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var bool
 	 */
 	protected $has_vimeo_embed = false;
@@ -91,6 +91,50 @@ class Content_Events extends Conversion_Events_Provider {
 	 */
 	public function get_event_names() {
 		return array();
+	}
+
+	/**
+	 * Gets the events this install can send, mapped to where each one can fire.
+	 *
+	 * Reports what the install makes possible, never what the current request did:
+	 * whether a post is paginated, embeds a Vimeo video or carries a `mailto:` link
+	 * is only knowable while a frontend page renders, and Site Health runs in
+	 * wp-admin. Nothing here reads the current request. Whether bbPress is active is
+	 * a site-wide fact, so `pagination_click` does report it.
+	 *
+	 * Keys are the event names as sent to GA and stay untranslated; the values are
+	 * translated for display.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @return array Map of event name to the pages or links it can fire on.
+	 */
+	public function get_eligible_events() {
+		return array(
+			'read_article'                                => __( 'single blog posts', 'google-site-kit' ),
+			'pagination_click'                            => class_exists( 'bbPress' )
+				? __( 'posts split into pages, bbPress topics', 'google-site-kit' )
+				: __( 'posts split into pages', 'google-site-kit' ),
+			'contact_link_click'                          => __( 'email, phone, SMS and messaging-app links', 'google-site-kit' ),
+			'outbound_link_click'                         => __( 'external links with rel="sponsored", rel="ugc" or rel="nofollow"', 'google-site-kit' ),
+			'video_start, video_progress, video_complete' => __( 'Vimeo embeds', 'google-site-kit' ),
+		);
+	}
+
+	/**
+	 * Gets the event names to show against this provider in Site Health.
+	 *
+	 * `get_event_names()` stays empty so these engagement events keep out of the Ads
+	 * conversion labels, Analytics conversion reporting and the conversion feature
+	 * metrics. That would leave this provider's Site Health row blank, so the row is
+	 * built from the eligible events instead.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @return string Comma separated list of event names.
+	 */
+	public function get_debug_data() {
+		return implode( ', ', array_keys( $this->get_eligible_events() ) );
 	}
 
 	/**
@@ -184,7 +228,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * accepts the Vimeo Player SDK's messages without an opt-in parameter; only the
 	 * `has_vimeo_embed` flag is set, for `get_inline_config()` to publish.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string $html A single embed's HTML markup.
 	 * @return string The embed's HTML markup, with `enablejsapi=1` added when it is a YouTube iframe.
@@ -204,7 +248,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Filters a single `<iframe>` tag matched by `filter_embed_html()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $matches Regex matches; `$matches[0]` is the full `<iframe …>` tag.
 	 * @return string The tag, with `enablejsapi=1` added to `src` when it is a YouTube embed.

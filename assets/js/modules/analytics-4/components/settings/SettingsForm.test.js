@@ -24,7 +24,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
-import { provideSiteInfo } from '@tests/js/utils';
+import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import SettingsForm from './SettingsForm';
 
 jest.mock( './SettingsControls', () => () => null );
@@ -39,16 +39,31 @@ describe( 'SettingsForm', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: false,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			accountID: null,
 		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 	} );
 
 	afterEach( () => {
 		mockTrackEvent.mockClear();
+	} );
+
+	it( 'should render the advanced data breakdowns setting', () => {
+		const { container } = render( <SettingsForm />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SETTINGS,
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-settings-measurement-row' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should not track the learn more link when setupFlowRefresh is disabled', () => {

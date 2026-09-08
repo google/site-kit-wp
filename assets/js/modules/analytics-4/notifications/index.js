@@ -232,7 +232,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		featureFlag: 'siteGoals',
 		checkRequirements: asyncRequireAll(
 			// The welcome modal takes precedence. When it is active, defer the
 			// Site Goals intro modal for 72 hours so the two are never shown at

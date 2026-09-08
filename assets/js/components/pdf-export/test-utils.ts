@@ -115,7 +115,7 @@ export function expectSurveyTriggerFetch( triggerID: string, ttl: number ) {
  * Collects every text string in a `react-test-renderer` tree, so a test can
  * assert on rendered copy without walking the tree itself.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param node A tree's root, a child node, or a leaf, as returned by
  *             `TestRenderer.create( element ).toJSON()`.

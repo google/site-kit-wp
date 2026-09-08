@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
 
@@ -47,6 +47,14 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	private $settings;
 
 	/**
+	 * Synchronization instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Publication_Synchronization
+	 */
+	private $synchronization;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since 1.186.0
@@ -56,8 +64,9 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 
-		$this->options  = $definition['options'];
-		$this->settings = $definition['settings'];
+		$this->options         = $definition['options'];
+		$this->settings        = $definition['settings'];
+		$this->synchronization = new Publication_Synchronization( $this->settings );
 	}
 
 	/**
@@ -90,47 +99,6 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 		$this->synchronize_publication_data( $publications );
 
 		return array_map( array( Publication_Normalizer::class, 'normalize' ), $publications );
-	}
-
-	/**
-	 * Returns the payment option for the given publication.
-	 *
-	 * @since 1.186.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return string Payment option for settings.
-	 */
-	private function get_payment_option( Publication $publication ) {
-		$payment_option = $publication->getPaymentOption();
-
-		if ( empty( $payment_option ) ) {
-			return '';
-		}
-
-		return Publication_Normalizer::map_payment_option( $payment_option );
-	}
-
-	/**
-	 * Returns the product IDs for the given publication.
-	 *
-	 * @since 1.186.0
-	 *
-	 * @param Publication $publication Publication object.
-	 * @return array Product IDs.
-	 */
-	private function get_product_ids( Publication $publication ) {
-		$products = $publication->getProducts();
-
-		if ( empty( $products ) || ! is_array( $products ) ) {
-			return array();
-		}
-
-		return array_values(
-			array_filter(
-				$products,
-				'is_string'
-			)
-		);
 	}
 
 	/**
@@ -171,7 +139,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	}
 
 	/**
-	 * Synchronizes the publication data with the module settings.
+	 * Synchronizes the connected publication from a publications list response.
 	 *
 	 * @since 1.186.0
 	 *
@@ -183,8 +151,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 			return;
 		}
 
-		$settings       = $this->settings->get();
-		$publication_id = $settings['publicationID'];
+		$publication_id = $this->settings->get()['publicationID'] ?? '';
 
 		if ( empty( $publication_id ) ) {
 			return;
@@ -202,45 +169,6 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 			return;
 		}
 
-		$filtered_publications = array_values( $filtered_publications );
-		$publication           = $filtered_publications[0];
-
-		$onboarding_state     = $settings['publicationOnboardingState'];
-		$new_onboarding_state = Publication_Normalizer::map_onboarding_state(
-			$publication->getOnboardingState() ?? ''
-		);
-
-		$new_settings = array(
-			'publicationOnboardingState' => $new_onboarding_state,
-			'productIDs'                 => $this->get_product_ids( $publication ),
-			'paymentOption'              => $this->get_payment_option( $publication ),
-		);
-
-		$content_policy_status = $publication->getContentPolicyStatus();
-
-		if ( $content_policy_status ) {
-			$state = $content_policy_status->getState();
-
-			$new_settings['contentPolicyState'] = ! empty( $state )
-				? Publication_Normalizer::map_content_policy_state( $state )
-				: '';
-			$new_settings['policyInfoLink']     = $content_policy_status->getPolicyInfoUrl() ?? '';
-		}
-
-		if ( $new_onboarding_state !== $onboarding_state ) {
-			$new_settings['publicationOnboardingStateChanged'] = true;
-		}
-
-		$this->settings->merge( $new_settings );
-
-		$cron_event = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		if ( $cron_event ) {
-			wp_unschedule_event( $cron_event, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
-		}
-
-		wp_schedule_single_event(
-			time() + HOUR_IN_SECONDS,
-			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
-		);
+		$this->synchronization->synchronize( array_values( $filtered_publications )[0] );
 	}
 }

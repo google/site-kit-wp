@@ -23,19 +23,17 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	VIEW_CONTEXT_ENTITY_DASHBOARD,
-	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 
 const sharedKeyMetrics = {
 	slug: 'sharedKeyMetrics',
+	// Only the main dashboard renders the Key Metrics section the step points
+	// at, so on the entity dashboard this tour would show nothing.
 	contexts: [
 		VIEW_CONTEXT_MAIN_DASHBOARD,
 		VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-		VIEW_CONTEXT_ENTITY_DASHBOARD,
-		VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	],
 	gaEventCategory: ( viewContext: string ) =>
 		`${ viewContext }_shared_key-metrics`,

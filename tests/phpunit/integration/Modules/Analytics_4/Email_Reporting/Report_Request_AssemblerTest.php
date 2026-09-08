@@ -221,6 +221,38 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$this->assertArrayHasKey( 'popular_content', $requests, 'build_requests() should still register the popular content report alongside the Site Goals reports.' );
 	}
 
+	public function test_build_requests__registers_every_site_goals_request_key_and_no_other() {
+		$site_wide_keys = $this->request_keys_starting_with(
+			$this->build_requests_for_events( array( 'purchase', 'contact' ) ),
+			'site_goals_'
+		);
+		$breakdown_keys = $this->request_keys_starting_with(
+			$this->build_requests_for_events( array( 'purchase', 'contact' ), $this->breakdown_dimension_availability() ),
+			'site_goals_'
+		);
+
+		$site_goals_keys = array(
+			'site_goals_online_store_primary',
+			'site_goals_online_store_primary_by_provider',
+			'site_goals_lead_primary',
+			'site_goals_lead_primary_by_form',
+			'site_goals_engagement',
+			'site_goals_engagement_by_provider',
+			'site_goals_engagement_by_form',
+		);
+
+		$this->assertEqualSets(
+			$site_goals_keys,
+			Analytics_4_Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS,
+			'SITE_GOALS_REQUEST_KEYS should hold every Site Goals payload key.'
+		);
+		$this->assertEqualSets(
+			$site_goals_keys,
+			array_merge( $site_wide_keys, $breakdown_keys ),
+			'build_requests() should register every Site Goals payload key, and no other keys.'
+		);
+	}
+
 	/**
 	 * Builds the report requests for the given detected events and dimension availability.
 	 *

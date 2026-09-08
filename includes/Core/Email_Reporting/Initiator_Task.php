@@ -132,7 +132,7 @@ class Initiator_Task {
 
 			default:
 				throw new InvalidArgumentException(
-					sprintf( 'Unsupported frequency "%s".', $frequency )
+					sprintf( 'Unsupported frequency "%s".', esc_html( $frequency ) )
 				);
 		}
 	}

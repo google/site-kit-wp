@@ -70,6 +70,10 @@
 		}
 	}
 
+	.googlesitekit-tab-bar__subscriber-management {
+		margin-bottom: $grid-gap-phone;
+	}
+
 	.googlesitekit-tab-bar--start-aligned-high-contrast {
 		border-bottom: 1px solid $c-utility-divider;
 
@@ -95,6 +99,24 @@
 
 		.mdc-tab-indicator > .mdc-tab-indicator__content--underline {
 			height: 3px;
+		}
+	}
+
+	// Combined with `--start-aligned-high-contrast` above, these grow the tabs
+	// to fill the full width and replace its fixed tab height with a shorter,
+	// evenly-padded shape, per the subscriber management designs.
+	.googlesitekit-tab-bar--start-aligned-high-contrast.googlesitekit-tab-bar__subscriber-management {
+		.mdc-tab-scroller__scroll-content {
+			.mdc-tab {
+				flex: 1 0 auto;
+				height: auto;
+
+				.mdc-tab__content {
+					letter-spacing: 0.2px;
+					padding-bottom: $grid-gap-phone;
+					padding-top: $grid-gap-phone;
+				}
+			}
 		}
 	}
 }

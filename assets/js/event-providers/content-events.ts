@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { initializeLinkClicks } from './content-events/link-clicks';
+import { initializePagination } from './content-events/pagination';
 import { initializeVimeo } from './content-events/vimeo';
 
 /** The Content Events configuration published by PHP on the frontend. */
@@ -48,3 +50,27 @@ export function getContentEventsConfig(): ContentEventsConfig {
 }
 
 initializeVimeo( getContentEventsConfig() );
+
+// A failure here is reported rather than thrown, so it can't take down whatever
+// this module registers after it.
+try {
+	initializePagination( getContentEventsConfig() );
+} catch ( error ) {
+	// eslint-disable-next-line no-console
+	console.error(
+		'Site Kit: failed to initialize pagination click tracking.',
+		error
+	);
+}
+
+// A failure here is reported rather than thrown, so it can't take down whatever
+// this module registers after it.
+try {
+	initializeLinkClicks();
+} catch ( error ) {
+	// eslint-disable-next-line no-console
+	console.error(
+		'Site Kit: failed to initialize link click tracking.',
+		error
+	);
+}

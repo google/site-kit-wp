@@ -31,8 +31,13 @@ import { __ } from '@wordpress/i18n';
  */
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import useFormValue from '@/js/hooks/useFormValue';
+import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	EXPRESS_SETUP_STEPS,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface ExpressSetupStepsProps {
 	extraSteps?: Record< string, string >;
@@ -41,17 +46,28 @@ interface ExpressSetupStepsProps {
 const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 	extraSteps = {},
 } ) => {
-	const [ step ] = useQueryArg( 'step' );
+	const [ showPublicationCreate ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_PUBLICATION_CREATE
+	);
+
+	const [ step ] = useStep();
+
+	const showTermsOfServiceStep =
+		showPublicationCreate || step === EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE;
 
 	const steps = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: __(
-			'Connect publication',
-			'google-site-kit'
-		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
-			'Accept terms of service',
-			'google-site-kit'
-		),
+		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: showPublicationCreate
+			? __( 'Create publication', 'google-site-kit' )
+			: __( 'Connect publication', 'google-site-kit' ),
+		...( showTermsOfServiceStep
+			? {
+					[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
+						'Accept terms of service',
+						'google-site-kit'
+					),
+			  }
+			: {} ),
 		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: __(
 			'Add publication policies',
 			'google-site-kit'

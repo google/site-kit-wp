@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { ComponentType, Ref } from 'react';
+import { ComponentType, FC, Ref } from 'react';
 
 /**
  * WordPress dependencies
@@ -65,10 +65,9 @@ export default function withIntersectionObserver< P >(
 		P & { ref: Ref< Element >; hasBeenInView: boolean }
 	>;
 
-	function WithIntersectionObserverComponent( {
-		onInView,
-		...props
-	}: P & WithIntersectionObserverProps ) {
+	const WithIntersectionObserverComponent: FC<
+		P & WithIntersectionObserverProps
+	> = ( { onInView, ...props } ) => {
 		const [ hasBeenInView, setHasBeenInView ] = useState( false );
 		const hasBeenInViewRef = useRef( false );
 		const observerRef = useRef< IntersectionObserver | null >( null );
@@ -131,7 +130,7 @@ export default function withIntersectionObserver< P >(
 				hasBeenInView={ hasBeenInView }
 			/>
 		);
-	}
+	};
 
 	WithIntersectionObserverComponent.displayName =
 		'WithIntersectionObserverComponent';

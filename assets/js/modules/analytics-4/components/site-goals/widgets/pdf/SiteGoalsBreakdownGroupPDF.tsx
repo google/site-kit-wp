@@ -80,7 +80,7 @@ const styles = createPDFStyles( {
 /**
  * Formats a metric's change for the tile badge.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param metric Metric to compare, or `undefined` when the tile has no change.
  * @return Formatted change and its direction, empty when there is nothing to compare.
@@ -96,7 +96,7 @@ function getChange( metric: SiteGoalsPDFMetric | undefined ) {
 /**
  * Builds the "of N total sessions" caption shown under a rate.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param sessions Sessions metric, or `undefined` when sessions are unknown.
  * @return Caption, or `undefined` when there are no sessions to report.

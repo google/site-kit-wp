@@ -11,6 +11,8 @@ namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Settings;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
@@ -161,6 +163,8 @@ class Debug_DataTest extends TestCase {
 			'consent_mode',
 			'consent_api',
 			'active_conversion_event_providers',
+			'content_events',
+			'conversion_tracking',
 		);
 		$actual_keys          = array_keys( $debug_information['google-site-kit']['fields'] );
 
@@ -265,6 +269,108 @@ class Debug_DataTest extends TestCase {
 			),
 			array_keys( $info['google-site-kit']['fields'] ),
 			'Failed to assert one or more GTG fields were included in the list of Site Kit fields'
+		);
+	}
+
+	/**
+	 * Returns the Site Kit debug fields, with Conversion Tracking left at its
+	 * default, enabled or disabled.
+	 *
+	 * @param bool|null $conversion_tracking_enabled Null leaves the option unset.
+	 * @return array Site Kit debug fields.
+	 */
+	private function get_site_kit_fields( $conversion_tracking_enabled = null ) {
+		remove_all_filters( 'debug_information' );
+
+		$context                      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$conversion_tracking_settings = new Conversion_Tracking_Settings( new Options( $context ) );
+		$conversion_tracking_settings->register();
+
+		if ( null !== $conversion_tracking_enabled ) {
+			$conversion_tracking_settings->set( array( 'enabled' => $conversion_tracking_enabled ) );
+		}
+
+		$debug_data = $this->new_debug_data( $context );
+		$debug_data->register();
+
+		$info = apply_filters( 'debug_information', array() );
+
+		return $info['google-site-kit']['fields'];
+	}
+
+	public function test_active_conversion_event_providers__carries_the_content_events_entry() {
+		$fields = $this->get_site_kit_fields();
+
+		$this->assertArrayHasKey(
+			Content_Events::CONVERSION_EVENT_PROVIDER_SLUG,
+			$fields['active_conversion_event_providers']['value'],
+			'Active conversion event providers should list the content events provider.'
+		);
+		$this->assertNotEmpty(
+			$fields['active_conversion_event_providers']['value'][ Content_Events::CONVERSION_EVENT_PROVIDER_SLUG ],
+			'The content events provider should name the events it can send.'
+		);
+	}
+
+	public function test_content_events_field__lists_every_eligible_event_in_order() {
+		$fields = $this->get_site_kit_fields();
+
+		$this->assertSame(
+			array(
+				'read_article',
+				'pagination_click',
+				'contact_link_click',
+				'outbound_link_click',
+				'video_start, video_progress, video_complete',
+			),
+			array_keys( $fields['content_events']['value'] ),
+			'The content events field should carry one entry per eligible event, in order.'
+		);
+
+		foreach ( $fields['content_events']['value'] as $event => $description ) {
+			$this->assertNotEmpty( $description, "The $event entry should name where it can fire." );
+		}
+	}
+
+	/**
+	 * @dataProvider data_conversion_tracking_states
+	 *
+	 * @param bool|null $enabled        Setting value; null leaves the option unset.
+	 * @param string    $expected_value Expected field value.
+	 * @param string    $expected_debug Expected field debug value.
+	 */
+	public function test_conversion_tracking_field__reports_the_setting( $enabled, $expected_value, $expected_debug ) {
+		$fields = $this->get_site_kit_fields( $enabled );
+
+		$this->assertSame( $expected_value, $fields['conversion_tracking']['value'], 'Conversion Tracking should report the setting.' );
+		$this->assertSame( $expected_debug, $fields['conversion_tracking']['debug'], 'Conversion Tracking debug value should match the setting.' );
+
+		// The content events entry and field are listed either way.
+		$this->assertArrayHasKey(
+			Content_Events::CONVERSION_EVENT_PROVIDER_SLUG,
+			$fields['active_conversion_event_providers']['value'],
+			'The content events provider should be listed whether or not Conversion Tracking is on.'
+		);
+		$this->assertNotEmpty( $fields['content_events']['value'], 'The content events field should be present whether or not Conversion Tracking is on.' );
+	}
+
+	public function data_conversion_tracking_states() {
+		return array(
+			'enabled'       => array(
+				true,
+				'Enabled (requires a Google Analytics or Google Ads web tag on the page)',
+				'enabled',
+			),
+			'disabled'      => array(
+				false,
+				'Disabled',
+				'disabled',
+			),
+			'option absent' => array(
+				null,
+				'Disabled',
+				'disabled',
+			),
 		);
 	}
 }
