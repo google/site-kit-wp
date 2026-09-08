@@ -24,9 +24,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { getPreviousDate, stringToDate } from '@/js/util';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideModules,
 	provideUserAuthentication,
 	untilResolved,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { properties } from './__fixtures__';
 import { MODULES_ANALYTICS_4, RESOURCE_TYPE_AUDIENCE } from './constants';
@@ -60,6 +62,10 @@ const resourceAvailabilityDates = {
 		[ testPropertyID ]: 20201218,
 	},
 };
+
+const sampleReportEndpoint = new RegExp(
+	'analytics-4/data/report\\?metrics%5B0%5D%5Bname%5D=totalUsers'
+);
 
 const saveResourceDataAvailabilityDate = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/save-resource-data-availability-date'
@@ -786,6 +792,82 @@ describe( 'modules/analytics-4 partial data', () => {
 				).toBe( false );
 			} );
 
+			it( 'should show no badge while the property is still collecting data', () => {
+				// Nothing on the tile is worth a badge of its own until the property it
+				// belongs to has caught up.
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+				const afterStart = Number(
+					getPreviousDate( startDate, -1 ).replace( /-/g, '' )
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: 20201220,
+						},
+						// The dimension on its own would raise a badge here.
+						customDimension: {
+							[ testCustomDimension ]: afterStart,
+						},
+						property: { [ testPropertyID ]: afterStart },
+					},
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isPropertyPartialData( testPropertyID )
+				).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBe( false );
+			} );
+
+			it( 'should show no badge when no property is connected', () => {
+				const { startDate } = registry
+					.select( CORE_USER )
+					.getDateRangeDates();
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setSettings( { propertyID: '' } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {},
+						// The dimension on its own would raise a badge here.
+						customDimension: {
+							[ testCustomDimension ]: Number(
+								getPreviousDate( startDate, -1 ).replace(
+									/-/g,
+									''
+								)
+							),
+						},
+						property: {},
+					},
+				} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTileTopContentPartialData(
+							testAudience1ResourceName
+						)
+				).toBe( false );
+			} );
+
 			it( 'should show no badge while the audience badge shows one', () => {
 				// One badge per tile, and the audience's takes precedence.
 				const { startDate } = registry
@@ -821,6 +903,431 @@ describe( 'modules/analytics-4 partial data', () => {
 						.isAudienceTileTopContentPartialData(
 							testAudience1ResourceName
 						)
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isLoadingAudienceTilePartialData', () => {
+			beforeEach( () => {
+				// Reading the badges reads the gathering data state, which sends off its
+				// own sample report wherever a test leaves that state unknown.
+				fetchMock.get( sampleReportEndpoint, { body: {} } );
+			} );
+
+			// Every date but the one under test is already in, so each case below is held
+			// back by that one date alone.
+			function provideDatesExcept( missing ) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience:
+							'audience' === missing
+								? {}
+								: { [ testAudience1ResourceName ]: 20201220 },
+						customDimension:
+							'customDimension' === missing
+								? {}
+								: { [ testCustomDimension ]: 20201221 },
+						property:
+							'property' === missing
+								? {}
+								: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+			}
+
+			it( 'should wait until the property ID is known, without looking a date up for it', async () => {
+				// Asking before settings load would look a date up for no property at all.
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/settings'
+					)
+				);
+
+				const freshRegistry = createTestRegistry();
+				provideModules( freshRegistry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+				await waitForDefaultTimeouts();
+
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.hasStartedResolution(
+							'getResourceDataAvailabilityDate',
+							[ undefined, 'property' ]
+						)
+				).toBe( false );
+			} );
+
+			it( 'should wait while the gathering data state is unknown', () => {
+				// Every other input is settled — the property, the audience list and all
+				// three dates — so only the gathering data state can hold this back.
+				const freshRegistry = createTestRegistry();
+				provideModules( freshRegistry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				freshRegistry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: [ testCustomDimension ],
+					propertyID: testPropertyID,
+				} );
+				freshRegistry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: [ testAudience1, testAudience2 ],
+						availableAudiencesLastSyncedAt:
+							( Date.now() - 1000 ) / 1000,
+					} );
+				freshRegistry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveModuleData( {
+						resourceAvailabilityDates: {
+							audience: {
+								[ testAudience1ResourceName ]: 20201220,
+							},
+							customDimension: {
+								[ testCustomDimension ]: 20201221,
+							},
+							property: { [ testPropertyID ]: 20201218 },
+						},
+					} );
+
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.getOrSyncAvailableAudiences()
+				).not.toBeUndefined();
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBeUndefined();
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should wait while the audience list is unknown', () => {
+				const freshRegistry = createTestRegistry();
+				provideModules( freshRegistry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				freshRegistry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: [ testCustomDimension ],
+					propertyID: testPropertyID,
+				} );
+				freshRegistry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/audience-settings'
+					)
+				);
+				freshRegistry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveModuleData( {
+						resourceAvailabilityDates: {
+							audience: {
+								[ testAudience1ResourceName ]: 20201220,
+							},
+							customDimension: {
+								[ testCustomDimension ]: 20201221,
+							},
+							property: { [ testPropertyID ]: 20201218 },
+						},
+					} );
+
+				// The badge cannot tell a Site Kit audience apart without the list.
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isAudienceTilePartialData( testAudience1ResourceName )
+				).toBeUndefined();
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should wait on the property date alone', () => {
+				provideDatesExcept( 'property' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should wait on the post type dimension date alone', () => {
+				provideDatesExcept( 'customDimension' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should wait on the audience date alone', () => {
+				provideDatesExcept( 'audience' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( true );
+			} );
+
+			it( 'should stop waiting once every date is in', () => {
+				provideDatesExcept( null );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( false );
+			} );
+
+			it( 'should stop waiting when the date report fails', async () => {
+				// A failed lookup is still a finished one. If the tiles waited for the
+				// answer this report was going to give, they would wait for good.
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				const referenceDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetProperties(
+					[
+						{
+							...property,
+							createTime: stringToDate(
+								getPreviousDate( referenceDate, 30 )
+							).toISOString(),
+						},
+					],
+					{ accountID }
+				);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: 20201220,
+						},
+						customDimension: {},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+
+				fetchMock.get(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					),
+					{ body: { error: 'Bad request' }, status: 400 }
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResourceDataAvailabilityDate(
+						testCustomDimension,
+						'customDimension'
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getResourceDataAvailabilityDate(
+					testCustomDimension,
+					'customDimension'
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( false );
+
+				expect( console ).toHaveErrored();
+			} );
+
+			it( 'should stop waiting when the property has no create time', async () => {
+				// Without a create time there are no report options, so the lookup ends
+				// having set no date at all.
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetProperties(
+						[ { ...property, createTime: undefined } ],
+						{ accountID }
+					);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: 20201220,
+						},
+						customDimension: {
+							[ testCustomDimension ]: 20201221,
+						},
+						property: {},
+					},
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResourceDataAvailabilityDate(
+						testPropertyID,
+						'property'
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getResourceDataAvailabilityDate( testPropertyID, 'property' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( false );
+			} );
+
+			it( 'should stop waiting on an audience that is no longer available', async () => {
+				// The lookup returns early for an audience the property no longer lists.
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetAudienceSettings( {
+						availableAudiences: [ testAudience2 ],
+					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {},
+						customDimension: {
+							[ testCustomDimension ]: 20201221,
+						},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResourceDataAvailabilityDate(
+						testAudience1ResourceName,
+						RESOURCE_TYPE_AUDIENCE
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getResourceDataAvailabilityDate(
+					testAudience1ResourceName,
+					RESOURCE_TYPE_AUDIENCE
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( false );
+			} );
+
+			it( 'should stop waiting on a dimension the site has never created', async () => {
+				// The lookup returns early for a dimension the site does not have, so a
+				// wait on its date would never end.
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveIsGatheringData( false );
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					availableCustomDimensions: [],
+				} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: {
+							[ testAudience1ResourceName ]: 20201220,
+						},
+						customDimension: {},
+						property: { [ testPropertyID ]: 20201218 },
+					},
+				} );
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResourceDataAvailabilityDate(
+						testCustomDimension,
+						'customDimension'
+					);
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getResourceDataAvailabilityDate(
+					testCustomDimension,
+					'customDimension'
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCustomDimensionPartialData( testCustomDimension )
+				).toBeUndefined();
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
 				).toBe( false );
 			} );
 		} );
