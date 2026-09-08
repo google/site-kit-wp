@@ -36,6 +36,7 @@ import {
 
 export { registerStore } from './datastore';
 export { registerNotifications } from './notifications';
+export { registerFeatures } from './feature-discovery';
 
 export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_SIGN_IN_WITH_GOOGLE, {

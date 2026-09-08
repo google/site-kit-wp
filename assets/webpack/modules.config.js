@@ -78,6 +78,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.ts',
 			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-feature-discovery':
+				'./js/googlesitekit-feature-discovery.ts',
 			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
 			'googlesitekit-modules-adsense':
 				'./js/googlesitekit-modules-adsense.ts',
