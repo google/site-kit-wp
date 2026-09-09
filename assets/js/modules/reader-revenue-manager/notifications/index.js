@@ -67,6 +67,7 @@ import {
 	requireProductID,
 	requireProductIDs,
 	requirePublicationOnboardingState,
+	requireSettingsAvailable,
 } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
 	EXPRESS_SETUP_CTAS,
@@ -306,6 +307,9 @@ export const NOTIFICATIONS = {
 			requireExpressSetupCTAActioned(
 				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 			),
+			// An unavailable settings response leaves the configured CTAs
+			// unknown, in which case the notification is not shown.
+			requireSettingsAvailable(),
 			asyncRequire(
 				false,
 				requireExpressSetupCTAConfigured(

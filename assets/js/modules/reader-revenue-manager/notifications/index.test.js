@@ -332,6 +332,34 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
 
+		it( 'should not be active when the module settings are unavailable', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( {
+					lastActionedExpressSetups: {
+						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
+					},
+				} );
+
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+
+			expect( console ).toHaveErrored();
+		} );
+
 		it( 'should not request the module settings when the CTA was not actioned', async () => {
 			// Only the user settings are provided, so a settings request would
 			// be issued if the checks ran out of order.
