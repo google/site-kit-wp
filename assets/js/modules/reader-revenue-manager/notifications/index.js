@@ -25,7 +25,12 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
+import {
+	requireCanActivateModule,
+	requireModuleConnected,
+	requireModuleNotConnected,
+	requirePromptDismissed,
+} from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -68,7 +73,7 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
-import { asyncRequireAll } from '@/js/util/async';
+import { asyncRequire, asyncRequireAll } from '@/js/util/async';
 
 /**
  * Checks if the setup success notification is currently being shown.
@@ -132,43 +137,17 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isPromptDismissed selector relies on the resolution
-				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				resolveSelect( CORE_MODULES ).isModuleConnected(
-					MODULE_SLUG_READER_REVENUE_MANAGER
-				),
-				resolveSelect( CORE_MODULES ).canActivateModule(
-					MODULE_SLUG_READER_REVENUE_MANAGER
-				),
-			] );
-
-			// Check if the prompt with the legacy key used before the banner was refactored
-			// to use the `notification ID` as the dismissal key, is dismissed.
-			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
-				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
-			);
-
-			const isRRMModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			const canActivateRRMModule = select(
-				CORE_MODULES
-			).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if (
-				isLegacyDismissed === false &&
-				isRRMModuleConnected === false &&
-				canActivateRRMModule
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			// The prompt with the legacy key, used before the banner was
+			// refactored to use the notification ID as its dismissal key, must
+			// not be dismissed.
+			asyncRequire(
+				false,
+				requirePromptDismissed( LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY )
+			),
+			requireModuleNotConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requireCanActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER )
+		),
 		isDismissible: true,
 		dismissRetries: 1,
 	},
