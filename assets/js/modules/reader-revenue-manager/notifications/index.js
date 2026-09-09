@@ -34,7 +34,6 @@ import {
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -66,6 +65,7 @@ import {
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	requireContentPolicyState,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
@@ -75,6 +75,7 @@ import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 	CONTENT_POLICY_STATES,
 	EXPRESS_SETUP_CTAS,
+	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
 	PENDING_POLICY_VIOLATION_STATES,
@@ -258,44 +259,21 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-
-			const contentPolicyState = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getContentPolicyState();
-
-			if (
-				contentPolicyState ===
-				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-			) {
-				return false;
-			}
-
-			const { publicationOnboardingState, paymentOption } =
-				( await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
-
-			if (
-				publicationOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				[ 'noPayment', '' ].includes( paymentOption ) &&
-				! isShowingSuccessNotification()
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			requirePublicationOnboardingState(
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			),
+			asyncRequireAny(
+				requirePaymentOption( 'noPayment' ),
+				requirePaymentOption( '' )
+			),
+			asyncRequire(
+				false,
+				requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
+			)
+		),
 	},
 	[ RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID ]: {
 		Component: PolicyViolationNotification,
