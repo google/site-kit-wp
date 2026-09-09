@@ -61,6 +61,8 @@ import {
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	requireContentPolicyState,
+	requireExpressSetupCTAActioned,
+	requireExpressSetupCTAConfigured,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
@@ -74,7 +76,6 @@ import {
 	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
 import {
 	asyncRequire,
 	asyncRequireAll,
@@ -301,11 +302,17 @@ export const NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		featureFlag: 'rrmExpressSetup',
 		isDismissible: true,
-		checkRequirements: async ( registry ) =>
-			await checkRequirementsForExpressSetupResumeNotification(
-				registry,
+		checkRequirements: asyncRequireAll(
+			requireExpressSetupCTAActioned(
 				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 			),
+			asyncRequire(
+				false,
+				requireExpressSetupCTAConfigured(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)
+			)
+		),
 	},
 };
 

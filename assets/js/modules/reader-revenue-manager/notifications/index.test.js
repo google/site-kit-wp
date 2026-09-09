@@ -22,12 +22,14 @@
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CONTENT_POLICY_STATES,
+	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -262,6 +264,80 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			provideContentPolicyState(
 				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
 			);
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+	describe( 'rrm-express-setup-resume-newsletter-notification', () => {
+		const { checkRequirements } =
+			NOTIFICATIONS[
+				RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID
+			];
+
+		function provideExpressSetupSettings( {
+			configuredCTAs,
+			lastActionedExpressSetups,
+		} ) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { configuredCTAs } );
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( { lastActionedExpressSetups } );
+		}
+
+		it( 'should be active when the CTA was actioned but is not configured', async () => {
+			provideExpressSetupSettings( {
+				configuredCTAs: {},
+				lastActionedExpressSetups: {
+					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
+				},
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active when the CTA action timestamp is falsy', async () => {
+			provideExpressSetupSettings( {
+				configuredCTAs: {},
+				lastActionedExpressSetups: {
+					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 0,
+				},
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the CTA is already configured', async () => {
+			provideExpressSetupSettings( {
+				configuredCTAs: {
+					'configured-cta-id': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+				},
+				lastActionedExpressSetups: {
+					[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
+				},
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should only evaluate the requested CTA type', async () => {
+			provideExpressSetupSettings( {
+				configuredCTAs: {
+					'configured-cta-id': EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+				},
+				lastActionedExpressSetups: { 'another-cta': 1752451200 },
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not request the module settings when the CTA was not actioned', async () => {
+			// Only the user settings are provided, so a settings request would
+			// be issued if the checks ran out of order.
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( { lastActionedExpressSetups: {} } );
 
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );
