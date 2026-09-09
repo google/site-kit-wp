@@ -30,6 +30,7 @@ import { createTestRegistry } from '@tests/js/test-utils';
 import {
 	requireContentPolicyState,
 	requireExpressSetupCTAActioned,
+	requireExpressSetupCTAConfigured,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
@@ -256,6 +257,50 @@ describe( 'Reader Revenue Manager data requirements', () => {
 
 			expect(
 				await requireExpressSetupCTAActioned(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( false );
+		} );
+	} );
+	describe( 'requireExpressSetupCTAConfigured', () => {
+		it( 'should return true when the CTA is configured', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					configuredCTAs: {
+						'configured-cta-id':
+							EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+					},
+				} );
+
+			expect(
+				await requireExpressSetupCTAConfigured(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when another CTA is configured', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					configuredCTAs: { 'configured-cta-id': 'another-cta' },
+				} );
+
+			expect(
+				await requireExpressSetupCTAConfigured(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when no CTA is configured', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { configuredCTAs: {} } );
+
+			expect(
+				await requireExpressSetupCTAConfigured(
 					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 				)( registry )
 			).toBe( false );

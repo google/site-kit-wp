@@ -133,3 +133,22 @@ export function requireExpressSetupCTAActioned( ctaType ) {
 		return !! lastActionedExpressSetups[ ctaType ];
 	};
 }
+
+/**
+ * Returns a function that checks if the given express setup CTA is already configured.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaType Express setup CTA type slug.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA is configured or not.
+ */
+export function requireExpressSetupCTAConfigured( ctaType ) {
+	return async ( { resolveSelect } ) => {
+		const { configuredCTAs = {} } =
+			( await resolveSelect(
+				MODULES_READER_REVENUE_MANAGER
+			).getSettings() ) || {};
+
+		return Object.values( configuredCTAs ).includes( ctaType );
+	};
+}
