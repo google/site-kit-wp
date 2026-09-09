@@ -103,27 +103,6 @@ function buildVisitorEngagementEventReportOptions(
 	};
 }
 
-/**
- * Builds the chart tile's report options for one ecommerce event.
- *
- * @since n.e.x.t
- *
- * @param {string} eventName         The ecommerce event the story detects.
- * @param {Object} [breakdownFilter] The provider tab's filter, empty for no tab.
- * @return {Object} The options `provideAnalytics4MockReport` takes.
- */
-function buildKeyActionChartReportOptions(
-	eventName: string,
-	breakdownFilter: Record< string, unknown > = {}
-) {
-	return getKeyActionChartReportOptions( {
-		dates,
-		eventNames: [ eventName ],
-		goalType: GOAL_TYPES.ECOMMERCE,
-		breakdownFilter,
-	} );
-}
-
 function maybeEmptyRows< T >( empty: boolean, rows: T[] ) {
 	return empty ? [] : rows;
 }
@@ -240,7 +219,12 @@ function commonSetup( registry: WPDataRegistry ) {
 		].forEach( ( breakdownFilter ) => {
 			provideAnalytics4MockReport(
 				registry,
-				buildKeyActionChartReportOptions( eventName, breakdownFilter )
+				getKeyActionChartReportOptions( {
+					dates,
+					eventNames: [ eventName ],
+					goalType: GOAL_TYPES.ECOMMERCE,
+					breakdownFilter,
+				} )
 			);
 		} );
 	} );
@@ -1031,9 +1015,11 @@ ZeroData.args = {
 			} );
 
 		// An empty chart report makes the tile show its zero data message.
-		const chartReportOptions = buildKeyActionChartReportOptions(
-			ENUM_CONVERSION_EVENTS.PURCHASE
-		);
+		const chartReportOptions = getKeyActionChartReportOptions( {
+			dates,
+			eventNames: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			goalType: GOAL_TYPES.ECOMMERCE,
+		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( { rows: [] }, { options: chartReportOptions } );

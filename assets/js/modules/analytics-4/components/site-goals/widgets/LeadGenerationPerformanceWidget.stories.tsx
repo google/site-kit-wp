@@ -89,27 +89,6 @@ function buildLeadEventsReportOptions(
 	};
 }
 
-/**
- * Builds the chart tile's report options for one set of lead events.
- *
- * @since n.e.x.t
- *
- * @param {Array}  leadEvents        The lead events the story detects.
- * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.
- * @return {Object} The options `provideAnalytics4MockReport` takes.
- */
-function buildKeyActionChartReportOptions(
-	leadEvents: string[],
-	breakdownFilter: Record< string, unknown > = {}
-) {
-	return getKeyActionChartReportOptions( {
-		dates,
-		eventNames: leadEvents,
-		goalType: GOAL_TYPES.LEAD,
-		breakdownFilter,
-	} );
-}
-
 const engagementReportOptions = {
 	...dates,
 	metrics: [ { name: 'engagementRate' }, { name: 'sessions' } ],
@@ -216,7 +195,12 @@ function commonSetup( registry: WPDataRegistry ) {
 		].forEach( ( breakdownFilter ) => {
 			provideAnalytics4MockReport(
 				registry,
-				buildKeyActionChartReportOptions( leadEvents, breakdownFilter )
+				getKeyActionChartReportOptions( {
+					dates,
+					eventNames: leadEvents,
+					goalType: GOAL_TYPES.LEAD,
+					breakdownFilter,
+				} )
 			);
 		} );
 	} );
@@ -1079,9 +1063,11 @@ ZeroData.args = {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{ rows: [] },
 			{
-				options: buildKeyActionChartReportOptions( [
-					ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-				] ),
+				options: getKeyActionChartReportOptions( {
+					dates,
+					eventNames: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+					goalType: GOAL_TYPES.LEAD,
+				} ),
 			}
 		);
 
