@@ -21,6 +21,7 @@
  */
 import {
 	CONTENT_POLICY_STATES,
+	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
@@ -28,6 +29,7 @@ import {
 import { createTestRegistry } from '@tests/js/test-utils';
 import {
 	requireContentPolicyState,
+	requireExpressSetupCTAActioned,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
@@ -197,6 +199,65 @@ describe( 'Reader Revenue Manager data requirements', () => {
 				await requireContentPolicyState( POLICY_VIOLATION_STATES )(
 					registry
 				)
+			).toBe( false );
+		} );
+	} );
+	describe( 'requireExpressSetupCTAActioned', () => {
+		it( 'should return true when the CTA was actioned', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( {
+					lastActionedExpressSetups: {
+						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
+					},
+				} );
+
+			expect(
+				await requireExpressSetupCTAActioned(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the CTA action timestamp is falsy', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( {
+					lastActionedExpressSetups: {
+						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 0,
+					},
+				} );
+
+			expect(
+				await requireExpressSetupCTAActioned(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when another CTA was actioned', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( {
+					lastActionedExpressSetups: { 'another-cta': 1752451200 },
+				} );
+
+			expect(
+				await requireExpressSetupCTAActioned(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when no CTA has been actioned', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetUserSettings( {} );
+
+			expect(
+				await requireExpressSetupCTAActioned(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)( registry )
 			).toBe( false );
 		} );
 	} );

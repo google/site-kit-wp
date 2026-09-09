@@ -114,3 +114,22 @@ export function requireContentPolicyState( states ) {
 		);
 	};
 }
+
+/**
+ * Returns a function that checks if the given express setup CTA was actioned.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} ctaType Express setup CTA type slug.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA was actioned or not.
+ */
+export function requireExpressSetupCTAActioned( ctaType ) {
+	return async ( { resolveSelect } ) => {
+		const { lastActionedExpressSetups = {} } =
+			( await resolveSelect(
+				MODULES_READER_REVENUE_MANAGER
+			).getUserSettings() ) || {};
+
+		return !! lastActionedExpressSetups[ ctaType ];
+	};
+}
