@@ -19,8 +19,10 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
@@ -190,6 +192,76 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 			);
 
 			global.location.href = SETUP_SUCCESS_URL;
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+	describe( 'rrm-policy-violation-extreme-notification', () => {
+		const { checkRequirements } =
+			NOTIFICATIONS[ RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID ];
+
+		function provideContentPolicyState( contentPolicyState ) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { contentPolicyState } );
+		}
+
+		beforeEach( () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		} );
+
+		it( 'should be active for the extreme content policy state', async () => {
+			provideContentPolicyState(
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			);
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active for a non-extreme policy violation', async () => {
+			provideContentPolicyState(
+				CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE
+			);
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			provideContentPolicyState(
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			);
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active while the setup success notification is showing', async () => {
+			provideContentPolicyState(
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			);
+
+			global.location.href = SETUP_SUCCESS_URL;
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the notification was dismissed as an item', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
+				] );
+
+			provideContentPolicyState(
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			);
 
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );

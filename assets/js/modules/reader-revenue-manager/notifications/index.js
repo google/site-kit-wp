@@ -17,23 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	requireCanActivateModule,
+	requireItemDismissed,
 	requireModuleActive,
 	requireModuleConnected,
 	requireModuleNotConnected,
 	requirePromptDismissed,
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -72,7 +67,6 @@ import {
 	requirePublicationOnboardingState,
 } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
-	CONTENT_POLICY_STATES,
 	EXPRESS_SETUP_CTAS,
 	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
@@ -86,22 +80,6 @@ import {
 	asyncRequireAll,
 	asyncRequireAny,
 } from '@/js/util/async';
-
-/**
- * Checks if the setup success notification is currently being shown.
- *
- * @since 1.172.0
- *
- * @return {boolean} True if the setup success notification is being shown, false otherwise.
- */
-function isShowingSuccessNotification() {
-	const notification = getQueryArg( location.href, 'notification' );
-	const slug = getQueryArg( location.href, 'slug' );
-	return (
-		notification === 'authentication_success' &&
-		slug === MODULE_SLUG_READER_REVENUE_MANAGER
-	);
-}
 
 /**
  * Requires the Reader Revenue Manager setup success notification to be showing.
@@ -300,39 +278,19 @@ export const NOTIFICATIONS = {
 		dismissRetries: 5,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
-					return false;
-				}
-
-				await resolveSelect( CORE_USER ).getDismissedItems();
-
-				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			// Due to the addition of the `dismissRetries` property, the notification dismissal
+			// logic uses prompts instead of items to track the dismissal status.
+			// However, it is possible that the notification is dismissed using dismissed items
+			// at the setup success notification stage.
+			asyncRequire(
+				false,
+				requireItemDismissed(
 					RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
-				);
-
-				// Due to the addition of the `dismissRetries` property, the notification dismissal
-				// logic uses prompts instead of items to track the dismissal status.
-				// However, it is possible that the notification is dismissed using dismissed items
-				// at the setup success notification stage.
-				if ( isItemDismissed ) {
-					return false;
-				}
-
-				await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings();
-
-				const contentPolicyState = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getContentPolicyState();
-
-				// Show only for EXTREME severity.
-				return (
-					contentPolicyState ===
-					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-				);
-			}
+				)
+			),
+			// Show only for EXTREME severity.
+			requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
 		),
 	},
 	[ RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID ]: {
