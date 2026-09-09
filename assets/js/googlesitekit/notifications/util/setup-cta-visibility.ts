@@ -38,7 +38,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
  * They stay hidden on the first dashboard landing so they don't stack on top of the
  * setup notifications that are already competing for the user's attention there.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Function} select      Data store select function.
  * @param {string}   viewContext Current view context.
@@ -72,7 +72,7 @@ export function shouldHideSetupCTAs(
  * Builds a `checkRequirements` callback that keeps a notification out of the
  * queue while the setup CTAs are hidden.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {Function} Callback resolving to `true` when the setup CTAs are shown.
  */

@@ -366,7 +366,7 @@ const baseActions = {
 	 * makes the user eligible to be invited again.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Resets the eligible subscribers cache on success.
+	 * @since 1.187.0 Resets the eligible subscribers cache on success.
 	 *
 	 * @param {number} userID Subscribed user ID.
 	 * @return {Object} Object with `response` and `error`.
@@ -513,7 +513,7 @@ const baseActions = {
 	 * pending unsubscribe snapshots taken from the stale cache.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Clears the just-unsubscribed users snapshot.
+	 * @since 1.187.0 Clears the just-unsubscribed users snapshot.
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -534,7 +534,7 @@ const baseActions = {
 	 * Dismisses a just-unsubscribed user, so `getJustUnsubscribedUsers` stops
 	 * reporting them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {number} userID Subscribed user ID.
 	 * @return {Object} Redux-style action.
@@ -907,7 +907,7 @@ const baseSelectors = {
 	 * consumer of this store keep a just-unsubscribed user's row visible
 	 * (e.g. to show a confirmation) instead of the user simply vanishing.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {Object} Just-unsubscribed users keyed by ID, in the same shape as `getSubscribedUsers().users` entries plus an `index`.

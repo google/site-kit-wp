@@ -47,6 +47,7 @@ import {
 export { registerStore } from './datastore';
 export { registerNotifications } from './notifications';
 export { registerWidgets } from './widgets';
+export { registerFeatures } from './feature-discovery';
 
 export function registerModule( modules ) {
 	modules.registerModule( MODULE_SLUG_READER_REVENUE_MANAGER, {

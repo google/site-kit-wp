@@ -139,7 +139,7 @@ import { requireSetupCTAsNotHidden } from './util/setup-cta-visibility';
  * argument plus a module `slug`, so the absence of a `slug` is what makes this
  * check specific to the initial Site Kit setup.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @return {function(): Promise<boolean>} Whether this page load follows the initial setup or not.
  */
@@ -157,7 +157,7 @@ function requireInitialSetupSuccess() {
  * dashboard already gates access. In view-only contexts the module must be
  * shared with the current user and must not be in the recovering state.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(): Promise<boolean>} Whether the module's data is viewable or not.
@@ -176,7 +176,7 @@ function requireModuleDataViewable( slug ) {
  * Requires the given module to be connected and its data to be viewable in the
  * current view context.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(): Promise<boolean>} Whether the module's data is available or not.

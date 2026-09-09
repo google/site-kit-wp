@@ -68,7 +68,7 @@ describe( 'SetupMainExpress', () => {
 		global.location.href =
 			'http://example.com/?cta=newsletter-signup&step=setup-cta';
 
-		const { getByText } = render( <SetupMainExpress /> );
+		const { getByText } = render( <SetupMainExpress />, { registry } );
 
 		expect(
 			getByText(

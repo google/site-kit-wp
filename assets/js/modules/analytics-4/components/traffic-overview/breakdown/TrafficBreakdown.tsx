@@ -21,8 +21,31 @@
  */
 import { FC } from 'react';
 
-const TrafficBreakdown: FC = () => {
-	return <div className="googlesitekit-traffic-overview__breakdown" />;
+/**
+ * Internal dependencies
+ */
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
+import TrafficBreakdownColumn from './TrafficBreakdownColumn';
+
+export interface TrafficBreakdownProps {
+	/** One report per breakdown column, keyed by the column's `id`. */
+	reports: Record< string, Report | undefined >;
+}
+
+const TrafficBreakdown: FC< TrafficBreakdownProps > = ( { reports } ) => {
+	return (
+		<div className="googlesitekit-traffic-overview__breakdown">
+			{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => (
+				<TrafficBreakdownColumn
+					key={ id }
+					heading={ heading }
+					rows={ getBreakdownRows( reports[ id ] ) }
+				/>
+			) ) }
+		</div>
+	);
 };
 
 export default TrafficBreakdown;
