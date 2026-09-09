@@ -47,25 +47,6 @@ const defaultArgs = {
 
 const reportOptions = getKeyActionChartReportOptions( defaultArgs );
 
-/**
- * Gives the registry a connected Analytics 4 module and registers its widgets.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry The registry to set up.
- * @return {void}
- */
-function provideConnectedAnalytics( registry: WPDataRegistry ) {
-	provideModules( registry, [
-		{
-			slug: MODULE_SLUG_ANALYTICS_4,
-			active: true,
-			connected: true,
-		},
-	] );
-	provideModuleRegistrations( registry );
-}
-
 function Template( {
 	setupRegistry = () => {},
 	...props
@@ -75,7 +56,15 @@ function Template( {
 	return (
 		<WithRegistrySetup
 			func={ ( registry: WPDataRegistry ) => {
-				provideConnectedAnalytics( registry );
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				provideModuleRegistrations( registry );
+
 				setupRegistry( registry );
 			} }
 		>
