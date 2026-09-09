@@ -62,6 +62,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.167.0
+	 * @since 1.187.0 Added a nonce to the provisioning redirect URI.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
@@ -87,7 +88,11 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 		$account->setDisplayName( $data_request->data['displayName'] );
 		$account->setRegionCode( $data_request->data['regionCode'] );
 
-		$redirect_uri = $this->provisioning_redirect_uri;
+		$redirect_uri = add_query_arg(
+			'nonce',
+			wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+			$this->provisioning_redirect_uri
+		);
 
 		// Add `service_version` query parameter if the feature flag is enabled.
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {

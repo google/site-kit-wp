@@ -31,7 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
+import {
+	PDF_DOWNLOAD_BUTTON_CLASS,
+	PDF_DOWNLOAD_PANEL_OPENED_KEY,
+} from '@/js/components/pdf-export/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 import PDFExportOverlayGraphic from '@/svg/graphics/pdf-export-overlay.svg';
@@ -55,7 +59,10 @@ const PDFIntroductionOverlayNotification: FC<
 			<OverlayNotification
 				notificationID={ id }
 				className="googlesitekit-pdf-introduction-overlay"
-				anchorID=".googlesitekit-pdf-download__button"
+				// On mobile and tablet the PDF download button collapses into
+				// the features menu, so the overlay anchors to whichever
+				// trigger exists.
+				anchorID={ `.${ PDF_DOWNLOAD_BUTTON_CLASS }, .${ FEATURES_MENU_BUTTON_CLASS }` }
 				title={ __( 'Export to PDF', 'google-site-kit' ) }
 				description={ __(
 					'You can now create a custom report featuring current metrics from your dashboard',

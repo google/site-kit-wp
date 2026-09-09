@@ -23,7 +23,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta;
 /**
  * Class for the CTA creation datapoint.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var \Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings
 	 */
 	private $settings;
@@ -40,7 +40,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -53,7 +53,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -120,7 +120,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Gets the supported CTA type handlers, keyed by CTA type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return CTA_Type_Handler_Interface[] CTA type handlers.
 	 */
@@ -142,7 +142,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param mixed        $response Created CTA resource.
 	 * @param Data_Request $data     Data request object.

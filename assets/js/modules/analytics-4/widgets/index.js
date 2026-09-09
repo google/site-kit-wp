@@ -88,6 +88,8 @@ import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
 } from '@/js/modules/analytics-4/components/site-goals/widgets';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
 	LeastEngagingPagesWidget,
@@ -149,25 +151,47 @@ const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
-	widgets.registerWidget(
-		'analyticsAllTrafficGA4',
-		{
-			Component: DashboardAllTrafficWidgetGA4,
-			width: widgets.WIDGET_WIDTHS.FULL,
-			priority: 1,
-			wrapWidget: false,
-			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			pdf: {
-				Component: DashboardAllTrafficWidgetGA4PDF,
-				getData: getAllTrafficPDFData,
-				label: __( 'Site traffic over time', 'google-site-kit' ),
+
+	// Only register the ("old") All Traffic widget when the new, "Traffic"
+	// widget feature is disabled.
+	if ( ! isFeatureEnabled( 'trafficOverview' ) ) {
+		widgets.registerWidget(
+			'analyticsAllTrafficGA4',
+			{
+				Component: DashboardAllTrafficWidgetGA4,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: DashboardAllTrafficWidgetGA4PDF,
+					getData: getAllTrafficPDFData,
+					label: __( 'Site traffic over time', 'google-site-kit' ),
+				},
 			},
-		},
-		[
-			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-		]
-	);
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
+
+	if ( isFeatureEnabled( 'trafficOverview' ) ) {
+		widgets.registerWidget(
+			TRAFFIC_OVERVIEW_WIDGET_SLUG,
+			{
+				Component: TrafficOverviewWidget,
+				width: widgets.WIDGET_WIDTHS.FULL,
+				priority: 1,
+				wrapWidget: false,
+				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			},
+			[
+				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+			]
+		);
+	}
 
 	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 		widgets.registerWidget(
@@ -844,44 +868,36 @@ export function registerWidgets( widgets ) {
 		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
 	);
 
-	/*
-	 * Site Goals widgets.
-	 *
-	 * Not registering these widgets when the feature flag is disabled will
-	 * ensure that the new Widget Area and Widget Context for Site Goals, including
-	 * the Navigation chip, will not be rendered when the feature is disabled.
-	 */
-	if ( isFeatureEnabled( 'siteGoals' ) ) {
-		widgets.registerWidget(
-			'analyticsOnlineStorePerformance',
-			{
-				Component: OnlineStorePerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.ECOMMERCE
-					) === true,
-			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
+	// Site Goals widgets.
+	widgets.registerWidget(
+		'analyticsOnlineStorePerformance',
+		{
+			Component: OnlineStorePerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) =>
+				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+					GOAL_TYPES.ECOMMERCE
+				) === true,
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 
-		widgets.registerWidget(
-			'analyticsLeadGenerationPerformance',
-			{
-				Component: LeadGenerationPerformanceWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 2,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				isActive: ( select ) =>
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.LEAD
-					) === true,
-			},
-			[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
-		);
-	}
+	widgets.registerWidget(
+		'analyticsLeadGenerationPerformance',
+		{
+			Component: LeadGenerationPerformanceWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 2,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			isActive: ( select ) =>
+				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+					GOAL_TYPES.LEAD
+				) === true,
+		},
+		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
+	);
 }

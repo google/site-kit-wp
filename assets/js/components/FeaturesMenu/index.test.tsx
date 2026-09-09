@@ -31,7 +31,6 @@ import {
 } from '@/js/components/dashboard-sharing/DashboardSharingSettings/__fixtures__';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
-import { SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -190,24 +189,6 @@ describe( 'FeaturesMenu', () => {
 					.select( CORE_UI )
 					.getValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY )
 			).toBe( true );
-		} );
-
-		it( 'clears the setup tooltip when opening the email reports panel', () => {
-			registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
-				isTooltipVisible: true,
-				tooltipSlug: SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
-			} );
-
-			const { getByText } = render( <FeaturesMenu />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
-
-			fireEvent.click( getByText( 'Manage email reports' ) );
-
-			expect(
-				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
-			).toBeUndefined();
 		} );
 
 		it( 'opens the sharing settings dialog when the sharing item is clicked', () => {

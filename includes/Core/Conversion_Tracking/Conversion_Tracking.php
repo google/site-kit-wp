@@ -185,7 +185,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 * Adds the active event provider flags and slugs to the inline base data.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Added the slugs of the active conversion event providers.
+	 * @since 1.187.0 Added the slugs of the active conversion event providers.
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
@@ -226,9 +226,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! is_string( $provider_class ) || ! $provider_class ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: %s: provider slug */
-						__( 'A conversion event provider class name is required to instantiate a provider: %s', 'google-site-kit' ),
-						$provider_slug
+						'A conversion event provider class name is required to instantiate a provider: %s',
+						esc_html( $provider_slug )
 					)
 				);
 			}
@@ -236,9 +235,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! class_exists( $provider_class ) ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: %s: provider classname */
-						__( "The '%s' class does not exist", 'google-site-kit' ),
-						$provider_class
+						"The '%s' class does not exist",
+						esc_html( $provider_class )
 					)
 				);
 			}
@@ -246,9 +244,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! is_subclass_of( $provider_class, Conversion_Events_Provider::class ) ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: 1: provider classname 2: Conversion_Events_Provider classname */
-						__( "The '%1\$s' class must extend the base conversion event provider class: %2\$s", 'google-site-kit' ),
-						$provider_class,
+						"The '%1\$s' class must extend the base conversion event provider class: %2\$s",
+						esc_html( $provider_class ),
 						Conversion_Events_Provider::class
 					)
 				);

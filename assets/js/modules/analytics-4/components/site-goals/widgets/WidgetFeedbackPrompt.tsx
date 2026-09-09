@@ -35,7 +35,6 @@ import ThumbsSurveyTrigger, {
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
-import { SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { trackEvent } from '@/js/util';
 
@@ -86,7 +85,6 @@ const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
 			<ThumbsSurveyTrigger
 				voteID={ voteID }
 				onVote={ handleVote }
-				downvoteFormURL={ SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL }
 				popperPlacement={ popperPlacement }
 			/>
 		</div>

@@ -35,10 +35,7 @@ import ThumbsSurveyTrigger, {
 } from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
 import useViewContext from '@/js/hooks/useViewContext';
-import {
-	SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE,
-	SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL,
-} from '@/js/modules/analytics-4/components/site-goals/constants';
+import { SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
@@ -117,7 +114,6 @@ const PrimaryActionRow: FC< PrimaryActionRowProps > = ( { goalType } ) => {
 				<ThumbsSurveyTrigger
 					voteID={ voteID }
 					onVote={ handleVote }
-					downvoteFormURL={ SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL }
 					ariaLabel={ __(
 						'Is this a key action?',
 						'google-site-kit'
