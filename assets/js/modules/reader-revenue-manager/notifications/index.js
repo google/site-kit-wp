@@ -27,6 +27,7 @@ import { getQueryArg } from '@wordpress/url';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
 	requireCanActivateModule,
+	requireModuleActive,
 	requireModuleConnected,
 	requireModuleNotConnected,
 	requirePromptDismissed,
@@ -64,7 +65,12 @@ import {
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
-import { requirePublicationOnboardingState } from '@/js/modules/reader-revenue-manager/data-requirements';
+import {
+	requirePaymentOption,
+	requireProductID,
+	requireProductIDs,
+	requirePublicationOnboardingState,
+} from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 	CONTENT_POLICY_STATES,
@@ -107,43 +113,27 @@ function requireShowingSetupSuccessNotification() {
 	);
 }
 
-async function checkRequirementsForProductIDNotification(
-	{ select, resolveSelect },
-	requiredPaymentOption
-) {
-	const readerRevenueManagerActive = select( CORE_MODULES ).isModuleActive(
-		MODULE_SLUG_READER_REVENUE_MANAGER
+/**
+ * Requires the conditions for showing a product ID notification to be met.
+ *
+ * The publication must be onboarded and offer at least one product, while its
+ * default `openaccess` product ID must still be the selected one.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} paymentOption Payment option the notification is for.
+ * @return {function(): Promise<boolean>} Whether the product ID notification should be shown or not.
+ */
+function requireProductIDNotification( paymentOption ) {
+	return asyncRequireAll(
+		requireModuleActive( MODULE_SLUG_READER_REVENUE_MANAGER ),
+		requirePublicationOnboardingState(
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		),
+		requireProductIDs(),
+		requireProductID( 'openaccess' ),
+		requirePaymentOption( paymentOption )
 	);
-
-	if ( ! readerRevenueManagerActive ) {
-		return false;
-	}
-
-	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-
-	const publicationOnboardingState = select(
-		MODULES_READER_REVENUE_MANAGER
-	).getPublicationOnboardingState();
-
-	const paymentOption = select(
-		MODULES_READER_REVENUE_MANAGER
-	).getPaymentOption();
-
-	const productIDs = select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
-
-	const productID = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
-
-	if (
-		publicationOnboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-		productIDs.length > 0 &&
-		productID === 'openaccess' &&
-		paymentOption === requiredPaymentOption
-	) {
-		return true;
-	}
-
-	return false;
 }
 
 export const NOTIFICATIONS = {
@@ -188,14 +178,7 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
-			const isActive = await checkRequirementsForProductIDNotification(
-				registry,
-				'contributions'
-			);
-
-			return isActive;
-		},
+		checkRequirements: requireProductIDNotification( 'contributions' ),
 	},
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
@@ -203,14 +186,7 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
-			const isActive = await checkRequirementsForProductIDNotification(
-				registry,
-				'subscriptions'
-			);
-
-			return isActive;
-		},
+		checkRequirements: requireProductIDNotification( 'subscriptions' ),
 	},
 	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
 		Component: PublicationApprovedOverlayNotification,
