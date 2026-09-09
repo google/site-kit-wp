@@ -348,7 +348,7 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Expected the change context line to be omitted when no row has a comparison value.' );
 	}
 
-	public function test_format_section__lists_every_site_goals_group_with_its_name_and_values() {
+	public function test_format_section__lists_every_site_goals_group_with_its_heading_and_values() {
 		$section = array(
 			'title'            => 'How is my online store performing?',
 			'section_template' => 'section-site-goals',
@@ -392,17 +392,17 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$result = Plain_Text_Formatter::format_section( $section );
 
-		$this->assertStringContainsString( 'How is my online store performing?', $result, 'Site Goals section should open with the section title.' );
-		$this->assertStringContainsString( 'Compared to previous 7 days', $result, 'Site Goals section should show the "Compared to" line.' );
-		$this->assertStringContainsString( "WooCommerce\n-----------", $result, 'Site Goals section should put the name of the plugin above its group, underlined.' );
-		$this->assertStringContainsString( 'Sales rate: 3.8% (+7.2%)', $result, 'Site Goals section should show the sales rate of the WooCommerce group.' );
-		$this->assertStringContainsString( 'Total sales: 116 (-4.6%)', $result, 'Site Goals section should show the total sales of the WooCommerce group.' );
-		$this->assertStringContainsString( 'Total sales: 214 (+6.8%)', $result, 'Site Goals section should show the total sales of the "Other sources" group.' );
-		$this->assertSame( 1, substr_count( $result, 'Sales rate' ), 'Site Goals section should show the "Other sources" total alone, with no rate row.' );
-		$this->assertStringEndsWith( "Total sales: 214 (+6.8%)\n\n", $result, 'Site Goals section should add nothing after the groups when the section has no prompt.' );
+		$this->assertStringContainsString( 'How is my online store performing?', $result, 'The Site Goals section should open with the section title.' );
+		$this->assertStringContainsString( 'Compared to previous 7 days', $result, 'The Site Goals section should show the "Compared to" line.' );
+		$this->assertStringContainsString( "WooCommerce\n-----------", $result, 'The Site Goals section should show "WooCommerce" as a group heading, underlined with hyphens.' );
+		$this->assertStringContainsString( 'Sales rate: 3.8% (+7.2%)', $result, 'The Site Goals section should show the sales rate of the WooCommerce group.' );
+		$this->assertStringContainsString( 'Total sales: 116 (-4.6%)', $result, 'The Site Goals section should show the total sales of the WooCommerce group.' );
+		$this->assertStringContainsString( 'Total sales: 214 (+6.8%)', $result, 'The Site Goals section should show the total sales of the "Other sources" group.' );
+		$this->assertSame( 1, substr_count( $result, 'Sales rate' ), 'The Site Goals section should show the "Other sources" total alone, with no rate row.' );
+		$this->assertStringEndsWith( "Total sales: 214 (+6.8%)\n\n", $result, 'The Site Goals section should add nothing after the groups when the section has no prompt.' );
 	}
 
-	public function test_format_section__ends_the_site_goals_text_with_the_enable_data_breakdown_prompt() {
+	public function test_format_section__writes_the_data_breakdown_prompt_and_no_group_heading_when_the_site_goals_results_are_combined() {
 		$section = array(
 			'title'            => 'Are people reaching out to my business?',
 			'section_template' => 'section-site-goals',
@@ -424,7 +424,7 @@ class Plain_Text_FormatterTest extends TestCase {
 							),
 						),
 						'prompt'         => array(
-							'text'      => 'Your events data may be grouped together across forms. To see separate results by form, %s.',
+							'text'      => 'Your events data might be grouped together across forms. To see separate results by form, %s.',
 							'link_text' => 'enable data breakdown',
 						),
 					),
@@ -434,13 +434,13 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$result = Plain_Text_Formatter::format_section( $section );
 
-		$this->assertStringContainsString( 'Total form completions: 85 (+0.6%)', $result, 'Site Goals section should show the values of the group that has no name.' );
+		$this->assertStringContainsString( 'Total form completions: 85 (+0.6%)', $result, 'The Site Goals section should show the values of the group that has no heading.' );
 		$this->assertStringContainsString(
-			'Your events data may be grouped together across forms. To see separate results by form, enable data breakdown (https://example.com/dashboard).',
+			'Your events data might be grouped together across forms. To see separate results by form, enable data breakdown (https://example.com/dashboard).',
 			$result,
-			'Site Goals section should end with the prompt, and put the dashboard URL after its link text.'
+			'The Site Goals section should end with the prompt, and put the dashboard URL after its link text.'
 		);
-		$this->assertStringNotContainsString( '----', $result, 'Site Goals section should show no group heading when the group has no name.' );
+		$this->assertStringNotContainsString( '----', $result, 'The Site Goals section should show no group heading when the results are combined into one group.' );
 	}
 
 	public function test_format_section__omits_the_site_goals_change_context_when_no_metric_has_a_comparison() {
@@ -477,9 +477,9 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$result = Plain_Text_Formatter::format_section( $section );
 
-		$this->assertStringContainsString( "Sales rate: 3.8%\n", $result, 'Site Goals section should end the sales rate row after its value when the row has no change.' );
-		$this->assertStringContainsString( "Total sales: 116\n", $result, 'Site Goals section should end the total sales row after its value when the row has no change.' );
-		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Site Goals section should show no "Compared to" line when no metric has a change.' );
+		$this->assertStringContainsString( "Sales rate: 3.8%\n", $result, 'The Site Goals section should end the sales rate row after its value when the row has no change.' );
+		$this->assertStringContainsString( "Total sales: 116\n", $result, 'The Site Goals section should end the total sales row after its value when the row has no change.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'The Site Goals section should show no "Compared to" line when no metric has a change.' );
 	}
 
 	public function test_format_section_returns_empty_for_empty_section_parts() {

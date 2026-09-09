@@ -324,7 +324,7 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringContainsString( 'View dashboard', $anchor_matches[1], 'Expected the label inside the HTML anchor branch.' );
 	}
 
-	public function test_render__shows_each_site_goals_group_with_its_name_and_values() {
+	public function test_render__shows_each_site_goals_group_with_its_heading_and_values() {
 		$sections = array(
 			'site_goals_online_store' => $this->get_site_goals_section(
 				'How is my online store performing?',
@@ -365,8 +365,8 @@ class Email_Template_RendererTest extends TestCase {
 
 		$html_output = $this->render_site_goals_report( $sections );
 
-		$this->assertStringContainsString( 'WooCommerce', $html_output, 'The card should name each plugin above its own group of metrics.' );
-		$this->assertStringContainsString( 'Other sources', $html_output, 'The card should show an "Other sources" group for the results that name no plugin.' );
+		$this->assertStringContainsString( 'WooCommerce', $html_output, 'The card should show "WooCommerce" as a group heading.' );
+		$this->assertStringContainsString( 'Other sources', $html_output, 'The card should show an "Other sources" heading for the results that name no plugin.' );
 		$this->assertStringContainsString( '3.8%', $html_output, 'The card should show the sales rate of the WooCommerce group.' );
 		$this->assertStringContainsString( '116', $html_output, 'The card should show the total sales of the WooCommerce group.' );
 		$this->assertStringContainsString( '214', $html_output, 'The card should show the total sales of the "Other sources" group.' );
@@ -377,7 +377,7 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertSame( 1, substr_count( $html_output, 'class="badge-negative"' ), 'The card should mark the one value that went down with a negative badge.' );
 	}
 
-	public function test_render__shows_the_enable_data_breakdown_prompt_when_the_site_goals_values_are_not_split_by_plugin() {
+	public function test_render__shows_the_data_breakdown_prompt_and_no_group_heading_when_the_site_goals_results_are_combined() {
 		$sections = array(
 			'site_goals_online_store' => $this->get_site_goals_section(
 				'How is my online store performing?',
@@ -397,7 +397,7 @@ class Email_Template_RendererTest extends TestCase {
 						),
 					),
 					'prompt'         => array(
-						'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
+						'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
 						'link_text' => 'enable data breakdown',
 					),
 				)
@@ -407,12 +407,12 @@ class Email_Template_RendererTest extends TestCase {
 		$html_output = $this->render_site_goals_report( $sections );
 
 		$this->assertStringContainsString(
-			'Your events data may be grouped together across plugins. To see separate results by plugin, <a class="link" href="https://example.com/dashboard"',
+			'Your events data might be grouped together across plugins. To see separate results by plugin, <a class="link" href="https://example.com/dashboard"',
 			$html_output,
 			'The card should show the prompt sentence with the dashboard link inside it.'
 		);
 		$this->assertStringContainsString( '>enable data breakdown</a>.', $html_output, 'The card should close the link before the period that ends the prompt sentence.' );
-		$this->assertStringNotContainsString( '<td class="text-primary" colspan="2"', $html_output, 'The card should show no group title when the group has no name.' );
+		$this->assertStringNotContainsString( '<td class="text-primary" colspan="2"', $html_output, 'The card should show no group heading when the results are combined into one group.' );
 	}
 
 	public function test_render__shows_each_site_goals_section_as_its_own_card() {
@@ -503,6 +503,7 @@ class Email_Template_RendererTest extends TestCase {
 		$html_output = $this->render_site_goals_report( $sections );
 
 		$this->assertStringContainsString( 'Total sales', $html_output, 'The card should still show every metric row.' );
+		$this->assertSame( 2, substr_count( $html_output, 'class="border"' ), 'Each of the two metric rows should render one cell alone, with no cell for a change badge.' );
 		$this->assertStringNotContainsString( 'Compared to previous 7 days', $html_output, 'The card should hide the "Compared to" line when no metric has a change.' );
 		$this->assertStringNotContainsString( 'class="badge-positive"', $html_output, 'The card should show no positive badge when no metric has a change.' );
 		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'The card should show no negative badge when no metric has a change.' );
@@ -531,7 +532,9 @@ class Email_Template_RendererTest extends TestCase {
 	/**
 	 * Renders an email report with the given Site Goals sections.
 	 *
-	 * `Sections_Map` builds no Site Goals section yet, so this test class returns the sections we pass in.
+	 * `Sections_Map` builds no Site Goals section yet, so this helper extends it with an
+	 * anonymous class. The constructor keeps the sections in `$payload`, which the override
+	 * returns.
 	 *
 	 * @param array $sections Site Goals sections to render.
 	 * @return string Rendered HTML of the email report.
@@ -540,7 +543,6 @@ class Email_Template_RendererTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 
 		$sections_map = new class( $context, $sections, new Golinks( $context ) ) extends Sections_Map {
-
 			public function get_sections() {
 				return $this->payload;
 			}

@@ -455,10 +455,9 @@ class Plain_Text_Formatter {
 		$output        = self::format_section_heading( $section['title'] );
 		$section_parts = $section['section_parts'];
 
-		// The card gives every section part the same values, so we read the first one.
+		// The section shows one "Compared to" line and one prompt, so both come from the first part.
 		$first_part = reset( $section_parts );
 
-		// The "Compared to" line shows only when a metric has a change.
 		$all_metrics = array();
 
 		foreach ( $section_parts as $part_config ) {
@@ -467,10 +466,11 @@ class Plain_Text_Formatter {
 			}
 		}
 
+		// The "Compared to" line shows only when a metric has a change.
 		$has_any_change = ! empty(
 			array_filter(
 				$all_metrics,
-				static fn( $metric ) => isset( $metric['trend'] )
+				static fn( $metric ) => null !== $metric['trend']
 			)
 		);
 
