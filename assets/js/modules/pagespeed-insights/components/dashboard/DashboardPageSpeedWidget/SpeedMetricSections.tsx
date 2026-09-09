@@ -27,6 +27,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
+import { FieldMetrics } from '@/js/modules/pagespeed-insights/components/common/reportMetrics';
 import { StrategyData } from './getPDFData';
 import MetricRow from './MetricRow';
 import MetricSection from './MetricSection';
@@ -50,14 +51,58 @@ interface SpeedMetricSectionsProps {
 	desktop: StrategyData | null;
 }
 
+interface RealUserMetricRow {
+	key: keyof FieldMetrics;
+	title: string;
+	description: string;
+}
+
+const allRealUserMetricRows: RealUserMetricRow[] = [
+	{
+		key: 'largestContentfulPaint',
+		title: _x(
+			'Largest Contentful Paint',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'Time it takes for the page to load',
+			'google-site-kit'
+		),
+	},
+	{
+		key: 'cumulativeLayoutShift',
+		title: _x(
+			'Cumulative Layout Shift',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'How stable the elements on the page are',
+			'google-site-kit'
+		),
+	},
+	{
+		key: 'interactionToNextPaint',
+		title: _x(
+			'Interaction to Next Paint',
+			'core web vitals name',
+			'google-site-kit'
+		),
+		description: __(
+			'How quickly your page responds when people interact with it',
+			'google-site-kit'
+		),
+	},
+];
+
 export default function SpeedMetricSections( {
 	mobile,
 	desktop,
 }: SpeedMetricSectionsProps ) {
-	const hasField =
-		mobile?.field !== null && mobile?.field !== undefined
-			? true
-			: desktop?.field !== null && desktop?.field !== undefined;
+	const realUserMetricRows = allRealUserMetricRows.filter(
+		( { key } ) => mobile?.field?.[ key ] || desktop?.field?.[ key ]
+	);
 
 	return (
 		<Fragment>
@@ -101,63 +146,25 @@ export default function SpeedMetricSections( {
 					/>
 				</MetricSection>
 			</PDFCard>
-			{ hasField && (
+			{ !! realUserMetricRows.length && (
 				<PDFCard style={ styles.secondCard }>
 					<MetricSection
 						title={ __( 'Real user data', 'google-site-kit' ) }
 					>
-						<MetricRow
-							title={ _x(
-								'Largest Contentful Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'Time it takes for the page to load',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.largestContentfulPaint
-							}
-							desktopMetric={
-								desktop?.field?.largestContentfulPaint
-							}
-						/>
-						<MetricRow
-							title={ _x(
-								'Cumulative Layout Shift',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How stable the elements on the page are',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.cumulativeLayoutShift
-							}
-							desktopMetric={
-								desktop?.field?.cumulativeLayoutShift
-							}
-						/>
-						<MetricRow
-							title={ _x(
-								'Interaction to Next Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How quickly your page responds when people interact with it',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.interactionToNextPaint
-							}
-							desktopMetric={
-								desktop?.field?.interactionToNextPaint
-							}
-							isLast
-						/>
+						{ realUserMetricRows.map(
+							( { key, title, description }, index ) => (
+								<MetricRow
+									key={ key }
+									title={ title }
+									description={ description }
+									mobileMetric={ mobile?.field?.[ key ] }
+									desktopMetric={ desktop?.field?.[ key ] }
+									isLast={
+										index === realUserMetricRows.length - 1
+									}
+								/>
+							)
+						) }
 					</MetricSection>
 				</PDFCard>
 			) }
