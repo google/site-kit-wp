@@ -177,6 +177,22 @@ export function requireItemDismissed( item ) {
 }
 
 /**
+ * Returns a function that checks if the given prompt is dismissed.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} prompt Dismissible prompt ID.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given prompt is dismissed or not.
+ */
+export function requirePromptDismissed( prompt ) {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( CORE_USER ).getDismissedPrompts();
+
+		return true === select( CORE_USER ).isPromptDismissed( prompt );
+	};
+}
+
+/**
  * Returns a function that checks if the audience segmentation widget is hidden.
  *
  * @since 1.166.0

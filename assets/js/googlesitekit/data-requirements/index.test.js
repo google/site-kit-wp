@@ -61,6 +61,7 @@ import {
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
+	requirePromptDismissed,
 	requireQueryArg,
 	requireSetupError,
 	requireSiteEmailReportingNotDisabled,
@@ -734,6 +735,39 @@ describe( 'data requirements', () => {
 				await requireModuleNotConnected( 'non-existent-module' )(
 					registry
 				)
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requirePromptDismissed', () => {
+		it( 'should return true when the prompt is dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': { expires: 0, count: 1 },
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the prompt is not dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the prompt dismissal has expired', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': {
+					expires: Math.floor( Date.now() / 1000 ) - 1,
+					count: 1,
+				},
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
 			).toBe( false );
 		} );
 	} );
