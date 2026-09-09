@@ -80,3 +80,19 @@ export function requireProductIDs() {
 		return productIDs?.length > 0;
 	};
 }
+
+/**
+ * Returns a function that checks if the selected product ID matches the given ID.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} id Product ID to match.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the selected product ID matches or not.
+ */
+export function requireProductID( id ) {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		return id === select( MODULES_READER_REVENUE_MANAGER ).getProductID();
+	};
+}

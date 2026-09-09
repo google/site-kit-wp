@@ -26,6 +26,7 @@ import {
 import { createTestRegistry } from '@tests/js/test-utils';
 import {
 	requirePaymentOption,
+	requireProductID,
 	requireProductIDs,
 	requirePublicationOnboardingState,
 } from './index';
@@ -130,6 +131,27 @@ describe( 'Reader Revenue Manager data requirements', () => {
 				.receiveGetSettings( {} );
 
 			expect( await requireProductIDs()( registry ) ).toBe( false );
+		} );
+	} );
+	describe( 'requireProductID', () => {
+		it( 'should return true when the product ID matches', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { productID: 'openaccess' } );
+
+			expect( await requireProductID( 'openaccess' )( registry ) ).toBe(
+				true
+			);
+		} );
+
+		it( 'should return false when the product ID does not match', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { productID: 'basic' } );
+
+			expect( await requireProductID( 'openaccess' )( registry ) ).toBe(
+				false
+			);
 		} );
 	} );
 } );
