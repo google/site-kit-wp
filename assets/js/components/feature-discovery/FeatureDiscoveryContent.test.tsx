@@ -23,39 +23,75 @@ import { render } from '@tests/js/test-utils';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 describe( 'FeatureDiscoveryContent', () => {
-	it.each( [
-		[
-			'/all-services',
-			'Feature Discovery Hub tab panel placeholder: All services and features',
-		],
-		[
-			'/whats-new',
-			'Feature Discovery Hub tab panel placeholder: What’s new?',
-		],
-	] )( 'should render the tab panel content for %s', ( route, text ) => {
-		const { getByText } = render( <FeatureDiscoveryContent />, { route } );
+	it( 'should render only the tab panel content for /all-services', () => {
+		const { getByText, queryByText } = render(
+			<FeatureDiscoveryContent />,
+			{
+				route: '/all-services',
+			}
+		);
 
-		expect( getByText( text ) ).toBeInTheDocument();
+		expect(
+			getByText(
+				'Feature Discovery Hub tab panel placeholder: All services and features'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			queryByText(
+				'Feature Discovery Hub tab panel placeholder: What’s new?'
+			)
+		).not.toBeInTheDocument();
 	} );
 
-	it.each( [ '/', '/unknown' ] )(
-		'should redirect %s to whats-new',
-		( route ) => {
-			const { getByText, history } = render(
-				<FeatureDiscoveryContent />,
-				{
-					route,
-				}
-			);
+	it( 'should render only the tab panel content for /whats-new', () => {
+		const { getByText, queryByText } = render(
+			<FeatureDiscoveryContent />,
+			{
+				route: '/whats-new',
+			}
+		);
 
-			expect( history.location.pathname ).toBe( '/whats-new' );
-			expect( history.action ).toBe( 'REPLACE' );
+		expect(
+			getByText(
+				'Feature Discovery Hub tab panel placeholder: What’s new?'
+			)
+		).toBeInTheDocument();
 
-			expect(
-				getByText(
-					'Feature Discovery Hub tab panel placeholder: What’s new?'
-				)
-			).toBeInTheDocument();
-		}
-	);
+		expect(
+			queryByText(
+				'Feature Discovery Hub tab panel placeholder: All services and features'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should redirect base path to /whats-new', () => {
+		const { getByText, history } = render( <FeatureDiscoveryContent />, {
+			route: '/',
+		} );
+
+		expect( history.location.pathname ).toBe( '/whats-new' );
+		expect( history.action ).toBe( 'REPLACE' );
+
+		expect(
+			getByText(
+				'Feature Discovery Hub tab panel placeholder: What’s new?'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should redirect unknown paths to /whats-new', () => {
+		const { getByText, history } = render( <FeatureDiscoveryContent />, {
+			route: '/unknown',
+		} );
+
+		expect( history.location.pathname ).toBe( '/whats-new' );
+		expect( history.action ).toBe( 'REPLACE' );
+
+		expect(
+			getByText(
+				'Feature Discovery Hub tab panel placeholder: What’s new?'
+			)
+		).toBeInTheDocument();
+	} );
 } );

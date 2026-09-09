@@ -40,6 +40,7 @@ import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	provideModules( registry );
 	provideUserAuthentication( registry );
+
 	registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
@@ -69,36 +70,53 @@ describe( 'FeatureDiscoveryApp', () => {
 		return result;
 	}
 
-	it.each( [
-		[ '/all-services', 'All services and features' ],
-		[ '/whats-new', 'What’s new?' ],
-	] )( 'should derive the active tab from %s', async ( pathname, name ) => {
-		const { getByRole } = await renderApp( pathname );
+	it( 'should render the shell including header', async () => {
+		const { container } = await renderApp();
+
+		expect( container ).toMatchSnapshot();
+	} );
+
+	it( 'should activate the correct tab for /all-services', async () => {
+		const { getByRole } = await renderApp( '/all-services' );
 
 		expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
-			name
+			'All services and features'
+		);
+	} );
+
+	it( 'should activate the correct tab for /whats-new', async () => {
+		const { getByRole } = await renderApp( '/whats-new' );
+
+		expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
+			'What’s new?'
 		);
 	} );
 
 	it( 'should update the hash and active tab when selecting each tab', async () => {
 		const { getByRole } = await renderApp();
 
-		for ( const [ pathname, name ] of [
-			[ '/all-services', 'All services and features' ],
-			[ '/whats-new', 'What’s new?' ],
-		] ) {
-			fireEvent.click( getByRole( 'tab', { name } ) );
+		fireEvent.click(
+			getByRole( 'tab', { name: 'All services and features' } )
+		);
 
-			expect( global.location.hash ).toBe( `#${ pathname }` );
+		expect( global.location.hash ).toBe( '#/all-services' );
 
-			expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
-				name
-			);
-		}
+		expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
+			'All services and features'
+		);
+
+		fireEvent.click( getByRole( 'tab', { name: 'What’s new?' } ) );
+
+		expect( global.location.hash ).toBe( '#/whats-new' );
+
+		expect( getByRole( 'tab', { selected: true } ) ).toHaveTextContent(
+			'What’s new?'
+		);
 	} );
 
 	it( 'should push tab changes to history and restore the active tab on back and forward', async () => {
 		const { getByRole } = await renderApp( '/all-services' );
+
 		const historyLength = global.history.length;
 
 		fireEvent.click( getByRole( 'tab', { name: 'What’s new?' } ) );
@@ -106,6 +124,7 @@ describe( 'FeatureDiscoveryApp', () => {
 		expect( global.history.length ).toBe( historyLength + 1 );
 
 		act( () => global.history.back() );
+
 		await waitFor( () => {
 			expect( global.location.hash ).toBe( '#/all-services' );
 
@@ -125,7 +144,7 @@ describe( 'FeatureDiscoveryApp', () => {
 		} );
 	} );
 
-	it( 'should avoid adding history entries when selecting the current tab', async () => {
+	it( 'should avoid adding history entries when clicking the current tab', async () => {
 		const { getByRole } = await renderApp();
 
 		const historyLength = global.history.length;
