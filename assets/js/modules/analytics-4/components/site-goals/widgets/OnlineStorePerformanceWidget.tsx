@@ -71,6 +71,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
@@ -100,19 +101,9 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-const EVENT_RATE_LABELS = {
-	purchase: __( 'Sales rate', 'google-site-kit' ),
-	add_to_cart: __( 'Add to cart rate', 'google-site-kit' ),
-};
-
-const EVENT_TOTAL_LABELS = {
-	purchase: __( 'Total sales', 'google-site-kit' ),
-	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
-};
-
 function getWidgetReportOptions(
 	dates: DateRange,
-	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
+	primaryEvent: EcommerceKeyActionEvent | undefined,
 	breakdownFilter?: Record< string, unknown >
 ) {
 	const primaryEventReportOptions: ReportOptions | null = primaryEvent
@@ -236,12 +227,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		);
 
-		const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined =
-			useSelect(
-				( select: Select ) =>
-					select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-				[]
-			);
+		const primaryEvent: EcommerceKeyActionEvent | undefined = useSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+			[]
+		);
 
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
@@ -265,20 +255,19 @@ const OnlineStorePerformanceWidget = forwardRef<
 		const selectedVisitorEngagementEvents =
 			resolvedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ];
 
-		const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
-			useSelect(
-				( select: Select ) =>
-					primaryEvent
-						? select(
-								MODULES_ANALYTICS_4
-						  ).getSecondaryEcommerceEvents( primaryEvent )
-						: [],
-				[ primaryEvent ]
-			);
+		const secondaryEcommerceEvents: EcommerceKeyActionEvent[] = useSelect(
+			( select: Select ) =>
+				primaryEvent
+					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+							primaryEvent
+					  )
+					: [],
+			[ primaryEvent ]
+		);
 		const enabledSecondaryEvents = selectedVisitorEngagementEvents.filter(
 			( eventName ) =>
 				secondaryEcommerceEvents.includes(
-					eventName as keyof typeof EVENT_TOTAL_LABELS
+					eventName as EcommerceKeyActionEvent
 				)
 		);
 
@@ -513,8 +502,30 @@ const OnlineStorePerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
-							rateTitle={ EVENT_RATE_LABELS[ primaryEvent ] }
-							totalTitle={ EVENT_TOTAL_LABELS[ primaryEvent ] }
+							rateTitle={
+								{
+									purchase: __(
+										'Sales rate',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Add to cart rate',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
+							totalTitle={
+								{
+									purchase: __(
+										'Total sales',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Products added to cart',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
 							totalSubtitle={ sprintf(
 								/* translators: %s: GA4 event name */
 								__( '“%s” events', 'google-site-kit' ),

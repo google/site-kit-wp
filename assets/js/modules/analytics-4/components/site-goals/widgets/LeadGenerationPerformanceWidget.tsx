@@ -30,7 +30,7 @@ import {
 	useEffect,
 	useState,
 } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -71,6 +71,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -191,28 +192,6 @@ function getFormBreakdownTabs(
 			),
 		};
 	} );
-}
-
-// The single/plural subtitle for the Total form completions tile.
-function getTotalSubtitle( detectedLeadEvents: string[] ): string {
-	if ( detectedLeadEvents.length === 1 ) {
-		return sprintf(
-			/* translators: %s: GA4 event name */
-			__( '“%s” events', 'google-site-kit' ),
-			detectedLeadEvents[ 0 ]
-		);
-	}
-
-	return sprintf(
-		/* translators: %d: number of detected event types */
-		_n(
-			'%d event type',
-			'%d event types',
-			detectedLeadEvents.length,
-			'google-site-kit'
-		),
-		detectedLeadEvents.length
-	);
 }
 
 function getWidgetReportOptions(
@@ -634,7 +613,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 								'Total form completions',
 								'google-site-kit'
 							) }
-							totalSubtitle={ getTotalSubtitle(
+							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
 							) }
 							currentRate={ currentRate }

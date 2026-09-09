@@ -88,6 +88,8 @@ import {
 	LeadGenerationPerformanceWidget,
 	OnlineStorePerformanceWidget,
 } from '@/js/modules/analytics-4/components/site-goals/widgets';
+import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
+import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
@@ -148,6 +150,51 @@ const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
 		'@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/ModulePopularPagesWidgetGA4PDF'
 	)
 );
+
+/**
+ * Lazy-loaded PDF component for the Online store performance widget.
+ */
+const OnlineStorePerformanceWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Lead generation performance widget.
+ */
+const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF'
+	)
+);
+
+/**
+ * Builds the `isActive` condition for a Site Goals widget.
+ *
+ * The dashboard and the PDF export decide visibility separately: the dashboard
+ * reads a widget's own `isActive`, while `isActivePDFWidget()` reads only the
+ * `isActive` inside that widget's `pdf` block. Setting one alone would let the
+ * export offer a section for a widget the dashboard is not showing, so both are
+ * given the condition this returns.
+ *
+ * The condition compares against `true` because `isSiteGoalsWidgetRenderable()`
+ * returns `undefined` until the Site Goals settings and the detected events
+ * have loaded.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} goalType The widget's goal type, one of `GOAL_TYPES`.
+ * @return {Function} Condition that takes the registry `select` and returns whether the widget renders.
+ */
+function isSiteGoalsWidgetActive( goalType ) {
+	return ( select ) =>
+		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+			goalType
+		) === true;
+}
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
@@ -877,10 +924,13 @@ export function registerWidgets( widgets ) {
 			priority: 1,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			isActive: ( select ) =>
-				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-					GOAL_TYPES.ECOMMERCE
-				) === true,
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
+			pdf: {
+				Component: OnlineStorePerformanceWidgetPDF,
+				getData: getOnlineStorePerformancePDFData,
+				label: __( 'Online store performance', 'google-site-kit' ),
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.ECOMMERCE ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 	);
@@ -893,10 +943,13 @@ export function registerWidgets( widgets ) {
 			priority: 2,
 			wrapWidget: false,
 			modules: [ MODULE_SLUG_ANALYTICS_4 ],
-			isActive: ( select ) =>
-				select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-					GOAL_TYPES.LEAD
-				) === true,
+			isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
+			pdf: {
+				Component: LeadGenerationPerformanceWidgetPDF,
+				getData: getLeadGenerationPerformancePDFData,
+				label: __( 'Lead generation performance', 'google-site-kit' ),
+				isActive: isSiteGoalsWidgetActive( GOAL_TYPES.LEAD ),
+			},
 		},
 		[ AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY ]
 	);
