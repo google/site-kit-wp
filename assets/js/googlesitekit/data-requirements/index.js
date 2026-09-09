@@ -71,8 +71,6 @@ export function requireIsAuthenticated() {
 export function requireCanViewSharedModule( slug ) {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The canViewSharedModule() selector relies on the resolution of
-			// the getModules() and getCapabilities() resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getCapabilities(),
 		] );
@@ -268,9 +266,6 @@ export function requireAuthError() {
 export function requireAccessToFeatureTour() {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The hasAccessToFeatureTour() selector relies on the resolution of
-			// the getModules(), getAuthentication() and getCapabilities()
-			// resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getAuthentication(),
 			resolveSelect( CORE_USER ).getCapabilities(),
@@ -289,8 +284,6 @@ export function requireAccessToFeatureTour() {
  */
 export function requireDataGatheringCompleteModalActive() {
 	return async ( { select, resolveSelect } ) => {
-		// The isDataGatheringCompleteModalActive() selector relies on the
-		// resolution of the getDismissedItems() resolver.
 		await resolveSelect( CORE_USER ).getDismissedItems();
 
 		return (
@@ -323,8 +316,6 @@ export function requireEmailReportingSubscribed() {
  */
 export function requireSetupError() {
 	return async ( { select, resolveSelect } ) => {
-		// The getSetupErrorMessage() selector relies on the resolution of the
-		// getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return !! select( CORE_SITE ).getSetupErrorMessage();
@@ -343,8 +334,6 @@ export function requireSetupError() {
  */
 export function requireConsentModeDisabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isConsentModeEnabled() selector relies on the resolution of the
-		// getConsentModeSettings() resolver.
 		await resolveSelect( CORE_SITE ).getConsentModeSettings();
 
 		return false === select( CORE_SITE ).isConsentModeEnabled();
@@ -372,8 +361,6 @@ export function requireAdsConnected() {
  */
 export function requireCanChangePluginAutoUpdates() {
 	return async ( { select, resolveSelect } ) => {
-		// The hasChangePluginAutoUpdatesCapacity() selector relies on the
-		// resolution of the getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return (
@@ -391,8 +378,6 @@ export function requireCanChangePluginAutoUpdates() {
  */
 export function requireSiteKitAutoUpdatesEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The getSiteKitAutoUpdatesEnabled() selector relies on the resolution
-		// of the getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return true === select( CORE_SITE ).getSiteKitAutoUpdatesEnabled();
@@ -420,8 +405,6 @@ export function requireAnyGoogleTagGatewayModuleConnected() {
  */
 export function requireGoogleTagGatewayEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isGoogleTagGatewayEnabled() selector relies on the resolution of
-		// the getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isGoogleTagGatewayEnabled();
@@ -440,8 +423,6 @@ export function requireGoogleTagGatewayEnabled() {
  */
 export function requireGTGHealthy() {
 	return async ( { select, resolveSelect } ) => {
-		// The isGTGHealthy() selector relies on the resolution of the
-		// getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isGTGHealthy();
@@ -460,8 +441,6 @@ export function requireGTGHealthy() {
  */
 export function requireGTGScriptAccessEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isScriptAccessEnabled() selector relies on the resolution of the
-		// getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isScriptAccessEnabled();
@@ -480,8 +459,6 @@ export function requireGTGScriptAccessEnabled() {
  */
 export function requireSiteEmailReportingNotDisabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isEmailReportingEnabled() selector relies on the resolution of
-		// the getEmailReportingSettings() resolver.
 		await resolveSelect( CORE_SITE ).getEmailReportingSettings();
 
 		return false !== select( CORE_SITE ).isEmailReportingEnabled();
@@ -511,8 +488,6 @@ export function requireViewOnlyContext() {
 export function requireModuleViewable( slug ) {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The getViewableModules() selector relies on the resolution of the
-			// getModules() and getCapabilities() resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getCapabilities(),
 		] );
@@ -568,8 +543,6 @@ export function requireHasRecoverableModules() {
  */
 export function requireModuleZeroData( datastoreSlug ) {
 	return async ( { select, resolveSelect } ) => {
-		// The hasZeroData() selector relies on the resolution of the sample
-		// report.
 		await resolveSelect( datastoreSlug ).getReport(
 			select( datastoreSlug ).getSampleReportArgs()
 		);
@@ -607,8 +580,6 @@ export function requireQueryArg( name, value ) {
  */
 export function requireHomeURLUsingHTTPS() {
 	return async ( { select, resolveSelect } ) => {
-		// The getHomeURL() selector relies on the resolution of the
-		// getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return isURLUsingHTTPS( select( CORE_SITE ).getHomeURL() );
