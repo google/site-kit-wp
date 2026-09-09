@@ -51,8 +51,8 @@ export type SiteGoalsPDFReports = Pick<
  * Makes the four Analytics report requests one Site Goals PDF section needs, in
  * parallel, and returns the reports.
  *
- * Throws when any one of the four requests fails. The export catches that
- * error and omits the widget's section from the PDF report. A cancel is not
+ * Throws when any one of the four requests fails. The export function catches
+ * errors and omits the widget's section from the PDF report. A cancel is not
  * a failure, so a cancelled export receives no report and no error (eg. an
  * empty object).
  *
