@@ -24,10 +24,16 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { renderHook } from '@tests/js/test-utils';
-import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
+import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { render, renderHook } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import { useSiteGoalsBreakdownNoticeCopy } from './useSiteGoalsBreakdownNoticeCopy';
 
 describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
@@ -35,8 +41,31 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideSiteInfo( registry );
+		// The hook only reads the setting for a user allowed to read it.
+		provideUserCapabilities( registry );
 	} );
+
+	function getDescriptionText( scope: BreakdownScope ): string {
+		const { result } = renderHook(
+			() => useSiteGoalsBreakdownNoticeCopy( scope ),
+			{ registry }
+		);
+
+		const { container } = render(
+			<div>{ result.current.description }</div>,
+			{
+				registry,
+			}
+		);
+
+		return container.textContent ?? '';
+	}
 
 	it( 'returns the multi-plugin ecommerce copy when multiple ecommerce providers are active', () => {
 		provideSiteInfo( registry, {
@@ -108,4 +137,73 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 			'Have multiple forms, or selling products or services?'
 		);
 	} );
+
+	describe( 'on a site that does not track conversions yet', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetConversionTrackingSettings( { enabled: false } );
+		} );
+
+		it.each( [
+			[ 'a single ecommerce provider', false ],
+			[ 'multiple ecommerce providers', true ],
+		] )(
+			'warns an online store about its sales, with %s',
+			( _label, hasMultipleProviders ) => {
+				provideSiteInfo( registry, {
+					hasMultipleActiveEcommerceEventProviders:
+						hasMultipleProviders,
+				} );
+
+				expect( getDescriptionText( GOAL_TYPES.ECOMMERCE ) ).toContain(
+					'Enabling this breakdown will also enable conversion tracking for your sales.'
+				);
+			}
+		);
+
+		it( 'warns a lead generation site about its forms', () => {
+			expect( getDescriptionText( GOAL_TYPES.LEAD ) ).toContain(
+				'Enabling this breakdown will also enable conversion tracking for your forms.'
+			);
+		} );
+
+		it.each( [
+			[ 'a single ecommerce provider', false ],
+			[ 'multiple ecommerce providers', true ],
+		] )(
+			'names both in the side panel notice, with %s',
+			( _label, hasMultipleProviders ) => {
+				provideSiteInfo( registry, {
+					hasMultipleActiveEcommerceEventProviders:
+						hasMultipleProviders,
+				} );
+
+				expect( getDescriptionText( BREAKDOWN_SCOPE_BOTH ) ).toContain(
+					'Enabling this breakdown will also enable conversion tracking for your forms and sales.'
+				);
+			}
+		);
+
+		it( 'puts the disclosure in front of the "Learn more" link', () => {
+			const text = getDescriptionText( GOAL_TYPES.ECOMMERCE );
+
+			expect(
+				text.indexOf( 'conversion tracking for your sales.' )
+			).toBeLessThan( text.indexOf( 'Learn more' ) );
+		} );
+	} );
+
+	it.each< [ string, BreakdownScope ] >( [
+		[ 'online store', GOAL_TYPES.ECOMMERCE ],
+		[ 'lead generation', GOAL_TYPES.LEAD ],
+		[ 'side panel', BREAKDOWN_SCOPE_BOTH ],
+	] )(
+		'says nothing about conversion tracking in the %s notice for a site that already tracks it',
+		( _label, scope ) => {
+			expect( getDescriptionText( scope ) ).not.toContain(
+				'conversion tracking'
+			);
+		}
+	);
 } );

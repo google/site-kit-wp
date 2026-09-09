@@ -68,6 +68,7 @@ import {
 	ALL_CUSTOM_DIMENSIONS,
 	useBreakdownEnableHandler,
 } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
@@ -231,6 +232,8 @@ function resolveBreakdownNoticeState(
 
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
+	canManageOptions: boolean | undefined;
+	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
 	isNoticeDismissed: boolean | undefined;
@@ -254,6 +257,8 @@ function computeNoticeState(
 ): BreakdownNoticeState {
 	const {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
@@ -267,6 +272,13 @@ function computeNoticeState(
 		isIntroModalDismissed === undefined ||
 		isNoticeDismissed === undefined
 	) {
+		return null;
+	}
+
+	// The description says whether the CTA also switches conversion tracking on,
+	// so waiting avoids showing the wrong wording first. Only someone allowed to
+	// read the setting ever gets a value, so nobody else is held back.
+	if ( canManageOptions && isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -548,6 +560,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	}, [ origin, showBreakdownTooltip, setSiteGoalsBreakdownTooltipPending ] );
 
 	const isViewOnly = useViewOnly();
+	const { canManageOptions, isConversionTrackingEnabled } =
+		useConversionTrackingSetting();
 
 	const creationError = useSelect( ( select: Select ) => {
 		for ( const customDimension of ALL_CUSTOM_DIMENSIONS ) {
@@ -633,6 +647,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	const noticeState = computeNoticeState( {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,

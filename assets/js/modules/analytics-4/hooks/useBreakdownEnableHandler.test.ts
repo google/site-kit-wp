@@ -30,6 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import {
@@ -75,8 +76,47 @@ describe( 'useBreakdownEnableHandler', () => {
 			.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, key );
 	}
 
+	function isConversionTrackingEnabled() {
+		return registry.select( CORE_SITE ).isConversionTrackingEnabled();
+	}
+
+	function withoutConversionTracking() {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: false } );
+	}
+
+	function mockDimensionCreation() {
+		fetchMock.post( createDimensionEndpoint, ( _url, opts ) => ( {
+			body: JSON.parse( opts.body as string ).data,
+			status: 200,
+		} ) );
+		fetchMock.post( syncDimensionsEndpoint, {
+			body: ALL_CUSTOM_DIMENSIONS.map( ( parameterName ) => ( {
+				parameterName,
+			} ) ),
+			status: 200,
+		} );
+	}
+
+	function enableHandler() {
+		return renderHook(
+			() =>
+				useBreakdownEnableHandler(
+					BREAKDOWN_ORIGIN_WIDGET,
+					GOAL_TYPES.LEAD
+				),
+			{ registry }
+		);
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideSiteInfo( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry, [
@@ -189,5 +229,110 @@ describe( 'useBreakdownEnableHandler', () => {
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
 		).toBeNull();
+	} );
+
+	describe( 'plugin conversion tracking', () => {
+		const conversionTrackingEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/site/data/conversion-tracking'
+		);
+
+		it.each( [
+			[ 'with', [ EDIT_SCOPE ] ],
+			[ 'without', [] ],
+		] )(
+			'is switched on by "Get breakdown" %s the Analytics edit scope',
+			async ( _label, grantedScopes ) => {
+				withoutConversionTracking();
+				provideUserAuthentication( registry, { grantedScopes } );
+				fetchMock.post( conversionTrackingEndpoint, {
+					body: { enabled: true },
+					status: 200,
+				} );
+				mockDimensionCreation();
+
+				const { result, waitForRegistry } = enableHandler();
+
+				await actHook( async () => {
+					await result.current.onEnable();
+				} );
+
+				await waitForRegistry();
+
+				expect( fetchMock ).toHaveFetched( conversionTrackingEndpoint );
+				expect( isConversionTrackingEnabled() ).toBe( true );
+			}
+		);
+
+		it( 'is left alone for a site that already tracks conversions', async () => {
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+			mockDimensionCreation();
+
+			const { result, waitForRegistry } = enableHandler();
+
+			await actHook( async () => {
+				await result.current.onEnable();
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( conversionTrackingEndpoint );
+			expect( isConversionTrackingEnabled() ).toBe( true );
+			expect( fetchMock ).toHaveFetched( createDimensionEndpoint );
+		} );
+
+		it( 'is left alone while the setting has not loaded', async () => {
+			// A user who cannot read the setting never gets a value, and a save
+			// they are not allowed to make would only 403.
+			registry
+				.dispatch( CORE_USER )
+				.receiveCapabilities( { googlesitekit_manage_options: false } );
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+			mockDimensionCreation();
+
+			const { result, waitForRegistry } = enableHandler();
+
+			await actHook( async () => {
+				await result.current.onEnable();
+			} );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( conversionTrackingEndpoint );
+			expect( fetchMock ).toHaveFetched( createDimensionEndpoint );
+		} );
+
+		it( 'stays off and creates no dimension when the save fails', async () => {
+			withoutConversionTracking();
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+			fetchMock.post( conversionTrackingEndpoint, {
+				body: {
+					code: 'internal_error',
+					message: 'Something went wrong.',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+			mockDimensionCreation();
+
+			const { result, waitForRegistry } = enableHandler();
+
+			await actHook( async () => {
+				await result.current.onEnable();
+			} );
+
+			await waitForRegistry();
+
+			expect( isConversionTrackingEnabled() ).toBe( false );
+			expect( fetchMock ).not.toHaveFetched( createDimensionEndpoint );
+
+			// The failed save is expected, and logs through the API layer.
+			expect( console ).toHaveErrored();
+		} );
 	} );
 } );
