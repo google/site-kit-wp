@@ -93,7 +93,7 @@ Ready.args = {
 Ready.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	delay: 400,
-	viewportLabel: 'large',
+	viewport: 'large',
 };
 
 export const Loading = Template.bind( {} ) as Story< KeyActionChartTileProps >;

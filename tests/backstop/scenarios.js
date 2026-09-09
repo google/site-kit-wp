@@ -148,31 +148,28 @@ function processSelectors( scenarioObj ) {
 }
 
 /**
- * Limits a scenario to the one viewport its `viewportLabel` names.
- *
- * Without `viewportLabel`, Backstop captures the scenario at every viewport
- * `viewports.js` defines.
+ * Limits a scenario a single viewport size.
  *
  * @since n.e.x.t
  *
- * @param {Object} scenario The scenario, which might hold a `viewportLabel`.
- * @return {Object} The scenario, which holds `viewports` when `viewportLabel`
- *                  named a viewport.
+ * @param {Object} scenario The scenario.
+ * @return {Object} The scenario, modified with limits on which viewport
+ *                  to render, if specified.
  */
 function applyViewportLabel( scenario ) {
-	const { viewportLabel, ...rest } = scenario;
+	const { viewport, ...rest } = scenario;
 
-	if ( ! viewportLabel ) {
+	if ( ! viewport ) {
 		return rest;
 	}
 
 	const namedViewports = viewports.filter(
-		( { label } ) => label === viewportLabel
+		( { label } ) => label === viewport
 	);
 
 	if ( ! namedViewports.length ) {
 		throw new Error(
-			`Scenario "${ scenario.label }" names the viewport "${ viewportLabel }", which viewports.js does not define.`
+			`Scenario "${ scenario.label }" used viewport "${ viewport }", but viewports.js does not support that size.`
 		);
 	}
 
