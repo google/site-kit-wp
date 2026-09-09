@@ -30,6 +30,7 @@ import {
 	requireModuleConnected,
 	requireModuleNotConnected,
 	requirePromptDismissed,
+	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -63,6 +64,7 @@ import {
 	RRM_SETUP_NOTIFICATION_ID,
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
+import { requirePublicationOnboardingState } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 	CONTENT_POLICY_STATES,
@@ -88,6 +90,20 @@ function isShowingSuccessNotification() {
 	return (
 		notification === 'authentication_success' &&
 		slug === MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+}
+
+/**
+ * Requires the Reader Revenue Manager setup success notification to be showing.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(): Promise<boolean>} Whether the setup success notification is being shown or not.
+ */
+function requireShowingSetupSuccessNotification() {
+	return asyncRequireAll(
+		requireQueryArg( 'notification', 'authentication_success' ),
+		requireQueryArg( 'slug', MODULE_SLUG_READER_REVENUE_MANAGER )
 	);
 }
 
@@ -155,29 +171,15 @@ export const NOTIFICATIONS = {
 		Component: RRMSetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-			const publicationOnboardingState = await select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublicationOnboardingState();
-
-			if (
-				isShowingSuccessNotification() &&
-				publicationOnboardingState !== undefined
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requireShowingSetupSuccessNotification(),
+			// The publication onboarding state must have been synced.
+			asyncRequire(
+				false,
+				requirePublicationOnboardingState( undefined )
+			)
+		),
 		isDismissible: false,
 	},
 	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
