@@ -42,3 +42,22 @@ export function requirePublicationOnboardingState( state ) {
 		);
 	};
 }
+
+/**
+ * Returns a function that checks if the payment option matches the given option.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} option Payment option to match.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the payment option matches or not.
+ */
+export function requirePaymentOption( option ) {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		return (
+			option ===
+			select( MODULES_READER_REVENUE_MANAGER ).getPaymentOption()
+		);
+	};
+}

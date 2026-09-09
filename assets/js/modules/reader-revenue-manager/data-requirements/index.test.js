@@ -24,7 +24,10 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { createTestRegistry } from '@tests/js/test-utils';
-import { requirePublicationOnboardingState } from './index';
+import {
+	requirePaymentOption,
+	requirePublicationOnboardingState,
+} from './index';
 
 describe( 'Reader Revenue Manager data requirements', () => {
 	let registry;
@@ -72,6 +75,35 @@ describe( 'Reader Revenue Manager data requirements', () => {
 			expect(
 				await requirePublicationOnboardingState( undefined )( registry )
 			).toBe( true );
+		} );
+	} );
+	describe( 'requirePaymentOption', () => {
+		it( 'should return true when the payment option matches', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { paymentOption: 'subscriptions' } );
+
+			expect(
+				await requirePaymentOption( 'subscriptions' )( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the payment option does not match', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { paymentOption: 'contributions' } );
+
+			expect(
+				await requirePaymentOption( 'subscriptions' )( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return true when matching against an empty payment option', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { paymentOption: '' } );
+
+			expect( await requirePaymentOption( '' )( registry ) ).toBe( true );
 		} );
 	} );
 } );
