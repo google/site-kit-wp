@@ -38,6 +38,7 @@ describe( 'CoreDashboardEffects', () => {
 
 	afterEach( () => {
 		document.body.classList.remove( HAS_SCROLLED_CLASS );
+		delete ( global as { pageYOffset?: number } ).pageYOffset;
 	} );
 
 	it.each( [
