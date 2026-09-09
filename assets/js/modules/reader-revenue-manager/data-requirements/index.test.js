@@ -20,11 +20,14 @@
  * Internal dependencies
  */
 import {
+	CONTENT_POLICY_STATES,
 	MODULES_READER_REVENUE_MANAGER,
+	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { createTestRegistry } from '@tests/js/test-utils';
 import {
+	requireContentPolicyState,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
@@ -152,6 +155,49 @@ describe( 'Reader Revenue Manager data requirements', () => {
 			expect( await requireProductID( 'openaccess' )( registry ) ).toBe(
 				false
 			);
+		} );
+	} );
+	describe( 'requireContentPolicyState', () => {
+		it( 'should return true when the content policy state is one of the given states', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					contentPolicyState:
+						CONTENT_POLICY_STATES.CONTENT_POLICY_VIOLATION_ACTIVE,
+				} );
+
+			expect(
+				await requireContentPolicyState( POLICY_VIOLATION_STATES )(
+					registry
+				)
+			).toBe( true );
+		} );
+
+		it( 'should return false when the content policy state is not one of the given states', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					contentPolicyState:
+						CONTENT_POLICY_STATES.CONTENT_POLICY_STATE_OK,
+				} );
+
+			expect(
+				await requireContentPolicyState( POLICY_VIOLATION_STATES )(
+					registry
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return false when the content policy state is not available', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {} );
+
+			expect(
+				await requireContentPolicyState( POLICY_VIOLATION_STATES )(
+					registry
+				)
+			).toBe( false );
 		} );
 	} );
 } );

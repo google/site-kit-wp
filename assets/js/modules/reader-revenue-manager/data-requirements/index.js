@@ -96,3 +96,21 @@ export function requireProductID( id ) {
 		return id === select( MODULES_READER_REVENUE_MANAGER ).getProductID();
 	};
 }
+
+/**
+ * Returns a function that checks if the content policy state is one of the given states.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<string>} states Content policy states to match against.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the content policy state is one of the given states or not.
+ */
+export function requireContentPolicyState( states ) {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		return states.includes(
+			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
+		);
+	};
+}
