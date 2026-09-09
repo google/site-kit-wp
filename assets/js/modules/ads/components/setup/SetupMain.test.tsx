@@ -76,7 +76,7 @@ describe( 'SetupMain', () => {
 		providePluginState();
 	} );
 
-	it( 'does not open the WooCommerce modal when WooCommerce is not active', async () => {
+	it( 'should not open the WooCommerce modal when WooCommerce is not active', async () => {
 		const { container, getByRole, waitForRegistry } = render(
 			<SetupMain />,
 			{ registry }
@@ -96,7 +96,7 @@ describe( 'SetupMain', () => {
 		expect( global.location.assign ).toHaveBeenCalled();
 	} );
 
-	it( 'opens the WooCommerce modal when WooCommerce is active', async () => {
+	it( 'should open the WooCommerce modal when WooCommerce is active', async () => {
 		providePluginState( { wooCommerceActive: true } );
 
 		const { container, getByRole, waitForRegistry } = render(
@@ -118,7 +118,7 @@ describe( 'SetupMain', () => {
 		expect( global.location.assign ).not.toHaveBeenCalled();
 	} );
 
-	it( 'closes the modal and continues account creation when "Continue with Site Kit" is clicked', async () => {
+	it( 'should close the modal and continue account creation when "Continue with Site Kit" is clicked', async () => {
 		providePluginState( { wooCommerceActive: true } );
 
 		const { container, getByRole, waitForRegistry } = render(
@@ -146,7 +146,7 @@ describe( 'SetupMain', () => {
 		expect( global.location.assign ).toHaveBeenCalled();
 	} );
 
-	it( 'closes the modal and continues account creation when "Create another account" is clicked', async () => {
+	it( 'should close the modal and continue account creation when "Create another account" is clicked', async () => {
 		providePluginState( {
 			wooCommerceActive: true,
 			googleForWooCommerceActive: true,

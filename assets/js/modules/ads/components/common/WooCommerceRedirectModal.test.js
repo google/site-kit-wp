@@ -125,7 +125,7 @@ describe( 'WooCommerceRedirectModal', () => {
 		providePluginState();
 	} );
 
-	it( 'does not render when the modal has already been dismissed', async () => {
+	it( 'should not render when the modal has already been dismissed', async () => {
 		await registry
 			.dispatch( CORE_SITE )
 			.setCacheItem( ADS_WOOCOMMERCE_REDIRECT_MODAL_CACHE_KEY, true );
@@ -162,7 +162,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			providePluginState( pluginState );
 		} );
 
-		it( 'tracks the view event with the correct label', async () => {
+		it( 'should track the view event with the correct label', async () => {
 			const { waitForRegistry } = render( <ModalComponent />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -177,7 +177,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			);
 		} );
 
-		it( 'invokes onContinueWithSiteKit and tracks the event when choosing Site Kit', async () => {
+		it( 'should invoke onContinueWithSiteKit and track the event when choosing Site Kit', async () => {
 			const { container, waitForRegistry } = render( <ModalComponent />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -197,7 +197,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			);
 		} );
 
-		it( 'stays open with a progress indicator while the caller continues with Site Kit', async () => {
+		it( 'should stay open with a progress indicator while the caller continues with Site Kit', async () => {
 			const { container, getByRole, queryByRole, waitForRegistry } =
 				render( <ModalComponent />, { registry } );
 
@@ -221,7 +221,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			expect( getGoogleForWooCommerceCTA( container ) ).toBeDisabled();
 		} );
 
-		it( 'tracks the event and dismisses the account linked notification when choosing Google for WooCommerce', async () => {
+		it( 'should track the event and dismiss the account linked notification when choosing Google for WooCommerce', async () => {
 			fetchMock.postOnce( dismissItemEndpoint, {} );
 			registerAccountLinkedNotification();
 
@@ -260,7 +260,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			providePluginState( { wooCommerceActive: true } );
 		} );
 
-		it( 'renders the WooCommerce copy and CTA labels', async () => {
+		it( 'should render the WooCommerce copy and CTA labels', async () => {
 			const { getByText, waitForRegistry } = render( <ModalComponent />, {
 				registry,
 			} );
@@ -278,7 +278,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'links the Google for WooCommerce CTA to the plugin install page', async () => {
+		it( 'should link the Google for WooCommerce CTA to the plugin install page', async () => {
 			const { container, waitForRegistry } = render( <ModalComponent />, {
 				registry,
 			} );
@@ -291,7 +291,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			);
 		} );
 
-		it( 'does not navigate imperatively when the CTA is a link', async () => {
+		it( 'should not navigate imperatively when the CTA is a link', async () => {
 			registerAccountLinkedNotification();
 			fetchMock.postOnce( dismissItemEndpoint, {} );
 
@@ -319,7 +319,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			} );
 		} );
 
-		it( 'links the Google for WooCommerce CTA to the Google dashboard', async () => {
+		it( 'should link the Google for WooCommerce CTA to the Google dashboard', async () => {
 			const { container, waitForRegistry } = render( <ModalComponent />, {
 				registry,
 			} );
@@ -332,7 +332,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			);
 		} );
 
-		it( 'does not navigate imperatively when the CTA is a link', async () => {
+		it( 'should not navigate imperatively when the CTA is a link', async () => {
 			registerAccountLinkedNotification();
 			fetchMock.postOnce( dismissItemEndpoint, {} );
 
@@ -361,7 +361,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			} );
 		} );
 
-		it( 'renders the existing account copy and CTA labels', async () => {
+		it( 'should render the existing account copy and CTA labels', async () => {
 			const { container, getByRole, getByText, waitForRegistry } = render(
 				<ModalComponent />,
 				{ registry }
@@ -385,7 +385,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			).toBeInTheDocument();
 		} );
 
-		it( 'navigates imperatively to the Google dashboard when viewing the current Ads account', async () => {
+		it( 'should navigate imperatively to the Google dashboard when viewing the current Ads account', async () => {
 			registerAccountLinkedNotification();
 			fetchMock.postOnce( dismissItemEndpoint, {} );
 
@@ -416,7 +416,7 @@ describe( 'WooCommerceRedirectModal', () => {
 			);
 		} );
 
-		it( 'invokes onContinueWithSiteKit when creating another account without an onClose callback', async () => {
+		it( 'should invoke onContinueWithSiteKit when creating another account without an onClose callback', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<ModalComponent onClose={ undefined } />,
 				{ registry }
@@ -433,7 +433,7 @@ describe( 'WooCommerceRedirectModal', () => {
 	} );
 
 	describe( 'when WooCommerce is not active', () => {
-		it( 'only closes the modal when the Google for WooCommerce CTA is clicked', async () => {
+		it( 'should only close the modal when the Google for WooCommerce CTA is clicked', async () => {
 			const { container, waitForRegistry } = render( <ModalComponent />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
