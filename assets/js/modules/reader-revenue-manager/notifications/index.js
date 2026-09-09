@@ -72,13 +72,12 @@ import {
 	requirePublicationOnboardingState,
 } from '@/js/modules/reader-revenue-manager/data-requirements';
 import {
-	ACTIVE_POLICY_VIOLATION_STATES,
 	CONTENT_POLICY_STATES,
 	EXPRESS_SETUP_CTAS,
 	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
-	PENDING_POLICY_VIOLATION_STATES,
+	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
@@ -283,31 +282,13 @@ export const NOTIFICATIONS = {
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
-					return false;
-				}
-
-				await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings();
-
-				const contentPolicyState = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getContentPolicyState();
-
-				// Show for pending or active violation states (not extreme).
-				return (
-					contentPolicyState !==
-						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE &&
-					( PENDING_POLICY_VIOLATION_STATES.includes(
-						contentPolicyState
-					) ||
-						ACTIVE_POLICY_VIOLATION_STATES.includes(
-							contentPolicyState
-						) )
-				);
-			}
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			// Show for pending or active violation states (not extreme).
+			asyncRequire(
+				false,
+				requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
+			),
+			requireContentPolicyState( POLICY_VIOLATION_STATES )
 		),
 	},
 	[ RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID ]: {
