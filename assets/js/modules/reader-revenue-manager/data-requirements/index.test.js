@@ -26,6 +26,7 @@ import {
 import { createTestRegistry } from '@tests/js/test-utils';
 import {
 	requirePaymentOption,
+	requireProductIDs,
 	requirePublicationOnboardingState,
 } from './index';
 
@@ -104,6 +105,31 @@ describe( 'Reader Revenue Manager data requirements', () => {
 				.receiveGetSettings( { paymentOption: '' } );
 
 			expect( await requirePaymentOption( '' )( registry ) ).toBe( true );
+		} );
+	} );
+	describe( 'requireProductIDs', () => {
+		it( 'should return true when the publication has at least one product ID', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { productIDs: [ 'basic' ] } );
+
+			expect( await requireProductIDs()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when the publication has no product IDs', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { productIDs: [] } );
+
+			expect( await requireProductIDs()( registry ) ).toBe( false );
+		} );
+
+		it( 'should return false when the product IDs are not available', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {} );
+
+			expect( await requireProductIDs()( registry ) ).toBe( false );
 		} );
 	} );
 } );

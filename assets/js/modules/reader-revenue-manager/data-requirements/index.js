@@ -61,3 +61,22 @@ export function requirePaymentOption( option ) {
 		);
 	};
 }
+
+/**
+ * Returns a function that checks if the publication has at least one product ID.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the publication has at least one product ID or not.
+ */
+export function requireProductIDs() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+		const productIDs = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getProductIDs();
+
+		return productIDs?.length > 0;
+	};
+}
