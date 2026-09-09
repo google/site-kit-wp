@@ -57,6 +57,7 @@ import {
 	requireGTGScriptAccessEnabled,
 	requireGoogleTagGatewayEnabled,
 	requireHasRecoverableModules,
+	requireModuleNotConnected,
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
@@ -687,6 +688,50 @@ describe( 'data requirements', () => {
 
 			expect(
 				await requireModuleZeroData( MODULES_SEARCH_CONSOLE )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireModuleNotConnected', () => {
+		it( 'should return true when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return false when the module cannot be found', async () => {
+			provideModules( registry );
+
+			expect(
+				await requireModuleNotConnected( 'non-existent-module' )(
 					registry
 				)
 			).toBe( false );
