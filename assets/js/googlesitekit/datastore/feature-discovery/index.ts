@@ -38,7 +38,7 @@ interface Store {
 	controls: typeof commonStore.controls;
 	reducer: typeof featuresStore.reducer;
 	resolvers: Record< string, never >;
-	selectors: typeof selectorsStore.selectors;
+	selectors: typeof selectorsStore.selectors & typeof newnessStore.selectors;
 }
 
 const store = combineStores(

@@ -43,7 +43,7 @@ import { getFeatureDismissalKey, getFeatureNewnessKey } from './utils';
 function getNewnessFloor( initialVersion: string ) {
 	const [ major, minor ] = initialVersion.split( '.' );
 
-	return `${ major }.${ Number( minor ) - 1 }.0`;
+	return `${ major }.${ Math.max( Number( minor ) - 1, 0 ) }.0`;
 }
 
 function hasNewnessState( select: Select ) {
@@ -187,27 +187,10 @@ export const selectors = {
 						return firstUnread ? -1 : 1;
 					}
 
-					if (
-						compareVersions.compare(
-							first.addedInVersion,
-							second.addedInVersion,
-							'>'
-						)
-					) {
-						return -1;
-					}
-
-					if (
-						compareVersions.compare(
-							first.addedInVersion,
-							second.addedInVersion,
-							'<'
-						)
-					) {
-						return 1;
-					}
-
-					return 0;
+					return compareVersions(
+						second.addedInVersion,
+						first.addedInVersion
+					);
 				} );
 		}
 	),
