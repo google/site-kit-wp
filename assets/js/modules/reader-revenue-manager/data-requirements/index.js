@@ -23,6 +23,20 @@ import { WPDataRegistry } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
+ * Returns a function that checks if the module settings are available.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the module settings are available or not.
+ */
+export function requireSettingsAvailable() {
+	return async ( { resolveSelect } ) =>
+		!! ( await resolveSelect(
+			MODULES_READER_REVENUE_MANAGER
+		).getSettings() );
+}
+
+/**
  * Returns a function that checks if the publication onboarding state matches the given state.
  *
  * @since n.e.x.t

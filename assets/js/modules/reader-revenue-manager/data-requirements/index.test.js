@@ -35,6 +35,7 @@ import {
 	requireProductID,
 	requireProductIDs,
 	requirePublicationOnboardingState,
+	requireSettingsAvailable,
 } from './index';
 
 describe( 'Reader Revenue Manager data requirements', () => {
@@ -304,6 +305,37 @@ describe( 'Reader Revenue Manager data requirements', () => {
 					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 				)( registry )
 			).toBe( false );
+		} );
+	} );
+	describe( 'requireSettingsAvailable', () => {
+		it( 'should return true when the settings are available', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {} );
+
+			expect( await requireSettingsAvailable()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when the settings request fails', async () => {
+			fetchMock.getOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+				),
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				}
+			);
+
+			expect( await requireSettingsAvailable()( registry ) ).toBe(
+				false
+			);
+
+			expect( console ).toHaveErrored();
 		} );
 	} );
 } );
