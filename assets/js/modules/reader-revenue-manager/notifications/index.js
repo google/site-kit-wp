@@ -81,7 +81,11 @@ import {
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
-import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import {
+	asyncRequire,
+	asyncRequireAll,
+	asyncRequireAny,
+} from '@/js/util/async';
 
 /**
  * Checks if the setup success notification is currently being shown.
@@ -111,6 +115,39 @@ function requireShowingSetupSuccessNotification() {
 		requireQueryArg( 'notification', 'authentication_success' ),
 		requireQueryArg( 'slug', MODULE_SLUG_READER_REVENUE_MANAGER )
 	);
+}
+
+/**
+ * Requires the publication onboarding state to have just changed.
+ *
+ * As a side effect, the changed flag is reset and the settings are saved when
+ * it is set, so that the publication approved overlay is not shown again for
+ * this reason.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(): Promise<boolean>} Whether the publication onboarding state has just changed or not.
+ */
+function requirePublicationOnboardingStateChanged() {
+	return async ( { resolveSelect, dispatch } ) => {
+		const { publicationOnboardingStateChanged } =
+			( await resolveSelect(
+				MODULES_READER_REVENUE_MANAGER
+			).getSettings() ) || {};
+
+		if ( publicationOnboardingStateChanged !== true ) {
+			return false;
+		}
+
+		const { saveSettings, setPublicationOnboardingStateChanged } = dispatch(
+			MODULES_READER_REVENUE_MANAGER
+		);
+
+		setPublicationOnboardingStateChanged( false );
+		saveSettings();
+
+		return true;
+	};
 }
 
 /**
@@ -195,50 +232,24 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect, dispatch } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			const {
-				publicationOnboardingState,
-				paymentOption,
-				publicationOnboardingStateChanged,
-			} =
-				( await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
-
-			// Show the overlay if the publication onboarding state is complete, and if either
-			// setup has just been completed but there is no paymentOption selected, or if the
-			// publication onboarding state has just changed.
-			if (
-				publicationOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				( ( isShowingSuccessNotification() && paymentOption === '' ) ||
-					publicationOnboardingStateChanged === true )
-			) {
-				// If the publication onboarding state has changed, reset it to false and save the settings.
-				// This is to ensure that the overlay is not shown again for this reason.
-				if ( publicationOnboardingStateChanged === true ) {
-					const {
-						saveSettings,
-						setPublicationOnboardingStateChanged,
-					} = dispatch( MODULES_READER_REVENUE_MANAGER );
-
-					setPublicationOnboardingStateChanged( false );
-					saveSettings();
-				}
-
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requirePublicationOnboardingState(
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			),
+			asyncRequireAny(
+				// This check resets the changed flag as a side effect, so it
+				// has to run whenever the onboarding state is complete, ahead
+				// of the alternative below.
+				requirePublicationOnboardingStateChanged(),
+				// Setup has just been completed but no payment option has been
+				// selected yet.
+				asyncRequireAll(
+					requireShowingSetupSuccessNotification(),
+					requirePaymentOption( '' )
+				)
+			)
+		),
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
 		Component: RRMIntroductoryOverlayNotification,
