@@ -71,11 +71,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
-import {
-	LEAD_RATE_LABEL,
-	LEAD_TOTAL_LABEL,
-	getLeadEventsSubtitle,
-} from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -609,8 +605,14 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
-							rateTitle={ LEAD_RATE_LABEL }
-							totalTitle={ LEAD_TOTAL_LABEL }
+							rateTitle={ __(
+								'Form completion rate',
+								'google-site-kit'
+							) }
+							totalTitle={ __(
+								'Total form completions',
+								'google-site-kit'
+							) }
 							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
 							) }

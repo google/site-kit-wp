@@ -1,5 +1,5 @@
 /**
- * Site Goals Key action labels and captions.
+ * Site Goals Key action event type and caption.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -29,50 +29,12 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 export type EcommerceKeyActionEvent = 'purchase' | 'add_to_cart';
 
 /**
- * The Site Goals Key action rate tile title, one per ecommerce event.
- *
- * @since n.e.x.t
- */
-export const ECOMMERCE_RATE_LABELS: Record< EcommerceKeyActionEvent, string > =
-	{
-		purchase: __( 'Sales rate', 'google-site-kit' ),
-		add_to_cart: __( 'Add to cart rate', 'google-site-kit' ),
-	};
-
-/**
- * The Site Goals Key action total tile title, one per ecommerce event.
- *
- * @since n.e.x.t
- */
-export const ECOMMERCE_TOTAL_LABELS: Record< EcommerceKeyActionEvent, string > =
-	{
-		purchase: __( 'Total sales', 'google-site-kit' ),
-		add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
-	};
-
-/**
- * The Site Goals Key action rate tile title for lead generation.
- *
- * @since n.e.x.t
- */
-export const LEAD_RATE_LABEL = __( 'Form completion rate', 'google-site-kit' );
-
-/**
- * The Site Goals Key action total tile title for lead generation.
- *
- * @since n.e.x.t
- */
-export const LEAD_TOTAL_LABEL = __(
-	'Total form completions',
-	'google-site-kit'
-);
-
-/**
  * Builds the caption that names the GA4 events behind the Site Goals lead
  * generation Key action total.
  *
- * With one detected event the caption names it. With several the caption counts
- * them, because no single name covers them all.
+ * With no detected event type: output "No event types".
+ * With one detected event type: output the event name (eg. `“contact” events`).
+ * With several event types: output the number of event types (eg. `2 event types`).
  *
  * @since n.e.x.t
  *

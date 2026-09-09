@@ -145,7 +145,7 @@ export function findTextStrings(
 }
 
 /**
- * Renders a PDF element and collects every text string it holds.
+ * Renders a PDF element and collects every text string it outputs.
  *
  * @since n.e.x.t
  *

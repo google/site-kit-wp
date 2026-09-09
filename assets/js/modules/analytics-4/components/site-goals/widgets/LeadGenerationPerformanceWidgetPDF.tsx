@@ -30,11 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
-import {
-	LEAD_RATE_LABEL,
-	LEAD_TOTAL_LABEL,
-	getLeadEventsSubtitle,
-} from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { LeadGenerationPerformancePDFData } from './getLeadGenerationPerformancePDFData';
 import SiteGoalsSectionPDF from './pdf/SiteGoalsSectionPDF';
 
@@ -55,8 +51,8 @@ const LeadGenerationPerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 		<SiteGoalsSectionPDF
 			heading={ __( 'Lead generation performance', 'google-site-kit' ) }
 			groups={ groups }
-			rateLabel={ LEAD_RATE_LABEL }
-			totalLabel={ LEAD_TOTAL_LABEL }
+			rateLabel={ __( 'Form completion rate', 'google-site-kit' ) }
+			totalLabel={ __( 'Total form completions', 'google-site-kit' ) }
 			totalSubtitle={ getLeadEventsSubtitle( leadEvents ) }
 			dateRangeLength={ dateRangeLength }
 		/>

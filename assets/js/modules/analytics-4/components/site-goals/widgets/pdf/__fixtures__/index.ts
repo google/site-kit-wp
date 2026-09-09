@@ -27,10 +27,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/widgets/pdf/test-utils';
 
 /**
- * The Analytics reports an Online store performance PDF loader test reads.
+ * The Analytics reports an Online store performance PDF loader test uses.
  *
- * The discovery report holds one provider the widget does not support, and the
- * grouped events report holds a row with no provider, so a test can check the
+ * The discovery report has one provider the widget does not support, and the
+ * grouped events report has a row with no provider, so a test can check the
  * "Other sources" group.
  */
 export const ONLINE_STORE_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
@@ -80,9 +80,9 @@ export const ONLINE_STORE_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 };
 
 /**
- * The Analytics reports a Lead generation performance PDF loader test reads.
+ * The Analytics reports a Lead generation performance PDF loader test uses.
  *
- * The forms are the IDs `12` and `34`, and the grouped events report holds a
+ * The forms are the IDs `12` and `34`, and the grouped events report has a
  * row with no form, so a test can check the "Other sources" group.
  */
 export const LEAD_GENERATION_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {

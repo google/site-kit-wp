@@ -76,7 +76,7 @@ export function buildBreakdownReportRows(
 }
 
 /**
- * Builds the two totals rows an aggregated report carries.
+ * Builds the two rows of metric value totals an aggregated report uses.
  *
  * @since n.e.x.t
  *
@@ -102,8 +102,8 @@ export function buildAggregatedTotalsRows(
  * loader asked for.
  *
  * The report store removes `reportID` before the request goes out, so the mock
- * cannot tell the reports apart by name. It reads what each request asks for
- * instead.
+ * cannot tell the reports apart by name. It checks the request URL's query
+ * parameters instead.
  *
  * @since n.e.x.t
  *

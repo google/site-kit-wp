@@ -30,10 +30,6 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
-import {
-	ECOMMERCE_RATE_LABELS,
-	ECOMMERCE_TOTAL_LABELS,
-} from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { OnlineStorePerformancePDFData } from './getOnlineStorePerformancePDFData';
 import SiteGoalsSectionPDF from './pdf/SiteGoalsSectionPDF';
 
@@ -54,8 +50,16 @@ const OnlineStorePerformanceWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 		<SiteGoalsSectionPDF
 			heading={ __( 'Online store performance', 'google-site-kit' ) }
 			groups={ groups }
-			rateLabel={ ECOMMERCE_RATE_LABELS[ primaryEvent ] }
-			totalLabel={ ECOMMERCE_TOTAL_LABELS[ primaryEvent ] }
+			rateLabel={
+				primaryEvent === 'purchase'
+					? __( 'Sales rate', 'google-site-kit' )
+					: __( 'Add to cart rate', 'google-site-kit' )
+			}
+			totalLabel={
+				primaryEvent === 'purchase'
+					? __( 'Total sales', 'google-site-kit' )
+					: __( 'Products added to cart', 'google-site-kit' )
+			}
 			totalSubtitle={ sprintf(
 				/* translators: %s: GA4 event name, e.g. "purchase". */
 				__( '“%s” events', 'google-site-kit' ),

@@ -35,7 +35,7 @@ import { OTHER_SOURCES_GROUP_ID } from './shapeSiteGoalsPDFData';
 import SiteGoalsBreakdownGroupPDF from './SiteGoalsBreakdownGroupPDF';
 
 /**
- * Renders the Site Goals breakdown group and reads the text it holds.
+ * Renders the Site Goals breakdown group and reads the text it outputs.
  *
  * @since n.e.x.t
  *
@@ -126,7 +126,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		).toBe( 2 );
 	} );
 
-	it( 'gives the rate tile a green background when the rate rises and a red one when it falls', () => {
+	it( 'renders the rate tile with a green background when the rate rises and a red one when it falls', () => {
 		const risingRateJSON = renderJSON(
 			<SiteGoalsBreakdownGroupPDF
 				group={ FULL_GROUP }
@@ -149,7 +149,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( fallingRateJSON ).toContain( PDF_COLORS.RED_R_10 );
 	} );
 
-	it( 'gives the rate tile a neutral background when the rate does not change', () => {
+	it( 'renders the rate tile with a neutral background when the rate does not change', () => {
 		const noChangeRateJSON = renderJSON(
 			<SiteGoalsBreakdownGroupPDF
 				group={ {
@@ -164,7 +164,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( noChangeRateJSON ).toContain( PDF_COLORS.NEUTRAL_N_10 );
 	} );
 
-	it( 'gives the rate tile a green background when the rate rises from zero', () => {
+	it( 'renders the rate tile with a green background when the rate rises from zero', () => {
 		const zeroPreviousRateJSON = renderJSON(
 			<SiteGoalsBreakdownGroupPDF
 				group={ { ...FULL_GROUP, rate: { current: 0.5, previous: 0 } } }
@@ -176,7 +176,7 @@ describe( 'SiteGoalsBreakdownGroupPDF', () => {
 		expect( zeroPreviousRateJSON ).toContain( PDF_COLORS.GREEN_G_10 );
 	} );
 
-	it( 'gives the rate tile no background color when the rate is zero in both periods', () => {
+	it( 'renders the rate tile with no background color when the rate is zero in both periods', () => {
 		const zeroRateJSON = renderJSON(
 			<SiteGoalsBreakdownGroupPDF
 				group={ { ...FULL_GROUP, rate: { current: 0, previous: 0 } } }

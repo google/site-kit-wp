@@ -63,7 +63,7 @@ export interface OnlineStorePerformancePDFData {
 /**
  * Loads the groups the Online store performance PDF section renders.
  *
- * The section holds one group per supported ecommerce plugin. It adds one more
+ * The section renders one group per supported ecommerce plugin, plus one more
  * group for the sales that came from none of them. When no supported plugin has
  * sales in the date range, the section falls back to a single group for the
  * whole site.
@@ -104,7 +104,7 @@ export default async function getOnlineStorePerformancePDFData( {
 		primaryEvent
 	);
 
-	// `! primaryEvent` changes nothing at runtime, and TypeScript needs it to
+	// `! primaryEvent` changes nothing at runtime, but TypeScript needs it to
 	// know the event is set in the data returned below.
 	if (
 		! primaryEvent ||

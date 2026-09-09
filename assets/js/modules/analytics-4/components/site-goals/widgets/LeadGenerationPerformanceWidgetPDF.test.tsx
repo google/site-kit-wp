@@ -29,7 +29,7 @@ import LeadGenerationPerformanceWidgetPDF from './LeadGenerationPerformanceWidge
 import { LEAD_GENERATION_PDF_GROUPS } from './pdf/__fixtures__';
 
 /**
- * Renders the Lead generation performance PDF section and reads the text it holds.
+ * Renders the Lead generation performance PDF section and reads the text it outputs.
  *
  * @since n.e.x.t
  *

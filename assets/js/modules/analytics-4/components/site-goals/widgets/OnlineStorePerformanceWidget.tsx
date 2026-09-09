@@ -71,11 +71,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
-import {
-	ECOMMERCE_RATE_LABELS,
-	ECOMMERCE_TOTAL_LABELS,
-	EcommerceKeyActionEvent,
-} from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
+import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
@@ -506,12 +502,32 @@ const OnlineStorePerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
-							rateTitle={ ECOMMERCE_RATE_LABELS[ primaryEvent ] }
+							rateTitle={
+								{
+									purchase: __(
+										'Sales rate',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Add to cart rate',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
 							totalTitle={
-								ECOMMERCE_TOTAL_LABELS[ primaryEvent ]
+								{
+									purchase: __(
+										'Total sales',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Products added to cart',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
 							}
 							totalSubtitle={ sprintf(
-								/* translators: %s: GA4 event name, e.g. "purchase". */
+								/* translators: %s: GA4 event name */
 								__( '“%s” events', 'google-site-kit' ),
 								primaryEvent
 							) }

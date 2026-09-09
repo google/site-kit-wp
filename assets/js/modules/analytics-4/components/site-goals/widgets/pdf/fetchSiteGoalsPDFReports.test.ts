@@ -35,7 +35,7 @@ import {
 } from './test-utils';
 
 // The builders return `null` only when no event is detected, and these always
-// pass one, so the cast holds for every test here.
+// pass one, so the non-null cast is safe in every test here.
 const GROUPED_REPORT_OPTIONS = getStoreGroupedReportOptions(
 	SITE_GOALS_PDF_TEST_DATES,
 	'purchase'
@@ -47,7 +47,7 @@ const AGGREGATED_REPORT_OPTIONS = getStoreAggregatedReportOptions(
 ) as SiteGoalsPDFReportOptions;
 
 /**
- * Requests the four Online store performance reports.
+ * Makes the four Online store performance report requests.
  *
  * @since n.e.x.t
  *
@@ -82,7 +82,7 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 4 );
 	} );
 
-	it( 'returns each report under the property name shapeSiteGoalsPDFData reads', async () => {
+	it( 'returns each report under the property name shapeSiteGoalsPDFData expects', async () => {
 		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
 
 		const reports = await fetchOnlineStorePDFReports( registry );

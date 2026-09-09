@@ -34,7 +34,7 @@ interface FetchAnalyticsReportResult {
 }
 
 /**
- * The four Analytics reports one Site Goals PDF section reads. The Key action
+ * The four Analytics reports one Site Goals PDF section needs. The Key action
  * events and the engagement metrics are each requested twice: once grouped by
  * the breakdown dimension, so the section can render a card per group, and
  * once with no dimension, for the section's whole-site fallback card.
@@ -48,8 +48,8 @@ export type SiteGoalsPDFReports = Pick<
 >;
 
 /**
- * Requests, in parallel, the four Analytics reports one Site Goals PDF section
- * reads.
+ * Makes the four Analytics report requests one Site Goals PDF section needs, in
+ * parallel, and returns the reports.
  *
  * Throws when any one of the four requests fails. The export catches that
  * error and omits the widget's section from the PDF report. A cancel is not
@@ -61,9 +61,9 @@ export type SiteGoalsPDFReports = Pick<
  * @param {Object}      params                         Analytics report request parameters.
  * @param {Object}      params.registry                WordPress data registry.
  * @param {AbortSignal} params.signal                  Signal that cancels the PDF export.
- * @param {Object}      params.groupedReportOptions    Site Goals PDF report options that carry the breakdown dimension.
- * @param {Object}      params.aggregatedReportOptions Site Goals PDF report options that carry no breakdown dimension.
- * @return {Promise<Object>} The four Analytics reports, under the property names `shapeSiteGoalsPDFData` reads, or no report when the export is cancelled.
+ * @param {Object}      params.groupedReportOptions    Site Goals PDF report options that include the breakdown dimension.
+ * @param {Object}      params.aggregatedReportOptions Site Goals PDF report options with no breakdown dimension.
+ * @return {Promise<Object>} The four Analytics reports, under the property names `shapeSiteGoalsPDFData` expects, or no report when the export is cancelled.
  */
 export default async function fetchSiteGoalsPDFReports( {
 	registry,
