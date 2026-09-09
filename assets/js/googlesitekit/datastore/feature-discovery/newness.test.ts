@@ -145,6 +145,17 @@ describe( 'core/feature-discovery newness', () => {
 			).toBe( true );
 		} );
 
+		it( 'should not throw for an initial version with no preceding minor release', () => {
+			provideNewnessState( { initialVersion: '1.0.0' } );
+			registerFeature( 'new-feature', { addedInVersion: '1.186.0' } );
+
+			expect( () =>
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureNew( 'new-feature' )
+			).not.toThrow();
+		} );
+
 		it( 'should exclude a feature whose timer has lapsed', () => {
 			provideNewnessState( {
 				expirableItems: {
@@ -168,6 +179,19 @@ describe( 'core/feature-discovery newness', () => {
 	} );
 
 	describe( 'getWhatsNewFeatures', () => {
+		it( 'should return undefined while user state is loading', () => {
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/expirable-items'
+				)
+			);
+			registerFeature( 'feature' );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
+			).toBeUndefined();
+		} );
+
 		it( 'should include only available, new, and undismissed features in the required order', () => {
 			provideModules( registry, [
 				{ slug: 'analytics-4', active: false, connected: false },
@@ -213,6 +237,19 @@ describe( 'core/feature-discovery newness', () => {
 	} );
 
 	describe( 'getNewFeatureCount', () => {
+		it( 'should return undefined while user state is loading', () => {
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/expirable-items'
+				)
+			);
+			registerFeature( 'feature' );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount()
+			).toBeUndefined();
+		} );
+
 		it( 'should count only unread Whats new features', () => {
 			provideNewnessState( {
 				expirableItems: {
