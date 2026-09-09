@@ -20,7 +20,7 @@ $section_icon  = $section['icon'];
 $dashboard_url = $section['dashboard_url'];
 $section_parts = $section['section_parts'];
 
-// The card shows one subtitle and one prompt, so both come from the first part.
+// The card gives every section part the same values, so we read the first one.
 $first_part = reset( $section_parts );
 $subtitle   = $first_part['data']['change_context'] ?? '';
 $prompt     = $first_part['data']['prompt'] ?? array();

@@ -532,9 +532,7 @@ class Email_Template_RendererTest extends TestCase {
 	/**
 	 * Renders an email report with the given Site Goals sections.
 	 *
-	 * `Sections_Map` builds no Site Goals section yet, so this helper extends it with an
-	 * anonymous class. The constructor keeps the sections in `$payload`, which the override
-	 * returns.
+	 * `Sections_Map` builds no Site Goals section yet, so this test class returns the sections we pass in.
 	 *
 	 * @param array $sections Site Goals sections to render.
 	 * @return string Rendered HTML of the email report.

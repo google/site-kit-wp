@@ -455,7 +455,7 @@ class Plain_Text_Formatter {
 		$output        = self::format_section_heading( $section['title'] );
 		$section_parts = $section['section_parts'];
 
-		// The section shows one "Compared to" line and one prompt, so both come from the first part.
+		// The section gives every section part the same values, so we read the first one.
 		$first_part = reset( $section_parts );
 
 		$all_metrics = array();
