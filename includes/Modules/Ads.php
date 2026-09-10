@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Modules\Module;
 use Google\Site_Kit\Core\Modules\Module_Settings;
 use Google\Site_Kit\Core\Modules\Module_With_Assets;
@@ -37,6 +38,7 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Modules\Ads\Ads_Conversion_Tracking_Intent;
 use Google\Site_Kit\Modules\Ads\PAX_Config;
 use Google\Site_Kit\Modules\Ads\Settings;
 use Google\Site_Kit\Modules\Ads\Has_Tag_Guard;
@@ -128,6 +130,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 */
 	public function register_persistent() {
 		add_filter( 'googlesitekit_inline_modules_data', fn ( $data ) => $this->persistent_inline_modules_data( $data ) );
+		add_action( 'googlesitekit_intents_register', $this->get_method_proxy( 'register_conversion_tracking_intent' ) );
 	}
 
 	/**
@@ -220,6 +223,17 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 		}
 
 		return $assets;
+	}
+
+	/**
+	 * Registers the intent to set up Ads conversion tracking.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Intents $intents Intents registry.
+	 */
+	protected function register_conversion_tracking_intent( Intents $intents ) {
+		$intents->register_intent( new Ads_Conversion_Tracking_Intent() );
 	}
 
 	/**
