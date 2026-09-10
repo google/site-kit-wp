@@ -14,11 +14,15 @@ namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client_Base;
+use Google\Site_Kit\Core\Intents\Intents;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Modules\Ads;
+use Google\Site_Kit\Modules\Ads\Ads_Conversion_Tracking_Intent;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
+use Google\Site_Kit\Tests\ModulesHelperTrait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +32,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AdsTest extends TestCase {
 	use Module_With_Scopes_ContractTests;
 	use Module_With_Settings_ContractTests;
+	use ModulesHelperTrait;
 
 	/**
 	 * Ads object.
@@ -72,10 +77,76 @@ class AdsTest extends TestCase {
 
 	public function test_register_persistent() {
 		remove_all_filters( 'googlesitekit_inline_modules_data' );
+		remove_all_actions( 'googlesitekit_intents_register' );
 
 		$this->ads->register_persistent();
 
 		$this->assertTrue( has_filter( 'googlesitekit_inline_modules_data' ), 'inline_modules_data filter should be registered.' );
+		$this->assertTrue( has_action( 'googlesitekit_intents_register' ), 'intents_register action should be registered.' );
+	}
+
+	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_active() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->activate_modules( Ads::MODULE_SLUG );
+
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should be active for this test.' );
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should be registered while the Ads module is active.'
+		);
+	}
+
+	public function test_register_persistent__ads_intent_is_registered_while_the_ads_module_is_not_active() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$this->assertArrayNotHasKey( Ads::MODULE_SLUG, $modules->get_active_modules(), 'The Ads module should not be active for this test.' );
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should be registered even though the Ads module is not active.'
+		);
+	}
+
+	public function test_register_persistent__ads_intent_is_withheld_while_the_feature_flag_is_off() {
+		remove_all_actions( 'googlesitekit_intents_register' );
+
+		$modules = new Modules( $this->context );
+		$modules->register();
+
+		$intents = new Intents();
+		$intents->register();
+
+		$this->assertNull(
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The Ads intent should not be returned while adsConversionTrackingIntent is disabled.'
+		);
+
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+
+		$this->assertInstanceOf(
+			Ads_Conversion_Tracking_Intent::class,
+			$intents->get_intent( Ads_Conversion_Tracking_Intent::INTENT_ID ),
+			'The registry already held the intent, so the null above came from the flag.'
+		);
 	}
 
 	public function test_register__googlesitekit_ads_measurement_connection_checks() {
