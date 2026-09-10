@@ -25,7 +25,9 @@ of truth shared with the other AI tools.
 2. **Work out which stage you're in.** If `$ARGUMENTS` names one of the numbered stage
    prompts under `design-doc/` (or `design-doc/preparation/`), follow that file — it defines
    the task, its inputs and where its output goes. `design-doc/README.md` describes the
-   process as a whole.
+   process as a whole. Its four preparation stages are optional: where the brief's "Current
+   inputs" table marks an artifact _(not used)_, work from the PRD and the design instead of
+   asking for it or producing it yourself.
 3. **Read the doc's own context** before writing: the feature brief
    (`design-doc/input/feature-brief.md`), the target document, its template
    (`design-doc/input/design-doc-template.md`), and — for structure and depth — the examples

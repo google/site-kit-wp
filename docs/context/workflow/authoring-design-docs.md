@@ -1,9 +1,9 @@
 # Authoring and Editing a Design Doc — Playbook
 
 This is the **single source of truth** for the conventions used when authoring or editing a
-design doc in Site Kit by Google. Every AI tool (Gemini CLI, Antigravity, Claude Code)
-points at this file through a thin per-tool adapter, so the conventions stay identical
-everywhere. When you change a convention, change it **here** — not in the adapters.
+design doc in Site Kit by Google. Every AI tool points at this file through a thin per-tool
+adapter, so the conventions stay identical everywhere. When you change a convention, change
+it **here** — not in the adapters.
 
 This playbook covers the cross-cutting conventions — assets, links, structure, and style —
 that apply throughout a design doc regardless of which section you are writing. It does
@@ -13,7 +13,8 @@ doc (its feature brief, PRD, template, and preparation notes).
 When starting a design doc, also read its template (`design-doc/input/design-doc-template.md`)
 and study the examples (`design-doc/input/examples/`) for structure and depth. The staged
 process that produces a design doc — from requirements through to the GitHub issues that
-implement it — is described in `design-doc/README.md`, one prompt file per stage.
+implement it — is described in `design-doc/README.md`, one prompt file per stage. Its four
+preparation stages are optional; a small, well-specified feature can start at stage 01.
 
 `design-doc/input/` is gitignored and supplied by the user, so the brief, template, examples
 and PRD may be absent. **Stop and ask the user** for anything missing rather than guessing at

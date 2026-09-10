@@ -18,7 +18,8 @@ intra-document links, structure, tables, work estimates, house style — live in
    reads it, and it's the only place feature-specific detail belongs.
 2. Add the rest of the inputs to `input/`. The required-inputs table in
    `preparation/00-introduction.md` lists what each stage needs and where it goes.
-3. Run the stages in order (see below).
+3. Run the stages in order (see below), starting either with the preparation stages or —
+   for a small, well-specified feature — straight in at stage 1.
 
 `input/` is gitignored, so the PRD, the design-doc template and the example docs stay out of
 the repository. A stage that's missing an input will stop and ask you for it rather than
@@ -26,12 +27,22 @@ invent one.
 
 ## The stages
 
+Stages 1–7 produce the design doc and then the issues. The four **preparation** stages that
+come before them are optional: they break a large or unfamiliar feature into reviewable pieces
+before any of the doc is written. For a small, well-specified feature, fill in the brief and
+start at stage 1 — mark the preparation rows of the brief's *Current inputs* table
+_(not used)_ and the later stages work from the PRD and the design instead.
+
+Skip them selectively too. An architecture document earns its place on a feature that spans
+several surfaces or adds backend work; a component list earns its place when there are enough
+components that naming them is a real decision.
+
 | Stage | Prompt file | Produces |
 | --- | --- | --- |
-| Prep 1 | `preparation/01-understand-requirements.md` | `preparation/output/overview-NN/` — an overview of the requirements, plus screenshots |
-| Prep 2 | `preparation/02-define-architecture.md` | `preparation/output/architecture-NN/` — the core architecture |
-| Prep 3 | `preparation/03-create-component-list.md` | `preparation/output/components-NN/` — the React component list |
-| Prep 4 | `preparation/04-create-detailed-design-outline.md` | `preparation/output/outline-NN/` — a skeleton of the detailed design section |
+| Prep 1 *(optional)* | `preparation/01-understand-requirements.md` | `preparation/output/overview-NN/` — an overview of the requirements, plus screenshots |
+| Prep 2 *(optional)* | `preparation/02-define-architecture.md` | `preparation/output/architecture-NN/` — the core architecture |
+| Prep 3 *(optional)* | `preparation/03-create-component-list.md` | `preparation/output/components-NN/` — the React component list |
+| Prep 4 *(optional)* | `preparation/04-create-detailed-design-outline.md` | `preparation/output/outline-NN/` — a skeleton of the detailed design section |
 | 1 | `01-overview-and-detailed-design.md` | `output/iteration-NN/design-doc.md` — every section up to and including the detailed design |
 | 2 | `02-overview-and-detailed-design-refinement.md` | refines those sections in place |
 | 3 | `03-remaining-sections-barring-work-estimates.md` | adds the remaining sections, bar work estimates |
@@ -42,10 +53,9 @@ invent one.
 
 ## Running a stage
 
-Give the agent the stage's prompt file. In Claude Code that's
-`/authoring-design-docs design-doc/04-work-estimates.md`; in Gemini `/authoring-design-docs`;
-in Antigravity the `/authoring-design-docs` workflow. Pasting the file's contents works too —
-the prompt files are self-contained and tool-agnostic.
+Give the agent the stage's prompt file — as
+`/authoring-design-docs design-doc/04-work-estimates.md` where your tool exposes that command,
+or by pasting the file's contents. The prompt files are self-contained and tool-agnostic.
 
 Then review the output and, if the stage produced a new artifact, point the brief's
 **Current inputs** table at it.
@@ -60,7 +70,7 @@ Earlier iterations are kept for reference but are **not** inputs: every stage is
 read them, because a superseded iteration is usually wrong rather than merely old. Later stages
 read only what the brief's *Current inputs* table points at, which is why you pin that
 yourself instead of it defaulting to the highest number — a newer iteration may be an
-experiment you decided against.
+experiment you decided against. A row marked _(not used)_ means that stage was skipped.
 
 ## Scripts
 

@@ -19,8 +19,8 @@ actually present:
 | Input               | Path                                                     | Needed by |
 | ------------------- | -------------------------------------------------------- | --------- |
 | Feature brief       | `design-doc/input/feature-brief.md`                      | every stage |
-| PRD                 | as named in the brief's "Resources"                      | preparation 01 |
-| Design              | as named in the brief's "Resources"                      | preparation 01, and any stage adding screenshots |
+| PRD                 | as named in the brief's "Resources"                      | preparation 01, or stage 01 when preparation is skipped |
+| Design              | as named in the brief's "Resources"                      | as above, and any stage adding screenshots |
 | Design doc template | `design-doc/input/design-doc-template.md`                | 01 |
 | Example design docs | `design-doc/input/examples/`                             | 01 |
 | Issue template      | `.github/ISSUE_TEMPLATE/feature_request.md`              | 06 |
@@ -36,9 +36,19 @@ If the brief itself is absent, create it from `design-doc/templates/feature-brie
 the user to fill it in — or fill it in from what they tell you, and have them confirm it —
 before going any further.
 
+## Inputs from earlier stages
+
+The brief's "Current inputs" table names the artifact each earlier stage produced. Read only
+what it points at — a superseded iteration is usually wrong rather than merely old.
+
+The four preparation stages are **optional**: they break a large or unfamiliar feature down
+before any of the doc is written, and a small, well-specified feature can go straight to stage
+01. Where the table marks an artifact _(not used)_, work from the brief's "Resources" — the PRD
+and the design — in its place. Don't ask for it, and don't produce it yourself as a side
+errand: the user chose to skip that stage.
+
 ## Conventions
 
 Follow the shared conventions for design-doc screenshots, diagrams, intra-document links, and
-house style defined in the playbook **`docs/context/workflow/authoring-design-docs.md`** (Claude
-Code exposes this as the `authoring-design-docs` skill; save screenshots and diagrams under the
-document's output directory).
+house style defined in the playbook **`docs/context/workflow/authoring-design-docs.md`**, and
+save screenshots and diagrams under the document's output directory.

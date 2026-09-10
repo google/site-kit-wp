@@ -7,8 +7,8 @@ Read ./design-doc/preparation/00-introduction.md
 ## Inputs
 
 Read the feature brief (./design-doc/input/feature-brief.md) and, from its "Current inputs"
-table, the design doc, the requirements overview, the architecture document, the component
-list and the detailed design outline.
+table, the design doc, plus whichever preparation artifacts it names — the requirements
+overview, the architecture document, the component list and the detailed design outline.
 
 ## Design doc content
 

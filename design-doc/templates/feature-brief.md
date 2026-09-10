@@ -57,10 +57,14 @@ its row below. Later stages read **only** what this table points at.
 Pin the iteration you want the next stage to read. That is not automatically the
 highest-numbered one — a newer iteration may be an experiment you decided against.
 
-| Artifact                | Path                    |
-| ----------------------- | ----------------------- |
-| Requirements overview   | _(not yet created)_     |
-| Architecture            | _(not yet created)_     |
-| Component list          | _(not yet created)_     |
-| Detailed design outline | _(not yet created)_     |
-| Design doc              | _(not yet created)_     |
+The four preparation artifacts are optional. If you're skipping the preparation stages —
+reasonable for a small, well-specified feature — mark their rows _(not used)_ and the later
+stages will work from the PRD and the design in "Resources" instead.
+
+| Artifact                | Path                |
+| ----------------------- | ------------------- |
+| Requirements overview   | _(not yet created)_ |
+| Architecture            | _(not yet created)_ |
+| Component list          | _(not yet created)_ |
+| Detailed design outline | _(not yet created)_ |
+| Design doc              | _(not yet created)_ |

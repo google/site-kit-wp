@@ -30,6 +30,8 @@ of this project's AI tools). Follow it exactly. Summary of what it covers:
 The staged process that produces a design doc — from requirements through to GitHub issues —
 is described in **`design-doc/README.md`**, one prompt file per stage. If you were given one
 of those stage files, follow it: it defines the task, its inputs and where its output goes.
+The four preparation stages are optional — where the brief's "Current inputs" table marks an
+artifact _(not used)_, work from the PRD and the design in its place.
 
 Before writing, read the feature brief (`design-doc/input/feature-brief.md`), the target
 document, its template (`design-doc/input/design-doc-template.md`), and the examples in
