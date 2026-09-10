@@ -21,7 +21,7 @@
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import PartialDataBadge from './PartialDataBadge';
 
 describe( 'PartialDataBadge', () => {
@@ -55,6 +55,28 @@ describe( 'PartialDataBadge', () => {
 		expect(
 			container.querySelector( '.googlesitekit-info-tooltip' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'shows the badge once the user picks a range starting before the dimension collected data', () => {
+		// The dimension started collecting on 2020-08-01. A 28-day range starts after
+		// that, a 90-day range before it.
+		const registry = setupRegistry( 20200801 );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
+
+		const { queryByText, getByText, rerender } = render(
+			<PartialDataBadge customDimensionSlug={ SLUG } />,
+			{ registry }
+		);
+
+		expect( queryByText( 'Partial data' ) ).not.toBeInTheDocument();
+
+		act( () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		} );
+
+		rerender( <PartialDataBadge customDimensionSlug={ SLUG } /> );
+
+		expect( getByText( 'Partial data' ) ).toBeInTheDocument();
 	} );
 
 	it( 'renders nothing when the dimension is not in partial data state', () => {
