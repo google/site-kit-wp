@@ -35,6 +35,9 @@
       "googlesitekit-widgets": [
         "./assets/js/googlesitekit-widgets"
       ],
+      "googlesitekit-feature-discovery": [
+        "./assets/js/googlesitekit-feature-discovery"
+      ],
       "@wordpress/api-fetch__non-shim": ["./node_modules/@wordpress/api-fetch"],
       "@wordpress/i18n__non-shim": ["./node_modules/@wordpress/i18n"]
     },

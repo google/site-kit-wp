@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
@@ -203,6 +204,30 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Add the chart tile's report for both ecommerce events, once with no tab
+	// filter and once per provider tab.
+	[
+		ENUM_CONVERSION_EVENTS.PURCHASE,
+		ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+	].forEach( ( eventName ) => {
+		[
+			{},
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
+		].forEach( ( breakdownFilter ) => {
+			provideAnalytics4MockReport(
+				registry,
+				getKeyActionChartReportOptions( {
+					dates,
+					eventNames: [ eventName ],
+					goalType: GOAL_TYPES.ECOMMERCE,
+					breakdownFilter,
+				} )
+			);
+		} );
+	} );
 }
 
 function seedGoalDriverReports(
@@ -813,7 +838,10 @@ Ready.args = {
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 	},
 };
-Ready.scenario = {};
+Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -862,7 +890,10 @@ TabbedBreakdownDeactivatedPlugin.args = {
 		seedTabbedBreakdown( registry );
 	},
 };
-TabbedBreakdownDeactivatedPlugin.scenario = {};
+TabbedBreakdownDeactivatedPlugin.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
 TabbedBreakdownPartialData.storyName = 'Tabbed Breakdown (Partial Data)';
@@ -886,7 +917,10 @@ TabbedBreakdownOtherSources.args = {
 		seedTabbedBreakdown( registry, { unattributedCount: 12 } );
 	},
 };
-TabbedBreakdownOtherSources.scenario = {};
+TabbedBreakdownOtherSources.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const ReadyAddToCart = Template.bind( {} ) as Story;
 ReadyAddToCart.storyName = 'Ready (Add to Cart)';
@@ -980,6 +1014,17 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		// An empty chart report makes the tile show its zero data message.
+		const chartReportOptions = getKeyActionChartReportOptions( {
+			dates,
+			eventNames: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			goalType: GOAL_TYPES.ECOMMERCE,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: chartReportOptions } );
+
 		seedGoalDriverReports( registry, [ ENUM_CONVERSION_EVENTS.PURCHASE ], {
 			empty: true,
 		} );

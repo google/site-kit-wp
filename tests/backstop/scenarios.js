@@ -31,6 +31,7 @@ const path = require( 'path' );
  * Internal dependencies
  */
 const storybookConfig = require( '../../storybook/main' );
+const viewports = require( './viewports' );
 
 // Use HTTP server instead of file:// URLs to support ES modules in modern Storybook.
 // See https://github.com/storybookjs/storybook/blob/next/MIGRATION.md#dropped-support-for-file-urls.
@@ -146,6 +147,35 @@ function processSelectors( scenarioObj ) {
 	return processedScenario;
 }
 
+/**
+ * Limits a scenario a single viewport size.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} scenario The scenario.
+ * @return {Object} The scenario, modified with limits on which viewport
+ *                  to render, if specified.
+ */
+function applyViewportLabel( scenario ) {
+	const { viewport, ...rest } = scenario;
+
+	if ( ! viewport ) {
+		return rest;
+	}
+
+	const namedViewports = viewports.filter(
+		( { label } ) => label === viewport
+	);
+
+	if ( ! namedViewports.length ) {
+		throw new Error(
+			`Scenario "${ scenario.label }" used viewport "${ viewport }", but viewports.js does not support that size.`
+		);
+	}
+
+	return { ...rest, viewports: namedViewports };
+}
+
 module.exports = csfScenarios.map( ( scenario ) => {
 	const backstopReadySelector = 'body.backstopjs-ready';
 
@@ -154,7 +184,7 @@ module.exports = csfScenarios.map( ( scenario ) => {
 		: backstopReadySelector;
 
 	return {
-		...processSelectors( scenario ),
+		...processSelectors( applyViewportLabel( scenario ) ),
 		readySelector,
 	};
 } );
