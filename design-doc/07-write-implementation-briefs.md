@@ -1,18 +1,18 @@
-# Design doc - refinement
+# Design doc - implementation briefs
 
 ## Introduction
 
 Read ./design-doc/preparation/00-introduction.md
 
-## Additional resources
+## Inputs
 
-- Requirements overview: ./design-doc/preparation/output/overview-09/overview.md
-- Architecture document: ./design-doc/preparation/output/architecture-06/architecture.md
-- Component list: ./design-doc/preparation/output/components-01/components.md
+Read the feature brief (./design-doc/input/feature-brief.md) and, from its "Current inputs"
+table, the design doc, the requirements overview, the architecture document and the component
+list.
 
 ## Write Implementation Briefs
 
-The design doc has been created and is available in ./design-doc/output/iteration-04/design-doc.md.
+The design doc has been created; it's the iteration the brief's "Design doc" row points at.
 
 Issues defined in the "Work Estimates" section of the design doc have been created, with their Acceptance Criteria defined.
 
@@ -21,18 +21,28 @@ The next step is to draft the "Implementation Brief" section for each of the iss
 Issues will be worked on in batches. For each batch:
 
 - Refer to the issue files in the ./design-doc/issues/implementation-brief/pending directory for the issues that need to be completed.
-- Example completed issues are found in the ./design-doc/issues/implementation-brief/examples directory.
-- Existing issues for the Feature Discovery Hub that have been completed are found in the ./design-doc/issues/implementation-brief/complete directory.
-- Create a new directory in ./design-doc/issues/implementation-brief/output/iteration-XX where XX is the latest iteration number.
+- Example completed issues are found in the ./design-doc/input/issues/implementation-brief-examples directory.
+- Existing issues for this feature that have been completed are found in the ./design-doc/issues/implementation-brief/complete directory.
+- Create a new directory in ./design-doc/issues/implementation-brief/output/iteration-XX where XX is the next iteration number.
 - Write the issues with their Implementation Briefs to the new directory.
 - Each issue should be in a separate file, named NN-{slug}.md where NN is the issue number and {slug} is the issue slug, derived from the issue title.
-- Copy this file (07-write-implementation-briefs.md) and 00-introduction.md to ./design-doc/issues/implementation-brief/output/iteration-XX/
+- Copy this file (07-write-implementation-briefs.md), 00-introduction.md and the feature brief to ./design-doc/issues/implementation-brief/output/iteration-XX/
 
 DO NOT read the contents of the previous iterations' output directories, as they may be incorrect.
 
+The `pending` directory holds the created issues trimmed down to their Feature Description and
+Acceptance criteria. To refresh it from GitHub:
+
+```sh
+node ./design-doc/scripts/github-fetch-sub-issues.js <parent-issue-number>
+node ./design-doc/scripts/markdown-trim-sections.js ./design-doc/issues/<parent-issue-number> \
+  -o ./design-doc/issues/implementation-brief/pending
+```
+
 ### Implementation Brief guidelines
 
-The examples directory and its README cover general IB style, and the bloat to avoid — read them
+The examples directory (./design-doc/input/issues/implementation-brief-examples) and its
+README cover general IB style, and the bloat to avoid — read them
 first. What follows is what review has repeatedly corrected in this project.
 
 **Respect the dependency order.**

@@ -1,11 +1,12 @@
 ---
 title: Author or edit a design doc
-description: Apply Site Kit's design-doc conventions — screenshots, Mermaid diagrams, intra-document links, and house style — when authoring or editing a design doc, following the project's shared playbook.
+description: Apply Site Kit's design-doc conventions — screenshots, Mermaid diagrams, intra-document links, and house style — when authoring or editing a design doc, or running a stage of the staged design-doc process, following the project's shared playbook.
 ---
 
 # Author or edit a design doc
 
-Run with `/authoring-design-docs [design doc path or section]` in the Agent chat.
+Run with `/authoring-design-docs [design doc path, stage prompt file, or section]` in the
+Agent chat.
 
 The conventions are the shared, tool-agnostic playbook
 **`docs/context/workflow/authoring-design-docs.md`** (the single source of truth used by all
@@ -26,6 +27,15 @@ of this project's AI tools). Follow it exactly. Summary of what it covers:
 6. **Style guide** — concise but human-friendly; self-contained; verify code references;
    decide or defer open points; US English; and edit cleanly, leaving no trace of the edit.
 
-Before writing, read the target document, its template
-(`design-doc/design-doc-template.md`), and the examples in `design-doc/examples/`.
-Feature-specific requirements live with the doc, not in this workflow.
+The staged process that produces a design doc — from requirements through to GitHub issues —
+is described in **`design-doc/README.md`**, one prompt file per stage. If you were given one
+of those stage files, follow it: it defines the task, its inputs and where its output goes.
+
+Before writing, read the feature brief (`design-doc/input/feature-brief.md`), the target
+document, its template (`design-doc/input/design-doc-template.md`), and the examples in
+`design-doc/input/examples/`. Feature-specific requirements live in the brief and the
+resources it names, not in this workflow.
+
+**Ask, don't invent** — `design-doc/input/` is gitignored and user-supplied, so the brief,
+template, examples or PRD may be absent. Stop and ask the user for anything missing rather
+than guessing at requirements or inventing a scope.

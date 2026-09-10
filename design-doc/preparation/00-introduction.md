@@ -1,41 +1,44 @@
-# Writing the Feature Discovery Hub design doc
+# Writing a design doc
 
 ## Introduction
 
-You're going to create a design doc for the "Feature Discovery Hub" feature. This is a new feature for Google's Site Kit plugin for WordPress.
+You're going to help create a design doc for a feature in Google's Site Kit plugin for
+WordPress, working through one stage of the process described in ./design-doc/README.md.
 
-This document is an introduction to the process of writing the design doc.
-
-## Resources
-
-The full requirements for the feature are found in these resources:
-
-- Product requirement document (PRD): ./design-doc/feature-discovery-hub-prd.md
-- Figma design: https://www.figma.com/design/7gBBIQhrIvLicLinAt9vta/Feature-Discovery-Hub?node-id=756-13326&p=f&t=31e0sVDm9Cupvhbt-0
-- Features list: https://docs.google.com/spreadsheets/d/1I3LvR-r0CY_uOiI2jZh_iy1m6AgCf9ypmhRBQBggzN0/edit?pli=1&gid=65994475#gid=65994475
-
-The design doc will follow this template: ./design-doc/design-doc-template.md
-
-Example design docs are found in this folder: ./design-doc/examples
+This file is the generic introduction, shared by every stage. The feature-specific brief —
+what the feature is, where its requirements live, and what is in and out of scope — is
+./design-doc/input/feature-brief.md.
 
 Your working directory contains the Site Kit codebase.
 
-## Scope
+## Before you start
 
-This will be an MVP implementation of the feature.
+Read ./design-doc/input/feature-brief.md, then check that the inputs your stage needs are
+actually present:
 
-Items NOT in scope are:
+| Input               | Path                                                     | Needed by |
+| ------------------- | -------------------------------------------------------- | --------- |
+| Feature brief       | `design-doc/input/feature-brief.md`                      | every stage |
+| PRD                 | as named in the brief's "Resources"                      | preparation 01 |
+| Design              | as named in the brief's "Resources"                      | preparation 01, and any stage adding screenshots |
+| Design doc template | `design-doc/input/design-doc-template.md`                | 01 |
+| Example design docs | `design-doc/input/examples/`                             | 01 |
+| Issue template      | `.github/ISSUE_TEMPLATE/feature_request.md`              | 06 |
+| Example issues (AC) | `design-doc/input/issues/acceptance-criteria-examples/`  | 06 |
+| Example issues (IB) | `design-doc/input/issues/implementation-brief-examples/` | 07 |
 
-- Aspects of the PRD that aren't included in the other resources.
-- The "Suggested for you" tab and other user input related aspects.
-  - "User input" in this context refers specifically to Site Kit's 3-question user input questionnaire. The other feedback mechanisms are in scope.
-- Showing features from plugin versions newer than the installed version.
-- RRM sub-features other than the newsletter sub-feature.
+`design-doc/input/` is gitignored and is supplied by the user, so its entries above may not be
+there (the issue template is part of the repository). **Stop and ask the user** for anything
+that's missing. Do not guess at requirements, invent a template or a scope, or carry on
+without the examples — a design doc built on assumed requirements is worse than no design doc.
 
-## Additional context
-
-- Some of the copy in Figma is placeholder text, the copy in the features list will be the final copy.
+If the brief itself is absent, create it from `design-doc/templates/feature-brief.md` and ask
+the user to fill it in — or fill it in from what they tell you, and have them confirm it —
+before going any further.
 
 ## Conventions
 
-Follow the shared conventions for design-doc screenshots, diagrams, intra-document links, and house style defined in the playbook **`docs/context/workflow/authoring-design-docs.md`** (Claude Code exposes this as the `authoring-design-docs` skill; save screenshots and diagrams under the document's output directory).
+Follow the shared conventions for design-doc screenshots, diagrams, intra-document links, and
+house style defined in the playbook **`docs/context/workflow/authoring-design-docs.md`** (Claude
+Code exposes this as the `authoring-design-docs` skill; save screenshots and diagrams under the
+document's output directory).

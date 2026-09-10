@@ -8,10 +8,16 @@ everywhere. When you change a convention, change it **here** — not in the adap
 This playbook covers the cross-cutting conventions — assets, links, structure, and style —
 that apply throughout a design doc regardless of which section you are writing. It does
 **not** cover the requirements of any specific feature or design doc; those live with that
-doc (its PRD, template, and preparation notes).
+doc (its feature brief, PRD, template, and preparation notes).
 
-When starting a design doc, also read its template (`design-doc/design-doc-template.md`)
-and study the examples (`design-doc/examples/`) for structure and depth.
+When starting a design doc, also read its template (`design-doc/input/design-doc-template.md`)
+and study the examples (`design-doc/input/examples/`) for structure and depth. The staged
+process that produces a design doc — from requirements through to the GitHub issues that
+implement it — is described in `design-doc/README.md`, one prompt file per stage.
+
+`design-doc/input/` is gitignored and supplied by the user, so the brief, template, examples
+and PRD may be absent. **Stop and ask the user** for anything missing rather than guessing at
+requirements or inventing a scope.
 
 ---
 
