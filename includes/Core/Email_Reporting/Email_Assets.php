@@ -49,6 +49,8 @@ class Email_Assets {
 		'icon-views'                    => '2025-12-01-icon-views.png',
 		'icon-visitors'                 => '2025-12-01-icon-visitors.png',
 		'icon-star'                     => '2026-03-03-icon-star.png',
+		'icon-online-store'             => '2026-08-31-icon-online-store.png',
+		'icon-lead-generation'          => '2026-08-31-icon-lead-generation.png',
 		'conversions-timeline-green'    => '2025-12-01-conversions-timeline-green.png',
 		'conversions-timeline-red'      => '2025-12-01-conversions-timeline-red.png',
 		'notification-icon-star'        => '2025-12-01-notification-icon-star.png',
