@@ -127,7 +127,10 @@ module.exports = ( mode, ANALYZE ) => ( {
 		...( ANALYZE
 			? [
 					new BundleAnalyzerPlugin( {
+						analyzerMode: 'static',
 						analyzerPort: 'auto',
+						openAnalyzer: false,
+						reportFilename: 'gutenberg-blocks-report.html',
 						reportTitle: 'Gutenberg Blocks Entry Points',
 					} ),
 			  ]

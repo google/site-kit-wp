@@ -104,7 +104,10 @@ module.exports = ( mode, ANALYZE ) => ( {
 		...( ANALYZE
 			? [
 					new BundleAnalyzerPlugin( {
+						analyzerMode: 'static',
 						analyzerPort: 'auto',
+						openAnalyzer: false,
+						reportFilename: 'frontend-modules-report.html',
 						reportTitle: 'Frontend Modules',
 					} ),
 			  ]

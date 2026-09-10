@@ -60,7 +60,10 @@ module.exports = ( mode, rules, ANALYZE ) => ( {
 		...( ANALYZE
 			? [
 					new BundleAnalyzerPlugin( {
+						analyzerMode: 'static',
 						analyzerPort: 'auto',
+						openAnalyzer: false,
+						reportFilename: 'basic-modules-report.html',
 						reportTitle: 'Basic Modules',
 					} ),
 			  ]

@@ -178,7 +178,10 @@ module.exports = function ( mode, rules, ANALYZE ) {
 			...( ANALYZE
 				? [
 						new BundleAnalyzerPlugin( {
+							analyzerMode: 'static',
 							analyzerPort: 'auto',
+							openAnalyzer: false,
+							reportFilename: 'modules-report.html',
 							reportTitle: 'Module Entry Points',
 						} ),
 				  ]
