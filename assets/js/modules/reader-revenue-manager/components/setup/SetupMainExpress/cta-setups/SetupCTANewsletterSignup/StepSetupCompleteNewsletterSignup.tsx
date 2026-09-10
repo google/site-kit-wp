@@ -32,13 +32,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { type Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import { StepSetupCompleteDetail } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	CTA,
 	CTA_TYPES,
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import useHasPreExistingCTAs from './useHasPreExistingCTAs';
 
 const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 

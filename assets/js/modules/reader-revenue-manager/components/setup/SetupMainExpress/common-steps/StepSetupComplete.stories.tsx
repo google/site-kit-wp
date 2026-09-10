@@ -31,11 +31,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
+import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Story } from '@/js/types/Story';
 import ExternalIcon from '@/svg/icons/external.svg';
 import StepSetupComplete from './StepSetupComplete';
-import StepSetupCompleteDetail from './StepSetupCompleteDetail';
 
 type Props = ComponentProps< typeof StepSetupComplete >;
 

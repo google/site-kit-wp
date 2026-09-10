@@ -32,9 +32,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { type Select, useSelect } from 'googlesitekit-data';
+import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExternalIcon from '@/svg/icons/external.svg';
-import useHasPreExistingCTAs from './useHasPreExistingCTAs';
 
 const ViewOnSiteCTA: FC = () => {
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
