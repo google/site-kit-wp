@@ -31,7 +31,6 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -587,27 +586,16 @@ const baseSelectors = {
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0
-	 * @since 1.183.0 Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
+	 * @since 1.183.0 No longer considers the user's stored preference; returns whether the Key Metrics widget area is hidden, as the widget is now an integral part of the dashboard.
 	 *
-	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
+	 * @return {boolean} True if the key metrics widget is hidden, false otherwise.
 	 */
-	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
-		const isWidgetAreaHidden =
-			select( CORE_SITE ).isKeyMetricsWidgetAreaHidden();
-
-		if ( isWidgetAreaHidden ) {
-			return true;
-		}
-
-		if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
-			return false;
-		}
-
-		return select( CORE_USER ).getRawKeyMetricsWidgetHidden();
-	} ),
+	isKeyMetricsWidgetHidden: createRegistrySelector(
+		( select ) => () => select( CORE_SITE ).isKeyMetricsWidgetAreaHidden()
+	),
 
 	/**
-	 * Gets the stored value of whether the key metrics widget is hidden, without the `setupFlowRefresh` feature flag override.
+	 * Gets the stored value of whether the key metrics widget is hidden.
 	 *
 	 * @since 1.183.0
 	 *

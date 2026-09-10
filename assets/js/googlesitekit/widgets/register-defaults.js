@@ -358,26 +358,22 @@ export function registerDefaults( widgetsAPI ) {
 	);
 
 	// Notice re-informing users that the Key Metrics widget area, which they had
-	// previously hidden, is now shown by default. Only registered under the
-	// `setupFlowRefresh` flag, and renders above the metric tiles.
-	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
-		widgetsAPI.registerWidget(
-			'keyMetricsBackNotice',
-			{
-				Component: KeyMetricsBackNotice,
-				width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
-				priority: 0,
-				wrapWidget: false,
-				isActive: ( select ) =>
-					select( CORE_USER ).getRawKeyMetricsWidgetHidden() ===
-						true &&
-					select( CORE_USER ).isItemDismissed(
-						KEY_METRICS_BACK_NOTICE_SLUG
-					) === false,
-			},
-			[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
-		);
-	}
+	// previously hidden, is now shown by default, and renders above the metric tiles.
+	widgetsAPI.registerWidget(
+		'keyMetricsBackNotice',
+		{
+			Component: KeyMetricsBackNotice,
+			width: [ widgetsAPI.WIDGET_WIDTHS.FULL ],
+			priority: 0,
+			wrapWidget: false,
+			isActive: ( select ) =>
+				select( CORE_USER ).getRawKeyMetricsWidgetHidden() === true &&
+				select( CORE_USER ).isItemDismissed(
+					KEY_METRICS_BACK_NOTICE_SLUG
+				) === false,
+		},
+		[ AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY ]
+	);
 
 	widgetsAPI.registerWidget(
 		'keyMetricsSetupCTA',

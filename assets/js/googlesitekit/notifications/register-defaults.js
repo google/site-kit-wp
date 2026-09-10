@@ -206,7 +206,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			),
 			requireIsAuthenticated()
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
@@ -227,7 +226,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			requireIsAuthenticated(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
@@ -698,7 +696,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		featureFlag: 'setupFlowRefresh',
 		checkRequirements: asyncRequireAll(
 			requireAccessToFeatureTour(),
 			asyncRequireAny( requireDataGatheringCompleteModalActive(), () =>

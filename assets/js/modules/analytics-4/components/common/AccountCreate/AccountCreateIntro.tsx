@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
 import Typography from '@/js/components/Typography';
 import P from '@/js/components/Typography/P';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import AnalyticsAccountCreationErrorNotice from './AnalyticsAccountCreationErrorNotice';
 
@@ -48,18 +47,16 @@ const AccountCreateIntro: FC< AccountCreateIntroProps > = ( {
 	accountCreationErrorCode,
 	onRetry,
 } ) => {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const viewContext = useViewContext();
 
 	const isSettingsContext = viewContext === VIEW_CONTEXT_SETTINGS;
 
-	const errorNotice =
-		setupFlowRefreshEnabled && !! accountCreationErrorCode ? (
-			<AnalyticsAccountCreationErrorNotice
-				errorCode={ accountCreationErrorCode }
-				onRetry={ onRetry }
-			/>
-		) : null;
+	const errorNotice = !! accountCreationErrorCode ? (
+		<AnalyticsAccountCreationErrorNotice
+			errorCode={ accountCreationErrorCode }
+			onRetry={ onRetry }
+		/>
+	) : null;
 
 	return (
 		<Fragment>

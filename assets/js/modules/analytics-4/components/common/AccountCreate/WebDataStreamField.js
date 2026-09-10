@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { WebDataStreamHint } from '@/js/modules/analytics-4/components/common';
 import {
@@ -38,8 +37,6 @@ import { FORM_ACCOUNT_CREATE } from '@/js/modules/analytics-4/datastore/constant
 import CreateAccountField from './CreateAccountField';
 
 export default function WebDataStreamField() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const [ value, setValue ] = useFormValue(
 		FORM_ACCOUNT_CREATE,
 		'dataStreamName'
@@ -50,7 +47,7 @@ export default function WebDataStreamField() {
 	);
 
 	// Ensure the hint is not shown when editing Analytics settings.
-	const showHint = setupFlowRefreshEnabled && ! isAnalyticsConnected;
+	const showHint = ! isAnalyticsConnected;
 
 	return (
 		<Fragment>
