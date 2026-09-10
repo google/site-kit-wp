@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -31,7 +32,7 @@ const {
 	resolve,
 } = require( '../../webpack/common' );
 
-module.exports = ( mode, rules ) => ( {
+module.exports = ( mode, rules, ANALYZE ) => ( {
 	name: 'Basic Modules',
 	entry: {
 		'googlesitekit-i18n': './js/googlesitekit-i18n.ts',
@@ -56,6 +57,14 @@ module.exports = ( mode, rules ) => ( {
 				return ( file.name || '' ).match( /\.js$/ );
 			},
 		} ),
+		...( ANALYZE
+			? [
+					new BundleAnalyzerPlugin( {
+						analyzerPort: 'auto',
+						reportTitle: 'Basic Modules',
+					} ),
+			  ]
+			: [] ),
 	],
 	optimization: {
 		concatenateModules: true,

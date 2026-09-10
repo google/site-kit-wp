@@ -23,6 +23,7 @@ const CreateFileWebpack = require( 'create-file-webpack' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const path = require( 'path' );
 const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -54,7 +55,7 @@ const LAZY_PDF_REPORT_VENDOR_MODULES = [
 	/[\\/]node_modules[\\/]restructure[\\/]/,
 ];
 
-module.exports = function ( mode, rules ) {
+module.exports = function ( mode, rules, ANALYZE ) {
 	const isProduction = mode === 'production';
 
 	return {
@@ -174,6 +175,14 @@ module.exports = function ( mode, rules ) {
 				chunkName: 'googlesitekit-vendor',
 				disallowed: LAZY_PDF_REPORT_VENDOR_MODULES,
 			} ),
+			...( ANALYZE
+				? [
+						new BundleAnalyzerPlugin( {
+							analyzerPort: 'auto',
+							reportTitle: 'Module Entry Points',
+						} ),
+				  ]
+				: [] ),
 		],
 		optimization: {
 			minimizer: createMinimizerRules(),

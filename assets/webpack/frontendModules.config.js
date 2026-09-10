@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -31,7 +32,7 @@ const {
 	resolve,
 } = require( '../../webpack/common' );
 
-module.exports = ( mode ) => ( {
+module.exports = ( mode, ANALYZE ) => ( {
 	name: 'Frontend Modules',
 	entry: {
 		// Consent mode
@@ -100,6 +101,14 @@ module.exports = ( mode ) => ( {
 				return ( file.name || '' ).match( /\.js$/ );
 			},
 		} ),
+		...( ANALYZE
+			? [
+					new BundleAnalyzerPlugin( {
+						analyzerPort: 'auto',
+						reportTitle: 'Frontend Modules',
+					} ),
+			  ]
+			: [] ),
 	],
 	optimization: {
 		concatenateModules: true,
