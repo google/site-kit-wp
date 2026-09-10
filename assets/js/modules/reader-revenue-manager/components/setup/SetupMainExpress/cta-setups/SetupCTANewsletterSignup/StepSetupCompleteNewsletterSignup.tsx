@@ -45,8 +45,14 @@ const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 const StepSetupCompleteNewsletterSignup: FC = () => {
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
 
-	// The newsletter CTA created in this flow is the most recent one of its
-	// type; its identifier is the last segment of the CTA resource name.
+	/*
+	 * The newsletter CTA created in this flow is the most recent one of its
+	 * type; its identifier is the last segment of the CTA resource name.
+	 *
+	 * @todo: This should be improved when implementing the survey CTA setup,
+	 * which will introduce the concept of a draft CTA with an ID that can be
+	 * referenced in the setup steps.
+	 */
 	const newsletterCTAID = useSelect( ( select: Select ) => {
 		const ctas: CTA[] | undefined = select(
 			MODULES_READER_REVENUE_MANAGER
