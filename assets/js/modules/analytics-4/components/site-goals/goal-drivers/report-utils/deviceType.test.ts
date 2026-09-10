@@ -17,18 +17,10 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates, makeRow } from './__fixtures__';
 import { buildDeviceTypeReportOptions, mapDeviceTypeRows } from './deviceType';
 
-function makeRow( dimensionValue: string, ...metricValues: string[] ) {
-	return {
-		dimensionValues: [ { value: dimensionValue } ],
-		metricValues: metricValues.map( ( value ) => ( { value } ) ),
-	};
-}
-
 describe( 'buildDeviceTypeReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should request the deviceCategory dimension', () => {
 		const options = buildDeviceTypeReportOptions( {
 			dates,

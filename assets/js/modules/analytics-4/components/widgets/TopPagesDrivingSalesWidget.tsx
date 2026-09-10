@@ -57,6 +57,11 @@ import {
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import {
+	GoalDriverTileColumnProps,
+	goalDriverValueColumn,
+} from './utils/goalDriverTileColumns';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface TopPagesDrivingSalesWidgetProps {
 	Widget: ElementType;
@@ -67,11 +72,6 @@ type GoalDriverPageRow = {
 	value: string | number;
 	pagePath?: string;
 };
-
-interface GoalDriverTileColumnProps {
-	row: Record< string, unknown >;
-	fieldValue?: unknown;
-}
 
 const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 	Widget,
@@ -94,13 +94,13 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
-	const report = useInViewSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
+	const {
+		report,
+		loading: baseLoading,
+		error,
+	} = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
 	const titles = useInViewSelect(
 		( select: Select ) =>
@@ -113,36 +113,12 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 		[ report, reportOptions ]
 	);
 
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			if (
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ reportOptions ]
-				)
-			) {
-				return true;
-			}
-
-			return ( report?.rows || [] ).length > 0 && titles === undefined;
-		},
-		[ report, reportOptions, titles ]
-	);
+	// The base loading state doesn't know about the page titles this tile
+	// additionally waits on, so it's extended here rather than folded into
+	// the shared hook, which every other "Selling products" tile uses as-is.
+	const loading =
+		baseLoading ||
+		( ( report?.rows || [] ).length > 0 && titles === undefined );
 
 	const rows: GoalDriverPageRow[] = mapTopPagesRows( report?.rows || [] ).map(
 		( row ) => {
@@ -205,12 +181,7 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 				);
 			},
 		},
-		{
-			field: 'value',
-			Component( { fieldValue }: GoalDriverTileColumnProps ) {
-				return <strong>{ fieldValue as string }</strong>;
-			},
-		},
+		goalDriverValueColumn,
 	];
 
 	return (

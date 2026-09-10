@@ -22,100 +22,25 @@
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useEffect, useMemo } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
-import {
-	GOAL_DRIVER_IDS,
-	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GOAL_DRIVER_IDS } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import useGoalDriverReport from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useGoalDriverReport';
 import {
 	buildDeviceTypeReportOptions,
 	mapDeviceTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/deviceType';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
-const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title = '',
-	goalType,
-	limit,
-	rows: providedRows,
-	loading: providedLoading,
-	error: providedError,
-	primaryEvent,
-	breakdownFilter,
-	onExpandableRowsChange,
-} ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-	const reportOptions = useMemo(
-		() =>
-			buildDeviceTypeReportOptions( {
-				dates,
-				primaryEvent,
-				breakdownFilter,
-				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				context: goalType,
-			} ),
-		[ dates, primaryEvent, breakdownFilter, goalType ]
-	);
-	const report = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
-	const reportError = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return false;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
-	const sourceRows = report?.rows || [];
-	const mappedRows = mapDeviceTypeRows( sourceRows );
-	const rows = providedRows || mappedRows;
-	const loading = providedLoading ?? reportLoading;
-	const error = providedError ?? reportError;
-
-	useEffect( () => {
-		onExpandableRowsChange?.(
-			GOAL_DRIVER_IDS.DEVICE_TYPE,
-			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
-		);
-	}, [ onExpandableRowsChange, rows.length ] );
-
-	const noDataMetricLabel =
-		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
+const DeviceTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
+	const { title = '', limit } = props;
+	const { rows, loading, error, noDataMetricLabel } = useGoalDriverReport( {
+		...props,
+		id: GOAL_DRIVER_IDS.DEVICE_TYPE,
+		buildReportOptions: buildDeviceTypeReportOptions,
+		mapRows: mapDeviceTypeRows,
+	} );
 
 	return (
 		<TableTile

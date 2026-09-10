@@ -80,6 +80,37 @@ export function mapRowsToShareOfTotal(
 	} ) );
 }
 
+interface ShareOfTotalLabelOptions {
+	/** Maps the row's raw (non-empty) dimension value to its display label. Defaults to the raw value. */
+	getLabel?: ( dimensionValue: string ) => string;
+	/** Label used when the dimension value is empty. Defaults to "(not set)". */
+	emptyLabel?: string;
+}
+
+/**
+ * Resolves a row's display label from its first dimension value, falling back
+ * to `emptyLabel` when that value is empty.
+ *
+ * Shared by `makeShareOfTotalMapper` and `makeShareOfExplicitTotalMapper`,
+ * which differ only in what they divide by, not in how a row's label is read.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   row                The report row.
+ * @param {Object}   options            Options.
+ * @param {Function} options.getLabel   Maps the row's raw (non-empty) dimension value to its display label.
+ * @param {string}   options.emptyLabel Label used when the dimension value is empty.
+ * @return {string} The row's display label.
+ */
+function resolveRowLabel(
+	row: ReportRow,
+	{ getLabel, emptyLabel }: Required< ShareOfTotalLabelOptions >
+): string {
+	const dimensionValue = row.dimensionValues?.[ 0 ]?.value || '';
+
+	return dimensionValue ? getLabel( dimensionValue ) : emptyLabel;
+}
+
 /**
  * Builds a share-of-total row mapper for a single-dimension driver.
  *
@@ -93,16 +124,11 @@ export function mapRowsToShareOfTotal(
 export function makeShareOfTotalMapper( {
 	getLabel = ( value: string ) => value,
 	emptyLabel = __( '(not set)', 'google-site-kit' ),
-}: {
-	getLabel?: ( dimensionValue: string ) => string;
-	emptyLabel?: string;
-} = {} ): GoalDriverRowMapper {
+}: ShareOfTotalLabelOptions = {} ): GoalDriverRowMapper {
 	return ( rows ) =>
-		mapRowsToShareOfTotal( rows, ( row ) => {
-			const dimensionValue = row.dimensionValues?.[ 0 ]?.value || '';
-
-			return dimensionValue ? getLabel( dimensionValue ) : emptyLabel;
-		} );
+		mapRowsToShareOfTotal( rows, ( row ) =>
+			resolveRowLabel( row, { getLabel, emptyLabel } )
+		);
 }
 
 /**
@@ -127,19 +153,12 @@ export function makeShareOfExplicitTotalMapper(
 	{
 		getLabel = ( value: string ) => value,
 		emptyLabel = __( '(not set)', 'google-site-kit' ),
-	}: {
-		getLabel?: ( dimensionValue: string ) => string;
-		emptyLabel?: string;
-	} = {}
+	}: ShareOfTotalLabelOptions = {}
 ): GoalDriverRowMapper {
 	return ( rows ) =>
 		mapRowsToShareOfTotal(
 			rows,
-			( row ) => {
-				const dimensionValue = row.dimensionValues?.[ 0 ]?.value || '';
-
-				return dimensionValue ? getLabel( dimensionValue ) : emptyLabel;
-			},
+			( row ) => resolveRowLabel( row, { getLabel, emptyLabel } ),
 			totalCount
 		);
 }

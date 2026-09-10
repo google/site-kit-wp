@@ -37,15 +37,14 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { render, within } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideModuleRegistrations,
-} from '@tests/js/utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import SalesRateWidget from './SalesRateWidget';
-import { provideSalesWidgetTestRegistry } from './salesWidgetTestRegistry';
+import {
+	SALES_WIDGET_REPORT_ENDPOINT,
+	provideSalesWidgetTestRegistry,
+	testGenericReportError,
+} from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -53,9 +52,6 @@ describe( 'SalesRateWidget', () => {
 	let registry: WPDataRegistry;
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		KM_ANALYTICS_SALES_RATE
-	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {
@@ -85,7 +81,7 @@ describe( 'SalesRateWidget', () => {
 	it( 'should render the loading state while resolving the reports', async () => {
 		// This widget requests two reports (primary event + engagement), so
 		// the frozen fetch mock must cover both GET requests.
-		freezeFetch( reportEndpoint, { repeat: 2 } );
+		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<SalesRateWidget { ...widgetProps } />,
@@ -98,33 +94,7 @@ describe( 'SalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the error variant when a report fetch fails', async () => {
-		provideModuleRegistrations( registry );
-
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<SalesRateWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
-	} );
+	testGenericReportError( () => registry, SalesRateWidget, widgetProps );
 
 	it( 'should render zero values when there are no purchases or sessions in either period', async () => {
 		const primaryEventReportOptions = getPrimaryEventReportOptions();

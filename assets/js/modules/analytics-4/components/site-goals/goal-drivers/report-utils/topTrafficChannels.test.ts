@@ -17,11 +17,10 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates } from './__fixtures__';
 import { buildTopTrafficChannelsReportOptions } from './topTrafficChannels';
 
 describe( 'buildTopTrafficChannelsReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should request the sessionDefaultChannelGroup dimension', () => {
 		const options = buildTopTrafficChannelsReportOptions( {
 			dates,

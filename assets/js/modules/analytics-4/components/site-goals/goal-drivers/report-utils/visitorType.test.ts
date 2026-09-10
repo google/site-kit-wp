@@ -17,21 +17,13 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates, makeRow } from './__fixtures__';
 import {
 	buildVisitorTypeReportOptions,
 	mapVisitorTypeRows,
 } from './visitorType';
 
-function makeRow( dimensionValue: string, ...metricValues: string[] ) {
-	return {
-		dimensionValues: [ { value: dimensionValue } ],
-		metricValues: metricValues.map( ( value ) => ( { value } ) ),
-	};
-}
-
 describe( 'buildVisitorTypeReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should request the newVsReturning dimension', () => {
 		const options = buildVisitorTypeReportOptions( {
 			dates,

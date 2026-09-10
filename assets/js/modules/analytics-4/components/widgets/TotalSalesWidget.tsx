@@ -24,7 +24,7 @@ import { ElementType, FC } from 'react';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
@@ -33,12 +33,10 @@ import {
 import { buildPrimaryEventReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface TotalSalesWidgetProps {
 	Widget: ElementType;
@@ -60,39 +58,9 @@ const TotalSalesWidget: FC< TotalSalesWidgetProps > = ( { Widget } ) => {
 		ENUM_CONVERSION_EVENTS.PURCHASE
 	);
 
-	const report =
-		useInViewSelect(
-			( select: Select ) =>
-				reportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-					: undefined,
-			[ reportOptions ]
-		) || {};
-
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
+	const { report, loading, error } = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
 	const { currentPrimaryCount, previousPrimaryCount } = processReports(
 		report,

@@ -17,6 +17,7 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates } from './__fixtures__';
 import {
 	buildGoalDriverTotalReportOptions,
 	buildSingleDimensionReportOptionsBuilder,
@@ -38,7 +39,6 @@ describe( 'withContextSuffix', () => {
 } );
 
 describe( 'buildSingleDimensionReportOptionsBuilder', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
 	const build = buildSingleDimensionReportOptionsBuilder( 'city', 'cities' );
 
 	it( 'should return undefined without a primary event', () => {
@@ -119,8 +119,6 @@ describe( 'buildSingleDimensionReportOptionsBuilder', () => {
 } );
 
 describe( 'buildGoalDriverTotalReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should return undefined without a primary event', () => {
 		expect(
 			buildGoalDriverTotalReportOptions( {

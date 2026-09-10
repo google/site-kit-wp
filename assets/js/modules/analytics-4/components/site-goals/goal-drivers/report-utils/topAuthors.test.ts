@@ -17,11 +17,10 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates } from './__fixtures__';
 import { buildTopAuthorsReportOptions } from './topAuthors';
 
 describe( 'buildTopAuthorsReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should return undefined without a primary event', () => {
 		expect(
 			buildTopAuthorsReportOptions( {

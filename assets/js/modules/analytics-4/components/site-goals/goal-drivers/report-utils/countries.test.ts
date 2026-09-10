@@ -17,18 +17,10 @@
 /**
  * Internal dependencies
  */
+import { REPORT_UTILS_TEST_DATES as dates, makeRow } from './__fixtures__';
 import { buildCountriesReportOptions, mapCountriesRows } from './countries';
 
-function makeRow( dimensionValue: string, ...metricValues: string[] ) {
-	return {
-		dimensionValues: [ { value: dimensionValue } ],
-		metricValues: metricValues.map( ( value ) => ( { value } ) ),
-	};
-}
-
 describe( 'buildCountriesReportOptions', () => {
-	const dates = { startDate: '2025-08-01', endDate: '2025-08-28' };
-
 	it( 'should request the country dimension', () => {
 		const options = buildCountriesReportOptions( {
 			dates,

@@ -25,60 +25,23 @@
 /**
  * Internal dependencies
  */
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { withContextSuffix } from './reportOptionsHelpers';
+import { buildRankedReportOptions } from './reportOptionsHelpers';
 import { BuildGoalDriverReportOptionsArgs } from './types';
 
-export function buildTopAuthorsReportOptions( {
-	dates,
-	primaryEvent,
-	breakdownFilter,
-	limit,
-	context,
-}: BuildGoalDriverReportOptionsArgs ): ReportOptions | undefined {
-	const eventNames = normalizePrimaryEvents( primaryEvent );
-
-	if ( ! dates || ! eventNames.length ) {
-		return undefined;
-	}
-
-	const eventDimensionFilters = getDimensionFiltersForEvents(
-		eventNames,
-		breakdownFilter
-	);
-
-	// Assigned to a variable, rather than returned directly, so the
-	// `notExpression` filter field (missing from `ReportOptions`, but
-	// accepted by the Analytics 4 report endpoint) isn't rejected by an
-	// excess property check against the function's declared return type.
-	const options = {
-		...dates,
+export function buildTopAuthorsReportOptions(
+	args: BuildGoalDriverReportOptionsArgs
+): ReportOptions | undefined {
+	return buildRankedReportOptions( {
+		...args,
 		dimensions: [ 'customEvent:googlesitekit_post_author', 'eventName' ],
-		dimensionFilters: {
+		reportIDSuffix: 'top-authors',
+		extraDimensionFilters: ( eventDimensionFilters ) => ( {
 			...( eventDimensionFilters || {} ),
 			'customEvent:googlesitekit_post_author': {
 				filterType: 'emptyFilter',
 				notExpression: true,
 			},
-		},
-		metrics: [ { name: 'eventCount' } ],
-		orderby: [
-			{
-				metric: { metricName: 'eventCount' },
-				desc: true,
-			},
-		],
-		limit,
-		keepEmptyRows: false,
-		reportID: withContextSuffix(
-			'analytics-4_goal-driver-reports_top-authors',
-			context
-		),
-	};
-
-	return options;
+		} ),
+	} );
 }

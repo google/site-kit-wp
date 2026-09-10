@@ -17,6 +17,7 @@
 /**
  * Internal dependencies
  */
+import { makeRow } from './__fixtures__';
 import {
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
@@ -24,13 +25,6 @@ import {
 	mapRowsToShareOfTotal,
 	parseMetricValue,
 } from './rowMapperHelpers';
-
-function makeRow( dimensionValue: string, ...metricValues: string[] ) {
-	return {
-		dimensionValues: [ { value: dimensionValue } ],
-		metricValues: metricValues.map( ( value ) => ( { value } ) ),
-	};
-}
 
 describe( 'parseMetricValue', () => {
 	it( 'should parse the metric value at the given index', () => {

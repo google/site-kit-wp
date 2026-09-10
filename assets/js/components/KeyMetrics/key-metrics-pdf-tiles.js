@@ -263,6 +263,62 @@ async function resolvePrimaryEcommerceEvent( registry ) {
 }
 
 /**
+ * Builds a PDF tile config for a single-report, ranked "Selling products" table tile.
+ *
+ * This tile is purchase-specific, so the primary event is always `purchase`
+ * rather than `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`) - if we
+ * used `getPrimaryEcommerceEvent()`, the tile would start showing
+ * "add-to-cart" data under the "sales" label.
+ *
+ * Covers the tiles that need nothing beyond that single ranked report and its
+ * row mapper - `Top traffic channels by sales rate`, `Sales by visitor type`
+ * and `Sales by countries`. `Top authors driving sales` (a second, site-wide
+ * total report) and `Top pages driving sales` (a second, page-titles report)
+ * have extra requirements and keep their own tile config.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} buildReportOptions Builds this tile's Analytics 4 report options.
+ * @param {Function} mapRows            Maps this tile's report rows to `GoalDriverRow[]`.
+ * @return {*} The PDF tile config: its `TileComponent` and `getTileData`, matching every other entry in `KEY_METRICS_PDF_TILES`.
+ */
+function createSellingProductsTableTile( buildReportOptions, mapRows ) {
+	return {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			( dates ) => {
+				const options = buildReportOptions( {
+					dates: pdfTableDates( dates ),
+					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
+					return [];
+				}
+
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
+			},
+			( [ report ] ) => {
+				const rows = mapRows( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
+				};
+			}
+		),
+	};
+}
+
+/**
  * Maps ranked report rows to `PDFMetricTileTable` rows for a page-based tile:
  * resolves each row's page path to its Analytics report link (matching the
  * dashboard row's own link) and delegates the primary label and metric
@@ -2043,123 +2099,19 @@ export const KEY_METRICS_PDF_TILES = {
 			}
 		),
 	},
-	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]: {
-		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Top traffic channels
-				// driving sales"), so the primary event is always `purchase`
-				// rather than `getPrimaryEcommerceEvent()`'s fallback
-				// (`add_to_cart`). If we used `getPrimaryEcommerceEvent()`,
-				// the tile would start showing "add-to-cart" data under the
-				// "sales" label.
-				const options = buildTopTrafficChannelsRateReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = mapTopTrafficChannelsRateRows(
-					report?.rows || []
-				);
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
+	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]:
+		createSellingProductsTableTile(
+			buildTopTrafficChannelsRateReportOptions,
+			mapTopTrafficChannelsRateRows
 		),
-	},
-	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: {
-		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Sales by visitor type"),
-				// so the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
-				// If we used `getPrimaryEcommerceEvent()`, the tile would
-				// start showing "add-to-cart" data under the "sales" label.
-				const options = buildVisitorTypeReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = mapVisitorTypeRows( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
-		),
-	},
-	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: {
-		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => {
-				// This tile is purchase-specific ("Sales by countries"), so
-				// the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
-				// If we used `getPrimaryEcommerceEvent()`, the tile would
-				// start showing "add-to-cart" data under the "sales" label.
-				const options = buildCountriesReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				} );
-
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
-			( [ report ] ) => {
-				const rows = mapCountriesRows( report?.rows || [] );
-
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.label,
-						metric: row.value,
-					} ) ),
-					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-				};
-			}
-		),
-	},
+	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: createSellingProductsTableTile(
+		buildVisitorTypeReportOptions,
+		mapVisitorTypeRows
+	),
+	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: createSellingProductsTableTile(
+		buildCountriesReportOptions,
+		mapCountriesRows
+	),
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(

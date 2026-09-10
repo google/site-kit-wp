@@ -53,6 +53,88 @@ export function withContextSuffix(
 }
 
 /**
+ * Builds the Analytics 4 report options for a ranked, event-filtered driver
+ * report: one or more dimensions broken down by `eventCount` (by default),
+ * ordered descending, with the given row limit.
+ *
+ * This is the shared shape behind every "top N" driver report - the drivers
+ * that need more than one dimension, an extra metric, or a dimension filter
+ * beyond the event filter (`topAuthors`, `topPages`,
+ * `topTrafficChannelsRate`) call this directly; `buildSingleDimensionReportOptionsBuilder`
+ * is a thin wrapper over it for the common single-dimension case.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}          args                         Builder args.
+ * @param {Object}          [args.dates]                 The date range.
+ * @param {string|string[]} [args.primaryEvent]          The primary conversion event name(s).
+ * @param {Object}          [args.breakdownFilter]       Optional dimension filter scoping the report to a breakdown tab.
+ * @param {number}          args.limit                   Row limit.
+ * @param {string}          [args.context]               Identifies the caller, appended to the reportID.
+ * @param {string[]}        args.dimensions              The Analytics 4 dimension name(s).
+ * @param {Object[]}        [args.metrics]               The report metrics. Defaults to a single `eventCount` metric.
+ * @param {string}          args.reportIDSuffix          Unique suffix for the report ID.
+ * @param {Function}        [args.extraDimensionFilters] Given the event `dimensionFilters`, returns the `dimensionFilters` to use instead (e.g. to also exclude "(not set)" rows for a dimension).
+ * @return {Object|undefined} The Analytics 4 `getReport` options, or `undefined` when there is no primary event.
+ */
+export function buildRankedReportOptions( {
+	dates,
+	primaryEvent,
+	breakdownFilter,
+	limit,
+	context,
+	dimensions,
+	metrics = [ { name: 'eventCount' } ],
+	reportIDSuffix,
+	extraDimensionFilters,
+}: BuildGoalDriverReportOptionsArgs & {
+	dimensions: ReportOptions[ 'dimensions' ];
+	metrics?: ReportOptions[ 'metrics' ];
+	reportIDSuffix: string;
+	extraDimensionFilters?: (
+		eventDimensionFilters: ReturnType< typeof getDimensionFiltersForEvents >
+	) => ReportOptions[ 'dimensionFilters' ];
+} ): ReportOptions | undefined {
+	const eventNames = normalizePrimaryEvents( primaryEvent );
+
+	if ( ! dates || ! eventNames.length ) {
+		return undefined;
+	}
+
+	const eventDimensionFilters = getDimensionFiltersForEvents(
+		eventNames,
+		breakdownFilter
+	);
+
+	// Assigned to a variable, rather than returned directly, so a
+	// `notExpression` filter field (missing from `ReportOptions`, but
+	// accepted by the Analytics 4 report endpoint) isn't rejected by an
+	// excess property check against the function's declared return type.
+	const options = {
+		...dates,
+		dimensions,
+		dimensionFilters: extraDimensionFilters
+			? extraDimensionFilters( eventDimensionFilters )
+			: eventDimensionFilters,
+		metrics,
+		orderby: [
+			{
+				metric: { metricName: 'eventCount' },
+				desc: true,
+			},
+		],
+		limit,
+		keepEmptyRows: false,
+		reportID: withContextSuffix(
+			`analytics-4_goal-driver-reports_${ reportIDSuffix }`,
+			context
+		),
+	};
+
+	return options;
+}
+
+/**
  * Builds a report options builder for a single-dimension, share-of-total driver.
  *
  * Covers `cities`, `countries`, `deviceType`, `visitorType` and
@@ -73,51 +155,21 @@ export function buildSingleDimensionReportOptionsBuilder(
 	reportIDSuffix: string,
 	{ excludeNotSet = false }: { excludeNotSet?: boolean } = {}
 ): GoalDriverReportOptionsBuilder {
-	return ( { dates, primaryEvent, breakdownFilter, limit, context } ) => {
-		const eventNames = normalizePrimaryEvents( primaryEvent );
-
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		const eventDimensionFilters = getDimensionFiltersForEvents(
-			eventNames,
-			breakdownFilter
-		);
-
-		// Assigned to a variable, rather than returned directly, so the
-		// `notExpression` filter field (missing from `ReportOptions`, but
-		// accepted by the Analytics 4 report endpoint) isn't rejected by an
-		// excess property check against the function's declared return type.
-		const options = {
-			...dates,
+	return ( args ) =>
+		buildRankedReportOptions( {
+			...args,
 			dimensions: [ dimension ],
-			dimensionFilters: excludeNotSet
-				? {
+			reportIDSuffix,
+			extraDimensionFilters: excludeNotSet
+				? ( eventDimensionFilters ) => ( {
 						...( eventDimensionFilters || {} ),
 						[ dimension ]: {
 							filterType: 'emptyFilter',
 							notExpression: true,
 						},
-				  }
-				: eventDimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit,
-			keepEmptyRows: false,
-			reportID: withContextSuffix(
-				`analytics-4_goal-driver-reports_${ reportIDSuffix }`,
-				context
-			),
-		};
-
-		return options;
-	};
+				  } )
+				: undefined,
+		} );
 }
 
 /**

@@ -24,11 +24,8 @@ import { ElementType, FC } from 'react';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import {
-	MetricTileTable,
-	MetricTileTablePlainText,
-} from '@/js/components/KeyMetrics';
+import { Select, useSelect } from 'googlesitekit-data';
+import { MetricTileTable } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
@@ -43,38 +40,15 @@ import {
 	mapCountriesRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { goalDriverTileColumns } from './utils/goalDriverTileColumns';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface SalesByCountriesWidgetProps {
 	Widget: ElementType;
 }
-
-interface GoalDriverTileColumnProps {
-	row: Record< string, unknown >;
-	fieldValue?: unknown;
-}
-
-const columns = [
-	{
-		field: 'label',
-		Component( { fieldValue }: GoalDriverTileColumnProps ) {
-			return (
-				<MetricTileTablePlainText content={ fieldValue as string } />
-			);
-		},
-	},
-	{
-		field: 'value',
-		Component( { fieldValue }: GoalDriverTileColumnProps ) {
-			return <strong>{ fieldValue as string }</strong>;
-		},
-	},
-];
 
 const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 	Widget,
@@ -94,38 +68,9 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
-	const report = useInViewSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
+	const { report, loading, error } = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
 	const rows = mapCountriesRows( report?.rows || [] );
 
@@ -135,7 +80,7 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 			widgetSlug={ KM_ANALYTICS_SALES_BY_COUNTRIES }
 			loading={ loading }
 			rows={ rows }
-			columns={ columns }
+			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

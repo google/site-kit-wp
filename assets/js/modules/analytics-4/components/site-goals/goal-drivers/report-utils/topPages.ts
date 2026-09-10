@@ -21,58 +21,22 @@
  */
 import { GoalDriverRow } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import {
 	ReportOptions,
 	ReportRow,
 } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
-import { withContextSuffix } from './reportOptionsHelpers';
+import { buildRankedReportOptions } from './reportOptionsHelpers';
 import { parseMetricValue } from './rowMapperHelpers';
 import { BuildGoalDriverReportOptionsArgs } from './types';
 
-export function buildTopPagesReportOptions( {
-	dates,
-	primaryEvent,
-	breakdownFilter,
-	limit,
-	context,
-}: BuildGoalDriverReportOptionsArgs ): ReportOptions | undefined {
-	const eventNames = normalizePrimaryEvents( primaryEvent );
-
-	if ( ! dates || ! eventNames.length ) {
-		return undefined;
-	}
-
-	// Assigned to a variable, rather than returned directly, so
-	// `keepEmptyRows` (missing from `ReportOptions`, but accepted by the
-	// Analytics 4 report endpoint) isn't rejected by an excess property
-	// check against the function's declared return type.
-	const options = {
-		...dates,
+export function buildTopPagesReportOptions(
+	args: BuildGoalDriverReportOptionsArgs
+): ReportOptions | undefined {
+	return buildRankedReportOptions( {
+		...args,
 		dimensions: [ 'pagePath', 'eventName' ],
-		dimensionFilters: getDimensionFiltersForEvents(
-			eventNames,
-			breakdownFilter
-		),
-		metrics: [ { name: 'eventCount' } ],
-		orderby: [
-			{
-				metric: { metricName: 'eventCount' },
-				desc: true,
-			},
-		],
-		limit,
-		keepEmptyRows: false,
-		reportID: withContextSuffix(
-			'analytics-4_goal-driver-reports_top-pages',
-			context
-		),
-	};
-
-	return options;
+		reportIDSuffix: 'top-pages',
+	} );
 }
 
 /**

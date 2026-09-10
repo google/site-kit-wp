@@ -34,28 +34,25 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
 import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
-	provideModuleRegistrations,
 	provideUserInfo,
 } from '@tests/js/utils';
-import { provideSalesWidgetTestRegistry } from './salesWidgetTestRegistry';
 import TopPagesDrivingSalesWidget from './TopPagesDrivingSalesWidget';
+import {
+	SALES_WIDGET_REPORT_ENDPOINT,
+	provideSalesWidgetTestRegistry,
+	testGenericReportError,
+	testInsufficientPermissionsError,
+} from './utils/salesWidgetTestRegistry';
 
 describe( 'TopPagesDrivingSalesWidget', () => {
 	let registry: WPDataRegistry;
 
 	const widgetProps = getWidgetComponentProps(
 		KM_ANALYTICS_TOP_PAGES_DRIVING_SALES
-	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 	const propertyID = '34567';
 
@@ -176,7 +173,7 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 
 	it( 'should render the loading state while resolving the report', async () => {
 		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( reportEndpoint );
+		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<TopPagesDrivingSalesWidget { ...widgetProps } />,
@@ -189,61 +186,17 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the generic error variant when the report fetch fails', async () => {
-		provideModuleRegistrations( registry );
+	testGenericReportError(
+		() => registry,
+		TopPagesDrivingSalesWidget,
+		widgetProps
+	);
 
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<TopPagesDrivingSalesWidget { ...widgetProps } />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
-		const errorResponse = {
-			code: 'test_error',
-			message: 'Error message.',
-			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<TopPagesDrivingSalesWidget { ...widgetProps } />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
-	} );
+	testInsufficientPermissionsError(
+		() => registry,
+		TopPagesDrivingSalesWidget,
+		widgetProps
+	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {
 		const reportOptions = getReportOptions();

@@ -31,15 +31,14 @@ import {
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { render, within } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideModuleRegistrations,
-} from '@tests/js/utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import SalesEngagementRateWidget from './SalesEngagementRateWidget';
-import { provideSalesWidgetTestRegistry } from './salesWidgetTestRegistry';
+import {
+	SALES_WIDGET_REPORT_ENDPOINT,
+	provideSalesWidgetTestRegistry,
+	testGenericReportError,
+} from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -47,9 +46,6 @@ describe( 'SalesEngagementRateWidget', () => {
 	let registry: WPDataRegistry;
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		KM_ANALYTICS_SALES_ENGAGEMENT_RATE
-	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	beforeEach( () => {
@@ -66,7 +62,7 @@ describe( 'SalesEngagementRateWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the report', async () => {
-		freezeFetch( reportEndpoint );
+		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<SalesEngagementRateWidget { ...widgetProps } />,
@@ -79,33 +75,11 @@ describe( 'SalesEngagementRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the error variant when the report fetch fails', async () => {
-		provideModuleRegistrations( registry );
-
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<SalesEngagementRateWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
-	} );
+	testGenericReportError(
+		() => registry,
+		SalesEngagementRateWidget,
+		widgetProps
+	);
 
 	it( 'should render zero values when there is no engagement data in either period', async () => {
 		const engagementReportOptions = getEngagementReportOptions();
