@@ -33,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
-import Badge from '@/js/components/Badge';
+import Badge, { BadgeProps } from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
@@ -86,16 +86,18 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		[ slug ]
 	);
 
-	const { Icon, name } = useSelect(
+	const module = useSelect(
 		( select: Select ) =>
 			feature?.moduleSlug
 				? select( CORE_MODULES ).getModule( feature.moduleSlug )
-				: {
-						Icon: SiteKitIcon,
-						name: __( 'Site Kit feature', 'google-site-kit' ),
-				  },
+				: undefined,
 		[ feature ]
 	);
+
+	const ModuleIcon = module?.Icon || SiteKitIcon;
+
+	const moduleName =
+		module?.name || __( 'Site Kit feature', 'google-site-kit' );
 
 	const onClickDismiss = useCallback( () => {
 		// TODO: #13357 -- Implement dismiss-with-feedback menu.
@@ -129,7 +131,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	const allBadges = [ ...userBadges, ...badges ];
 
 	// TODO: #13361 -- Define `variant` prop for each badge type using variants.
-	const badgeProps = {
+	const badgePropsMap: Record< FEATURE_BADGES, BadgeProps > = {
 		[ FEATURE_BADGES.NEW ]: {
 			label: __( 'New', 'google-site-kit' ),
 		},
@@ -160,7 +162,10 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					>
 						{ title }
 						{ allBadges.map( ( badge ) => (
-							<Badge { ...badgeProps[ badge ] } key={ badge } />
+							<Badge
+								{ ...badgePropsMap[ badge ] }
+								key={ badge }
+							/>
 						) ) }
 					</Typography>
 
@@ -194,11 +199,11 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 			<footer className="googlesitekit-feature-card__footer">
 				<div className="googlesitekit-feature-card__service">
-					<Icon aria-hidden="true" height={ 36 } width={ 36 } />
+					<ModuleIcon aria-hidden="true" height={ 36 } width={ 36 } />
 
 					{ /* @ts-expect-error - The `Typography` component is not typed yet. */ }
 					<Typography size={ SIZE_LARGE } type={ TYPE_BODY }>
-						{ name }
+						{ moduleName }
 					</Typography>
 				</div>
 

@@ -41,7 +41,7 @@ export interface EffortIndicatorProps {
 }
 
 const EffortIndicator: FC< EffortIndicatorProps > = ( { effort } ) => {
-	const labels = {
+	const labels: Record< FeatureEffort, string > = {
 		[ FEATURE_EFFORTS.LOW ]: __( 'Just a few clicks', 'google-site-kit' ),
 		[ FEATURE_EFFORTS.MEDIUM ]: __( 'A short setup', 'google-site-kit' ),
 		[ FEATURE_EFFORTS.HIGH ]: __( 'In depth setup', 'google-site-kit' ),
