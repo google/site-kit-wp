@@ -247,10 +247,6 @@ describe( 'FeatureCard', () => {
 			registry,
 		} );
 
-		act( () => {
-			jest.advanceTimersByTime( 0 );
-		} );
-
 		expect(
 			container.querySelector( '.googlesitekit-feature-card__dot' )
 		).toHaveClass( 'googlesitekit-feature-card__dot--visible' );

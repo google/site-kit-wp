@@ -33,7 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
-import Badge, { BadgeProps } from '@/js/components/Badge';
+import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
@@ -47,6 +47,7 @@ import P from '@/js/components/Typography/P';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
+	FEATURE_BADGE_PROPS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -108,11 +109,14 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	}, [] );
 
 	useEffect( () => {
-		const timeout = isFeatureUnread ? 0 : 3000;
+		if ( isFeatureUnread ) {
+			setShowUnreadDot( true );
+			return undefined;
+		}
 
 		const visibilityTimeout = setTimeout( () => {
-			setShowUnreadDot( isFeatureUnread );
-		}, timeout );
+			setShowUnreadDot( false );
+		}, 3000 );
 
 		return () => {
 			clearTimeout( visibilityTimeout );
@@ -129,16 +133,6 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		isFeatureNew && ! hideNewBadge ? [ FEATURE_BADGES.NEW ] : [];
 
 	const allBadges = [ ...userBadges, ...badges ];
-
-	// TODO: #13361 -- Define `variant` prop for each badge type using variants.
-	const badgePropsMap: Record< FEATURE_BADGES, BadgeProps > = {
-		[ FEATURE_BADGES.NEW ]: {
-			label: __( 'New', 'google-site-kit' ),
-		},
-		[ FEATURE_BADGES.PAID_SERVICE ]: {
-			label: __( 'Paid service', 'google-site-kit' ),
-		},
-	};
 
 	return (
 		<article className="googlesitekit-feature-card">
@@ -163,7 +157,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 						{ title }
 						{ allBadges.map( ( badge ) => (
 							<Badge
-								{ ...badgePropsMap[ badge ] }
+								{ ...FEATURE_BADGE_PROPS[ badge ] }
 								key={ badge }
 							/>
 						) ) }
@@ -209,6 +203,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 				<div className="googlesitekit-feature-card__actions">
 					{ /* TODO: #13322 -- Implement FeatureCTA  */ }
+					<code>&lt;FeatureCTA /&gt;</code>
 
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button onClick={ onClickReadMore }>

@@ -16,6 +16,20 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { BadgeProps } from '@/js/components/Badge';
+import {
+	FeatureBadge,
+	FeatureEffort,
+} from '@/js/googlesitekit/datastore/feature-discovery/types';
+
 export const CORE_FEATURE_DISCOVERY = 'core/feature-discovery';
 
 export const FEATURE_CATEGORIES = {
@@ -46,13 +60,33 @@ export const FEATURE_EFFORTS = {
 	HIGH: 3,
 } as const;
 
+export const FEATURE_EFFORT_LABELS: Record< FeatureEffort, string > = {
+	[ FEATURE_EFFORTS.LOW ]: __( 'Just a few clicks', 'google-site-kit' ),
+	[ FEATURE_EFFORTS.MEDIUM ]: __( 'A short setup', 'google-site-kit' ),
+	[ FEATURE_EFFORTS.HIGH ]: __( 'In depth setup', 'google-site-kit' ),
+};
+
 export const FEATURE_SETUP_TYPES = {
 	SETUP_FLOW: 'setup-flow',
 	BACKGROUND_TOGGLE: 'background-toggle',
 	IN_PLACE_PANEL: 'in-place-panel',
 } as const;
 
-export enum FEATURE_BADGES {
-	NEW = 'new',
-	PAID_SERVICE = 'paid-service',
-}
+export const FEATURE_BADGES = {
+	NEW: 'new',
+	PAID_SERVICE: 'paid-service',
+	RECOMMENDED: 'recommended',
+} as const;
+
+// TODO: #13361 -- Provide a `variant` prop for each badge type.
+export const FEATURE_BADGE_PROPS: Record< FeatureBadge, BadgeProps > = {
+	[ FEATURE_BADGES.NEW ]: {
+		label: __( 'New', 'google-site-kit' ),
+	},
+	[ FEATURE_BADGES.PAID_SERVICE ]: {
+		label: __( 'Paid service', 'google-site-kit' ),
+	},
+	[ FEATURE_BADGES.RECOMMENDED ]: {
+		label: __( 'Recommended for you', 'google-site-kit' ),
+	},
+} as const;

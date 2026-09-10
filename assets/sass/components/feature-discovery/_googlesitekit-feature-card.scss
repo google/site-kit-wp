@@ -27,7 +27,12 @@
 		display: grid;
 		grid-template-columns: max-content auto;
 		padding-block: 30px;
+		padding-inline-end: 16px;
 		row-gap: 10px;
+
+		&:last-child {
+			border-bottom: none;
+		}
 	}
 
 	.googlesitekit-feature-card__status {
@@ -119,6 +124,7 @@
 		align-items: center;
 		display: flex;
 		flex-grow: 1;
+		gap: var(--googlesitekit-feature-card-gap-m);
 		justify-content: end;
 	}
 }

@@ -73,18 +73,25 @@ const TEST_NEW_FEATURE_SETTINGS = {
 	addedInVersion: TEST_NEW_VERSION,
 };
 
-interface StoryArgs extends FeatureCardProps {
+interface StoryArgs {
+	cards: FeatureCardProps[];
 	setupRegistry?: ( registry: WPDataRegistry ) => void;
 }
 
-function Template( args: FeatureCardProps ) {
-	return <FeatureCard { ...args } />;
+function Template( { cards }: StoryArgs ) {
+	return (
+		<div>
+			{ cards.map( ( props ) => (
+				<FeatureCard { ...props } key={ props.slug } />
+			) ) }
+		</div>
+	);
 }
 
 export const Default = Template.bind( {} ) as Story< StoryArgs >;
 Default.storyName = 'Default';
 Default.args = {
-	slug: 'dashboard-sharing',
+	cards: [ { slug: 'dashboard-sharing' } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
@@ -96,7 +103,7 @@ Default.scenario = {};
 export const ModuleFeature = Template.bind( {} ) as Story< StoryArgs >;
 ModuleFeature.storyName = 'Module Feature';
 ModuleFeature.args = {
-	slug: 'ads',
+	cards: [ { slug: 'ads' } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
@@ -108,8 +115,8 @@ ModuleFeature.scenario = {};
 export const New = Template.bind( {} ) as Story< StoryArgs >;
 New.storyName = 'New';
 New.args = {
-	slug: 'dashboard-sharing',
-	hideUnreadDot: true,
+	cards: [ { slug: 'dashboard-sharing', hideUnreadDot: true } ],
+
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
@@ -121,9 +128,7 @@ New.scenario = {};
 export const NewDismissible = Template.bind( {} ) as Story< StoryArgs >;
 NewDismissible.storyName = 'New, Dismissible';
 NewDismissible.args = {
-	slug: 'ads',
-	isDismissible: true,
-	hideNewBadge: true,
+	cards: [ { slug: 'ads', isDismissible: true, hideNewBadge: true } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
@@ -131,6 +136,21 @@ NewDismissible.args = {
 	},
 };
 NewDismissible.scenario = {};
+
+export const MultipleCards = Template.bind( {} ) as Story< StoryArgs >;
+MultipleCards.storyName = 'Multiple Cards';
+MultipleCards.args = {
+	cards: [ { slug: 'dashboard-sharing' }, { slug: 'ads' } ],
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'dashboard-sharing', TEST_FEATURE_SETTINGS );
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'ads', TEST_MODULE_FEATURE_SETTINGS );
+	},
+};
+MultipleCards.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureCard',

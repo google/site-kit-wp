@@ -35,6 +35,8 @@ import type {
 export type FeatureCategorySlug =
 	typeof FEATURE_CATEGORIES[ keyof typeof FEATURE_CATEGORIES ];
 
+export type FeatureBadge = typeof FEATURE_BADGES[ keyof typeof FEATURE_BADGES ];
+
 export type FeatureEffort =
 	typeof FEATURE_EFFORTS[ keyof typeof FEATURE_EFFORTS ];
 
@@ -114,14 +116,14 @@ export interface FeatureSettings {
 	checkRequirements?: ( select: Select ) => boolean | undefined;
 	detail?: FeatureDetail;
 	// Static badges only. The "New" badge is derived per user.
-	badges?: FEATURE_BADGES[];
+	badges?: FeatureBadge[];
 	successNotice?: FeatureSuccessNotice;
 }
 
 export interface Feature extends FeatureSettings {
 	slug: string;
 	prerequisiteModules: string[];
-	badges: FEATURE_BADGES[];
+	badges: FeatureBadge[];
 }
 
 export interface FeatureCategory {

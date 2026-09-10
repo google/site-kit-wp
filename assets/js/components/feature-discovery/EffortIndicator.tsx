@@ -23,16 +23,14 @@ import classNames from 'classnames';
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_BODY } from '@/js/components/Typography/constants';
-import { FEATURE_EFFORTS } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	FEATURE_EFFORTS,
+	FEATURE_EFFORT_LABELS,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { FeatureEffort } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import WrenchIcon from '@/svg/icons/wrench.svg';
 
@@ -41,12 +39,6 @@ export interface EffortIndicatorProps {
 }
 
 const EffortIndicator: FC< EffortIndicatorProps > = ( { effort } ) => {
-	const labels: Record< FeatureEffort, string > = {
-		[ FEATURE_EFFORTS.LOW ]: __( 'Just a few clicks', 'google-site-kit' ),
-		[ FEATURE_EFFORTS.MEDIUM ]: __( 'A short setup', 'google-site-kit' ),
-		[ FEATURE_EFFORTS.HIGH ]: __( 'In depth setup', 'google-site-kit' ),
-	};
-
 	return (
 		<div className="googlesitekit-effort-indicator">
 			<div
@@ -74,7 +66,7 @@ const EffortIndicator: FC< EffortIndicatorProps > = ( { effort } ) => {
 				size={ SIZE_MEDIUM }
 				type={ TYPE_BODY }
 			>
-				{ labels[ effort ] }
+				{ FEATURE_EFFORT_LABELS[ effort ] }
 			</Typography>
 		</div>
 	);
