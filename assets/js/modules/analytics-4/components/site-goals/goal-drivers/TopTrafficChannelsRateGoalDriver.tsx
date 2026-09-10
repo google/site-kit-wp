@@ -39,9 +39,9 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildTopTrafficChannelsRateReportOptions,
+	mapTopTrafficChannelsRateRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -62,9 +62,7 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-			]( {
+			buildTopTrafficChannelsRateReportOptions( {
 				dates,
 				primaryEvent,
 				breakdownFilter,
@@ -106,10 +104,7 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 
 	const sourceRows = report?.rows || [];
-	const mappedRows =
-		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE ](
-			sourceRows
-		);
+	const mappedRows = mapTopTrafficChannelsRateRows( sourceRows );
 
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;

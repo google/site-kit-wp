@@ -500,7 +500,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 		} );
 
 		describe( 'getKeyMetricsConversionEventWidgets', () => {
-			it( 'includes the Selling products Key Metric tiles under purchase', () => {
+			it( 'includes the "Selling products" Key Metrics widgets in the list of widgets mapped to the "purchase" conversion event', () => {
 				const { purchase } = registry
 					.select( MODULES_ANALYTICS_4 )
 					.getKeyMetricsConversionEventWidgets();

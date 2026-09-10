@@ -35,17 +35,16 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	buildGoalDriverTotalReportOptions,
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
+import { buildTopAuthorsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topAuthors';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -96,7 +95,7 @@ const columns = [
  * @return {Object|undefined} The report options.
  */
 function getTopAuthorsDrivingSalesReportOptions( select: Select ) {
-	return GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ]( {
+	return buildTopAuthorsReportOptions( {
 		dates: select( CORE_USER ).getDateRangeDates(),
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -107,8 +106,7 @@ function getTopAuthorsDrivingSalesReportOptions( select: Select ) {
  * Gets the site-wide total report options for the Top Authors Driving Sales widget.
  *
  * The percentage shown is each author's share of every matching event
- * site-wide, not just the ranked authors above - see
- * `buildGoalDriverTotalReportOptions`.
+ * site-wide, not just the ranked authors above.
  *
  * @since n.e.x.t
  *

@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import {
-	CORE_USER,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
@@ -40,51 +39,15 @@ import {
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
+import {
+	createTestRegistry,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
+	provideModules,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
-
-/**
- * Builds a fake `select` for exercising a Key Metric tile's display gates
- * without a full registry, mirroring the real selectors' "some events
- * detected" / "every dimension available" combining logic.
- *
- * @since n.e.x.t
- *
- * @param {Object}   options                             Options.
- * @param {string[]} [options.detectedEvents]            The Analytics 4 detected conversion events.
- * @param {boolean}  [options.isKeyMetricActive]         Whether the tile is already an active Key Metric.
- * @param {string[]} [options.availableCustomDimensions] The Analytics 4 available custom dimensions.
- * @return {Function} A fake `select( store )` function.
- */
-function makeSelect( {
-	detectedEvents = [],
-	isKeyMetricActive = false,
-	availableCustomDimensions = [],
-} = {} ) {
-	return ( store ) => {
-		if ( store === MODULES_ANALYTICS_4 ) {
-			return {
-				hasConversionReportingEvents: ( events ) =>
-					( Array.isArray( events ) ? events : [ events ] ).some(
-						( event ) => detectedEvents.includes( event )
-					),
-				hasCustomDimensions: ( dimensions ) =>
-					( Array.isArray( dimensions )
-						? dimensions
-						: [ dimensions ]
-					).every( ( dimension ) =>
-						availableCustomDimensions.includes( dimension )
-					),
-			};
-		}
-
-		if ( store === CORE_USER ) {
-			return { isKeyMetricActive: () => isKeyMetricActive };
-		}
-
-		throw new Error( `Unexpected store selected in test: ${ store }` );
-	};
-}
 
 const DATES = {
 	startDate: '2025-01-08',
@@ -592,6 +555,21 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 } );
 
 describe( 'Selling products Key Metric tiles', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry );
+		// None of the Selling products slugs are in the default active Key
+		// Metrics, so `isKeyMetricActive( slug )` resolves to `false` below.
+		provideKeyMetrics( registry );
+		// None of the Selling products conversion events are in the default
+		// user input settings, so they don't count as active goals below.
+		provideKeyMetricsUserInputSettings( registry );
+	} );
+
 	const SELLING_PRODUCTS_SLUGS = [
 		KM_ANALYTICS_TOTAL_SALES,
 		KM_ANALYTICS_SALES_RATE,
@@ -606,58 +584,76 @@ describe( 'Selling products Key Metric tiles', () => {
 	it.each( SELLING_PRODUCTS_SLUGS )(
 		'should offer %s when purchase is detected',
 		( slug ) => {
-			const widget = KEY_METRICS_WIDGETS[ slug ];
-			const select = makeSelect( {
-				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
 
-			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
-				true
-			);
-			expect( widget.displayInList( { select, slug } ) ).toBe( true );
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( true );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( true );
 		}
 	);
 
 	it.each( SELLING_PRODUCTS_SLUGS )(
 		'should not offer %s when purchase has not been detected',
 		( slug ) => {
-			const widget = KEY_METRICS_WIDGETS[ slug ];
-			const select = makeSelect( {
-				detectedEvents: [ ENUM_CONVERSION_EVENTS.CONTACT ],
-			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
 
-			expect( widget.displayInSelectionPanel( { select, slug } ) ).toBe(
-				false
-			);
-			expect( widget.displayInList( { select, slug } ) ).toBe( false );
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( false );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( false );
 		}
 	);
 
 	describe( 'Top authors driving sales', () => {
 		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES;
 
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		} );
+
 		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
 			const widget = KEY_METRICS_WIDGETS[ slug ];
 
 			expect(
 				widget.displayInWidgetArea( {
-					select: makeSelect( {
-						detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						availableCustomDimensions: [],
-					} ),
+					select: registry.select,
 					isViewOnlyDashboard: true,
 					slug,
 				} )
 			).toBe( false );
 
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
 			expect(
 				widget.displayInWidgetArea( {
-					select: makeSelect( {
-						detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
-						availableCustomDimensions: [
-							'googlesitekit_post_author',
-						],
-					} ),
+					select: registry.select,
 					isViewOnlyDashboard: true,
 					slug,
 				} )
@@ -665,15 +661,15 @@ describe( 'Selling products Key Metric tiles', () => {
 		} );
 
 		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
-			const widget = KEY_METRICS_WIDGETS[ slug ];
-			const select = makeSelect( {
-				detectedEvents: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				availableCustomDimensions: [],
 			} );
 
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
 			expect(
 				widget.displayInSelectionPanel( {
-					select,
+					select: registry.select,
 					isViewOnlyDashboard: true,
 					slug,
 				} )
@@ -681,11 +677,35 @@ describe( 'Selling products Key Metric tiles', () => {
 
 			expect(
 				widget.displayInList( {
-					select,
+					select: registry.select,
 					isViewOnlyDashboard: true,
 					slug,
 				} )
 			).toBe( false );
+		} );
+
+		it( 'should be offered on a view-only dashboard when both purchase is detected and the post author custom dimension is available', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
 		} );
 	} );
 } );

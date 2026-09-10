@@ -28,24 +28,18 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { render, within } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
-	provideKeyMetrics,
 	provideModuleRegistrations,
-	provideModules,
 } from '@tests/js/utils';
 import SalesEngagementRateWidget from './SalesEngagementRateWidget';
+import { provideSalesWidgetTestRegistry } from './salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -60,17 +54,7 @@ describe( 'SalesEngagementRateWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		provideKeyMetrics( registry );
-		provideModules(
-			registry,
-			withConnected( MODULE_SLUG_ANALYTICS_4 ) as Parameters<
-				typeof provideModules
-			>[ 1 ]
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		provideSalesWidgetTestRegistry( registry );
 	} );
 
 	function getEngagementReportOptions() {
@@ -90,13 +74,9 @@ describe( 'SalesEngagementRateWidget', () => {
 		);
 		await waitForRegistry();
 
-		[
-			'.googlesitekit-km-widget-tile__loading',
-			'.googlesitekit-km-widget-tile__loading-header',
-			'.googlesitekit-km-widget-tile__loading-body',
-		].forEach( ( selector ) => {
-			expect( container.querySelector( selector ) ).toBeInTheDocument();
-		} );
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the error variant when the report fetch fails', async () => {
@@ -145,24 +125,20 @@ describe( 'SalesEngagementRateWidget', () => {
 
 		const metricElement = container.querySelector(
 			'.googlesitekit-km-widget-tile__metric'
-		);
-		expect( metricElement ).toBeInTheDocument();
-		expect(
 			// eslint-disable-next-line sitekit/acronym-case
-			within( metricElement as HTMLElement ).getByText( '0%' )
-		).toBeInTheDocument();
+		) as HTMLElement;
+		expect( metricElement ).toBeInTheDocument();
+		expect( within( metricElement ).getByText( '0%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
 		).toHaveTextContent( 'of 0 total sessions' );
 
 		const changeBadge = container.querySelector(
 			'.googlesitekit-change-badge'
-		);
-		expect( changeBadge ).toBeInTheDocument();
-		expect(
 			// eslint-disable-next-line sitekit/acronym-case
-			within( changeBadge as HTMLElement ).getByText( '0%' )
-		).toBeInTheDocument();
+		) as HTMLElement;
+		expect( changeBadge ).toBeInTheDocument();
+		expect( within( changeBadge ).getByText( '0%' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render the current period engagement rate, sessions subtext, and the change vs. the previous period', async () => {

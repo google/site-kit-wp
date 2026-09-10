@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import {
@@ -30,21 +35,22 @@ import {
 import MetricTileHeader from './MetricTileHeader';
 
 describe( 'MetricTileHeader', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 	} );
 
-	async function openTooltip( container ) {
+	// eslint-disable-next-line sitekit/acronym-case
+	async function openTooltip( container: HTMLElement ) {
 		const infoTooltip = container.querySelector(
 			'.googlesitekit-info-tooltip'
 		);
 
 		expect( infoTooltip ).toBeInTheDocument();
 
-		fireEvent.mouseOver( infoTooltip );
+		fireEvent.mouseOver( infoTooltip as Element );
 
 		await waitFor( () => {
 			expect(
@@ -52,7 +58,10 @@ describe( 'MetricTileHeader', () => {
 			).toBeInTheDocument();
 		} );
 
-		return document.querySelector( '.googlesitekit-info-tooltip__content' );
+		return document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
 	}
 
 	it( 'should render the info tooltip as unchanged plain text when there is no documentation slug', async () => {

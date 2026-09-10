@@ -38,7 +38,7 @@ import {
 import {
 	buildEngagementReportOptions,
 	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {

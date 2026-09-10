@@ -374,6 +374,7 @@ function seedGoalDriverReports(
 					metricValues: [ { value: '16' } ],
 				},
 		  ];
+	const totalEventCount = hasMultipleEvents ? '100' : '93';
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
@@ -387,7 +388,9 @@ function seedGoalDriverReports(
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: empty ? [] : [ { metricValues: [ { value: '100' } ] } ],
+			rows: empty
+				? []
+				: [ { metricValues: [ { value: totalEventCount } ] } ],
 		},
 		{ options: topTrafficTotalOptions }
 	);

@@ -43,12 +43,39 @@ import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDash
  *
  * @typedef {Object} WidgetComponentProps
  * @property {string} widgetSlug The widget's slug.
- * @property {*} Widget The Widget component scoped to the widget instance.
- * @property {*} WidgetRecoverableModules The WidgetRecoverableModules component scoped to the widget instance.
- * @property {*} WidgetReportZero The WidgetReportZero component scoped to the widget instance.
- * @property {*} WidgetReportError The WidgetReportError component scoped to the widget instance.
- * @property {*} WidgetNull The WidgetNull component scoped to the widget instance.
+ * @property {WPComponent} Widget The `Widget` component, pre-bound to this widget's slug.
+ * @property {WPComponent} WidgetRecoverableModules The `WidgetRecoverableModules` component, pre-bound to this widget's slug.
+ * @property {WPComponent} WidgetReportZero The `WidgetReportZero` component, pre-bound to this widget's slug.
+ * @property {WPComponent} WidgetReportError The `WidgetReportError` component, pre-bound to this widget's slug.
+ * @property {WPComponent} WidgetNull The `WidgetNull` component, pre-bound to this widget's slug.
  */
+
+/**
+ * Builds the widget-scoped component props for a single widget.
+ *
+ * `withWidgetSlug()` wraps each component in `forwardRef`, which TypeScript
+ * would otherwise use to infer a stricter type than the `WidgetComponentProps`
+ * type declared below. Declaring that return type here forces TypeScript to
+ * use it instead, so TS widget components (e.g. `WidgetNull`) don't fail to
+ * type-check.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} widgetSlug The widget's slug.
+ * @return {WidgetComponentProps} The widget-scoped component props.
+ */
+function buildWidgetComponentProps( widgetSlug ) {
+	return {
+		widgetSlug,
+		Widget: withWidgetSlug( widgetSlug )( Widget ),
+		WidgetRecoverableModules: withWidgetSlug( widgetSlug )(
+			WidgetRecoverableModules
+		),
+		WidgetReportZero: withWidgetSlug( widgetSlug )( WidgetReportZero ),
+		WidgetReportError: withWidgetSlug( widgetSlug )( WidgetReportError ),
+		WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
+	};
+}
 
 /**
  * Gets the props to pass to a widget's component.
@@ -59,33 +86,7 @@ import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDash
  * @param {string} widgetSlug The widget's slug.
  * @return {WidgetComponentProps} Props to pass to the widget component.
  */
-export const getWidgetComponentProps =
-	// The widget-scoped components below are wrapped in `forwardRef`, whose
-	// narrow inferred prop type otherwise fails structural checks against the
-	// looser prop types TS widget components declare for them (e.g. `WidgetNull`).
-	/**
-	 * @since n.e.x.t
-	 *
-	 * @type {function(string): WidgetComponentProps}
-	 */
-	(
-		memize( ( widgetSlug ) => {
-			// Scope widget-specific components to the widget instance so that the
-			// component does not need to (re-)specify the widget slug.
-			return {
-				widgetSlug,
-				Widget: withWidgetSlug( widgetSlug )( Widget ),
-				WidgetRecoverableModules: withWidgetSlug( widgetSlug )(
-					WidgetRecoverableModules
-				),
-				WidgetReportZero:
-					withWidgetSlug( widgetSlug )( WidgetReportZero ),
-				WidgetReportError:
-					withWidgetSlug( widgetSlug )( WidgetReportError ),
-				WidgetNull: withWidgetSlug( widgetSlug )( WidgetNull ),
-			};
-		} )
-	);
+export const getWidgetComponentProps = memize( buildWidgetComponentProps );
 
 function withWidgetSlug( widgetSlug ) {
 	return ( WrappedComponent ) => {

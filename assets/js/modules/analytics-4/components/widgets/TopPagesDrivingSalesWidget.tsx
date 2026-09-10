@@ -42,14 +42,13 @@ import {
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildTopPagesReportOptions,
+	mapTopPagesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topPages';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -89,9 +88,7 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 	// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
 	// otherwise the tile would silently start showing add-to-cart data under
 	// a "sales" label.
-	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-		GOAL_DRIVER_IDS.TOP_PAGES
-	]( {
+	const reportOptions = buildTopPagesReportOptions( {
 		dates,
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -147,25 +144,25 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 		[ report, reportOptions, titles ]
 	);
 
-	const rows: GoalDriverPageRow[] = GOAL_DRIVER_ROW_MAPPERS[
-		GOAL_DRIVER_IDS.TOP_PAGES
-	]( report?.rows || [] ).map( ( row ) => {
-		const rawPageTitle = row.pagePath
-			? titles?.[ row.pagePath ]
-			: undefined;
-		const pageTitle = rawPageTitle
-			? decodeAmpersand( rawPageTitle ).trim()
-			: undefined;
+	const rows: GoalDriverPageRow[] = mapTopPagesRows( report?.rows || [] ).map(
+		( row ) => {
+			const rawPageTitle = row.pagePath
+				? titles?.[ row.pagePath ]
+				: undefined;
+			const pageTitle = rawPageTitle
+				? decodeAmpersand( rawPageTitle ).trim()
+				: undefined;
 
-		return {
-			...row,
-			label:
-				! pageTitle ||
-				pageTitle === __( '(unknown)', 'google-site-kit' )
-					? row.label
-					: pageTitle,
-		};
-	} );
+			return {
+				...row,
+				label:
+					! pageTitle ||
+					pageTitle === __( '(unknown)', 'google-site-kit' )
+						? row.label
+						: pageTitle,
+			};
+		}
+	);
 
 	const columns = [
 		{

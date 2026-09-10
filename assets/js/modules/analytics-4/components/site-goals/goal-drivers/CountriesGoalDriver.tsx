@@ -39,9 +39,9 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildCountriesReportOptions,
+	mapCountriesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -62,7 +62,7 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.COUNTRIES ]( {
+			buildCountriesReportOptions( {
 				dates,
 				primaryEvent,
 				breakdownFilter,
@@ -102,8 +102,7 @@ const CountriesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ reportOptions ]
 	);
 	const sourceRows = report?.rows || [];
-	const mappedRows =
-		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.COUNTRIES ]( sourceRows );
+	const mappedRows = mapCountriesRows( sourceRows );
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
 	const error = providedError ?? reportError;

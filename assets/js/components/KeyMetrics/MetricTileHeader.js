@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -51,16 +51,27 @@ export default function MetricTileHeader( {
 			: undefined
 	);
 
-	const tooltipContent = documentationURL ? (
-		<Fragment>
-			{ infoTooltip }{ ' ' }
-			<Link href={ documentationURL } external hideExternalIndicator>
-				{ __( 'Learn more', 'google-site-kit' ) }
-			</Link>
-		</Fragment>
-	) : (
-		infoTooltip
-	);
+	const tooltipContent = documentationURL
+		? createInterpolateElement(
+				__( '<TooltipText /> <LearnMoreLink />', 'google-site-kit' ),
+				{
+					// The tooltip content can be a plain string, so it's wrapped
+					// in a Fragment to satisfy createInterpolateElement's
+					// requirement that every substitution be a valid element.
+					// eslint-disable-next-line react/jsx-no-useless-fragment
+					TooltipText: <Fragment>{ infoTooltip }</Fragment>,
+					LearnMoreLink: (
+						<Link
+							href={ documentationURL }
+							external
+							hideExternalIndicator
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					),
+				}
+		  )
+		: infoTooltip;
 
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">

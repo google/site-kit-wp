@@ -93,6 +93,59 @@ export const selectors = {
 	),
 
 	/**
+	 * Checks whether a conversion event is currently relevant for Key Metrics
+	 * selection, beyond whether GA4 has actually detected it.
+	 *
+	 * An event also counts as active if the user has already picked a Key
+	 * Metric tied to it (via `getKeyMetricsConversionEventWidgets()`), or if
+	 * they named it as a business goal during onboarding (via
+	 * `getUserInputSettings().includeConversionEvents`). This keeps a Key
+	 * Metric selectable even after its event stops being "detected", so a
+	 * user can still find and re-select a metric they've deselected, rather
+	 * than losing access to it outright.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} event Conversion event to check.
+	 * @return {boolean} True if the event is currently active.
+	 */
+	isConversionEventCurrentlyActive: createRegistrySelector(
+		( select ) => ( state, event ) => {
+			if (
+				select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+					event
+				)
+			) {
+				return true;
+			}
+
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+			const userPickedMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
+
+			if (
+				userPickedMetrics?.length &&
+				conversionEventWidgets[ event ]?.some( ( widget ) =>
+					userPickedMetrics.includes( widget )
+				)
+			) {
+				return true;
+			}
+
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+
+			return !! userInputSettings?.includeConversionEvents?.values?.includes(
+				event
+			);
+		}
+	),
+
+	/**
 	 * Checks if any ecommerce conversion reporting events have been detected.
 	 *
 	 * @since 1.178.0

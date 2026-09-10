@@ -144,8 +144,8 @@ function shouldDisplayWidgetWithCustomDimensions( {
 }
 
 /**
- * Determines whether to display a widget that requires both a conversion
- * reporting event and custom dimensions in the key metrics selection panel.
+ * Determines if a widget that requires both a conversion reporting event
+ * and custom dimensions in the key metrics selection panel should appear.
  *
  * This function is attached to the widget object that requires both and has
  * the `requiredConversionEventName` and `requiredCustomDimensions` properties.
@@ -155,13 +155,29 @@ function shouldDisplayWidgetWithCustomDimensions( {
  * @param {Object}   options                     Options object.
  * @param {Function} options.select              Data store select function.
  * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
- * @param {string}   options.slug                Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-function shouldDisplayWidgetWithConversionEventAndCustomDimensions( options ) {
-	return (
-		shouldDisplayWidgetWithConversionEvent.call( this, options ) &&
-		shouldDisplayWidgetWithCustomDimensions.call( this, options )
+function shouldDisplayWidgetWithConversionEventAndCustomDimensions( {
+	select,
+	isViewOnlyDashboard,
+} ) {
+	const events = Array.isArray( this.requiredConversionEventName )
+		? this.requiredConversionEventName
+		: [ this.requiredConversionEventName ];
+	const hasRequiredConversionEvent = events.some( ( event ) =>
+		select( MODULES_ANALYTICS_4 ).isConversionEventCurrentlyActive( event )
+	);
+
+	if ( ! hasRequiredConversionEvent ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		this.requiredCustomDimensions
 	);
 }
 

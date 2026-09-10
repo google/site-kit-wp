@@ -35,14 +35,13 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildVisitorTypeReportOptions,
+	mapVisitorTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -90,9 +89,7 @@ const SalesByVisitorTypeWidget: FC< SalesByVisitorTypeWidgetProps > = ( {
 	// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
 	// otherwise the tile would silently start showing add-to-cart data under
 	// a "sales" label.
-	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-		GOAL_DRIVER_IDS.VISITOR_TYPE
-	]( {
+	const reportOptions = buildVisitorTypeReportOptions( {
 		dates,
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -131,9 +128,7 @@ const SalesByVisitorTypeWidget: FC< SalesByVisitorTypeWidgetProps > = ( {
 		[ reportOptions ]
 	);
 
-	const rows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.VISITOR_TYPE ](
-		report?.rows || []
-	);
+	const rows = mapVisitorTypeRows( report?.rows || [] );
 
 	return (
 		<MetricTileTable

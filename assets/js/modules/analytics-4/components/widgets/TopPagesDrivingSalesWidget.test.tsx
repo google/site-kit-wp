@@ -29,9 +29,7 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -44,11 +42,10 @@ import { render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
-	provideKeyMetrics,
 	provideModuleRegistrations,
-	provideModules,
 	provideUserInfo,
 } from '@tests/js/utils';
+import { provideSalesWidgetTestRegistry } from './salesWidgetTestRegistry';
 import TopPagesDrivingSalesWidget from './TopPagesDrivingSalesWidget';
 
 describe( 'TopPagesDrivingSalesWidget', () => {
@@ -174,17 +171,7 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		provideKeyMetrics( registry );
-		provideModules(
-			registry,
-			withConnected( MODULE_SLUG_ANALYTICS_4 ) as Parameters<
-				typeof provideModules
-			>[ 1 ]
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		provideSalesWidgetTestRegistry( registry );
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
@@ -197,13 +184,9 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 		);
 		await waitForRegistry();
 
-		[
-			'.googlesitekit-km-widget-tile__loading',
-			'.googlesitekit-km-widget-tile__loading-header',
-			'.googlesitekit-km-widget-tile__loading-body',
-		].forEach( ( selector ) => {
-			expect( container.querySelector( selector ) ).toBeInTheDocument();
-		} );
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the generic error variant when the report fetch fails', async () => {

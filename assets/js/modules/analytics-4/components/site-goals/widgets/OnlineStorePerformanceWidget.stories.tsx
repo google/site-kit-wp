@@ -402,6 +402,7 @@ function seedGoalDriverReports(
 					metricValues: [ { value: '6' } ],
 				},
 		  ];
+	const totalEventCount = isAddToCart ? '90' : '108';
 	const pageEventCounts = isAddToCart
 		? [ '47', '31', '18' ]
 		: [ '30', '25', '20' ];
@@ -440,7 +441,9 @@ function seedGoalDriverReports(
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: empty ? [] : [ { metricValues: [ { value: '100' } ] } ],
+			rows: empty
+				? []
+				: [ { metricValues: [ { value: totalEventCount } ] } ],
 		},
 		{ options: topTrafficTotalOptions }
 	);

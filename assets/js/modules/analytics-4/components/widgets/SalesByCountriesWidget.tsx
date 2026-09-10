@@ -35,14 +35,13 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildCountriesReportOptions,
+	mapCountriesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -89,9 +88,7 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 	// event is always `purchase` rather than `getPrimaryEcommerceEvent()`'s
 	// detected fallback to `add_to_cart` - otherwise the tile would silently
 	// start showing add-to-cart data under a "sales" label.
-	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-		GOAL_DRIVER_IDS.COUNTRIES
-	]( {
+	const reportOptions = buildCountriesReportOptions( {
 		dates,
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -130,9 +127,7 @@ const SalesByCountriesWidget: FC< SalesByCountriesWidgetProps > = ( {
 		[ reportOptions ]
 	);
 
-	const rows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.COUNTRIES ](
-		report?.rows || []
-	);
+	const rows = mapCountriesRows( report?.rows || [] );
 
 	return (
 		<MetricTileTable

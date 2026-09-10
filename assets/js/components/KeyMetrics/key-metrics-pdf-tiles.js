@@ -69,19 +69,32 @@ import {
 import { getTopEarningContentReportOptions } from '@/js/modules/adsense/components/widgets/TopEarningContentWidget';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
+	buildCountriesReportOptions,
+	mapCountriesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
+import {
 	buildEngagementReportOptions,
-	buildGoalDriverTotalReportOptions,
 	buildPrimaryEventReportOptions,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
+import {
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
+import { buildTopAuthorsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topAuthors';
+import { buildTopPagesReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topPages';
+import {
+	buildTopTrafficChannelsRateReportOptions,
+	mapTopTrafficChannelsRateRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
+import {
+	buildVisitorTypeReportOptions,
+	mapVisitorTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	getEngagedTrafficSourceReportOptions,
@@ -232,7 +245,7 @@ function pdfTableDates( dates ) {
 }
 
 /**
- * Resolves the primary ecommerce event for a Selling products PDF tile.
+ * Resolves the primary ecommerce event for a "Selling products" PDF tile.
  *
  * `getPrimaryEcommerceEvent` derives from `getDetectedEvents` but has no
  * resolver of its own, so this resolves the detected events first and reads
@@ -1886,16 +1899,15 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Total sales"), so the
 				// primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart counts under a "sales" label.
+				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would
+				// start showing "add-to-cart" counts under the "sales" label.
 				const options = buildPrimaryEventReportOptions(
 					dates,
 					ENUM_CONVERSION_EVENTS.PURCHASE
 				);
 
-				// No primary ecommerce event means no data, so fetch nothing
-				// and let the empty reports drop the tile.
+				// No primary ecommerce event means no data.
 				if ( ! options ) {
 					return [];
 				}
@@ -1906,7 +1918,7 @@ export const KEY_METRICS_PDF_TILES = {
 				const { currentPrimaryCount, previousPrimaryCount } =
 					processReports( report || {}, {} );
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( ! report?.rows?.length ) {
 					return null;
 				}
@@ -1929,16 +1941,15 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Sales rate"), so the
 				// primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
+				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would start
+				// showing "add-to-cart" data under the "sales" label.
 				const primaryEventOptions = buildPrimaryEventReportOptions(
 					dates,
 					ENUM_CONVERSION_EVENTS.PURCHASE
 				);
 
-				// No primary ecommerce event means no data, so fetch nothing
-				// and let the empty reports drop the tile.
+				// No primary ecommerce event means no data.
 				if ( ! primaryEventOptions ) {
 					return [];
 				}
@@ -1961,7 +1972,7 @@ export const KEY_METRICS_PDF_TILES = {
 						engagementReport || {}
 					);
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( ! primaryEventReport?.rows?.length ) {
 					return null;
 				}
@@ -1990,8 +2001,7 @@ export const KEY_METRICS_PDF_TILES = {
 					registry
 				);
 
-				// No primary ecommerce event means no data, so fetch nothing
-				// and let the empty reports drop the tile.
+				// No primary ecommerce event means no data.
 				if ( ! primaryEvent ) {
 					return [];
 				}
@@ -2010,7 +2020,7 @@ export const KEY_METRICS_PDF_TILES = {
 					currentSessions,
 				} = processReports( {}, engagementReport || {} );
 
-				// No totals means the report has no data, so drop the tile.
+				// No totals means the report has no data, so don't render the tile.
 				if ( ! engagementReport?.totals?.length ) {
 					return null;
 				}
@@ -2039,13 +2049,11 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Top traffic channels
 				// driving sales"), so the primary event is always `purchase`
-				// rather than `getPrimaryEcommerceEvent()`'s detected
-				// fallback to `add_to_cart` - otherwise the tile would
-				// silently start showing add-to-cart data under a "sales"
-				// label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( {
+				// rather than `getPrimaryEcommerceEvent()`'s fallback
+				// (`add_to_cart`). If we used `getPrimaryEcommerceEvent()`,
+				// the tile would start showing "add-to-cart" data under the
+				// "sales" label.
+				const options = buildTopTrafficChannelsRateReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -2058,9 +2066,9 @@ export const KEY_METRICS_PDF_TILES = {
 				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
 			},
 			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-				]( report?.rows || [] );
+				const rows = mapTopTrafficChannelsRateRows(
+					report?.rows || []
+				);
 
 				if ( ! rows.length ) {
 					return null;
@@ -2082,12 +2090,10 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Sales by visitor type"),
 				// so the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( {
+				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would
+				// start showing "add-to-cart" data under the "sales" label.
+				const options = buildVisitorTypeReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -2100,9 +2106,7 @@ export const KEY_METRICS_PDF_TILES = {
 				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
 			},
 			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.VISITOR_TYPE
-				]( report?.rows || [] );
+				const rows = mapVisitorTypeRows( report?.rows || [] );
 
 				if ( ! rows.length ) {
 					return null;
@@ -2124,12 +2128,10 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Sales by countries"), so
 				// the primary event is always `purchase` rather than
-				// `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( {
+				// `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would
+				// start showing "add-to-cart" data under the "sales" label.
+				const options = buildCountriesReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -2142,9 +2144,7 @@ export const KEY_METRICS_PDF_TILES = {
 				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
 			},
 			( [ report ] ) => {
-				const rows = GOAL_DRIVER_ROW_MAPPERS[
-					GOAL_DRIVER_IDS.COUNTRIES
-				]( report?.rows || [] );
+				const rows = mapCountriesRows( report?.rows || [] );
 
 				if ( ! rows.length ) {
 					return null;
@@ -2166,17 +2166,15 @@ export const KEY_METRICS_PDF_TILES = {
 			( dates ) => {
 				// This tile is purchase-specific ("Top authors driving
 				// sales"), so the primary event is always `purchase` rather
-				// than `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
+				// than `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would
+				// start showing "add-to-cart" data under the "sales" label.
 				//
 				// The percentage shown is each author's share of every
 				// matching event site-wide, not just the ranked authors
-				// above - see `buildGoalDriverTotalReportOptions`.
+				// above.
 				const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.TOP_AUTHORS
-				]( {
+				const options = buildTopAuthorsReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
@@ -2226,13 +2224,11 @@ export const KEY_METRICS_PDF_TILES = {
 			async ( dates, registry ) => {
 				// This tile is purchase-specific ("Top pages driving
 				// sales"), so the primary event is always `purchase` rather
-				// than `getPrimaryEcommerceEvent()`'s detected fallback to
-				// `add_to_cart` - otherwise the tile would silently start
-				// showing add-to-cart data under a "sales" label.
+				// than `getPrimaryEcommerceEvent()`'s fallback (`add_to_cart`).
+				// If we used `getPrimaryEcommerceEvent()`, the tile would
+				// start showing "add-to-cart" data under the "sales" label.
 				const primaryEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
-				const options = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-					GOAL_DRIVER_IDS.TOP_PAGES
-				]( {
+				const options = buildTopPagesReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,

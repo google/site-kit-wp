@@ -40,9 +40,9 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildTopPagesReportOptions,
+	mapTopPagesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topPages';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
@@ -65,7 +65,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_PAGES ]( {
+			buildTopPagesReportOptions( {
 				dates,
 				primaryEvent,
 				breakdownFilter,
@@ -122,9 +122,7 @@ const TopPagesGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ report, reportOptions, titles ]
 	);
 	const sourceRows = report?.rows || [];
-	const mappedRows = GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.TOP_PAGES ](
-		sourceRows
-	).map( ( row ) => {
+	const mappedRows = mapTopPagesRows( sourceRows ).map( ( row ) => {
 		const rawPageTitle = titles?.[ row.pagePath || '' ];
 		const pageTitle = rawPageTitle
 			? decodeAmpersand( rawPageTitle ).trim()

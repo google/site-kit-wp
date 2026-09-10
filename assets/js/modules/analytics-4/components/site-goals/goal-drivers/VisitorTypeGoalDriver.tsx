@@ -39,9 +39,9 @@ import {
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildVisitorTypeReportOptions,
+	mapVisitorTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
@@ -62,15 +62,13 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.VISITOR_TYPE ](
-				{
-					dates,
-					primaryEvent,
-					breakdownFilter,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-					context: goalType,
-				}
-			),
+			buildVisitorTypeReportOptions( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
+			} ),
 		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 	const report = useSelect(
@@ -104,8 +102,7 @@ const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ reportOptions ]
 	);
 	const sourceRows = report?.rows || [];
-	const mappedRows =
-		GOAL_DRIVER_ROW_MAPPERS[ GOAL_DRIVER_IDS.VISITOR_TYPE ]( sourceRows );
+	const mappedRows = mapVisitorTypeRows( sourceRows );
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
 	const error = providedError ?? reportError;
