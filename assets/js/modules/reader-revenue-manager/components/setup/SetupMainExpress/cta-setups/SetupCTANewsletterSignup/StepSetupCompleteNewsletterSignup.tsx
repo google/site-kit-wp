@@ -32,8 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { type Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	CTA,
@@ -83,6 +85,14 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 		[ newsletterCTAID ]
 	);
 
+	const rrmSettingsURL = useSelect(
+		( select: Select ) =>
+			select( CORE_SITE ).getModuleSettingsEditURL(
+				MODULE_SLUG_READER_REVENUE_MANAGER
+			),
+		[]
+	);
+
 	return (
 		<Fragment>
 			{ hasPreExistingCTAs && (
@@ -108,9 +118,14 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 			<StepSetupCompleteDetail
 				title={ __( 'Placement settings', 'google-site-kit' ) }
 			>
-				{ __(
-					'To change where the form appears on your site, go to Site Kit settings.',
-					'google-site-kit'
+				{ createInterpolateElement(
+					__(
+						'To change where the form appears on your site, go to <a>Site Kit settings</a>.',
+						'google-site-kit'
+					),
+					{
+						a: <Link href={ rrmSettingsURL } external />,
+					}
 				) }
 			</StepSetupCompleteDetail>
 			<StepSetupCompleteDetail
