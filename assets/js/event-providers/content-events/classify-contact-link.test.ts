@@ -25,7 +25,7 @@ import classifyContactLink, {
 } from './classify-contact-link';
 
 /**
- * Classifies an href through a real anchor, the way the listener does.
+ * Classifies an href through a parsed URL, the way the listener does.
  *
  * @since n.e.x.t
  *
@@ -33,10 +33,7 @@ import classifyContactLink, {
  * @return {string|null} The resolved `link_type`, or `null`.
  */
 function classifyHref( href: string ): ContactLinkType | null {
-	const anchor = global.document.createElement( 'a' );
-	anchor.setAttribute( 'href', href );
-
-	return classifyContactLink( anchor );
+	return classifyContactLink( new URL( href ) );
 }
 
 describe( 'classifyContactLink', () => {
@@ -155,13 +152,13 @@ describe( 'classifyContactLink', () => {
 		}
 	);
 
-	it( 'should return null for a malformed href rather than throwing', () => {
-		const anchor = global.document.createElement( 'a' );
-		// An unclosed IPv6 host, which the URL parser rejects.
-		anchor.setAttribute( 'href', 'http://[' );
+	it( 'should leave the URL it was given unchanged', () => {
+		// The listener passes this same URL on to the outbound classifier, which
+		// reports the address, so a `www.` host must survive classification.
+		const url = new URL( 'https://www.wa.me/15551234567' );
 
-		expect( () => classifyContactLink( anchor ) ).not.toThrow();
-		expect( classifyContactLink( anchor ) ).toBeNull();
+		expect( classifyContactLink( url ) ).toBe( 'whatsapp' );
+		expect( url.href ).toBe( 'https://www.wa.me/15551234567' );
 	} );
 
 	describe( 'CONTACT_LINK_MATCHERS', () => {

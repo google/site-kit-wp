@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import classifyContactLink from './classify-contact-link';
+import classifyOutboundLink from './classify-outbound-link';
 import { initializeLinkClicks } from './link-clicks';
 import {
 	SiteKitGlobal,
@@ -28,8 +29,8 @@ import {
 	render,
 } from './test-utils';
 
-// Wraps the real `classifyContactLink` in a spy: the tests still get its real
-// return values, and can also assert whether the listener called it at all.
+// Wraps both real classifiers in spies: the tests still get their real return
+// values, and can also assert whether the listener called each one at all.
 jest.mock( './classify-contact-link', () => {
 	const actual = jest.requireActual( './classify-contact-link' );
 
@@ -40,7 +41,18 @@ jest.mock( './classify-contact-link', () => {
 	};
 } );
 
-const classifySpy = classifyContactLink as jest.Mock;
+jest.mock( './classify-outbound-link', () => {
+	const actual = jest.requireActual( './classify-outbound-link' );
+
+	return {
+		__esModule: true,
+		...actual,
+		default: jest.fn( actual.default ),
+	};
+} );
+
+const classifyContactSpy = classifyContactLink as jest.Mock;
+const classifyOutboundSpy = classifyOutboundLink as jest.Mock;
 
 describe( 'initializeLinkClicks', () => {
 	let gtagEventMock: jest.Mock;
@@ -52,7 +64,8 @@ describe( 'initializeLinkClicks', () => {
 	}
 
 	beforeEach( () => {
-		classifySpy.mockClear();
+		classifyContactSpy.mockClear();
+		classifyOutboundSpy.mockClear();
 		gtagEventMock = jest.fn();
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
@@ -189,6 +202,38 @@ describe( 'initializeLinkClicks', () => {
 			'a group invite',
 			'<a href="https://chat.whatsapp.com/ABCDEF">Join</a>',
 		],
+		[
+			'an outbound link with no rel',
+			'<a href="https://example.com/deal">Deal</a>',
+		],
+		[
+			'an outbound link qualified by nothing this event reports',
+			'<a href="https://example.com/x" rel="noopener noreferrer">Read</a>',
+		],
+		[
+			'an outbound link whose rel only looks qualified',
+			'<a href="https://example.com/x" rel="sponsored-post">Read</a>',
+		],
+		[
+			'a qualified link that stays on this site',
+			'<a href="/about" rel="sponsored">About</a>',
+		],
+		[
+			'a qualified link that stays on this site, written in full',
+			`<a href="http://${ global.location.hostname }/about" rel="ugc">About</a>`,
+		],
+		[
+			'a qualified link that opens no address',
+			'<a href="javascript:void(0)" rel="nofollow">Nowhere</a>',
+		],
+		[
+			'a qualified app-scheme link the contact classifier does not list',
+			'<a href="msteams://l/chat/0/0?users=hello@example.com" rel="nofollow">Chat</a>',
+		],
+		[
+			'a qualified messaging share link',
+			'<a href="whatsapp://send?text=Hello" rel="nofollow">Share</a>',
+		],
 	] )( 'should emit nothing for %s', ( _label, markup ) => {
 		const element = render( markup );
 		initialize();
@@ -218,12 +263,23 @@ describe( 'initializeLinkClicks', () => {
 				'contact_link_click',
 				expect.objectContaining( { link_type: 'whatsapp' } )
 			);
+			expect( gtagEventMock ).not.toHaveBeenCalledWith(
+				'outbound_link_click',
+				expect.anything()
+			);
+
+			// The address holds the phone number, so it may reach no payload.
+			const payload = JSON.stringify(
+				gtagEventMock.mock.calls[ 0 ][ 1 ]
+			);
+
+			[ '15551234567', 'wa.me' ].forEach( ( identifier ) => {
+				expect( payload ).not.toContain( identifier );
+			} );
 		}
 	);
 
-	// `closest( 'a[href]' )`, not `closest( 'a' )`: an anchor with no address is
-	// not a link, and #13291 handles whatever this leaves unclassified — so it
-	// must never be resolved in the first place.
+	// An anchor with no address is not a link, so neither classifier may see it.
 	it( 'should not resolve an anchor that has no href', () => {
 		const anchor = render( '<a class="no-href">Nowhere</a>' );
 		initialize();
@@ -235,7 +291,7 @@ describe( 'initializeLinkClicks', () => {
 			} )
 		);
 
-		expect( classifySpy ).not.toHaveBeenCalled();
+		expect( classifyContactSpy ).not.toHaveBeenCalled();
 		expect( gtagEventMock ).not.toHaveBeenCalled();
 	} );
 
@@ -245,7 +301,7 @@ describe( 'initializeLinkClicks', () => {
 
 		( anchor as HTMLAnchorElement ).click();
 
-		expect( classifySpy ).toHaveBeenCalledTimes( 1 );
+		expect( classifyContactSpy ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'should register one document click listener', () => {
@@ -256,42 +312,52 @@ describe( 'initializeLinkClicks', () => {
 		expect( typeof added[ 0 ][ 1 ] ).toBe( 'function' );
 	} );
 
-	it( 'should ensure clicking the link still opens the URL', () => {
-		// The shared preventNavigation listener runs before this one and would
-		// make defaultPrevented true, so it steps aside here and the probe below
-		// swallows the click instead.
-		global.document.removeEventListener( 'click', preventNavigation );
+	it.each( [
+		[
+			'a contact link',
+			'<a href="tel:+15551234567">Call</a>',
+			'contact_link_click',
+			{ link_type: 'phone' },
+		],
+		[
+			'a qualified outbound link',
+			'<a href="https://example.com/deal" rel="sponsored">Deal</a>',
+			'outbound_link_click',
+			{ link_rel: 'sponsored' },
+		],
+	] )(
+		'should ensure clicking %s still opens the URL',
+		( _label, markup, eventName, payload ) => {
+			// The shared preventNavigation listener runs before this one and
+			// would make defaultPrevented true, so it steps aside here and the
+			// probe below swallows the click instead.
+			global.document.removeEventListener( 'click', preventNavigation );
 
-		const anchor = render< HTMLAnchorElement >(
-			'<a href="tel:+15551234567">Call</a>'
-		);
-		initialize();
+			const anchor = render< HTMLAnchorElement >( markup );
+			initialize();
 
-		let preventedWhenProbed: boolean | undefined;
+			let preventedWhenProbed: boolean | undefined;
 
-		function probe( event: Event ) {
-			preventedWhenProbed = event.defaultPrevented;
-			event.preventDefault();
+			function probe( event: Event ) {
+				preventedWhenProbed = event.defaultPrevented;
+				event.preventDefault();
+			}
+
+			// Registered after the initializer, so reaching it at all also
+			// shows the tracking listener let the click carry on.
+			global.document.addEventListener( 'click', probe );
+			anchor.click();
+			global.document.removeEventListener( 'click', probe );
+
+			expect( preventedWhenProbed ).toBe( false );
+			expect( gtagEventMock ).toHaveBeenCalledWith(
+				eventName,
+				expect.objectContaining( payload )
+			);
 		}
-
-		// Registered after the initializer, so it sees whatever the tracking
-		// listener did to the event.
-		global.document.addEventListener( 'click', probe );
-		anchor.click();
-		global.document.removeEventListener( 'click', probe );
-
-		expect( preventedWhenProbed ).toBe( false );
-		expect( gtagEventMock ).toHaveBeenCalledWith( 'contact_link_click', {
-			link_type: 'phone',
-		} );
-	} );
+	);
 
 	it( "should keep tracking later clicks when one click's handling throws", () => {
-		// Mock console.error since this test intentionally triggers it.
-		const consoleErrorSpy = jest
-			.spyOn( console, 'error' )
-			.mockImplementation( () => {} );
-
 		render(
 			'<a href="tel:+15551234567">Call</a>' +
 				'<a href="mailto:hello@example.com">Email</a>'
@@ -307,11 +373,6 @@ describe( 'initializeLinkClicks', () => {
 		} );
 
 		first.click();
-		expect( consoleErrorSpy ).toHaveBeenCalledWith(
-			'Site Kit: failed to track this link click.',
-			expect.any( Error )
-		);
-
 		second.click();
 
 		expect( gtagEventMock ).toHaveBeenCalledTimes( 2 );
@@ -320,6 +381,169 @@ describe( 'initializeLinkClicks', () => {
 			{ link_type: 'email' }
 		);
 
-		consoleErrorSpy.mockRestore();
+		// Restoring a local `console.error` spy would leave every test after
+		// this one unable to notice an error it never expected.
+		expect( console ).toHaveErroredWith(
+			'Site Kit: failed to track this link click.',
+			new Error( 'boom' )
+		);
+	} );
+	describe( 'outbound_link_click', () => {
+		it( 'should emit one event carrying the rel, the address and the transport', () => {
+			const anchor = render< HTMLAnchorElement >(
+				'<a href="https://example.com/deal" rel="sponsored">Deal</a>'
+			);
+			initialize();
+
+			anchor.click();
+
+			expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
+			expect( gtagEventMock ).toHaveBeenCalledWith(
+				'outbound_link_click',
+				{
+					link_rel: 'sponsored',
+					link_url: 'https://example.com/deal',
+					link_domain: 'example.com',
+					transport_type: 'beacon',
+				}
+			);
+		} );
+
+		it.each( [
+			[
+				'<a href="https://example.com/post" rel="ugc">Post</a>',
+				'ugc',
+				'https://example.com/post',
+				'example.com',
+			],
+			[
+				'<a href="https://example.com/x?ref=1" rel="nofollow">X</a>',
+				'nofollow',
+				'https://example.com/x?ref=1',
+				'example.com',
+			],
+			[
+				'<a href="https://shop.example.com/" rel="nofollow sponsored">Shop</a>',
+				'sponsored nofollow',
+				'https://shop.example.com/',
+				'shop.example.com',
+			],
+			[
+				'<a href="https://example.com/x" rel="ugc,nofollow">X</a>',
+				'ugc nofollow',
+				'https://example.com/x',
+				'example.com',
+			],
+			[
+				'<a href="https://example.com/x" rel="noopener nofollow noreferrer">X</a>',
+				'nofollow',
+				'https://example.com/x',
+				'example.com',
+			],
+			// The contact classifier strips a `www.` prefix to match its hosts,
+			// so this reports the address the visitor actually clicked.
+			[
+				'<a href="https://www.example.com/deal" rel="NoFollow">Deal</a>',
+				'nofollow',
+				'https://www.example.com/deal',
+				'www.example.com',
+			],
+		] )(
+			'should report %s as link_rel "%s"',
+			( markup, linkRel, linkURL, linkDomain ) => {
+				const anchor = render< HTMLAnchorElement >( markup );
+				initialize();
+
+				anchor.click();
+
+				expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
+				expect( gtagEventMock ).toHaveBeenCalledWith(
+					'outbound_link_click',
+					{
+						link_rel: linkRel,
+						link_url: linkURL,
+						link_domain: linkDomain,
+						transport_type: 'beacon',
+					}
+				);
+			}
+		);
+
+		it( 'should resolve a click on a child element up to the anchor', () => {
+			render(
+				'<a href="https://example.com/deal" rel="sponsored"><svg class="icon"></svg><span class="label">Deal</span></a>'
+			);
+			initialize();
+
+			global.document.querySelector( '.label' )?.dispatchEvent(
+				new global.MouseEvent( 'click', {
+					bubbles: true,
+					cancelable: true,
+				} )
+			);
+
+			expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
+			expect( gtagEventMock ).toHaveBeenCalledWith(
+				'outbound_link_click',
+				expect.objectContaining( { link_rel: 'sponsored' } )
+			);
+		} );
+
+		it( 'should classify an anchor appended after initialization', () => {
+			initialize();
+
+			const anchor = render< HTMLAnchorElement >(
+				'<a href="https://example.com/x" rel="ugc">Post</a>'
+			);
+			anchor.click();
+
+			expect( gtagEventMock ).toHaveBeenCalledWith(
+				'outbound_link_click',
+				expect.objectContaining( { link_rel: 'ugc' } )
+			);
+		} );
+
+		it( 'should hand both classifiers the same parsed URL for one click', () => {
+			const anchor = render< HTMLAnchorElement >(
+				'<a href="https://example.com/deal" rel="sponsored">Deal</a>'
+			);
+			initialize();
+
+			anchor.click();
+
+			expect( classifyContactSpy ).toHaveBeenCalledTimes( 1 );
+			expect( classifyOutboundSpy ).toHaveBeenCalledTimes( 1 );
+			expect( classifyOutboundSpy.mock.calls[ 0 ][ 1 ] ).toBe(
+				classifyContactSpy.mock.calls[ 0 ][ 0 ]
+			);
+		} );
+
+		it( 'should emit nothing for an address the parser rejects, and keep emitting after it', () => {
+			render(
+				// An unclosed IPv6 host, which the URL parser rejects.
+				'<a href="http://[" rel="nofollow">Broken</a>' +
+					'<a href="https://example.com/deal" rel="sponsored">Deal</a>'
+			);
+			initialize();
+
+			const [ broken, deal ] = Array.from(
+				global.document.querySelectorAll< HTMLAnchorElement >(
+					'a[href]'
+				)
+			);
+
+			broken.click();
+
+			expect( gtagEventMock ).not.toHaveBeenCalled();
+			expect( classifyContactSpy ).not.toHaveBeenCalled();
+
+			deal.click();
+
+			expect( gtagEventMock ).toHaveBeenCalledTimes( 1 );
+			expect( gtagEventMock ).toHaveBeenCalledWith(
+				'outbound_link_click',
+				expect.objectContaining( { link_rel: 'sponsored' } )
+			);
+		} );
 	} );
 } );
