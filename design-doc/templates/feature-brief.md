@@ -59,7 +59,8 @@ highest-numbered one — a newer iteration may be an experiment you decided agai
 
 The four preparation artifacts are optional. If you're skipping the preparation stages —
 reasonable for a small, well-specified feature — mark their rows _(not used)_ and the later
-stages will work from the PRD and the design in "Resources" instead.
+stages will work from the PRD and the design in "Resources" instead. Any row without a path
+is treated that way, so an unedited one is safe too.
 
 | Artifact                | Path                |
 | ----------------------- | ------------------- |

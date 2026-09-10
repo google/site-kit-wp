@@ -20,9 +20,9 @@ actually present:
 | ------------------- | -------------------------------------------------------- | --------- |
 | Feature brief       | `design-doc/input/feature-brief.md`                      | every stage |
 | PRD                 | as named in the brief's "Resources"                      | preparation 01, or stage 01 when preparation is skipped |
-| Design              | as named in the brief's "Resources"                      | as above, and any stage adding screenshots |
-| Design doc template | `design-doc/input/design-doc-template.md`                | 01 |
-| Example design docs | `design-doc/input/examples/`                             | 01 |
+| Design              | as named in the brief's "Resources"                      | preparation 01, stage 01, and any stage adding screenshots |
+| Design doc template | `design-doc/input/design-doc-template.md`                | 01–05 |
+| Example design docs | `design-doc/input/examples/`                             | 01–05 |
 | Issue template      | `.github/ISSUE_TEMPLATE/feature_request.md`              | 06 |
 | Example issues (AC) | `design-doc/input/issues/acceptance-criteria-examples/`  | 06 |
 | Example issues (IB) | `design-doc/input/issues/implementation-brief-examples/` | 07 |
@@ -36,6 +36,10 @@ If the brief itself is absent, create it from `design-doc/templates/feature-brie
 the user to fill it in — or fill it in from what they tell you, and have them confirm it —
 before going any further.
 
+The design doc follows the template ./design-doc/input/design-doc-template.md, which defines
+its sections; the examples in ./design-doc/input/examples/ show the expected structure and
+depth.
+
 ## Inputs from earlier stages
 
 The brief's "Current inputs" table names the artifact each earlier stage produced. Read only
@@ -43,9 +47,9 @@ what it points at — a superseded iteration is usually wrong rather than merely
 
 The four preparation stages are **optional**: they break a large or unfamiliar feature down
 before any of the doc is written, and a small, well-specified feature can go straight to stage
-01. Where the table marks an artifact _(not used)_, work from the brief's "Resources" — the PRD
-and the design — in its place. Don't ask for it, and don't produce it yourself as a side
-errand: the user chose to skip that stage.
+01. Where a preparation row names no path — marked _(not used)_, or never filled in — work from
+the brief's "Resources", the PRD and the design, in its place. Don't ask for it, and don't
+produce it yourself as a side errand: that stage was skipped.
 
 ## Conventions
 

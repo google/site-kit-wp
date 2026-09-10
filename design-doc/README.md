@@ -63,8 +63,10 @@ Then review the output and, if the stage produced a new artifact, point the brie
 ## Iterations
 
 A stage that produces a new artifact writes it to a new `<name>-NN` directory, numbered
-sequentially, and copies its own prompt file and the brief in alongside it — so each artifact
-records the instructions that produced it.
+sequentially, and copies its own prompt file and the brief in alongside it — so the artifact
+records the instructions that produced it. Stages 2–5 refine the design doc in place, so an
+`iteration-NN` directory records the prompt that created the doc, not every prompt that
+touched it.
 
 Earlier iterations are kept for reference but are **not** inputs: every stage is told not to
 read them, because a superseded iteration is usually wrong rather than merely old. Later stages
@@ -77,15 +79,16 @@ experiment you decided against. A row marked _(not used)_ means that stage was s
 `scripts/` holds helpers used around the process. The GitHub ones need the
 [GitHub CLI](https://cli.github.com) authenticated (`gh auth login` or `GH_TOKEN`); the diagram
 renderer needs `mmdc` from [`@mermaid-js/mermaid-cli`](https://github.com/mermaid-js/mermaid-cli).
-Each script takes `--help`.
+The three below that take options also take `--help`; the two markdown converters print their
+usage when called with no arguments.
 
 | Script | What it does |
 | --- | --- |
-| `markdown-mermaid-to-png.js <doc>.md` | Renders every inline ```` ```mermaid ```` fence to `diagrams/NN-diagram.png` and writes `<doc>-rendered.md` referencing them. The input is untouched. |
+| `markdown-mermaid-to-png.js <doc>.md` | Renders each inline ```` ```mermaid ```` fence to `diagrams/NN-diagram.png` and writes `<doc>-rendered.md` referencing them. The input is untouched. Only fences flush with the left margin are matched — an indented one is skipped silently. |
 | `markdown-convert-embedded-images.js embed <doc>.md` | Inlines every image as a base64 data URI, writing `<doc>-embedded.md` — one self-contained file that survives a paste into Google Docs. `extract` reverses it. |
 | `github-fetch-sub-issues.js <parent-issue>` | Writes every sub-issue of the parent to `issues/<parent-issue>/`. |
 | `markdown-trim-sections.js <dir\|file…>` | Trims issue markdown to named sections — by default the Feature Description and acceptance criteria, which is what stage 7 reads from `pending/`. |
-| `github-create-sub-issues.js <parent-issue>` | Creates a GitHub issue per markdown file in a batch directory and attaches each to the parent as a sub-issue. `--dry-run` first; re-runs skip files that already have an issue, and `--update` pushes later edits. |
+| `github-create-sub-issues.js <parent-issue>` | Creates a GitHub issue per markdown file in a batch directory and attaches each to the parent as a sub-issue. Point `-o` at the issue tree's `output/` (its default doesn't match this layout) and it takes the newest `iteration-NN`, or name one with `-d`. `--dry-run` first; re-runs skip files that already have an issue, and `--update` pushes later edits. |
 
 See [Preparing the doc for Google Docs](../docs/context/workflow/authoring-design-docs.md#preparing-the-doc-for-google-docs)
 in the playbook for how the first two fit together.

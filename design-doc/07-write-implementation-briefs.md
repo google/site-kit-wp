@@ -25,8 +25,8 @@ Issues will be worked on in batches. For each batch:
 - Existing issues for this feature that have been completed are found in the ./design-doc/issues/implementation-brief/complete directory.
 - Create a new directory in ./design-doc/issues/implementation-brief/output/iteration-XX where XX is the next iteration number.
 - Write the issues with their Implementation Briefs to the new directory.
-- Each issue should be in a separate file, named NN-{slug}.md where NN is the issue number and {slug} is the issue slug, derived from the issue title.
-- Copy this file (07-write-implementation-briefs.md), 00-introduction.md and the feature brief to ./design-doc/issues/implementation-brief/output/iteration-XX/
+- Keep each issue's filename and its `Source:` line exactly as they appear in `pending` — they carry the GitHub issue number, which is what lets the brief be pushed back to the right issue.
+- Copy this file (07-write-implementation-briefs.md), ./design-doc/preparation/00-introduction.md and the feature brief to ./design-doc/issues/implementation-brief/output/iteration-XX/
 
 DO NOT read the contents of the previous iterations' output directories, as they may be incorrect.
 
@@ -38,6 +38,16 @@ node ./design-doc/scripts/github-fetch-sub-issues.js <parent-issue-number>
 node ./design-doc/scripts/markdown-trim-sections.js ./design-doc/issues/<parent-issue-number> \
   -o ./design-doc/issues/implementation-brief/pending
 ```
+
+Once the user has approved a batch, the briefs are pushed back to the existing issues with:
+
+```sh
+node ./design-doc/scripts/github-create-sub-issues.js <parent-issue-number> \
+  -d <batch directory> --update --dry-run
+```
+
+`--update` resolves each issue from the `Source:` line or the filename, so both must survive
+from `pending`. Drop `--dry-run` to do it for real. Don't run it unless you're asked to.
 
 ### Implementation Brief guidelines
 

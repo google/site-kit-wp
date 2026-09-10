@@ -12,8 +12,7 @@ section, the PRD and the design.
 ## Preparation
 
 To prepare for creating the design doc, you need to read and understand the requirements.
-
-Read the PRD and the design, and write an overview of the feature:
+Write an overview of the feature:
 
 - Create a new directory in ./design-doc/preparation/output/overview-XX where XX is the next iteration number.
 - Write the overview to ./design-doc/preparation/output/overview-XX/overview.md

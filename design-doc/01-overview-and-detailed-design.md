@@ -10,9 +10,6 @@ Read the feature brief (./design-doc/input/feature-brief.md) and, from its "Curr
 table, whichever preparation artifacts it names — the requirements overview, the architecture
 document, the component list and the detailed design outline.
 
-The design doc follows the template ./design-doc/input/design-doc-template.md. Example design
-docs, for structure and depth, are in ./design-doc/input/examples/
-
 ## Design doc content
 
 Write all sections up to and including the detailed design section of the design doc.

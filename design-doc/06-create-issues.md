@@ -23,15 +23,23 @@ Issues will be created in batches. For each batch:
 - Existing issues that have been completed are found in the ./design-doc/issues/acceptance-criteria/output/final directory.
 - Create a new directory in ./design-doc/issues/acceptance-criteria/output/iteration-XX where XX is the next iteration number.
 - Write the issues to the new directory.
-- Each issue should be in a separate file, named NN-{slug}.md where NN is the issue number and {slug} is the issue slug, derived from the issue title.
-- Copy this file (06-create-issues.md), 00-introduction.md and the feature brief to ./design-doc/issues/acceptance-criteria/output/iteration-XX/
+- Each issue should be in a separate file, named NN-{slug}.md where NN is the issue number from the "Work Estimates" table and {slug} is the issue slug, derived from the issue title.
+- Each file must open with a `# NN: Title` heading and carry the template's `## Feature Description` section. `github-create-sub-issues.js` takes the issue title from that heading, with the leading number dropped, and silently ignores any markdown file without the description section — which is how the copied prompt and introduction are excluded.
+- Copy this file (06-create-issues.md), ./design-doc/preparation/00-introduction.md and the feature brief to ./design-doc/issues/acceptance-criteria/output/iteration-XX/
 
 DO NOT read the contents of the previous iterations' output directories, as they may be incorrect.
 
-Once the user has approved a batch, it's pushed to GitHub with
-`node ./design-doc/scripts/github-create-sub-issues.js <parent-issue-number> -d <batch directory>`,
-which creates an issue per markdown file and attaches each as a sub-issue of the parent. Don't
-run it unless you're asked to.
+Once the user has approved a batch, it's pushed to GitHub with:
+
+```sh
+node ./design-doc/scripts/github-create-sub-issues.js <parent-issue-number> \
+  -o ./design-doc/issues/acceptance-criteria/output --dry-run
+```
+
+which creates an issue per markdown file in the highest-numbered `iteration-NN` directory
+under `-o` and attaches each as a sub-issue of the parent. Drop `--dry-run` to do it for real,
+or pass `-d <directory>` to target a batch other than the newest. Don't run it unless you're
+asked to.
 
 ## Acceptance criteria guidelines
 
