@@ -16,22 +16,30 @@
  * limitations under the License.
  */
 
-.googlesitekit-plugin .googlesitekit-effort-indicator {
-	align-items: center;
-	color: $c-surfaces-on-surface-variant;
-	display: flex;
-	flex-wrap: nowrap;
-	gap: 10px;
-	padding-block: 6px;
+.googlesitekit-plugin {
+
+	.googlesitekit-effort-indicator {
+		align-items: center;
+		color: $c-surfaces-on-background-variant;
+		display: flex;
+		flex-wrap: nowrap;
+		gap: 10px;
+		padding-block: 6px;
+	}
 
 	.googlesitekit-effort-indicator__icons {
 		align-items: center;
-		color: $c-neutral-n-500;
 		display: flex;
+		gap: 1px;
+		padding-block: 2px;
+	}
+
+	.googlesitekit-effort-indicator__icon {
+		display: block;
+		fill: currentcolor;
 	}
 
 	.googlesitekit-effort-indicator__icon--inactive {
-		display: block;
-		color: $c-neutral-n-100;
+		fill: $c-surfaces-surface-2;
 	}
 }

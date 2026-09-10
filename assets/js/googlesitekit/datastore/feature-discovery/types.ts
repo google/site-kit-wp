@@ -26,6 +26,7 @@ import type { ComponentType, LazyExoticComponent } from 'react';
  */
 import type { Select } from 'googlesitekit-data';
 import type {
+	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
@@ -113,14 +114,14 @@ export interface FeatureSettings {
 	checkRequirements?: ( select: Select ) => boolean | undefined;
 	detail?: FeatureDetail;
 	// Static badges only. The "New" badge is derived per user.
-	badges?: string[];
+	badges?: FEATURE_BADGES[];
 	successNotice?: FeatureSuccessNotice;
 }
 
 export interface Feature extends FeatureSettings {
 	slug: string;
 	prerequisiteModules: string[];
-	badges: string[];
+	badges: FEATURE_BADGES[];
 }
 
 export interface FeatureCategory {

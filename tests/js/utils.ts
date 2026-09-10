@@ -31,13 +31,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { singleQuestionSurvey } from '@/js/components/surveys/__fixtures__';
 import * as coreFeatureDiscovery from '@/js/googlesitekit/datastore/feature-discovery';
-import {
-	CORE_FEATURE_DISCOVERY,
-	FEATURE_CATEGORIES,
-	FEATURE_EFFORTS,
-	FEATURE_SETUP_TYPES,
-} from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import * as coreForms from '@/js/googlesitekit/datastore/forms';
 import * as coreLocation from '@/js/googlesitekit/datastore/location';
 import * as corePdf from '@/js/googlesitekit/datastore/pdf';
@@ -333,41 +326,6 @@ export function provideModules(
 		);
 
 	registry.dispatch( CORE_MODULES ).receiveGetModules( modules );
-}
-
-/**
- * Provides feature catalog entries to the given registry.
- *
- * Each entry is registered over a complete default feature so callers only
- * need to provide the fields relevant to their test or story.
- *
- * @since n.e.x.t
- * @private
- *
- * @param {Object}   registry Data registry object.
- * @param {Object[]} features Feature entries to register.
- * @return {void}
- */
-export function provideFeatures(
-	registry: WPDataRegistry,
-	features: ( Partial< FeatureSettings > & { slug: string } )[] = []
-) {
-	const defaultFeature: FeatureSettings = {
-		title: 'Test feature',
-		shortDescription: 'Test feature description.',
-		effort: FEATURE_EFFORTS.LOW,
-		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-		addedInVersion: '1.186.0',
-		setup: {
-			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
-		},
-	};
-
-	features.forEach( ( { slug, ...settings } ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( slug, { ...defaultFeature, ...settings } );
-	} );
 }
 
 /**

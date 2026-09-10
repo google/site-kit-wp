@@ -52,6 +52,7 @@ export const FEATURE_SETUP_TYPES = {
 	IN_PLACE_PANEL: 'in-place-panel',
 } as const;
 
-export const FEATURE_BADGES = {
-	PAID_SERVICE: 'paid-service',
-} as const;
+export enum FEATURE_BADGES {
+	NEW = 'new',
+	PAID_SERVICE = 'paid-service',
+}

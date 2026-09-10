@@ -20,32 +20,31 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
+import { ComponentPropsWithoutRef } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { forwardRef } from '@wordpress/element';
 
-const Badge = forwardRef(
-	( { label, className, hasLeftSpacing = false, ...rest }, ref ) => (
+export interface BadgeProps extends ComponentPropsWithoutRef< 'span' > {
+	label: string;
+	hasLeftSpacing?: boolean;
+	className?: string;
+}
+
+const Badge = forwardRef< HTMLSpanElement, BadgeProps >(
+	( { label, className, hasLeftSpacing = false, ...props }, ref ) => (
 		<span
-			ref={ ref }
-			{ ...rest }
+			{ ...props }
 			className={ classnames( 'googlesitekit-badge', className, {
 				'googlesitekit-badge--has-left-spacing': hasLeftSpacing,
 			} ) }
+			ref={ ref }
 		>
 			{ label }
 		</span>
 	)
 );
-
-Badge.displayName = 'Badge';
-
-Badge.propTypes = {
-	label: PropTypes.string.isRequired,
-	hasLeftSpacing: PropTypes.bool,
-};
 
 export default Badge;

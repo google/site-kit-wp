@@ -25,214 +25,141 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
-	actions as featureDiscoveryActions,
-	controls as featureDiscoveryControls,
-	initialState as featureDiscoveryInitialState,
-	reducer as featureDiscoveryReducer,
-	resolvers as featureDiscoveryResolvers,
-	selectors as featureDiscoverySelectors,
-} from '@/js/googlesitekit/datastore/feature-discovery';
-import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
+	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
+	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
-import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
-import {
-	provideFeatures,
-	provideModuleRegistrations,
-	provideModules,
-} from '@tests/js/utils';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureCard, { FeatureCardProps } from './FeatureCard';
 
-interface StoryFeature extends Partial< FeatureSettings > {
-	slug: string;
-	cardProps?: Omit< FeatureCardProps, 'slug' >;
+const TEST_OLD_VERSION = '1.84.0';
+const TEST_INITIAL_VERSION = '1.86.0';
+const TEST_NEW_VERSION = '1.87.0';
+
+const TEST_FEATURE_SETTINGS = {
+	title: 'Collaborate with other team members by sharing dashboard access',
+	shortDescription:
+		'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',
+	effort: FEATURE_EFFORTS.LOW,
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	addedInVersion: TEST_OLD_VERSION,
+	setup: {
+		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+	},
+};
+
+const TEST_MODULE_FEATURE_SETTINGS = {
+	title: 'Increase your visibility in Search',
+	shortDescription:
+		'Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they’re actively interested in your services or products.',
+	effort: FEATURE_EFFORTS.HIGH,
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	moduleSlug: MODULE_SLUG_ADS,
+	addedInVersion: TEST_OLD_VERSION,
+	badges: [ FEATURE_BADGES.PAID_SERVICE ],
+	setup: {
+		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+	},
+};
+
+const TEST_NEW_FEATURE_SETTINGS = {
+	...TEST_MODULE_FEATURE_SETTINGS,
+	addedInVersion: TEST_NEW_VERSION,
+};
+
+interface StoryArgs extends FeatureCardProps {
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
 }
 
-interface TemplateProps {
-	features: StoryFeature[];
-	modules?: { slug: string; name: string }[];
-	newFeatureSlugs?: string[];
-	unreadFeatureSlugs?: string[];
+function Template( args: FeatureCardProps ) {
+	return <FeatureCard { ...args } />;
 }
 
-function provideFeatureNewness(
-	registry: WPDataRegistry,
-	newFeatureSlugs: string[],
-	unreadFeatureSlugs: string[]
-) {
-	registry.registerStore( CORE_FEATURE_DISCOVERY, {
-		actions: featureDiscoveryActions,
-		controls: featureDiscoveryControls,
-		initialState: featureDiscoveryInitialState,
-		reducer: featureDiscoveryReducer,
-		resolvers: featureDiscoveryResolvers,
-		selectors: {
-			...featureDiscoverySelectors,
-			isFeatureNew: ( _state: unknown, slug: string ) =>
-				newFeatureSlugs.includes( slug ),
-			isFeatureUnread: ( _state: unknown, slug: string ) =>
-				unreadFeatureSlugs.includes( slug ),
-		},
-	} );
-}
-
-function Template( {
-	features,
-	modules = [],
-	newFeatureSlugs = [],
-	unreadFeatureSlugs = [],
-}: TemplateProps ) {
-	return (
-		<WithRegistrySetup
-			func={ ( registry: WPDataRegistry ) => {
-				const catalogFeatures = features.map( ( feature ) => {
-					const catalogFeature = { ...feature };
-					delete catalogFeature.cardProps;
-
-					return catalogFeature;
-				} );
-
-				provideFeatureNewness(
-					registry,
-					newFeatureSlugs,
-					unreadFeatureSlugs
-				);
-				provideModules( registry, modules );
-				provideModuleRegistrations( registry );
-				provideFeatures( registry, catalogFeatures );
-			} }
-		>
-			<div className="googlesitekit-feature-card-story">
-				{ features.map( ( { slug, cardProps = {} } ) => (
-					<FeatureCard key={ slug } slug={ slug } { ...cardProps } />
-				) ) }
-			</div>
-		</WithRegistrySetup>
-	);
-}
-
-export const GoogleServiceFeature = Template.bind(
-	{}
-) as Story< TemplateProps >;
-GoogleServiceFeature.storyName = 'Google service feature';
-GoogleServiceFeature.args = {
-	features: [
-		{
-			slug: 'enhanced-measurement',
-			title: 'Measure even more visitor interactions',
-			shortDescription:
-				'Automatically collect more kinds of interactions with your content.',
-			effort: FEATURE_EFFORTS.MEDIUM,
-			moduleSlug: MODULE_SLUG_ANALYTICS_4,
-		},
-	],
-	modules: [ { slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' } ],
+export const Default = Template.bind( {} ) as Story< StoryArgs >;
+Default.storyName = 'Default';
+Default.args = {
+	slug: 'dashboard-sharing',
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'dashboard-sharing', TEST_FEATURE_SETTINGS );
+	},
 };
-GoogleServiceFeature.scenario = {};
+Default.scenario = {};
 
-export const SiteKitFeature = Template.bind( {} ) as Story< TemplateProps >;
-SiteKitFeature.storyName = 'Site Kit feature';
-SiteKitFeature.args = {
-	features: [
-		{
-			slug: 'key-metrics',
-			title: 'See the metrics that matter most',
-			shortDescription:
-				'Choose the metrics most relevant to your site goals and see them together.',
-			effort: FEATURE_EFFORTS.LOW,
-		},
-	],
+export const ModuleFeature = Template.bind( {} ) as Story< StoryArgs >;
+ModuleFeature.storyName = 'Module Feature';
+ModuleFeature.args = {
+	slug: 'ads',
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'ads', TEST_MODULE_FEATURE_SETTINGS );
+	},
 };
-SiteKitFeature.scenario = {};
+ModuleFeature.scenario = {};
 
-export const AllServicesAndFeatures = Template.bind(
-	{}
-) as Story< TemplateProps >;
-AllServicesAndFeatures.storyName = 'All services and features';
-AllServicesAndFeatures.args = {
-	features: [
-		{
-			slug: 'new-feature',
-			title: 'A newly available feature',
-			cardProps: { hideUnreadDot: true },
-		},
-	],
-	newFeatureSlugs: [ 'new-feature' ],
-	unreadFeatureSlugs: [ 'new-feature' ],
+export const New = Template.bind( {} ) as Story< StoryArgs >;
+New.storyName = 'New';
+New.args = {
+	slug: 'dashboard-sharing',
+	hideUnreadDot: true,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'dashboard-sharing', TEST_NEW_FEATURE_SETTINGS );
+	},
 };
-AllServicesAndFeatures.scenario = {};
+New.scenario = {};
 
-export const WhatsNew = Template.bind( {} ) as Story< TemplateProps >;
-WhatsNew.storyName = "What's new";
-WhatsNew.args = {
-	features: [
-		{
-			slug: 'unread-feature',
-			title: 'An unread feature',
-			cardProps: {
-				hideNewBadge: true,
-				isDismissible: true,
-			},
-		},
-	],
-	newFeatureSlugs: [ 'unread-feature' ],
-	unreadFeatureSlugs: [ 'unread-feature' ],
+export const NewDismissible = Template.bind( {} ) as Story< StoryArgs >;
+NewDismissible.storyName = 'New, Dismissible';
+NewDismissible.args = {
+	slug: 'ads',
+	isDismissible: true,
+	hideNewBadge: true,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'ads', TEST_NEW_FEATURE_SETTINGS );
+	},
 };
-WhatsNew.scenario = {};
-
-export const PaidService = Template.bind( {} ) as Story< TemplateProps >;
-PaidService.storyName = 'Paid service badge';
-PaidService.args = {
-	features: [
-		{
-			slug: 'adsense',
-			title: 'Earn money from your content',
-			shortDescription:
-				'Connect AdSense to understand how your content is earning.',
-			badges: [ FEATURE_BADGES.PAID_SERVICE ],
-			moduleSlug: MODULE_SLUG_ADSENSE,
-		},
-	],
-	modules: [ { slug: MODULE_SLUG_ADSENSE, name: 'AdSense' } ],
-};
-PaidService.scenario = {};
-
-export const SeveralCards = Template.bind( {} ) as Story< TemplateProps >;
-SeveralCards.storyName = 'Several cards';
-SeveralCards.args = {
-	features: [
-		{
-			slug: 'analytics',
-			title: 'Understand how visitors use your site',
-			moduleSlug: MODULE_SLUG_ANALYTICS_4,
-		},
-		{
-			slug: 'key-metrics',
-			title: 'See the metrics that matter most',
-			effort: FEATURE_EFFORTS.MEDIUM,
-		},
-		{
-			slug: 'adsense',
-			title: 'Earn money from your content',
-			badges: [ FEATURE_BADGES.PAID_SERVICE ],
-			moduleSlug: MODULE_SLUG_ADSENSE,
-		},
-	],
-	modules: [
-		{ slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' },
-		{ slug: MODULE_SLUG_ADSENSE, name: 'AdSense' },
-	],
-};
-SeveralCards.scenario = {};
+NewDismissible.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureCard',
 	component: FeatureCard,
-	parameters: { padding: 24 },
+	decorators: [
+		(
+			StoryComponent: Story< StoryArgs >,
+			{ args }: { args: StoryArgs }
+		) => {
+			const { setupRegistry = () => {}, ...rest } = args;
+
+			function setupStoryRegistry( registry: WPDataRegistry ) {
+				registry
+					.dispatch( CORE_USER )
+					.receiveInitialSiteKitVersion( TEST_INITIAL_VERSION );
+
+				provideModuleRegistrations( registry );
+				provideModules( registry, [
+					{ slug: MODULE_SLUG_ADS, name: 'Ads' },
+				] );
+
+				setupRegistry( registry );
+			}
+
+			return (
+				<WithRegistrySetup func={ setupStoryRegistry }>
+					<StoryComponent { ...rest } />
+				</WithRegistrySetup>
+			);
+		},
+	],
 };

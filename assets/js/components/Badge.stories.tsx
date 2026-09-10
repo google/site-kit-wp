@@ -19,9 +19,9 @@
 /**
  * Internal dependencies
  */
-import Badge from './Badge';
+import Badge, { BadgeProps } from './Badge';
 
-function Template( args ) {
+function Template( args: BadgeProps ) {
 	return <Badge { ...args } />;
 }
 

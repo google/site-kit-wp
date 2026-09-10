@@ -17,30 +17,30 @@
  */
 
 /**
+ * External dependencies
+ */
+import { Fragment } from 'react';
+
+/**
  * Internal dependencies
  */
 import { FEATURE_EFFORTS } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Story } from '@/js/types/Story';
-import EffortIndicator, { EffortIndicatorProps } from './EffortIndicator';
+import EffortIndicator from './EffortIndicator';
 
-function Template( args: EffortIndicatorProps ) {
-	return <EffortIndicator { ...args } />;
+function Template() {
+	return (
+		<Fragment>
+			<EffortIndicator effort={ FEATURE_EFFORTS.LOW } />
+			<EffortIndicator effort={ FEATURE_EFFORTS.MEDIUM } />
+			<EffortIndicator effort={ FEATURE_EFFORTS.HIGH } />
+		</Fragment>
+	);
 }
 
-export const Low = Template.bind( {} ) as Story< EffortIndicatorProps >;
-Low.storyName = 'Just a few clicks';
-Low.args = { effort: FEATURE_EFFORTS.LOW };
-Low.scenario = {};
-
-export const Medium = Template.bind( {} ) as Story< EffortIndicatorProps >;
-Medium.storyName = 'A short setup';
-Medium.args = { effort: FEATURE_EFFORTS.MEDIUM };
-Medium.scenario = {};
-
-export const High = Template.bind( {} ) as Story< EffortIndicatorProps >;
-High.storyName = 'In depth setup';
-High.args = { effort: FEATURE_EFFORTS.HIGH };
-High.scenario = {};
+export const Default = Template.bind( {} ) as Story;
+Default.storyName = 'EffortIndicator';
+Default.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/EffortIndicator',

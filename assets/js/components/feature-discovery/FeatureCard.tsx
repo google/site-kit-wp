@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 
 /**
  * WordPress dependencies
@@ -33,21 +33,25 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
+import Badge from '@/js/components/Badge';
+import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
+import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
 	SIZE_MEDIUM,
+	TYPE_BODY,
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_BADGES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import SiteKitIcon from '@/svg/graphics/logo-g.svg';
 import CloseIcon from '@/svg/icons/close.svg';
-import EffortIndicator from './EffortIndicator';
-import FeatureBadges from './FeatureBadges';
-import FeatureServiceIdentity from './FeatureServiceIdentity';
-
-const UNREAD_DOT_DELAY_MS = 3000;
 
 export interface FeatureCardProps {
 	slug: string;
@@ -62,29 +66,51 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	hideNewBadge = false,
 	hideUnreadDot = false,
 } ) => {
+	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
+
+	const isFeatureNew = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureNew( slug ) === true,
+		[ slug ]
+	);
+
+	const isFeatureUnread = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isFeatureUnread( slug ) === true,
+		[ slug ]
+	);
+
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
 		[ slug ]
 	);
-	const isFeatureUnread = useSelect(
+
+	const { Icon, name } = useSelect(
 		( select: Select ) =>
-			select( CORE_FEATURE_DISCOVERY ).isFeatureUnread?.( slug ) === true,
-		[ slug ]
+			feature?.moduleSlug
+				? select( CORE_MODULES ).getModule( feature.moduleSlug )
+				: {
+						Icon: SiteKitIcon,
+						name: __( 'Site Kit feature', 'google-site-kit' ),
+				  },
+		[ feature ]
 	);
 
-	const [ isUnreadDotVisible, setIsUnreadDotVisible ] =
-		useState( isFeatureUnread );
+	const onClickDismiss = useCallback( () => {
+		// TODO: #13357 -- Implement dismiss-with-feedback menu.
+	}, [] );
+
+	const onClickReadMore = useCallback( () => {
+		// TODO: #13330 -- Implement feature detail panel shell.
+	}, [] );
 
 	useEffect( () => {
-		if ( isFeatureUnread ) {
-			setIsUnreadDotVisible( true );
-			return undefined;
-		}
+		const timeout = isFeatureUnread ? 0 : 3000;
 
 		const visibilityTimeout = setTimeout( () => {
-			setIsUnreadDotVisible( false );
-		}, UNREAD_DOT_DELAY_MS );
+			setShowUnreadDot( isFeatureUnread );
+		}, timeout );
 
 		return () => {
 			clearTimeout( visibilityTimeout );
@@ -95,68 +121,96 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		return null;
 	}
 
-	const { effort, shortDescription, title } = feature;
+	const { title, shortDescription, effort, badges = [] } = feature;
+
+	const userBadges =
+		isFeatureNew && ! hideNewBadge ? [ FEATURE_BADGES.NEW ] : [];
+
+	const allBadges = [ ...userBadges, ...badges ];
+
+	// TODO: #13361 -- Define `variant` prop for each badge type using variants.
+	const badgeProps = {
+		[ FEATURE_BADGES.NEW ]: {
+			label: __( 'New', 'google-site-kit' ),
+		},
+		[ FEATURE_BADGES.PAID_SERVICE ]: {
+			label: __( 'Paid service', 'google-site-kit' ),
+		},
+	};
 
 	return (
 		<article className="googlesitekit-feature-card">
-			<div className="googlesitekit-feature-card__title-row">
-				{ ! hideUnreadDot && (
-					<span
-						className={ classnames(
-							'googlesitekit-feature-card__unread-dot',
-							{
-								'googlesitekit-feature-card__unread-dot--visible':
-									isUnreadDotVisible,
-							}
-						) }
-						aria-hidden="true"
-					/>
-				) }
-				<Typography
-					as="h3"
-					className="googlesitekit-feature-card__title"
-					size={ SIZE_LARGE }
-					type={ TYPE_TITLE }
-				>
-					{ title }
-				</Typography>
-				<FeatureBadges slug={ slug } hideNewBadge={ hideNewBadge } />
-				{ isDismissible && (
-					<Button
-						// @ts-expect-error - The `Button` component is not typed yet.
-						className="googlesitekit-button-icon googlesitekit-feature-card__dismiss"
-						icon={ <CloseIcon width={ 14 } height={ 14 } /> }
-						aria-label={ sprintf(
-							/* translators: %s: feature name */
-							__( 'Dismiss %s', 'google-site-kit' ),
-							title
-						) }
-						text
-					/>
-				) }
+			<div className="googlesitekit-feature-card__status">
+				<span
+					aria-hidden="true"
+					className={ classnames( 'googlesitekit-feature-card__dot', {
+						'googlesitekit-feature-card__dot--visible':
+							showUnreadDot && ! hideUnreadDot,
+					} ) }
+				/>
 			</div>
 
-			<P
-				className="googlesitekit-feature-card__description"
-				size={ SIZE_MEDIUM }
-			>
-				{ shortDescription }
-			</P>
+			<div className="googlesitekit-feature-card__content">
+				<div className="googlesitekit-feature-card__header">
+					<Typography
+						as="h3"
+						className="googlesitekit-feature-card__title"
+						size={ SIZE_LARGE }
+						type={ TYPE_TITLE }
+					>
+						{ title }
+						{ allBadges.map( ( badge ) => (
+							<Badge { ...badgeProps[ badge ] } key={ badge } />
+						) ) }
+					</Typography>
 
-			<EffortIndicator effort={ effort } />
+					{ isDismissible && (
+						<Link
+							aria-label={ sprintf(
+								/* translators: %s: feature name */
+								__( 'Dismiss %s', 'google-site-kit' ),
+								title
+							) }
+							className="googlesitekit-feature-card__dismiss"
+							onClick={ onClickDismiss }
+							linkButton
+						>
+							<CloseIcon width={ 12 } height={ 12 } />
+						</Link>
+					) }
+				</div>
 
-			<div className="googlesitekit-feature-card__action-row">
-				<FeatureServiceIdentity slug={ slug } />
+				<div className="googlesitekit-feature-card__details">
+					<P
+						className="googlesitekit-feature-card__description"
+						size={ SIZE_MEDIUM }
+					>
+						{ shortDescription }
+					</P>
+
+					<EffortIndicator effort={ effort } />
+				</div>
+			</div>
+
+			<footer className="googlesitekit-feature-card__footer">
+				<div className="googlesitekit-feature-card__service">
+					<Icon aria-hidden="true" height={ 36 } width={ 36 } />
+
+					{ /* @ts-expect-error - The `Typography` component is not typed yet. */ }
+					<Typography size={ SIZE_LARGE } type={ TYPE_BODY }>
+						{ name }
+					</Typography>
+				</div>
+
 				<div className="googlesitekit-feature-card__actions">
-					<span className="googlesitekit-feature-card__cta-placeholder">
-						{ __( 'Feature CTA', 'google-site-kit' ) }
-					</span>
+					{ /* TODO: #13322 -- Implement FeatureCTA  */ }
+
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
-					<Button tertiary>
+					<Button onClick={ onClickReadMore }>
 						{ __( 'Read more', 'google-site-kit' ) }
 					</Button>
 				</div>
-			</div>
+			</footer>
 		</article>
 	);
 };

@@ -17,40 +17,47 @@
  */
 
 /**
+ * External dependencies
+ */
+import { SVGProps } from 'react';
+
+/**
  * Internal dependencies
  */
 import { FEATURE_EFFORTS } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { render, screen } from '@tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import EffortIndicator from './EffortIndicator';
+
+jest.mock(
+	'@/svg/icons/wrench.svg',
+	() => ( props: SVGProps< SVGSVGElement > ) => <svg { ...props } />
+);
 
 describe( 'EffortIndicator', () => {
 	it.each( [
-		[ FEATURE_EFFORTS.LOW, 'Just a few clicks', 1 ],
-		[ FEATURE_EFFORTS.MEDIUM, 'A short setup', 2 ],
-		[ FEATURE_EFFORTS.HIGH, 'In depth setup', 3 ],
+		[ 'Just a few clicks', FEATURE_EFFORTS.LOW, 2 ],
+		[ 'A short setup', FEATURE_EFFORTS.MEDIUM, 1 ],
+		[ 'In depth setup', FEATURE_EFFORTS.HIGH, 0 ],
 	] as const )(
-		'should render the label and filled icon count for effort %s',
-		( effort, label, filledIconCount ) => {
-			const { container } = render(
+		'should display "%s" for effort %s, with %s/3 inactive icons',
+		( label, effort, inactiveIconCount ) => {
+			const { container, getByText } = render(
 				<EffortIndicator effort={ effort } />
 			);
 
-			expect( screen.getByText( label ) ).toBeInTheDocument();
+			expect( getByText( label ) ).toBeInTheDocument();
+
 			expect(
 				container.querySelectorAll(
 					'.googlesitekit-effort-indicator__icon'
 				)
 			).toHaveLength( 3 );
+
 			expect(
 				container.querySelectorAll(
-					'.googlesitekit-effort-indicator__icon--filled'
+					'.googlesitekit-effort-indicator__icon--inactive'
 				)
-			).toHaveLength( filledIconCount );
-			expect(
-				container.querySelector(
-					'.googlesitekit-effort-indicator__icons'
-				)
-			).toHaveAttribute( 'aria-hidden', 'true' );
+			).toHaveLength( inactiveIconCount );
 		}
 	);
 } );

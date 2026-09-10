@@ -62,12 +62,13 @@ const EffortIndicator: FC< EffortIndicatorProps > = ( { effort } ) => {
 									f > effort,
 							}
 						) }
-						height={ 24 }
+						height={ 20 }
 						key={ f }
-						width={ 24 }
+						width={ 20 }
 					/>
 				) ) }
 			</div>
+
 			<Typography
 				className="googlesitekit-effort-indicator__label"
 				size={ SIZE_MEDIUM }
