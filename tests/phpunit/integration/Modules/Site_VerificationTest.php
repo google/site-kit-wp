@@ -23,6 +23,7 @@ use Google\Site_Kit\Modules\Site_Verification;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_User;
 
 /**
  * @group Modules
@@ -65,7 +66,7 @@ class Site_VerificationTest extends TestCase {
 		remove_all_actions( 'added_user_meta' );
 		remove_all_actions( 'updated_user_meta' );
 		remove_all_actions( 'deleted_user_meta' );
-		$user_id           = $this->factory()->user->create();
+		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$user_options      = new User_Options( $context );
 		$transients        = new Transients( $context );
@@ -79,18 +80,47 @@ class Site_VerificationTest extends TestCase {
 
 		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Verification meta tags transient should not exist initially.' );
 		$this->assertStringContainsString( $verification_meta, $this->capture_action( 'wp_head' ), 'Verification meta should be rendered in wp_head.' );
-		$this->assertContains( $verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Verification meta should be cached in transient.' );
+		$this->assertContains( $verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS )['user_tags'], 'Verification meta should be cached in transient.' );
 
 		$updated_verification_meta = $verification_meta . '-updated';
 		update_user_meta( $user_id, $meta_key, $updated_verification_meta );
 
 		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Verification meta tags transient should be cleared on update.' );
 		$this->assertStringContainsString( $updated_verification_meta, $this->capture_action( 'wp_head' ), 'Updated verification meta should be rendered in wp_head.' );
-		$this->assertContains( $updated_verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Updated verification meta should be cached in transient.' );
+		$this->assertContains( $updated_verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS )['user_tags'], 'Updated verification meta should be cached in transient.' );
 
 		delete_user_meta( $user_id, $meta_key );
 
 		$this->assertFalse( $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Verification meta tags transient should be cleared on deletion.' );
+	}
+
+	public function test_meta_tag_verification_requires_setup_permission() {
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'added_user_meta' );
+		remove_all_actions( 'updated_user_meta' );
+		remove_all_actions( 'deleted_user_meta' );
+		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options      = new User_Options( $context );
+		$transients        = new Transients( $context );
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$meta_key          = $user_options->get_meta_key( Verification_Meta::OPTION );
+		$verification_meta = uniqid( 'test-verification-' );
+
+		add_user_meta( $user_id, $meta_key, $verification_meta );
+
+		$this->assertTrue( user_can( $user_id, Permissions::SETUP ), 'User should have setup permission initially.' );
+		$this->assertStringContainsString( $verification_meta, $this->capture_action( 'wp_head' ), 'Verification meta should be rendered for a user with setup permission.' );
+
+		( new WP_User( $user_id ) )->remove_role( 'administrator' );
+
+		// The permission is checked at render time, so the tag is no longer rendered
+		// even though it is still cached.
+		$this->assertContains( $verification_meta, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS )['user_tags'], 'Verification meta should still be cached after role removal.' );
+		$this->assertFalse( user_can( $user_id, Permissions::SETUP ), 'User should not have setup permission after role removal.' );
+		$this->assertStringNotContainsString( $verification_meta, $this->capture_action( 'wp_head' ), 'Verification meta should not be rendered without setup permission.' );
 	}
 
 	/**
@@ -99,11 +129,15 @@ class Site_VerificationTest extends TestCase {
 	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
+		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$site_verification = new Site_Verification( $context );
 		$site_verification->register();
 
-		( new Transients( $context ) )->set( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, array( $saved_tag ) );
+		( new Transients( $context ) )->set(
+			Site_Verification::TRANSIENT_VERIFICATION_META_TAGS,
+			array( 'user_tags' => array( $user_id => $saved_tag ) )
+		);
 
 		$this->assertStringContainsString(
 			$expected_output,
@@ -116,6 +150,40 @@ class Site_VerificationTest extends TestCase {
 			$this->capture_action( 'login_head' ),
 			'Verification tag should be rendered in login_head.'
 		);
+	}
+
+	public function test_meta_tags_cached_in_legacy_format_are_rebuilt() {
+		remove_all_actions( 'wp_head' );
+		remove_all_actions( 'added_user_meta' );
+		remove_all_actions( 'updated_user_meta' );
+		remove_all_actions( 'deleted_user_meta' );
+		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$context           = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options      = new User_Options( $context );
+		$transients        = new Transients( $context );
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$meta_key          = $user_options->get_meta_key( Verification_Meta::OPTION );
+		$verification_meta = uniqid( 'test-verification-' );
+
+		add_user_meta( $user_id, $meta_key, $verification_meta );
+
+		// Cache a flat list of tags, as stored by previous versions of the plugin.
+		$legacy_cache = array( 'stale-verification-tag' );
+		$transients->set( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS, $legacy_cache );
+
+		$this->assertEquals( $legacy_cache, $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS ), 'Tags cached in the legacy format should be in place before rendering.' );
+
+		$output = $this->capture_action( 'wp_head' );
+
+		$this->assertStringNotContainsString( 'stale-verification-tag', $output, 'Tags cached in the legacy format should not be rendered.' );
+		$this->assertStringContainsString( $verification_meta, $output, 'Tags cached in the legacy format should be rebuilt from user meta.' );
+
+		$cached = $transients->get( Site_Verification::TRANSIENT_VERIFICATION_META_TAGS );
+
+		$this->assertArrayHasKey( 'user_tags', $cached, 'Rebuilt tags should be cached in the current format.' );
+		$this->assertContains( $verification_meta, $cached['user_tags'], 'Rebuilt tags should be cached in the current format.' );
 	}
 
 	public function data_register_head_verification_tags() {
@@ -185,7 +253,7 @@ class Site_VerificationTest extends TestCase {
 		// Ensure that the verification isn't served if there is a match, but the user does not have the permission.
 		$user_options->set( Verification_File::OPTION, '1234' );
 		$this->assertTrue( user_can( $user_id, Permissions::SETUP ), 'User should have setup permission initially.' );
-		( new \WP_User( $user_id ) )->remove_role( 'administrator' );
+		( new WP_User( $user_id ) )->remove_role( 'administrator' );
 		$this->assertFalse( user_can( $user_id, Permissions::SETUP ), 'User should not have setup permission after role removal.' );
 		$this->assertEquals( '', $this->capture_action( 'init' ), 'No verification response should be served without setup permission.' );
 	}
