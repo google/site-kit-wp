@@ -33,8 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { ProgressBar } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -124,7 +124,12 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 			) }
 
 			{ hasPublications || getPublicationsError ? (
-				<P size={ SIZE_SMALL } type={ TYPE_LABEL }>
+				<Typography
+					as="div"
+					className=""
+					size={ SIZE_SMALL }
+					type={ TYPE_LABEL }
+				>
 					<Link
 						className="googlesitekit-rrm-express-setup-step__cta-link"
 						leadingIcon={
@@ -147,7 +152,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 									'google-site-kit'
 							  ) }
 					</Link>
-				</P>
+				</Typography>
 			) : null }
 		</div>
 	);

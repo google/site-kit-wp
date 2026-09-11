@@ -59,6 +59,7 @@
 		.googlesitekit-rrm-express-setup__content {
 			background-color: $c-surfaces-surface;
 			min-height: calc( 100vh - 252px ); // 46px admin bar + 72px header + 50px stepper + 84px footer.
+			padding-block-end: $grid-gap-phone;
 			padding-inline: $grid-gap-phone;
 
 			@media (min-width: $bp-wpAdminBarTablet) {
