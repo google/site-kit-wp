@@ -1,7 +1,7 @@
 /**
  * CoreDashboardEffects component.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,29 @@
  */
 
 /**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
  * Internal dependencies
  */
+import useDashboardType, {
+	DASHBOARD_TYPE_MAIN,
+} from '@/js/hooks/useDashboardType';
 import { useHasScrolledEffect } from '@/js/hooks/useHasScrolledEffect';
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
+import DashboardMainEffectComponent from './DashboardMainEffectComponent';
 
-export default function CoreDashboardEffects() {
-	useOpenEmailReportingSelectionPanelEffect();
+const CoreDashboardEffects: FC = () => {
 	useHasScrolledEffect();
 
+	const dashboardType = useDashboardType();
+
+	if ( dashboardType === DASHBOARD_TYPE_MAIN ) {
+		return <DashboardMainEffectComponent />;
+	}
+
 	return null;
-}
+};
+
+export default CoreDashboardEffects;
