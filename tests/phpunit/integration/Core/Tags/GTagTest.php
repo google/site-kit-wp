@@ -83,12 +83,17 @@ class GTagTest extends TestCase {
 	public function test_gtag_script_contains_gtag_call() {
 		do_action( 'wp_enqueue_scripts' );
 
-		$scripts = wp_scripts();
-		$script  = $scripts->registered[ GTag::HANDLE ];
-
-		// Assert the array of inline script data contains the necessary gtag config line.
-		// Should be in index 5, the first registered gtag.
-		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_1 . '");', $script->extra['after'][5], 'Inline script should include config call for first tag.' );
+		$this->assertSame(
+			array(
+				'window.dataLayer = window.dataLayer || [];function gtag(){dataLayer.push(arguments);}',
+				sprintf( 'gtag(%s);', '"' . static::TEST_COMMAND_2 . '",' . json_encode( static::TEST_COMMAND_2_PARAMS[0] ) ),
+				'gtag("js", new Date());',
+				'gtag("set", "developer_id.dZTNiMT", true);',
+				'gtag("config", "' . static::TEST_TAG_ID_1 . '");',
+			),
+			$this->get_inline_scripts( 'after' ),
+			'Inline scripts should end with the config call for the first tag, after the gtag bootstrap, commands and developer id.'
+		);
 	}
 
 	/**
@@ -166,14 +171,22 @@ class GTagTest extends TestCase {
 	public function test_gtag_script_commands() {
 		do_action( 'wp_enqueue_scripts' );
 
-		$scripts = wp_scripts();
-		$script  = $scripts->registered[ GTag::HANDLE ];
-
 		// Test commands in the before position.
-		$this->assertEquals( sprintf( 'gtag(%s");', '"' . static::TEST_COMMAND_1 . '","' . implode( '","', static::TEST_COMMAND_1_PARAMS ) ), $script->extra['before'][1], 'Before inline script should include first command call.' );
+		$this->assertContains(
+			sprintf( 'gtag(%s");', '"' . static::TEST_COMMAND_1 . '","' . implode( '","', static::TEST_COMMAND_1_PARAMS ) ),
+			$this->get_inline_scripts( 'before' ),
+			'Before inline script should include first command call.'
+		);
 
 		// Test commands in the after position.
-		$this->assertEquals( sprintf( 'gtag(%s);', '"' . static::TEST_COMMAND_2 . '",' . json_encode( static::TEST_COMMAND_2_PARAMS[0] ) ), $script->extra['after'][2], 'After inline script should include second command call.' );
+		$this->assertInlineScriptsInOrder(
+			array(
+				sprintf( 'gtag(%s);', '"' . static::TEST_COMMAND_2 . '",' . json_encode( static::TEST_COMMAND_2_PARAMS[0] ) ),
+				'gtag("js", new Date());',
+			),
+			'after',
+			'After inline script should include second command call, before the gtag js command.'
+		);
 	}
 
 	public function test_gtag_with_tag_config() {
@@ -181,12 +194,14 @@ class GTagTest extends TestCase {
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$scripts = wp_scripts();
-		$script  = $scripts->registered[ GTag::HANDLE ];
-
-		// Assert the array of inline script data contains the necessary gtag entry for the second script.
-		// Should be in index 6, immediately after the first registered gtag.
-		$this->assertEquals( 'gtag("config", "' . static::TEST_TAG_ID_2 . '", ' . json_encode( self::TEST_TAG_ID_2_CONFIG ) . ');', $script->extra['after'][6], 'Inline script should include config call for second tag with config.' );
+		$this->assertInlineScriptsInOrder(
+			array(
+				'gtag("config", "' . static::TEST_TAG_ID_1 . '");',
+				'gtag("config", "' . static::TEST_TAG_ID_2 . '", ' . json_encode( self::TEST_TAG_ID_2_CONFIG ) . ');',
+			),
+			'after',
+			'Inline script should include config call for each tag, in the order the tags were added.'
+		);
 	}
 
 	public function test_get_gtag_src() {
@@ -217,15 +232,26 @@ class GTagTest extends TestCase {
 
 		do_action( 'wp_enqueue_scripts' );
 
-		$scripts = wp_scripts();
-		$script  = $scripts->registered[ GTag::HANDLE ];
-
-		$this->assertEquals( 'gtag("set", "developer_id.dZTNiMT", true);', $script->extra['after'][4], 'Inline script should include developer id always.' );
+		$this->assertInlineScriptsInOrder(
+			array(
+				'gtag("set", "developer_id.dZTNiMT", true);',
+				'gtag("config", "' . static::TEST_TAG_ID_1 . '");',
+			),
+			'after',
+			'Inline script should include developer id always, before the tag config call.'
+		);
 
 		if ( $data['settings']['isEnabled'] && $data['settings']['isGTGHealthy'] && $data['settings']['isScriptAccessEnabled'] ) {
-			$this->assertEquals( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'][5], 'Inline script should include GTG developer id when conditions are met.' );
+			$this->assertInlineScriptsInOrder(
+				array(
+					'gtag("set", "developer_id.dZTNiMT", true);',
+					'gtag("set", "developer_id.dZmZmYj", true);',
+				),
+				'after',
+				'Inline script should include GTG developer id after the Site Kit developer id when conditions are met.'
+			);
 		} else {
-			$this->assertNotContains( 'gtag("set", "developer_id.dZmZmYj", true);', $script->extra['after'], 'Inline script should not include GTG developer id when conditions are not met.' );
+			$this->assertNotContains( 'gtag("set", "developer_id.dZmZmYj", true);', $this->get_inline_scripts( 'after' ), 'Inline script should not include GTG developer id when conditions are not met.' );
 		}
 	}
 
@@ -299,5 +325,33 @@ class GTagTest extends TestCase {
 			),
 			'All GTG handles should be enqueued.'
 		);
+	}
+
+	/**
+	 * Gets the inline scripts registered for the gtag handle.
+	 *
+	 * @param string $position Position the scripts were added at, either `before` or `after`.
+	 * @return array List of inline scripts, in the order they were added.
+	 */
+	private function get_inline_scripts( $position ) {
+		$script = wp_scripts()->registered[ GTag::HANDLE ];
+
+		// WordPress stored an unused falsy entry ahead of the first inline script before https://core.trac.wordpress.org/ticket/52320.
+		return array_values( array_filter( $script->extra[ $position ] ) );
+	}
+
+	/**
+	 * Asserts that the given inline scripts are all registered, in the given order relative to each other.
+	 *
+	 * Other inline scripts may appear before, between, or after them.
+	 *
+	 * @param array  $expected Inline scripts, in their expected relative order.
+	 * @param string $position Position the scripts were added at, either `before` or `after`.
+	 * @param string $message  Optional. Message to display when the assertion fails.
+	 */
+	private function assertInlineScriptsInOrder( array $expected, $position, $message = '' ) {
+		$scripts = $this->get_inline_scripts( $position );
+
+		$this->assertSame( $expected, array_values( array_intersect( $scripts, $expected ) ), $message );
 	}
 }
