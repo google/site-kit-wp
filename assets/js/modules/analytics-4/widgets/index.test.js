@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
@@ -251,6 +256,10 @@ describe( 'Analytics 4 widget registrations', () => {
 			'analyticsLeadGenerationPerformance',
 		];
 
+		const removeSiteGoalsWidgetEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/remove-site-goals-widget'
+		);
+
 		it.each( [
 			[
 				'only ecommerce active',
@@ -324,5 +333,66 @@ describe( 'Analytics 4 widget registrations', () => {
 				} );
 			}
 		);
+
+		it( 'should keep only the lead generation widget in the Site Goals area after the online store widget is removed', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSiteGoalsSettings( {
+					activeWidgets: [ 'ecommerce', 'lead' ],
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				detectedEvents: [ 'purchase', 'contact' ],
+			} );
+
+			fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+				body: { activeWidgets: [ 'lead' ] },
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'ecommerce' );
+
+			registerWidgets( widgets );
+
+			expect(
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY )
+			).toEqual( [ 'analyticsLeadGenerationPerformance' ] );
+		} );
+
+		it( 'should leave the Site Goals area empty after the online store and lead generation widgets are removed', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSiteGoalsSettings( {
+					activeWidgets: [ 'ecommerce', 'lead' ],
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				detectedEvents: [ 'purchase', 'contact' ],
+			} );
+
+			fetchMock.post( removeSiteGoalsWidgetEndpoint, ( _url, opts ) => {
+				const { widget } = JSON.parse( opts.body ).data;
+
+				return {
+					body: {
+						activeWidgets: widget === 'ecommerce' ? [ 'lead' ] : [],
+					},
+					status: 200,
+				};
+			} );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'ecommerce' );
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'lead' );
+
+			registerWidgets( widgets );
+
+			expect(
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY )
+			).toEqual( [] );
+		} );
 	} );
 } );
