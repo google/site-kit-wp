@@ -61,11 +61,6 @@
 			margin-block-start: 0;
 		}
 
-		/* TODO: 11266 -- Remove this override and update VRT refrences. */
-		.googlesitekit-settings-connect-module__cta.googlesitekit-typography {
-			line-height: $lh-body-lg;
-		}
-
 		.googlesitekit-settings-connect-module__switch {
 			float: right;
 
