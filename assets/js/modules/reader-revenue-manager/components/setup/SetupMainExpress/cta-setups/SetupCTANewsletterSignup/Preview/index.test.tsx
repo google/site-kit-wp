@@ -19,14 +19,34 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render, screen } from '@tests/js/test-utils';
+import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
+import { EXPRESS_SETUP_CTA_FORMS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	createTestRegistry,
+	fireEvent,
+	render,
+	screen,
+} from '@tests/js/test-utils';
+import Preview from './index';
 import InlinePane from './InlinePane';
 import PopupPane from './PopupPane';
-import Preview from './Preview';
+
+function renderPreview(
+	formValues: Record< string, string | boolean > = {},
+	registry: Registry = createTestRegistry() as Registry
+) {
+	registry
+		.dispatch( CORE_FORMS )
+		.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, formValues );
+
+	return render( <Preview />, { registry } );
+}
 
 describe( 'Preview', () => {
 	it( 'should render the popup heading and description by default', () => {
-		render( <Preview /> );
+		renderPreview();
 
 		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
 		expect(
@@ -37,7 +57,7 @@ describe( 'Preview', () => {
 	} );
 
 	it( 'should render the Pop-up and Inline tabs', () => {
-		render( <Preview /> );
+		renderPreview();
 
 		expect(
 			screen.getByRole( 'tab', { name: /pop-up/i } )
@@ -48,20 +68,21 @@ describe( 'Preview', () => {
 	} );
 
 	it( 'should render popup pane content by default', () => {
-		render( <Preview ctaTitle="My Newsletter" ctaBody="Sign up today." /> );
+		renderPreview( {
+			[ NEWSLETTER_SIGNUP_FORM.CTA_TITLE ]: 'My Newsletter',
+			[ NEWSLETTER_SIGNUP_FORM.CTA_BODY ]: 'Sign up today.',
+		} );
 
 		// Popup tab is active by default, popup content should be visible.
 		expect( screen.getByText( 'My Newsletter' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should show inline pane content when the Inline tab is clicked', () => {
-		render(
-			<Preview
-				ctaTitle="My Newsletter"
-				ctaBody="Sign up today."
-				consentEnabled={ false }
-			/>
-		);
+		renderPreview( {
+			[ NEWSLETTER_SIGNUP_FORM.CTA_TITLE ]: 'My Newsletter',
+			[ NEWSLETTER_SIGNUP_FORM.CTA_BODY ]: 'Sign up today.',
+			[ NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED ]: false,
+		} );
 
 		const inlineTab = screen.getByRole( 'tab', { name: /inline/i } );
 		fireEvent.click( inlineTab );
@@ -72,7 +93,7 @@ describe( 'Preview', () => {
 	} );
 
 	it( 'should update the heading when switching to the Inline tab', () => {
-		render( <Preview /> );
+		renderPreview();
 
 		expect( screen.getByText( 'See how it looks' ) ).toBeInTheDocument();
 
@@ -88,9 +109,8 @@ describe( 'Preview', () => {
 	} );
 
 	it( 'should not render CTA title and body when not provided', () => {
-		render( <Preview /> );
+		renderPreview();
 
-		// Default state has no ctaTitle or ctaBody props.
 		expect(
 			screen.queryByRole( 'heading', { name: /your form header/i } )
 		).not.toBeInTheDocument();

@@ -197,6 +197,40 @@ describe( 'TextField', () => {
 		}
 	);
 
+	it( 'shows the character counter when `showCharacterCounter` is set', () => {
+		const { container } = render(
+			<TextField
+				{ ...defaultProps }
+				maxLength={ 40 }
+				value="Hello"
+				showCharacterCounter
+			/>
+		);
+
+		expect(
+			container.querySelector( '.mdc-text-field-character-counter' )
+		).toHaveTextContent( '5 / 40' );
+	} );
+
+	it.each( [
+		{
+			caseName: 'without `showCharacterCounter`',
+			props: { maxLength: 40 },
+		},
+		{
+			caseName: 'without `maxLength`',
+			props: { showCharacterCounter: true },
+		},
+	] )( 'does not show the character counter $caseName', ( { props } ) => {
+		const { container } = render(
+			<TextField { ...defaultProps } { ...props } value="Hello" />
+		);
+
+		expect(
+			container.querySelector( '.mdc-text-field-character-counter' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'shows `trailingIcon` when neither error prop is set', () => {
 		const { container } = render(
 			<TextField
