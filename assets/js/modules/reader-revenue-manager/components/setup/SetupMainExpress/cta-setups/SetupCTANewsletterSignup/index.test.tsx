@@ -57,8 +57,7 @@ const STEP_CONTENT = {
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
-	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]:
-		'RRM express setup placeholder: newsletter CTA setup step.',
+	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up your sign-up form',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
 		'Your newsletter signup form is ready!',
 };

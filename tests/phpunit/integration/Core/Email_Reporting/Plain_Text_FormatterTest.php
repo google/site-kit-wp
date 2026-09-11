@@ -348,6 +348,140 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'Expected the change context line to be omitted when no row has a comparison value.' );
 	}
 
+	public function test_format_section__lists_every_site_goals_group_with_its_heading_and_values() {
+		$section = array(
+			'title'            => 'How is my online store performing?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals_online_store' => array(
+					'data' => array(
+						'change_context' => 'Compared to previous 7 days',
+						'groups'         => array(
+							array(
+								'label'   => 'WooCommerce',
+								'metrics' => array(
+									array(
+										'label' => 'Sales rate',
+										'value' => '3.8%',
+										'trend' => 7.2,
+									),
+									array(
+										'label' => 'Total sales',
+										'value' => '116',
+										'trend' => -4.6,
+									),
+								),
+							),
+							array(
+								'label'   => 'Other sources',
+								'metrics' => array(
+									array(
+										'label' => 'Total sales',
+										'value' => '214',
+										'trend' => 6.8,
+									),
+								),
+							),
+						),
+						'prompt'         => array(),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'How is my online store performing?', $result, 'The Site Goals section should open with the section title.' );
+		$this->assertStringContainsString( 'Compared to previous 7 days', $result, 'The Site Goals section should show the "Compared to" line.' );
+		$this->assertStringContainsString( "WooCommerce\n-----------", $result, 'The Site Goals section should show "WooCommerce" as a group heading, underlined with hyphens.' );
+		$this->assertStringContainsString( 'Sales rate: 3.8% (+7.2%)', $result, 'The Site Goals section should show the sales rate of the WooCommerce group.' );
+		$this->assertStringContainsString( 'Total sales: 116 (-4.6%)', $result, 'The Site Goals section should show the total sales of the WooCommerce group.' );
+		$this->assertStringContainsString( 'Total sales: 214 (+6.8%)', $result, 'The Site Goals section should show the total sales of the "Other sources" group.' );
+		$this->assertSame( 1, substr_count( $result, 'Sales rate' ), 'The Site Goals section should show the "Other sources" total alone, with no rate row.' );
+		$this->assertStringEndsWith( "Total sales: 214 (+6.8%)\n\n", $result, 'The Site Goals section should add nothing after the groups when the section has no prompt.' );
+	}
+
+	public function test_format_section__writes_the_data_breakdown_prompt_and_no_group_heading_when_the_site_goals_results_are_combined() {
+		$section = array(
+			'title'            => 'Are people reaching out to my business?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals_lead_generation' => array(
+					'data' => array(
+						'change_context' => 'Compared to previous 7 days',
+						'groups'         => array(
+							array(
+								'label'   => '',
+								'metrics' => array(
+									array(
+										'label' => 'Total form completions',
+										'value' => '85',
+										'trend' => 0.6,
+									),
+								),
+							),
+						),
+						'prompt'         => array(
+							'text'      => 'Your events data might be grouped together across forms. To see separate results by form, %s.',
+							'link_text' => 'enable data breakdown',
+						),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Total form completions: 85 (+0.6%)', $result, 'The Site Goals section should show the values of the group that has no heading.' );
+		$this->assertStringContainsString(
+			'Your events data might be grouped together across forms. To see separate results by form, enable data breakdown (https://example.com/dashboard).',
+			$result,
+			'The Site Goals section should end with the prompt, and put the dashboard URL after its link text.'
+		);
+		$this->assertStringNotContainsString( '----', $result, 'The Site Goals section should show no group heading when the results are combined into one group.' );
+	}
+
+	public function test_format_section__omits_the_site_goals_change_context_when_no_metric_has_a_comparison() {
+		$section = array(
+			'title'            => 'How is my online store performing?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals_online_store' => array(
+					'data' => array(
+						'change_context' => 'Compared to previous 7 days',
+						'groups'         => array(
+							array(
+								'label'   => 'WooCommerce',
+								'metrics' => array(
+									array(
+										'label' => 'Sales rate',
+										'value' => '3.8%',
+										'trend' => null,
+									),
+									array(
+										'label' => 'Total sales',
+										'value' => '116',
+										'trend' => null,
+									),
+								),
+							),
+						),
+						'prompt'         => array(),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( "Sales rate: 3.8%\n", $result, 'The Site Goals section should end the sales rate row after its value when the row has no change.' );
+		$this->assertStringContainsString( "Total sales: 116\n", $result, 'The Site Goals section should end the total sales row after its value when the row has no change.' );
+		$this->assertStringNotContainsString( 'Compared to previous 7 days', $result, 'The Site Goals section should show no "Compared to" line when no metric has a change.' );
+	}
+
 	public function test_format_section_returns_empty_for_empty_section_parts() {
 		$section = array(
 			'title'            => 'Empty Section',
