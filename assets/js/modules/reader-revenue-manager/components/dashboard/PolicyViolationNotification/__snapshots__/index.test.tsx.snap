@@ -18,7 +18,7 @@ exports[`PolicyViolationNotification should render error notification for immedi
             class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice googlesitekit-notice--error"
+              class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default"
               role="status"
             >
               <div
@@ -27,15 +27,15 @@ exports[`PolicyViolationNotification should render error notification for immedi
                 <svg />
               </div>
               <div
-                class="googlesitekit-notice__content"
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <p
-                  class="googlesitekit-notice__title"
+                  class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
                 >
                   Action needed: Your Reader Revenue Manager account is terminated
                 </p>
                 <p
-                  class="googlesitekit-notice__description"
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.
                 </p>
@@ -95,7 +95,7 @@ exports[`PolicyViolationNotification should render warning notification for pend
             class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice googlesitekit-notice--warning"
+              class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--default"
               role="status"
             >
               <div
@@ -104,15 +104,15 @@ exports[`PolicyViolationNotification should render warning notification for pend
                 <svg />
               </div>
               <div
-                class="googlesitekit-notice__content"
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <p
-                  class="googlesitekit-notice__title"
+                  class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
                 >
                   Action needed: fix a policy issue with Reader Revenue Manager
                 </p>
                 <p
-                  class="googlesitekit-notice__description"
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   Your site has content that breaks the rules for Reader Revenue Manager. To keep your account active and CTAs public, you must resolve all policy violations.
                 </p>

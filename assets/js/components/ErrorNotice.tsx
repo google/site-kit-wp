@@ -32,7 +32,10 @@ import { isURL } from '@wordpress/url';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { sanitizeHTML } from '@/js/util';
 import { isErrorRetryable, isPermissionScopeError } from '@/js/util/errors';
 import Notice from './Notice';
@@ -52,6 +55,7 @@ export interface ErrorNoticeProps {
 	noPrefix?: boolean;
 	skipRetryMessage?: boolean;
 	hideIcon?: boolean;
+	variant?: NOTICE_VARIANTS;
 }
 
 const ErrorNotice: FC< ErrorNoticeProps > = ( {
@@ -64,6 +68,7 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	noPrefix = false,
 	skipRetryMessage,
 	hideIcon = false,
+	variant,
 } ) => {
 	const dispatch = useDispatch();
 
@@ -153,8 +158,14 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	return (
 		<Notice
 			className={ className }
-			type={ NOTICE_TYPES.ERROR }
-			title={ title }
+			ctaButton={
+				shouldDisplayRetry
+					? {
+							label: __( 'Retry', 'google-site-kit' ),
+							onClick: handleRetry,
+					  }
+					: undefined
+			}
 			description={
 				// The error messages that come from the server/API can contain
 				// HTML (eg. links), so we use `dangerouslySetInnerHTML` and sanitize
@@ -169,15 +180,10 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 					) }
 				/>
 			}
-			ctaButton={
-				shouldDisplayRetry
-					? {
-							label: __( 'Retry', 'google-site-kit' ),
-							onClick: handleRetry,
-					  }
-					: undefined
-			}
 			hideIcon={ hideIcon }
+			title={ title }
+			type={ NOTICE_TYPES.ERROR }
+			variant={ variant }
 		/>
 	);
 };

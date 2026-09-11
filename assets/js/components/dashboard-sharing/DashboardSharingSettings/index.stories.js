@@ -118,6 +118,26 @@ SingleAdminWithNonOwnedModules.args = {
 	},
 };
 
+export const SingleAdminWithRecoverableModule = Template.bind( {} );
+SingleAdminWithRecoverableModule.storyName =
+	'Single Admin With Recoverable Module';
+SingleAdminWithRecoverableModule.args = {
+	setupRegistry: ( registry ) => {
+		provideModules( registry, [
+			...modules,
+			{
+				slug: MODULE_SLUG_SEARCH_CONSOLE,
+				shareable: true,
+				recoverable: true,
+				owner: {
+					id: 2,
+					login: 'Admin 2',
+				},
+			},
+		] );
+	},
+};
+
 export const MultiAdminsDefault = Template.bind( {} );
 MultiAdminsDefault.storyName = 'Multi Admins Default';
 MultiAdminsDefault.args = {

@@ -20,18 +20,34 @@
 import classnames from 'classnames';
 import { FC } from 'react';
 
+/**
+ * Internal dependencies
+ */
+import {
+	SIZE_MEDIUM,
+	TYPE_LABEL,
+	TypographySize,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+
 interface TitleProps {
 	className?: string;
+	size?: TypographySize;
 }
 
-const Title: FC< TitleProps > = ( { className, children } ) => {
-	{
-		/* TODO: 11266 -- Use P typography component and remove CSS overrides. */
-	}
+const Title: FC< TitleProps > = ( {
+	className,
+	children,
+	size = SIZE_MEDIUM,
+} ) => {
 	return (
-		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
+		<P
+			className={ classnames( 'googlesitekit-notice__title', className ) }
+			size={ size }
+			type={ TYPE_LABEL }
+		>
 			{ children }
-		</p>
+		</P>
 	);
 };
 
