@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import {
@@ -29,8 +24,11 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_SETTINGS,
 } from '@/js/googlesitekit/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	requireHomeURLUsingHTTPS,
+	requireModuleConnected,
+	requireQueryArg,
+} from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -41,8 +39,8 @@ import CompatibilityWarningSubtleNotification from '@/js/modules/sign-in-with-go
 import SetupSuccessSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/SetupSuccessSubtleNotification';
 import SignInWithGoogleSetupCTABanner from '@/js/modules/sign-in-with-google/components/dashboard/SignInWithGoogleSetupCTABanner';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
-import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
-import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
+import { requireCompatibilityCheckErrors } from '@/js/modules/sign-in-with-google/data-requirements';
+import { asyncRequire, asyncRequireAll } from '@/js/util/async';
 
 export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 	'sign-in-with-google-setup-cta': {
@@ -51,48 +49,23 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isModuleConnected() relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-				// Ensure the site info is resolved to get the home URL.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
-			] );
-
-			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			);
-			if ( isConnected ) {
-				return false;
-			}
-
-			const homeURL = select( CORE_SITE ).getHomeURL();
-			if ( ! isURLUsingHTTPS( homeURL ) ) {
-				return false;
-			}
-
-			return true;
-		},
+		checkRequirements: asyncRequireAll(
+			asyncRequire(
+				false,
+				requireModuleConnected( MODULE_SLUG_SIGN_IN_WITH_GOOGLE )
+			),
+			requireHomeURLUsingHTTPS()
+		),
 		isDismissible: true,
 	},
 	'setup-success-notification-siwg': {
 		Component: SetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			if (
-				'authentication_success' === notification &&
-				slug === MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireQueryArg( 'notification', 'authentication_success' ),
+			requireQueryArg( 'slug', MODULE_SLUG_SIGN_IN_WITH_GOOGLE )
+		),
 	},
 	'sign-in-with-google-compatibility-warning': {
 		Component: CompatibilityWarningSubtleNotification,
@@ -103,26 +76,12 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 			VIEW_CONTEXT_SETTINGS,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_MODULES ).getModules();
-
-			const isConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_SIGN_IN_WITH_GOOGLE
-			);
-
-			if ( ! isConnected ) {
-				return false;
-			}
-
-			// Ensure compatibility checks are loaded only when the module is connected.
-			const compatibilityChecks = await resolveSelect(
-				MODULES_SIGN_IN_WITH_GOOGLE
-			).getCompatibilityChecks();
-
-			const errors = compatibilityChecks?.checks || {};
-
-			return Object.keys( errors ).length > 0;
-		},
+		checkRequirements: asyncRequireAll(
+			// The connection check comes first so that the compatibility
+			// checks request is only issued once the module is connected.
+			requireModuleConnected( MODULE_SLUG_SIGN_IN_WITH_GOOGLE ),
+			requireCompatibilityCheckErrors()
+		),
 		isDismissible: true,
 	},
 };
