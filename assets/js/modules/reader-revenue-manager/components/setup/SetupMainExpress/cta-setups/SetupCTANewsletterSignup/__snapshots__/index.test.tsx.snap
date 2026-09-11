@@ -168,7 +168,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                     <a
                       aria-label="Publisher center (opens in a new tab)"
                       class="googlesitekit-cta-link"
-                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Foverview%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Foverview%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
@@ -197,7 +197,27 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
-                    To change where the form appears on your site, go to Site Kit settings.
+                    To change where the form appears on your site, go to 
+                    <a
+                      aria-label="Site Kit settings (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/reader-revenue-manager/edit"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        Site Kit settings
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                    .
                   </p>
                 </div>
                 <div
@@ -215,7 +235,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                     <a
                       aria-label="Publisher center (opens in a new tab)"
                       class="googlesitekit-cta-link"
-                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                       rel="noopener noreferrer"
                       target="_blank"
                     >
@@ -454,7 +474,27 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                   <p
                     class="googlesitekit-typography googlesitekit-rrm-express-setup-complete__detail-description googlesitekit-typography--body googlesitekit-typography--medium"
                   >
-                    To change where the form appears on your site, go to Site Kit settings.
+                    To change where the form appears on your site, go to 
+                    <a
+                      aria-label="Site Kit settings (opens in a new tab)"
+                      class="googlesitekit-cta-link"
+                      href="http://example.com/wp-admin/admin.php?page=googlesitekit-settings#connected-services/reader-revenue-manager/edit"
+                      rel="noopener noreferrer"
+                      target="_blank"
+                    >
+                      <span
+                        class="googlesitekit-cta-link__contents"
+                      >
+                        Site Kit settings
+                      </span>
+                      <span
+                        class="googlesitekit-icon-wrapper"
+                        style="margin-left: 5px;"
+                      >
+                        <svg />
+                      </span>
+                    </a>
+                    .
                   </p>
                 </div>
                 <div
@@ -472,7 +512,7 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                     <a
                       aria-label="Publisher center (opens in a new tab)"
                       class="googlesitekit-cta-link"
-                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DABCD_123-4%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
+                      href="https://accounts.google.com/accountchooser?continue=https%3A%2F%2Fpublishercenter.google.com%2Freader-revenue-manager%2Fcontent-access%2Fctas%2Fnewsletter%2F5%3Fpublication%3DQRSTUVWX%26utm_source%3Dsitekit&Email=wapuu.wordpress%40gmail.com&utm_source=sitekit"
                       rel="noopener noreferrer"
                       target="_blank"
                     >

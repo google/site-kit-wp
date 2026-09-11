@@ -302,6 +302,14 @@ describe( 'SetupCTANewsletterSignup', () => {
 		} );
 
 		describe( '"View on your site" CTA', () => {
+			beforeEach( () => {
+				jest.spyOn( global, 'open' ).mockImplementation( () => null );
+			} );
+
+			afterEach( () => {
+				jest.restoreAllMocks();
+			} );
+
 			it( 'opens the front page for the sitewide snippet mode', () => {
 				const { getByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
@@ -310,6 +318,17 @@ describe( 'SetupCTANewsletterSignup', () => {
 				expect(
 					getByRole( 'button', { name: /View on your site/i } )
 				).toBeInTheDocument();
+
+				expect( global.open ).not.toHaveBeenCalled();
+
+				fireEvent.click(
+					getByRole( 'button', { name: /View on your site/i } )
+				);
+
+				expect( global.open ).toHaveBeenCalledWith(
+					'http://example.com',
+					'_blank'
+				);
 			} );
 
 			it( 'opens the first matching post for the post_types snippet mode', async () => {
@@ -336,6 +355,19 @@ describe( 'SetupCTANewsletterSignup', () => {
 				expect( fetchMock ).toHaveFetched( searchEndpoint );
 				expect( fetchMock.lastCall( searchEndpoint )?.[ 0 ] ).toContain(
 					'subtype=post'
+				);
+
+				expect( global.open ).not.toHaveBeenCalled();
+
+				fireEvent.click(
+					await findByRole( 'button', {
+						name: /View on your site/i,
+					} )
+				);
+
+				expect( global.open ).toHaveBeenCalledWith(
+					'http://example.com/hello-world/',
+					'_blank'
 				);
 			} );
 
