@@ -40,7 +40,10 @@ import {
 } from '@/js/googlesitekit/data/utils';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import { GoalDriverSelectionState } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import {
+	GoalDriverSelectionState,
+	GoalType,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
@@ -59,7 +62,7 @@ const { setErrorForAction, clearActionError } = errorStoreActions;
  * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
  * when it populates the site-wide `activeWidgets` list.
  */
-const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
+export const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
 	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
 };
@@ -73,15 +76,23 @@ export interface PerUserSiteGoalsSettings {
 }
 
 /**
- * Full merged settings returned by the GET endpoint.
+ * Site-wide fields that the GET and the removal endpoints both return.
  */
-export interface SiteGoalsSettings extends PerUserSiteGoalsSettings {
+export interface SiteWideSiteGoalsSettings {
 	activeWidgets?: string[];
 }
+
+/**
+ * Full merged settings returned by the GET endpoint.
+ */
+export interface SiteGoalsSettings
+	extends PerUserSiteGoalsSettings,
+		SiteWideSiteGoalsSettings {}
 
 interface State {
 	siteGoalsSettings?: SiteGoalsSettings;
 	isFetchingSaveSiteGoalsSettings?: Record< string, boolean >;
+	isFetchingRemoveSiteGoalsWidget?: Record< string, boolean >;
 	breakdownTooltipPending?: boolean;
 }
 
@@ -97,6 +108,14 @@ interface SetBreakdownTooltipPendingAction {
  * Result shape returned by the fetch-store save action.
  */
 type SaveResult = { response?: PerUserSiteGoalsSettings; error?: unknown };
+
+/**
+ * Result shape returned by the fetch-store widget removal action.
+ */
+type RemoveWidgetResult = {
+	response?: SiteWideSiteGoalsSettings;
+	error?: unknown;
+};
 
 /**
  * Minimal typed view over the registry exposed inside the generator actions and
@@ -158,6 +177,23 @@ function validateSiteGoalsSettings( settings: unknown ): void {
 	} );
 }
 
+/**
+ * Validates the widget a removal request names.
+ *
+ * @since n.e.x.t
+ *
+ * @param {*} widget Goal type of the widget to validate.
+ * @return {void}
+ */
+function validateSiteGoalsWidget( widget: unknown ): void {
+	const widgets: string[] = Object.values( GOAL_TYPES );
+
+	invariant(
+		typeof widget === 'string' && widgets.includes( widget ),
+		`widget should be one of ${ widgets.join( ', ' ) }.`
+	);
+}
+
 const fetchGetSiteGoalsSettingsStore = createFetchStore( {
 	baseName: 'getSiteGoalsSettings',
 	controlCallback() {
@@ -204,6 +240,30 @@ const fetchSaveSiteGoalsSettingsStore = createFetchStore( {
 		fetchSaveSiteGoalsSettings: (
 			settings: PerUserSiteGoalsSettings
 		) => unknown;
+	};
+};
+
+const fetchRemoveSiteGoalsWidgetStore = createFetchStore( {
+	baseName: 'removeSiteGoalsWidget',
+	controlCallback: ( { widget }: { widget: GoalType } ) =>
+		set( 'modules', MODULE_SLUG_ANALYTICS_4, 'remove-site-goals-widget', {
+			widget,
+		} ),
+	reducerCallback: createReducer(
+		( state: State, siteWideSettings: SiteWideSiteGoalsSettings ) => {
+			state.siteGoalsSettings = {
+				...state.siteGoalsSettings,
+				...siteWideSettings,
+			};
+		}
+	),
+	argsToParams: ( widget: GoalType ) => ( { widget } ),
+	validateParams: ( { widget }: { widget: unknown } ) =>
+		validateSiteGoalsWidget( widget ),
+	isAction: true,
+} ) as {
+	actions: {
+		fetchRemoveSiteGoalsWidget: ( widget: GoalType ) => unknown;
 	};
 };
 
@@ -270,6 +330,39 @@ const baseActions = {
 
 			if ( error ) {
 				yield setErrorForAction( error, 'saveSiteGoalsSettings', [] );
+			}
+
+			return { response, error };
+		}
+	),
+
+	/**
+	 * Removes a Site Goals widget from the dashboard for every user of the site.
+	 *
+	 * The daily cron adds the widget back when its plugin is active again and
+	 * Site Kit finds its events.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {GoalType} widget Goal type of the widget to remove.
+	 * @return {Object} Object with `response` and `error`.
+	 */
+	removeSiteGoalsWidget: createValidatedAction(
+		( widget: GoalType ) => {
+			validateSiteGoalsWidget( widget );
+		},
+		function* (
+			widget: GoalType
+		): Generator< unknown, RemoveWidgetResult, unknown > {
+			yield clearActionError( 'removeSiteGoalsWidget', [] );
+
+			const { response, error } =
+				( yield fetchRemoveSiteGoalsWidgetStore.actions.fetchRemoveSiteGoalsWidget(
+					widget
+				) ) as RemoveWidgetResult;
+
+			if ( error ) {
+				yield setErrorForAction( error, 'removeSiteGoalsWidget', [] );
 			}
 
 			return { response, error };
@@ -458,6 +551,20 @@ const baseSelectors = {
 	},
 
 	/**
+	 * Checks whether a Site Goals widget removal request is running.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` while a widget is being removed, otherwise `false`.
+	 */
+	isRemovingSiteGoalsWidget( state: State ): boolean {
+		return Object.values(
+			state.isFetchingRemoveSiteGoalsWidget || {}
+		).some( Boolean );
+	},
+
+	/**
 	 * Checks whether the breakdown notice tooltip is pending (deferred from the
 	 * Side Panel until it closes).
 	 *
@@ -485,6 +592,7 @@ interface Store {
 const store = combineStores(
 	fetchGetSiteGoalsSettingsStore,
 	fetchSaveSiteGoalsSettingsStore,
+	fetchRemoveSiteGoalsWidgetStore,
 	{
 		initialState: baseInitialState,
 		actions: baseActions,

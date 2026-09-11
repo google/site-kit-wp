@@ -95,55 +95,9 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	}
 
 	public function test_cron_callback__does_not_update_site_goals_when_no_active_providers() {
-		$property_id = '123456789';
 		$options     = new Options( $this->context );
-		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
+		$analytics_4 = $this->set_up_analytics_with_detected_event( 'purchase' );
 
-		$authentication = new Authentication( $this->context, $options, $this->user_options );
-		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
-
-		$this->settings->merge(
-			array(
-				'ownerID'    => $user_id,
-				'propertyID' => $property_id,
-			)
-		);
-
-		$authentication->get_oauth_client()->set_granted_scopes( $analytics_4->get_scopes() );
-
-		FakeHttp::fake_google_http_handler(
-			$analytics_4->get_client(),
-			function ( Request $request ) use ( $property_id ) {
-				$url = parse_url( $request->getUri() );
-				if ( "/v1beta/properties/{$property_id}:runReport" === $url['path'] ) {
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'kind'     => 'analyticsData#runReport',
-									'rowCount' => 1,
-									'rows'     => array(
-										array(
-											'dimensionValues' => array(
-												array( 'value' => 'purchase' ),
-											),
-										),
-									),
-								)
-							)
-						)
-					);
-				}
-				return new FulfilledPromise( new Response( 200 ) );
-			}
-		);
-
-		$analytics_4->register();
-
-		// No providers registered — activeWidgets should not be updated.
 		Conversion_Tracking::$providers = array();
 
 		$provider = new Conversion_Reporting_Provider(
@@ -162,56 +116,9 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	}
 
 	public function test_cron_callback__updates_site_goals_with_ecommerce_widget() {
-		$property_id = '123456789';
 		$options     = new Options( $this->context );
-		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		$this->user_options->switch_user( $user_id );
+		$analytics_4 = $this->set_up_analytics_with_detected_event( 'purchase' );
 
-		$authentication = new Authentication( $this->context, $options, $this->user_options );
-		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
-
-		$this->settings->merge(
-			array(
-				'ownerID'    => $user_id,
-				'propertyID' => $property_id,
-			)
-		);
-
-		$authentication->get_oauth_client()->set_granted_scopes( $analytics_4->get_scopes() );
-
-		FakeHttp::fake_google_http_handler(
-			$analytics_4->get_client(),
-			function ( Request $request ) use ( $property_id ) {
-				$url = parse_url( $request->getUri() );
-				if ( "/v1beta/properties/{$property_id}:runReport" === $url['path'] ) {
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'kind'     => 'analyticsData#runReport',
-									'rowCount' => 1,
-									'rows'     => array(
-										array(
-											'dimensionValues' => array(
-												array( 'value' => 'purchase' ),
-											),
-										),
-									),
-								)
-							)
-						)
-					);
-				}
-				return new FulfilledPromise( new Response( 200 ) );
-			}
-		);
-
-		$analytics_4->register();
-
-		// Register active ecommerce provider.
 		Conversion_Tracking::$providers = array(
 			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
 		);
@@ -234,56 +141,9 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	}
 
 	public function test_cron_callback__updates_site_goals_with_lead_widget() {
-		$property_id = '123456789';
 		$options     = new Options( $this->context );
-		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
-		wp_set_current_user( $user_id );
-		$this->user_options->switch_user( $user_id );
+		$analytics_4 = $this->set_up_analytics_with_detected_event( 'contact' );
 
-		$authentication = new Authentication( $this->context, $options, $this->user_options );
-		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
-
-		$this->settings->merge(
-			array(
-				'ownerID'    => $user_id,
-				'propertyID' => $property_id,
-			)
-		);
-
-		$authentication->get_oauth_client()->set_granted_scopes( $analytics_4->get_scopes() );
-
-		FakeHttp::fake_google_http_handler(
-			$analytics_4->get_client(),
-			function ( Request $request ) use ( $property_id ) {
-				$url = parse_url( $request->getUri() );
-				if ( "/v1beta/properties/{$property_id}:runReport" === $url['path'] ) {
-					return new FulfilledPromise(
-						new Response(
-							200,
-							array(),
-							json_encode(
-								array(
-									'kind'     => 'analyticsData#runReport',
-									'rowCount' => 1,
-									'rows'     => array(
-										array(
-											'dimensionValues' => array(
-												array( 'value' => 'contact' ),
-											),
-										),
-									),
-								)
-							)
-						)
-					);
-				}
-				return new FulfilledPromise( new Response( 200 ) );
-			}
-		);
-
-		$analytics_4->register();
-
-		// Register active lead provider.
 		Conversion_Tracking::$providers = array(
 			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
 		);
@@ -303,6 +163,99 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$this->assertContains( 'lead', $active_widgets, 'A detected lead event with an active lead provider should add the lead widget.' );
 		$this->assertNotContains( 'ecommerce', $active_widgets, 'Without an ecommerce provider, the ecommerce widget should not be added.' );
+	}
+
+	public function test_cron_callback__adds_a_removed_widget_back_when_its_plugin_is_active() {
+		$options     = new Options( $this->context );
+		$analytics_4 = $this->set_up_analytics_with_detected_event( 'purchase' );
+
+		$site_goals_settings = new Site_Goals_Site_Settings( $options );
+		$site_goals_settings->register();
+		$site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
+		$site_goals_settings->remove_widget( 'ecommerce' );
+
+		Conversion_Tracking::$providers = array(
+			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
+		);
+
+		$provider = new Conversion_Reporting_Provider(
+			$this->context,
+			$this->settings,
+			$this->user_options,
+			$analytics_4
+		);
+
+		$this->invoke_cron_callback( $provider );
+
+		$this->assertContains(
+			'ecommerce',
+			$site_goals_settings->get()['activeWidgets'],
+			'The cron should add the removed ecommerce widget back when an ecommerce plugin is active.'
+		);
+	}
+
+	/**
+	 * Sets up Analytics with a connected property whose report returns one detected event.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $detected_event Conversion event name the faked report returns.
+	 * @return Analytics_4 The registered Analytics instance the cron callback reads.
+	 */
+	private function set_up_analytics_with_detected_event( $detected_event ) {
+		$property_id = '123456789';
+		$options     = new Options( $this->context );
+		$user_id     = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $user_id );
+		$this->user_options->switch_user( $user_id );
+
+		$authentication = new Authentication( $this->context, $options, $this->user_options );
+		$analytics_4    = new Analytics_4( $this->context, $options, $this->user_options, $authentication );
+
+		$this->settings->merge(
+			array(
+				'ownerID'    => $user_id,
+				'propertyID' => $property_id,
+			)
+		);
+
+		$authentication->get_oauth_client()->set_granted_scopes( $analytics_4->get_scopes() );
+
+		FakeHttp::fake_google_http_handler(
+			$analytics_4->get_client(),
+			function ( Request $request ) use ( $property_id, $detected_event ) {
+				$url = parse_url( $request->getUri() );
+
+				if ( "/v1beta/properties/{$property_id}:runReport" === $url['path'] ) {
+					return new FulfilledPromise(
+						new Response(
+							200,
+							array(),
+							json_encode(
+								array(
+									'kind'     => 'analyticsData#runReport',
+									'rowCount' => 1,
+									'rows'     => array(
+										array(
+											'dimensionValues' => array(
+												array( 'value' => $detected_event ),
+											),
+										),
+									),
+								)
+							)
+						)
+					);
+				}
+
+				return new FulfilledPromise( new Response( 200 ) );
+			}
+		);
+
+		$analytics_4->register();
+
+		return $analytics_4;
 	}
 
 	/**

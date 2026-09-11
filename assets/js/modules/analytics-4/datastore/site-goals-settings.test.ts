@@ -30,6 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -46,6 +47,9 @@ describe( 'modules/analytics-4 site goals settings', () => {
 	);
 	const saveSiteGoalsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
+	);
+	const removeSiteGoalsWidgetEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/remove-site-goals-widget'
 	);
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -154,6 +158,164 @@ describe( 'modules/analytics-4 site goals settings', () => {
 						.dispatch( MODULES_ANALYTICS_4 )
 						.saveSiteGoalsSettings( { goalDrivers: 'invalid' } )
 				).toThrow( /goalDrivers should be an object/ );
+			} );
+		} );
+
+		describe( 'removeSiteGoalsWidget', () => {
+			it( 'should post the widget to the removal endpoint and remove it from the active widgets', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						goalDrivers,
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: { activeWidgets: [ 'ecommerce' ] },
+					status: 200,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'lead' );
+
+				expect( error ).toBeUndefined();
+				expect( response ).toEqual( {
+					activeWidgets: [ 'ecommerce' ],
+				} );
+				expect( fetchMock ).toHaveFetched(
+					removeSiteGoalsWidgetEndpoint,
+					{ body: { data: { widget: 'lead' } } }
+				);
+			} );
+
+			it( 'should update only the active widgets and keep the goal drivers and visitor engagement settings when a widget is removed', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						goalDrivers,
+						visitorEngagement,
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: { activeWidgets: [ 'lead' ] },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsSettings()
+				).toEqual( {
+					goalDrivers,
+					visitorEngagement,
+					activeWidgets: [ 'lead' ],
+				} );
+			} );
+
+			it( 'should leave the other widget active and the removed widget inactive', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: { activeWidgets: [ 'lead' ] },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetActive( 'lead' )
+				).toBe( true );
+			} );
+
+			it( 'should stop the removed widget from rendering', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setDetectedEvents( [ 'purchase', 'contact' ] );
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: { activeWidgets: [ 'lead' ] },
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'lead' )
+				).toBe( true );
+			} );
+
+			it( 'should return an error when the request fails', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				const errorResponse = {
+					code: 'site_goals_widget_provider_active',
+					message:
+						'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+					data: { status: 400 },
+				};
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: errorResponse,
+					status: 400,
+				} );
+
+				const { response, error } = await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				expect( console ).toHaveErrored();
+				expect( response ).toBeUndefined();
+				expect( error ).toEqual( errorResponse );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsSettings().activeWidgets
+				).toEqual( [ 'ecommerce', 'lead' ] );
+			} );
+
+			it( 'should throw for a widget outside the Site Goals goal types', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_ANALYTICS_4 )
+						.removeSiteGoalsWidget( 'traffic' )
+				).toThrow( /widget should be one of lead, ecommerce/ );
 			} );
 		} );
 	} );
@@ -561,6 +723,50 @@ describe( 'modules/analytics-4 site goals settings', () => {
 					registry
 						.select( MODULES_ANALYTICS_4 )
 						.isSavingSiteGoalsSettings()
+				).toBe( false );
+			} );
+		} );
+
+		describe( 'isRemovingSiteGoalsWidget', () => {
+			it( 'should return true while the removal request runs and false after it finishes', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				let resolveRequest!: () => void;
+				fetchMock.postOnce(
+					removeSiteGoalsWidgetEndpoint,
+					() =>
+						new Promise( ( resolve ) => {
+							resolveRequest = () =>
+								resolve( {
+									body: { activeWidgets: [ 'lead' ] },
+									status: 200,
+								} );
+						} )
+				);
+
+				const promise = registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				await waitFor( () =>
+					expect(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.isRemovingSiteGoalsWidget()
+					).toBe( true )
+				);
+
+				resolveRequest();
+				await promise;
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isRemovingSiteGoalsWidget()
 				).toBe( false );
 			} );
 		} );
