@@ -29,20 +29,25 @@ const testBundleConfig = require( './webpack/testBundle.config' );
 
 function* webpackConfig( env, argv ) {
 	const { mode } = argv;
+	const { ANALYZE } = env || {};
 
 	const rules = createRules( mode );
 
 	// Build the settings js..
-	yield modulesConfig( mode, rules );
+	yield modulesConfig( mode, rules, ANALYZE );
 
 	// Build basic modules that don't require advanced optimizations, splitting chunks, and so on...
-	yield basicModulesConfig( mode, rules );
+	yield basicModulesConfig( mode, rules, ANALYZE );
 
 	// Build modules that will be used on the frontend, that require wider browser support.
-	yield frontendModules( mode );
+	yield frontendModules( mode, ANALYZE );
 
 	// Build the Gutenberg blocks JS/CSS.
-	yield gutenbergBlocksConfig( mode );
+	yield gutenbergBlocksConfig( mode, ANALYZE );
+
+	if ( ANALYZE ) {
+		return;
+	}
 
 	// Build the main plugin admin css.
 	yield adminCssConfig( mode );
