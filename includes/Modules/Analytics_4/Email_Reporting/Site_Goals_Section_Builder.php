@@ -195,7 +195,7 @@ class Site_Goals_Section_Builder {
 				'sessions'            => $this->sum_sessions( $engagement_report, $group_dimension ),
 				'group_labels'        => $group_labels,
 				// The group labels count both store events, but this total counts only
-				// the one the card names.
+				// the one named by the card.
 				'shows_other_sources' => $is_split_by_provider && $this->has_other_sources(
 					$this->filter_rows_by_event( $discovery_rows, $primary_event ),
 					$group_dimension,
