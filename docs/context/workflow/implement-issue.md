@@ -33,6 +33,28 @@ not when the issue is created — expect it to be empty and don't rely on it.
 markers are missing, or the Implementation Brief is ambiguous/contradictory. Do not guess
 at requirements.
 
+## Read every issue this one references — before writing any code
+
+A brief's `(added in #12950)`, `(see #13005)`, or "the create variant is #13022" carries
+requirements that the issue in front of you doesn't repeat.
+
+Collect every issue referenced anywhere in the four sections — `#12345`, a full issue URL, the
+parent epic, anything GitHub lists as linked — and read each with
+`gh issue view <number> --json title,body,state,url` before implementing. Take from each:
+
+- **If closed** — the classes, selectors, hooks and constants your brief expects to exist. Confirm
+  they're actually in your branch, not just merged elsewhere.
+- **If still open** — the work that isn't yours. Stop at that boundary; don't duplicate a symbol
+  it's going to add.
+- **Its acceptance criteria**, where they constrain yours (a shared payload shape, a naming
+  scheme, an ordering guarantee). Code wins if already written; otherwise ask.
+
+Follow a second hop only when the first leaves a requirement genuinely unclear.
+
+**Stop and ask the user** if a referenced issue can't be fetched, your brief depends on work it
+hasn't landed yet, or a sibling is named indirectly ("the next issue", "issue 5") rather than by
+number.
+
 ## Step 2 — Determine scope
 
 Classify the work and identify the affected module:
@@ -145,7 +167,8 @@ and verification results.
 - **Local only.** Do **not** commit, push, or open a pull request unless the user explicitly
   asks. The deliverable is a working, verified local change on the feature branch.
 - **No scope creep.** Implement what the brief specifies; flag anything underspecified rather
-  than inventing behavior.
+  than inventing behavior. A referenced issue is context, never a work item — never implement
+  a sibling's brief because your issue mentions it.
 - **Commit messages** (only when asked to commit) must satisfy `bin/check-commit-msg.php`:
   start with a capital letter, begin with a present-tense verb, contain more than one word,
   and end with a full stop — e.g. `Track learn more about conversion tracking link.`
