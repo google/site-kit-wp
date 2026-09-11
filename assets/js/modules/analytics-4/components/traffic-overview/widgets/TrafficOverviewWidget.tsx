@@ -52,7 +52,7 @@ interface TrafficOverviewTabDescriptor extends TrafficOverviewTab {
 const TABS: TrafficOverviewTabDescriptor[] = [
 	{
 		id: TRAFFIC_OVERVIEW_TAB_ID,
-		label: __( 'Traffic Overview', 'google-site-kit' ),
+		label: __( 'Traffic overview', 'google-site-kit' ),
 		PanelComponent: TrafficOverviewPanel,
 	},
 ];
