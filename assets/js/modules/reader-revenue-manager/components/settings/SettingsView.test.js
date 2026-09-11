@@ -28,6 +28,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
+	createTestRegistryWithFeatures,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
@@ -47,9 +48,7 @@ describe( 'SettingsView', () => {
 		publicationId: publicationID,
 	} = publication;
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-
+	function setupRegistry() {
 		const moduleData = [
 			{
 				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -64,6 +63,11 @@ describe( 'SettingsView', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		setupRegistry();
 	} );
 
 	it( 'should render the "SettingsView" component', async () => {
@@ -186,6 +190,11 @@ describe( 'SettingsView', () => {
 				'cta-1': 'newsletter-signup',
 			},
 		};
+
+		beforeEach( () => {
+			registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
+			setupRegistry();
+		} );
 
 		it( 'should display the configured CTAs when the `rrmExpressSetup` feature flag is enabled', async () => {
 			registry

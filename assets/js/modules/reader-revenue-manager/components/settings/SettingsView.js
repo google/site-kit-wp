@@ -57,9 +57,9 @@ export default function SettingsView() {
 			return '';
 		}
 
-		const settings = select( MODULES_READER_REVENUE_MANAGER ).getSettings();
-
-		return getConfiguredCTAList( settings?.configuredCTAs )
+		return getConfiguredCTAList(
+			select( MODULES_READER_REVENUE_MANAGER ).getConfiguredCTAs()
+		)
 			.map( ( { label } ) => label )
 			.join( ', ' );
 	} );

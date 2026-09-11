@@ -43,6 +43,7 @@ import InViewProvider from '../assets/js/components/InViewProvider';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { bootstrapFetchMocks } from './fetch-mocks';
+import { reloadForFeatures } from './utils/reloadForFeatures';
 import { resetGlobals } from './utils/resetGlobals';
 
 setUsingCache( false );
@@ -124,6 +125,19 @@ export const decorators = [
 	},
 	( Story ) => {
 		resetGlobals();
+
+		return <Story />;
+	},
+	// Must be the outermost (last) decorator: it needs to run, and
+	// potentially bail out, before anything else (including `resetGlobals()`
+	// above) touches global state for a story that's about to be torn down
+	// by a reload. See `reloadForFeatures` for why this is necessary.
+	( Story, { parameters } ) => {
+		const { features = [] } = parameters;
+
+		if ( reloadForFeatures( features ) ) {
+			return null;
+		}
 
 		return <Story />;
 	},
