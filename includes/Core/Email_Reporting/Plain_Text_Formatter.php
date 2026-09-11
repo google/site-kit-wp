@@ -535,7 +535,7 @@ class Plain_Text_Formatter {
 				$section['dashboard_url']
 			);
 
-			$output .= self::sanitize_text( sprintf( $prompt['text'], $prompt_link ) ) . "\n\n";
+			$output .= sprintf( self::sanitize_text( $prompt['text'] ), $prompt_link ) . "\n\n";
 		}
 
 		return $output;

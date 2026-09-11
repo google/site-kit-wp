@@ -776,4 +776,31 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'Total form completions: 1 234 (+0.6%)', $result, 'Site Goals totals with non-breaking space entities should decode for plain text.' );
 		$this->assertStringNotContainsString( '&nbsp;', $result, 'Plain text should not contain non-breaking space entities.' );
 	}
+
+	public function test_format_section__decodes_html_entities_in_site_goals_prompt_without_corrupting_url() {
+		$section = array(
+			'title'            => 'Are people reaching out to my business?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard?view=1&copy=true&reg=1',
+			'section_parts'    => array(
+				'site_goals_lead_generation' => array(
+					'data' => array(
+						'change_context' => '',
+						'groups'         => array(),
+						'prompt'         => array(
+							'text'      => 'Don&#8217;t miss out! %s to track performance.',
+							'link_text' => 'See Dana&#8217;s Goals',
+						),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Don’t miss out! See Dana’s Goals (https://example.com/dashboard?view=1&copy=true&reg=1) to track performance.', $result );
+		$this->assertStringNotContainsString( '&#8217;', $result );
+		$this->assertStringNotContainsString( '©=true', $result, 'URL query parameter &copy=true must not be corrupted to ©=true.' );
+		$this->assertStringNotContainsString( '®=1', $result, 'URL query parameter &reg=1 must not be corrupted to ®=1.' );
+	}
 }
