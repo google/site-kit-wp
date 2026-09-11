@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -621,6 +622,51 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_visitors', $payload, 'get_user_payload() should still return the total visitors report when Analytics detected no conversion event.' );
 	}
 
+	public function test_get_user_payload__adds_no_site_goals_report_when_no_site_goals_widget_is_active() {
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ), array() );
+
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, '`get_user_payload()` should return no online store report when `activeWidgets` is empty, even though `detectedEvents` has `purchase`.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $payload, '`get_user_payload()` should return no lead generation report when `activeWidgets` is empty, even though `detectedEvents` has `contact`.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload, '`get_user_payload()` should still return the total visitors report when `activeWidgets` is empty.' );
+	}
+
+	public function test_get_user_payload__adds_the_site_goals_reports_only_for_a_role_that_analytics_is_shared_with() {
+		$admin_id  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$editor_id = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$author_id = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Analytics_4::MODULE_SLUG );
+		$this->set_analytics_settings_connected(
+			array(
+				'ownerID'        => $admin_id,
+				'detectedEvents' => array( 'purchase', 'contact' ),
+			)
+		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ) );
+		$this->options->set(
+			Module_Sharing_Settings::OPTION,
+			array(
+				Analytics_4::MODULE_SLUG => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
+		$analytics->register();
+		$this->fake_analytics_report( $analytics );
+
+		$editor_payload = $this->create_data_requests()->get_user_payload( $editor_id, $this->date_range );
+		$author_payload = $this->create_data_requests()->get_user_payload( $author_id, $this->date_range );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the online store count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the lead generation count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertSame( array(), $author_payload, "`get_user_payload()` should return an empty payload to an author, because Analytics isn't shared with the author role." );
+	}
+
 	public function test_get_user_payload__adds_the_author_and_category_reports_when_the_post_dimensions_have_data() {
 		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
 		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
@@ -633,12 +679,13 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 	}
 
 	/**
-	 * Gets the Analytics payload for an owner whose Analytics settings hold the given detected events.
+	 * Gets the Analytics payload for an owner, with the given `detectedEvents` and `activeWidgets` settings.
 	 *
 	 * @param array $detected_events Detected event names to store in the Analytics settings.
+	 * @param array $active_widgets  Optional. Site Goals widget types to store in `activeWidgets`. Default `ecommerce` and `lead`.
 	 * @return array Analytics payload keyed by request key.
 	 */
-	private function get_analytics_payload_for_detected_events( array $detected_events ) {
+	private function get_analytics_payload_for_detected_events( array $detected_events, array $active_widgets = array( 'ecommerce', 'lead' ) ) {
 		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
 
@@ -649,6 +696,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 				'detectedEvents' => $detected_events,
 			)
 		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => $active_widgets ) );
 
 		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
 		$analytics->register();
