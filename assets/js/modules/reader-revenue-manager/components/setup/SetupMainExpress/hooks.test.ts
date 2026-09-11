@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import fetchMock from 'fetch-mock';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -37,12 +32,16 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	providePublication,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
+	muteFetch,
 	render,
 	renderHook,
 } from '@tests/js/test-utils';
@@ -342,6 +341,11 @@ describe( 'useStep', () => {
 			expect( result.current[ 0 ] ).toBe(
 				EXPRESS_SETUP_STEPS.SETUP_COMPLETE
 			);
+
+			// Prevent another request from being made to the publication endpoint.
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.finishResolution( 'getPublication', [ {} ] );
 		} );
 	} );
 } );
@@ -349,31 +353,27 @@ describe( 'useStep', () => {
 describe( 'useHasPreExistingCTAs', () => {
 	let registry: WPDataRegistry;
 
-	const publicationID = 'ABCD_123-4';
-
 	const ctasEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
 	);
 
 	const cta = {
-		name: `organizations/ABCD1234/publications/${ publicationID }/ctas/9d2418415-ab3a`,
+		name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/9d2418415-ab3a`,
 		type: 'NEWSLETTER_SIGNUP',
 	};
 
 	const otherCTA = {
-		name: `organizations/ABCD1234/publications/${ publicationID }/ctas/8j8152411-cd4b`,
+		name: `organizations/ABCD1234/publications/${ PUBLICATION_ID }/ctas/8j8152411-cd4b`,
 		type: 'NEWSLETTER_SIGNUP',
 	};
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( { publicationID } );
+		providePublication( registry, publications[ 0 ] );
 	} );
 
 	it( 'returns undefined while the CTAs are loading', () => {
-		fetchMock.getOnce( ctasEndpoint, { body: [ cta ], status: 200 } );
+		muteFetch( ctasEndpoint );
 
 		const { result, unmount } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -385,9 +385,10 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there are no configured CTAs', () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [], params: { publicationID } } );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
+			ctas: [],
+			params: { publicationID: PUBLICATION_ID },
+		} );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -397,9 +398,10 @@ describe( 'useHasPreExistingCTAs', () => {
 	} );
 
 	it( 'returns false when there is only the CTA just created in this setup flow', () => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetCTAs( { ctas: [ cta ], params: { publicationID } } );
+		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
+			ctas: [ cta ],
+			params: { publicationID: PUBLICATION_ID },
+		} );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
 			registry,
@@ -411,7 +413,7 @@ describe( 'useHasPreExistingCTAs', () => {
 	it( 'returns true when there is more than one configured CTA', () => {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
 			ctas: [ cta, otherCTA ],
-			params: { publicationID },
+			params: { publicationID: PUBLICATION_ID },
 		} );
 
 		const { result } = renderHook( () => useHasPreExistingCTAs(), {
