@@ -87,3 +87,9 @@ tests/e2e/screenshots
 # Playwright
 tests/playwright/artifacts
 
+
+# Design doc process: the inputs you supply and the artifacts it produces stay local.
+design-doc/input/
+design-doc/output/
+design-doc/preparation/output/
+design-doc/issues/
