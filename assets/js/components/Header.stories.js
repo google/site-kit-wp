@@ -100,20 +100,7 @@ HeaderWithHelpMenu.args = {
 		provideUserAuthentication( registry );
 	},
 };
-
-export const HeaderWithHelpMenuSFR = Template.bind( {} );
-HeaderWithHelpMenuSFR.storyName =
-	'Plugin Header with Help Menu - SetupFlowRefresh';
-HeaderWithHelpMenuSFR.args = {
-	children: <HelpMenu />,
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-	},
-};
-HeaderWithHelpMenuSFR.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-HeaderWithHelpMenuSFR.scenario = {
+HeaderWithHelpMenu.scenario = {
 	delay: 3000,
 	clickSelector: '.googlesitekit-help-menu__button',
 	postInteractionWait: 3000,

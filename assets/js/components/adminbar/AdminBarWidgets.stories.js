@@ -68,6 +68,7 @@ AnalyticsInactive.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the search console module store but provide no data.
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_SEARCH_CONSOLE,
@@ -75,6 +76,8 @@ AnalyticsInactive.args = {
 				connected: true,
 			},
 		] );
+		provideModuleRegistrations( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			adminURL: 'http://example.com/wp-admin/',
 		} );
@@ -88,47 +91,6 @@ AnalyticsInactiveNewCompleteActivation.storyName =
 AnalyticsInactiveNewCompleteActivation.args = {
 	setupRegistry: ( registry ) => {
 		// Set up the analytics module store but provide no data.
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: false,
-			},
-		] );
-		provideModuleRegistrations( registry );
-		provideUserAuthentication( registry );
-		setupSearchConsoleMockReports( registry );
-	},
-};
-
-export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
-WithSetupFlowRefreshSetUpAnalytics.storyName =
-	'Setup Flow Refresh - Set up Analytics CTA';
-WithSetupFlowRefreshSetUpAnalytics.args = {
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-		provideUserCapabilities( registry );
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_SEARCH_CONSOLE,
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
-		setupSearchConsoleMockReports( registry );
-	},
-};
-WithSetupFlowRefreshSetUpAnalytics.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-
-export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
-WithSetupFlowRefreshCompleteSetup.storyName =
-	'Setup Flow Refresh - Complete Setup CTA';
-WithSetupFlowRefreshCompleteSetup.args = {
-	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 		provideUserCapabilities( registry );
 		provideModules( registry, [
@@ -142,9 +104,6 @@ WithSetupFlowRefreshCompleteSetup.args = {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		setupSearchConsoleMockReports( registry );
 	},
-};
-WithSetupFlowRefreshCompleteSetup.parameters = {
-	features: [ 'setupFlowRefresh' ],
 };
 
 export const Analytics4WidgetsLoading = Template.bind( {} );
