@@ -21,6 +21,8 @@
  */
 import { ProgressBar } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function UserProfile() {
@@ -37,7 +39,7 @@ export default function UserProfile() {
 	}
 
 	return (
-		<p className="googlesitekit-setup-module__user">
+		<P className="googlesitekit-setup-module__user" size={ SIZE_MEDIUM }>
 			<img
 				className="googlesitekit-setup-module__user-image"
 				src={ userPicture }
@@ -46,6 +48,6 @@ export default function UserProfile() {
 			<span className="googlesitekit-setup-module__user-email">
 				{ userEmail }
 			</span>
-		</p>
+		</P>
 	);
 }

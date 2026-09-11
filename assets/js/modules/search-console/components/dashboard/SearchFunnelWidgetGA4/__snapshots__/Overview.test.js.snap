@@ -279,7 +279,7 @@ exports[`Overview should render the Search Funnel Overview, including the Activa
             class="googlesitekit-analytics-cta__details"
           >
             <p
-              class="googlesitekit-analytics-cta--description"
+              class="googlesitekit-typography googlesitekit-analytics-cta--description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               See how many people visit your site from Search and track how you’re achieving your goals
             </p>

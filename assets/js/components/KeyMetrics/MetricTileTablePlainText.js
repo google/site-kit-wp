@@ -21,11 +21,21 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+
 export default function MetricTileTablePlainText( { content } ) {
 	return (
-		<p className="googlesitekit-km-widget-tile__table-plain-text">
+		<P
+			className="googlesitekit-km-widget-tile__table-plain-text"
+			size={ SIZE_SMALL }
+			type={ TYPE_BODY }
+		>
 			{ content }
-		</p>
+		</P>
 	);
 }
 

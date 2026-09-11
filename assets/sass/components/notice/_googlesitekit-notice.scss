@@ -66,6 +66,7 @@
 	}
 
 	.googlesitekit-notice__content {
+		/* TODO: 11266 -- Correct typography in components, remove this override and update VRT refrences. */
 		font-family: $f-primary;
 		font-size: $fs-title-sm;
 		font-weight: $fw-normal;

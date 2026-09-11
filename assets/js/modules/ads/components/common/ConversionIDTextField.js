@@ -28,6 +28,8 @@ import { __ } from '@wordpress/i18n';
 import { TextField } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { useDebounce } from '@/js/hooks/useDebounce';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { isValidConversionID } from '@/js/modules/ads/utils/validation';
@@ -80,9 +82,12 @@ export default function ConversionIDTextField( {
 			) }
 
 			{ helperText && (
-				<p className="googlesitekit-settings-module__fields-group-helper-text">
+				<P
+					className="googlesitekit-settings-module__fields-group-helper-text"
+					size={ SIZE_MEDIUM }
+				>
 					{ helperText }
-				</p>
+				</P>
 			) }
 
 			<TextField

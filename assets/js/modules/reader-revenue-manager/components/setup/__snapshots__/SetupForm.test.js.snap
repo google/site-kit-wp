@@ -29,7 +29,7 @@ exports[`SetupForm should not silently fail when there is an error 1`] = `
       </div>
     </div>
     <p
-      class="googlesitekit-margin-bottom-0"
+      class="googlesitekit-typography googlesitekit-setup-module__description googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Select your preferred publication to connect with Site Kit
     </p>
@@ -113,7 +113,7 @@ exports[`SetupForm should render the form correctly 1`] = `
 <div>
   <form>
     <p
-      class="googlesitekit-margin-bottom-0"
+      class="googlesitekit-typography googlesitekit-setup-module__description googlesitekit-typography--body googlesitekit-typography--medium"
     >
       Select your preferred publication to connect with Site Kit
     </p>

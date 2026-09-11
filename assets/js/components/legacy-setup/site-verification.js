@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
 import { get, set } from 'googlesitekit-api';
 import { Button, ProgressBar, TextField } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { trackEvent, validateJSON } from '@/js/util';
 
@@ -221,12 +222,15 @@ class SiteVerification extends Component {
 					{ __( 'Verify URL', 'google-site-kit' ) }
 				</Typography>
 
-				<p className="googlesitekit-wizard-step__text">
+				<P
+					className="googlesitekit-wizard-step__text"
+					size={ SIZE_MEDIUM }
+				>
 					{ __(
 						'Congratulations, your site has been verified!',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 			</Fragment>
 		);
 	}
@@ -250,15 +254,23 @@ class SiteVerification extends Component {
 					{ __( 'Verify URL', 'google-site-kit' ) }
 				</Typography>
 
-				<p className="googlesitekit-wizard-step__text">
+				<P
+					className="googlesitekit-wizard-step__text"
+					size={ SIZE_MEDIUM }
+				>
 					{ __(
 						'We will need to verify your URL for Site Kit.',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 
 				{ errorMsg && 0 < errorMsg.length && (
-					<p className="googlesitekit-error-text">{ errorMsg }</p>
+					<P
+						className="googlesitekit-error-text"
+						size={ SIZE_MEDIUM }
+					>
+						{ errorMsg }
+					</P>
 				) }
 
 				{ isAuthenticated && this.renderForm() }

@@ -25,18 +25,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { SIZE_SMALL, TYPE_TITLE } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import AudienceTileCollectingDataImage from '@/svg/graphics/audience-segmentation-collecting-data.svg';
 
 export default function AudienceTileCollectingData() {
 	return (
 		<Fragment>
 			<AudienceTileCollectingDataImage className="googlesitekit-audience-segmentation-tile__zero-data-image" />
-			<p className="googlesitekit-audience-segmentation-tile__zero-data-description">
+			<P
+				className="googlesitekit-audience-segmentation-tile__zero-data-description"
+				size={ SIZE_SMALL }
+				type={ TYPE_TITLE }
+			>
 				{ __(
 					'Site Kit is collecting data for this group.',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 		</Fragment>
 	);
 }

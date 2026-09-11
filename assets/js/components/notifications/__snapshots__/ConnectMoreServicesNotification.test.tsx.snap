@@ -24,7 +24,7 @@ exports[`ConnectMoreServicesNotification component behaviour should render corre
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--headline googlesitekit-typography--medium"
                 >
                   Boost your site’s performance by enhancing your dashboard
                 </p>

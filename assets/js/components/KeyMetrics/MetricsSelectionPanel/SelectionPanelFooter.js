@@ -40,6 +40,13 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { safelySort } from '@/js/util';
 
@@ -56,6 +63,8 @@ export default function SelectionPanelFooter( {
 	closePanel = () => {},
 	isFullScreen = false,
 } ) {
+	const breakpoint = useBreakpoint();
+
 	const [ finalButtonText, setFinalButtonText ] = useState( null );
 	const [ wasSaved, setWasSaved ] = useState( false );
 	const isLoading = useSelect( ( select ) =>
@@ -132,7 +141,11 @@ export default function SelectionPanelFooter( {
 	const itemCountElement = isLoading ? (
 		<PreviewBlock width="89px" height="20px" />
 	) : (
-		<p className="googlesitekit-selection-panel-footer__item-count">
+		<P
+			className="googlesitekit-selection-panel-footer__item-count"
+			size={ breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM }
+			type={ TYPE_LABEL }
+		>
 			{ createInterpolateElement(
 				sprintf(
 					/* translators: 1: Number of selected items. 2: Maximum number of items that can be selected. */
@@ -149,7 +162,7 @@ export default function SelectionPanelFooter( {
 					),
 				}
 			) }
-		</p>
+		</P>
 	);
 
 	return (

@@ -30,6 +30,8 @@ import { Component } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import CheckIcon from '@/svg/icons/check.svg';
 import ExclamationIcon from '@/svg/icons/exclamation.svg';
 
@@ -98,9 +100,12 @@ class WizardProgressStep extends Component {
 						) }
 					</div>
 				</div>
-				<p className="googlesitekit-wizard-progress-step__text">
+				<P
+					className="googlesitekit-wizard-progress-step__text"
+					size={ SIZE_MEDIUM }
+				>
 					{ title }
-				</p>
+				</P>
 			</div>
 		);
 	}

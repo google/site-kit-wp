@@ -32,6 +32,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_TITLE } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { Cell, Row } from '@/js/material-components';
 import AdSenseIcon from '@/svg/graphics/adsense.svg';
@@ -72,9 +73,13 @@ const Content = forwardRef( ( { stage, mode, onAnimationEnd }, ref ) => {
 		<Fragment>
 			<Row>
 				<Cell size={ 12 }>
-					<p className="googlesitekit-setup__intro-title">
+					<P
+						className="googlesitekit-setup__intro-title"
+						size={ SIZE_SMALL }
+						type={ TYPE_TITLE }
+					>
 						{ __( 'Connect Service', 'google-site-kit' ) }
-					</p>
+					</P>
 					<div className="googlesitekit-setup-module">
 						<div className="googlesitekit-setup-module__logo">
 							<AdSenseIcon width="33" height="33" />

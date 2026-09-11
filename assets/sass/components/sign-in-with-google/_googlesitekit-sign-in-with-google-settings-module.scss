@@ -160,6 +160,11 @@
 		.googlesitekit-sign-in-with-google__preview--label {
 			margin: 0 0 1rem;
 			text-align: center;
+
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography {
+				line-height: $lh-body-lg;
+			}
 		}
 
 		.googlesitekit-sign-in-with-google__preview--protector {

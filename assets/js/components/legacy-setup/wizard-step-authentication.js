@@ -33,6 +33,7 @@ import { __, _x } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import OptIn from '@/js/components/OptIn';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { VIEW_CONTEXT_SPLASH } from '@/js/googlesitekit/constants';
@@ -101,12 +102,15 @@ class WizardStepAuthentication extends Component {
 								) }
 							</P>
 							{ needReauthenticate && (
-								<p className="googlesitekit-error-text">
+								<P
+									className="googlesitekit-error-text"
+									size={ SIZE_MEDIUM }
+								>
 									{ __(
 										'You did not grant access to one or more of the requested scopes. Please grant all scopes that you are prompted for.',
 										'google-site-kit'
 									) }
-								</p>
+								</P>
 							) }
 							<P>
 								<Button onClick={ this.onButtonClick }>

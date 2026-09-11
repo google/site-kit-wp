@@ -37,6 +37,7 @@ import { Checkbox, SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -150,7 +151,10 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 					'google-site-kit'
 				) }
 			</Checkbox>
-			<p className="googlesitekit-ad-blocking-recovery__error-protection-tag-info">
+			<P
+				className="googlesitekit-ad-blocking-recovery__error-protection-tag-info"
+				size={ SIZE_MEDIUM }
+			>
 				{ createInterpolateElement(
 					__(
 						'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',
@@ -160,7 +164,7 @@ export default function PlaceTagsStep( { setActiveStep } ) {
 						a: <Link href={ learnMoreURL } external />,
 					}
 				) }
-			</p>
+			</P>
 			{ error && <ErrorNotice error={ error } /> }
 			<SpinnerButton
 				onClick={ onCTAClick }
