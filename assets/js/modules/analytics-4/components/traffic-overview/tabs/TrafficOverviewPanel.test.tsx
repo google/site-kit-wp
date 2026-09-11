@@ -91,7 +91,7 @@ describe( 'TrafficOverviewPanel', () => {
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'marks the panel as a tab panel and names it using the content in the "Traffic Overview" tab', async () => {
+	it( 'marks the panel as a tab panel and names it using the content in the "Traffic overview" tab', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{ registry }

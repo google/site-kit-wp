@@ -95,7 +95,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders one tab labeled "Traffic Overview" at the top of the widget body', async () => {
+	it( 'renders one tab labeled "Traffic overview" at the top of the widget body', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -109,14 +109,14 @@ describe( 'TrafficOverviewWidget', () => {
 		const tabs = screen.getAllByRole( 'tab' );
 
 		expect( tabs ).toHaveLength( 1 );
-		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic Overview' );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 		expect(
 			container.querySelector( '.googlesitekit-widget__body' )
 				?.firstElementChild
 		).toHaveClass( 'googlesitekit-scrollable-tabs' );
 	} );
 
-	it( 'names the tab panel after the "Traffic Overview" tab', async () => {
+	it( 'names the tab panel after the "Traffic overview" tab', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -128,7 +128,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			screen.getByRole( 'tabpanel', { name: 'Traffic Overview' } )
+			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
 		).toBeInTheDocument();
 	} );
 
