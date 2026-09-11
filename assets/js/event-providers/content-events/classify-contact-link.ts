@@ -251,19 +251,15 @@ CONTACT_LINK_MATCHERS.forEach( ( matcher ) => {
  *
  * @since n.e.x.t
  *
- * @param {HTMLAnchorElement} anchor Anchor that was clicked.
+ * @param {URL} linkURL Parsed link address.
  * @return {string|null} The `link_type` to report, or `null` when the link is not a contact link.
  */
 export default function classifyContactLink(
-	anchor: HTMLAnchorElement
+	linkURL: URL
 ): ContactLinkType | null {
-	let url: URL;
-
-	try {
-		url = new URL( anchor.href );
-	} catch {
-		return null;
-	}
+	// The normalization below writes to the hostname, and the caller reports the
+	// same URL's address, so that write happens on a copy of it.
+	const url = new URL( linkURL );
 
 	const isWebLink = 'http:' === url.protocol || 'https:' === url.protocol;
 

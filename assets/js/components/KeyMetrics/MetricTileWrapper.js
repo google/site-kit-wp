@@ -54,6 +54,8 @@ export default function MetricTileWrapper( props ) {
 		title = KEY_METRICS_WIDGETS[ widgetSlug ]?.title,
 		infoTooltip = KEY_METRICS_WIDGETS[ widgetSlug ]?.infoTooltip ||
 			KEY_METRICS_WIDGETS[ widgetSlug ]?.description,
+		documentationLinkSlug = KEY_METRICS_WIDGETS[ widgetSlug ]
+			?.documentationLinkSlug,
 	} = props;
 
 	const viewContext = useViewContext();
@@ -110,6 +112,7 @@ export default function MetricTileWrapper( props ) {
 					title={ title }
 					infoTooltip={ infoTooltip }
 					loading={ loading }
+					documentationLinkSlug={ documentationLinkSlug }
 				/>
 				<div className="googlesitekit-km-widget-tile__body">
 					{ loading && <MetricTileLoader /> }
@@ -126,4 +129,5 @@ MetricTileWrapper.propTypes = {
 	title: PropTypes.string,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	moduleSlug: PropTypes.string.isRequired,
+	documentationLinkSlug: PropTypes.string,
 };
