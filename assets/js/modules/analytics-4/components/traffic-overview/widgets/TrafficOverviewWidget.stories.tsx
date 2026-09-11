@@ -75,6 +75,11 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+	// A creation time before the selected range means the chart shows no
+	// marker. Storing the time also stops the story requesting it.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 }
 
 /**

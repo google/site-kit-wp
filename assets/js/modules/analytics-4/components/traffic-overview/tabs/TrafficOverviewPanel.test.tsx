@@ -25,7 +25,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+import {
+	getGraphReportArgs,
+	getTotalsReportArgs,
+} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/charts/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry, render, waitFor } from '@tests/js/test-utils';
@@ -76,6 +80,34 @@ describe( 'TrafficOverviewPanel', () => {
 		);
 	}
 
+	/**
+	 * Puts a daily-visitors report in the store under the arguments the panel requests.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Array<Array>} days  The days and their visitors, as `createDailyVisitorsReport` takes them.
+	 * @param {string}       [url] Optional. The entity URL the report covers.
+	 * @return {void}
+	 */
+	function provideGraphReport(
+		days: Array< [ string, number ] >,
+		url?: string
+	) {
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( createDailyVisitorsReport( days ), {
+				options: getGraphReportArgs( {
+					startDate,
+					endDate,
+					...( url ? { url } : {} ),
+				} ),
+			} );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
@@ -88,6 +120,7 @@ describe( 'TrafficOverviewPanel', () => {
 				connected: true,
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -129,10 +162,6 @@ describe( 'TrafficOverviewPanel', () => {
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',
 		] );
-
-		// The chart lands in a later issue; the breakdown has since arrived.
-		expect( sections[ 1 ] ).toBeEmptyDOMElement();
-		expect( sections[ 2 ] ).not.toBeEmptyDOMElement();
 	} );
 
 	it( 'builds the visitor total and its badge from the totals report', async () => {
@@ -166,6 +195,53 @@ describe( 'TrafficOverviewPanel', () => {
 
 		expect( getByText( '500' ) ).toBeInTheDocument();
 		expect( getByText( '+25%' ) ).toBeInTheDocument();
+	} );
+
+	it( 'shows the daily visitors of the whole site on the main dashboard', async () => {
+		provideGraphReport( [
+			[ '2025-01-14', 40 ],
+			[ '2025-01-15', 12 ],
+		] );
+
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Google Charts shows nothing under Jest, so this test reads the
+		// chart's screen-reader lines instead.
+		expect(
+			getByText( 'January 14, 2025: 40 visitors' )
+		).toBeInTheDocument();
+		expect(
+			getByText( 'January 15, 2025: 12 visitors' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'shows the daily visitors of the current URL on the entity dashboard', async () => {
+		const entityURL = 'https://example.com/about/';
+
+		provideSiteInfo( registry, { currentEntityURL: entityURL } );
+		// Only the report for this URL is in the store, so this day can come
+		// from no other request.
+		provideGraphReport( [ [ '2025-01-14', 6 ] ], entityURL );
+
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'January 14, 2025: 6 visitors' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {

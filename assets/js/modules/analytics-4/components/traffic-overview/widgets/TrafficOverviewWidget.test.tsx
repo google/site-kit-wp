@@ -71,6 +71,10 @@ describe( 'TrafficOverviewWidget', () => {
 		] );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+		// The chart shows no marker for a creation time before the selected range.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 

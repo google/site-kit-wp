@@ -31,3 +31,9 @@ export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
  * of a dimension as before.
  */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
+
+/**
+ * The hex value of `$c-violet-v-600`, the Sass token the design gives the
+ * traffic chart's line. Google Charts takes a color as an option, not a class.
+ */
+export const TRAFFIC_CHART_LINE_COLOR = '#462083';
