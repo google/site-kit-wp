@@ -42,7 +42,6 @@ class Email_Assets {
 		'site-kit-logo'                 => '2025-12-01-site-kit-logo.png',
 		// email-report assets.
 		'shooting-stars-graphic'        => '2025-12-01-shooting-stars-graphic.png',
-		'icon-conversions'              => '2025-12-01-icon-conversions.png',
 		'icon-growth'                   => '2025-12-01-icon-growth.png',
 		'icon-link-arrow'               => '2025-12-01-icon-link-arrow.png',
 		'icon-search'                   => '2025-12-01-icon-search.png',
@@ -51,8 +50,6 @@ class Email_Assets {
 		'icon-star'                     => '2026-03-03-icon-star.png',
 		'icon-online-store'             => '2026-08-31-icon-online-store.png',
 		'icon-lead-generation'          => '2026-08-31-icon-lead-generation.png',
-		'conversions-timeline-green'    => '2025-12-01-conversions-timeline-green.png',
-		'conversions-timeline-red'      => '2025-12-01-conversions-timeline-red.png',
 		'notification-icon-star'        => '2025-12-01-notification-icon-star.png',
 		// invitation-email assets.
 		'invitation-envelope-graphic'   => '2026-02-05-invitation-envelope-graphic.png',

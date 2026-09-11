@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Golinks\Golinks;
+use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Site_Goals_Section_Builder;
 
 /**
  * Class for mapping email report sections and their layout configuration.
@@ -112,16 +113,67 @@ class Sections_Map {
 	 * - section_parts: Array of template parts with their data.
 	 *
 	 * @since 1.168.0
+	 * @since n.e.x.t Added the online store and lead generation sections at the top.
 	 *
 	 * @return array Array of sections with their configuration.
 	 */
 	public function get_sections() {
 		return array_merge(
+			$this->get_site_goals_sections(),
 			$this->get_visitors_section(),
 			$this->get_traffic_sources_section(),
 			$this->get_attention_section(),
 			$this->get_growth_drivers_section()
 		);
+	}
+
+	/**
+	 * Gets the online store and lead generation sections, in the order the
+	 * dashboard shows their widgets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Section configuration array.
+	 */
+	protected function get_site_goals_sections() {
+		$cards = array(
+			'how_is_my_online_store_performing'      => array(
+				'payload_key' => Site_Goals_Section_Builder::ONLINE_STORE_SECTION_KEY,
+				'title'       => esc_html__( 'How is my online store performing?', 'google-site-kit' ),
+				'icon'        => 'online-store',
+			),
+			'are_people_reaching_out_to_my_business' => array(
+				'payload_key' => Site_Goals_Section_Builder::LEAD_GENERATION_SECTION_KEY,
+				'title'       => esc_html__( 'Are people reaching out to my business?', 'google-site-kit' ),
+				'icon'        => 'lead-generation',
+			),
+		);
+
+		$sections = array();
+
+		foreach ( $cards as $section_key => $card ) {
+			$section_parts = $this->filter_section_parts(
+				array(
+					$card['payload_key'] => array(
+						'data' => $this->payload[ $card['payload_key'] ] ?? array(),
+					),
+				)
+			);
+
+			if ( empty( $section_parts ) ) {
+				continue;
+			}
+
+			$sections[ $section_key ] = array(
+				'title'            => $card['title'],
+				'icon'             => $card['icon'],
+				'section_template' => 'section-site-goals',
+				'dashboard_url'    => $this->get_dashboard_url(),
+				'section_parts'    => $section_parts,
+			);
+		}
+
+		return $sections;
 	}
 
 	/**

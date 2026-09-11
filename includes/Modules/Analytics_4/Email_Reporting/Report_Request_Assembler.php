@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_Report_Options;
 
@@ -165,7 +166,9 @@ class Report_Request_Assembler {
 	}
 
 	/**
-	 * Builds the Site Goals requests for each widget whose events Analytics has detected.
+	 * Builds the Site Goals requests for each widget the dashboard shows.
+	 *
+	 * The dashboard decides which widgets to show in `isSiteGoalsWidgetRenderable()`.
 	 *
 	 * The online store widget and the lead generation widget each need their own key
 	 * action count, plus the engagement rate and the session count. Two widgets with no
@@ -177,13 +180,17 @@ class Report_Request_Assembler {
 	 *
 	 * @since 1.187.0
 	 * @since n.e.x.t Added the discovery report of each widget that splits its results.
+	 *                Skipped the reports of a widget the dashboard doesn't show.
 	 *
 	 * @return array Report requests keyed by payload key.
 	 */
 	private function build_site_goals_requests() {
 		$requests = array();
 
-		if ( $this->report_options->has_ecommerce_events() ) {
+		if (
+			$this->report_options->has_ecommerce_events()
+			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_ECOMMERCE )
+		) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ) ) {
 				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ] = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 				$requests[ self::SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY ]           = $this->report_options->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
@@ -194,7 +201,10 @@ class Report_Request_Assembler {
 			}
 		}
 
-		if ( $this->report_options->has_lead_events() ) {
+		if (
+			$this->report_options->has_lead_events()
+			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_LEAD )
+		) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_FORM_ID ) ) {
 				$requests[ self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ] = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 				$requests[ self::SITE_GOALS_LEAD_DISCOVERY_KEY ]       = $this->report_options->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );

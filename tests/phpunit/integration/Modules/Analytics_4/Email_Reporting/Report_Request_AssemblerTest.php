@@ -155,6 +155,36 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		);
 	}
 
+	public function test_build_requests__registers_no_online_store_request_when_the_online_store_widget_is_not_active() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ), array(), array( 'lead' ) );
+
+		$this->assertSame(
+			array(),
+			$this->request_keys_starting_with( $requests, 'site_goals_online_store' ),
+			"`build_requests()` should register no online store request when `activeWidgets` doesn't have `ecommerce`, even though the site sends an ecommerce event."
+		);
+		$this->assertArrayHasKey(
+			'site_goals_lead_primary',
+			$requests,
+			'`build_requests()` should still register the lead generation count when `activeWidgets` has `lead`.'
+		);
+	}
+
+	public function test_build_requests__registers_no_lead_generation_request_when_the_lead_generation_widget_is_not_active() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ), array(), array( 'ecommerce' ) );
+
+		$this->assertSame(
+			array(),
+			$this->request_keys_starting_with( $requests, 'site_goals_lead' ),
+			"`build_requests()` should register no lead generation request when `activeWidgets` doesn't have `lead`, even though the site sends a lead event."
+		);
+		$this->assertArrayHasKey(
+			'site_goals_online_store_primary',
+			$requests,
+			'`build_requests()` should still register the online store count when `activeWidgets` has `ecommerce`.'
+		);
+	}
+
 	public function test_build_requests__registers_one_engagement_report_for_the_store_and_lead_widgets_when_neither_breakdown_dimension_has_data() {
 		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ) );
 
@@ -301,15 +331,17 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 	}
 
 	/**
-	 * Builds the report requests for the given detected events and dimension availability.
+	 * Builds the report requests for the given events, dimension availability, and
+	 * Site Goals widget types.
 	 *
 	 * The `Report_Options` that built the requests stays in `$this->report_options`.
 	 *
 	 * @param array $detected_events Detected event names.
 	 * @param array $availability    Optional. Custom dimension availability keyed by dimension slug. Default empty.
+	 * @param array $active_widgets  Optional. Site Goals widget types in `activeWidgets`. Default `ecommerce` and `lead`.
 	 * @return array Report requests keyed by payload key.
 	 */
-	private function build_requests_for_events( array $detected_events, array $availability = array() ) {
+	private function build_requests_for_events( array $detected_events, array $availability = array(), array $active_widgets = array( 'ecommerce', 'lead' ) ) {
 		$this->report_options = new Analytics_4_Report_Options(
 			array(
 				'startDate'        => '2024-01-01',
@@ -321,11 +353,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$this->context
 		);
 
-		// The test sets the same three options `Email_Reporting_Data_Requests` sets
-		// before it builds the requests.
+		// `Email_Reporting_Data_Requests` sets these values too, before it builds the requests.
 		$this->report_options->set_audience_segmentation_enabled( false );
 		$this->report_options->set_detected_events( $detected_events );
 		$this->report_options->set_custom_dimension_availability( $availability );
+		$this->report_options->set_active_site_goals_widgets( $active_widgets );
 
 		$assembler = new Analytics_4_Report_Request_Assembler( $this->report_options );
 
