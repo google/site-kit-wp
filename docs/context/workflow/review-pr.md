@@ -15,12 +15,60 @@ live in `docs/context/js/` and `docs/context/php/`, and the rubric for grading t
 
 Run these in parallel (substitute `<number>`):
 
-- `gh pr view <number> --json number,title,body,author,baseRefName,headRefName,files,additions,deletions,commits`
+- `gh pr view <number> --json number,title,body,author,baseRefName,headRefName,headRefOid,files,additions,deletions,commits`
 - `gh pr diff <number>`
 
 **Stop and ask the user** if the PR can't be found or the diff is empty.
 
-## Step 2 — Identify and read the linked issue
+## Step 2 — Get the PR's code into a working tree
+
+Review the PR's **actual code**, not just the diff. Reviewers often check the PR out before
+asking for a review, so **first determine whether it's already checked out** here:
+
+```
+git rev-parse --abbrev-ref HEAD
+git rev-parse HEAD
+```
+
+- **Already checked out** — the current branch equals the PR's `headRefName` **and** the current
+  HEAD commit equals its `headRefOid` (both from Step 1). Review the files in the primary working
+  directory and **skip the worktree entirely** (including the cleanup in Guardrails). This tree
+  has `node_modules`, so the Step 6 verification tooling can run locally if needed.
+- **Same branch name, different commit** — the local checkout is stale or has extra local
+  commits, so it isn't what the PR proposes. Say so in the review and use the worktree below.
+- **Anything else** — use the worktree below.
+
+Check the PR branch out into an isolated git worktree so your current working tree and branch
+stay untouched:
+
+```
+git fetch origin pull/<number>/head:pr-<number>-review
+git worktree add ../site-kit-wp-pr-<number> pr-<number>-review
+```
+
+The `pull/<number>/head` ref works whether the PR comes from a branch in this repo or a fork.
+From here on, **inspect the PR's files inside that worktree** (`../site-kit-wp-pr-<number>`) so
+every file you read reflects the code as it would land after merge. Convention docs
+(`docs/context/…`) can be read from either location — they're identical across branches unless
+the PR itself changes them.
+
+The worktree contains only tracked files — there is **no `node_modules`** — so treat it as
+**read-only source for judging the code**, not a place to run npm tooling (see Step 6 for
+verification). Capture its absolute path once (`git worktree list`) and read files by that
+absolute path: the worktree is a sibling of the repo directory, and the shell's working
+directory may reset between commands, so don't rely on a prior `cd` persisting.
+
+If `git fetch` or `git worktree add` fails because of a stale worktree/branch left over from a
+previous review, clean up and retry:
+
+```
+git worktree remove --force ../site-kit-wp-pr-<number>
+git branch -D pr-<number>-review
+```
+
+**Stop and ask the user** if the worktree still can't be created.
+
+## Step 3 — Identify and read the linked issue
 
 Site Kit PRs use `.github/PULL_REQUEST_TEMPLATE.md`, whose **Summary** section links the issue
 the PR implements:
@@ -43,7 +91,7 @@ If the PR body has **no** linked issue (the `- #` line is empty), say so in the 
 requirements adherence as "not verifiable", and review conventions and code quality only. Do
 not invent acceptance criteria.
 
-## Step 3 — Load the relevant convention docs
+## Step 4 — Load the relevant convention docs
 
 Read **only** the convention docs that the changed files touch — use the same scope map as
 `implement-issue.md` Step 3:
@@ -59,26 +107,33 @@ Read **only** the convention docs that the changed files touch — use the same 
 
 The convention checklist in `review-checklist.md` (§2) maps each area to its authoritative doc.
 
-## Step 4 — Inspect the changed files
+## Step 5 — Inspect the changed files
 
 For any non-trivial changed file (not auto-generated, not lock files), read the full file for
-context around the changed lines. Focus on files where the diff alone is insufficient to judge
-correctness.
+context around the changed lines — **from whichever tree holds the PR's code** (Step 2): the
+worktree if you created one, otherwise the primary working directory. Focus on files where the
+diff alone is insufficient to judge correctness.
 
-## Step 5 — Judge against the checklist
+## Step 6 — Judge against the checklist
 
 Grade the change against `review-checklist.md`:
 
 - **Requirements adherence** (§1) — the primary check. Walk each **Acceptance criterion** and
-  each **Implementation Brief** checkbox from the linked issue (Step 2) and confirm the diff
+  each **Implementation Brief** checkbox from the linked issue (Step 3) and confirm the diff
   actually implements it; call out anything missing, incomplete, or contradicting the brief.
   Confirm every **Test Coverage** item exists as a real test. Skip only if no issue is linked.
 - **Convention adherence** (§2) — check only the areas the change actually touches; cite the
   context file + section for every deviation.
 - **Code quality** (§3) — correctness, security, performance, documentation, accessibility.
-- **Verification** (§4) — lint, tests run, build for non-trivial asset changes.
+- **Verification** (§4) — confirm lint, tests, and (for non-trivial asset changes) the build
+  pass. Read the PR's CI results with `gh pr checks <number>` rather than reproducing them
+  locally, and don't `npx` a tool (it pulls the wrong version off the network). A worktree has
+  no `node_modules`, so the tooling can't run inside it at all; if you do run a linter against
+  the worktree via a symlinked `node_modules`, know that `@/…`-aliased imports can resolve into
+  your base checkout: an `import/named` / `import/no-unresolved` "error" on a symbol the PR
+  adds or moves is usually a false positive — confirm by reading the file in the worktree.
 
-## Step 6 — Produce the review
+## Step 7 — Produce the review
 
 Structure the output as below. Omit any section with nothing to report.
 
@@ -96,7 +151,7 @@ One paragraph describing what this PR does and what areas it touches. Name the l
 
 #### Requirements Adherence
 
-Only when an issue is linked (Step 2). For each **Acceptance criterion** and **Implementation
+Only when an issue is linked (Step 3). For each **Acceptance criterion** and **Implementation
 Brief** checkbox, state ✅ met / ⚠️ partial / ❌ missing, with the `file:line` that satisfies it
 (or what's absent). Note any **Test Coverage** item without a corresponding test.
 
@@ -144,3 +199,8 @@ Brief justification. If requesting changes, list the blocking issues as a number
 - **Cite, don't assert.** For every convention violation, name the principle, the context file
   + section that defines it, and the affected `file:line`.
 - **Scope the read.** Load only the convention docs the change touches — not everything.
+- **Clean up the worktree.** Only if Step 2 created one. Once the review is produced, remove it
+  so it doesn't linger: `git worktree remove ../site-kit-wp-pr-<number>` (add `--force` if it
+  refuses — a `node_modules` symlink or other untracked file makes the plain form refuse), then
+  `git branch -D pr-<number>-review`. When the PR was already checked out, there is nothing to
+  clean up — never delete or switch the user's branch.

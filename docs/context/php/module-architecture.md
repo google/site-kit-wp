@@ -735,7 +735,9 @@ final class Analytics_4 extends Module implements
 
 ## Module Data Access
 
-Modules provide data through the datapoint pattern.
+Modules provide data through the datapoint pattern. A datapoint is identified by an ID in
+`METHOD:name` form (e.g. `GET:report`, `POST:create-property`) and is reached from the client
+through the `modules/{slug}/data/{datapoint}` REST route (see `rest-api.md`).
 
 **Location**: `includes/Core/Modules/Module.php`
 
@@ -753,28 +755,241 @@ final public function set_data( $datapoint, $data ) {
 }
 ```
 
+### Datapoint Building Blocks
+
+**Location**: `includes/Core/Modules/`
+
+-   **`Datapoint`**: Base class holding the definition — service, required scopes, shareable flag, and the scopes-request message.
+-   **`Shareable_Datapoint`**: `Datapoint` subclass whose `is_shareable()` always returns `true`, so the data may be served with the module owner's credentials.
+-   **`Executable_Datapoint`**: Interface declaring `create_request()` / `parse_response()`, i.e. the datapoint executes itself instead of the module doing it.
+-   **`Permission_Aware_Datapoint`**: Interface declaring `permission_callback()`, overriding the REST method's default permission check.
+
+A datapoint class extends `Datapoint` (or `Shareable_Datapoint`) and implements
+`Executable_Datapoint`:
+
+```php
+class Get_Accounts extends Datapoint implements Executable_Datapoint {
+
+    public function create_request( Data_Request $data_request ) {
+        // Resolves the `service` definition field to the Google service instance.
+        $service = $this->get_service();
+
+        return $service->accounts->listAccounts();
+    }
+
+    public function parse_response( $response, Data_Request $data ) {
+        return array_map( array( Analytics_4::class, 'filter_account_with_ids' ), $response->getAccounts() );
+    }
+}
+```
+
+`create_request()` may return:
+
+-   A `RequestInterface` — a deferred Google service call, executed with the OAuth client resolved for the datapoint (owner's client for a shared request, otherwise the current user's).
+-   A `Closure` — invoked directly, for datapoints that only read/write local state and never call a Google API.
+-   A `WP_Error` — returned to the caller as-is.
+-   Anything else results in an `invalid_datapoint_request` error (HTTP 400).
+
+For missing or malformed request parameters, either return a `WP_Error` or throw one of the
+exceptions in `includes/Core/REST_API/Exception/` (`Missing_Required_Param_Exception`,
+`Invalid_Param_Exception`); `execute_data_request()` converts thrown exceptions to `WP_Error`.
+
 ### Defining Datapoints
+
+`get_datapoint_definitions()` returns a map of datapoint ID to its definition. The definition
+fields understood by `Datapoint` are:
+
+-   **service**: Service identifier string, or a callable returning a `Google_Service` instance (preferred; a callable defers service construction until the datapoint runs). Pass `''` for datapoints that don't call a Google API.
+-   **scopes**: Additional OAuth scopes required beyond the module's base scopes.
+-   **shareable**: Legacy flag for array definitions; class-based datapoints extend `Shareable_Datapoint` instead.
+-   **request_scopes_message**: Message shown when the required scopes are missing.
+
+Any other keys are dependencies read by the concrete datapoint's constructor.
 
 ```php
 protected function get_datapoint_definitions() {
     return array(
-        'GET:accounts' => new Datapoint(
-            'analyticsadmin',
+        'GET:accounts'         => new Get_Accounts(
             array(
-                'https://www.googleapis.com/auth/analytics.readonly',
-            ),
-            false, // Not shareable
-            'Request Google OAuth access to list Analytics accounts'
+                'service' => function () {
+                    return $this->get_service( 'analyticsadmin' );
+                },
+            )
         ),
-        'POST:create-property' => new Datapoint(
-            'analyticsadmin',
+        'POST:create-property' => new Create_Property(
             array(
-                'https://www.googleapis.com/auth/analytics.edit',
+                'reference_site_url'     => $this->context->get_reference_site_url(),
+                'service'                => function () {
+                    return $this->get_service( 'analyticsadmin' );
+                },
+                'scopes'                 => array( self::EDIT_SCOPE ),
+                'request_scopes_message' => __( 'You’ll need to grant Site Kit permission to create a new Analytics property on your behalf.', 'google-site-kit' ),
             )
         ),
     );
 }
 ```
+
+`Module::get_datapoint_definition( 'GET:accounts' )` resolves a single definition (throwing
+`Invalid_Datapoint_Exception` for an unknown ID) and memoizes the whole map, because a single
+request resolves the same datapoint twice — once for the REST permission check and once to
+execute it.
+
+### Datapoint Classes
+
+**Reference implementation**: `includes/Modules/Analytics_4/Datapoints/`
+
+Analytics 4 defines one class per datapoint in a `Datapoints/` subdirectory of the module,
+which keeps request building, response parsing and per-datapoint dependencies together instead
+of in module-wide `switch` statements. Class names are the datapoint's action in PascalCase,
+prefixed with a verb matching the operation — `Get_Report`, `Get_Account_Summaries`,
+`Create_Property`, `Save_Audience_Settings`, `Sync_Custom_Dimensions`,
+`Set_Google_Tag_ID_Mismatch`, `Update_Enhanced_Measurement_Settings` — so the class name and
+the datapoint ID stay recognizably related without being mechanically derived from it
+(`POST:enhanced-measurement-settings` → `Update_Enhanced_Measurement_Settings`).
+
+Dependencies (settings, storage, transients, utility objects) are injected through the
+definition array and unpacked in the constructor:
+
+```php
+class Set_Google_Tag_ID_Mismatch extends Datapoint implements Executable_Datapoint {
+
+    private $transients;
+
+    public function __construct( array $definition ) {
+        parent::__construct( $definition );
+        $this->transients = $definition['transients'];
+    }
+
+    public function create_request( Data_Request $data_request ) {
+        if ( ! isset( $data_request['hasMismatchedTag'] ) ) {
+            throw new Missing_Required_Param_Exception( 'hasMismatchedTag' );
+        }
+
+        // No Google API call — return a closure that mutates local state.
+        return function () use ( $data_request ) {
+            $this->transients->set( 'googlesitekit_inline_tag_id_mismatch', $data_request['hasMismatchedTag'] );
+            return $data_request['hasMismatchedTag'];
+        };
+    }
+
+    public function parse_response( $response, Data_Request $data ) {
+        return $response;
+    }
+}
+```
+
+Datapoints that share behavior extend a common abstract base in the same directory — e.g.
+`Site_Goals_Settings_Datapoint` centralizes the settings dependency, the pass-through
+`parse_response()` and the permission callback for `Get_Site_Goals_Settings` and
+`Save_Site_Goals_Settings`.
+
+Each datapoint class has a matching test class under
+`tests/phpunit/integration/Modules/Analytics_4/Datapoints/`, tagged `@group Datapoints`, that
+instantiates the datapoint directly with fake services rather than going through the module.
+
+### Registering Datapoints in the Module
+
+The module composes the map and memoizes it, since building it instantiates every datapoint
+object. Feature-flagged datapoints are appended conditionally:
+
+**Location**: `includes/Modules/Analytics_4.php`
+
+```php
+protected function get_datapoint_definitions() {
+    if ( $this->datapoints ) {
+        return $this->datapoints;
+    }
+
+    $this->datapoints = array(
+        // ...datapoint instances keyed by `METHOD:name`...
+    );
+
+    if ( Feature_Flags::enabled( 'siteGoals' ) ) {
+        $this->datapoints['GET:form-metadata'] = new Get_Form_Metadata(
+            array( 'service' => '' )
+        );
+    }
+
+    return $this->datapoints;
+}
+```
+
+### Shareable Datapoints
+
+Shareable datapoints can be served to view-only users on a shared dashboard using the module
+owner's credentials. `Module::is_shareable()` reports `true` when the module has an owner, is
+connected, and defines at least one shareable datapoint.
+
+A datapoint that needs to know whether the current request is a shared one receives a closure,
+because `Module::is_shared_datapoint_request()` is protected:
+
+```php
+'GET:report' => new Get_Report(
+    array(
+        'service'           => function () {
+            return $this->get_service( 'analyticsdata' );
+        },
+        'settings'          => $this->get_settings(),
+        'context'           => $this->context,
+        'is_shared_request' => function ( Datapoint $datapoint ) {
+            return $this->is_shared_datapoint_request( $datapoint );
+        },
+    )
+),
+```
+
+Datapoints that expose settings can also narrow what they return for non-admins — e.g.
+`Get_Audience_Settings` returns the full settings for users with `MANAGE_OPTIONS` and only the
+view-only keys otherwise.
+
+### Permission-Aware Datapoints
+
+By default a datapoint inherits the permission check of its HTTP method: readable datapoints
+require view access, editable ones require `manage_options`. A datapoint implementing
+`Permission_Aware_Datapoint` overrides that default — used, for example, so any
+dashboard-viewing user can read form metadata or persist a per-user setting:
+
+```php
+class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint {
+
+    public function permission_callback() {
+        return current_user_can( Permissions::VIEW_DASHBOARD );
+    }
+}
+```
+
+`REST_Modules_Controller` resolves the datapoint before running the permission check and
+fails closed: if a datapoint's own `permission_callback()` throws, access is denied rather
+than falling back to the broader default.
+
+### Scope Validation
+
+Before a datapoint runs, `execute_data_request()` validates the datapoint's `scopes` and then
+the module's base scopes against the resolved OAuth client. A shortfall throws
+`Insufficient_Scopes_Exception` carrying the required scopes and the datapoint's
+`request_scopes_message` (defaulting to a generic “grant Site Kit permission” message), which
+the client uses to prompt for the additional grant.
+
+### Legacy Array Definitions
+
+Modules that predate the datapoint classes still map datapoint IDs to plain definition arrays
+and implement the request/response logic in the module's own `create_data_request()` and
+`parse_data_response()` `switch` statements (AdSense, Tag Manager, PageSpeed Insights,
+Reader Revenue Manager, Site Verification). `get_datapoint_definition()` wraps such an array in
+a `Datapoint` instance, and `execute_data_request()` falls back to the module methods when the
+datapoint doesn't implement `Executable_Datapoint`.
+
+Search Console shows the intermediate state: `GET:matched-sites`, `GET:sites` and `POST:site`
+remain array definitions, while `GET:searchanalytics` and `POST:searchanalytics-batch` use
+datapoint classes (`includes/Modules/Search_Console/Datapoints/`) that delegate back to the
+module through `prepare_args` / `create_request` callables passed in the definition.
+
+Sign in with Google is fully class-based, with its single datapoint in a `Datapoint/`
+subdirectory (`includes/Modules/Sign_In_With_Google/Datapoint/Compatibility_Checks.php`) —
+follow Analytics 4's plural `Datapoints/` for new modules.
+
+**New datapoints should be implemented as classes** following the Analytics 4 structure.
 
 ### Using Datapoints
 
@@ -786,6 +1001,9 @@ $accounts = $module->get_data( 'accounts' );
 $result = $module->set_data( 'create-property', array(
     'accountID' => 'accounts/12345',
 ) );
+
+// List datapoint names (method prefixes stripped, de-duplicated)
+$datapoints = $module->get_datapoints();
 ```
 
 ## Module State
