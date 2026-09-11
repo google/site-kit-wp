@@ -270,53 +270,6 @@
 
 }
 
-// Old design styles - override Typography when setupFlowRefresh is disabled.
-.googlesitekit-tour-tooltip:not(.googlesitekit-tour-tooltip--setupFlowRefresh) {
-
-	.googlesitekit-tooltip-title {
-		font-family: $f-secondary;
-		font-size: $fs-body-lg;
-		letter-spacing: $ls-m;
-		line-height: $lh-body-lg;
-		margin-bottom: 4px;
-	}
-
-	.googlesitekit-tooltip-body {
-		font-family: $f-primary;
-		font-size: $fs-body-md;
-		font-weight: $fw-light;
-		letter-spacing: $ls-s;
-		line-height: $lh-body-md;
-		max-width: 352px;
-		padding: 24px 56px 2px 24px;
-	}
-
-	.googlesitekit-tooltip-button {
-
-		&:not(:first-of-type) {
-			margin-left: 28px;
-		}
-
-		&:focus {
-			outline: 1px dotted $c-interactive-inverse-focus;
-			outline-offset: 6px;
-		}
-	}
-
-	// Modal step overrides need higher specificity to override old design styles.
-	&.googlesitekit-tour-tooltip__modal_step {
-
-		.googlesitekit-tooltip-body {
-			max-width: 100%;
-			padding: 16px 16px 0;
-		}
-
-		.googlesitekit-tooltip-title {
-			margin-bottom: 10px;
-		}
-	}
-}
-
 // Fix AdminMenuTooltip jumping on scroll by using fixed positioning.
 // !important is required to override Joyride's inline styles.
 #react-joyride-step-0:has(.googlesitekit-tour-tooltip__fixed-settings-tooltip) > div.__floater {
