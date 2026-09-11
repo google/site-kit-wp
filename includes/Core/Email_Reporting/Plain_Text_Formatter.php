@@ -85,7 +85,7 @@ class Plain_Text_Formatter {
 	 */
 	public static function format_simple_email( $data ) {
 		$site_domain     = $data['site']['domain'] ?? '';
-		$title           = wp_strip_all_tags( $data['title'] ?? '' );
+		$title           = self::sanitize_text( $data['title'] ?? '' );
 		$learn_more_url  = $data['learn_more_url'] ?? '';
 		$cta             = $data['primary_call_to_action'] ?? array();
 		$footer_copy     = $data['footer']['copy'] ?? '';
@@ -108,9 +108,8 @@ class Plain_Text_Formatter {
 
 		// Body paragraphs (convert links to text, then strip remaining HTML).
 		foreach ( (array) $body as $paragraph ) {
-			$paragraph = self::convert_links_to_text( $paragraph );
-			$lines[]   = wp_strip_all_tags( $paragraph );
-			$lines[]   = '';
+			$lines[] = self::sanitize_text( self::convert_links_to_text( $paragraph ) );
+			$lines[] = '';
 		}
 
 		// Learn more link (optional).
@@ -134,7 +133,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
-			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer_copy ) );
+			$lines[] = self::sanitize_text( self::convert_links_to_text( $footer_copy ) );
 		}
 
 		// Mirror the HTML `footer_type` branch: `inline` skips utility links.
@@ -244,6 +243,34 @@ class Plain_Text_Formatter {
 	}
 
 	/**
+	 * Prepares a string for plain text email output.
+	 *
+	 * Strips HTML tags and decodes HTML entities so plain text matches what the
+	 * HTML email displays in the browser.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $text Text that may contain HTML tags or entities.
+	 * @return string Sanitized plain text.
+	 */
+	protected static function sanitize_text( $text ) {
+		if ( '' === $text || null === $text ) {
+			return '';
+		}
+
+		static $charset = null;
+		if ( null === $charset ) {
+			$charset = get_bloginfo( 'charset' );
+		}
+
+		return html_entity_decode(
+			wp_strip_all_tags( (string) $text ),
+			ENT_QUOTES | ENT_HTML5,
+			$charset
+		);
+	}
+
+	/**
 	 * Converts HTML anchor tags to plain text format.
 	 *
 	 * Replaces `<a href="url">text</a>` with `text (url)` so that
@@ -295,7 +322,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer['copy'] ) ) {
-			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer['copy'] ) );
+			$lines[] = self::sanitize_text( self::convert_links_to_text( $footer['copy'] ) );
 		}
 
 		$lines = self::append_footer_links( $lines, $footer['unsubscribe_url'] ?? '' );
@@ -374,7 +401,7 @@ class Plain_Text_Formatter {
 		);
 
 		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
-			$output .= $first_part['data']['change_context'] . "\n\n";
+			$output .= self::sanitize_text( $first_part['data']['change_context'] ) . "\n\n";
 		}
 
 		foreach ( $section_parts as $part_key => $part_config ) {
@@ -384,8 +411,8 @@ class Plain_Text_Formatter {
 
 			$data    = $part_config['data'];
 			$output .= self::format_metric(
-				$data['label'] ?? '',
-				$data['value'] ?? '',
+				self::sanitize_text( $data['label'] ?? '' ),
+				self::sanitize_text( $data['value'] ?? '' ),
 				$data['change'] ?? null
 			);
 			$output .= "\n";
@@ -412,7 +439,7 @@ class Plain_Text_Formatter {
 			}
 
 			$data       = $part_config['data'];
-			$part_label = Sections_Map::get_part_label( $part_key );
+			$part_label = self::sanitize_text( Sections_Map::get_part_label( $part_key ) );
 
 			// Part heading.
 			$output .= $part_label . "\n";
@@ -422,15 +449,15 @@ class Plain_Text_Formatter {
 			$has_any_change = ! empty( array_filter( $data['changes'] ?? array(), static fn( $change ) => null !== $change ) );
 
 			if ( $has_any_change && ! empty( $data['change_context'] ) ) {
-				$output .= $data['change_context'] . "\n";
+				$output .= self::sanitize_text( $data['change_context'] ) . "\n";
 			}
 
 			// Dimension values (list items).
 			if ( ! empty( $data['dimension_values'] ) && is_array( $data['dimension_values'] ) ) {
 				foreach ( $data['dimension_values'] as $index => $item ) {
-					$label  = is_array( $item ) ? ( $item['label'] ?? '' ) : $item;
+					$label  = self::sanitize_text( is_array( $item ) ? ( $item['label'] ?? '' ) : $item );
 					$url    = is_array( $item ) ? ( $item['url'] ?? '' ) : '';
-					$value  = $data['values'][ $index ] ?? '';
+					$value  = self::sanitize_text( $data['values'][ $index ] ?? '' );
 					$change = $data['changes'][ $index ] ?? null;
 
 					$output .= self::format_page_row( $label, $value, $change, $url ) . "\n";
@@ -475,18 +502,24 @@ class Plain_Text_Formatter {
 		);
 
 		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
-			$output .= $first_part['data']['change_context'] . "\n\n";
+			$output .= self::sanitize_text( $first_part['data']['change_context'] ) . "\n\n";
 		}
 
 		foreach ( $section_parts as $part_config ) {
 			foreach ( $part_config['data']['groups'] as $group ) {
-				if ( '' !== $group['label'] ) {
-					$output .= $group['label'] . "\n";
-					$output .= str_repeat( '-', mb_strlen( $group['label'] ) ) . "\n";
+				$group_label = self::sanitize_text( $group['label'] );
+
+				if ( '' !== $group_label ) {
+					$output .= $group_label . "\n";
+					$output .= str_repeat( '-', mb_strlen( $group_label ) ) . "\n";
 				}
 
 				foreach ( $group['metrics'] as $metric ) {
-					$output .= self::format_metric( $metric['label'], $metric['value'], $metric['trend'] ) . "\n";
+					$output .= self::format_metric(
+						self::sanitize_text( $metric['label'] ),
+						self::sanitize_text( $metric['value'] ),
+						$metric['trend']
+					) . "\n";
 				}
 
 				$output .= "\n";
@@ -496,9 +529,13 @@ class Plain_Text_Formatter {
 		$prompt = $first_part['data']['prompt'] ?? array();
 
 		if ( ! empty( $prompt ) ) {
-			$prompt_link = sprintf( '%s (%s)', $prompt['link_text'], $section['dashboard_url'] );
+			$prompt_link = sprintf(
+				'%s (%s)',
+				self::sanitize_text( $prompt['link_text'] ),
+				$section['dashboard_url']
+			);
 
-			$output .= sprintf( $prompt['text'], $prompt_link ) . "\n\n";
+			$output .= self::sanitize_text( sprintf( $prompt['text'], $prompt_link ) ) . "\n\n";
 		}
 
 		return $output;
