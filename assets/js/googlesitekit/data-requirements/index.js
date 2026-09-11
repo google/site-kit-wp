@@ -115,6 +115,26 @@ export function requireModuleConnected( slug ) {
 }
 
 /**
+ * Returns a function that checks if the given module is not connected.
+ *
+ * The connection state is tri-state: it is `undefined` until the modules have
+ * been fetched, which does not satisfy this requirement.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is not connected or not.
+ */
+export function requireModuleNotConnected( slug ) {
+	return async function ( { resolveSelect } ) {
+		return (
+			false ===
+			( await resolveSelect( CORE_MODULES ).isModuleConnected( slug ) )
+		);
+	};
+}
+
+/**
  * Returns a function that checks if the current user is the owner of the given module.
  *
  * @since 1.166.0
