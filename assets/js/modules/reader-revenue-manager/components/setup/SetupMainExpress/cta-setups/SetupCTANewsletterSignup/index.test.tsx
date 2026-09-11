@@ -21,12 +21,16 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	providePublication,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -143,8 +147,13 @@ describe( 'SetupCTANewsletterSignup', () => {
 	} );
 
 	describe( 'setup complete step', () => {
-		const organizationID = 'ABCD1234';
-		const publicationID = 'ABCD_123-4';
+		// Publication with accepted terms of service.
+		const publication = publications[ 3 ];
+
+		/* eslint-disable sitekit/acronym-case */
+		const organizationID = publication.organizationId;
+		const publicationID = publication.publicationId;
+		/* eslint-enable sitekit/acronym-case */
 
 		const preExistingCTA = {
 			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/1`,
@@ -180,6 +189,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 					postTypes,
 				} );
 
+			providePublication( registry, publication );
+
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetCTAs( { ctas, params: {} } );
@@ -188,10 +199,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 		beforeEach( () => {
 			setupRegistry();
 
-			global.location.href = 'http://example.com/';
-		} );
-
-		beforeEach( () => {
 			originalHref = global.location.href;
 			global.location.href = setupCompleteURL;
 		} );
