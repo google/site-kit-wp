@@ -76,7 +76,7 @@ describe( 'TrafficBreakdown', () => {
 		return render( <TrafficBreakdown reports={ reports } />, { registry } );
 	}
 
-	it( 'renders the three headings in the catalog order', () => {
+	it( 'renders the section heading above the three column headings, in the catalog order', () => {
 		const { getAllByRole } = renderBreakdown( {
 			channels: CHANNELS,
 			locations: LOCATIONS,
@@ -86,10 +86,23 @@ describe( 'TrafficBreakdown', () => {
 		expect(
 			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
 		).toEqual( [
+			'Traffic breakdown',
 			'Visitors by channels',
 			'Visitors by locations',
 			'Visitors by devices',
 		] );
+	} );
+
+	it( 'names the section region after its own heading', () => {
+		const { getAllByRole } = renderBreakdown( {
+			channels: CHANNELS,
+			locations: LOCATIONS,
+			devices: DEVICES,
+		} );
+
+		expect(
+			getAllByRole( 'region', { name: 'Traffic breakdown' } )
+		).toHaveLength( 1 );
 	} );
 
 	it( 'names each column region after its own heading', () => {
