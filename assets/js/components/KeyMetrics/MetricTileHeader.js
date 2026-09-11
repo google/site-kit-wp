@@ -22,13 +22,57 @@
 import PropTypes from 'prop-types';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import { useSelect } from 'googlesitekit-data';
 import InfoTooltip from '@/js/components/InfoTooltip';
+import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
-export default function MetricTileHeader( { title, infoTooltip, loading } ) {
+export default function MetricTileHeader( {
+	title,
+	infoTooltip,
+	loading,
+	documentationLinkSlug,
+} ) {
+	const documentationURL = useSelect( ( select ) =>
+		documentationLinkSlug
+			? select( CORE_SITE ).getDocumentationLinkURL(
+					documentationLinkSlug
+			  )
+			: undefined
+	);
+
+	const tooltipContent = documentationURL
+		? createInterpolateElement(
+				__( '<TooltipText /> <LearnMoreLink />', 'google-site-kit' ),
+				{
+					// The tooltip content can be a plain string, so it's wrapped
+					// in a Fragment to satisfy createInterpolateElement's
+					// requirement that every substitution be a valid element.
+					// eslint-disable-next-line react/jsx-no-useless-fragment
+					TooltipText: <Fragment>{ infoTooltip }</Fragment>,
+					LearnMoreLink: (
+						<Link
+							href={ documentationURL }
+							external
+							hideExternalIndicator
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					),
+				}
+		  )
+		: infoTooltip;
+
 	return (
 		<div className="googlesitekit-km-widget-tile__title-container">
 			<Typography
@@ -41,10 +85,10 @@ export default function MetricTileHeader( { title, infoTooltip, loading } ) {
 			</Typography>
 			{ loading ? (
 				<VisuallyHidden>
-					<InfoTooltip title={ infoTooltip } />
+					<InfoTooltip title={ tooltipContent } />
 				</VisuallyHidden>
 			) : (
-				<InfoTooltip title={ infoTooltip } />
+				<InfoTooltip title={ tooltipContent } />
 			) }
 		</div>
 	);
@@ -54,4 +98,5 @@ MetricTileHeader.propTypes = {
 	title: PropTypes.string,
 	infoTooltip: PropTypes.oneOfType( [ PropTypes.string, PropTypes.element ] ),
 	loading: PropTypes.bool,
+	documentationLinkSlug: PropTypes.string,
 };

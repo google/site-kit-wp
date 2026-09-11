@@ -94,6 +94,19 @@ export const KM_SEARCH_CONSOLE_POPULAR_KEYWORDS =
 export const KM_ANALYTICS_VISITS_PER_VISITOR = 'kmAnalyticsVisitsPerVisitor';
 export const KM_ANALYTICS_MOST_ENGAGING_PAGES = 'kmAnalyticsMostEngagingPages';
 export const KM_ANALYTICS_TOP_CATEGORIES = 'kmAnalyticsTopCategories';
+export const KM_ANALYTICS_TOTAL_SALES = 'kmAnalyticsTotalSales';
+export const KM_ANALYTICS_SALES_RATE = 'kmAnalyticsSalesRate';
+export const KM_ANALYTICS_SALES_ENGAGEMENT_RATE =
+	'kmAnalyticsSalesEngagementRate';
+export const KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE =
+	'kmAnalyticsTopTrafficChannelsDrivingSalesRate';
+export const KM_ANALYTICS_SALES_BY_VISITOR_TYPE =
+	'kmAnalyticsSalesByVisitorType';
+export const KM_ANALYTICS_SALES_BY_COUNTRIES = 'kmAnalyticsSalesByCountries';
+export const KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES =
+	'kmAnalyticsTopAuthorsDrivingSales';
+export const KM_ANALYTICS_TOP_PAGES_DRIVING_SALES =
+	'kmAnalyticsTopPagesDrivingSales';
 
 export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
@@ -120,7 +133,14 @@ export const keyMetricsGA4Widgets = [
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
-	KM_ANALYTICS_TOP_CATEGORIES,
+	KM_ANALYTICS_TOTAL_SALES,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 ];
 
 export const allKeyMetricsTileWidgets = [
