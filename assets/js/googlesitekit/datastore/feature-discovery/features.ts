@@ -63,6 +63,7 @@ export const actions = {
 	 * @param {string}         settings.title                 Feature's card title.
 	 * @param {string}         settings.shortDescription      Feature's card description.
 	 * @param {number}         settings.effort                Effort level: `1`, `2` or `3`.
+	 * @param {string}         [settings.moduleSlug]          Optional. Module whose service identity is shown on the feature card.
 	 * @param {Array.<string>} settings.goalCategories        Goal categories the feature belongs to, in order. The first is its primary category.
 	 * @param {string}         settings.addedInVersion        Site Kit version the feature was released in.
 	 * @param {Object}         settings.setup                 Setup descriptor driving the feature's CTA and activation.

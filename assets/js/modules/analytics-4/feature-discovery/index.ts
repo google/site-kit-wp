@@ -47,6 +47,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'analytics', {
+		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __(
 			'Understand how visitors interact with your content',
 			'google-site-kit'
@@ -248,6 +249,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'enhanced-measurement', {
+		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
 			'Better understand what visitors do on your site with detailed tracking',

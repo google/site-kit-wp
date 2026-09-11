@@ -1,0 +1,130 @@
+/**
+ * Feature card styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-feature-card {
+		--googlesitekit-feature-card-gap-s: 6px;
+		--googlesitekit-feature-card-gap-m: 10px;
+		--googlesitekit-feature-card-dot-size: 12px;
+
+		border-bottom: 1px solid $c-neutral-n-100;
+		display: grid;
+		grid-template-columns: max-content auto;
+		padding-block: 30px;
+		padding-inline-end: 16px;
+		row-gap: 10px;
+
+		&:last-child {
+			border-bottom: none;
+		}
+	}
+
+	.googlesitekit-feature-card__status {
+		grid-row: span 2;
+		padding-block: var(--googlesitekit-feature-card-gap-s);
+		padding-inline: var(--googlesitekit-feature-card-dot-size);
+	}
+
+	.googlesitekit-feature-card__dot {
+		aspect-ratio: 1;
+		background: $c-red-r-400;
+		border-radius: 50%;
+		display: block;
+		inline-size: var(--googlesitekit-feature-card-dot-size);
+		opacity: 0;
+		transition: opacity 1000ms ease;
+	}
+
+	.googlesitekit-feature-card__dot--visible {
+		opacity: 1;
+		transition: none;
+	}
+
+	.googlesitekit-feature-card__content {
+		display: grid;
+		gap: var(--googlesitekit-feature-card-gap-s);
+	}
+
+	.googlesitekit-feature-card__header {
+		align-items: start;
+		display: flex;
+		flex-wrap: nowrap;
+		gap: var(--googlesitekit-feature-card-gap-m);
+		justify-content: space-between;
+	}
+
+	.googlesitekit-feature-card__title {
+		align-items: center;
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
+		justify-content: start;
+		margin: 0;
+	}
+
+	.googlesitekit-feature-card__dismiss {
+		color: $c-surfaces-on-background-variant;
+		padding: 2px;
+
+		svg {
+			display: block;
+		}
+	}
+
+	.googlesitekit-feature-card__details {
+		display: grid;
+		gap: 2px;
+	}
+
+	.googlesitekit-feature-card__description {
+		margin: 0;
+	}
+
+	.googlesitekit-feature-card__footer {
+		display: grid;
+		gap: var(--googlesitekit-feature-card-gap-m);
+
+		@media ( min-width: $bp-tablet ) {
+			align-items: center;
+			display: flex;
+			justify-content: space-between;
+		}
+	}
+
+	.googlesitekit-feature-card__service {
+		align-items: center;
+		display: flex;
+		gap: var(--googlesitekit-feature-card-gap-m);
+
+		svg {
+			background: $c-neutral-n-10;
+			border-radius: 10px;
+			display: block;
+			padding: 6px;
+		}
+	}
+
+	.googlesitekit-feature-card__actions {
+		align-items: center;
+		display: flex;
+		flex-grow: 1;
+		gap: var(--googlesitekit-feature-card-gap-m);
+		justify-content: end;
+	}
+}

@@ -26,6 +26,7 @@ import type { ComponentType, LazyExoticComponent } from 'react';
  */
 import type { Select } from 'googlesitekit-data';
 import type {
+	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
@@ -33,6 +34,8 @@ import type {
 
 export type FeatureCategorySlug =
 	typeof FEATURE_CATEGORIES[ keyof typeof FEATURE_CATEGORIES ];
+
+export type FeatureBadge = typeof FEATURE_BADGES[ keyof typeof FEATURE_BADGES ];
 
 export type FeatureEffort =
 	typeof FEATURE_EFFORTS[ keyof typeof FEATURE_EFFORTS ];
@@ -101,6 +104,8 @@ export interface FeatureSettings {
 	title: string;
 	shortDescription: string;
 	effort: FeatureEffort;
+	// The module whose service identity is presented on the feature card.
+	moduleSlug?: string;
 	// The modules the feature depends on but does not itself set up.
 	prerequisiteModules?: string[];
 	// In order, the first being the feature's primary category.
@@ -111,14 +116,14 @@ export interface FeatureSettings {
 	checkRequirements?: ( select: Select ) => boolean | undefined;
 	detail?: FeatureDetail;
 	// Static badges only. The "New" badge is derived per user.
-	badges?: string[];
+	badges?: FeatureBadge[];
 	successNotice?: FeatureSuccessNotice;
 }
 
 export interface Feature extends FeatureSettings {
 	slug: string;
 	prerequisiteModules: string[];
-	badges: string[];
+	badges: FeatureBadge[];
 }
 
 export interface FeatureCategory {

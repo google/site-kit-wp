@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
+		moduleSlug: MODULE_SLUG_ADS,
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
 			'Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they’re actively interested in your services or products.',
