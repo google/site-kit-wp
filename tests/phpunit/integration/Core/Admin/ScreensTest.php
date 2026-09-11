@@ -16,10 +16,19 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Admin\Screens;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Intents\Intents;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Ads\Ads_Conversion_Tracking_Intent;
+use Google\Site_Kit\Tests\Core\Intents\FakeIntent;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
+use WPDieException;
 
 /**
  * ScreensTest.
@@ -482,5 +491,235 @@ class ScreensTest extends TestCase {
 		$this->assertNotNull( $redirect, 'Should redirect to the Key Metrics setup screen when setup is incomplete and Analytics is connected.' );
 		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'Redirect should include key-metrics-setup page.' );
 		$this->assertStringContainsString( 'showProgress=true', $redirect->get_location(), 'Redirect should include showProgress param.' );
+	}
+
+	/**
+	 * Rebuilds the Screens instance so query parameters are readable and the given intents are used.
+	 *
+	 * @param Intents $intents Intents instance to resolve the intent argument against.
+	 */
+	private function set_up_screens_with_intents( Intents $intents ) {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+
+		$this->screens = new Screens( $context, new Assets( $context ), new Modules( $context ), new Authentication( $context ), $intents );
+	}
+
+	/**
+	 * Makes the given editor a view-only dashboard user and the current user.
+	 *
+	 * @param int $user_id Editor to switch to.
+	 */
+	private function switch_to_view_only_user( $user_id ) {
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		( new Module_Sharing_Settings( new Options( $context ) ) )->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		// The permissions registered at plugin load stay bound to the admin, so this user needs their own.
+		remove_all_filters( 'map_meta_cap' );
+		remove_all_filters( 'user_has_cap' );
+		wp_set_current_user( $user_id );
+
+		$user_options    = new User_Options( $context, $user_id );
+		$authentication  = new Authentication( $context, null, $user_options );
+		$modules         = new Modules( $context, null, $user_options, $authentication );
+		$dismissed_items = new Dismissed_Items( $user_options );
+
+		( new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items ) )->register();
+
+		// Until the splash is dismissed a shared role lands on the splash screen instead of the dashboard.
+		$dismissed_items->add( 'shared_dashboard_splash' );
+	}
+
+	/**
+	 * Renders the dashboard screen and returns its markup.
+	 *
+	 * @return string Rendered screen markup, or an empty string if the screen was not registered.
+	 */
+	private function render_dashboard_screen() {
+		// The plugin registered its own Screens at plugin load, and that one would render a second dashboard onto the same hook.
+		remove_all_actions( 'admin_menu' );
+
+		$this->screens->register();
+		do_action( 'admin_menu' );
+
+		foreach ( array_keys( $this->force_get_property( $this->screens, 'screens' ) ) as $hook_suffix ) {
+			if ( false === strpos( $hook_suffix, 'googlesitekit-dashboard' ) ) {
+				continue;
+			}
+
+			ob_start();
+
+			try {
+				do_action( $hook_suffix );
+			} finally {
+				// wp_die() throws out of do_action(), and the buffer has to close either way.
+				$output = ob_get_clean();
+			}
+
+			return $output;
+		}
+
+		return '';
+	}
+
+	/**
+	 * Builds an Intents instance holding the Ads conversion tracking intent.
+	 *
+	 * @return Intents Intents instance.
+	 */
+	private function get_intents_with_ads_intent() {
+		$intents = new Intents();
+		$intents->register_intent( new Ads_Conversion_Tracking_Intent() );
+
+		return $intents;
+	}
+
+	public function test_dashboard_render__intent_and_code_fill_the_intent_attributes() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['code']   = 'abc123';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-slug="ads-conversion-tracking"', $output, 'The intent slug should be rendered.' );
+		$this->assertStringContainsString( 'data-intent-code="abc123"', $output, 'The intent code should be rendered.' );
+	}
+
+	public function data_requests_without_a_usable_intent() {
+		return array(
+			'no intent argument'    => array( array( 'code' => 'abc123' ) ),
+			'no code argument'      => array( array( 'intent' => Ads_Conversion_Tracking_Intent::INTENT_ID ) ),
+			'intent nothing claims' => array(
+				array(
+					'intent' => 'not-a-registered-intent',
+					'code'   => 'abc123',
+				),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_requests_without_a_usable_intent
+	 */
+	public function test_dashboard_render__intent_attributes_stay_empty( $query_args ) {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		foreach ( $query_args as $key => $value ) {
+			$_GET[ $key ] = $value;
+		}
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'id="js-googlesitekit-main-dashboard"', $output, 'The ordinary dashboard should still render.' );
+		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'The intent slug should be empty.' );
+		$this->assertStringContainsString( 'data-intent-code=""', $output, 'The intent code should be empty.' );
+	}
+
+	public function test_dashboard_render__intent_attributes_stay_empty_for_an_unavailable_intent() {
+		$intents = new Intents();
+		$intents->register_intent( new FakeIntent( 'unavailable-intent', false ) );
+		$this->set_up_screens_with_intents( $intents );
+
+		$_GET['intent'] = 'unavailable-intent';
+		$_GET['code']   = 'abc123';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'An intent that reports itself unavailable should not be rendered.' );
+		$this->assertStringContainsString( 'data-intent-code=""', $output, 'An intent that reports itself unavailable should not bring its code along.' );
+	}
+
+	public function test_dashboard_render__intent_attributes_stay_empty_while_the_ads_feature_flag_is_off() {
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['code']   = 'abc123';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'The Ads intent should not be rendered while adsConversionTrackingIntent is off.' );
+		$this->assertStringContainsString( 'data-intent-code=""', $output, 'The Ads intent code should not be rendered while adsConversionTrackingIntent is off.' );
+	}
+
+	public function test_dashboard_render__intent_attributes_stay_empty_for_a_view_only_user() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'A view-only user should reach the dashboard.' );
+		$this->assertFalse( current_user_can( Permissions::SETUP ), 'A view-only user should not be able to set up Site Kit.' );
+
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['code']   = 'abc123';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-view-only="1"', $output, 'The dashboard should render in view-only mode.' );
+		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'A view-only user should get no intent slug.' );
+		$this->assertStringContainsString( 'data-intent-code=""', $output, 'A view-only user should get no intent code.' );
+	}
+
+	public function test_dashboard_render__script_in_the_code_argument_is_escaped() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['code']   = '"><script>alert(1)</script>';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-code="&quot;&gt;&lt;script&gt;alert(1)&lt;/script&gt;"', $output, 'The payload should read as text inside the attribute.' );
+		$this->assertStringNotContainsString( '<script>alert(1)</script>', $output, 'The payload should never reach the page as markup.' );
+	}
+
+	public function test_dashboard_render__script_in_the_intent_argument_renders_nothing() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent'] = '"><script>alert(1)</script>';
+		$_GET['code']   = 'abc123';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-slug=""', $output, 'A payload nothing claims should leave the slug empty.' );
+		$this->assertStringNotContainsString( '<script>alert(1)</script>', $output, 'The payload should never reach the page as markup.' );
+	}
+
+	public function test_dashboard_render__module_slug_with_reauth_still_fills_the_setup_attribute() {
+		update_option( Modules::OPTION_ACTIVE_MODULES, array( 'analytics-4' ) );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['slug']   = 'analytics-4';
+		$_GET['reAuth'] = 'true';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-setup-module-slug="analytics-4"', $output, 'An active module slug should still reach the page.' );
+	}
+
+	public function test_dashboard_render__inactive_module_slug_still_ends_the_request() {
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['slug']   = 'analytics-4';
+		$_GET['reAuth'] = 'true';
+
+		try {
+			$this->render_dashboard_screen();
+			$this->fail( 'An inactive module slug should end the request.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'has not been activated', $e->getMessage(), 'The 403 message should say the module is not activated.' );
+		}
 	}
 }
