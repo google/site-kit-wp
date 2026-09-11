@@ -85,7 +85,7 @@ export default function AdminBarWidgets() {
 		: { lg: 6, md: 4 };
 
 	return (
-		<Row>
+		<Row className="googlesitekit-adminbar__widgets-row">
 			{ canViewSharedSearchConsole && (
 				<Fragment>
 					<Cell

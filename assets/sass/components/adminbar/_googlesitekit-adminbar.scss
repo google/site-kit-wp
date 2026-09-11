@@ -95,7 +95,8 @@
 				padding-top: 12px;
 			}
 
-			.mdc-layout-grid__inner {
+			// Scoped to this row so it doesn't zero the gap of other adminbar rows.
+			.googlesitekit-adminbar__widgets-row.mdc-layout-grid__inner {
 				row-gap: 0;
 			}
 
