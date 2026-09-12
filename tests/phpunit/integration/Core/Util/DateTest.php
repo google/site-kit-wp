@@ -95,23 +95,24 @@ class DateTest extends TestCase {
 	 * @param int    $expected_days Expected number of days.
 	 */
 	public function test_parse_date_range( $range, $multiplier, $offset, $previous, $expected_days ) {
-		list( $start_date, $end_date ) = Date::parse_date_range( $range, $multiplier, $offset, $previous );
-
 		$end_offset   = $previous ? $offset + $expected_days : $offset;
 		$start_offset = $end_offset + $expected_days - 1;
 
-		$expected_end   = gmdate( 'Y-m-d', strtotime( "{$end_offset} days ago" ) );
-		$expected_start = gmdate( 'Y-m-d', strtotime( "{$start_offset} days ago" ) );
+		$expected_end_before   = gmdate( 'Y-m-d', strtotime( "{$end_offset} days ago" ) );
+		$expected_start_before = gmdate( 'Y-m-d', strtotime( "{$start_offset} days ago" ) );
 
-		$this->assertEquals(
-			$expected_start,
-			$start_date,
+		list( $start_date, $end_date ) = Date::parse_date_range( $range, $multiplier, $offset, $previous );
+
+		$expected_end_after   = gmdate( 'Y-m-d', strtotime( "{$end_offset} days ago" ) );
+		$expected_start_after = gmdate( 'Y-m-d', strtotime( "{$start_offset} days ago" ) );
+
+		$this->assertTrue(
+			$start_date === $expected_start_before || $start_date === $expected_start_after,
 			'Start date should match expected start date based on offset and duration.'
 		);
 
-		$this->assertEquals(
-			$expected_end,
-			$end_date,
+		$this->assertTrue(
+			$end_date === $expected_end_before || $end_date === $expected_end_after,
 			'End date should match expected end date based on offset.'
 		);
 	}
