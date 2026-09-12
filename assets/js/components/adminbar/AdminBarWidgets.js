@@ -85,16 +85,18 @@ export default function AdminBarWidgets() {
 		: { lg: 6, md: 4 };
 
 	return (
-		<Row>
+		<Row className="googlesitekit-adminbar__widgets-row">
 			{ canViewSharedSearchConsole && (
 				<Fragment>
 					<Cell
+						smSize={ 2 }
 						lgSize={ searchConsoleSize.lg }
 						mdSize={ searchConsoleSize.md }
 					>
 						<AdminBarImpressionsWidget />
 					</Cell>
 					<Cell
+						smSize={ 2 }
 						lgSize={ searchConsoleSize.lg }
 						mdSize={ searchConsoleSize.md }
 					>
@@ -108,12 +110,14 @@ export default function AdminBarWidgets() {
 				canViewSharedAnalytics && (
 					<Fragment>
 						<Cell
+							smSize={ 2 }
 							lgSize={ analyticsSize.lg }
 							mdSize={ analyticsSize.md }
 						>
 							<AdminBarUniqueVisitorsGA4Widget />
 						</Cell>
 						<Cell
+							smSize={ 2 }
 							lgSize={ analyticsSize.lg }
 							mdSize={ analyticsSize.md }
 						>

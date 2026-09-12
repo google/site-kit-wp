@@ -61,6 +61,9 @@ Ready.args = {
 		setupAnalytics4MockReports( registry );
 	},
 };
+Ready.scenario = {
+	readySelector: '.googlesitekit-data-block',
+};
 
 export const AnalyticsInactive = Template.bind( {} );
 AnalyticsInactive.storyName = 'Inactive: Analytics Setup CTA';
