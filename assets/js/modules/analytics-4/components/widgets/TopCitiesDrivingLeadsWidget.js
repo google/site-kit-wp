@@ -49,7 +49,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the report request the same data.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   dates      The date range for the report.
  * @param {string[]} eventNames The lead event names to filter by.
@@ -64,7 +64,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * Both this widget and the metric's PDF tile import this, so the dashboard tile
  * and the report request filter by the same events.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string[]} [detectedEvents] The property's detected conversion events.
  * @return {string[]} The lead event names to filter by.

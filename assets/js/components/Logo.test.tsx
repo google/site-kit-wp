@@ -40,29 +40,44 @@ jest.mock(
 );
 
 describe( 'Logo', () => {
-	it( 'renders both the Google "G" and the Site Kit logo', () => {
-		const { container } = render( <Logo /> );
+	const originalWindowWidth = global.innerWidth;
 
-		expect(
-			container.querySelector( '.googlesitekit-logo__logo-g' )
-		).toBeInTheDocument();
-		expect(
-			container.querySelector( '.googlesitekit-logo__logo-sitekit' )
-		).toBeInTheDocument();
+	afterEach( () => {
+		global.innerWidth = originalWindowWidth;
 	} );
 
-	it( 'renders the Site Kit logo at 100 by 29 and the Google "G" at 25 by 25', () => {
+	it( 'renders the Site Kit logo at 100 by 29 on a wide screen', () => {
+		global.innerWidth = 1280;
+
 		const { container } = render( <Logo /> );
 
 		const siteKitLogo = container.querySelector(
 			'.googlesitekit-logo__logo-sitekit'
 		);
+		expect( siteKitLogo ).toBeInTheDocument();
 		expect( siteKitLogo ).toHaveAttribute( 'width', '100' );
 		expect( siteKitLogo ).toHaveAttribute( 'height', '29' );
+	} );
+
+	it( 'renders no separate Google "G" on a wide screen', () => {
+		global.innerWidth = 1280;
+
+		const { container } = render( <Logo /> );
+
+		expect(
+			container.querySelector( '.googlesitekit-logo__logo-g' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the Google "G" at 25 by 25 under 450 pixels', () => {
+		global.innerWidth = 449;
+
+		const { container } = render( <Logo /> );
 
 		const googleG = container.querySelector(
 			'.googlesitekit-logo__logo-g'
 		);
+		expect( googleG ).toBeInTheDocument();
 		expect( googleG ).toHaveAttribute( 'width', '25' );
 		expect( googleG ).toHaveAttribute( 'height', '25' );
 	} );

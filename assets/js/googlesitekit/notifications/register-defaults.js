@@ -36,6 +36,7 @@ import ConnectMoreServicesNotification from '@/js/components/notifications/Conne
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
+import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
 import GatheringDataNotification from '@/js/components/notifications/GatheringDataNotification';
 import GoogleTagGatewaySetupBanner from '@/js/components/notifications/GoogleTagGatewaySetupBanner';
@@ -52,9 +53,9 @@ import SplashSetupErrorMessageNotification from '@/js/components/setup/SetupUsin
 import WelcomeModal, {
 	WELCOME_MODAL_NOTIFICATION,
 } from '@/js/components/WelcomeModal';
+import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { isFeatureEnabled } from '@/js/features';
 import {
-	SITE_KIT_VIEW_ONLY_CONTEXTS,
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -63,10 +64,36 @@ import {
 	VIEW_CONTEXT_SPLASH,
 } from '@/js/googlesitekit/constants';
 import {
+	requireAccessToFeatureTour,
+	requireAdsConnected,
+	requireAnyGoogleTagGatewayModuleConnected,
+	requireAuthError,
 	requireCanActivateModule,
-	requireIsAuthenticatedUser,
+	requireCanChangePluginAutoUpdates,
+	requireCanViewSharedModule,
+	requireCapability,
+	requireConsentModeDisabled,
+	requireDataGatheringCompleteModalActive,
+	requireEmailReportingSubscribed,
+	requireGTGHealthy,
+	requireGTGScriptAccessEnabled,
+	requireGoogleTagGatewayEnabled,
+	requireHasRecoverableModules,
+	requireIsAuthenticated,
 	requireModuleActive,
+	requireModuleConnected,
 	requireModuleGatheringData,
+	requireModuleRecoverable,
+	requireModuleViewable,
+	requireModuleZeroData,
+	requireQueryArg,
+	requireScope,
+	requireSetupError,
+	requireSiteEmailReportingNotDisabled,
+	requireSiteKitAutoUpdatesEnabled,
+	requireUnsatisfiedScopes,
+	requireUnsatisfiedScopesCount,
+	requireViewOnlyContext,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -78,15 +105,22 @@ import {
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { requireAdSenseLinked } from '@/js/modules/analytics-4/data-requirements';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { READ_SCOPE as TAGMANAGER_READ_SCOPE } from '@/js/modules/tagmanager/datastore/constants';
 import { MINUTE_IN_SECONDS } from '@/js/util';
-import { asyncRequire, asyncRequireAll } from '@/js/util/async';
+import {
+	asyncRequire,
+	asyncRequireAll,
+	asyncRequireAny,
+} from '@/js/util/async';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
+	ACTIVATE_ANALYTICS_NOTIFICATION,
+	CONNECT_MORE_SERVICES_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
@@ -95,9 +129,67 @@ import {
 	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
 } from './constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
+import { requireSetupCTAsNotHidden } from './util/setup-cta-visibility';
+
+/**
+ * Requires the current page load to be the one directly following the initial
+ * Site Kit setup.
+ *
+ * The module setup success notification is identified by the same query
+ * argument plus a module `slug`, so the absence of a `slug` is what makes this
+ * check specific to the initial Site Kit setup.
+ *
+ * @since 1.187.0
+ *
+ * @return {function(): Promise<boolean>} Whether this page load follows the initial setup or not.
+ */
+function requireInitialSetupSuccess() {
+	return asyncRequireAll(
+		requireQueryArg( 'notification', 'authentication_success' ),
+		asyncRequire( false, requireQueryArg( 'slug' ) )
+	);
+}
+
+/**
+ * Requires the given module's data to be viewable in the current view context.
+ *
+ * Outside view-only contexts there is nothing to check, since the module's own
+ * dashboard already gates access. In view-only contexts the module must be
+ * shared with the current user and must not be in the recovering state.
+ *
+ * @since 1.187.0
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(): Promise<boolean>} Whether the module's data is viewable or not.
+ */
+function requireModuleDataViewable( slug ) {
+	return asyncRequireAny(
+		asyncRequire( false, requireViewOnlyContext() ),
+		asyncRequireAll(
+			requireCanViewSharedModule( slug ),
+			asyncRequire( false, requireModuleRecoverable( slug ) )
+		)
+	);
+}
+
+/**
+ * Requires the given module to be connected and its data to be viewable in the
+ * current view context.
+ *
+ * @since 1.187.0
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(): Promise<boolean>} Whether the module's data is available or not.
+ */
+function requireModuleDataAvailable( slug ) {
+	return asyncRequireAll(
+		requireModuleConnected( slug ),
+		requireModuleDataViewable( slug )
+	);
+}
 
 export const DEFAULT_NOTIFICATIONS = {
-	'connect-more-services-notification': {
+	[ CONNECT_MORE_SERVICES_NOTIFICATION ]: {
 		Component: ConnectMoreServicesNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -112,11 +204,11 @@ export const DEFAULT_NOTIFICATIONS = {
 				false,
 				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
 			),
-			requireIsAuthenticatedUser()
+			requireIsAuthenticated()
 		),
 		featureFlag: 'setupFlowRefresh',
 	},
-	'activate-analytics-notification': {
+	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
@@ -132,7 +224,7 @@ export const DEFAULT_NOTIFICATIONS = {
 				false,
 				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
 			),
-			requireIsAuthenticatedUser(),
+			requireIsAuthenticated(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
 		featureFlag: 'setupFlowRefresh',
@@ -148,40 +240,24 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isAuthenticated(), hasScope() and getUnsatisfiedScopes() selectors
-				// rely on the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const isAuthenticated = select( CORE_USER ).isAuthenticated();
-
-			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_ANALYTICS_4
-			);
-
-			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
-				TAGMANAGER_READ_SCOPE
-			);
-
-			const unsatisfiedScopes =
-				select( CORE_USER ).getUnsatisfiedScopes();
-
-			const showUnsatisfiedScopesAlertGTE =
-				ga4ModuleConnected &&
-				! hasTagManagerReadScope &&
-				unsatisfiedScopes?.length === 1;
-
-			return (
-				unsatisfiedScopes?.length &&
-				isAuthenticated &&
-				! showUnsatisfiedScopesAlertGTE
-			);
-		},
+		checkRequirements: asyncRequireAll(
+			requireUnsatisfiedScopes(),
+			requireIsAuthenticated(),
+			// The Google Tag Gateway variant of this alert takes over when the
+			// Tag Manager read scope is the only scope left to grant for a
+			// connected Analytics module, so this alert must stand down.
+			asyncRequire(
+				false,
+				asyncRequireAll(
+					requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+					asyncRequire(
+						false,
+						requireScope( TAGMANAGER_READ_SCOPE )
+					),
+					requireUnsatisfiedScopesCount( 1 )
+				)
+			)
+		),
 		isDismissible: false,
 	},
 	'authentication-error-gte': {
@@ -195,31 +271,11 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isAuthenticated() and hasScope() selectors
-				// rely on the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const isAuthenticated = select( CORE_USER ).isAuthenticated();
-
-			const ga4ModuleConnected = select( CORE_MODULES ).isModuleConnected(
-				MODULE_SLUG_ANALYTICS_4
-			);
-
-			const hasTagManagerReadScope = select( CORE_USER ).hasScope(
-				TAGMANAGER_READ_SCOPE
-			);
-
-			const showUnsatisfiedScopesAlertGTE =
-				ga4ModuleConnected && ! hasTagManagerReadScope;
-
-			return isAuthenticated && showUnsatisfiedScopesAlertGTE;
-		},
+		checkRequirements: asyncRequireAll(
+			requireIsAuthenticated(),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			asyncRequire( false, requireScope( TAGMANAGER_READ_SCOPE ) )
+		),
 		isDismissible: false,
 	},
 	setup_plugin_error: {
@@ -236,28 +292,17 @@ export const DEFAULT_NOTIFICATIONS = {
 				? []
 				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-
-			const temporaryPersistedPermissionsError = select(
-				CORE_FORMS
-			).getValue(
-				FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-				'permissionsError'
-			);
-
-			if (
-				temporaryPersistedPermissionsError?.data
-					?.skipDefaultErrorNotifications
-			) {
-				return false;
-			}
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
-
-			return !! setupErrorMessage;
-		},
+		checkRequirements: asyncRequireAll(
+			// A temporarily persisted permissions error can opt out of the
+			// default error notifications. This is checked first because it
+			// needs no data resolution.
+			( { select } ) =>
+				! select( CORE_FORMS ).getValue(
+					FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
+					'permissionsError'
+				)?.data?.skipDefaultErrorNotifications,
+			requireSetupError()
+		),
 		isDismissible: false,
 	},
 	'splash-setup-plugin-error': {
@@ -265,14 +310,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		priority: PRIORITY.ERROR_HIGH,
 		areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await resolveSelect( CORE_SITE ).getSiteInfo();
-
-			const setupErrorMessage =
-				select( CORE_SITE ).getSetupErrorMessage();
-
-			return !! setupErrorMessage;
-		},
+		checkRequirements: requireSetupError(),
 		isDismissible: false,
 		featureFlag: 'setupFlowRefreshPhase4',
 	},
@@ -285,11 +323,7 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_SETTINGS,
 		],
-		checkRequirements: ( { select } ) => {
-			const error = select( CORE_USER ).getAuthError();
-
-			return !! error;
-		},
+		checkRequirements: requireAuthError(),
 		isDismissible: false,
 	},
 	'top-earning-pages-success-notification': {
@@ -299,111 +333,82 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 		],
-		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			const adSenseModuleConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ADSENSE );
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireAdSenseLinked(),
+			async ( { select, resolveSelect, dispatch } ) => {
+				const { startDate, endDate } =
+					select( CORE_USER ).getDateRangeDates();
 
-			const analyticsModuleConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+				const reportOptions = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath' ],
+					metrics: [ { name: 'totalAdRevenue' } ],
+					orderby: [
+						{
+							metric: { metricName: 'totalAdRevenue' },
+							desc: true,
+						},
+					],
+					limit: 3,
+					reportID:
+						'notifications_top-earning-pages-success-notification_reportOptions',
+				};
 
-			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
-				return false;
+				// Ensure resolution of the report has completed before showing this
+				// notification, since it should only appear when the user has no data in
+				// the report.
+				const report = await resolveSelect(
+					MODULES_ANALYTICS_4
+				).getReport( reportOptions );
+
+				// This notification should only appear when the user has connected their
+				// AdSense and Google Analytics accounts, but has not yet received any data
+				// from linking the accounts. If they have any data from the "linked" report,
+				// we show them a different notification and should not show this one. Check
+				// to see if the user already has data and dismiss this notification without
+				// showing it.
+				if ( isZeroReport( report ) === false ) {
+					await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						'top-earning-pages-success-notification'
+					);
+					return false;
+				}
+
+				return true;
 			}
-
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			if ( ! isAdSenseLinked ) {
-				return false;
-			}
-
-			const { startDate, endDate } =
-				select( CORE_USER ).getDateRangeDates();
-
-			const reportOptions = {
-				startDate,
-				endDate,
-				dimensions: [ 'pagePath' ],
-				metrics: [ { name: 'totalAdRevenue' } ],
-				orderby: [
-					{
-						metric: { metricName: 'totalAdRevenue' },
-						desc: true,
-					},
-				],
-				limit: 3,
-				reportID:
-					'notifications_top-earning-pages-success-notification_reportOptions',
-			};
-
-			// Ensure resolution of the report has completed before showing this
-			// notification, since it should only appear when the user has no data in
-			// the report.
-			const report = await resolveSelect( MODULES_ANALYTICS_4 ).getReport(
-				reportOptions
-			);
-
-			// This notification should only appear when the user has connected their
-			// AdSense and Google Analytics accounts, but has not yet received any data
-			// from linking the accounts. If they have any data from the "linked" report,
-			// we show them a different notification and should not show this one. Check
-			// to see if the user already has data and dismiss this notification without
-			// showing it.
-			if ( isZeroReport( report ) === false ) {
-				await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
-					'top-earning-pages-success-notification'
-				);
-				return false;
-			}
-
-			return true;
-		},
+		),
 		isDismissible: true,
 	},
 	[ SITE_KIT_SETUP_SUCCESS_NOTIFICATION ]: {
 		Component: SiteKitSetupSuccessNotification,
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			if ( 'authentication_success' === notification && ! slug ) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: requireInitialSetupSuccess(),
 	},
 	'setup-success-notification-module': {
 		Component: ModuleSetupSuccessNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
+		checkRequirements: asyncRequireAll(
+			requireQueryArg( 'notification', 'authentication_success' ),
+			async ( { select, resolveSelect } ) => {
 				// The getModule() selector relies on the resolution
 				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+				await resolveSelect( CORE_MODULES ).getModules();
 
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-			const module = select( CORE_MODULES ).getModule( slug );
+				const module = select( CORE_MODULES ).getModule(
+					getQueryArg( location.href, 'slug' )
+				);
 
-			if (
-				'authentication_success' === notification &&
-				false === module.overrideSetupSuccessNotification &&
-				module.active
-			) {
-				return true;
+				return (
+					false === module?.overrideSetupSuccessNotification &&
+					true === module?.active
+				);
 			}
-
-			return false;
-		},
+		),
 	},
 	[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
@@ -414,29 +419,23 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			await Promise.all( [
-				// The hasCapability() selector relies on the resolution
-				// of the getCapabilities() resolver.
-				resolveSelect( CORE_USER ).getCapabilities(),
-				// The hasChangePluginAutoUpdatesCapacity() and
-				// getSiteKitAutoUpdatesEnabled() selectors rely on the
-				// resolution of the getSiteInfo() resolver.
-				resolveSelect( CORE_SITE ).getSiteInfo(),
-			] );
+		checkRequirements: asyncRequireAll(
+			// If the user just set up Site Kit (i.e. just returned from the
+			// initial OAuth sign-in flow) and is seeing the dashboard for the
+			// first time, we want to hide (dismiss) this notification for 10
+			// minutes so they aren't immediately bothered by this CTA.
+			async ( registry, viewContext ) => {
+				if (
+					! ( await requireInitialSetupSuccess()(
+						registry,
+						viewContext
+					) )
+				) {
+					return true;
+				}
 
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
+				const { select, dispatch } = registry;
 
-			const { dismissNotification } = dispatch( CORE_NOTIFICATIONS );
-
-			/**
-			 * If the user just set up Site Kit (i.e. just returned from the
-			 * initial OAuth sign-in flow) and is seeing the dashboard
-			 * for the first time, we want to hide (dismiss) this notification for 10
-			 * minutes so they aren't immediately bothered by this CTA.
-			 */
-			if ( notification === 'authentication_success' && ! slug ) {
 				const alreadyDismissed =
 					select( CORE_USER ).isDismissingItem(
 						ENABLE_AUTO_UPDATES_BANNER_SLUG
@@ -446,37 +445,23 @@ export const DEFAULT_NOTIFICATIONS = {
 					);
 
 				if ( ! alreadyDismissed ) {
-					await dismissNotification(
+					await dispatch( CORE_NOTIFICATIONS ).dismissNotification(
 						ENABLE_AUTO_UPDATES_BANNER_SLUG,
 						{
 							expiresInSeconds: MINUTE_IN_SECONDS * 10,
 						}
 					);
 				}
+
 				return false;
-			}
-
-			const hasUpdatePluginCapability = select( CORE_USER ).hasCapability(
-				PERMISSION_UPDATE_PLUGINS
-			);
-			const hasChangePluginAutoUpdatesCapacity =
-				select( CORE_SITE ).hasChangePluginAutoUpdatesCapacity();
-			const siteKitAutoUpdatesEnabled =
-				select( CORE_SITE ).getSiteKitAutoUpdatesEnabled();
-
+			},
 			// Don't render anything if the user has no permission to update plugin,
 			// auto-updates can not be enabled for Site Kit, or auto updates are already
 			// enabled for Site Kit.
-			if (
-				hasUpdatePluginCapability &&
-				hasChangePluginAutoUpdatesCapacity &&
-				! siteKitAutoUpdatesEnabled
-			) {
-				return true;
-			}
-
-			return false;
-		},
+			requireCapability( PERMISSION_UPDATE_PLUGINS ),
+			requireCanChangePluginAutoUpdates(),
+			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
+		),
 		isDismissible: true,
 	},
 	'gathering-data-notification': {
@@ -489,77 +474,18 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
-			const viewOnly =
-				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
-
-			await Promise.all( [
-				// The isModuleConnected() and canViewSharedModule() selectors rely
-				// on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-				viewOnly
-					? resolveSelect( CORE_MODULES ).getRecoverableModules()
-					: Promise.resolve( [] ),
-			] );
-
-			const isAnalyticsConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			const canViewSharedAnalytics = ! viewOnly
-				? true
-				: select( CORE_USER ).canViewSharedModule(
-						MODULE_SLUG_ANALYTICS_4
-				  );
-
-			const canViewSharedSearchConsole = ! viewOnly
-				? true
-				: select( CORE_USER ).canViewSharedModule(
-						MODULE_SLUG_SEARCH_CONSOLE
-				  );
-
-			const showRecoverableAnalytics = await ( () => {
-				if ( ! viewOnly ) {
-					return false;
-				}
-
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				return Object.keys( recoverableModules ).includes(
-					MODULE_SLUG_ANALYTICS_4
-				);
-			} )();
-			const showRecoverableSearchConsole = await ( () => {
-				if ( ! viewOnly ) {
-					return false;
-				}
-
-				const recoverableModules =
-					select( CORE_MODULES ).getRecoverableModules();
-
-				return Object.keys( recoverableModules ).includes(
-					MODULE_SLUG_SEARCH_CONSOLE
-				);
-			} )();
-
-			const analyticsGatheringData =
-				isAnalyticsConnected &&
-				canViewSharedAnalytics &&
-				false === showRecoverableAnalytics
-					? await resolveSelect(
-							MODULES_ANALYTICS_4
-					  ).isGatheringData()
-					: false;
-			const searchConsoleGatheringData =
-				canViewSharedSearchConsole &&
-				false === showRecoverableSearchConsole &&
-				( await resolveSelect(
-					MODULES_SEARCH_CONSOLE
-				).isGatheringData() );
-
-			return analyticsGatheringData || searchConsoleGatheringData;
-		},
+		checkRequirements: asyncRequireAny(
+			asyncRequireAll(
+				requireModuleDataAvailable( MODULE_SLUG_ANALYTICS_4 ),
+				requireModuleGatheringData( MODULES_ANALYTICS_4 )
+			),
+			// Search Console is always connected, so only its view-context
+			// visibility is checked here.
+			asyncRequireAll(
+				requireModuleDataViewable( MODULE_SLUG_SEARCH_CONSOLE ),
+				requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+			)
+		),
 		isDismissible: false,
 	},
 	'zero-data-notification': {
@@ -572,89 +498,35 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
-			const viewOnly =
-				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
-
-			await Promise.all( [
-				// The isModuleConnected() and canViewSharedModule() selectors rely
-				// on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-				viewOnly
-					? resolveSelect( CORE_MODULES ).getRecoverableModules()
-					: Promise.resolve( [] ),
-			] );
-
-			async function getModuleState( moduleSlug, datastoreSlug ) {
-				// Check if the module connected and return early if not.
-				const isConnected =
-					select( CORE_MODULES ).isModuleConnected( moduleSlug );
-				if ( ! isConnected ) {
-					return 'disconnected';
-				}
-
-				// If we are in the view only mode, we need to ensure the user can view the module
-				// and it is not in the recovering state. Return early if either of these is wrong.
-				if ( viewOnly ) {
-					const canView =
-						select( CORE_USER ).canViewSharedModule( moduleSlug );
-					if ( ! canView ) {
-						return 'cant-view';
-					}
-
-					const modules =
-						select( CORE_MODULES ).getRecoverableModules();
-					if ( !! modules[ moduleSlug ] ) {
-						return 'recovering';
-					}
-				}
-
-				// Next, we need to check gathering data state and return early
-				// if the module is in the gathering state.
-				const isGatheringData = await resolveSelect(
-					datastoreSlug
-				).isGatheringData();
-				if ( isGatheringData ) {
-					return 'gathering';
-				}
-
-				// Finally, we need to preload the sample report and check if it has zero data.
-				await resolveSelect( datastoreSlug ).getReport(
-					select( datastoreSlug ).getSampleReportArgs()
-				);
-
-				if ( select( datastoreSlug ).hasZeroData() ) {
-					return 'zero-data';
-				}
-
-				return 'connected';
-			}
-
-			// Get Analytics-4 and Search Console states.
-			const analyticsState = await getModuleState(
-				MODULE_SLUG_ANALYTICS_4,
-				MODULES_ANALYTICS_4
-			);
-
-			const searchConsoleState = await getModuleState(
-				MODULE_SLUG_SEARCH_CONSOLE,
-				MODULES_SEARCH_CONSOLE
-			);
-
+		checkRequirements: asyncRequireAll(
 			// If either of the modules is gathering data, we don't show the notification.
-			if (
-				analyticsState === 'gathering' ||
-				searchConsoleState === 'gathering'
-			) {
-				return false;
-			}
-
+			asyncRequire(
+				false,
+				asyncRequireAny(
+					asyncRequireAll(
+						requireModuleDataAvailable( MODULE_SLUG_ANALYTICS_4 ),
+						requireModuleGatheringData( MODULES_ANALYTICS_4 )
+					),
+					asyncRequireAll(
+						requireModuleDataAvailable(
+							MODULE_SLUG_SEARCH_CONSOLE
+						),
+						requireModuleGatheringData( MODULES_SEARCH_CONSOLE )
+					)
+				)
+			),
 			// If either of the modules is in the zero data state, we need to show the notification.
-			return (
-				analyticsState === 'zero-data' ||
-				searchConsoleState === 'zero-data'
-			);
-		},
+			asyncRequireAny(
+				asyncRequireAll(
+					requireModuleDataAvailable( MODULE_SLUG_ANALYTICS_4 ),
+					requireModuleZeroData( MODULES_ANALYTICS_4 )
+				),
+				asyncRequireAll(
+					requireModuleDataAvailable( MODULE_SLUG_SEARCH_CONSOLE ),
+					requireModuleZeroData( MODULES_SEARCH_CONSOLE )
+				)
+			)
+		),
 		isDismissible: true,
 	},
 	'module-recovery-alert': {
@@ -663,18 +535,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.HEADER,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: false,
-		checkRequirements: async ( { resolveSelect } ) => {
-			const recoverableModules = await resolveSelect(
-				CORE_MODULES
-			).getRecoverableModules();
-			const recoverableModulesList = Object.keys(
-				recoverableModules || {}
-			);
-			if ( ! recoverableModulesList.length ) {
-				return false;
-			}
-			return true;
-		},
+		checkRequirements: requireHasRecoverableModules(),
 	},
 	[ CONSENT_MODE_SETUP_CTA_WIDGET_SLUG ]: {
 		Component: ConsentModeSetupCTABanner,
@@ -683,20 +544,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The isConsentModeEnabled selector relies on the resolution
-			// of the getConsentModeSettings() resolver.
-			await resolveSelect( CORE_SITE ).getConsentModeSettings();
-
-			const isConsentModeEnabled =
-				select( CORE_SITE ).isConsentModeEnabled();
-
-			if ( isConsentModeEnabled !== false ) {
-				return false;
-			}
-
-			return resolveSelect( CORE_SITE ).isAdsConnected();
-		},
+		checkRequirements: asyncRequireAll(
+			requireConsentModeDisabled(),
+			requireAdsConnected()
+		),
 		dismissRetries: 2,
 	},
 	[ GTG_SETUP_CTA_BANNER_NOTIFICATION ]: {
@@ -705,36 +556,28 @@ export const DEFAULT_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect, dispatch } ) => {
-			const isGTGModuleConnected =
-				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
+		checkRequirements: asyncRequireAll(
+			requireAnyGoogleTagGatewayModuleConnected(),
+			asyncRequire( false, requireGoogleTagGatewayEnabled() ),
+			// The health and script access statuses are tri-state: they are
+			// `null` until the server requirement status has been fetched, so
+			// trigger that fetch and skip the banner for this page load.
+			( { select, dispatch } ) => {
+				const { isGTGHealthy, isScriptAccessEnabled } =
+					select( CORE_SITE );
 
-			if ( ! isGTGModuleConnected ) {
-				return false;
-			}
+				if (
+					[ isGTGHealthy(), isScriptAccessEnabled() ].includes( null )
+				) {
+					dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
+					return false;
+				}
 
-			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
-
-			const {
-				isGoogleTagGatewayEnabled,
-				isGTGHealthy,
-				isScriptAccessEnabled,
-			} = select( CORE_SITE );
-
-			if ( isGoogleTagGatewayEnabled() ) {
-				return false;
-			}
-
-			const isHealthy = isGTGHealthy();
-			const isAccessEnabled = isScriptAccessEnabled();
-
-			if ( [ isHealthy, isAccessEnabled ].includes( null ) ) {
-				dispatch( CORE_SITE ).fetchGetGTGServerRequirementStatus();
-				return false;
-			}
-
-			return isHealthy && isAccessEnabled;
-		},
+				return true;
+			},
+			requireGTGHealthy(),
+			requireGTGScriptAccessEnabled()
+		),
 		isDismissible: true,
 		featureFlag: 'googleTagGateway',
 	},
@@ -742,27 +585,14 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: GoogleTagGatewayWarningNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const isGTGModuleConnected =
-				select( CORE_SITE ).isAnyGoogleTagGatewayModuleConnected();
-
-			if ( ! isGTGModuleConnected ) {
-				return false;
-			}
-
-			await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
-
-			const {
-				isGoogleTagGatewayEnabled,
-				isGTGHealthy,
-				isScriptAccessEnabled,
-			} = select( CORE_SITE );
-
-			return (
-				isGoogleTagGatewayEnabled() &&
-				( ! isGTGHealthy() || ! isScriptAccessEnabled() )
-			);
-		},
+		checkRequirements: asyncRequireAll(
+			requireAnyGoogleTagGatewayModuleConnected(),
+			requireGoogleTagGatewayEnabled(),
+			asyncRequireAny(
+				asyncRequire( false, requireGTGHealthy() ),
+				asyncRequire( false, requireGTGScriptAccessEnabled() )
+			)
+		),
 		isDismissible: true,
 		featureFlag: 'googleTagGateway',
 	},
@@ -776,47 +606,27 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect }, viewContext ) => {
+		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotHidden(),
 			// Check if email reporting is enabled at site level.
-			await resolveSelect( CORE_SITE ).getEmailReportingSettings();
-
-			if ( select( CORE_SITE ).isEmailReportingEnabled() === false ) {
-				return false;
-			}
-
-			// Check user subscription status.
-			const settings = await resolveSelect(
-				CORE_USER
-			).getEmailReportingSettings();
-
-			if ( settings === undefined || settings?.subscribed ) {
-				return false;
-			}
-
-			const viewOnly =
-				SITE_KIT_VIEW_ONLY_CONTEXTS.includes( viewContext );
-
+			requireSiteEmailReportingNotDisabled(),
+			// The user's own email reporting settings need to have loaded
+			// before their subscription status can be trusted.
+			async ( { resolveSelect } ) =>
+				undefined !==
+				( await resolveSelect(
+					CORE_USER
+				).getEmailReportingSettings() ),
+			asyncRequire( false, requireEmailReportingSubscribed() ),
 			// For view-only users, check if user has access to at least one
 			// of the required email report data modules.
 			// Admins always have access to the overlay notification.
-			if ( viewOnly ) {
-				await Promise.all( [
-					resolveSelect( CORE_MODULES ).getModules(),
-					resolveSelect( CORE_USER ).getCapabilities(),
-				] );
-				const viewableModules =
-					select( CORE_USER ).getViewableModules();
-
-				if (
-					! viewableModules?.includes( MODULE_SLUG_ANALYTICS_4 ) &&
-					! viewableModules?.includes( MODULE_SLUG_SEARCH_CONSOLE )
-				) {
-					return false;
-				}
-			}
-
-			return ! select( CORE_USER ).isEmailReportingSubscribed();
-		},
+			asyncRequireAny(
+				asyncRequire( false, requireViewOnlyContext() ),
+				requireModuleViewable( MODULE_SLUG_ANALYTICS_4 ),
+				requireModuleViewable( MODULE_SLUG_SEARCH_CONSOLE )
+			)
+		),
 	},
 	[ PDF_INTRODUCTION_OVERLAY_NOTIFICATION ]: {
 		Component: PDFIntroductionOverlayNotification,
@@ -829,6 +639,55 @@ export const DEFAULT_NOTIFICATIONS = {
 		],
 		isDismissible: true,
 		featureFlag: 'pdfGeneration',
+		checkRequirements: requireSetupCTAsNotHidden(),
+	},
+	[ sharedKeyMetrics.slug ]: {
+		Component: createFeatureTourNotification( sharedKeyMetrics ),
+		priority: PRIORITY.FEATURE_TOUR,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: sharedKeyMetrics.contexts,
+		// `TourTooltips` records the dismissal itself through `dismissTour`, so
+		// this stays false to avoid writing a second dismissal record.
+		isDismissible: false,
+		checkRequirements: async ( { select, resolveSelect } ) => {
+			if ( isInitialWelcomeModalActive() ) {
+				return false;
+			}
+
+			await Promise.all( [
+				resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
+				// These two back `getKeyMetrics()`, which returns before its own
+				// data arrives and would drop the tour for an eligible user.
+				resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+				resolveSelect( CORE_USER ).getUserInputSettings(),
+				resolveSelect( CORE_USER ).getUser(),
+				resolveSelect( CORE_SITE ).getSiteInfo(),
+			] );
+
+			if (
+				select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
+			) {
+				return false;
+			}
+
+			const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( ! Array.isArray( keyMetrics ) || keyMetrics.length === 0 ) {
+				return false;
+			}
+
+			const keyMetricsSetupCompletedBy =
+				select( CORE_SITE ).getKeyMetricsSetupCompletedBy();
+			const currentUserID = select( CORE_USER ).getID();
+
+			return (
+				Number.isInteger( keyMetricsSetupCompletedBy ) &&
+				keyMetricsSetupCompletedBy > 0 &&
+				Number.isInteger( currentUserID ) &&
+				currentUserID !== keyMetricsSetupCompletedBy
+			);
+		},
 	},
 	[ WELCOME_MODAL_NOTIFICATION ]: {
 		Component: WelcomeModal,
@@ -840,27 +699,12 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		featureFlag: 'setupFlowRefresh',
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// The `hasAccessToFeatureTour` selector depends on the modules,
-			// authentication, and capabilities being resolved, while
-			// `isDataGatheringCompleteModalActive` depends on the dismissed
-			// items.
-			await Promise.all( [
-				resolveSelect( CORE_MODULES ).getModules(),
-				resolveSelect( CORE_USER ).getAuthentication(),
-				resolveSelect( CORE_USER ).getCapabilities(),
-				resolveSelect( CORE_USER ).getDismissedItems(),
-			] );
-
-			if ( ! select( CORE_USER ).hasAccessToFeatureTour() ) {
-				return false;
-			}
-
-			return (
-				select( CORE_USER ).isDataGatheringCompleteModalActive() ||
+		checkRequirements: asyncRequireAll(
+			requireAccessToFeatureTour(),
+			asyncRequireAny( requireDataGatheringCompleteModalActive(), () =>
 				isInitialWelcomeModalActive()
-			);
-		},
+			)
+		),
 	},
 };
 

@@ -89,6 +89,7 @@ function shouldIgnore( node, name, acronymMatch, acronym, importedNames ) {
 		'HTMLButtonElement',
 		'HTMLDivElement',
 		'HTMLFormElement',
+		'HTMLIFrameElement',
 		'HTMLImageElement',
 		'HTMLInputElement',
 		'HTMLParagraphElement',

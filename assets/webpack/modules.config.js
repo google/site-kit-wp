@@ -78,6 +78,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.ts',
 			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-feature-discovery':
+				'./js/googlesitekit-feature-discovery.ts',
 			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
 			'googlesitekit-modules-adsense':
 				'./js/googlesitekit-modules-adsense.ts',
@@ -104,6 +106,7 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-metric-selection.tsx',
 			'googlesitekit-key-metrics-setup':
 				'./js/googlesitekit-key-metrics-setup.tsx',
+			'googlesitekit-features': './js/googlesitekit-features.tsx',
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',

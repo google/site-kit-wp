@@ -38,6 +38,10 @@ export default function AccountField() {
 		<CreateAccountField
 			label={ __( 'Account', 'google-site-kit' ) }
 			hasError={ ! value }
+			errorMessage={ __(
+				'An account name is required.',
+				'google-site-kit'
+			) }
 			value={ value }
 			setValue={ setValue }
 			name="account"

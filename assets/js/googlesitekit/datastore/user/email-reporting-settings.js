@@ -127,7 +127,7 @@ const baseActions = {
 	 * one arrives (rather than clearing it first) so the displayed date
 	 * doesn't flash away and back while refetching.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 */
 	*invalidateEmailReportingNextReport() {
 		const registry = yield commonActions.getRegistry();
@@ -397,7 +397,7 @@ const baseSelectors = {
 	/**
 	 * Gets the next scheduled email report timestamp for the user's saved frequency.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(number|undefined)} Unix timestamp (in seconds) of the next scheduled report; `undefined` if not loaded.

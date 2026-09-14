@@ -316,9 +316,6 @@ WithEnhancedConversionsNotice.parameters = {
 
 export const WithSiteGoalsBreakdownsRow = Template.bind( null );
 WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';
-WithSiteGoalsBreakdownsRow.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRow.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -344,9 +341,6 @@ WithSiteGoalsBreakdownsRow.scenario = {};
 export const WithSiteGoalsBreakdownsRowEnabled = Template.bind( null );
 WithSiteGoalsBreakdownsRowEnabled.storyName =
 	'With Site Goals custom dimensions row enabled';
-WithSiteGoalsBreakdownsRowEnabled.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRowEnabled.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {
@@ -382,9 +376,6 @@ WithSiteGoalsBreakdownsRowEnabled.scenario = {};
 export const WithSiteGoalsBreakdownsRowNewProperty = Template.bind( null );
 WithSiteGoalsBreakdownsRowNewProperty.storyName =
 	'With Site Goals custom dimensions row and a new property';
-WithSiteGoalsBreakdownsRowNewProperty.parameters = {
-	features: [ 'siteGoals' ],
-};
 WithSiteGoalsBreakdownsRowNewProperty.decorators = [
 	( Story ) => {
 		function setupRegistry( registry ) {

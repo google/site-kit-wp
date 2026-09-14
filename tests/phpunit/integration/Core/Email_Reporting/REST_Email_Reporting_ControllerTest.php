@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Email\Email;
 use Google\Site_Kit\Core\Email_Reporting\Cron_Health_Check;
+use Google\Site_Kit\Core\Email_Reporting\Email_Log;
 use Google\Site_Kit\Core\Email_Reporting\Email_Log_Batch_Query;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Golink_Handler;
 use Google\Site_Kit\Core\Email_Reporting\Email_Reporting_Settings;
@@ -156,6 +157,10 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		}
 		// This ensures the REST server is initialized fresh for each test using it.
 		unset( $GLOBALS['wp_rest_server'] );
+
+		if ( post_type_exists( Email_Log::POST_TYPE ) ) {
+			unregister_post_type( Email_Log::POST_TYPE );
+		}
 	}
 
 	public function test_register() {
@@ -166,6 +171,23 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 
 		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ), 'Expected REST routes filter to be registered' );
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
+	}
+
+	public function test_register__adds_only_the_email_reporting_and_email_reporting_errors_paths() {
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+
+		$paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+
+		$this->assertEqualSets(
+			array(
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting',
+				'/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors',
+			),
+			$paths,
+			'The preload paths should hold email-reporting and email-reporting-errors and nothing else.'
+		);
 	}
 
 	public function test_get_routes() {
@@ -527,6 +549,61 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		);
 	}
 
+	public function test_get_email_reporting_errors_returns_each_admins_own_error() {
+		$this->register_email_log_dependencies();
+
+		$other_admin = $this->create_admin_with_token( 'admin-other' );
+		$batch_id    = 'batch-errors-scope';
+
+		$this->create_email_log_post(
+			$batch_id,
+			$this->primary_admin_id,
+			'{"errors":{"primary_error":["Primary error"]},"error_data":{"primary_error":{"category_id":"permissions_error","module_slug":"analytics-4"}}}'
+		);
+		$this->create_email_log_post(
+			$batch_id,
+			$other_admin,
+			'{"errors":{"other_error":["Other error"]},"error_data":{"other_error":{"category_id":"permissions_error","module_slug":"search-console"}}}'
+		);
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors' );
+
+		wp_set_current_user( $this->primary_admin_id );
+		$primary_data = rest_get_server()->dispatch( $request )->get_data();
+		$this->assertSame( 'analytics-4', $primary_data['error_data']['primary_error']['module_slug'], 'Primary admin should see their own error.' );
+
+		wp_set_current_user( $other_admin );
+		$other_data = rest_get_server()->dispatch( $request )->get_data();
+		$this->assertSame( 'search-console', $other_data['error_data']['other_error']['module_slug'], 'Other admin should see their own error, independent of the primary admin\'s.' );
+	}
+
+	public function test_get_email_reporting_errors_returns_empty_for_admin_with_no_failed_log() {
+		$this->register_email_log_dependencies();
+
+		$other_admin = $this->create_admin_with_token( 'admin-other' );
+		$batch_id    = 'batch-errors-partial';
+
+		$this->create_email_log_post(
+			$batch_id,
+			$this->primary_admin_id,
+			'{"errors":{"primary_error":["Primary error"]},"error_data":{"primary_error":{"category_id":"permissions_error","module_slug":"analytics-4"}}}'
+		);
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		wp_set_current_user( $other_admin );
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-errors' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertSame( array(), $response->get_data(), 'An admin whose own report did not fail should see no error, even when another admin\'s report failed.' );
+	}
+
 	public function test_get_eligible_subscribers_includes_invited_field() {
 		$current_admin = $this->create_admin_with_token( 'admin-current' );
 		$other_admin   = $this->create_admin_with_token( 'admin-other' );
@@ -782,6 +859,34 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		);
 	}
 
+	public function test_get_subscribed_users__excludes_the_current_user() {
+		$other_subscriber_id = $this->create_admin_with_token( 'other-subscriber', 'Other Subscriber', 'other-subscriber@example.com' );
+		$this->subscribe_user( $other_subscriber_id );
+
+		// The viewing admin is subscribed too, but manages their own subscription
+		// elsewhere, so they should not show up in the list they use to manage
+		// everyone else's.
+		$this->subscribe_user( $this->primary_admin_id );
+
+		wp_set_current_user( $this->primary_admin_id );
+
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/email-reporting-subscribed-users' );
+		$response = rest_get_server()->dispatch( $request );
+		$data     = $response->get_data();
+
+		$this->assertEquals( 200, $response->get_status(), 'Subscribed users request should succeed for admins.' );
+		$this->assertSame( 1, $data['total'], 'Total should not count the viewing admin.' );
+		$this->assertSame(
+			array( $other_subscriber_id ),
+			wp_list_pluck( $data['users'], 'id' ),
+			'Subscribed users should exclude the viewing admin.'
+		);
+	}
+
 	public function test_get_subscribed_users__respects_pagination() {
 		$user_ids = array();
 
@@ -974,6 +1079,30 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 			'invalid property'    => array( array( 'some-invalid-property' => 'value' ) ),
 			'non-boolean enabled' => array( array( 'enabled' => 123 ) ),
 		);
+	}
+
+	private function register_email_log_dependencies() {
+		$email_log       = new Email_Log( $this->context );
+		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
+		$register_method->setAccessible( true );
+		$register_method->invoke( $email_log );
+	}
+
+	private function create_email_log_post( $batch_id, $author_id, $error_details ) {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_type'   => Email_Log::POST_TYPE,
+				'post_status' => Email_Log::STATUS_FAILED,
+				'post_title'  => 'Log ' . uniqid(),
+				'post_author' => $author_id,
+			)
+		);
+
+		update_post_meta( $post_id, Email_Log::META_BATCH_ID, $batch_id );
+		update_post_meta( $post_id, Email_Log::META_SEND_ATTEMPTS, Email_Log_Batch_Query::MAX_ATTEMPTS );
+		update_post_meta( $post_id, Email_Log::META_ERROR_DETAILS, $error_details );
+
+		return $post_id;
 	}
 
 	private function create_admin_with_token( $login = null, $display_name = null, $email = null ) {

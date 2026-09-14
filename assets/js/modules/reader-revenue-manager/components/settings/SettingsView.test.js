@@ -174,6 +174,93 @@ describe( 'SettingsView', () => {
 		).toBeInTheDocument();
 	} );
 
+	describe( 'configured CTAs', () => {
+		const settings = {
+			ownerID: 1,
+			publicationID,
+			publicationOnboardingState: ONBOARDING_ACTION_REQUIRED,
+			productID: 'openaccess',
+			snippetMode: 'post_types',
+			postTypes: [ 'post' ],
+			configuredCTAs: {
+				'cta-1': 'newsletter-signup',
+			},
+		};
+
+		it( 'should display the configured CTAs when the `rrmExpressSetup` feature flag is enabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( settings );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( getByText( 'CTAs' ) ).toBeInTheDocument();
+			expect(
+				getByText( 'Newsletter sign-up form' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should display the configured CTAs as a comma-separated list', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					...settings,
+					configuredCTAs: {
+						'cta-1': 'newsletter-signup',
+						'cta-2': 'newsletter-signup',
+					},
+				} );
+
+			const { getByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getByText( 'Newsletter sign-up form, Newsletter sign-up form' )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should not display the CTAs item when there are no configured CTAs', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { ...settings, configuredCTAs: {} } );
+
+			const { queryByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+			} );
+
+			await waitForRegistry();
+
+			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should not display the CTAs item when the feature flag is disabled', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( settings );
+
+			const { queryByText, waitForRegistry } = render( <SettingsView />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
+			expect(
+				queryByText( 'Newsletter sign-up form' )
+			).not.toBeInTheDocument();
+		} );
+	} );
+
 	it( 'should not display setting for post types if snippet placement is set otherwise', async () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )

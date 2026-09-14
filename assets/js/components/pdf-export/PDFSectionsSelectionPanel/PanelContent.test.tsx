@@ -157,7 +157,7 @@ describe( 'PanelContent', () => {
 	/**
 	 * Sets the stored panel state to open.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {void}
 	 */
@@ -170,7 +170,7 @@ describe( 'PanelContent', () => {
 	/**
 	 * Sets the stored panel state to closed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {void}
 	 */

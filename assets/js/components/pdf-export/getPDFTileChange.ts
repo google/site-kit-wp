@@ -33,7 +33,7 @@ export interface PDFTileChange {
 /**
  * Gets a change badge's `PDFChangeType` from a numeric change value.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {number} change The change value.
  * @return {string} The change's type (`'positive'`, `'negative'`, or `'noChange'`).
@@ -55,7 +55,7 @@ export function getPDFChangeType( change: number ): PDFChangeType {
  * The result is `undefined` when the change can't be computed (e.g. the previous
  * value is zero), which hides the badge.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {number}  previousValue        The previous period's value.
  * @param {number}  currentValue         The current period's value.

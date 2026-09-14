@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -34,6 +29,7 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -49,6 +45,8 @@ import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/co
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
+const { simulateAllIntersections } = mockIntersectionObserver();
+
 describe( 'AudienceSegmentationBackNotice', () => {
 	let registry: WPDataRegistry;
 
@@ -63,14 +61,11 @@ describe( 'AudienceSegmentationBackNotice', () => {
 	)( AudienceSegmentationBackNotice );
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -172,10 +167,7 @@ describe( 'AudienceSegmentationBackNotice', () => {
 
 		// Simulate the notice coming into view.
 		act( () => {
-			intersectionObserver.simulate( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} );
+			simulateAllIntersections( true );
 		} );
 
 		await waitFor( () => {

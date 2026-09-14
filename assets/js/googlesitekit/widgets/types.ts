@@ -41,7 +41,7 @@ export interface PDFReportDates {
 /**
  * Base parameters a PDF widget's `getData` loader receives.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export interface PDFDataLoaderParams {
 	/** WordPress data registry, with `resolveSelect` added. */
@@ -67,7 +67,7 @@ export interface PDFDataLoaderParams {
  * Parameters a PDF widget's `getData` loader receives.
  *
  * @since 1.183.0
- * @since n.e.x.t Added `viewOnly`.
+ * @since 1.186.0 Added `viewOnly`.
  */
 export interface GetPDFDataParams extends PDFDataLoaderParams {
 	/** Whether the export runs on a view-only dashboard, where a loader leaves out the links an administrator sees. */
@@ -113,7 +113,7 @@ export interface WidgetPDFData {
  * PDF export configuration for a widget.
  *
  * @since 1.181.0
- * @since n.e.x.t Added `viewOnly` to the `getData` params.
+ * @since 1.186.0 Added `viewOnly` to the `getData` params.
  */
 export interface WidgetPDFConfig {
 	Component: PDFWidgetComponent;

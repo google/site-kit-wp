@@ -28,7 +28,10 @@ import {
 	PERMISSION_AUTHENTICATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import {
+	ACTIVATE_ANALYTICS_NOTIFICATION,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -78,7 +81,7 @@ export function useWelcomeTour() {
 
 			return (
 				queuedNotifications?.[ 0 ]?.id ===
-				'activate-analytics-notification'
+				ACTIVATE_ANALYTICS_NOTIFICATION
 			);
 		},
 		[ viewContext ]

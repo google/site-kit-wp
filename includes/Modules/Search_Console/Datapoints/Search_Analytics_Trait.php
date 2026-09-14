@@ -26,7 +26,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SearchAnalyticsQue
  * so that `get_service()` resolves the Search Console service, and to populate the
  * `$settings` and `$context` properties declared here from their constructor.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Module settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Settings
 	 */
 	protected $settings;
@@ -43,7 +43,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Context
 	 */
 	protected $context;
@@ -51,7 +51,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Prepares search analytics request arguments from raw request data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $request_data Raw request data.
 	 * @return array Prepared request arguments.
@@ -92,7 +92,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Creates a new Search Console analytics request for the current site and given arguments.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
@@ -172,7 +172,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Parses search analytics response rows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed $response Request response.
 	 * @return mixed Response rows, or the response itself when rows are unavailable.
@@ -192,7 +192,7 @@ trait Search_Analytics_Trait {
 	/**
 	 * Gets the property ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return string Property ID URL if set, or empty string.
 	 */
@@ -208,7 +208,7 @@ trait Search_Analytics_Trait {
 	 * Mirrors {@see \Google\Site_Kit\Core\Modules\Module::parse_string_list()}, which is
 	 * not available here since datapoints do not extend `Module`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string|array $items Items to parse.
 	 * @return array An array of string items.

@@ -99,6 +99,9 @@ describe( 'useBreakdownEnableHandler', () => {
 			isWidgetHidden: false,
 		} );
 		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
 	} );
 
 	it( 'triggers the OAuth flow and records the form state when the edit scope is missing', async () => {

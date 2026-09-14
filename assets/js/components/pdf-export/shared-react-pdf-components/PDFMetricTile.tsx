@@ -29,7 +29,7 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import PDFChangeBadge from './PDFChangeBadge';
-import PDFTypography from './PDFTypography';
+import PDFTypography, { PDFTypographySize } from './PDFTypography';
 
 const tileStyles = createPDFStyles( {
 	container: {
@@ -43,6 +43,9 @@ const tileStyles = createPDFStyles( {
 	title: {
 		marginBottom: 1,
 	},
+	titleAboveSmallValue: {
+		marginBottom: 4,
+	},
 	aside: {
 		flexDirection: 'column',
 		alignItems: 'flex-end',
@@ -51,6 +54,10 @@ const tileStyles = createPDFStyles( {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 		marginTop: 4,
 	},
+	subtitle: {
+		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
+		marginTop: 1,
+	},
 } );
 
 export interface PDFMetricTileProps {
@@ -58,6 +65,10 @@ export interface PDFMetricTileProps {
 	title: string;
 	/** Pre-formatted metric value to display prominently, e.g. "32.6K". */
 	value: string;
+	/** Size of the value's `headline` typography. Defaults to `'medium'`. */
+	valueSize?: PDFTypographySize;
+	/** Optional caption rendered below the value, e.g. "of 3,579 total sessions". */
+	subtitle?: string;
 	/** Pre-formatted, signed change string for the badge, e.g. "+5.1%". Hides the badge when omitted. */
 	change?: string;
 	/** The change's direction. Controls the badge color. */
@@ -69,21 +80,36 @@ export interface PDFMetricTileProps {
 const PDFMetricTile: FC< PDFMetricTileProps > = ( {
 	title,
 	value,
+	valueSize = 'medium',
+	subtitle,
 	change,
 	changeType = 'positive',
 	changeLabel,
 } ) => {
+	const hasSmallValue = valueSize === 'small';
+
 	return (
 		<View style={ tileStyles.container }>
 			<View style={ tileStyles.metric }>
 				<PDFTypography
-					type="title"
-					size="small"
-					style={ tileStyles.title }
+					type={ hasSmallValue ? 'body' : 'title' }
+					size={ hasSmallValue ? 'medium' : 'small' }
+					style={
+						hasSmallValue
+							? tileStyles.titleAboveSmallValue
+							: tileStyles.title
+					}
 				>
 					{ title }
 				</PDFTypography>
-				<PDFTypography type="headline">{ value }</PDFTypography>
+				<PDFTypography type="headline" size={ valueSize }>
+					{ value }
+				</PDFTypography>
+				{ !! subtitle && (
+					<PDFTypography size="small" style={ tileStyles.subtitle }>
+						{ subtitle }
+					</PDFTypography>
+				) }
 			</View>
 			<View style={ tileStyles.aside }>
 				{ !! change && (

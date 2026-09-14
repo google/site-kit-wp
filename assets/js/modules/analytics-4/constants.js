@@ -16,6 +16,16 @@
  * limitations under the License.
  */
 
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+export const WEB_DATA_STREAM_NAME_REQUIRED_MESSAGE = __(
+	'A web data stream name is required.',
+	'google-site-kit'
+);
+
 export const ACTIVATION_STEP_REMINDER = 0;
 export const ACTIVATION_STEP_SETUP = 1;
 export const ACTIVATION_STEP_SUCCESS = 2;

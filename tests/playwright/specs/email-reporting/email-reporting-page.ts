@@ -70,7 +70,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the header button that opens the email reports panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {Locator} The manage email reports header button.
 	 */
@@ -83,7 +83,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the header button that opens the features menu on mobile and tablet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {Locator} The features menu trigger button.
 	 */
@@ -94,7 +94,7 @@ export class EmailReportingPage {
 	/**
 	 * Get the features menu item that opens the email reports panel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return {Locator} The manage email reports menu item.
 	 */

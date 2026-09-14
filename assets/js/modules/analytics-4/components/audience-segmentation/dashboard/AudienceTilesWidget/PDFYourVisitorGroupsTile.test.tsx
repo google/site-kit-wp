@@ -86,7 +86,7 @@ function renderTile(
 /**
  * Counts the "Partial data" badges.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param json The rendered PDF content, serialized to a string.
  * @return The number of "Partial data" badges.

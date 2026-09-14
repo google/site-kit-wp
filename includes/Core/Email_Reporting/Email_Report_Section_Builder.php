@@ -110,7 +110,8 @@ class Email_Report_Section_Builder {
 	 * Build one or more section parts from raw payloads for a module.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Removed $user_locale parameter, locale switching is now handled by the Email_Log_Processor.
+	 * @since 1.186.0 Removed $user_locale parameter, locale switching is now handled by the Email_Log_Processor.
+	 * @since 1.187.0 Added the `groups` and the `prompt` to each section.
 	 *
 	 * @param string   $module_slug Module slug (e.g. analytics-4).
 	 * @param array    $raw_sections_payloads Raw reports payloads.
@@ -149,6 +150,8 @@ class Email_Report_Section_Builder {
 					'trends'           => $trends,
 					'dimensions'       => $section_payload['dimensions'] ?? array(),
 					'dimension_values' => $section_payload['dimension_values'] ?? array(),
+					'groups'           => $section_payload['groups'] ?? array(),
+					'prompt'           => $section_payload['prompt'] ?? array(),
 					'date_range'       => $date_range,
 					'dashboard_link'   => $this->format_dashboard_link( $module_slug ),
 				)
@@ -185,7 +188,7 @@ class Email_Report_Section_Builder {
 	 * Normalize trend values to floats.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Returns floats instead of locale-formatted percentage strings.
+	 * @since 1.186.0 Returns floats instead of locale-formatted percentage strings.
 	 *
 	 * @param array $trends Trend values.
 	 * @return array|null Normalized trend values.

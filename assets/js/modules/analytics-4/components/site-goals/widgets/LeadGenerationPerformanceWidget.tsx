@@ -28,9 +28,10 @@ import {
 	forwardRef,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -46,6 +47,7 @@ import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goal
 import BreakdownTabs, {
 	BreakdownTab,
 } from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
+import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
@@ -53,6 +55,7 @@ import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/com
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
+	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -69,6 +72,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -84,20 +88,6 @@ interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
 	/** Set by `withIntersectionObserver` once the widget is in view. */
 	hasBeenInView?: boolean;
 }
-
-// Maps a lead-form event provider slug (the `googlesitekit_event_provider`
-// dimension value carried on every form conversion event) to its plugin's
-// display name, so the form tooltip can name the source from the report alone.
-// Keep this in sync with the lead-form providers in `assets/js/event-providers/`:
-// a slug missing here silently omits the form tab's source tooltip.
-const LEAD_PROVIDER_LABELS: Record< string, string > = {
-	'contact-form-7': 'Contact Form 7',
-	'ninja-forms': 'Ninja Forms',
-	wpforms: 'WPForms',
-	mailchimp: 'Mailchimp for WordPress',
-	'popup-maker': 'Popup Maker',
-	'optin-monster': 'OptinMonster',
-};
 
 // Builds the info-tooltip for a form tab. Has three variants depending on how
 // many pages the form was seen on, and falls back to the plugin-only variant
@@ -189,7 +179,7 @@ function getFormBreakdownTabs(
 		// display name for the tooltip.
 		const providerSlug = formProviders?.[ formID ];
 		const plugin = providerSlug
-			? LEAD_PROVIDER_LABELS[ providerSlug ]
+			? SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS[ providerSlug ]
 			: undefined;
 
 		return {
@@ -203,28 +193,6 @@ function getFormBreakdownTabs(
 			),
 		};
 	} );
-}
-
-// The single/plural subtitle for the Total form completions tile.
-function getTotalSubtitle( detectedLeadEvents: string[] ): string {
-	if ( detectedLeadEvents.length === 1 ) {
-		return sprintf(
-			/* translators: %s: GA4 event name */
-			__( '“%s” events', 'google-site-kit' ),
-			detectedLeadEvents[ 0 ]
-		);
-	}
-
-	return sprintf(
-		/* translators: %d: number of detected event types */
-		_n(
-			'%d event type',
-			'%d event types',
-			detectedLeadEvents.length,
-			'google-site-kit'
-		),
-		detectedLeadEvents.length
-	);
 }
 
 function getWidgetReportOptions(
@@ -360,6 +328,15 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 			[]
 		);
+
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames: string[] = useMemo(
+			() => detectedLeadEvents || [],
+			[ detectedLeadEvents ]
+		);
+
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
 				select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
@@ -386,6 +363,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			[]
 		);
 
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
 		const {
 			breakdownDimension,
 			breakdownValues,
@@ -393,6 +376,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			activeTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
+			isBreakdownValueTab,
 			hasOtherSources,
 			otherSourcesCount,
 			otherSourcesPreviousCount,
@@ -401,7 +385,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			// needs no event scoping. The lead events only detect unattributed
 			// "Other sources" data.
 		} = useSiteGoalsBreakdown( GOAL_TYPES.LEAD, {
-			detectionEventNames: detectedLeadEvents || [],
+			detectionEventNames: keyActionEventNames,
 		} );
 
 		// Only the tabbed breakdown shows the partial-data badge, and only when
@@ -492,7 +476,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 		const { leadEventsReportOptions, engagementReportOptions } =
 			getWidgetReportOptions(
 				dates,
-				detectedLeadEvents || [],
+				keyActionEventNames,
 				breakdownFilter
 			);
 
@@ -599,16 +583,25 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				collapsible
 			>
 				{ breakdownTabs && (
-					<BreakdownTabs
-						tabs={ breakdownTabs }
-						activeTabID={ activeTabID }
-						onTabChange={ handleTabChange }
-						showOtherSources={ hasOtherSources }
-						otherSourcesLabel={ __(
-							'Other form completions',
-							'google-site-kit'
+					<Fragment>
+						<BreakdownTabs
+							tabs={ breakdownTabs }
+							activeTabID={ activeTabID }
+							onTabChange={ handleTabChange }
+							showOtherSources={ hasOtherSources }
+							otherSourcesLabel={ __(
+								'Other form completions',
+								'google-site-kit'
+							) }
+						/>
+
+						{ isBreakdownValueTab && (
+							<EventProviderDeactivatedNotice
+								goalType={ GOAL_TYPES.LEAD }
+								providerSlug={ formProviders?.[ activeTabID ] }
+							/>
 						) }
-					/>
+					</Fragment>
 				) }
 
 				{ isOtherSourcesTab && (
@@ -636,8 +629,16 @@ const LeadGenerationPerformanceWidget = forwardRef<
 								'Total form completions',
 								'google-site-kit'
 							) }
-							totalSubtitle={ getTotalSubtitle(
+							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
+							) }
+							chartTitle={ sprintf(
+								/* translators: %d: number of days in the selected date range, e.g. 28. */
+								__(
+									'Total form completions in the last %d days',
+									'google-site-kit'
+								),
+								dateRangeDays
 							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
@@ -648,6 +649,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.LEAD }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }

@@ -63,7 +63,7 @@ class Content_Map {
 	 *
 	 * Falls back to the template's title when no subject is set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $template_name The template name.
 	 * @return string The subject string.
@@ -189,7 +189,7 @@ class Content_Map {
 	 *
 	 * Templates not in this mapping use `get_title()` as their subject.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return array Mapping of template names to subject strings.
 	 */
@@ -302,7 +302,7 @@ class Content_Map {
 	/**
 	 * Gets the primary call-to-action for a template.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string  $template_name Template name (e.g. 'error-email-report-analytics-4').
 	 * @param Golinks $golinks       Golinks instance for building URLs.

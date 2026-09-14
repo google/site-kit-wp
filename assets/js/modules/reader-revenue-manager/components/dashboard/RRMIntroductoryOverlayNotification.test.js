@@ -29,7 +29,10 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	CONTENT_POLICY_STATES,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
 import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import { createTestRegistry, provideModules } from '@tests/js/utils';
@@ -99,6 +102,20 @@ describe( 'RRMIntroductoryOverlayNotification', () => {
 				VIEW_CONTEXT_MAIN_DASHBOARD
 			);
 			expect( isActive ).toBe( true );
+		} );
+
+		it( 'is inactive when the publication has extreme policy violations', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setContentPolicyState(
+					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+				);
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+			expect( isActive ).toBe( false );
 		} );
 	} );
 

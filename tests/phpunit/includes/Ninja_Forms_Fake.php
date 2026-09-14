@@ -20,7 +20,7 @@ namespace Google\Site_Kit\Tests;
  * environment installs no Ninja Forms, and `ninja-forms-fake-functions.php`
  * returns this instance from the global `Ninja_Forms()` function.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Ninja_Forms_Fake {
 	/**
 	 * The single instance the global `Ninja_Forms()` function returns.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Ninja_Forms_Fake
 	 */
 	private static $instance;
@@ -37,7 +37,7 @@ class Ninja_Forms_Fake {
 	/**
 	 * Each form title a test added, with the form ID as the key.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var array
 	 */
 	private $form_titles = array();
@@ -48,7 +48,7 @@ class Ninja_Forms_Fake {
 	 * A test adds a form through one call and the code under test reads it through
 	 * another, because `Ninja_Forms_Fake` keeps one instance for the whole process.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return Ninja_Forms_Fake The single instance.
 	 */
@@ -63,7 +63,7 @@ class Ninja_Forms_Fake {
 	/**
 	 * Adds a form title for the given ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param int    $form_id The form ID.
 	 * @param string $title   The title the form stores.
@@ -75,7 +75,7 @@ class Ninja_Forms_Fake {
 	/**
 	 * Gets a `Ninja_Forms_Model_Factory_Fake` for a form ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param int $form_id The form ID.
 	 * @return Ninja_Forms_Model_Factory_Fake The factory holding the form.

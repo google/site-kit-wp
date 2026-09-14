@@ -56,7 +56,7 @@ export const actions = {
 	/**
 	 * Registers a feature in the catalog with a given slug and settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {string}         slug                           Feature's slug.
 	 * @param {Object}         settings                       Feature's settings.

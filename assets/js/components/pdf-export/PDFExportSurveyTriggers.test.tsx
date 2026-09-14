@@ -54,7 +54,7 @@ describe( 'PDFExportSurveyTriggers', () => {
 	/**
 	 * Renders the component for a user who already has the given slugs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {string[]} dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.
 	 * @return {Object} The render result for the component.

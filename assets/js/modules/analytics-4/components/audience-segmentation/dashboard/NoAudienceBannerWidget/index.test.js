@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * Internal dependencies
  */
 import {
@@ -36,7 +31,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockIntersectionObserver,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -54,6 +52,8 @@ mockTrackEvent.mockImplementation( () => Promise.resolve() );
 describe( 'NoAudienceBannerWidget', () => {
 	mockLocation();
 
+	const { simulateAllIntersections } = mockIntersectionObserver();
+
 	let registry;
 
 	const WidgetWithComponentProps = withWidgetComponentProps(
@@ -65,8 +65,6 @@ describe( 'NoAudienceBannerWidget', () => {
 	);
 
 	beforeEach( () => {
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -80,7 +78,6 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		jest.clearAllMocks();
 	} );
 
@@ -241,10 +238,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -357,10 +351,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -456,10 +447,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -543,10 +531,7 @@ describe( 'NoAudienceBannerWidget', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

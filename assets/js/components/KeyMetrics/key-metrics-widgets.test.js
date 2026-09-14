@@ -22,11 +22,30 @@
 import {
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
+import {
+	createTestRegistry,
+	provideKeyMetrics,
+	provideKeyMetricsUserInputSettings,
+	provideModules,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import { KEY_METRICS_PDF_TILES } from './key-metrics-pdf-tiles';
 import { KEY_METRICS_WIDGETS } from './key-metrics-widgets';
 
@@ -62,7 +81,7 @@ function registryReturning( report ) {
  * Builds a registry whose `fetchGetReport` resolves with the given reports in
  * order, so a tile that requests more than one report gets each in turn.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object[]} reports The report responses to resolve, in fetch order.
  * @return {Object} A mock registry.
@@ -78,7 +97,7 @@ function registryReturningReports( reports ) {
 /**
  * Loads one tile's data against a single report fixture.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string} slug   The key metric slug.
  * @param {Object} report The report response the tile fetches.
@@ -95,7 +114,7 @@ function loadTile( slug, report ) {
 /**
  * Loads one tile's data against several report fixtures, in fetch order.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string}   slug    The key metric slug.
  * @param {Object[]} reports The report responses the tile fetches, in order.
@@ -114,7 +133,7 @@ function loadTileWithReports( slug, reports ) {
  * fetch: `resolveSelect().getReport` returns `resolvedReport` for that first
  * read, and `fetchGetReport` returns `fetchReports` in order for the rest.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object}   resolvedReport The report the tile reads up front.
  * @param {Object[]} fetchReports   The report responses the tile then fetches.
@@ -136,7 +155,7 @@ function registryWithResolvedReport( resolvedReport, fetchReports ) {
 /**
  * Loads a tile that reads a report before deciding what to fetch.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string}   slug           The key metric slug.
  * @param {Object}   resolvedReport The report the tile reads up front.
@@ -531,6 +550,162 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 
 			expect( data ).not.toBeNull();
 			expect( data.value ).toBe( 'Organic Search' );
+		} );
+	} );
+} );
+
+describe( 'Selling products Key Metric tiles', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry );
+		// None of the Selling products slugs are in the default active Key
+		// Metrics, so `isKeyMetricActive( slug )` resolves to `false` below.
+		provideKeyMetrics( registry );
+		// None of the Selling products conversion events are in the default
+		// user input settings, so they don't count as active goals below.
+		provideKeyMetricsUserInputSettings( registry );
+	} );
+
+	const SELLING_PRODUCTS_SLUGS = [
+		KM_ANALYTICS_TOTAL_SALES,
+		KM_ANALYTICS_SALES_RATE,
+		KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+		KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+		KM_ANALYTICS_SALES_BY_COUNTRIES,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+		KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	];
+
+	it.each( SELLING_PRODUCTS_SLUGS )(
+		'should offer %s when purchase is detected',
+		( slug ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( true );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( true );
+		}
+	);
+
+	it.each( SELLING_PRODUCTS_SLUGS )(
+		'should not offer %s when purchase has not been detected',
+		( slug ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( false );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( false );
+		}
+	);
+
+	describe( 'Top authors driving sales', () => {
+		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES;
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		} );
+
+		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should be offered on a view-only dashboard when both purchase is detected and the post author custom dimension is available', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
 		} );
 	} );
 } );

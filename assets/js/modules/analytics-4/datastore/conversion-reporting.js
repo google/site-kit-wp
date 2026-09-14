@@ -33,14 +33,22 @@ import { createRegistrySelector } from 'googlesitekit-data';
 import { USER_INPUT_PURPOSE_TO_CONVERSION_EVENTS_MAPPING } from '@/js/components/user-input/util/constants';
 import {
 	CORE_USER,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -80,6 +88,59 @@ export const selectors = {
 
 			return eventsToCheck.some( ( event ) =>
 				detectedEvents.includes( event )
+			);
+		}
+	),
+
+	/**
+	 * Checks whether a conversion event is currently relevant for Key Metrics
+	 * selection, beyond whether GA4 has actually detected it.
+	 *
+	 * An event also counts as active if the user has already picked a Key
+	 * Metric tied to it (via `getKeyMetricsConversionEventWidgets()`), or if
+	 * they named it as a business goal during onboarding (via
+	 * `getUserInputSettings().includeConversionEvents`). This keeps a Key
+	 * Metric selectable even after its event stops being "detected", so a
+	 * user can still find and re-select a metric they've deselected, rather
+	 * than losing access to it outright.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} event Conversion event to check.
+	 * @return {boolean} True if the event is currently active.
+	 */
+	isConversionEventCurrentlyActive: createRegistrySelector(
+		( select ) => ( state, event ) => {
+			if (
+				select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
+					event
+				)
+			) {
+				return true;
+			}
+
+			const conversionEventWidgets =
+				select(
+					MODULES_ANALYTICS_4
+				).getKeyMetricsConversionEventWidgets();
+			const userPickedMetrics =
+				select( CORE_USER ).getUserPickedMetrics();
+
+			if (
+				userPickedMetrics?.length &&
+				conversionEventWidgets[ event ]?.some( ( widget ) =>
+					userPickedMetrics.includes( widget )
+				)
+			) {
+				return true;
+			}
+
+			const userInputSettings =
+				select( CORE_USER ).getUserInputSettings();
+
+			return !! userInputSettings?.includeConversionEvents?.values?.includes(
+				event
 			);
 		}
 	),
@@ -361,6 +422,14 @@ export const selectors = {
 				KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 				KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+				KM_ANALYTICS_TOTAL_SALES,
+				KM_ANALYTICS_SALES_RATE,
+				KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+				KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+				KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+				KM_ANALYTICS_SALES_BY_COUNTRIES,
+				KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+				KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 			],
 			add_to_cart: [
 				KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,

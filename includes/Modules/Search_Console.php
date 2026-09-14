@@ -202,7 +202,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	/**
 	 * Creates the search analytics datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return Get_Search_Analytics Search analytics datapoint instance.
 	 */

@@ -24,18 +24,24 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { useWindowWidth } from '@/js/hooks/useWindowSize';
 import GoogleLogoIcon from '@/svg/graphics/logo-g.svg';
 import SiteKitLogoIcon from '@/svg/graphics/logo-sitekit.svg';
 import VisuallyHidden from './VisuallyHidden';
 
 function Logo() {
+	// Must match `$width-xsmall` in `assets/sass/config/_variables.scss`.
+	const isXSmallWindow = useWindowWidth() < 450;
+
 	return (
 		<div className="googlesitekit-logo" aria-hidden="true">
-			<GoogleLogoIcon
-				className="googlesitekit-logo__logo-g"
-				height="25"
-				width="25"
-			/>
+			{ isXSmallWindow && (
+				<GoogleLogoIcon
+					className="googlesitekit-logo__logo-g"
+					height="25"
+					width="25"
+				/>
+			) }
 			<SiteKitLogoIcon
 				className="googlesitekit-logo__logo-sitekit"
 				height="29"

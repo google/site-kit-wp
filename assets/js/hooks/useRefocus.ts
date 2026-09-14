@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Invokes a function when the window is blurred and then refocused after the specified delay.
@@ -31,6 +31,12 @@ import { useEffect } from '@wordpress/element';
  * @return {void}
  */
 export function useRefocus( callback: () => void, milliseconds = 0 ): void {
+	const callbackRef = useRef( callback );
+
+	useEffect( () => {
+		callbackRef.current = callback;
+	}, [ callback ] );
+
 	// Run the supplied callback whenever a user re-focuses window, as
 	// long as it happens after the specified delay.
 	useEffect( () => {
@@ -55,7 +61,7 @@ export function useRefocus( callback: () => void, milliseconds = 0 ): void {
 			}
 			runCallback = false;
 
-			callback();
+			callbackRef.current();
 		}
 
 		global.addEventListener( 'focus', onFocus );
@@ -66,5 +72,5 @@ export function useRefocus( callback: () => void, milliseconds = 0 ): void {
 			global.removeEventListener( 'blur', countIdleTime );
 			global.clearTimeout( timeout );
 		};
-	}, [ milliseconds, callback ] );
+	}, [ milliseconds ] );
 }

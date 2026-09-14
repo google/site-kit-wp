@@ -119,6 +119,19 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should keep the words "Site Kit" in the splash header, by adding `googlesitekit-setup-splash` to the body', async () => {
+		const { waitForRegistry } = render( <SetupUsingProxyWithSignIn />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+		} );
+
+		await waitForRegistry();
+
+		expect( global.document.body ).toHaveClass(
+			'googlesitekit-setup-splash'
+		);
+	} );
+
 	it( 'should not render the Activate Analytics notice when the Analytics module is not available', async () => {
 		registry
 			.dispatch( CORE_MODULES )

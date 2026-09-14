@@ -173,7 +173,7 @@ class Get_Form_Metadata extends Shareable_Datapoint implements Executable_Datapo
 	 * Every step checks what it received, since another plugin could declare
 	 * `Ninja_Forms()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param int $form_id The form ID.
 	 * @return string The form title, or an empty string when Ninja Forms is inactive or holds no title for the ID.

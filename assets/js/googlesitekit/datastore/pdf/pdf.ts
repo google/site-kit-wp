@@ -445,7 +445,7 @@ export const selectors = {
 	/**
 	 * Determines whether a report is generating.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {PDFState} state Data store's state.
 	 * @return {boolean} `true` while a report is generating.

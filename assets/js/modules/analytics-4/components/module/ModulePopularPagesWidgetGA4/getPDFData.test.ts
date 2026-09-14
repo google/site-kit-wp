@@ -107,7 +107,7 @@ const PROPERTY_ID = '123456789';
  * The link comes from the same selector the loader uses, so a test checks the
  * page filter and date range, not the URL format.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Registry} registry Registry that holds the Analytics property.
  * @param {string}   pagePath Page path from a report row.
@@ -128,7 +128,7 @@ function getExpectedPageLink( registry: Registry, pagePath: string ): string {
  * The link comes from the same selector the loader uses, so a test checks the
  * title falls back to the page's entity dashboard, not the URL format.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Registry} registry Registry that holds the reference site URL.
  * @param {string}   pagePath Page path from a report row.

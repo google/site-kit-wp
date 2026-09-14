@@ -21,7 +21,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert as Google_Service_
 /**
  * Class for the notifications datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Module settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Module_Settings
 	 */
 	private $settings;
@@ -37,7 +37,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Get data callable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var callable
 	 */
 	private $get_data;
@@ -45,7 +45,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Get account URL callable.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var callable
 	 */
 	private $get_account_url;
@@ -53,7 +53,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -72,7 +72,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable A callable that returns notifications by filtering SEVERE alerts.
@@ -129,7 +129,7 @@ class Get_Notifications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response Callable that returns notifications array.
 	 * @param Data_Request $data     Data request object.

@@ -73,6 +73,7 @@ describe( 'core/site site info', () => {
 			hasActiveLeadEventProviders: false,
 			hasActiveEcommerceEventProviders: false,
 			hasMultipleActiveEcommerceEventProviders: false,
+			activeConversionEventProviders: [ 'woocommerce' ],
 		};
 
 		entityInfo = {
@@ -534,6 +535,10 @@ describe( 'core/site site info', () => {
 			[
 				'hasMultipleActiveEcommerceEventProviders',
 				'hasMultipleActiveEcommerceEventProviders',
+			],
+			[
+				'getActiveConversionEventProviders',
+				'activeConversionEventProviders',
 			],
 			[
 				'getKeyMetricsSetupIsWidgetAreaHidden',

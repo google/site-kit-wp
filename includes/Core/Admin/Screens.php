@@ -583,6 +583,32 @@ final class Screens {
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'featureDiscoveryHub' ) ) {
+			array_splice(
+				$screens,
+				2,
+				0,
+				array(
+					new Screen(
+						self::PREFIX . 'features',
+						array(
+							'title'            => __( 'Add Features', 'google-site-kit' ),
+							'menu_title'       => __( 'Add Features', 'google-site-kit' ),
+							'capability'       => Permissions::MANAGE_OPTIONS,
+							'enqueue_callback' => function ( Assets $assets ) {
+								$assets->enqueue_asset( 'googlesitekit-features' );
+							},
+							'render_callback'  => function () {
+								?>
+								<div id="js-googlesitekit-features" class="googlesitekit-page"></div>
+								<?php
+							},
+						)
+					),
+				)
+			);
+		}
+
 		$screens[] = new Screen(
 			self::PREFIX . 'user-input',
 			array(

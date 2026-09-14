@@ -25,49 +25,14 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import PDFMetricTileTable from './PDFMetricTileTable';
-
-/**
- * Collects every text string rendered in a react-test-renderer tree, so a test
- * can assert on the tile copy without walking the tree itself.
- *
- * @since n.e.x.t
- *
- * @param {(string|number|Object|null)} node   The current tree node.
- * @param {string[]}                    output The strings collected so far.
- * @return {string[]} The collected text strings.
- */
-function findTextStrings(
-	node:
-		| string
-		| number
-		| TestRenderer.ReactTestRendererJSON
-		| null
-		| undefined,
-	output: string[] = []
-): string[] {
-	if ( node === null || node === undefined ) {
-		return output;
-	}
-	if ( typeof node === 'string' ) {
-		output.push( node );
-		return output;
-	}
-	if ( typeof node === 'number' ) {
-		output.push( String( node ) );
-		return output;
-	}
-	if ( Array.isArray( node.children ) ) {
-		node.children.forEach( ( child ) => findTextStrings( child, output ) );
-	}
-	return output;
-}
 
 /**
  * Renders `PDFMetricTileTable` with the given props and returns its collected
  * text strings.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {string[]} The rendered text strings.
