@@ -132,7 +132,6 @@ describe( 'SetupMain', () => {
 			waitForRegistry,
 		} = render( <SetupMain />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MODULE_SETUP,
 		} );
 

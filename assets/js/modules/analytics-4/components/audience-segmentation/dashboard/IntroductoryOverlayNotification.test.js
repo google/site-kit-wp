@@ -45,7 +45,6 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
-	setEnabledFeatures,
 } from '@tests/js/test-utils';
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import IntroductoryOverlayNotification, {
@@ -309,8 +308,6 @@ describe( 'IntroductoryOverlayNotification', () => {
 		it( 'is not active and dismisses itself when the welcome modal is present', async () => {
 			global.location.href =
 				'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
-
-			setEnabledFeatures( [ 'setupFlowRefresh' ] );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: JSON.stringify( [

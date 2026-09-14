@@ -147,7 +147,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should show questionnaire UI when setupFlowRefresh is enabled and purpose is answered', async () => {
+	it( 'should show questionnaire UI when purpose is answered', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -171,7 +171,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 
@@ -190,7 +189,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		);
 	} );
 
-	it( 'should display `Personalized metrics` title when setupFlowRefresh is enabled', async () => {
+	it( 'should display `Personalized metrics` title', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -200,7 +199,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 
@@ -209,7 +207,7 @@ describe( 'SettingsCardKeyMetrics', () => {
 		expect( getByText( 'Personalized metrics' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should show subtle notification CTA when setupFlowRefresh is enabled and purpose is unanswered', async () => {
+	it( 'should show subtle notification CTA when purpose is unanswered', async () => {
 		await registry
 			.dispatch( CORE_USER )
 			.receiveIsUserInputCompleted( false );
@@ -220,7 +218,6 @@ describe( 'SettingsCardKeyMetrics', () => {
 			<SettingsCardKeyMetrics />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 

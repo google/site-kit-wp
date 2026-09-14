@@ -68,20 +68,9 @@ describe( 'SettingsAdmin', () => {
 		} );
 	} );
 
-	it( 'should render SettingsCardAudiences when setupFlowRefresh is disabled', async () => {
-		const { getByText, waitForRegistry } = render( <SettingsAdmin />, {
-			registry,
-		} );
-
-		await waitForRegistry();
-
-		expect( getByText( /SettingsCardAudiences/i ) ).toBeInTheDocument();
-	} );
-
-	it( 'should not render SettingsCardAudiences when setupFlowRefresh is enabled', async () => {
+	it( 'should not render SettingsCardAudiences', async () => {
 		const { queryByText, waitForRegistry } = render( <SettingsAdmin />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		await waitForRegistry();

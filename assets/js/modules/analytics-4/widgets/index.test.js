@@ -62,7 +62,6 @@ describe( 'Analytics 4 widget registrations', () => {
 	} );
 
 	afterEach( () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
 		enabledFeatures.delete( 'trafficOverview' );
 	} );
 
@@ -186,19 +185,7 @@ describe( 'Analytics 4 widget registrations', () => {
 	} );
 
 	describe( 'Audience Segmentation back notice widget', () => {
-		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
-			).toBeNull();
-		} );
-
-		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
-			enabledFeatures.add( 'setupFlowRefresh' );
-
+		it( 'should register the back notice widget', () => {
 			registerWidgets( widgets );
 
 			expect(
@@ -209,7 +196,6 @@ describe( 'Analytics 4 widget registrations', () => {
 		} );
 
 		it( 'should only be active when raw hidden is true and notice is not dismissed', () => {
-			enabledFeatures.add( 'setupFlowRefresh' );
 			registerWidgets( widgets );
 
 			const widget = registry
