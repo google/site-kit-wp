@@ -512,7 +512,6 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_authorize_user__default_redirect_url_notification_initial_setup() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -535,7 +534,6 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_authorize_user__default_redirect_url_notification_existing_user() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
