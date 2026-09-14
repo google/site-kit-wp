@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, useMemo } from 'react';
 
 /**
  * WordPress dependencies
@@ -117,11 +117,15 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 		  ]
 		: undefined;
 
-	const dayFormatter = new Intl.DateTimeFormat( getLocale(), {
-		year: 'numeric',
-		month: 'long',
-		day: 'numeric',
-	} );
+	const dayFormatter = useMemo(
+		() =>
+			new Intl.DateTimeFormat( getLocale(), {
+				year: 'numeric',
+				month: 'long',
+				day: 'numeric',
+			} ),
+		[]
+	);
 
 	return (
 		<div className="googlesitekit-traffic-overview__chart">
