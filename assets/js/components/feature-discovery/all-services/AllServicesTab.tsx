@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager newsletter signup form step.
+ * AllServicesTab placeholder component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,20 +21,10 @@
  */
 import { FC } from 'react';
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
+const AllServicesTab: FC = () => (
+	<p>
+		Feature Discovery Hub tab panel placeholder: All services and features
+	</p>
+);
 
-const StepSignupForm: FC = () => {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: newsletter CTA setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
-};
-
-export default StepSignupForm;
+export default AllServicesTab;

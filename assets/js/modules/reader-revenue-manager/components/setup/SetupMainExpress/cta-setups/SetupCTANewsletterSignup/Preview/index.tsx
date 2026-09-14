@@ -25,28 +25,42 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import useFormValue from '@/js/hooks/useFormValue';
+import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import CTAPreview, {
 	CTA_PREVIEW_TAB_INLINE,
 	CTA_PREVIEW_TAB_POPUP,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAPreview';
+import { EXPRESS_SETUP_CTA_FORMS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import InlinePane from './InlinePane';
 import PopupPane from './PopupPane';
 
-interface Props {
-	ctaTitle?: string;
-	ctaBody?: string;
-	consentEnabled?: boolean;
-	consentText?: string;
-}
-
-export default function Preview( {
-	ctaTitle,
-	ctaBody,
-	consentEnabled,
-	consentText,
-}: Props ) {
+export default function Preview() {
 	const [ activeTab, setActiveTab ] = useState( CTA_PREVIEW_TAB_POPUP );
-	const paneProps = { ctaTitle, ctaBody, consentEnabled, consentText };
+
+	const [ ctaTitle ] = useFormValue< string >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CTA_TITLE
+	);
+	const [ ctaBody ] = useFormValue< string >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CTA_BODY
+	);
+	const [ consentEnabled ] = useFormValue< boolean >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CONSENT_ENABLED
+	);
+	const [ consentText ] = useFormValue< string >(
+		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
+		NEWSLETTER_SIGNUP_FORM.CONSENT_TEXT
+	);
+
+	const paneProps = {
+		ctaTitle,
+		ctaBody,
+		consentEnabled: !! consentEnabled,
+		consentText,
+	};
 
 	const title =
 		activeTab === CTA_PREVIEW_TAB_INLINE
