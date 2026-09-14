@@ -586,7 +586,8 @@ const baseSelectors = {
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0
-	 * @since 1.183.0 No longer considers the user's stored preference; returns whether the Key Metrics widget area is hidden, as the widget is now an integral part of the dashboard.
+	 * @since 1.183.0 Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
+	 * @since n.e.x.t No longer considers the user's stored preference; returns whether the Key Metrics widget area is hidden.
 	 *
 	 * @return {boolean} True if the key metrics widget is hidden, false otherwise.
 	 */
