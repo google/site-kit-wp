@@ -68,7 +68,7 @@ export const LEAD_BREAKDOWN_DIMENSION = `customEvent:${
  * Both reports carry the breakdown dimension when one is given, so a single
  * request per report returns every group, instead of one request per group.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dates              Date range, including the compare range.
  * @param eventFilter        `eventName` dimension filter for the event report.
@@ -108,7 +108,7 @@ function getSiteGoalsPDFReportOptions(
 /**
  * Builds the grouped online store reports, returning every provider at once.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dates        Date range, including the compare range.
  * @param primaryEvent Primary ecommerce event, from `getPrimaryEcommerceEvent`.
@@ -133,7 +133,7 @@ export function getStoreGroupedReportOptions(
 /**
  * Builds the aggregated online store reports, used when there is no breakdown.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dates        Date range, including the compare range.
  * @param primaryEvent Primary ecommerce event, from `getPrimaryEcommerceEvent`.
@@ -158,7 +158,7 @@ export function getStoreAggregatedReportOptions(
 /**
  * Builds the grouped lead generation reports, returning every form at once.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dates      Date range, including the compare range.
  * @param leadEvents Detected lead events, from `getDetectedLeadEvents`.
@@ -183,7 +183,7 @@ export function getLeadGroupedReportOptions(
 /**
  * Builds the aggregated lead generation reports, used when there is no breakdown.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dates      Date range, including the compare range.
  * @param leadEvents Detected lead events, from `getDetectedLeadEvents`.

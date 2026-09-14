@@ -58,6 +58,7 @@ import {
 	requireGoogleTagGatewayEnabled,
 	requireHasRecoverableModules,
 	requireModuleNotConnected,
+	requireHomeURLUsingHTTPS,
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
@@ -735,6 +736,22 @@ describe( 'data requirements', () => {
 					registry
 				)
 			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireHomeURLUsingHTTPS', () => {
+		it( 'should return true when the home URL uses HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'https://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when the home URL does not use HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'http://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe(
+				false
+			);
 		} );
 	} );
 

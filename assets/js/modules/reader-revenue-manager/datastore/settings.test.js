@@ -21,7 +21,8 @@
  */
 import { setUsingCache } from 'googlesitekit-api';
 import { enabledFeatures } from '@/js/features';
-import { createTestRegistry } from '@tests/js/utils';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
+import { publications } from './__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
 	INVARIANT_INVALID_CONFIGURED_CTAS,
@@ -340,6 +341,61 @@ describe( 'modules/reader-revenue-manager settings', () => {
 	} );
 
 	describe( 'submitChanges', () => {
+		it( 'should invalidate getPublication when changing publication settings', async () => {
+			const dispatch = registry.dispatch(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			const select = registry.select( MODULES_READER_REVENUE_MANAGER );
+
+			const publicationA = publications[ 0 ];
+			const publicationB = publications[ 3 ];
+
+			const publicationEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+			);
+
+			dispatch.receiveGetSettings( {
+				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationA.publicationId,
+			} );
+
+			dispatch.receiveGetPublication( publicationA );
+
+			select.getPublication();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication();
+
+			expect( select.getPublication() ).toEqual( publicationA );
+
+			const newSettings = {
+				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationB.publicationId,
+			};
+
+			fetchMock.postOnce( settingsEndpoint, { body: newSettings } );
+			fetchMock.getOnce( publicationEndpoint, { body: publicationB } );
+
+			dispatch.setSettings( newSettings );
+
+			await dispatch.submitChanges();
+
+			select.getPublication();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication();
+
+			expect( select.getPublication() ).toEqual( publicationB );
+			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
+		} );
+
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )

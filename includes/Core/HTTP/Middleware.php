@@ -35,8 +35,8 @@ class Middleware {
 				$wp_http = new WP_Http();
 				if ( $wp_http->block_request( $uri ) ) {
 					throw new RequestException(
-						__( 'User has blocked requests through HTTP.', 'default' ),
-						$request
+						__( 'User has blocked requests through HTTP.', 'default' ), // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Guzzle exception message, never output.
+						$request // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- RequestException takes the request object as its second argument, not output.
 					);
 				}
 

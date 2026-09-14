@@ -29,7 +29,7 @@ import {
 /**
  * Builds a grouped report row.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param value     Breakdown dimension value.
  * @param dateRange Date range slug.
@@ -48,7 +48,7 @@ function groupedRow( value: string, dateRange: string, metrics: number[] ) {
 /**
  * Builds a totals row for an aggregated report.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param dateRange Date range slug.
  * @param metrics   Metric values, in report order.

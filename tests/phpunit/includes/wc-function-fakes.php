@@ -30,7 +30,7 @@ if ( ! function_exists( 'wc_get_price_decimals' ) ) {
 	 * option and runs the `wc_get_price_decimals` filter. A test can set either
 	 * one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return int The store's decimal places, `2` until a test changes them.
 	 */
@@ -48,7 +48,7 @@ if ( ! function_exists( 'wc_format_decimal' ) ) {
 	 * such as `12.3456`. The real function also removes the thousand separator
 	 * and rewrites the decimal separator for the store's locale.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param mixed $number The price, as a float or a string, such as `12.3456` or `'20.00'`.
 	 * @return string The same price, as a string.
@@ -66,7 +66,7 @@ if ( ! function_exists( 'get_woocommerce_currency' ) ) {
 	 * Like the real function, it reads the `woocommerce_currency` option and runs
 	 * the `woocommerce_currency` filter. A test can set either one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return string The store's currency code, `USD` until a test changes it.
 	 */
@@ -85,7 +85,7 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	 * of them here, so this fake reports every page as no endpoint. A test that
 	 * needs one of those pages has to replace this fake.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param string|false $endpoint The endpoint to look for, such as `order-received`. This fake ignores it.
 	 * @return bool Always `false`.
