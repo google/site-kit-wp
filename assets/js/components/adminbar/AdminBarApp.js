@@ -67,6 +67,9 @@ export default function AdminBarApp() {
 			<Grid>
 				<Row>
 					<Cell size={ 3 } alignMiddle>
+						<div className="googlesitekit-adminbar__subtitle">
+							{ __( 'Stats for', 'google-site-kit' ) }
+						</div>
 						<div className="googlesitekit-adminbar__title">
 							{ currentEntityTitle
 								? decodeHTMLEntity( currentEntityTitle )
