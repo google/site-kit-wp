@@ -102,6 +102,11 @@
 			@extend .mdc-layout-grid__cell--span-2-tablet;
 		}
 
+		.mdc-layout-grid__cell--span-2-phone {
+
+			@extend .mdc-layout-grid__cell--span-2-phone;
+		}
+
 		.mdc-layout-grid__cell--span-3 {
 
 			@extend .mdc-layout-grid__cell--span-3;

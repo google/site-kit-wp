@@ -590,6 +590,20 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_is_site_goals_widget_active__is_true_only_for_a_widget_type_in_the_active_widgets_setting() {
+		$builder = $this->create_builder();
+		$builder->set_active_site_goals_widgets( array( 'lead' ) );
+
+		$this->assertTrue(
+			$builder->is_site_goals_widget_active( 'lead' ),
+			'`is_site_goals_widget_active()` should be true for `lead` when `activeWidgets` has `lead`.'
+		);
+		$this->assertFalse(
+			$builder->is_site_goals_widget_active( 'ecommerce' ),
+			'`is_site_goals_widget_active()` should be false for `ecommerce` when `activeWidgets` has `lead` alone.'
+		);
+	}
+
 	/**
 	 * Asserts that a report covers the report period and the period before it.
 	 *

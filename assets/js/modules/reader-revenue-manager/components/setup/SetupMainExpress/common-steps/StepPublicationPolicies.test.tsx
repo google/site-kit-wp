@@ -124,6 +124,22 @@ describe( 'StepPublicationPolicies', () => {
 			'http example.com/terms-of-service',
 			'http example.com/privacy-policy',
 		],
+		[
+			'protocols with a missing slash',
+			'https:/example.com',
+			'http:/example.com',
+		],
+		[
+			'protocols with an extra slash',
+			'https:///example.com',
+			'http:///example.com',
+		],
+		[ 'domains without a host', 'https://.com', 'http://.com' ],
+		[
+			'domains starting with a hyphen',
+			'https://-example.com',
+			'http://-example.com',
+		],
 		[ 'non-URL values', 'Terms of service URL', 'Privacy policy URL' ],
 	] )(
 		'should disable submission and display an error message for %s',

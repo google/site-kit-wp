@@ -509,6 +509,63 @@ class Email_Template_RendererTest extends TestCase {
 		$this->assertStringNotContainsString( 'class="badge-negative"', $html_output, 'The card should show no negative badge when no metric has a change.' );
 	}
 
+	public function test_render__shows_the_online_store_and_lead_generation_cards_above_the_visitors_section() {
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$sections_map = new Sections_Map(
+			$context,
+			array(
+				'total_visitors'             => array(
+					'label'          => 'Total visitors',
+					'value'          => '120',
+					'change'         => 20,
+					'change_context' => 'Compared to previous 7 days',
+				),
+				'site_goals_online_store'    => array(
+					'values' => array( '116' ),
+					'groups' => array(
+						array(
+							'label'   => '',
+							'metrics' => array(
+								array(
+									'label' => 'Total sales',
+									'value' => '116',
+									'trend' => 7.2,
+								),
+							),
+						),
+					),
+				),
+				'site_goals_lead_generation' => array(
+					'values' => array( '85' ),
+					'groups' => array(
+						array(
+							'label'   => '',
+							'metrics' => array(
+								array(
+									'label' => 'Total form completions',
+									'value' => '85',
+									'trend' => 0.6,
+								),
+							),
+						),
+					),
+				),
+			),
+			new Golinks( $context )
+		);
+
+		$html_output = ( new Email_Template_Renderer( $sections_map ) )->render( 'email-report', $this->get_minimal_template_data() );
+
+		$online_store_position    = strpos( $html_output, 'How is my online store performing?' );
+		$lead_generation_position = strpos( $html_output, 'Are people reaching out to my business?' );
+		$visitors_position        = strpos( $html_output, 'How many people are finding and visiting my site?' );
+
+		$this->assertNotFalse( $online_store_position, 'The email should show the "How is my online store performing?" card.' );
+		$this->assertNotFalse( $lead_generation_position, 'The email should show the "Are people reaching out to my business?" card.' );
+		$this->assertLessThan( $lead_generation_position, $online_store_position, 'The email should show the online store card above the lead generation card.' );
+		$this->assertLessThan( $visitors_position, $lead_generation_position, 'The email should show the lead generation card above the visitors section.' );
+	}
+
 	/**
 	 * Builds one Site Goals section from the given part data.
 	 *

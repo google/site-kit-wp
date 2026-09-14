@@ -1,7 +1,7 @@
 /**
- * CoreDashboardEffects component.
+ * AllServicesTab placeholder component.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
  */
 
 /**
- * Internal dependencies
+ * External dependencies
  */
-import { useHasScrolledEffect } from '@/js/hooks/useHasScrolledEffect';
-import useOpenEmailReportingSelectionPanelEffect from '@/js/hooks/useOpenEmailReportingSelectionPanelEffect';
+import { FC } from 'react';
 
-export default function CoreDashboardEffects() {
-	useOpenEmailReportingSelectionPanelEffect();
-	useHasScrolledEffect();
+const AllServicesTab: FC = () => (
+	<p>
+		Feature Discovery Hub tab panel placeholder: All services and features
+	</p>
+);
 
-	return null;
-}
+export default AllServicesTab;

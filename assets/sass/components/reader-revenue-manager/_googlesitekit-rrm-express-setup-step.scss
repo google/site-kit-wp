@@ -47,7 +47,15 @@
 		max-inline-size: 500px;
 
 		.mdc-text-field {
-			inline-size: auto;
+			inline-size: 100%;
+		}
+
+		.mdc-select--outlined,
+		.mdc-text-field--outlined {
+
+			.mdc-floating-label {
+				color: $c-surfaces-on-background-variant;
+			}
 		}
 	}
 
