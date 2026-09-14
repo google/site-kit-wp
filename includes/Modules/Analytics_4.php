@@ -83,6 +83,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Remove_Site_Goals_Widget;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
@@ -1063,6 +1064,14 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				array(
 					'site_goals_settings' => $this->site_goals_settings,
 					'service'             => '',
+				)
+			),
+			'POST:remove-site-goals-widget'               => new Remove_Site_Goals_Widget(
+				array(
+					'site_goals_settings'      => $this->site_goals_settings,
+					'site_goals_site_settings' => $this->site_goals_site_settings,
+					'context'                  => $this->context,
+					'service'                  => '',
 				)
 			),
 			'GET:advanced-data-breakdowns-settings'       => new Get_Advanced_Data_Breakdowns_Settings(

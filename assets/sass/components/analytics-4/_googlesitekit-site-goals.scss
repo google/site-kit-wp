@@ -146,6 +146,22 @@ $site-goals-tile-connector-offset: 3.5px;
 		line-height: $lh-label-md;
 	}
 
+	.googlesitekit-site-goals-removal-notice {
+		.googlesitekit-notice__title,
+		.googlesitekit-notice__description {
+			line-height: $lh-body-md;
+		}
+
+		.googlesitekit-notice__title {
+			letter-spacing: 0;
+		}
+
+		.mdc-button {
+			min-height: 40px;
+			padding: 10px $grid-gap-phone;
+		}
+	}
+
 	.googlesitekit-site-goals-other-sources-notice {
 		margin-bottom: 24px;
 	}
