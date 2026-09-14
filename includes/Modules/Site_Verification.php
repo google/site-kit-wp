@@ -440,26 +440,82 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * Gets all available verification tags for all users.
 	 *
 	 * This is a special method needed for printing all meta tags in the frontend.
+	 * Only tags belonging to users who have the necessary permissions are returned,
+	 * consistent with how the verification file is served. The permission checks are
+	 * intentionally not cached so that they take effect as soon as they change.
 	 *
 	 * @since 1.4.0
+	 * @since n.e.x.t Only returns tags for users with the `Permissions::SETUP` capability.
 	 *
 	 * @return array List of verification meta tags.
 	 */
 	private function get_all_verification_tags() {
-		global $wpdb;
+		$user_tags = $this->get_all_user_verification_tags();
 
-		$meta_tags = $this->transients->get( self::TRANSIENT_VERIFICATION_META_TAGS );
+		// Prime the user and user meta caches in bulk, as the capability checks below
+		// would otherwise query for each user individually. This issues no queries at
+		// all when there are no tags, which is the case for most sites, as the file
+		// verification method is preferred over meta tags.
+		cache_users( array_keys( $user_tags ) );
 
-		if ( ! is_array( $meta_tags ) ) {
-			$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
-			// phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$meta_tags = $wpdb->get_col(
-				$wpdb->prepare( "SELECT DISTINCT meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
-			);
-			$this->transients->set( self::TRANSIENT_VERIFICATION_META_TAGS, $meta_tags );
+		$meta_tags = array();
+
+		foreach ( $user_tags as $user_id => $meta_tag ) {
+			// If the user does not have the necessary permissions then skip their tag.
+			if ( ! user_can( $user_id, Permissions::SETUP ) ) {
+				continue;
+			}
+
+			$meta_tags[] = $meta_tag;
 		}
 
-		return array_filter( $meta_tags );
+		return array_filter( array_unique( $meta_tags ) );
+	}
+
+	/**
+	 * Gets the stored verification meta tag of every user that has one.
+	 *
+	 * The result is cached in a transient as it is needed on every frontend
+	 * request. Only the stored tags are cached here; whether a tag is actually
+	 * rendered depends on a permission check made at render time.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Verification meta tags, keyed by user ID.
+	 */
+	private function get_all_user_verification_tags() {
+		$cached = $this->transients->get( self::TRANSIENT_VERIFICATION_META_TAGS );
+
+		// The cached tags are wrapped in an array to distinguish them from the
+		// flat list of tags cached by previous versions of the plugin.
+		if ( is_array( $cached ) && isset( $cached['user_tags'] ) && is_array( $cached['user_tags'] ) ) {
+			return $cached['user_tags'];
+		}
+
+		global $wpdb;
+
+		$meta_key = $this->user_options->get_meta_key( Verification_Meta::OPTION );
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$results = $wpdb->get_results(
+			$wpdb->prepare( "SELECT user_id, meta_value FROM {$wpdb->usermeta} WHERE meta_key = %s", $meta_key )
+		);
+
+		// Return without caching if the query failed, as the transient does not
+		// expire and would otherwise suppress all tags until it is invalidated.
+		if ( ! is_array( $results ) ) {
+			return array();
+		}
+
+		$user_tags = array();
+
+		foreach ( $results as $result ) {
+			$user_tags[ (int) $result->user_id ] = $result->meta_value;
+		}
+
+		$this->transients->set( self::TRANSIENT_VERIFICATION_META_TAGS, array( 'user_tags' => $user_tags ) );
+
+		return $user_tags;
 	}
 
 	/**
