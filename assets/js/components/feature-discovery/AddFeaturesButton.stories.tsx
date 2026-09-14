@@ -76,9 +76,7 @@ export default {
 	decorators: [
 		(
 			StoryComponent: () => ReactElement,
-			{
-				args,
-			}: { args: { setupRegistry: ( registry: WPDataRegistry ) => void } }
+			{ args }: { args: Story[ 'args' ] }
 		) => {
 			return (
 				<WithRegistrySetup
@@ -95,7 +93,7 @@ export default {
 							.dispatch( CORE_USER )
 							.receiveGetExpirableItems( {} );
 
-						args.setupRegistry?.( registry );
+						args?.setupRegistry?.( registry );
 					} }
 				>
 					<StoryComponent />
