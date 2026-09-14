@@ -8,7 +8,7 @@ exports[`SetupEnhancedMeasurementSwitch should not render the switch when enhanc
     class="googlesitekit-analytics-enable-enhanced-measurement"
   >
     <div
-      class="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label"
+      class="googlesitekit-typography googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label googlesitekit-typography--medium"
     >
       Enhanced measurement is enabled for this web data stream
     </div>

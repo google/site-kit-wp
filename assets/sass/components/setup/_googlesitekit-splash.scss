@@ -49,11 +49,6 @@
 
 		.googlesitekit-setup__description {
 			margin-top: 24px;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				line-height: $lh-body-lg;
-			}
 		}
 
 		.googlesitekit-setup__services-list {

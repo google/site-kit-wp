@@ -73,11 +73,6 @@
 
 			.googlesitekit-overlay-card__title {
 				margin: 0 0 5px;
-
-				/* TODO: 11266 -- Remove this override and update VRT refrences. */
-				&.googlesitekit-typography {
-					letter-spacing: unset;
-				}
 			}
 		}
 	}

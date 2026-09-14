@@ -36,11 +36,6 @@
 
 		.googlesitekit-analytics-cta--description {
 			margin: 0;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography.googlesitekit-typography {
-				line-height: $lh-body-lg;
-			}
 		}
 
 		.mdc-button {
