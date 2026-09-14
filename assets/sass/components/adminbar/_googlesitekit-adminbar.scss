@@ -88,6 +88,37 @@
 		.googlesitekit-data-block__datapoint--resize {
 			font-size: inherit;
 		}
+
+		@include mdc-layout-grid-media-query_("phone") {
+
+			.googlesitekit-data-block {
+				padding-top: 12px;
+			}
+
+			// Scoped to this row so it doesn't zero the gap of other adminbar rows.
+			.googlesitekit-adminbar__widgets-row.mdc-layout-grid__inner {
+				row-gap: 0;
+			}
+
+			.mdc-layout-grid__cell--span-2-phone {
+				display: flex;
+
+				// Fill the cell whether it holds a data block, or its loading/error state.
+				> * {
+					flex: 1;
+				}
+
+				.googlesitekit-data-block {
+					display: flex;
+					flex-direction: column;
+				}
+
+				.googlesitekit-data-block__title {
+					// Keep a long title wrapping within its own column instead of overlapping the next one.
+					overflow-wrap: anywhere;
+				}
+			}
+		}
 	}
 
 	// Handle links on mobile.
