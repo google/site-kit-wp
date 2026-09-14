@@ -20,13 +20,13 @@
  * Internal dependencies
  */
 import {
-	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
-import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -47,32 +47,42 @@ const TEST_OLD_VERSION = '1.84.0';
 const TEST_INITIAL_VERSION = '1.86.0';
 const TEST_NEW_VERSION = '1.87.0';
 
-const TEST_FEATURE_SETTINGS: FeatureSettings = {
+const TEST_FEATURE: Feature = {
+	slug: 'test-feature',
 	title: 'Test feature title',
 	shortDescription: 'Test feature description.',
 	effort: FEATURE_EFFORTS.LOW,
 	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 	addedInVersion: TEST_OLD_VERSION,
+	prerequisiteModules: [],
+	badges: [],
 	setup: {
 		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 	},
 };
 
-const TEST_NEW_FEATURE_SETTINGS: FeatureSettings = {
-	...TEST_FEATURE_SETTINGS,
+const TEST_SITE_KIT_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'key-metrics',
+};
+
+const TEST_NEW_FEATURE: Feature = {
+	...TEST_FEATURE,
 	addedInVersion: TEST_NEW_VERSION,
 };
 
-const TEST_MODULE_FEATURE_SETTINGS: FeatureSettings = {
-	...TEST_FEATURE_SETTINGS,
+const TEST_MODULE_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'enhanced-measurement',
 	title: 'Measure even more visitor interactions',
 	shortDescription: 'Collect enhanced measurement events.',
 	effort: FEATURE_EFFORTS.MEDIUM,
 	moduleSlug: MODULE_SLUG_ANALYTICS_4,
 };
 
-const TEST_BADGED_FEATURE_SETTINGS: FeatureSettings = {
-	...TEST_FEATURE_SETTINGS,
+const TEST_BADGED_FEATURE: Feature = {
+	...TEST_FEATURE,
+	slug: 'paid-feature',
 	badges: [ FEATURE_BADGES.PAID_SERVICE ],
 };
 
@@ -107,12 +117,7 @@ describe( 'FeatureCard', () => {
 				Icon: AnalyticsIconSpy,
 			} );
 
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature(
-				'enhanced-measurement',
-				TEST_MODULE_FEATURE_SETTINGS
-			);
+		provideFeatures( registry, [ TEST_MODULE_FEATURE ] );
 
 		const { getByRole, getByText } = render(
 			<FeatureCard slug="enhanced-measurement" />,
@@ -136,9 +141,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should render the Site Kit service identity by default', () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'key-metrics', TEST_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_SITE_KIT_FEATURE ] );
 
 		const { getByText } = render( <FeatureCard slug="key-metrics" />, {
 			registry,
@@ -148,9 +151,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should render the unread dot and New badge for new features', async () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 
 		const { container, getByText } = render(
 			<FeatureCard slug="test-feature" />,
@@ -169,9 +170,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should not render the unread dot or New badge for non-new features', () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_FEATURE ] );
 
 		const { container, queryByText } = render(
 			<FeatureCard slug="test-feature" />,
@@ -188,9 +187,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should hide the New badge for a new feature when hideNewBadge is set', async () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 
 		const { container, queryByText } = render(
 			<FeatureCard slug="test-feature" hideNewBadge />,
@@ -209,9 +206,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should hide the unread dot for a new feature when hideUnreadDot is set', async () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 
 		const { container, getByText, rerender } = render(
 			<FeatureCard slug="test-feature" />,
@@ -239,9 +234,7 @@ describe( 'FeatureCard', () => {
 	it( 'should keep the unread dot visible for three seconds after it is marked seen', () => {
 		jest.useFakeTimers();
 
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 
 		const { container } = render( <FeatureCard slug="test-feature" />, {
 			registry,
@@ -276,9 +269,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should render badges carried by the catalog entry', () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'paid-feature', TEST_BADGED_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_BADGED_FEATURE ] );
 
 		const { getByText } = render( <FeatureCard slug="paid-feature" />, {
 			registry,
@@ -288,9 +279,7 @@ describe( 'FeatureCard', () => {
 	} );
 
 	it( 'should render the dismiss control only when the card is dismissible', () => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'test-feature', TEST_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_FEATURE ] );
 
 		const { getByRole, queryByRole, rerender } = render(
 			<FeatureCard slug="test-feature" />,

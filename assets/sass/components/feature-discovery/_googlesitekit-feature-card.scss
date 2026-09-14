@@ -28,7 +28,7 @@
 		grid-template-columns: max-content auto;
 		padding-block: 30px;
 		padding-inline-end: $grid-gap-phone;
-		row-gap: 10px;
+		row-gap: var(--googlesitekit-feature-card-gap-m);
 
 		&:last-child {
 			border-bottom: none;

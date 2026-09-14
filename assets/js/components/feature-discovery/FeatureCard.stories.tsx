@@ -25,12 +25,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
-	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
@@ -42,19 +43,23 @@ const TEST_OLD_VERSION = '1.84.0';
 const TEST_INITIAL_VERSION = '1.86.0';
 const TEST_NEW_VERSION = '1.87.0';
 
-const TEST_FEATURE_SETTINGS = {
+const TEST_FEATURE: Feature = {
+	slug: 'dashboard-sharing',
 	title: 'Collaborate with other team members by sharing dashboard access',
 	shortDescription:
 		'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials.',
 	effort: FEATURE_EFFORTS.LOW,
 	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 	addedInVersion: TEST_OLD_VERSION,
+	prerequisiteModules: [],
+	badges: [],
 	setup: {
 		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 	},
 };
 
-const TEST_MODULE_FEATURE_SETTINGS = {
+const TEST_MODULE_FEATURE: Feature = {
+	slug: 'ads',
 	title: 'Increase your visibility in Search',
 	shortDescription:
 		'Appear in search results when people look for keywords related to what you offer. Ads helps you connect with people at the moment they’re actively interested in your services or products.',
@@ -62,14 +67,21 @@ const TEST_MODULE_FEATURE_SETTINGS = {
 	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 	moduleSlug: MODULE_SLUG_ADS,
 	addedInVersion: TEST_OLD_VERSION,
+	prerequisiteModules: [],
 	badges: [ FEATURE_BADGES.PAID_SERVICE ],
 	setup: {
 		type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 	},
 };
 
-const TEST_NEW_FEATURE_SETTINGS = {
-	...TEST_MODULE_FEATURE_SETTINGS,
+const TEST_NEW_FEATURE: Feature = {
+	...TEST_MODULE_FEATURE,
+	slug: 'dashboard-sharing',
+	addedInVersion: TEST_NEW_VERSION,
+};
+
+const TEST_NEW_MODULE_FEATURE: Feature = {
+	...TEST_MODULE_FEATURE,
 	addedInVersion: TEST_NEW_VERSION,
 };
 
@@ -93,9 +105,7 @@ Default.storyName = 'Default';
 Default.args = {
 	cards: [ { slug: 'dashboard-sharing' } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'dashboard-sharing', TEST_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_FEATURE ] );
 	},
 };
 Default.scenario = {};
@@ -105,9 +115,7 @@ ModuleFeature.storyName = 'Module Feature';
 ModuleFeature.args = {
 	cards: [ { slug: 'ads' } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'ads', TEST_MODULE_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_MODULE_FEATURE ] );
 	},
 };
 ModuleFeature.scenario = {};
@@ -118,9 +126,7 @@ New.args = {
 	cards: [ { slug: 'dashboard-sharing', hideUnreadDot: true } ],
 
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'dashboard-sharing', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 	},
 };
 New.scenario = {};
@@ -130,9 +136,7 @@ NewDismissible.storyName = 'New, Dismissible';
 NewDismissible.args = {
 	cards: [ { slug: 'ads', isDismissible: true, hideNewBadge: true } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'ads', TEST_NEW_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_NEW_MODULE_FEATURE ] );
 	},
 };
 NewDismissible.scenario = {};
@@ -142,12 +146,7 @@ MultipleCards.storyName = 'Multiple Cards';
 MultipleCards.args = {
 	cards: [ { slug: 'dashboard-sharing' }, { slug: 'ads' } ],
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'dashboard-sharing', TEST_FEATURE_SETTINGS );
-		registry
-			.dispatch( CORE_FEATURE_DISCOVERY )
-			.registerFeature( 'ads', TEST_MODULE_FEATURE_SETTINGS );
+		provideFeatures( registry, [ TEST_FEATURE, TEST_MODULE_FEATURE ] );
 	},
 };
 MultipleCards.scenario = {};

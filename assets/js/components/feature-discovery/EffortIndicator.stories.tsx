@@ -31,9 +31,9 @@ import EffortIndicator from './EffortIndicator';
 function Template() {
 	return (
 		<Fragment>
-			<EffortIndicator effort={ FEATURE_EFFORTS.LOW } />
-			<EffortIndicator effort={ FEATURE_EFFORTS.MEDIUM } />
-			<EffortIndicator effort={ FEATURE_EFFORTS.HIGH } />
+			{ Object.values( FEATURE_EFFORTS ).map( ( effort ) => (
+				<EffortIndicator key={ effort } effort={ effort } />
+			) ) }
 		</Fragment>
 	);
 }
