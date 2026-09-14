@@ -75,6 +75,11 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+	// Storing the creation time stops a request for the Analytics property.
+	// This day sits before the selected range, so the chart draws no marker.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 }
 
 /**
@@ -139,7 +144,9 @@ MainDashboard.args = {
 		provideTrafficOverviewReports( registry );
 	},
 };
-MainDashboard.scenario = {};
+MainDashboard.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
 
 /**
  * This story sets no `scenario`, so it runs no visual check. A current entity
