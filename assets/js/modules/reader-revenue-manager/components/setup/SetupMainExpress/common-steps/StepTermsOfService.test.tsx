@@ -93,6 +93,8 @@ describe( 'StepTermsOfService', () => {
 	} );
 
 	it( 'should keep the terms step visible after visiting it', () => {
+		provideTermsOfService( registry );
+
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
