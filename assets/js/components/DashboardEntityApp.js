@@ -47,6 +47,7 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import { useFeature } from '@/js/hooks/useFeature';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -56,6 +57,7 @@ import DateRangeSelector from './DateRangeSelector';
 import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import AddFeaturesButton from './feature-discovery/AddFeaturesButton';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import Layout from './layout/Layout';
@@ -125,6 +127,8 @@ function DashboardEntityApp() {
 			'url-not-part-of-this-site'
 		);
 	} );
+
+	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 
 	useMonitorInternetConnection();
 
@@ -221,6 +225,9 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
+					<AddFeaturesButton />
+				) }
 				<ManageEmailReportsButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
