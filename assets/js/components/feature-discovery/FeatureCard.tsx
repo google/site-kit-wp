@@ -148,20 +148,23 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 
 			<div className="googlesitekit-feature-card__content">
 				<div className="googlesitekit-feature-card__header">
-					<Typography
-						as="h3"
-						className="googlesitekit-feature-card__title"
-						size={ SIZE_LARGE }
-						type={ TYPE_TITLE }
-					>
-						{ title }
+					<div className="googlesitekit-feature-card__title">
+						<Typography
+							as="h3"
+							className="googlesitekit-feature-card__heading"
+							size={ SIZE_LARGE }
+							type={ TYPE_TITLE }
+						>
+							{ title }
+						</Typography>
+
 						{ allBadges.map( ( badge ) => (
 							<Badge
 								{ ...FEATURE_BADGE_PROPS[ badge ] }
 								key={ badge }
 							/>
 						) ) }
-					</Typography>
+					</div>
 
 					{ isDismissible && (
 						<Link

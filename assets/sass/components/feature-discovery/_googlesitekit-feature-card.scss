@@ -75,6 +75,9 @@
 		flex-wrap: wrap;
 		gap: var(--googlesitekit-feature-card-gap-s) var(--googlesitekit-feature-card-gap-m);
 		justify-content: start;
+	}
+
+	.googlesitekit-feature-card__heading {
 		margin: 0;
 	}
 

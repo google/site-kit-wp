@@ -30,7 +30,6 @@ import { forwardRef } from '@wordpress/element';
 export interface BadgeProps extends ComponentPropsWithoutRef< 'span' > {
 	label: string;
 	hasLeftSpacing?: boolean;
-	className?: string;
 }
 
 const Badge = forwardRef< HTMLSpanElement, BadgeProps >(
@@ -46,5 +45,7 @@ const Badge = forwardRef< HTMLSpanElement, BadgeProps >(
 		</span>
 	)
 );
+
+Badge.displayName = 'Badge';
 
 export default Badge;

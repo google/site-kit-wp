@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { Registry } from '@/js/googlesitekit-data';
 import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -40,8 +41,6 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import FeatureCard from './FeatureCard';
-
-type Registry = ReturnType< typeof createTestRegistry >;
 
 const TEST_OLD_VERSION = '1.84.0';
 const TEST_INITIAL_VERSION = '1.86.0';
@@ -90,7 +89,7 @@ describe( 'FeatureCard', () => {
 	let registry: Registry;
 
 	beforeEach( () => {
-		registry = createTestRegistry();
+		registry = createTestRegistry() as Registry;
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
