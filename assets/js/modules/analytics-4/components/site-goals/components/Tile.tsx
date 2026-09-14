@@ -33,6 +33,8 @@ import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
 import GoalTile from './GoalTile';
@@ -107,9 +109,12 @@ export const Tile: FC< TileProps > = ( {
 						<div className="googlesitekit-site-goals-tile__metric">
 							{ numFmt( currentValue, format ) }
 						</div>
-						<p className="googlesitekit-site-goals-tile__subtext">
+						<P
+							className="googlesitekit-site-goals-tile__subtext"
+							size={ SIZE_SMALL }
+						>
 							{ subtitle }
-						</p>
+						</P>
 					</div>
 					{ previousValue !== 0 && (
 						<div className="googlesitekit-site-goals-tile__change-container">
@@ -122,7 +127,10 @@ export const Tile: FC< TileProps > = ( {
 								) }
 							/>
 							{ comparisonDays && (
-								<p className="googlesitekit-site-goals-tile__comparison-label">
+								<P
+									className="googlesitekit-site-goals-tile__comparison-label"
+									size={ SIZE_SMALL }
+								>
 									{ sprintf(
 										/* translators: %d: number of days in the comparison period */
 										__(
@@ -131,7 +139,7 @@ export const Tile: FC< TileProps > = ( {
 										),
 										comparisonDays
 									) }
-								</p>
+								</P>
 							) }
 						</div>
 					) }

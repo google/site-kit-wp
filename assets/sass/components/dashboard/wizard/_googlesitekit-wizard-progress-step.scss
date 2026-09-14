@@ -95,10 +95,14 @@
 
 		.googlesitekit-wizard-progress-step__text {
 			color: $c-tertiary;
-			font-size: $fs-body-md;
-			font-weight: $fw-medium;
-			letter-spacing: $ls-s;
 			margin: 0;
+
+			&.googlesitekit-typography {
+				font-weight: $fw-medium;
+
+				/* TODO: 11266 -- Remove this override and update VRT refrences. */
+				line-height: $lh-body-lg;
+			}
 
 			span {
 				color: $c-error;
