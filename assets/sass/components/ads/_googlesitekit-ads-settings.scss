@@ -28,11 +28,6 @@
 			color: $c-surfaces-on-surface-variant;
 			margin-bottom: 20px;
 			margin-top: 6px;
-
-			/* TODO: 11266 -- Remove this override and update VRT refrences. */
-			&.googlesitekit-typography {
-				line-height: $lh-body-lg;
-			}
 		}
 
 		.googlesitekit-setup-module__inputs {
