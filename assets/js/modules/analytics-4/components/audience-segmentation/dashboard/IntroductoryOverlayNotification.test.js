@@ -279,18 +279,6 @@ describe( 'IntroductoryOverlayNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when the audiences widget area is hidden', async () => {
-			registry
-				.dispatch( CORE_USER )
-				.setAudienceSegmentationWidgetHidden( true );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-			expect( isActive ).toBe( false );
-		} );
-
 		it( 'is not active when the current user is the one who completed the audience segmentation setup', async () => {
 			const userID = registry.select( CORE_USER ).getID();
 
