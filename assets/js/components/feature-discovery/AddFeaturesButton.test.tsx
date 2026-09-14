@@ -35,7 +35,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
-	fireEvent,
 	provideSiteInfo,
 	render,
 } from '@tests/js/test-utils';
@@ -121,25 +120,5 @@ describe( 'AddFeaturesButton', () => {
 		expect(
 			queryByText( 'New features available' )
 		).not.toBeInTheDocument();
-	} );
-
-	it( 'does not show a tooltip until the button is hovered', () => {
-		const { queryByRole } = render( <AddFeaturesButton />, {
-			registry,
-		} );
-
-		expect( queryByRole( 'tooltip' ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'shows a tooltip with the button label on hover', async () => {
-		const { findByRole, getByRole } = render( <AddFeaturesButton />, {
-			registry,
-		} );
-
-		fireEvent.mouseOver( getByRole( 'link', { name: buttonLabel } ) );
-
-		const tooltip = await findByRole( 'tooltip', { name: buttonLabel } );
-
-		expect( tooltip ).toBeInTheDocument();
 	} );
 } );

@@ -44,28 +44,11 @@
 			color: $c-content-on-primary-container;
 			text-decoration: none;
 		}
-
-		@media (max-width: $bp-wpAdminBarTablet) {
-			border-radius: 50%;
-			height: 36px;
-			justify-content: center;
-			padding: 0;
-			width: 36px;
-		}
 	}
 
 	.googlesitekit-add-features-button__icon {
 		color: $c-site-kit-sk-300;
 		flex-shrink: 0;
-	}
-
-	.googlesitekit-add-features-button__label {
-		// Below this breakpoint the pill collapses to an icon-only circle, in
-		// line with the header's other icon buttons.
-		@media (max-width: $bp-wpAdminBarTablet) {
-
-			@include screen-reader-only;
-		}
 	}
 
 	// The 8px dot reads as a 14px circle because of its 3px surround, which
@@ -81,12 +64,5 @@
 		right: -3px;
 		top: -3px;
 		width: 14px;
-
-		// The collapsed button is a circle, so the dot moves in to sit on its
-		// edge rather than floating off the corner of its bounding box.
-		@media (max-width: $bp-wpAdminBarTablet) {
-			right: -2px;
-			top: -2px;
-		}
 	}
 }

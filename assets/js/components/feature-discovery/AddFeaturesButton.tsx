@@ -34,7 +34,6 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
-import { Tooltip } from '@/js/googlesitekit-components';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import PlusHeavy from '@/svg/icons/plus-heavy.svg';
@@ -61,29 +60,26 @@ const AddFeaturesButton: FC = () => {
 
 	return (
 		<div className="googlesitekit-add-features-button-wrapper">
-			{ /* @ts-expect-error - The `Tooltip` component is not typed yet. */ }
-			<Tooltip title={ buttonLabel } enterDelay={ 100 }>
-				<a
-					aria-describedby={
-						hasNewFeatures ? ariaDescribedBy : undefined
-					}
-					className="googlesitekit-add-features-button"
-					href={ featuresURL }
+			<a
+				aria-describedby={
+					hasNewFeatures ? ariaDescribedBy : undefined
+				}
+				className="googlesitekit-add-features-button"
+				href={ featuresURL }
+			>
+				<PlusHeavy
+					className="googlesitekit-add-features-button__icon"
+					width={ 13 }
+					height={ 13 }
+				/>
+				<Typography
+					className="googlesitekit-add-features-button__label"
+					size={ SIZE_SMALL }
+					type={ TYPE_LABEL }
 				>
-					<PlusHeavy
-						className="googlesitekit-add-features-button__icon"
-						width={ 13 }
-						height={ 13 }
-					/>
-					<Typography
-						className="googlesitekit-add-features-button__label"
-						size={ SIZE_SMALL }
-						type={ TYPE_LABEL }
-					>
-						{ buttonLabel }
-					</Typography>
-				</a>
-			</Tooltip>
+					{ buttonLabel }
+				</Typography>
+			</a>
 			{ hasNewFeatures && (
 				<span
 					className="googlesitekit-add-features-button__new-indicator"
