@@ -124,7 +124,7 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -147,9 +147,7 @@ describe( 'AdminBarWidgets', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			queryByText( /Set up Google Analytics/ )
-		).not.toBeInTheDocument();
+		expect( queryByText( /Set up Analytics/ ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the Admin Bar Widgets for the view only user if the module is shared', async () => {
@@ -193,7 +191,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
 		const { waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -228,7 +225,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -250,7 +246,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -272,7 +267,6 @@ describe( 'AdminBarWidgets', () => {
 	it( 'should track the `click_learn_more_link` event when the "Learn more" link is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -301,7 +295,7 @@ describe( 'AdminBarWidgets', () => {
 			<AdminBarWidgets />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -345,7 +339,7 @@ describe( 'AdminBarWidgets', () => {
 
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitForRegistry();
