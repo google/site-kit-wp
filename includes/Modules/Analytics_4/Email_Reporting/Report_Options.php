@@ -57,6 +57,14 @@ class Report_Options extends Base_Report_Options {
 	private $detected_events = array();
 
 	/**
+	 * Site Goals widget types in the site-wide `activeWidgets` setting.
+	 *
+	 * @since n.e.x.t
+	 * @var array
+	 */
+	private $active_site_goals_widgets = array();
+
+	/**
 	 * Whether audience segmentation is enabled.
 	 *
 	 * Null value means the 'audienceSegmentationSetupCompletedBy'
@@ -153,6 +161,29 @@ class Report_Options extends Base_Report_Options {
 	 */
 	private function get_detected_lead_events() {
 		return array_values( array_intersect( Conversion_Reporting_Events_Sync::LEAD_EVENT_NAMES, $this->detected_events ) );
+	}
+
+	/**
+	 * Sets the Site Goals widget types from the site-wide `activeWidgets` setting.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $active_widgets Widget types, such as `ecommerce` or `lead`.
+	 */
+	public function set_active_site_goals_widgets( array $active_widgets ) {
+		$this->active_site_goals_widgets = $active_widgets;
+	}
+
+	/**
+	 * Checks whether the site-wide `activeWidgets` setting lists a Site Goals widget type.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $widget_type Widget type, `ecommerce` or `lead`.
+	 * @return bool True when the setting lists the widget type, false otherwise.
+	 */
+	public function is_site_goals_widget_active( $widget_type ) {
+		return in_array( $widget_type, $this->active_site_goals_widgets, true );
 	}
 
 	/**

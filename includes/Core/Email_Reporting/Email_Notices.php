@@ -42,13 +42,6 @@ class Email_Notices {
 	const PLACEMENT_HEADER = 'header';
 
 	/**
-	 * Section placement identifier.
-	 *
-	 * @since 1.175.0
-	 */
-	const PLACEMENT_SECTION = 'section';
-
-	/**
 	 * Maximum number of impressions before permanent dismissal.
 	 *
 	 * @since 1.175.0
@@ -140,49 +133,6 @@ class Email_Notices {
 	}
 
 	/**
-	 * Gets eligible section notices for a user and section key.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @param WP_User $user        Recipient user.
-	 * @param string  $section_key Section key.
-	 * @return array Eligible section notices.
-	 */
-	public function get_section_notices( WP_User $user, $section_key ) {
-		return $this->get_notices_for_placement(
-			$user,
-			self::PLACEMENT_SECTION,
-			(string) $section_key
-		);
-	}
-
-	/**
-	 * Gets registered section notice keys.
-	 *
-	 * @since 1.175.0
-	 *
-	 * @return string[] Unique section keys.
-	 */
-	public function get_section_notice_keys() {
-		$section_keys = array();
-
-		foreach ( $this->notices as $notice ) {
-			if ( self::PLACEMENT_SECTION !== $notice->get_placement() ) {
-				continue;
-			}
-
-			$section_key = sanitize_key( $notice->get_section_key() );
-			if ( '' === $section_key ) {
-				continue;
-			}
-
-			$section_keys[] = $section_key;
-		}
-
-		return array_values( array_unique( $section_keys ) );
-	}
-
-	/**
 	 * Dismisses a notice for a user.
 	 *
 	 * @since 1.175.0
@@ -247,25 +197,20 @@ class Email_Notices {
 	}
 
 	/**
-	 * Gets eligible notices for a placement and optional section key.
+	 * Gets eligible notices for a placement.
 	 *
 	 * @since 1.175.0
+	 * @since n.e.x.t Removed the `$section_key` parameter.
 	 *
-	 * @param WP_User $user        Recipient user.
-	 * @param string  $placement   Placement slug.
-	 * @param string  $section_key Optional. Section key for section placement.
+	 * @param WP_User $user      Recipient user.
+	 * @param string  $placement Placement slug.
 	 * @return array Eligible notices.
 	 */
-	private function get_notices_for_placement( WP_User $user, $placement, $section_key = '' ) {
+	private function get_notices_for_placement( WP_User $user, $placement ) {
 		$eligible_notices = array();
-		$section_key      = sanitize_key( $section_key );
 
 		foreach ( $this->notices as $notice ) {
 			if ( $placement !== $notice->get_placement() ) {
-				continue;
-			}
-
-			if ( self::PLACEMENT_SECTION === $placement && $notice->get_section_key() !== $section_key ) {
 				continue;
 			}
 
