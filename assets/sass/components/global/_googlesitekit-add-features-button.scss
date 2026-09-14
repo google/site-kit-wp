@@ -37,12 +37,34 @@
 		height: 32px;
 		padding: 6px 12px;
 		text-decoration: none;
+		transition: background $t-default ease-in-out, border-color $t-default ease-in-out;
 
+		// WordPress admin colours and underlines links, and rings them on
+		// focus, so each interactive state has to restate the design's own
+		// treatment.
 		&:active,
 		&:focus,
 		&:hover {
 			color: $c-content-on-primary-container;
 			text-decoration: none;
+		}
+
+		// Every state deepens the gradient's end stop and the border by one
+		// step of the Site Kit green ramp, per the GM2 design system.
+		&:hover {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-100 120.31%);
+			border-color: $c-site-kit-sk-200;
+		}
+
+		&:focus {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-200 120.31%);
+			border-color: $c-site-kit-sk-300;
+			outline: none;
+		}
+
+		&:active {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-300 120.31%);
+			border-color: $c-site-kit-sk-400;
 		}
 	}
 

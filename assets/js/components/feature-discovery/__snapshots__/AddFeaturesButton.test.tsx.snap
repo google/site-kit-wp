@@ -8,7 +8,6 @@ exports[`AddFeaturesButton does not show the new features indicator when there a
     <a
       class="googlesitekit-add-features-button"
       href="http://example.com/wp-admin/admin.php?page=googlesitekit-features"
-      title="Add features"
     >
       <svg />
       <span
@@ -30,7 +29,6 @@ exports[`AddFeaturesButton renders correctly 1`] = `
       aria-describedby="googlesitekit-add-features-button-description-0"
       class="googlesitekit-add-features-button"
       href="http://example.com/wp-admin/admin.php?page=googlesitekit-features"
-      title="Add features"
     >
       <svg />
       <span
