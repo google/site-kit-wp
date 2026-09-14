@@ -18,12 +18,7 @@
  * Internal dependencies
  */
 import { expect, test } from '../../playwright';
-import {
-	asUser,
-	withFeatureFlags,
-	withFixtures,
-	withPlugins,
-} from '../../wordpress';
+import { asUser, withFixtures, withPlugins } from '../../wordpress';
 import {
 	EmailReportingPage,
 	VerifyPanelStateOptions,
@@ -148,32 +143,28 @@ test.describe( 'Email Reporting', { annotation: [ user, plugins ] }, () => {
 		).toBeHidden();
 	} );
 
-	test(
-		'should not offer the header entry point during the initial setup flow',
-		{ annotation: [ withFeatureFlags( 'setupFlowRefresh' ) ] },
-		async ( { wp } ) => {
-			await wp.visitAdmin(
-				'admin.php?page=googlesitekit-dashboard&showProgress=true'
-			);
+	test( 'should not offer the header entry point during the initial setup flow', async ( {
+		wp,
+	} ) => {
+		await wp.visitAdmin(
+			'admin.php?page=googlesitekit-dashboard&showProgress=true'
+		);
 
-			const pageObject = new EmailReportingPage( wp.page );
+		const pageObject = new EmailReportingPage( wp.page );
 
-			// Checked instead of a Site Kit-rendered control: WordPress renders the
-			// admin toolbar itself, outside the Site Kit app's React tree, so it
-			// proves the page loaded even if an unrelated error inside that tree
-			// (e.g. one thrown by a different header control) replaced the app with
-			// its error fallback and took every Site Kit element down with it.
-			await expect( wp.page.locator( '#wpadminbar' ) ).toBeVisible();
-			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
+		// Checked instead of a Site Kit-rendered control: WordPress renders the
+		// admin toolbar itself, outside the Site Kit app's React tree, so it
+		// proves the page loaded even if an unrelated error inside that tree
+		// (e.g. one thrown by a different header control) replaced the app with
+		// its error fallback and took every Site Kit element down with it.
+		await expect( wp.page.locator( '#wpadminbar' ) ).toBeVisible();
+		await expect( pageObject.manageEmailReportsButton ).toBeHidden();
 
-			// The features menu still renders for its other items, so prove
-			// the email reports item is the one missing.
-			if ( await pageObject.featuresMenuButton.isVisible() ) {
-				await pageObject.featuresMenuButton.click();
-				await expect(
-					pageObject.manageEmailReportsMenuItem
-				).toBeHidden();
-			}
+		// The features menu still renders for its other items, so prove
+		// the email reports item is the one missing.
+		if ( await pageObject.featuresMenuButton.isVisible() ) {
+			await pageObject.featuresMenuButton.click();
+			await expect( pageObject.manageEmailReportsMenuItem ).toBeHidden();
 		}
-	);
+	} );
 } );
