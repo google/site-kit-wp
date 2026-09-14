@@ -57,6 +57,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_TYPES,
 	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_TERMS_OF_SERVICE,
 	TERMS_OF_SERVICE_FORM,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
@@ -71,6 +72,11 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const [ , setShowTermsOfService ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_TERMS_OF_SERVICE
+	);
+
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ isSaving, setIsSaving ] = useState( false );
 
@@ -187,6 +193,10 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 			setIsLoading( false );
 		}
 	}, [ hasResolvedPublication, hasResolvedTermsOfService ] );
+
+	useEffect( () => {
+		setShowTermsOfService( true );
+	}, [ setShowTermsOfService ] );
 
 	if ( isLoading ) {
 		return <ProgressBar />;

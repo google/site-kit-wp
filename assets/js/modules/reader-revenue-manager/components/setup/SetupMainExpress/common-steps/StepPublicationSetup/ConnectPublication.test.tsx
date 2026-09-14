@@ -20,11 +20,17 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_TERMS_OF_SERVICE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -78,6 +84,41 @@ describe( 'ConnectPublication', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
+	} );
+
+	it( 'should hide the terms step when selecting a publication with accepted terms', async () => {
+		providePublications( registry, publications );
+		await registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.selectPublication( TEST_PUBLICATION_WITHOUT_ACCEPTED_TERMS );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_TERMS_OF_SERVICE ]: true,
+			} );
+		render( <ConnectPublication onComplete={ () => {} } />, { registry } );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					READER_REVENUE_MANAGER_SETUP_FORM,
+					SHOW_TERMS_OF_SERVICE
+				)
+		).toBe( true );
+
+		await act( async () => {
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.selectPublication( TEST_PUBLICATION_WITH_ACCEPTED_TERMS );
+		} );
+		expect(
+			registry
+				.select( CORE_FORMS )
+				.getValue(
+					READER_REVENUE_MANAGER_SETUP_FORM,
+					SHOW_TERMS_OF_SERVICE
+				)
+		).toBe( false );
 	} );
 
 	it( 'should display a retry-able error if getting publications fails', async () => {
