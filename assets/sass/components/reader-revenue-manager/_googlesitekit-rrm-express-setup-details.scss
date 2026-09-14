@@ -31,6 +31,15 @@
 		padding-block-end: 8px;
 	}
 
+	.googlesitekit-rrm-express-setup-details--inline {
+		display: flex;
+		flex-wrap: wrap;
+
+		.googlesitekit-rrm-express-setup-details__item {
+			flex: 1 1 auto;
+		}
+	}
+
 	.googlesitekit-rrm-express-setup-details__term {
 		color: $c-surfaces-on-surface-variant;
 	}

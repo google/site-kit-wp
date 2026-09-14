@@ -49,7 +49,7 @@ export const actions = {
 	/**
 	 * Sets the active device tab for the PageSpeed Insights widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {string} activeTab Device tab to activate: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.
 	 * @return {Object} Redux-style action.
@@ -88,7 +88,7 @@ export const selectors = {
 	/**
 	 * Gets the active device tab for the PageSpeed Insights widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} Active device tab: `STRATEGY_MOBILE` or `STRATEGY_DESKTOP`.

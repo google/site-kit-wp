@@ -129,7 +129,7 @@ function syncConfiguredCTAs( state: CTAsState, ctas: CTA[] ): void {
 /**
  * Validates the CTA creation parameters.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param  params Parameters to validate.
  * @return {void}
@@ -246,7 +246,7 @@ const baseActions = {
 	/**
 	 * Creates a CTA for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param  params                  Parameters.
 	 * @param  params.organizationID   Optional. Organization ID. Defaults to the configured setting on the server.
@@ -322,7 +322,7 @@ const baseSelectors = {
 	/**
 	 * Gets the CTAs for the publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param  state  Data store's state.
 	 * @param  params Optional parameters.

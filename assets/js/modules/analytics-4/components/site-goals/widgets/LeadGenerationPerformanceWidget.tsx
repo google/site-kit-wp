@@ -28,6 +28,7 @@ import {
 	forwardRef,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
@@ -327,6 +328,15 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 			[]
 		);
+
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames: string[] = useMemo(
+			() => detectedLeadEvents || [],
+			[ detectedLeadEvents ]
+		);
+
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
 				select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
@@ -353,6 +363,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			[]
 		);
 
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
 		const {
 			breakdownDimension,
 			breakdownValues,
@@ -369,7 +385,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			// needs no event scoping. The lead events only detect unattributed
 			// "Other sources" data.
 		} = useSiteGoalsBreakdown( GOAL_TYPES.LEAD, {
-			detectionEventNames: detectedLeadEvents || [],
+			detectionEventNames: keyActionEventNames,
 		} );
 
 		// Only the tabbed breakdown shows the partial-data badge, and only when
@@ -460,7 +476,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 		const { leadEventsReportOptions, engagementReportOptions } =
 			getWidgetReportOptions(
 				dates,
-				detectedLeadEvents || [],
+				keyActionEventNames,
 				breakdownFilter
 			);
 
@@ -616,6 +632,14 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
 							) }
+							chartTitle={ sprintf(
+								/* translators: %d: number of days in the selected date range, e.g. 28. */
+								__(
+									'Total form completions in the last %d days',
+									'google-site-kit'
+								),
+								dateRangeDays
+							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
 							currentSessions={ currentSessions }
@@ -625,6 +649,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.LEAD }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }

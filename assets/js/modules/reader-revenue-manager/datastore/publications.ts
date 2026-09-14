@@ -76,6 +76,10 @@ export interface Publication {
 			userAccepted: boolean;
 		};
 	};
+	/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+	publicationTosUrl?: string;
+	publicationPrivacyPolicyUrl?: string;
+	/* eslint-enable sitekit/acronym-case */
 }
 
 interface ReaderRevenueManagerState {
@@ -182,7 +186,7 @@ function syncConnectedPublicationSettings(
 /**
  * Resolves the publication ID for a request, falling back to the saved setting.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} state            Store state.
  * @param {Object} [state.settings] Module settings.
@@ -200,7 +204,7 @@ export function getSelectedPublicationID(
  * Resolves module settings when no publication ID was passed and settings
  * are not already in the store.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} registry               Data registry.
  * @param {Object} [params]               Optional publication parameters.
@@ -251,8 +255,30 @@ const fetchGetPublicationsStore = createFetchStore( {
 	),
 } );
 
+const fetchPublicationStoreReducerCallback = createReducer(
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
+		state.publications = state.publications || [];
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		const publicationID = publication.publicationId;
+
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( publicationIndex === -1 ) {
+			state.publications.push( publication );
+		} else {
+			state.publications[ publicationIndex ] = publication;
+		}
+
+		syncConnectedPublicationSettings( state, publication );
+	}
+);
+
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	controlCallback: ( {
 		displayName,
 		languageCode,
@@ -297,27 +323,6 @@ const fetchCreatePublicationStore = createFetchStore( {
 	},
 	isAction: true,
 } );
-
-const fetchPublicationStoreReducerCallback = createReducer(
-	( state: ReaderRevenueManagerState, publication: Publication ) => {
-		state.publications = state.publications || [];
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		const publicationIndex = state.publications.findIndex(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( publicationIndex === -1 ) {
-			state.publications.push( publication );
-		} else {
-			state.publications[ publicationIndex ] = publication;
-		}
-
-		syncConnectedPublicationSettings( state, publication );
-	}
-);
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',

@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
@@ -31,18 +30,20 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.136.0
  * @since 1.137.0 Moved function to its own file.
+ * @since n.e.x.t Use `isConversionEventCurrentlyActive()` so a metric stays selectable once picked or named as a business goal, even after its event stops being "detected".
  *
  * @param {Object}   options        Options object.
  * @param {Function} options.select Data store select function.
- * @param {string}   options.slug   Key metric widget slug.
  * @return {boolean} Whether to display the widget.
  */
-export function shouldDisplayWidgetWithConversionEvent( { select, slug } ) {
-	return (
-		select( MODULES_ANALYTICS_4 ).hasConversionReportingEvents(
-			// This property is available to the widget object that requires the
-			// conversion reporting events, where the function is attached.
-			this.requiredConversionEventName
-		) || select( CORE_USER ).isKeyMetricActive( slug )
+export function shouldDisplayWidgetWithConversionEvent( { select } ) {
+	// This property is available to the widget object that requires the
+	// conversion reporting events, where the function is attached.
+	const events = Array.isArray( this.requiredConversionEventName )
+		? this.requiredConversionEventName
+		: [ this.requiredConversionEventName ];
+
+	return events.some( ( event ) =>
+		select( MODULES_ANALYTICS_4 ).isConversionEventCurrentlyActive( event )
 	);
 }

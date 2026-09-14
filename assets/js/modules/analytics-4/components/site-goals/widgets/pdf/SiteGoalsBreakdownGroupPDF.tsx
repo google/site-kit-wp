@@ -81,7 +81,7 @@ const RATE_TILE_BACKGROUND_BY_CHANGE_TYPE: Record< PDFChangeType, string > = {
 /**
  * Formats a metric's change for the tile badge.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {(Object|undefined)} metric The Site Goals PDF metric to compare, or `undefined` when the tile has none.
  * @return {Object} Formatted change and its direction, empty when there is nothing to compare.
@@ -149,7 +149,7 @@ function getTileChangeProps(
 /**
  * Builds the "of N total sessions" caption shown under a rate.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {(Object|undefined)} sessions The sessions metric, or `undefined` when the group has none.
  * @return {(string|undefined)} The caption, or `undefined` when the group has no sessions.

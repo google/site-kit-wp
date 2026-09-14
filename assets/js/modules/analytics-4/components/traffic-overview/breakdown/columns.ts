@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -30,22 +35,27 @@ export interface TrafficBreakdownColumnDescriptor
 	extends BreakdownReportDescriptor {
 	/** The key for this column's report in the `breakdownReports` map, such as `channels`. */
 	id: string;
+	/** The column's heading, which also names it for a screen reader. */
+	heading: string;
 }
 
 /** The breakdown columns the Traffic Overview panel shows, in the order given. */
 export const TRAFFIC_BREAKDOWN_COLUMNS: TrafficBreakdownColumnDescriptor[] = [
 	{
 		id: 'channels',
+		heading: __( 'Visitors by channels', 'google-site-kit' ),
 		dimensionName: 'sessionDefaultChannelGrouping',
 		reportID: CHANNELS_BREAKDOWN_REPORT_ID,
 	},
 	{
 		id: 'locations',
+		heading: __( 'Visitors by locations', 'google-site-kit' ),
 		dimensionName: 'country',
 		reportID: LOCATIONS_BREAKDOWN_REPORT_ID,
 	},
 	{
 		id: 'devices',
+		heading: __( 'Visitors by devices', 'google-site-kit' ),
 		dimensionName: 'deviceCategory',
 		reportID: DEVICES_BREAKDOWN_REPORT_ID,
 	},

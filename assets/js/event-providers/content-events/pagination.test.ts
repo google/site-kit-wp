@@ -21,8 +21,12 @@
  */
 import { ContentEventsConfig } from '@/js/event-providers/content-events';
 import { initializePagination } from './pagination';
-
-type SiteKitGlobal = typeof global._googlesitekit;
+import {
+	SiteKitGlobal,
+	createListenerTracker,
+	preventNavigation,
+	render,
+} from './test-utils';
 
 const POST_ID = 42;
 
@@ -40,82 +44,25 @@ function baseConfig(
 describe( 'initializePagination', () => {
 	let gtagEventMock: jest.Mock;
 
-	/**
-	 * Renders markup into the document body and returns the first element.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} markup Markup to render.
-	 * @return {Element} The rendered markup's first element.
-	 */
-	function render< T extends Element = Element >( markup: string ): T {
-		global.document.body.innerHTML = markup;
+	const listeners = createListenerTracker();
 
-		return global.document.body.firstElementChild as T;
-	}
-
-	/**
-	 * Stops jsdom from trying to follow the anchors these tests click.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} event The click to swallow.
-	 * @return {void}
-	 */
-	function preventNavigation( event: Event ) {
-		event.preventDefault();
-	}
-
-	let registeredListeners: Array< [ string, EventListener ] > = [];
-
-	/**
-	 * Runs the initializer, recording the listeners it puts on `document`.
-	 *
-	 * `initializePagination()` has no teardown — in production it is called once
-	 * per page load — so without this every test would leave its listener behind
-	 * and a later click would be counted once per test that had already run.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {ContentEventsConfig} config Content events configuration.
-	 * @return {Array} The `[ type, listener ]` pairs this call registered.
-	 */
-	function initialize(
-		config: ContentEventsConfig = baseConfig()
-	): Array< [ string, EventListener ] > {
-		const addEventListenerSpy = jest.spyOn(
-			global.document,
-			'addEventListener'
-		);
-
-		initializePagination( config );
-
-		const added: Array< [ string, EventListener ] > =
-			addEventListenerSpy.mock.calls.map( ( [ type, listener ] ) => [
-				type as string,
-				listener as EventListener,
-			] );
-
-		// Restoring clears the spy's recorded calls, so they are read out first.
-		addEventListenerSpy.mockRestore();
-		registeredListeners.push( ...added );
-
-		return added;
+	function initialize( config: ContentEventsConfig = baseConfig() ) {
+		return listeners.record( () => initializePagination( config ) );
 	}
 
 	beforeEach( () => {
 		gtagEventMock = jest.fn();
 		global._googlesitekit = { gtagEvent: gtagEventMock };
 		global.document.body.innerHTML = '';
-		registeredListeners = [];
+		listeners.reset();
+		// Every anchor here carries a real href, which jsdom would try to
+		// navigate to and log "Not implemented: navigation" for.
 		global.document.addEventListener( 'click', preventNavigation );
 	} );
 
 	afterEach( () => {
 		global.document.body.classList.remove( 'single-topic' );
-		registeredListeners.forEach( ( [ type, listener ] ) =>
-			global.document.removeEventListener( type, listener )
-		);
+		listeners.removeAll();
 		global.document.removeEventListener( 'click', preventNavigation );
 		global.document.body.innerHTML = '';
 		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;

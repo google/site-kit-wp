@@ -113,7 +113,7 @@ class Update_PublicationTest extends TestCase {
 			$this->get_data_request(
 				array(
 					'data' => array(
-						'publicationTosURL' => 'https://example.com/terms',
+						'publicationTosUrl' => 'https://example.com/terms',
 					),
 				)
 			)
@@ -133,8 +133,8 @@ class Update_PublicationTest extends TestCase {
 					'organizationID' => 'organization-1',
 					'publicationID'  => 'publication-1',
 					'data'           => array(
-						'publicationTosURL'           => 'https://example.com/terms',
-						'publicationPrivacyPolicyURL' => 'https://example.com/privacy',
+						'publicationTosUrl'           => 'https://example.com/terms',
+						'publicationPrivacyPolicyUrl' => 'https://example.com/privacy',
 					),
 				)
 			)
@@ -171,7 +171,7 @@ class Update_PublicationTest extends TestCase {
 				$this->get_data_request(
 					array(
 						'data' => array(
-							'publicationTosURL' => 'https://example.com/terms',
+							'publicationTosUrl' => 'https://example.com/terms',
 						),
 					)
 				)
@@ -219,7 +219,7 @@ class Update_PublicationTest extends TestCase {
 					'organizationID' => 'organization-1',
 					'publicationID'  => 'publication-1',
 					'data'           => array(
-						'publicationTosURL' => 'https://example.com/terms',
+						'publicationTosUrl' => 'https://example.com/terms',
 					),
 				)
 			)
