@@ -136,6 +136,30 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * Builds a discovery report, which names the groups a card shows.
+	 *
+	 * The report covers one stretch of days, so its rows carry no `dateRange` dimension.
+	 *
+	 * @param string $event_name     Event name every row counted.
+	 * @param string $dimension_name Dimension whose value names the group.
+	 * @param array  $counts         Event count over the discovery days, keyed by dimension value.
+	 * @return array Report holding one row per dimension value.
+	 */
+	private function build_discovery_report( $event_name, $dimension_name, array $counts ) {
+		$rows = array();
+
+		foreach ( $counts as $dimension_value => $count ) {
+			$rows[] = array( array( $event_name, (string) $dimension_value ), array( $count ) );
+		}
+
+		return $this->build_report(
+			array( 'eventName', $dimension_name ),
+			array( 'eventCount' ),
+			$rows
+		);
+	}
+
+	/**
 	 * Creates a published `wpforms` post, which is what `Get_Form_Metadata` reads a title
 	 * from.
 	 *
@@ -157,12 +181,22 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	 * WooCommerce and Easy Digital Downloads each get a group of their own, and the
 	 * "(not set)" row goes into the "Other sources" group.
 	 *
-	 * @return array Module payload holding the key action report and the engagement report.
+	 * @return array Module payload holding the key action report, the engagement report and
+	 *               the discovery report.
 	 */
 	private function build_online_store_by_provider_payload() {
 		$provider_dimension = 'customEvent:googlesitekit_event_provider';
 
 		return array(
+			'site_goals_online_store_discovery'           => $this->build_discovery_report(
+				'purchase',
+				$provider_dimension,
+				array(
+					'woocommerce'            => '1200',
+					'easy-digital-downloads' => '300',
+					'(not set)'              => '60',
+				)
+			),
 			'site_goals_online_store_primary_by_provider' => $this->build_report(
 				array( 'eventName', $provider_dimension, 'dateRange' ),
 				array( 'eventCount' ),
@@ -328,6 +362,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'purchase', 'some-other-plugin', 'date_range_1' ), array( '4' ) ),
 					)
 				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'       => '1200',
+						'some-other-plugin' => '90',
+					)
+				),
 				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
 					$provider_dimension,
 					array( 'woocommerce' => array( '2000', '2600' ) )
@@ -347,7 +389,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_sections__builds_no_other_sources_group_when_the_report_names_a_plugin_for_every_sale() {
+	public function test_build_sections__builds_no_other_sources_group_when_the_discovery_report_names_a_plugin_for_every_sale() {
 		$provider_dimension = 'customEvent:googlesitekit_event_provider';
 
 		$sections = $this->builder->build_sections(
@@ -360,6 +402,11 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
 					)
 				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array( 'woocommerce' => '1200' )
+				),
 				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
 					$provider_dimension,
 					array( 'woocommerce' => array( '2000', '2600' ) )
@@ -370,7 +417,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$this->assertSame(
 			array( 'WooCommerce' ),
 			array_column( $sections[0]['groups'], 'label' ),
-			'build_sections() should build no "Other sources" group when the report names a plugin for every sale.'
+			'build_sections() should build no "Other sources" group when the discovery report names a plugin for every sale.'
 		);
 	}
 
@@ -389,6 +436,15 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'purchase', 'easy-digital-downloads', 'date_range_1' ), array( '30' ) ),
 					)
 				),
+				// The discovery report ties too, because that is what the order is read from.
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'            => '500',
+						'easy-digital-downloads' => '500',
+					)
+				),
 				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
 					$provider_dimension,
 					array(
@@ -403,6 +459,214 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			array( 'Easy Digital Downloads', 'WooCommerce' ),
 			array_column( $sections[0]['groups'], 'label' ),
 			'build_sections() should order two plugins on the same sales count by name, so the section shows the same order on every run.'
+		);
+	}
+
+	public function test_build_sections__orders_the_online_store_groups_by_the_discovery_report_rather_than_the_report_period() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				// Easy Digital Downloads outsells WooCommerce over the report period, and
+				// WooCommerce outsells it over the discovery days.
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '10' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '8' ) ),
+						array( array( 'purchase', 'easy-digital-downloads', 'date_range_0' ), array( '100' ) ),
+						array( array( 'purchase', 'easy-digital-downloads', 'date_range_1' ), array( '80' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'            => '1200',
+						'easy-digital-downloads' => '300',
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array(
+						'woocommerce'            => array( '2000', '2600' ),
+						'easy-digital-downloads' => array( '875', '1000' ),
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'WooCommerce', 'Easy Digital Downloads' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should order the online store groups by their sales over the discovery days, so the report period never reorders them.'
+		);
+	}
+
+	public function test_build_sections__gives_a_group_the_discovery_report_names_a_rate_of_zero_and_no_badge_when_the_report_period_holds_no_sale() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				// Easy Digital Downloads sold nothing over either period, so it holds no row.
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'            => '1200',
+						'easy-digital-downloads' => '300',
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'label'   => 'Easy Digital Downloads',
+				'metrics' => array(
+					array(
+						'label' => 'Sales rate',
+						'value' => '0%',
+						'trend' => null,
+					),
+					array(
+						'label' => 'Total sales',
+						'value' => '0',
+						'trend' => null,
+					),
+				),
+			),
+			$sections[0]['groups'][1],
+			'build_sections() should give a plugin the discovery report names a rate of 0% and a total of 0, and no badge, when neither period holds a sale for it.'
+		);
+	}
+
+	public function test_build_sections__shows_a_minus_one_hundred_percent_badge_when_the_previous_period_alone_holds_sales() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+						array( array( 'purchase', 'easy-digital-downloads', 'date_range_1' ), array( '20' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'            => '1200',
+						'easy-digital-downloads' => '300',
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array(
+						'woocommerce'            => array( '2000', '2600' ),
+						'easy-digital-downloads' => array( '0', '1000' ),
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( -100.0, -100.0 ),
+			array_column( $sections[0]['groups'][1]['metrics'], 'trend' ),
+			'build_sections() should show a -100% badge on both tiles of a plugin that sold over the previous period alone.'
+		);
+	}
+
+	public function test_build_sections__shows_other_sources_when_the_discovery_days_alone_hold_a_sale_outside_the_named_plugins() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				// The report period names WooCommerce for every sale it holds.
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce' => '1200',
+						'(not set)'   => '60',
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'WooCommerce', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should show the "Other sources" group the widget shows, which the discovery days decide.'
+		);
+		$this->assertSame(
+			'0',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should count the report period in the "Other sources" total, which holds no sale here.'
+		);
+	}
+
+	public function test_build_sections__builds_no_section_when_the_report_period_holds_no_key_action_although_the_discovery_report_names_a_group() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+		$form_dimension     = 'customEvent:googlesitekit_form_id';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array()
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array( 'woocommerce' => '1200' )
+				),
+				'site_goals_lead_primary_by_form'   => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array()
+				),
+				'site_goals_lead_discovery'         => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array( '17' => '1200' )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array(),
+			$sections,
+			'build_sections() should leave a card out of the email when the report period holds no key action, whatever the discovery days name.'
 		);
 	}
 
@@ -475,6 +739,15 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', '(not set)', 'date_range_1' ), array( '4' ) ),
 					)
 				),
+				'site_goals_lead_discovery'       => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array(
+						$newsletter_form_id => '1200',
+						$missing_form_id    => '300',
+						'(not set)'         => '90',
+					)
+				),
 				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
 					$form_dimension,
 					array(
@@ -535,6 +808,87 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			array(),
 			$sections[0]['prompt'],
 			'build_sections() should ask the reader nothing when the lead generation results are already split by form.'
+		);
+	}
+
+	public function test_build_sections__orders_the_lead_generation_groups_by_the_discovery_report_rather_than_the_report_period() {
+		$form_dimension = 'customEvent:googlesitekit_form_id';
+		$busy_form_id   = $this->create_form( 'Busy form' );
+		$quiet_form_id  = $this->create_form( 'Quiet form' );
+
+		$sections = $this->builder->build_sections(
+			array(
+				// The quiet form takes more completions over the report period, and fewer
+				// over the discovery days.
+				'site_goals_lead_primary_by_form' => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'contact', (string) $busy_form_id, 'date_range_0' ), array( '10' ) ),
+						array( array( 'contact', (string) $busy_form_id, 'date_range_1' ), array( '8' ) ),
+						array( array( 'contact', (string) $quiet_form_id, 'date_range_0' ), array( '100' ) ),
+						array( array( 'contact', (string) $quiet_form_id, 'date_range_1' ), array( '80' ) ),
+					)
+				),
+				'site_goals_lead_discovery'       => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array(
+						$busy_form_id  => '1200',
+						$quiet_form_id => '300',
+					)
+				),
+				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+					$form_dimension,
+					array(
+						$busy_form_id  => array( '2000', '2600' ),
+						$quiet_form_id => array( '875', '1000' ),
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Busy form', 'Quiet form' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should order the lead generation groups by their completions over the discovery days, so the report period never reorders them.'
+		);
+	}
+
+	public function test_build_sections__reads_the_store_event_the_card_counts_alone_when_it_decides_other_sources() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+					)
+				),
+				// The discovery report counts both store events. Only WooCommerce sold, and
+				// the unnamed plugin took carts alone, which this card never counts.
+				'site_goals_online_store_discovery' => $this->build_report(
+					array( 'eventName', $provider_dimension ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce' ), array( '1200' ) ),
+						array( array( 'add_to_cart', '(not set)' ), array( '500' ) ),
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'WooCommerce' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should build no "Other sources" group for a plugin that took carts alone, because the card counts sales.'
 		);
 	}
 
@@ -684,6 +1038,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', '(other)', 'date_range_1' ), array( '4' ) ),
 					)
 				),
+				'site_goals_lead_discovery'       => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array(
+						$newsletter_form_id => '1200',
+						'(other)'           => '90',
+					)
+				),
 				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
 					$form_dimension,
 					array( $newsletter_form_id => array( '2000', '2600' ) )
@@ -717,6 +1079,14 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', (string) $newsletter_form_id, 'date_range_1' ), array( '100' ) ),
 						array( array( 'contact', array(), 'date_range_0' ), array( '9' ) ),
 						array( array( 'contact', array(), 'date_range_1' ), array( '4' ) ),
+					)
+				),
+				'site_goals_lead_discovery'       => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array(
+						$newsletter_form_id => '1200',
+						''                  => '90',
 					)
 				),
 				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
