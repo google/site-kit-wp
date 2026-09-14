@@ -88,6 +88,20 @@ exports[`Actions should render correctly 1`] = `
     </a>
     Test in progress feedback
   </div>
+  <div
+    class="googlesitekit-setup__step-hint"
+  >
+    <p>
+      Why is this required?
+    </p>
+    <span
+      class="googlesitekit-info-tooltip"
+      role="tooltip"
+      tabindex="0"
+    >
+      <svg />
+    </span>
+  </div>
 </div>
 `;
 
@@ -187,6 +201,20 @@ exports[`Actions should render the reset button when the site is resettable 1`] 
         Reset Site Kit
       </span>
     </button>
+  </div>
+  <div
+    class="googlesitekit-setup__step-hint"
+  >
+    <p>
+      Why is this required?
+    </p>
+    <span
+      class="googlesitekit-info-tooltip"
+      role="tooltip"
+      tabindex="0"
+    >
+      <svg />
+    </span>
   </div>
 </div>
 `;
@@ -288,6 +316,20 @@ exports[`Actions view-only button should render the button for a second admin wh
         Skip sign-in and view limited dashboard
       </span>
     </button>
+  </div>
+  <div
+    class="googlesitekit-setup__step-hint"
+  >
+    <p>
+      Why is this required?
+    </p>
+    <span
+      class="googlesitekit-info-tooltip"
+      role="tooltip"
+      tabindex="0"
+    >
+      <svg />
+    </span>
   </div>
 </div>
 `;

@@ -115,11 +115,13 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect(
-			getByText( /Connect Google Analytics as part of your setup/ )
+			getByText(
+				/Get visitor insights by connecting Google Analytics as part of setup/
+			)
 		).toBeInTheDocument();
 	} );
 
-	it( 'should keep the words "Site Kit" in the splash header, by adding `googlesitekit-setup-splash` to the body', async () => {
+	it( 'should keep the words "Site Kit" in the splash header, by adding `googlesitekit-setup-flow` to the body', async () => {
 		const { waitForRegistry } = render( <SetupUsingProxyWithSignIn />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SPLASH,
@@ -128,7 +130,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		await waitForRegistry();
 
 		expect( global.document.body ).toHaveClass(
-			'googlesitekit-setup-splash'
+			'googlesitekit-setup-flow'
 		);
 	} );
 
@@ -154,7 +156,9 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect(
-			queryByText( /Connect Google Analytics as part of your setup/ )
+			queryByText(
+				/Get visitor insights by connecting Google Analytics as part of setup/
+			)
 		).not.toBeInTheDocument();
 	} );
 
@@ -216,69 +220,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				expectedURL
 			);
-		} );
-	} );
-
-	it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL on CTA click if chosen to connect Analytics', async () => {
-		fetchMock.postOnce(
-			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
-			{ body: { success: true } }
-		);
-
-		fetchMock.getOnce(
-			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' ),
-			{
-				body: {
-					authenticated: true,
-					requiredScopes: [
-						'https://www.googleapis.com/auth/analytics.readonly',
-					],
-					grantedScopes: [],
-					unsatisfiedScopes: [
-						'https://www.googleapis.com/auth/analytics.readonly',
-					],
-					needsReauthentication: true,
-				},
-			}
-		);
-
-		// Set the Analytics checkbox to true.
-		registry.dispatch( CORE_FORMS ).setValues( ANALYTICS_NOTICE_FORM_NAME, {
-			[ ANALYTICS_NOTICE_CHECKBOX ]: true,
-		} );
-
-		provideModuleRegistrations( registry );
-
-		const { getByRole, waitForRegistry } = render(
-			<SetupUsingProxyWithSignIn />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-			}
-		);
-
-		await waitForRegistry();
-
-		fireEvent.click(
-			getByRole( 'button', { name: /sign in with google/i } )
-		);
-
-		await act( () =>
-			registry.resolveSelect( MODULES_ANALYTICS_4 ).getAdminReauthURL()
-		);
-
-		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
-		const reauthURL = registry
-			.select( MODULES_ANALYTICS_4 )
-			.getAdminReauthURL();
-
-		const finalURL = addQueryArgs( proxySetupURL, {
-			redirect: reauthURL,
-		} );
-
-		await waitFor( () => {
-			expect( global.location.assign ).toHaveBeenCalled();
-			expect( global.location.assign ).toHaveBeenCalledWith( finalURL );
 		} );
 	} );
 

@@ -303,7 +303,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                             <label
                               class="mdc-floating-label mdc-floating-label--float-above"
                               for="googlesitekit-select-1"
-                              style="transition-duration: 0s;"
+                              style=""
                             >
                               Property
                             </label>
@@ -361,7 +361,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                             <label
                               class="mdc-floating-label mdc-floating-label--float-above"
                               for="googlesitekit-select-2"
-                              style="transition-duration: 0s;"
+                              style=""
                             >
                               Web data stream
                             </label>

@@ -129,9 +129,12 @@ describe( 'SettingsCardKeyMetrics', () => {
 	} );
 
 	it( 'should not show ConversionReportingSettingsSubtleNotification when Key metrics are setup using tailored metrics', async () => {
-		await registry
-			.dispatch( CORE_USER )
-			.receiveIsUserInputCompleted( true );
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: [ 'sell_products' ],
+				scope: 'site',
+			},
+		} );
 
 		const { container, waitForRegistry } = render(
 			<SettingsCardKeyMetrics />,
