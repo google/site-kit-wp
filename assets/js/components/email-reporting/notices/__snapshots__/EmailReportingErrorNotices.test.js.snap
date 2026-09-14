@@ -6,7 +6,7 @@ exports[`EmailReportingErrorNotices should render the permissions error notice w
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default googlesitekit-email-reporting__admin-settings-notice"
       role="status"
     >
       <div
@@ -15,15 +15,15 @@ exports[`EmailReportingErrorNotices should render the permissions error notice w
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Email reports are failing to send
         </p>
         <p
-          class="googlesitekit-notice__description"
+          class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
         >
           We were unable to generate your report due to insufficient permissions in Analytics. To fix this, contact your administrator or get help. Report delivery will automatically resume once the issue is resolved.
         </p>
@@ -56,7 +56,7 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-email-reporting__admin-settings-notice"
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default googlesitekit-email-reporting__admin-settings-notice"
       role="status"
     >
       <div
@@ -65,15 +65,15 @@ exports[`EmailReportingErrorNotices should render the report error notice when e
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Email reports are failing to send
         </p>
         <p
-          class="googlesitekit-notice__description"
+          class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
         >
           We were unable to generate your report because data loading failed for Search Console. To fix this, go to Search Console settings in Site Kit or get help. Report delivery will automatically resume once the issue is resolved.
         </p>

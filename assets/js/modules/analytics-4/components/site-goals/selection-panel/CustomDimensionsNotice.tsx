@@ -266,16 +266,15 @@ const CustomDimensionsNotice: FC = () => {
 
 	return (
 		<SelectionPanelNotice
-			// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
-			className="googlesitekit-notice--square googlesitekit-notice--side-panel googlesitekit-site-goals-selection-panel__custom-dimensions-notice"
-			type={ NOTICE_TYPES.WARNING }
-			description={ description }
+			className="googlesitekit-site-goals-selection-panel__custom-dimensions-notice"
 			ctaButton={ {
 				label: __( 'Set up', 'google-site-kit' ),
 				onClick: onSetupClick,
 				inProgress: isSettingUpCustomDimensions,
 				disabled: isNavigatingToOAuthURL,
 			} }
+			description={ description }
+			type={ NOTICE_TYPES.WARNING }
 			hideIcon
 		/>
 	);

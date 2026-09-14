@@ -18,39 +18,45 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import PropTypes from 'prop-types';
 
 /**
  * Internal dependencies
  */
-import { VALID_SIZES, VALID_TYPES } from './constants';
+import { TypographySize, TypographyType } from './constants';
 
-export default function Typography( {
+const DEFAULT_TAG_NAME = 'span';
+
+interface TypographyOwnProps {
+	className?: string;
+	size: TypographySize;
+	type: TypographyType;
+}
+
+export type TypographyProps< E extends React.ElementType > = {
+	as?: E;
+} & TypographyOwnProps &
+	Omit< React.ComponentPropsWithoutRef< E >, keyof TypographyOwnProps >;
+
+function Typography< E extends React.ElementType = typeof DEFAULT_TAG_NAME >( {
+	as,
 	className,
-	type,
 	size,
-	as: Component = 'span',
-	children,
+	type,
 	...props
-} ) {
+}: TypographyProps< E > ) {
+	const Component = as || DEFAULT_TAG_NAME;
+
 	return (
 		<Component
-			className={ classnames( 'googlesitekit-typography', className, {
-				[ `googlesitekit-typography--${ type }` ]:
-					type && VALID_TYPES.includes( type ),
-				[ `googlesitekit-typography--${ size }` ]:
-					size && VALID_SIZES.includes( size ),
-			} ) }
+			className={ classnames(
+				'googlesitekit-typography',
+				className,
+				type && `googlesitekit-typography--${ type }`,
+				size && `googlesitekit-typography--${ size }`
+			) }
 			{ ...props }
-		>
-			{ children }
-		</Component>
+		/>
 	);
 }
 
-Typography.propTypes = {
-	className: PropTypes.string,
-	type: PropTypes.oneOf( VALID_TYPES ),
-	size: PropTypes.oneOf( VALID_SIZES ),
-	as: PropTypes.oneOfType( [ PropTypes.string, PropTypes.elementType ] ),
-};
+export default Typography;

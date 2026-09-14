@@ -42,14 +42,12 @@ const Header: FC< HeaderProps > = ( { closePanel } ) => {
 			title={ __( 'Download your Site Kit report', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
 		>
-			{ /* @ts-expect-error - The `P` component's `size` prop has a default for non-mobile devices and is not currently inferred as optional. */ }
 			<P>
 				{ __(
 					'Generate a PDF featuring the current metrics from your dashboard. The report reflects the same date range selected in your dashboard, excluding data from the current day to ensure accuracy.',
 					'google-site-kit'
 				) }
 			</P>
-			{ /* @ts-expect-error - The `P` component's `size` prop has a default for non-mobile devices and is not currently inferred as optional. */ }
 			<P>
 				{ __(
 					'Select the topics you would like to include in your report:',

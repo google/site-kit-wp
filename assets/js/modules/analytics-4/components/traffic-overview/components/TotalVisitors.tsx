@@ -89,7 +89,6 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( { report } ) => {
 			</Typography>
 			<div className="googlesitekit-traffic-overview__total-visitors-metric">
 				<div className="googlesitekit-traffic-overview__total-visitors-figure">
-					{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
 					<Typography
 						as="span"
 						type={ TYPE_DISPLAY }

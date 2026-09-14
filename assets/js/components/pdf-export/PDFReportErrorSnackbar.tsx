@@ -33,7 +33,10 @@ import { __ } from '@wordpress/i18n';
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import CloseIcon from '@/svg/icons/close.svg';
 
@@ -77,21 +80,22 @@ const PDFReportErrorSnackbar: FC< PDFReportErrorSnackbarProps > = ( {
 
 	return (
 		<Notice
-			type={ NOTICE_TYPES.ERROR }
-			className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right googlesitekit-pdf-report-error-snackbar googlesitekit-notice-snackbar--content--small"
-			title={ title }
-			description={ description || defaultDescription }
+			className="googlesitekit-pdf-report-error-snackbar"
 			ctaButton={ {
 				label: retryLabel,
 				onClick: onRetry,
 				tertiary: true,
 			} }
+			description={ description || defaultDescription }
 			dismissButton={ {
 				variant: 'icon',
 				icon: <CloseIcon width={ 10 } height={ 10 } />,
 				ariaLabel: dismissAriaLabel,
 				onClick: onDismiss,
 			} }
+			title={ title }
+			type={ NOTICE_TYPES.ERROR }
+			variant={ NOTICE_VARIANTS.SNACKBAR }
 		/>
 	);
 };
