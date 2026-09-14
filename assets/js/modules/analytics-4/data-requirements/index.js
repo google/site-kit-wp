@@ -87,8 +87,6 @@ export function requireAudienceSegmentationSetupCompletedByUser() {
  */
 export function requireAdSenseLinked() {
 	return async ( { select, resolveSelect } ) => {
-		// The getAdSenseLinked() selector relies on the resolution of the
-		// getSettings() resolver.
 		await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
 
 		return true === select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
