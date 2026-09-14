@@ -186,6 +186,10 @@ final class Plugin {
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 
+				// Modules add their intent listeners during $modules->register() above, so collecting intents earlier would come up empty.
+				$intents = new Core\Intents\Intents();
+				$intents->register();
+
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
 
