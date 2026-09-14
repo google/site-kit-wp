@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager newsletter signup form step.
+ * Feature Discovery API types.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,24 +17,24 @@
  */
 
 /**
- * External dependencies
+ * Internal dependencies
  */
-import { FC } from 'react';
+import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 
 /**
- * WordPress dependencies
+ * Feature Discovery API instance type.
+ *
+ * @since n.e.x.t
  */
-import { __ } from '@wordpress/i18n';
-
-const StepSignupForm: FC = () => {
-	return (
-		<p>
-			{ __(
-				'RRM express setup placeholder: newsletter CTA setup step.',
-				'google-site-kit'
-			) }
-		</p>
-	);
-};
-
-export default StepSignupForm;
+export interface FeatureDiscoveryAPI {
+	/**
+	 * Registers a feature in the catalog.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string}          slug     Feature's slug.
+	 * @param {FeatureSettings} settings Feature's settings.
+	 * @return {void}
+	 */
+	registerFeature( slug: string, settings: FeatureSettings ): void;
+}

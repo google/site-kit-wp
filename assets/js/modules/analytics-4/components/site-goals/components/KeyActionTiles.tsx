@@ -36,35 +36,53 @@ import {
 	PERCENT_FORMAT,
 } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
+import KeyActionChartTile, {
+	KeyActionChartTileProps,
+} from './KeyActionChartTile';
 
-interface KeyActionTilesProps {
-	// Whether the "Other sources" tab is active; it shows only the total, since
-	// unattributed events have no per-source sessions to compute a rate against.
+interface KeyActionTilesProps
+	extends Pick<
+		KeyActionChartTileProps,
+		'dates' | 'eventNames' | 'goalType' | 'breakdownFilter'
+	> {
+	/**
+	 * Whether the "Other sources" tab is active, which shows the total tile
+	 * alone.
+	 */
 	isOtherSourcesTab: boolean;
+	/** The URL the rate tile's info tooltip links to. */
 	supportURL: string;
+	/** The rate tile's title. */
 	rateTitle: string;
+	/** The total tile's title. */
 	totalTitle: string;
+	/** The line under the total, which names the event. */
 	totalSubtitle: string;
+	/** The chart tile's title. */
+	chartTitle: string;
+	/** The Key action's rate over the selected date range. */
 	currentRate: number;
+	/** The Key action's rate over the period before the selected date range. */
 	previousRate: number;
+	/** The total sessions the rate is a share of. */
 	currentSessions: number;
-	// Counts for a value tab (the goal's primary event, scoped to the tab).
+	/** The Key action's count on a value tab, over the selected date range. */
 	currentCount: number;
+	/** The Key action's count on a value tab, over the period before the selected date range. */
 	previousCount: number;
-	// Counts for the "Other sources" tab (unattributed events).
+	/** The unattributed count, which the "Other sources" tab shows in place of `currentCount`. */
 	otherSourcesCount: number;
+	/** The unattributed count over the period before the selected date range. */
 	otherSourcesPreviousCount: number;
 }
 
-// Renders the Key action rate and total tiles, shared by the Site Goals
-// widgets. The parent supplies all copy (titles/subtitle) so this stays
-// presentational.
 const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 	isOtherSourcesTab,
 	supportURL,
 	rateTitle,
 	totalTitle,
 	totalSubtitle,
+	chartTitle,
 	currentRate,
 	previousRate,
 	currentSessions,
@@ -72,6 +90,10 @@ const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 	previousCount,
 	otherSourcesCount,
 	otherSourcesPreviousCount,
+	dates,
+	eventNames,
+	goalType,
+	breakdownFilter,
 } ) => (
 	<Fragment>
 		{ ! isOtherSourcesTab && (
@@ -117,6 +139,16 @@ const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 			}
 			format={ NUMBER_FORMAT }
 		/>
+
+		{ ! isOtherSourcesTab && (
+			<KeyActionChartTile
+				title={ chartTitle }
+				dates={ dates }
+				eventNames={ eventNames }
+				goalType={ goalType }
+				breakdownFilter={ breakdownFilter }
+			/>
+		) }
 	</Fragment>
 );
 

@@ -45,3 +45,11 @@ export { default as TopRecentTrendingPagesWidget } from './TopRecentTrendingPage
 export { default as TopCategoriesWidget } from './TopCategoriesWidget';
 export { default as TopPagesDrivingLeadsWidget } from './TopPagesDrivingLeadsWidget';
 export { default as PopularAuthorsWidget } from './PopularAuthorsWidget';
+export { default as TotalSalesWidget } from './TotalSalesWidget';
+export { default as SalesRateWidget } from './SalesRateWidget';
+export { default as SalesEngagementRateWidget } from './SalesEngagementRateWidget';
+export { default as TopTrafficChannelsDrivingSalesRateWidget } from './TopTrafficChannelsDrivingSalesRateWidget';
+export { default as SalesByVisitorTypeWidget } from './SalesByVisitorTypeWidget';
+export { default as SalesByCountriesWidget } from './SalesByCountriesWidget';
+export { default as TopAuthorsDrivingSalesWidget } from './TopAuthorsDrivingSalesWidget';
+export { default as TopPagesDrivingSalesWidget } from './TopPagesDrivingSalesWidget';

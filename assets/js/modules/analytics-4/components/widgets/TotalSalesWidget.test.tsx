@@ -1,0 +1,149 @@
+/**
+ * TotalSalesWidget component tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOTAL_SALES,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { buildPrimaryEventReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import {
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { render } from '@tests/js/test-utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
+import TotalSalesWidget from './TotalSalesWidget';
+import {
+	SALES_WIDGET_REPORT_ENDPOINT,
+	provideSalesWidgetTestRegistry,
+	testGenericReportError,
+} from './utils/salesWidgetTestRegistry';
+
+type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+describe( 'TotalSalesWidget', () => {
+	let registry: WPDataRegistry;
+	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
+		KM_ANALYTICS_TOTAL_SALES
+	);
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		provideSalesWidgetTestRegistry( registry );
+	} );
+
+	function getReportOptions() {
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+
+		return buildPrimaryEventReportOptions(
+			dates,
+			ENUM_CONVERSION_EVENTS.PURCHASE
+		);
+	}
+
+	it( 'should render the loading state while resolving the report', async () => {
+		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+
+		const { container, waitForRegistry } = render(
+			<TotalSalesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).toBeInTheDocument();
+	} );
+
+	testGenericReportError( () => registry, TotalSalesWidget, widgetProps );
+
+	it( 'should render zero values when there are no purchases in either period', async () => {
+		const reportOptions = getReportOptions();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( { rows: [] }, { options: reportOptions } );
+
+		const { container, getByText, waitForRegistry } = render(
+			<TotalSalesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
+		).toHaveTextContent( '0' );
+		expect( getByText( '0' ) ).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-change-badge' )
+		).toHaveTextContent( '0%' );
+	} );
+
+	it( 'should render the current period total sales count and the change vs. the previous period', async () => {
+		const reportOptions = getReportOptions();
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '150' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '100' } ],
+					},
+				],
+			},
+			{ options: reportOptions }
+		);
+
+		const { container, getByText, waitForRegistry } = render(
+			<TotalSalesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
+		).toHaveTextContent( '150' );
+		expect( getByText( '150' ) ).toBeInTheDocument();
+
+		expect(
+			container.querySelector( '.googlesitekit-change-badge' )
+		).toHaveTextContent( '+50%' );
+	} );
+} );

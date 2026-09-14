@@ -40,17 +40,22 @@ interface ExpressSetupStepDetailsProps
 			term: ReactNode;
 		} >
 	) => ReactNode;
+	inline?: boolean;
 }
 
 const ExpressSetupStepDetails: FC< ExpressSetupStepDetailsProps > = ( {
 	children,
 	className,
+	inline,
 	...props
 } ) => {
 	return (
 		<dl
 			className={ classNames(
 				'googlesitekit-rrm-express-setup-details',
+				{
+					'googlesitekit-rrm-express-setup-details--inline': inline,
+				},
 				className
 			) }
 			{ ...props }

@@ -22,8 +22,16 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
@@ -35,16 +43,38 @@ export interface TrafficBreakdownProps {
 }
 
 const TrafficBreakdown: FC< TrafficBreakdownProps > = ( { reports } ) => {
+	// `useInstanceId` is typed as `string | number`, so it is read as a string
+	// the way `TextField` does.
+	const instanceID = useInstanceId(
+		TrafficBreakdown,
+		'googlesitekit-traffic-overview__breakdown-heading'
+	);
+	const headingID = `${ instanceID }`;
+
 	return (
-		<div className="googlesitekit-traffic-overview__breakdown">
-			{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => (
-				<TrafficBreakdownColumn
-					key={ id }
-					heading={ heading }
-					rows={ getBreakdownRows( reports[ id ] ) }
-				/>
-			) ) }
-		</div>
+		<section
+			className="googlesitekit-traffic-overview__breakdown"
+			aria-labelledby={ headingID }
+		>
+			<Typography
+				as="h3"
+				type={ TYPE_TITLE }
+				size={ SIZE_MEDIUM }
+				id={ headingID }
+				className="googlesitekit-traffic-overview__breakdown-heading"
+			>
+				{ __( 'Traffic breakdown', 'google-site-kit' ) }
+			</Typography>
+			<div className="googlesitekit-traffic-overview__breakdown-columns">
+				{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => (
+					<TrafficBreakdownColumn
+						key={ id }
+						heading={ heading }
+						rows={ getBreakdownRows( reports[ id ] ) }
+					/>
+				) ) }
+			</div>
+		</section>
 	);
 };
 
