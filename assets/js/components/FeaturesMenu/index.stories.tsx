@@ -113,7 +113,10 @@ WithAddFeaturesButton.parameters = {
 	features: [ 'featureDiscoveryHub' ],
 };
 WithAddFeaturesButton.scenario = {
-	...Default.scenario,
+	delay: 3000,
+	clickSelector: '.googlesitekit-features-menu__button',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
 };
 
 export const WithoutPDFGeneration = Template.bind( {} ) as Story;
@@ -124,7 +127,10 @@ WithoutPDFGeneration.args = {
 	},
 };
 WithoutPDFGeneration.scenario = {
-	...Default.scenario,
+	delay: 3000,
+	clickSelector: '.googlesitekit-features-menu__button',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
 };
 
 export const ViewOnly = Template.bind( {} ) as Story & {
@@ -170,7 +176,10 @@ ViewOnly.parameters = {
 	features: [ 'pdfGeneration' ],
 };
 ViewOnly.scenario = {
-	...Default.scenario,
+	delay: 3000,
+	clickSelector: '.googlesitekit-features-menu__button',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
 };
 
 export default {
