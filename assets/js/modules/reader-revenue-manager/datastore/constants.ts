@@ -68,6 +68,8 @@ export const READER_REVENUE_MANAGER_NOTICES_FORM =
 
 export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
 
+export const SHOW_TERMS_OF_SERVICE = 'showTermsOfService';
+
 export const RESET_PUBLICATIONS = 'resetPublications';
 
 export const SYNC_PUBLICATION = 'syncPublication';
