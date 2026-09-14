@@ -353,9 +353,6 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
-					<AddFeaturesButton />
-				) }
 				{ isMobileOrTabletBreakpoint ? (
 					<Fragment>
 						<HelpMenu
@@ -365,6 +362,9 @@ export default function DashboardMainApp() {
 					</Fragment>
 				) : (
 					<Fragment>
+						{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
+							<AddFeaturesButton />
+						) }
 						<ManageEmailReportsButton />
 						{ pdfGenerationEnabled && <PDFDownloadButton /> }
 						{ ! viewOnlyDashboard && (

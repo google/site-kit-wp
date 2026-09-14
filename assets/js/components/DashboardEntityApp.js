@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import FeaturesMenu from '@/js/components/FeaturesMenu';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -47,6 +48,11 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -71,6 +77,7 @@ import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
+	const breakpoint = useBreakpoint();
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -218,6 +225,12 @@ function DashboardEntityApp() {
 			</div>
 		);
 	}
+
+	// On mobile and tablet the individual feature action icons collapse into
+	// the single three-dots features menu.
+	const isMobileOrTabletBreakpoint =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -225,12 +238,23 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
-					<AddFeaturesButton />
+				{ isMobileOrTabletBreakpoint ? (
+					<Fragment>
+						<HelpMenu />
+						<FeaturesMenu hidePDFItem />
+					</Fragment>
+				) : (
+					<Fragment>
+						{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
+							<AddFeaturesButton />
+						) }
+						<ManageEmailReportsButton />
+						{ ! viewOnlyDashboard && (
+							<DashboardSharingSettingsButton />
+						) }
+						<HelpMenu />
+					</Fragment>
 				) }
-				<ManageEmailReportsButton />
-				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu />
 			</Header>
 
 			<div className="googlesitekit-page-content">
