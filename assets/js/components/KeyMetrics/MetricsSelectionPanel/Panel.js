@@ -34,10 +34,10 @@ import {
 import SelectionPanel from '@/js/components/SelectionPanel';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { trackEvent } from '@/js/util';
-import getSavedViewableMetrics from './getSavedViewableMetrics';
 import PanelContent from './PanelContent';
 
 export default function Panel() {
@@ -48,7 +48,7 @@ export default function Panel() {
 	);
 	const savedViewableMetrics = useInViewSelect(
 		( select ) =>
-			getSavedViewableMetrics( { select, isViewOnlyDashboard } ),
+			select( CORE_USER ).getSavedViewableMetrics( isViewOnlyDashboard ),
 		[ isViewOnlyDashboard ]
 	);
 

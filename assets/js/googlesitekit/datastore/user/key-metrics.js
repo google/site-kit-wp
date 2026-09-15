@@ -706,6 +706,51 @@ const baseSelectors = {
 			} );
 		}
 	),
+
+	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
+	/**
+	 * Gets the user's saved key metric slugs that are still displayable in the
+	 * Key Metrics selection panel.
+	 *
+	 * `getKeyMetrics()` returns everything the user has saved, and
+	 * `isKeyMetricAvailable()` only checks that a widget's module is connected
+	 * or shared.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state               Data store's state.
+	 * @param {boolean} isViewOnlyDashboard Whether the current dashboard is view-only.
+	 * @return {Array<string>} The filtered key metric slugs.
+	 */
+	getSavedViewableMetrics: createRegistrySelector(
+		( select ) => ( state, isViewOnlyDashboard ) => {
+			const metrics = select( CORE_USER ).getKeyMetrics();
+
+			if ( ! Array.isArray( metrics ) ) {
+				return [];
+			}
+
+			const { isKeyMetricAvailable } = select( CORE_USER );
+
+			return metrics.filter( ( slug ) => {
+				if ( ! isKeyMetricAvailable( slug ) ) {
+					return false;
+				}
+
+				const widget = KEY_METRICS_WIDGETS[ slug ];
+
+				if ( typeof widget?.displayInSelectionPanel !== 'function' ) {
+					return true;
+				}
+
+				return widget.displayInSelectionPanel( {
+					select,
+					isViewOnlyDashboard,
+					slug,
+				} );
+			} );
+		}
+	),
 };
 
 const store = combineStores(

@@ -33,7 +33,6 @@ import {
 	KEY_METRICS_SELECTED,
 	KEY_METRICS_SELECTION_FORM,
 } from '@/js/components/KeyMetrics/constants';
-import getSavedViewableMetrics from '@/js/components/KeyMetrics/MetricsSelectionPanel/getSavedViewableMetrics';
 import PanelContent from '@/js/components/KeyMetrics/MetricsSelectionPanel/PanelContent';
 import Layout from '@/js/components/layout/Layout';
 import PageHeader from '@/js/components/PageHeader';
@@ -62,7 +61,7 @@ export default function FullScreenMetricSelectionApp() {
 
 	const savedViewableMetrics = useSelect(
 		( select ) =>
-			getSavedViewableMetrics( { select, isViewOnlyDashboard } ),
+			select( CORE_USER ).getSavedViewableMetrics( isViewOnlyDashboard ),
 		[ isViewOnlyDashboard ]
 	);
 
