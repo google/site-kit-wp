@@ -102,6 +102,23 @@ Default.scenario = {
 	onReadyScript: 'mouse.js',
 };
 
+export const WithAddFeaturesButton = Template.bind( {} ) as Story;
+WithAddFeaturesButton.storyName = 'With Add Features Button';
+WithAddFeaturesButton.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideUserAuthentication( registry );
+	},
+};
+WithAddFeaturesButton.parameters = {
+	features: [ 'featureDiscoveryHub' ],
+};
+WithAddFeaturesButton.scenario = {
+	delay: 3000,
+	clickSelector: '.googlesitekit-features-menu__button',
+	postInteractionWait: 3000,
+	onReadyScript: 'mouse.js',
+};
+
 export const WithoutPDFGeneration = Template.bind( {} ) as Story;
 WithoutPDFGeneration.storyName = 'Without PDF Generation';
 WithoutPDFGeneration.args = {

@@ -108,6 +108,14 @@ describe( 'FeaturesMenu', () => {
 			registry
 				.dispatch( MODULES_SEARCH_CONSOLE )
 				.receiveGetSettings( { ownerID: 1 } );
+
+			// Dismissed and expirable items, and the initial Site Kit version are
+			// used by the Add Features button when checking for new features.
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( '1.0.0' );
 		} );
 
 		it( 'renders the menu trigger button', () => {
@@ -154,6 +162,18 @@ describe( 'FeaturesMenu', () => {
 			const { queryByText } = render( <FeaturesMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect(
+				queryByText( 'Download PDF report' )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'does not render the PDF item when `hidePDFItem` is true, even if the `pdfGeneration` feature is enabled', () => {
+			const { queryByText } = render( <FeaturesMenu hidePDFItem />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'pdfGeneration' ],
 			} );
 
 			expect(
@@ -266,6 +286,25 @@ describe( 'FeaturesMenu', () => {
 
 			expect( menu ).toHaveAttribute( 'aria-hidden', 'true' );
 		} );
+
+		it( 'renders the Add Features button when the `featureDiscoveryHub` feature is enabled', () => {
+			const { getByText } = render( <FeaturesMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'featureDiscoveryHub' ],
+			} );
+
+			expect( getByText( 'Add features' ) ).toBeInTheDocument();
+		} );
+
+		it( 'does not render the Add Features button when the `featureDiscoveryHub` feature is disabled', () => {
+			const { queryByText } = render( <FeaturesMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			expect( queryByText( 'Add features' ) ).not.toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'on the view-only dashboard', () => {
@@ -336,6 +375,18 @@ describe( 'FeaturesMenu', () => {
 			expect(
 				queryByRole( 'button', { name: triggerLabel } )
 			).not.toBeInTheDocument();
+		} );
+
+		it( 'does not render the Add Features button, even when the `featureDiscoveryHub` feature is enabled', () => {
+			provideViewableModules( [ 'search-console' ] );
+
+			const { queryByText } = render( <FeaturesMenu />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+				features: [ 'featureDiscoveryHub' ],
+			} );
+
+			expect( queryByText( 'Add features' ) ).not.toBeInTheDocument();
 		} );
 	} );
 } );
