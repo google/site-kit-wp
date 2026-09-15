@@ -132,14 +132,14 @@ describe( 'AdminBarWidgets', () => {
 		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the Set up Google Analytics CTA in a cell without `.mdc-layout-grid__cell--span-2-phone`', async () => {
+	it( 'should render the Set up Analytics CTA in a cell without `.mdc-layout-grid__cell--span-2-phone`', async () => {
 		const { getByText, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
 		} );
 
 		await waitForRegistry();
 
-		const cta = getByText( /Set up Google Analytics/ );
+		const cta = getByText( /Set up Analytics/ );
 
 		expect( cta.closest( '.mdc-layout-grid__cell' ) ).not.toHaveClass(
 			'mdc-layout-grid__cell--span-2-phone'
