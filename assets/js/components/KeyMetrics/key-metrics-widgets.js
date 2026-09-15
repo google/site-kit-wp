@@ -611,11 +611,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_SALES_RATE ]: {
 		title: __( 'Sales rate', 'google-site-kit' ),
 		description: __(
-			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
 			'google-site-kit'
 		),
 		documentationLinkSlug: 'site-goals-online-store-key-action',
