@@ -19,32 +19,9 @@
 /**
  * Internal dependencies
  */
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { createTotalsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { render } from '@tests/js/test-utils';
 import TotalVisitors from './TotalVisitors';
-
-/**
- * Builds a totals report holding the selected range then the range before it.
- *
- * The values are strings, the way the API returns them.
- *
- * @since n.e.x.t
- *
- * @param {number} currentValue  Visitors over the selected range.
- * @param {number} previousValue Visitors over the range before it.
- * @return {Object} The totals report.
- */
-function createTotalsReport(
-	currentValue: number,
-	previousValue: number
-): Report {
-	return {
-		totals: [
-			{ metricValues: [ { value: String( currentValue ) } ] },
-			{ metricValues: [ { value: String( previousValue ) } ] },
-		],
-	};
-}
 
 describe( 'TotalVisitors', () => {
 	it.each( [
@@ -109,15 +86,42 @@ describe( 'TotalVisitors', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should read a missing report as zero visitors', () => {
-		// This is what the section shows while the report is still on its way,
-		// which reads as a real zero. #13411 replaces it with a loading state.
-		const { container, getByText } = render( <TotalVisitors /> );
+	it( 'should replace the total and its change badge with a placeholder while the report loads', () => {
+		const { container, getByRole, queryByText } = render(
+			<TotalVisitors
+				report={ createTotalsReport( 1200, 1000 ) }
+				loaded={ false }
+			/>
+		);
 
-		expect( getByText( '0' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'heading', { name: 'Total visitors' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect( queryByText( '1.2K' ) ).not.toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '0%' );
+		).toBeNull();
+	} );
+
+	it( 'should replace the total and its change badge with "Gathering data…" while the property is gathering data', () => {
+		const { container, getByRole, getByText, queryByText } = render(
+			<TotalVisitors
+				report={ createTotalsReport( 1200, 1000 ) }
+				gatheringData
+			/>
+		);
+
+		expect(
+			getByRole( 'heading', { name: 'Total visitors' } )
+		).toBeInTheDocument();
+		expect( getByText( 'Gathering data…' ) ).toBeInTheDocument();
+		expect( queryByText( '1.2K' ) ).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-change-badge' )
+		).toBeNull();
 	} );
 
 	it( 'should render the title as plain text, and nothing in the section is clickable', () => {
