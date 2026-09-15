@@ -250,6 +250,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 		select( MODULES_ANALYTICS_4 ).isFetchingSyncAvailableCustomDimensions()
 	);
 
+	// A tile that renders before its badges are known shows the wrong one, so the row
+	// waits for every audience to answer.
+	const partialDataBadgesLoading = useInViewSelect(
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).isLoadingAudienceTilePartialData(
+				visibleAudiences
+			),
+		[ visibleAudiences ]
+	);
+
 	// Ensure the active tile is always correctly selected.
 	const [ activeTile, setActiveTile ] = useState( visibleAudiences[ 0 ] );
 
@@ -274,13 +284,16 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 	// Determine loading state.
 	const loading =
 		widgetLoading ||
-		! reportLoaded ||
-		! siteKitAudiencesReportLoaded ||
-		! totalPageviewsReportLoaded ||
-		! topCitiesReportsLoaded ||
-		! topContentReportsLoaded ||
-		! topContentPageTitlesReportsLoaded ||
-		isSyncingAvailableCustomDimensions;
+		isSyncingAvailableCustomDimensions ||
+		! [
+			reportLoaded,
+			siteKitAudiencesReportLoaded,
+			totalPageviewsReportLoaded,
+			topCitiesReportsLoaded,
+			topContentReportsLoaded,
+			topContentPageTitlesReportsLoaded,
+			partialDataBadgesLoading === false,
+		].every( Boolean );
 
 	return (
 		<Fragment>
