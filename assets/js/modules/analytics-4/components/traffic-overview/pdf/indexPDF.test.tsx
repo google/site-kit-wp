@@ -78,15 +78,15 @@ const DEFAULT_REPORTS = buildReports( {
 } );
 
 describe( 'Traffic Overview PDF', () => {
-	it( 'should render nothing when data is null', () => {
+	it( 'renders nothing when data is null', () => {
 		expect( renderTree( { data: null } ) ).toBeNull();
 	} );
 
-	it( 'should render nothing when data is undefined', () => {
+	it( 'renders nothing when data is undefined', () => {
 		expect( renderTree( {} ) ).toBeNull();
 	} );
 
-	it( 'should render the heading and the All visitors tile with its value, change, and line chart', () => {
+	it( 'renders the heading and the All visitors tile with its value, change, and line chart', () => {
 		const json = JSON.stringify(
 			renderTree( {
 				data: DEFAULT_REPORTS,
@@ -103,14 +103,14 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).toContain( LINE_CHART_DATA_URI );
 	} );
 
-	it( 'should render the All visitors tile without a chart when the chart image is missing', () => {
+	it( 'renders the All visitors tile without a chart when the chart image is missing', () => {
 		const json = JSON.stringify( renderTree( { data: DEFAULT_REPORTS } ) );
 
 		expect( json ).toContain( 'All visitors' );
 		expect( json ).not.toContain( 'data:image' );
 	} );
 
-	it( 'should print no change badge when the previous value is 0', () => {
+	it( 'prints no change badge when the previous value is 0', () => {
 		const data = buildReports( {
 			currentUsers: '1234',
 			previousUsers: '0',
@@ -129,7 +129,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).not.toContain( '#ffded3' );
 	} );
 
-	it( 'should render the three ranked tiles, in order, with their headings and rows', () => {
+	it( 'renders the three ranked tiles, in order, with their headings and rows', () => {
 		const json = JSON.stringify(
 			renderTree( {
 				data: DEFAULT_REPORTS,
@@ -155,7 +155,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).toContain( 'Others' );
 	} );
 
-	it( 'should render no change badge on the ranked tiles', () => {
+	it( 'renders no change badge on the ranked tiles', () => {
 		const json = JSON.stringify(
 			renderTree( {
 				data: DEFAULT_REPORTS,
@@ -168,7 +168,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( badgeCount ).toBe( 1 );
 	} );
 
-	it( 'should print a breakdown’s heading and its empty state when it has no rows, while the other two still print their rows', () => {
+	it( 'prints a breakdown’s heading and its empty state when it has no rows, while the other two still print their rows', () => {
 		const data = { ...DEFAULT_REPORTS, channelBreakdown: [] };
 
 		const json = JSON.stringify(
@@ -190,7 +190,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).toContain( 'Desktop' );
 	} );
 
-	it( 'should print a breakdown’s empty state when its rows are null', () => {
+	it( 'prints a breakdown’s empty state when its rows are null', () => {
 		const data = { ...DEFAULT_REPORTS, locationBreakdown: null };
 
 		const json = JSON.stringify(
@@ -207,7 +207,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).not.toContain( 'Singapore' );
 	} );
 
-	it( 'should render no donut chart image and no colour-swatched legend', () => {
+	it( 'renders no donut chart image and no colour-swatched legend', () => {
 		const json = JSON.stringify(
 			renderTree( {
 				data: DEFAULT_REPORTS,

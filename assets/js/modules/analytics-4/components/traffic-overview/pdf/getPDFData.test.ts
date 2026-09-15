@@ -164,6 +164,33 @@ function seedTotalsAndGraphReports( testRegistry: Registry ) {
 	);
 }
 
+/**
+ * Seeds the three breakdown reports with one row each, for tests that need
+ * non-empty breakdowns but don't care about their content.
+ *
+ * @since n.e.x.t
+ *
+ * @param  testRegistry Registry to seed.
+ * @return {void}
+ */
+function seedDefaultBreakdownReports( testRegistry: Registry ) {
+	testRegistry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
+			options: channelsArgs,
+		} );
+	testRegistry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( buildBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
+			options: locationsArgs,
+		} );
+	testRegistry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport( buildBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
+			options: devicesArgs,
+		} );
+}
+
 describe( 'Traffic Overview getPDFData', () => {
 	let registry: Registry;
 	let dataTable: { addColumn: jest.Mock; addRows: jest.Mock };
@@ -188,7 +215,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		setGoogle( undefined );
 	} );
 
-	it( 'should build the five reports with the selected range and no entity URL', async () => {
+	it( 'builds the five reports with the selected range and no entity URL', async () => {
 		// The registry resolves a report already in state without fetching, so
 		// pre-seeding each report at its exact expected args and asserting no
 		// fetch happened proves `getPDFData` built that exact args shape. The
@@ -228,7 +255,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should build the five reports with the current entity URL when one is set', async () => {
+	it( 'builds the five reports with the current entity URL when one is set', async () => {
 		const entityURL = 'https://example.com/post-1';
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 
@@ -288,23 +315,9 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( 'should return chartImages holding only lineChart', async () => {
+	it( 'returns chartImages holding only lineChart', async () => {
 		seedTotalsAndGraphReports( registry );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
-				options: channelsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
-				options: locationsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
-				options: devicesArgs,
-			} );
+		seedDefaultBreakdownReports( registry );
 
 		const result = await getPDFData( {
 			registry,
@@ -321,7 +334,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		).toBe( 'LineChart' );
 	} );
 
-	it( 'should shape each breakdown report with getBreakdownRows()', async () => {
+	it( 'shapes each breakdown report with getBreakdownRows()', async () => {
 		seedTotalsAndGraphReports( registry );
 		const channelReport = buildBreakdownReport( [
 			[ 'Organic Search', 60 ],
@@ -371,7 +384,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		);
 	} );
 
-	it( 'should leave a failed breakdown report null while the other two still resolve', async () => {
+	it( 'leaves a failed breakdown report null while the other two still resolve', async () => {
 		seedTotalsAndGraphReports( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -420,7 +433,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should stop before requesting anything when the signal is already aborted', async () => {
+	it( 'stops before requesting anything when the signal is already aborted', async () => {
 		const controller = new AbortController();
 		controller.abort();
 
@@ -436,7 +449,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should stop after the reports resolve when the signal aborts before the chart renders', async () => {
+	it( 'stops after the reports resolve when the signal aborts before the chart renders', async () => {
 		const controller = new AbortController();
 
 		seedTotalsAndGraphReports( registry );
@@ -473,25 +486,11 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( mockRenderGoogleChartToDataURI ).not.toHaveBeenCalled();
 	} );
 
-	it( 'should stop after the chart renders when the signal is aborted', async () => {
+	it( 'stops after the chart renders when the signal is aborted', async () => {
 		const controller = new AbortController();
 
 		seedTotalsAndGraphReports( registry );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
-				options: channelsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
-				options: locationsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
-				options: devicesArgs,
-			} );
+		seedDefaultBreakdownReports( registry );
 
 		mockRenderGoogleChartToDataURI.mockReset().mockImplementation( () => {
 			controller.abort();
@@ -507,7 +506,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect( result ).toEqual( { data: null } );
 	} );
 
-	it( 'should forward the abort signal to each report request', async () => {
+	it( 'forwards the abort signal to each report request', async () => {
 		fetchMock.get( reportEndpoint, { body: { rows: [] }, status: 200 } );
 
 		const { signal } = new AbortController();
