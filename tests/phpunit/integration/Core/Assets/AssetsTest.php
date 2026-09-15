@@ -329,6 +329,7 @@ class AssetsTest extends TestCase {
 		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
 
 		set_current_screen( 'edit.php' );
+		remove_all_actions( 'admin_enqueue_scripts' );
 
 		$this->assets->register();
 
