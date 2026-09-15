@@ -91,7 +91,7 @@ describe( 'MetricTileHeader', () => {
 		const { container } = render(
 			<MetricTileHeader
 				title="Sales rate"
-				infoTooltip="The percentage of total visitors who successfully completed a key action, like making a purchase"
+				infoTooltip="The percentage of total visitors who successfully completed a key action (like making a purchase)"
 				documentationLinkSlug="site-goals-online-store-key-action"
 			/>,
 			{ registry }
@@ -101,7 +101,7 @@ describe( 'MetricTileHeader', () => {
 
 		expect(
 			within( tooltipContent ).getByText(
-				'The percentage of total visitors who successfully completed a key action, like making a purchase',
+				'The percentage of total visitors who successfully completed a key action (like making a purchase)',
 				{ exact: false }
 			)
 		).toBeInTheDocument();
