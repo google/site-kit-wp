@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidgetGA4 report options.
+ * Traffic Overview report options.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
