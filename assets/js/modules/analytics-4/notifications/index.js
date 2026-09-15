@@ -30,6 +30,7 @@ import {
 	requireItemDismissed,
 	requireModuleAccess,
 	requireModuleConnected,
+	requireModuleNotConnected,
 	requireModuleOwnership,
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
@@ -208,7 +209,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			asyncRequire( false, requireModuleConnected( MODULE_SLUG_ADS ) )
+			requireModuleNotConnected( MODULE_SLUG_ADS )
 		),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',
