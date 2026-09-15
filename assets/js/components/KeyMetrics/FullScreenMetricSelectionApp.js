@@ -60,8 +60,10 @@ export default function FullScreenMetricSelectionApp() {
 		);
 	} );
 
-	const savedViewableMetrics = useSelect( ( select ) =>
-		getSavedViewableMetrics( { select, isViewOnlyDashboard } )
+	const savedViewableMetrics = useSelect(
+		( select ) =>
+			getSavedViewableMetrics( { select, isViewOnlyDashboard } ),
+		[ isViewOnlyDashboard ]
 	);
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
