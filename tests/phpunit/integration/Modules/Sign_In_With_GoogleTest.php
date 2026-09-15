@@ -13,6 +13,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -669,6 +670,109 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected to redirect' );
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location(), 'POST auth callback should redirect to provided URI.' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_redirect_for_a_same_origin_request() {
+		$redirect_uri              = home_url( '/test-page/' );
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = home_url();
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from this site should be handled.' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_not_redirect_for_another_sites_origin() {
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://another-site.example.com';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( home_url( '/test-page/' ) ) );
+			$this->expectNotToPerformAssertions();
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection for a request announcing another origin' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_not_authenticate_for_another_sites_origin() {
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://another-site.example.com';
+
+		$authenticator = $this->createMock( Authenticator_Interface::class );
+		$authenticator->expects( $this->never() )
+			->method( 'authenticate_user' );
+
+		$this->call_handle_auth_callback( $authenticator );
+	}
+
+	/**
+	 * The login page can sit on an origin `site_url()` does not describe. It is
+	 * filterable, and it takes its scheme from `force_ssl_admin()`.
+	 */
+	public function test_handle_auth_callback_should_redirect_for_the_login_page_origin() {
+		$redirect_uri = home_url( '/test-page/' );
+
+		add_filter(
+			'login_url',
+			function () {
+				return 'https://login.example.net/wp-login.php';
+			}
+		);
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://login.example.net';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from the login page should be handled.' );
+		}
+	}
+
+	/**
+	 * The existing-user link flow runs on `profile.php`, so admin requests are
+	 * a third origin a genuine sign-in can announce.
+	 */
+	public function test_handle_auth_callback_should_redirect_for_the_admin_origin() {
+		$redirect_uri = home_url( '/test-page/' );
+
+		add_filter(
+			'admin_url',
+			function () {
+				return 'https://admin.example.net/wp-admin/';
+			}
+		);
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://admin.example.net';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from the admin area should be handled.' );
+		}
+	}
+
+	/**
+	 * A host sharing this site's cookie domain is still a different origin.
+	 */
+	public function test_handle_auth_callback_should_not_redirect_for_a_host_sharing_the_cookie_domain() {
+		$host = URL::parse( home_url(), PHP_URL_HOST );
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://other.' . $host;
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( home_url( '/test-page/' ) ) );
+			$this->expectNotToPerformAssertions();
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection for a host sharing the cookie domain' );
 		}
 	}
 

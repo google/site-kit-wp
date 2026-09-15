@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Sign_In_With_Google;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\WooCommerce_Authenticator;
@@ -28,6 +29,11 @@ class WooCommerce_AuthenticatorTest extends TestCase {
 
 	public function set_up() {
 		parent::set_up();
+
+		// `WP_UnitTestCase_Base::set_up()` empties `$_GET`, `$_POST` and
+		// `$_REQUEST`, but not `$_COOKIE`, so clear it here to keep cookies
+		// from leaking between tests.
+		$_COOKIE = array();
 
 		// WooCommerce itself registers the "customer" role (via
 		// `WC_Install::create_roles()`) whenever the plugin is active, which
@@ -47,7 +53,24 @@ class WooCommerce_AuthenticatorTest extends TestCase {
 		'family_name' => 'Last',
 	);
 
+	/**
+	 * Authenticates with a nonce cookie and token claim which match.
+	 *
+	 * The value is generated per call, so a test can only pass the nonce check
+	 * because the cookie reached the comparison, not because it happened to
+	 * reuse a value shared across the suite.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @return string Redirect URL.
+	 */
 	private function do_authenticate_user( $profile_reader_data = array() ) {
+		if ( is_array( $profile_reader_data ) ) {
+			$nonce = wp_generate_password( 32, false );
+
+			$profile_reader_data['nonce']           = $nonce;
+			$_COOKIE[ Authenticator::COOKIE_NONCE ] = $nonce;
+		}
+
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
 									->setMethods( array( 'get_profile_data' ) )
