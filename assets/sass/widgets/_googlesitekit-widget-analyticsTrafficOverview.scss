@@ -124,37 +124,63 @@
 		}
 
 		.googlesitekit-traffic-overview__breakdown {
+			margin-top: 62px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-columns {
 			display: grid;
 			gap: 24px;
 
 			// Stacked through tablet; three columns from desktop up.
 			grid-template-columns: 1fr;
-			margin-top: 62px;
+			margin-top: 18px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 0;
+				gap: 42px;
 
 				// Equal fractions, so a column with no rows keeps its width.
 				grid-template-columns: repeat(3, 1fr);
 			}
 		}
 
+		// Every column carries its own connector on the left, the same rail and
+		// dot the site goals goal drivers use, so the third column is marked the
+		// same way as the two that follow a neighbour.
 		.googlesitekit-traffic-overview__breakdown-column {
+			min-width: 0;
 
-			@media (min-width: $bp-desktop) {
-				padding: 0 24px;
+			// The dot is 9px and its gap to the text is 10px, so a row starts
+			// 19px past the column's left edge.
+			padding: 8px 0 8px 19px;
+			position: relative;
 
-				&:first-child {
-					padding-left: 0;
-				}
+			// The rail is a `::before` rather than a border, so it and the dot
+			// centered on it both sit inside the column's own box. `left`
+			// centers the 2px rail in the 9px dot: (9px - 2px) / 2.
+			&::before {
+				background: $c-utility-divider;
+				bottom: 0;
+				content: "";
+				left: 3.5px;
+				position: absolute;
+				top: 0;
+				width: 2px;
+			}
 
-				&:last-child {
-					padding-right: 0;
-				}
-
-				&:not(:first-child) {
-					border-left: 1px solid $c-utility-divider;
-				}
+			&::after {
+				background: $c-utility-divider;
+				border-radius: 50%;
+				content: "";
+				height: 9px;
+				left: 0;
+				position: absolute;
+				top: 15px;
+				width: 9px;
 			}
 		}
 
@@ -176,7 +202,7 @@
 
 		.googlesitekit-traffic-overview__breakdown-row
 			+ .googlesitekit-traffic-overview__breakdown-row {
-			margin-top: 5px;
+			margin-top: 4px;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row-label {
