@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getTrafficChartData } from './getTrafficChartData';
-import { createDailyVisitorsReport } from './test-utils';
 
 describe( 'getTrafficChartData', () => {
 	it( 'names the columns "Day" and "Users"', () => {
