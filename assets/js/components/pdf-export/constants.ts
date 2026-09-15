@@ -36,7 +36,7 @@ export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
  * The introduction overlay anchors to this button, so the class is shared
  * rather than repeated as a selector string.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  */
 export const PDF_DOWNLOAD_BUTTON_CLASS = 'googlesitekit-pdf-download__button';
 
@@ -106,8 +106,8 @@ export const PDF_EXPORT_DOWNLOADED_ITEM_SLUG = 'pdf-export-downloaded';
  */
 export const ORDERED_MAIN_DASHBOARD_CONTEXTS = [
 	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
-	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
 	CONTEXT_MAIN_DASHBOARD_CONTENT,
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_MONETIZATION,

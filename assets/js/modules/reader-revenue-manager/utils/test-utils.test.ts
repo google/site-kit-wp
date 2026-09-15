@@ -21,7 +21,9 @@ import { Registry } from '@/js/googlesitekit-data';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { providePublications } from './test-utils';
+import { providePublication, providePublications } from './test-utils';
+
+const TEST_PUBLICATION = publications[ 3 ];
 
 describe( 'test utilities', () => {
 	describe( 'providePublications', () => {
@@ -51,6 +53,42 @@ describe( 'test utilities', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.getPublications().length
 			).toBe( publications.length );
+		} );
+	} );
+
+	describe( 'providePublication', () => {
+		let registry: Registry;
+
+		beforeEach( () => {
+			registry = createTestRegistry() as Registry;
+		} );
+
+		it( 'should provide a publication', () => {
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication()
+			).toBeUndefined();
+
+			providePublication( registry, TEST_PUBLICATION );
+
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.hasFinishedResolution( 'getPublication' )
+			).toBe( true );
+
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationID()
+			).toEqual( TEST_PUBLICATION.publicationId ); // eslint-disable-line sitekit/acronym-case
+
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication()
+			).toEqual( TEST_PUBLICATION );
 		} );
 	} );
 } );

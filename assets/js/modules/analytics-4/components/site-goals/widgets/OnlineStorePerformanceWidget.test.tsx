@@ -17,7 +17,6 @@
 /**
  * External dependencies
  */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import fetchMock from 'fetch-mock';
 
 /**
@@ -34,6 +33,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import {
 	BREAKDOWN_ORIGIN_FORM_KEY,
 	BREAKDOWN_ORIGIN_WIDGET,
@@ -54,6 +54,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -69,9 +70,14 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 describe( 'OnlineStorePerformanceWidget', () => {
 	let registry: WPDataRegistry;
+
+	const { getObservedElements } = mockIntersectionObserver();
+
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		'analyticsOnlineStorePerformance'
 	);
+
+	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
 
 	function buildPrimaryEventReportOptions(
 		dates: Record< string, unknown >,
@@ -120,6 +126,40 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		};
 	}
 
+	/**
+	 * Adds the chart tile's report for every ecommerce event and provider tab,
+	 * so no test leaves the tile in its loading placeholder.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function receiveKeyActionChartReports() {
+		const breakdownFilters: Record< string, unknown >[] = [
+			{},
+			...[ 'woocommerce', 'easy-digital-downloads' ].map(
+				( provider ) => ( { [ PROVIDER_DIMENSION ]: provider } )
+			),
+		];
+
+		[
+			ENUM_CONVERSION_EVENTS.PURCHASE,
+			ENUM_CONVERSION_EVENTS.ADD_TO_CART,
+		].forEach( ( eventName ) => {
+			breakdownFilters.forEach( ( breakdownFilter ) => {
+				provideAnalytics4MockReport(
+					registry,
+					getKeyActionChartReportOptions( {
+						dates: registry.select( CORE_USER ).getDateRangeDates(),
+						eventNames: [ eventName ],
+						goalType: GOAL_TYPES.ECOMMERCE,
+						breakdownFilter,
+					} )
+				);
+			} );
+		} );
+	}
+
 	function seedGoalDriverReports(
 		eventNames: string[],
 		{
@@ -155,14 +195,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		const topTrafficTotalOptions = {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 		};
 
 		const topTrafficRateOptions = {
@@ -178,7 +220,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
 		};
 
 		const topPagesOptions = {
@@ -194,7 +237,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -226,7 +269,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 		};
 
 		const citiesOptions = {
@@ -248,7 +291,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 		};
 
 		const countriesOptions = {
@@ -270,7 +313,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 		};
 
 		const deviceTypeOptions = {
@@ -286,7 +329,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_device-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 		};
 
 		if ( loading ) {
@@ -722,6 +765,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		// Default to aggregated mode (no breakdown provider values yet); tabbed
 		// tests re-seed with provider values.
 		seedBreakdown();
+		receiveKeyActionChartReports();
 	} );
 
 	it( 'renders WidgetNull when no ecommerce events are detected', async () => {
@@ -775,17 +819,27 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+		);
+
+		expect( keyActionRow ).toBeInTheDocument();
+		// The row holds Sales rate, Total sales, and Total sales in the last
+		// 28 days.
 		expect(
-			container.querySelector(
-				'.googlesitekit-site-goals-primary-action'
-			)
-		).toBeInTheDocument();
+			keyActionRow?.querySelectorAll( '.googlesitekit-site-goals-tile' )
+		).toHaveLength( 3 );
+		// The widget holds the Key action row's three tiles and the Engagement
+		// rate tile.
 		expect(
 			container.querySelectorAll( '.googlesitekit-site-goals-tile' )
-		).toHaveLength( 3 ); // Sales rate + Total sales + Engagement rate
+		).toHaveLength( 4 );
 		expect( getByText( 'Sales rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
 		expect( getByText( '“purchase” events' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Total sales in the last 28 days' )
+		).toBeInTheDocument();
 		expect( getByText( 'Engagement rate' ) ).toBeInTheDocument();
 		expect(
 			getByText( 'What’s helping you reach your goals?' )
@@ -798,11 +852,53 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
+		// The site-wide total (100) is larger than the sum of the ranked
+		// rows above (54 + 23 + 16 = 93), so these percentages only match if
+		// "Top traffic channels" divides by that total rather than by the
+		// visible rows.
+		expect( getByText( '54%' ) ).toBeInTheDocument();
+		expect( getByText( '23%' ) ).toBeInTheDocument();
+		expect( getByText( '16%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
 			)
 		).toHaveLength( 3 );
+	} );
+
+	it( 'shows 90 days in the chart tile title when the date range is the last 90 days', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		provideAnalytics4MockReport(
+			registry,
+			buildPrimaryEventReportOptions(
+				dates,
+				ENUM_CONVERSION_EVENTS.PURCHASE
+			)
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		receiveKeyActionChartReports();
+
+		const { getByText, waitForRegistry } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Total sales in the last 90 days' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders a collapsible widget', async () => {
@@ -865,6 +961,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect( getByText( 'Add to cart rate' ) ).toBeInTheDocument();
 		expect( getByText( 'Products added to cart' ) ).toBeInTheDocument();
 		expect( getByText( '“add_to_cart” events' ) ).toBeInTheDocument();
+		expect(
+			getByText( 'Products added to cart in the last 28 days' )
+		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by total sales' )
 		).toBeInTheDocument();
@@ -1152,7 +1251,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
@@ -1641,8 +1741,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	const PROVIDER_DIMENSION = 'customEvent:googlesitekit_event_provider';
-
 	// Seeds the Key action, visitor engagement and goal driver reports for a
 	// breakdown tab whose section reports carry the given provider filter.
 	function seedTabbedReports( breakdownFilter: Record< string, unknown > ) {
@@ -1821,6 +1919,12 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		await waitFor( () => {
 			expect( getByText( 'Key action' ) ).toBeInTheDocument();
 		} );
+		// Only the aggregate total renders: no chart tile, no engagement
+		// section, and no drivers.
+		expect( getByText( 'Total sales' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Total sales in the last 28 days' )
+		).not.toBeInTheDocument();
 		expect(
 			queryByText( 'How are your visitors engaging?' )
 		).not.toBeInTheDocument();
@@ -1977,8 +2081,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	} );
 
 	it( 'observes the widget element after it renders', async () => {
-		intersectionObserver.mock();
-
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
@@ -1990,15 +2092,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		const observedTargets = intersectionObserver.observers.map(
-			( observer ) => observer.target
-		);
-		expect( observedTargets ).toContain(
+		expect( getObservedElements() ).toContain(
 			container.querySelector(
 				'.googlesitekit-widget--analyticsOnlineStorePerformance'
 			)
 		);
-
-		intersectionObserver.restore();
 	} );
 } );

@@ -125,7 +125,7 @@ class Report_Data_Processor {
 	/**
 	 * Sums one metric for each group and each date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array  $rows            Report rows, as `Email_Report_Payload_Processor::extract_report_rows()`
 	 *                                returns them.

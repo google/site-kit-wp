@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Email_Reporting;
 
+use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Email_Reporting\Report_Options as Analytics_Report_Options;
 
@@ -25,49 +26,63 @@ class Report_Request_Assembler {
 	/**
 	 * Payload key of the report that counts online store key actions across the whole site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_PRIMARY_KEY = 'site_goals_online_store_primary';
 
 	/**
 	 * Payload key of the report that counts online store key actions, one row per event provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY = 'site_goals_online_store_primary_by_provider';
 
 	/**
 	 * Payload key of the report that counts lead generation key actions across the whole site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_LEAD_PRIMARY_KEY = 'site_goals_lead_primary';
 
 	/**
 	 * Payload key of the report that counts lead generation key actions, one row per form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY = 'site_goals_lead_primary_by_form';
 
 	/**
-	 * Payload key of the report that holds the engagement rate and the session count of the whole site.
+	 * Payload key of the report that names the groups the online store card shows.
 	 *
 	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY = 'site_goals_online_store_discovery';
+
+	/**
+	 * Payload key of the report that names the groups the lead generation card shows.
+	 *
+	 * @since n.e.x.t
+	 */
+	const SITE_GOALS_LEAD_DISCOVERY_KEY = 'site_goals_lead_discovery';
+
+	/**
+	 * Payload key of the report that holds the engagement rate and the session count of the whole site.
+	 *
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_KEY = 'site_goals_engagement';
 
 	/**
 	 * Payload key of the report that holds the engagement rate and the session count, one row per event provider.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY = 'site_goals_engagement_by_provider';
 
 	/**
 	 * Payload key of the report that holds the engagement rate and the session count, one row per form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 */
 	const SITE_GOALS_ENGAGEMENT_BY_FORM_KEY = 'site_goals_engagement_by_form';
 
@@ -77,14 +92,16 @@ class Report_Request_Assembler {
 	 * A Site Goals section reads more than one of these reports, so no key here gets a
 	 * section of its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var array
 	 */
 	const SITE_GOALS_REQUEST_KEYS = array(
 		self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY,
 		self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY,
+		self::SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY,
 		self::SITE_GOALS_LEAD_PRIMARY_KEY,
 		self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY,
+		self::SITE_GOALS_LEAD_DISCOVERY_KEY,
 		self::SITE_GOALS_ENGAGEMENT_KEY,
 		self::SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY,
 		self::SITE_GOALS_ENGAGEMENT_BY_FORM_KEY,
@@ -113,7 +130,7 @@ class Report_Request_Assembler {
 	 * Builds Analytics 4 batch report requests.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the Site Goals report requests, and fixed the author and
+	 * @since 1.187.0 Added the Site Goals report requests, and fixed the author and
 	 *                category dimension keys, which never matched the availability map.
 	 *
 	 * @param array $custom_titles Optional. Custom titles keyed by request key.
@@ -149,23 +166,34 @@ class Report_Request_Assembler {
 	}
 
 	/**
-	 * Builds the Site Goals requests for each widget whose events Analytics has detected.
+	 * Builds the Site Goals requests for each widget the dashboard shows.
+	 *
+	 * The dashboard decides which widgets to show in `isSiteGoalsWidgetRenderable()`.
 	 *
 	 * The online store widget and the lead generation widget each need their own key
 	 * action count, plus the engagement rate and the session count. Two widgets with no
 	 * breakdown dimension write the same `site_goals_engagement` key, so the batch asks
 	 * for that report once.
 	 *
-	 * @since n.e.x.t
+	 * A widget that splits its results asks for one more report, which names the groups it
+	 * shows over a longer, fixed period.
+	 *
+	 * @since 1.187.0
+	 * @since n.e.x.t Added the discovery report of each widget that splits its results.
+	 *                Skipped the reports of a widget the dashboard doesn't show.
 	 *
 	 * @return array Report requests keyed by payload key.
 	 */
 	private function build_site_goals_requests() {
 		$requests = array();
 
-		if ( $this->report_options->has_ecommerce_events() ) {
+		if (
+			$this->report_options->has_ecommerce_events()
+			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_ECOMMERCE )
+		) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ) ) {
 				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ] = $this->report_options->get_online_store_primary_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+				$requests[ self::SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY ]           = $this->report_options->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 				$requests[ self::SITE_GOALS_ENGAGEMENT_BY_PROVIDER_KEY ]           = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
 			} else {
 				$requests[ self::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY ] = $this->report_options->get_online_store_primary_options();
@@ -173,9 +201,13 @@ class Report_Request_Assembler {
 			}
 		}
 
-		if ( $this->report_options->has_lead_events() ) {
+		if (
+			$this->report_options->has_lead_events()
+			&& $this->report_options->is_site_goals_widget_active( Conversion_Events_Provider::CATEGORY_LEAD )
+		) {
 			if ( $this->report_options->has_custom_dimension_data( Analytics_4::CUSTOM_DIMENSION_FORM_ID ) ) {
 				$requests[ self::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ] = $this->report_options->get_lead_primary_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+				$requests[ self::SITE_GOALS_LEAD_DISCOVERY_KEY ]       = $this->report_options->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 				$requests[ self::SITE_GOALS_ENGAGEMENT_BY_FORM_KEY ]   = $this->report_options->get_engagement_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
 			} else {
 				$requests[ self::SITE_GOALS_LEAD_PRIMARY_KEY ] = $this->report_options->get_lead_primary_options();

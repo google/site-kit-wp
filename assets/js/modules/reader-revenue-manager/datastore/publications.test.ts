@@ -145,6 +145,143 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			} );
 		} );
 
+		describe( 'created publication state', () => {
+			const params = {
+				displayName: 'Example Publication',
+				languageCode: 'en',
+				regionCode: 'US',
+			};
+
+			const publication = fixtures.publications[ 3 ];
+
+			it( 'should not need additional requests for publications after creating and selecting a first publication', async () => {
+				enabledFeatures.add( 'rrmExpressSetup' );
+
+				const dispatch = registry.dispatch(
+					MODULES_READER_REVENUE_MANAGER
+				);
+
+				const select = registry.select(
+					MODULES_READER_REVENUE_MANAGER
+				);
+
+				dispatch.receiveGetSettings( {
+					publicationID: '',
+					organizationID: '',
+					snippetMode: 'per_post',
+					postTypes: [],
+					configuredCTAs: {},
+				} );
+
+				dispatch.receiveGetPublications( [] );
+
+				select.getPublication();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication();
+
+				expect(
+					select.hasFinishedResolution( 'getPublication', [] )
+				).toBe( true );
+
+				expect( select.getPublication() ).toBeUndefined();
+
+				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+
+				fetchMock.postOnce( createPublicationEndpoint, {
+					body: publication,
+				} );
+
+				fetchMock.postOnce( settingsEndpoint, ( url, { body } ) => ( {
+					body: JSON.parse( body as string ).data,
+				} ) );
+
+				const { response } = await dispatch.createPublication( params );
+
+				await dispatch.selectPublication( response );
+
+				expect( await dispatch.submitChanges() ).toEqual( {} );
+
+				select.getPublication();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication();
+
+				expect( select.getPublication() ).toEqual( publication );
+				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+			} );
+
+			it( 'should add created publications to state and return it without an additional request', async () => {
+				const existing = fixtures.publications[ 0 ];
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ existing ] );
+
+				fetchMock.postOnce( createPublicationEndpoint, {
+					body: publication,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createPublication( params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( [ existing, publication ] );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublication( {
+							publicationID: publication.publicationId,
+						} )
+				).toEqual( publication );
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication( {
+					publicationID: publication.publicationId,
+				} );
+
+				expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+			} );
+
+			it( 'should preserve publications state when creation fails', async () => {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetPublications( [ publication ] );
+
+				fetchMock.postOnce( createPublicationEndpoint, {
+					body: {
+						code: 'internal_server_error',
+						message: 'Creation failed',
+						data: { status: 500 },
+					},
+					status: 500,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createPublication( params );
+
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublications()
+				).toEqual( [ publication ] );
+
+				expect( console ).toHaveErrored();
+			} );
+		} );
+
 		describe( 'updatePublication', () => {
 			const params = {
 				organizationID: 'organization-1',
@@ -732,6 +869,8 @@ describe( 'modules/reader-revenue-manager publications', () => {
 
 	describe( 'fetchGetPublications settings synchronization', () => {
 		beforeEach( () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+
 			const extraData = [
 				{
 					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -744,7 +883,10 @@ describe( 'modules/reader-revenue-manager publications', () => {
 		} );
 
 		it( 'should update settings in state when publications are fetched', async () => {
-			const publication = fixtures.publications[ 0 ];
+			const publication = {
+				...fixtures.publications[ 0 ],
+				organizationId: 'organization-1',
+			};
 
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -757,7 +899,7 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				} );
 
 			fetchMock.getOnce( publicationsEndpoint, {
-				body: fixtures.publications,
+				body: [ publication ],
 				status: 200,
 			} );
 
@@ -777,6 +919,9 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [ 'basic' ] );
 			expect( settings.paymentOption ).toEqual( 'subscriptions' );
+			expect( settings.organizationID ).toEqual(
+				publication.organizationId
+			);
 			expect( settings.contentPolicyState ).toEqual(
 				'CONTENT_POLICY_STATE_OK'
 			);
@@ -849,6 +994,65 @@ describe( 'modules/reader-revenue-manager publications', () => {
 			);
 			expect( settings.productIDs ).toEqual( [] );
 			expect( settings.paymentOption ).toEqual( '' );
+		} );
+	} );
+
+	describe( 'fetchGetPublication settings synchronization', () => {
+		beforeEach( () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+		} );
+
+		it( 'should update settings and savedSettings when a publication is fetched', async () => {
+			const publication = {
+				...fixtures.publications[ 0 ],
+				organizationId: 'organization-1',
+			};
+			const params = {
+				organizationID: publication.organizationId,
+				publicationID: publication.publicationId,
+			};
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					publicationID: publication.publicationId,
+					publicationOnboardingState:
+						PUBLICATION_ONBOARDING_STATES.PENDING_VERIFICATION,
+					productIDs: [],
+					paymentOption: '',
+					organizationID: '',
+				} );
+
+			fetchMock.getOnce( publicationEndpoint, {
+				body: publication,
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublication( params );
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication( params );
+
+			const settings = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getSettings();
+
+			expect( settings ).toMatchObject( {
+				publicationOnboardingState: publication.onboardingState,
+				productIDs: [ 'basic' ],
+				paymentOption: 'subscriptions',
+				organizationID: publication.organizationId,
+				contentPolicyState: 'CONTENT_POLICY_STATE_OK',
+			} );
+			expect(
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.haveSettingsChanged()
+			).toBe( false );
 		} );
 	} );
 

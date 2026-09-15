@@ -1,0 +1,84 @@
+/**
+ * Reader Revenue Manager newsletter signup CTA express setup styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-express-setup-step--cta-setup.googlesitekit-rrm-newsletter-signup-setup {
+
+		.googlesitekit-rrm-newsletter-signup-setup__checkboxes {
+			display: grid;
+			gap: 4px;
+		}
+
+
+		// Establishes an adaptive height for the form text fields on tablet.
+		@media (min-width: $bp-tablet) and (max-width: $bp-desktop) {
+
+			.googlesitekit-rrm-express-setup-step__cta-setup-fields-primary {
+				display: flex;
+				flex-direction: column;
+				min-height: 0;
+			}
+		
+			.googlesitekit-rrm-newsletter-signup-setup__form-text {
+				display: flex;
+				flex: 1 1 auto;
+				flex-direction: column;
+				min-height: 0;
+
+				.googlesitekit-rrm-express-setup-step__form-controls {
+					display: flex;
+					flex: 1 1 auto;
+					flex-direction: column;
+					min-height: 0;
+				}
+
+				.googlesitekit-rrm-express-setup-step__form-input {
+					display: flex;
+					flex-direction: column;
+
+					&:first-child {
+						flex: 1 1 0;
+					}
+
+					&:last-child {
+						flex: 2 1 0;
+					}
+				}
+
+				.mdc-text-field:not(.mdc-text-field--textarea) {
+					height: 100%;
+					min-height: 76px;
+				}
+
+				.mdc-text-field--textarea {
+					display: flex;
+					flex: 1 1 auto;
+					flex-direction: column;
+					min-height: 100px;
+
+					.mdc-text-field__input {
+						flex: 1 1 auto;
+						min-height: 60px;
+						resize: none;
+					}
+				}
+			}
+		}
+	}
+}

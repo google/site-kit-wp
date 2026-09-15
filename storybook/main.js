@@ -77,6 +77,7 @@ module.exports = {
 	addons: [
 		getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
 		getModuleAbsolutePath( '@storybook/addon-viewport' ),
+		getModuleAbsolutePath( 'storybook-addon-pseudo-states' ),
 	],
 	previewHead( head ) {
 		if ( process.env.VRT === '1' ) {

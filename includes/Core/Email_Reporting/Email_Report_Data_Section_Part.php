@@ -106,7 +106,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Groups the section shows its values under, each holding a `label` and its `metrics`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @var array
 	 */
@@ -115,7 +115,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Prompt the section shows, holding a `text` and a `link_text`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @var array
 	 */
@@ -125,7 +125,7 @@ class Email_Report_Data_Section_Part {
 	 * Constructor.
 	 *
 	 * @since 1.167.0
-	 * @since n.e.x.t Added the `groups` and the `prompt` to the section data.
+	 * @since 1.187.0 Added the `groups` and the `prompt` to the section data.
 	 *
 	 * @param string $section_key  Unique section key.
 	 * @param array  $section_data Section data. Requires title, labels and values. Takes
@@ -271,7 +271,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets the groups the section shows its values under.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return array Groups, each holding a `label` and its `metrics`. Empty for a section that shows one flat list of values.
 	 */
@@ -282,7 +282,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Gets the prompt the section shows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @return array Prompt holding a `text` and a `link_text`. Empty for a section that asks the reader nothing.
 	 */
@@ -497,7 +497,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns the groups.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array|null $groups Groups the section shows its values under. Null leaves the section with no group.
 	 *
@@ -519,7 +519,7 @@ class Email_Report_Data_Section_Part {
 	/**
 	 * Validates and assigns the prompt.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array|null $prompt Prompt the section shows. Null leaves the section with no prompt.
 	 *

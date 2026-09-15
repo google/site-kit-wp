@@ -436,6 +436,7 @@ class Analytics_4Test extends TestCase {
 
 		$_GET['gatoscallback']   = '1';
 		$_GET['accountTicketId'] = '123456';
+		$_GET['nonce']           = wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION );
 
 		$class  = new \ReflectionClass( Analytics_4::class );
 		$method = $class->getMethod( 'handle_provisioning_callback' );
@@ -482,6 +483,167 @@ class Analytics_4Test extends TestCase {
 				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
 				$redirect->get_location(),
 				'Should redirect to dashboard with account ticket ID mismatch error.'
+			);
+		}
+	}
+
+	public function test_handle_provisioning_callback__no_stored_ticket_and_no_account_ticket_id() {
+		$test_variables = $this->set_up_handle_provisioning_callback_test();
+		$method         = $test_variables['method'];
+		$analytics      = $test_variables['analytics'];
+		$dashboard_url  = $test_variables['dashboard_url'];
+
+		// No account ticket is stored for the user, and the request omits
+		// `accountTicketId`. The two must not be treated as a match.
+		unset( $_GET['accountTicketId'] );
+		$_GET['accountId'] = '99999999';
+
+		$settings_before = $analytics->get_settings()->get();
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect with a mismatch error when no account ticket is stored.'
+			);
+		}
+
+		$this->assertEquals(
+			$settings_before,
+			$analytics->get_settings()->get(),
+			'Settings should be untouched when no account ticket is stored.'
+		);
+	}
+
+	public function test_handle_provisioning_callback__empty_stored_ticket_and_empty_account_ticket_id() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// An empty stored ticket must not match an empty `accountTicketId`.
+		// Only a real ticket in progress may proceed.
+		set_transient( $account_ticked_id_transient, '' );
+		$_GET['accountTicketId'] = '';
+		$_GET['accountId']       = '99999999';
+
+		$settings_before = $analytics->get_settings()->get();
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect with a mismatch error when the stored ticket is empty.'
+			);
+		}
+
+		$this->assertEquals(
+			$settings_before,
+			$analytics->get_settings()->get(),
+			'Settings should be untouched when the stored ticket is empty.'
+		);
+	}
+
+	public function test_handle_provisioning_callback__missing_nonce() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// A valid ticket is in progress, but the request carries no nonce.
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+		unset( $_GET['nonce'] );
+
+		$settings_before = $analytics->get_settings()->get();
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect with an invalid nonce error when the nonce is missing.'
+			);
+		}
+
+		$this->assertEquals(
+			$settings_before,
+			$analytics->get_settings()->get(),
+			'Settings should be untouched when the nonce is missing.'
+		);
+		$this->assertEquals(
+			$_GET['accountTicketId'],
+			get_transient( $account_ticked_id_transient ),
+			'Account ticket transient should survive a request with a missing nonce.'
+		);
+	}
+
+	public function test_handle_provisioning_callback__invalid_nonce() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+		$_GET['nonce']     = 'not-a-valid-nonce';
+
+		$settings_before = $analytics->get_settings()->get();
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect with an invalid nonce error when the nonce does not verify.'
+			);
+		}
+
+		$this->assertEquals(
+			$settings_before,
+			$analytics->get_settings()->get(),
+			'Settings should be untouched when the nonce does not verify.'
+		);
+	}
+
+	public function test_handle_provisioning_callback__nonce_for_a_different_user() {
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$dashboard_url               = $test_variables['dashboard_url'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId'] = '12345678';
+
+		// A nonce created for another user must not verify for the current one.
+		$current_user_id = get_current_user_id();
+		$other_admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $other_admin_id );
+		$_GET['nonce'] = wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION );
+		wp_set_current_user( $current_user_id );
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				$redirect->get_location(),
+				'Should redirect with an invalid nonce error for another user\'s nonce.'
 			);
 		}
 	}
@@ -1404,8 +1566,12 @@ class Analytics_4Test extends TestCase {
 		);
 		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
-		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
-		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields.' );
+		$redirect_uri = add_query_arg(
+			'nonce',
+			wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+			$this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri']
+		);
+		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should match the analytics redirect URI from site fields plus the nonce.' );
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
@@ -1483,14 +1649,28 @@ class Analytics_4Test extends TestCase {
 		);
 		$this->assertEquals( $account_display_name, $account_ticket_request->getAccount()->getDisplayName(), 'Account display name should match the provided value.' );
 		$this->assertEquals( $region_code, $account_ticket_request->getAccount()->getRegionCode(), 'Account region code should match the provided value.' );
-		$redirect_uri = $this->authentication->get_google_proxy()->get_site_fields()['analytics_redirect_uri'];
-		$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
+		$expected_query_args = array(
+			'gatoscallback'   => '1',
+			'service_version' => 'v3',
+			'nonce'           => wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
+		);
 
 		if ( $params['showProgressExpectedValue'] ) {
-			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+			$expected_query_args['show_progress'] = '1';
 		}
 
-		$this->assertEquals( $redirect_uri, $account_ticket_request->getRedirectUri(), 'Redirect URI should include service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
+		// Compare the query arguments rather than the whole URI, as their order is
+		// not significant. `assertEquals` matches associative arrays by key, so
+		// the expected order below does not have to match the URI.
+		$redirect_uri = $account_ticket_request->getRedirectUri();
+		parse_str( wp_parse_url( $redirect_uri, PHP_URL_QUERY ), $actual_query_args );
+
+		$this->assertEquals(
+			admin_url( 'index.php' ),
+			strtok( $redirect_uri, '?' ),
+			'Redirect URI should point at the admin callback URL.'
+		);
+		$this->assertEquals( $expected_query_args, $actual_query_args, 'Redirect URI should include the nonce, service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );

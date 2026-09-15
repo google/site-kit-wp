@@ -54,7 +54,7 @@ export const TARGET_WAIT_TIMEOUT_MS = 30000;
 /**
  * Creates a notification component that runs the given feature tour.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {Object} tour Feature tour definition.
  * @return {Function} Notification component for the tour.

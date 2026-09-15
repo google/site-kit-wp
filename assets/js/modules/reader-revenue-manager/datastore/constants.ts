@@ -68,6 +68,8 @@ export const READER_REVENUE_MANAGER_NOTICES_FORM =
 
 export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
 
+export const SHOW_TERMS_OF_SERVICE = 'showTermsOfService';
+
 export const RESET_PUBLICATIONS = 'resetPublications';
 
 export const SYNC_PUBLICATION = 'syncPublication';
@@ -76,12 +78,31 @@ export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
 };
 
+export const EXPRESS_SETUP_CTA_FORMS = {
+	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',
+};
+
 export const enum EXPRESS_SETUP_STEPS {
 	CONNECT_PUBLICATION = 'connect-publication',
 	TERMS_OF_SERVICE = 'terms-of-service',
 	PUBLICATION_POLICIES = 'publication-policies',
 	SETUP_CTA = 'setup-cta',
 	SETUP_COMPLETE = 'setup-complete',
+}
+
+export const enum PUBLICATION_POLICIES_FORM {
+	TERMS_OF_SERVICE_URL = 'publicationTosUrl',
+	PRIVACY_POLICY_URL = 'publicationPrivacyPolicyUrl',
+}
+
+export const enum TERMS_OF_SERVICE_FORM {
+	PUBLICATION_TYPE = 'publicationType',
+	EMAIL_OPT_IN = 'emailOptIn',
+}
+
+export const enum PUBLICATION_TYPES {
+	FOR_PROFIT = 'FOR_PROFIT',
+	NON_PROFIT = 'NON_PROFIT',
 }
 
 export const enum CREATE_PUBLICATION_FORM {

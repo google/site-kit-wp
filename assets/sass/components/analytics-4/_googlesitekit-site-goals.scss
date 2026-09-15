@@ -269,6 +269,11 @@ $site-goals-tile-connector-offset: 3.5px;
 			}
 		}
 
+		&.googlesitekit-site-goals-tile--chart
+			.googlesitekit-site-goals-tile__header {
+			margin-bottom: 4px;
+		}
+
 		.googlesitekit-site-goals-tile__title {
 			color: $c-surfaces-on-surface;
 			font-size: $fs-body-md;
@@ -319,6 +324,21 @@ $site-goals-tile-connector-offset: 3.5px;
 			display: grid;
 			flex: 1;
 			gap: 8px;
+		}
+
+		.googlesitekit-site-goals-tile__chart {
+			display: block;
+
+			svg path {
+				stroke-linejoin: round;
+			}
+		}
+
+		.googlesitekit-site-goals-tile__zero-state {
+			color: $c-surfaces-on-surface-variant;
+			font-size: $fs-body-sm;
+			letter-spacing: $ls-xs;
+			line-height: $lh-body-sm;
 		}
 
 		.googlesitekit-site-goals-tile__metric {

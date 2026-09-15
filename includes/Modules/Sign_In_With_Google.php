@@ -454,6 +454,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',

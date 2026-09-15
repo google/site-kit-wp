@@ -1,0 +1,47 @@
+/**
+ * Reader Revenue Manager express setup terms of service styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-express-setup-terms-of-service {
+		background: $c-surfaces-background;
+		border-radius: 4px;
+		display: grid;
+		gap: 1lh;
+		max-block-size: 338px;
+		overflow-y: auto;
+		padding: $grid-gap-desktop;
+
+		* {
+			margin-block: 0;
+			min-inline-size: 0;
+		}
+
+		ul {
+			list-style: disc;
+			margin-inline-start: 2em;
+		}
+
+		ol {
+
+			ol,
+			ul {
+				margin-block: 10px;
+			}
+		}
+	}
+}

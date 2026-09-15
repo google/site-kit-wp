@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 /**
  * Gets the title the email report shows for each lead generation form.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Form_Title_Resolver {
 	/**
 	 * Datapoint that reads the stored title of each form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var Get_Form_Metadata
 	 */
 	private $form_metadata;
@@ -34,7 +34,7 @@ class Form_Title_Resolver {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param Get_Form_Metadata|null $form_metadata Optional. Datapoint that reads the stored title
 	 *                                             of each form.
@@ -46,7 +46,7 @@ class Form_Title_Resolver {
 	/**
 	 * Gets the title of each form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $form_ids Form IDs the `googlesitekit_form_id` dimension reported
 	 *                        (e.g. `array( '12', 'jnpfwoygltxurnayflew' )`).
@@ -84,7 +84,7 @@ class Form_Title_Resolver {
 	 * directly and `permission_callback()` never runs. The datapoint reads a form post
 	 * title and nothing else.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param array $form_ids Form IDs the report grouped its rows by.
 	 * @return array Map of form ID to metadata, holding a `title` for each, or an empty

@@ -40,13 +40,18 @@ import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import useFormValue from '@/js/hooks/useFormValue';
 import {
 	ExpressSetupStepDetails,
 	ExpressSetupStepHeadline,
 	PublicationSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_TERMS_OF_SERVICE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { languageCodeFormat, regionCodeFormat } from '@/js/util/i18n';
 
@@ -61,6 +66,11 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 } ) => {
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
+
+	const [ , setShowTermsOfService ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_TERMS_OF_SERVICE
+	);
 
 	const defaultDescription = __(
 		'To use Reader Revenue Manager, connect your publication or create a new one.',
@@ -81,6 +91,14 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 	const canSubmitChanges = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).canSubmitChanges(),
+		[]
+	);
+
+	const hasResolvedSettings = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
+				'getSettings'
+			),
 		[]
 	);
 
@@ -145,15 +163,29 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 			}
 		}
 
-		if ( publications && ! publicationID ) {
+		/**
+		 * Selecting a publication sets publication-related module settings.
+		 * This will cause settings to be defined, preventing the fetching of
+		 * default settings from the server, which can lead to
+		 * `canSubmitChanges` returning as `false` because settings are
+		 * incomplete if `publications` resolves before settings.
+		 */
+		if ( hasResolvedSettings && publications && ! publicationID ) {
 			autoSelectPublication();
 		}
 	}, [
 		findMatchedPublication,
+		hasResolvedSettings,
 		publicationID,
 		publications,
 		selectPublication,
 	] );
+
+	useEffect( () => {
+		setShowTermsOfService(
+			! publication?.rrmProduct?.tosAcceptance?.userAccepted
+		);
+	}, [ publication, setShowTermsOfService ] );
 
 	return (
 		<form

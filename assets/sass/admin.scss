@@ -217,6 +217,9 @@
 // Tour Tooltip
 @import "components/tour-tooltip/googlesitekit-tour-tooltip";
 
+// Feature Discovery
+@import "components/feature-discovery/googlesitekit-feature-discovery";
+
 // Feature Tours
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
@@ -268,6 +271,7 @@
 @import "widgets/widgets";
 @import "widgets/googlesitekit-widget-adsense-performance";
 @import "widgets/googlesitekit-widget-analyticsAllTraffic";
+@import "widgets/googlesitekit-widget-analyticsTrafficOverview";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-analyticsPopularPages";
 @import "widgets/googlesitekit-widget-error-handler";

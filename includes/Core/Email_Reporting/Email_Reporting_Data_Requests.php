@@ -25,6 +25,7 @@ use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Options as Sea
 use Google\Site_Kit\Modules\Search_Console\Email_Reporting\Report_Request_Assembler as Search_Console_Report_Request_Assembler;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use WP_Error;
 use WP_User;
 
@@ -57,7 +58,7 @@ class Email_Reporting_Data_Requests {
 	 * An admin can connect PageSpeed Insights and AdSense as well. Neither adds
 	 * a section.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 * @var string[]
 	 */
 	const PAYLOAD_MODULE_SLUGS = array(
@@ -96,6 +97,14 @@ class Email_Reporting_Data_Requests {
 	 * @var Module_Audience_Settings
 	 */
 	private $audience_settings;
+
+	/**
+	 * Site Goals site settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Site_Goals_Site_Settings
+	 */
+	private $site_goals_site_settings;
 
 	/**
 	 * Custom dimensions availability helper.
@@ -138,6 +147,7 @@ class Email_Reporting_Data_Requests {
 		$this->user_options = $user_options ?: new User_Options( $this->context );
 
 		$this->audience_settings                = new Module_Audience_Settings( new Options( $this->context ) );
+		$this->site_goals_site_settings         = new Site_Goals_Site_Settings( new Options( $this->context ) );
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( $transients );
 	}
 
@@ -146,7 +156,7 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since 1.168.0
 	 * @since 1.172.0 Adds optional shared payloads to reuse per-module data.
-	 * @since n.e.x.t Returns a categorized permissions_error when the payload is empty
+	 * @since 1.187.0 Returns a categorized permissions_error when the payload is empty
 	 *                because the recipient's own service-entity access check failed.
 	 *
 	 * @param int   $user_id              User ID.
@@ -347,7 +357,8 @@ class Email_Reporting_Data_Requests {
 	 * Collects Analytics 4 payloads keyed by section-part identifiers.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added the detected events and every custom dimension's availability to the report options.
+	 * @since 1.187.0 Added the detected events and every custom dimension's availability to the report options.
+	 * @since n.e.x.t Added the active Site Goals widgets to the report options.
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.
@@ -359,6 +370,7 @@ class Email_Reporting_Data_Requests {
 		$report_options->set_audience_segmentation_enabled( $this->is_audience_segmentation_enabled() );
 		$report_options->set_custom_dimension_availability( $this->custom_dimensions_data_available->get_data_availability() );
 		$report_options->set_detected_events( $module->get_settings()->get()['detectedEvents'] ?? array() );
+		$report_options->set_active_site_goals_widgets( $this->site_goals_site_settings->get()['activeWidgets'] ?? array() );
 
 		$request_assembler                = new Analytics_4_Report_Request_Assembler( $report_options );
 		list( $requests, $custom_titles ) = $request_assembler->build_requests();
@@ -409,7 +421,7 @@ class Email_Reporting_Data_Requests {
 	 * Filters modules to those accessible to the provided user.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Also returns the slugs of modules dropped because the recipient's
+	 * @since 1.187.0 Also returns the slugs of modules dropped because the recipient's
 	 *                own service-entity access check explicitly denied access.
 	 *
 	 * @param array   $modules Active modules.

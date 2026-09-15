@@ -169,7 +169,7 @@ class Email_Template_Formatter {
 	 * Prepares section payload for the template renderer.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the `groups` and the `prompt` to the section payload.
+	 * @since 1.187.0 Added the `groups` and the `prompt` to the section payload.
 	 *
 	 * @param array $sections   Section instances.
 	 * @param array $date_range Date range used for the report.

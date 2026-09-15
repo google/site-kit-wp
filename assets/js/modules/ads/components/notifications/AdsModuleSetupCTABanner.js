@@ -128,6 +128,21 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 		setOpenDialog( false );
 	}, [ setOpenDialog ] );
 
+	// Choosing Site Kit from the modal dismisses this notification, suppresses
+	// the modal for subsequent CTA clicks, and activates the Ads module. The
+	// modal stays open, showing its own progress indicator, until activation
+	// navigates away.
+	const onContinueWithSiteKit = useCallback( () => {
+		dismissNotification( id );
+		dismissWooCommerceRedirectModal();
+		activateModule();
+	}, [
+		dismissNotification,
+		dismissWooCommerceRedirectModal,
+		activateModule,
+		id,
+	] );
+
 	const tooltipSettings = {
 		tooltipSlug: 'ads-setup-notification',
 		content: __(
@@ -207,9 +222,11 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 			/>
 			{ openDialog && (
 				<WooCommerceRedirectModal
-					onDismiss={ () => dismissNotification( id ) }
 					onClose={ onModalClose }
-					onBeforeSetupCallback={ dismissWooCommerceRedirectModal }
+					onContinueWithSiteKit={ onContinueWithSiteKit }
+					onUseGoogleForWooCommerce={ () =>
+						dismissNotification( id )
+					}
 					dialogActive
 				/>
 			) }
