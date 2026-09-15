@@ -35,6 +35,7 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
@@ -154,7 +155,7 @@ export default function AdBlockingRecoveryToggle() {
 						onClick={ handleAdBlockingRecoveryToggleClick }
 						hideLabel={ false }
 					/>
-					<P>
+					<P size={ SIZE_SMALL }>
 						{ createInterpolateElement(
 							__(
 								'Identify site visitors that have an ad blocker browser extension installed. These site visitors will see the ad blocking recovery message created in AdSense. <a>Configure your message</a>',
@@ -182,7 +183,7 @@ export default function AdBlockingRecoveryToggle() {
 							onClick={ handleErrorProtectionToggleClick }
 							hideLabel={ false }
 						/>
-						<P>
+						<P size={ SIZE_SMALL }>
 							{ createInterpolateElement(
 								__(
 									'If a site visitor’s ad blocker browser extension blocks the message you create in AdSense, a default, non-customizable ad blocking recovery message will display instead. <a>Learn more</a>',

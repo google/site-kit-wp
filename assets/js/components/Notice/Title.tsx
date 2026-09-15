@@ -25,6 +25,9 @@ interface TitleProps {
 }
 
 const Title: FC< TitleProps > = ( { className, children } ) => {
+	{
+		/* TODO: 11266 -- Use P typography component and remove CSS overrides. */
+	}
 	return (
 		<p className={ classnames( 'googlesitekit-notice__title', className ) }>
 			{ children }

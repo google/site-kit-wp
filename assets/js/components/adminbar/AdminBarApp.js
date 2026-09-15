@@ -27,6 +27,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -74,7 +76,10 @@ export default function AdminBarApp() {
 							{ currentEntityTitle
 								? decodeHTMLEntity( currentEntityTitle )
 								: currentEntityURL }
-							<p className="googlesitekit-adminbar__title--date-range">
+							<P
+								className="googlesitekit-adminbar__title--date-range"
+								size={ SIZE_MEDIUM }
+							>
 								{ sprintf(
 									/* translators: %s: number of days */
 									_n(
@@ -85,7 +90,7 @@ export default function AdminBarApp() {
 									),
 									dateRangeLength
 								) }
-							</p>
+							</P>
 						</div>
 					</Cell>
 

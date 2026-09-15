@@ -34,6 +34,11 @@
 
 		.googlesitekit-km-connect-module-cta-tile__content .googlesitekit-km-connect-module-cta-tile__text {
 			margin: 0 0 4px;
+
+			/* TODO: 11266 -- Remove this override and update VRT refrences. */
+			&.googlesitekit-typography {
+				line-height: $lh-body-lg;
+			}
 		}
 
 		&.googlesitekit-km-widget-tile {

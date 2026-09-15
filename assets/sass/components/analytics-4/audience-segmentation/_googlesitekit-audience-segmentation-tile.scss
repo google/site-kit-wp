@@ -250,11 +250,12 @@
 			}
 
 			.googlesitekit-audience-segmentation-tile__zero-data-description {
-				font-family: $f-primary;
-				font-size: $fs-title-sm;
-				font-weight: $fw-medium;
-				line-height: $lh-title-sm;
 				margin: 0;
+
+				/* TODO: 11266 -- Remove this override and update VRT refrences. */
+				&.googlesitekit-typography {
+					letter-spacing: $ls-s;
+				}
 			}
 
 			.googlesitekit-audience-segmentation-tile-hide-cta {
