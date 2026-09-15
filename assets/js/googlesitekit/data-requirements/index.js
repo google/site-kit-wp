@@ -116,8 +116,9 @@ export function requireModuleConnected( slug ) {
 /**
  * Returns a function that checks if the given module is not connected.
  *
- * The connection state is tri-state: it is `undefined` until the modules have
- * been fetched, which does not satisfy this requirement.
+ * This is not the inverse of `requireModuleConnected()`: the requirement is
+ * only satisfied when the module is known to be disconnected, so an
+ * unresolved `undefined` value does not pass.
  *
  * @since n.e.x.t
  *
