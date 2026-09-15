@@ -155,41 +155,12 @@ describe( 'MetricsSelectionPanel', () => {
 			expect( document.body ).toMatchSnapshot();
 		} );
 
-		it( 'should render correctly with the `setupFlowRefresh` feature flag enabled', async () => {
-			const { waitForRegistry } = render( <MetricsSelectionPanel />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			} );
-
-			await waitForRegistry();
-			await act( waitForDefaultTimeouts );
-
-			expect( document.body ).toMatchSnapshot();
-		} );
-
 		it( 'should not display a settings link to edit personalized goals for a view-only user', async () => {
 			const { container, waitForRegistry } = render(
 				<MetricsSelectionPanel />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-				}
-			);
-
-			await waitForRegistry();
-
-			expect( container ).not.toHaveTextContent(
-				'Edit your personalized goals or deactivate this widget in'
-			);
-		} );
-
-		it( 'should not display a settings link to edit personalized goals for a view-only user when `setupFlowRefresh` is enabled', async () => {
-			const { container, waitForRegistry } = render(
-				<MetricsSelectionPanel />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-					features: [ 'setupFlowRefresh' ],
 				}
 			);
 

@@ -81,12 +81,7 @@ export default function Chart( {
 					<Grid>
 						<Row>
 							<Cell>
-								<ActivateAnalyticsCTA
-									title={ __(
-										'Key Events completed',
-										'google-site-kit'
-									) }
-								/>
+								<ActivateAnalyticsCTA />
 							</Cell>
 						</Row>
 					</Grid>

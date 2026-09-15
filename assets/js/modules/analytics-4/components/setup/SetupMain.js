@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -37,7 +36,6 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import ToastNotice from '@/js/components/ToastNotice';
 import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import {
 	AccountCreate,
@@ -105,7 +103,6 @@ export default function SetupMain( { finishSetup } ) {
 		location.href,
 		'accountCreationErrorCode'
 	);
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	// Show the Create Account screen when an account creation error is present,
 	// even if the user has existing accounts, so the error can be surfaced inline
@@ -113,15 +110,14 @@ export default function SetupMain( { finishSetup } ) {
 	const isCreateAccount =
 		ACCOUNT_CREATE === accountID ||
 		( Array.isArray( accounts ) && ! accounts.length ) ||
-		( setupFlowRefreshEnabled && !! accountCreationErrorCode );
+		!! accountCreationErrorCode;
 
-	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+	const isInitialSetupFlow = !! showProgress;
 
 	const [ searchConsoleSetupSuccess, setSearchConsoleSetupSuccess ] =
 		useQueryArg( 'searchConsoleSetupSuccess' );
 
-	const showSearchConsoleSetupSuccessToast =
-		!! searchConsoleSetupSuccess && setupFlowRefreshEnabled;
+	const showSearchConsoleSetupSuccessToast = !! searchConsoleSetupSuccess;
 
 	let viewComponent;
 	// Here we also check for `hasResolvedAccounts` to prevent showing a different case below
@@ -140,15 +136,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<Fragment>
-			<div
-				className={ classnames(
-					'googlesitekit-setup-module googlesitekit-setup-module--analytics',
-					{
-						'googlesitekit-feature--setupFlowRefresh':
-							setupFlowRefreshEnabled,
-					}
-				) }
-			>
+			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
 				<div className="googlesitekit-setup-module__step">
 					{ isInitialSetupFlow ? (
 						<Typography

@@ -32,7 +32,6 @@ import {
 	createReducer,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
@@ -346,20 +345,12 @@ const baseSelectors = {
 	 * Gets the audience segmentation widget visibility from the audience settings.
 	 *
 	 * @since 1.124.0
-	 * @since 1.183.0 Hardwire to return `true` for the Setup Flow Refresh feature.
+	 * @since 1.183.0 Hardwired to return `false` when the `setupFlowRefresh` feature flag is enabled.
+	 * @since n.e.x.t Always returns `false`, as the audience segmentation widget is now an integral part of the dashboard.
 	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} Whether or not the audience segmentation widget is hidden; `undefined` if not loaded.
+	 * @return {boolean} Whether or not the audience segmentation widget is hidden.
 	 */
-	isAudienceSegmentationWidgetHidden: createRegistrySelector(
-		( select ) => () => {
-			if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
-				return false;
-			}
-
-			return select( CORE_USER ).getRawAudienceSegmentationWidgetHidden();
-		}
-	),
+	isAudienceSegmentationWidgetHidden: () => false,
 
 	/**
 	 * Gets the `didSetAudiences` flag from the audience settings.

@@ -34,11 +34,7 @@ import { useCallback, useEffect, useRef } from '@wordpress/element';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
-import {
-	SIZE_MEDIUM,
-	TYPE_BODY,
-	TYPE_LABEL,
-} from '@/js/components/Typography/constants';
+import { SIZE_MEDIUM, TYPE_LABEL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import {
 	FORM_USER_INPUT_QUESTION_SNAPSHOT,
@@ -50,7 +46,6 @@ import { getErrorMessageForAnswer } from '@/js/components/user-input/util/valida
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -129,9 +124,7 @@ export default function UserInputPreviewGroup( {
 
 	const isEditing = currentlyEditingSlug === slug;
 	const hasAnswer = values.length > 0;
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const shouldUseAnswerQuestionCTA =
-		setupFlowRefreshEnabled && settingsView && ! hasAnswer;
+	const shouldUseAnswerQuestionCTA = settingsView && ! hasAnswer;
 
 	const isScreenLoading = isSavingSettings || isNavigating;
 	const isEditControlDisabled =
@@ -214,12 +207,7 @@ export default function UserInputPreviewGroup( {
 				) }
 			>
 				<LoadingWrapper loading={ loading } width="340px" height="21px">
-					<P
-						type={
-							setupFlowRefreshEnabled ? TYPE_LABEL : TYPE_BODY
-						}
-						size={ SIZE_MEDIUM }
-					>
+					<P type={ TYPE_LABEL } size={ SIZE_MEDIUM }>
 						{ title }
 					</P>
 				</LoadingWrapper>

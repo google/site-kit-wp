@@ -88,211 +88,170 @@ describe( 'HelpMenu', () => {
 		jest.clearAllMocks();
 	} );
 
-	describe( 'with the `setupFlowRefresh` feature flag enabled', () => {
-		it( 'should render the correct menu items', () => {
-			const { container } = render( <HelpMenu showFeatureTour />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
-
-			expect( container ).toMatchSnapshot();
+	it( 'should render the correct menu items', () => {
+		const { container } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should not render "Start a feature tour" when `showFeatureTour` is false', () => {
-			const { queryByText } = render( <HelpMenu />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+		expect( container ).toMatchSnapshot();
+	} );
 
-			expect(
-				queryByText( 'Start a feature tour' )
-			).not.toBeInTheDocument();
+	it( 'should not render "Start a feature tour" when `showFeatureTour` is false', () => {
+		const { queryByText } = render( <HelpMenu />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should not render "Start a feature tour" when Analytics is connected and gathering data', () => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-			] );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsGatheringData( true );
+		expect( queryByText( 'Start a feature tour' ) ).not.toBeInTheDocument();
+	} );
 
-			const { queryByText } = render( <HelpMenu showFeatureTour />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+	it( 'should not render "Start a feature tour" when Analytics is connected and gathering data', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 
-			expect(
-				queryByText( 'Start a feature tour' )
-			).not.toBeInTheDocument();
+		const { queryByText } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should render "Start a feature tour" when Analytics is connected and not gathering data', () => {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: true,
-				},
-			] );
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_ANALYTICS_4 ]: false,
-			} );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsDataAvailableOnLoad( true );
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveIsGatheringData( false );
+		expect( queryByText( 'Start a feature tour' ) ).not.toBeInTheDocument();
+	} );
 
-			const { getByText } = render( <HelpMenu showFeatureTour />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+	it( 'should render "Start a feature tour" when Analytics is connected and not gathering data', () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_ANALYTICS_4 ]: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsDataAvailableOnLoad( true );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 
-			expect( getByText( 'Start a feature tour' ) ).toBeInTheDocument();
+		const { getByText } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should not render "Start a feature tour" when Analytics is not connected and Search Console is gathering data', () => {
-			provideGatheringDataState( registry, {
-				[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
-			} );
-			registry
-				.dispatch( MODULES_SEARCH_CONSOLE )
-				.receiveIsGatheringData( true );
+		expect( getByText( 'Start a feature tour' ) ).toBeInTheDocument();
+	} );
 
-			const { queryByText } = render( <HelpMenu showFeatureTour />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+	it( 'should not render "Start a feature tour" when Analytics is not connected and Search Console is gathering data', () => {
+		provideGatheringDataState( registry, {
+			[ MODULE_SLUG_SEARCH_CONSOLE ]: true,
+		} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( true );
 
-			expect(
-				queryByText( 'Start a feature tour' )
-			).not.toBeInTheDocument();
+		const { queryByText } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should render the "Get help with AdSense" menu item when AdSense is active', () => {
-			provideModules( registry, [ { slug: 'adsense', active: true } ] );
+		expect( queryByText( 'Start a feature tour' ) ).not.toBeInTheDocument();
+	} );
 
-			const { container, getByText } = render(
-				<HelpMenu showFeatureTour />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
+	it( 'should render the "Get help with AdSense" menu item when AdSense is active', () => {
+		provideModules( registry, [ { slug: 'adsense', active: true } ] );
 
-			expect( container ).toMatchSnapshot();
-			expect( getByText( 'Get help with AdSense' ) ).toBeInTheDocument();
+		const { container, getByText } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should track the `open_helpmenu` event when the help menu is opened', () => {
-			const { getByRole } = render( <HelpMenu showFeatureTour />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
-			} );
+		expect( container ).toMatchSnapshot();
+		expect( getByText( 'Get help with AdSense' ) ).toBeInTheDocument();
+	} );
 
-			fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
-
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
-				'open_helpmenu'
-			);
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+	it( 'should track the `open_helpmenu` event when the help menu is opened', () => {
+		const { getByRole } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it.each( [
-			[ 'Browse documentation', 'browse_documentation' ],
-			[ 'Get free support', 'get_support' ],
-			[ 'Start a feature tour', 'start_tour' ],
-			[ 'Send feedback', 'send_feedback' ],
-		] )(
-			'should track the `click_menu_item` event when clicking the "%s" button, with the label set to `%s`',
-			( linkText, expectedLabel ) => {
-				const { getByText } = render( <HelpMenu showFeatureTour />, {
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'setupFlowRefresh' ],
-				} );
+		fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
 
-				fireEvent.click( getByText( linkText ) );
-
-				expect( mockTrackEvent ).toHaveBeenCalledWith(
-					`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
-					'click_menu_item',
-					expectedLabel
-				);
-				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
-			}
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar`,
+			'open_helpmenu'
 		);
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+	} );
 
-		it( 'should track the `click_menu_item` event for the "Get help with AdSense" menu item when AdSense is active', () => {
-			provideModules( registry, [ { slug: 'adsense', active: true } ] );
-
+	it.each( [
+		[ 'Browse documentation', 'browse_documentation' ],
+		[ 'Get free support', 'get_support' ],
+		[ 'Start a feature tour', 'start_tour' ],
+		[ 'Send feedback', 'send_feedback' ],
+	] )(
+		'should track the `click_menu_item` event when clicking the "%s" button, with the label set to `%s`',
+		( linkText, expectedLabel ) => {
 			const { getByText } = render( <HelpMenu showFeatureTour />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
-			fireEvent.click( getByText( 'Get help with AdSense' ) );
+			fireEvent.click( getByText( linkText ) );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
 				'click_menu_item',
-				'get_adsense_help'
+				expectedLabel
 			);
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		}
+	);
+
+	it( 'should track the `click_menu_item` event for the "Get help with AdSense" menu item when AdSense is active', () => {
+		provideModules( registry, [ { slug: 'adsense', active: true } ] );
+
+		const { getByText } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
-			const { getByText, waitForRegistry } = render(
-				<HelpMenu showFeatureTour />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'setupFlowRefresh' ],
-				}
-			);
+		fireEvent.click( getByText( 'Get help with AdSense' ) );
 
-			await waitForRegistry();
-
-			fireEvent.click( getByText( 'Start a feature tour' ) );
-
-			await waitFor( () => {
-				expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
-					mockWelcomeTour
-				);
-			} );
-		} );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
+			'click_menu_item',
+			'get_adsense_help'
+		);
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	describe( 'without the `setupFlowRefresh` feature flag', () => {
-		it( 'should track the `click_outgoing_link` event for legacy menu items', () => {
-			const { getByText } = render( <HelpMenu />, {
+	it( 'should trigger the dashboard tour when the "Start a feature tour" button is clicked', async () => {
+		const { getByText, waitForRegistry } = render(
+			<HelpMenu showFeatureTour />,
+			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
+			}
+		);
 
-			fireEvent.click( getByText( 'Read help docs' ) );
+		await waitForRegistry();
 
-			expect( mockTrackEvent ).toHaveBeenCalledWith(
-				`${ VIEW_CONTEXT_MAIN_DASHBOARD }_headerbar_helpmenu`,
-				'click_outgoing_link',
-				'documentation'
+		fireEvent.click( getByText( 'Start a feature tour' ) );
+
+		await waitFor( () => {
+			expect( registry.select( CORE_USER ).getCurrentTour() ).toEqual(
+				mockWelcomeTour
 			);
-			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );
