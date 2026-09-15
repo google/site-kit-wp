@@ -87,6 +87,20 @@ describe( 'getTrafficChartData', () => {
 		expect( hasVisitors ).toBe( false );
 	} );
 
+	it( 'draws a flat line at zero across the whole date range when the report has no rows', () => {
+		const { chartData } = getTrafficChartData( {
+			report: { rows: [] },
+			startDate: '2025-01-13',
+			endDate: '2025-01-16',
+		} );
+
+		expect( chartData.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 13 ), 0 ],
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
+	} );
+
 	it( 'shows a date label on the second day and the last day when there is no report', () => {
 		const { ticks } = getTrafficChartData( {
 			startDate: '2025-01-13',
