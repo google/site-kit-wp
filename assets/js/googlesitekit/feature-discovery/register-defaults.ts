@@ -152,7 +152,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
-		effort: FEATURE_EFFORTS.LOW,
+		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
 		addedInVersion: '1.89.0',
 		setup: {
