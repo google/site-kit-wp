@@ -47,4 +47,4 @@ export const FEATURE_DISCOVERY_TABS = [
 export const DEFAULT_TAB_PATH = '/whats-new';
 export const FIRST_VISIT_TAB_PATH = '/all-services';
 export const FEATURE_DISCOVERY_VISITED_ITEM_SLUG = 'feature-discovery-visited';
-export const HUB_LAUNCH_VERSION = '1.188.0';
+export const HUB_LAUNCH_VERSION = '1.188.0'; // Will be updated in issue #13422
