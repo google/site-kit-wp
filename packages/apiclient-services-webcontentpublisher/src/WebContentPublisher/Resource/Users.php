@@ -17,38 +17,37 @@
 
 namespace Google\Service\WebContentPublisher\Resource;
 
-use Google\Service\WebContentPublisher\CheckFreeAccessResponse;
+use Google\Service\WebContentPublisher\GeneratePlatformSiteTokensRequest;
+use Google\Service\WebContentPublisher\GeneratePlatformSiteTokensResponse;
 
 /**
- * The "publications" collection of methods.
+ * The "users" collection of methods.
  * Typical usage is:
  *  <code>
  *   $webcontentpublisherService = new Google\Service\WebContentPublisher(...);
- *   $publications = $webcontentpublisherService->publications;
+ *   $users = $webcontentpublisherService->users;
  *  </code>
  */
-class Publications extends \Google\Service\Resource
+class Users extends \Google\Service\Resource
 {
   /**
-   * Checks if a user is eligible for free article access.
-   * (publications.checkFreeAccess)
+   * Returns user tokens mapped to their canonical domains for all publications
+   * the authenticated user is entitled to. (users.generatePlatformSiteTokens)
    *
-   * @param string $name Required. The resource name of the publication. Format:
-   * publications/{publication_id}
+   * @param string $name Required. The resource name of the user to generate
+   * tokens for. Format: users/{user}
+   * @param GeneratePlatformSiteTokensRequest $postBody
    * @param array $optParams Optional parameters.
-   *
-   * @opt_param string httpReferrer Required. The HTTP referrer.
-   * @opt_param string uri Required. The URI of the content.
-   * @return CheckFreeAccessResponse
+   * @return GeneratePlatformSiteTokensResponse
    * @throws \Google\Service\Exception
    */
-  public function checkFreeAccess($name, $optParams = [])
+  public function generatePlatformSiteTokens($name, GeneratePlatformSiteTokensRequest $postBody, $optParams = [])
   {
-    $params = ['name' => $name];
+    $params = ['name' => $name, 'postBody' => $postBody];
     $params = array_merge($params, $optParams);
-    return $this->call('checkFreeAccess', [$params], CheckFreeAccessResponse::class);
+    return $this->call('generatePlatformSiteTokens', [$params], GeneratePlatformSiteTokensResponse::class);
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(Publications::class, 'Google_Service_WebContentPublisher_Resource_Publications');
+class_alias(Users::class, 'Google_Service_WebContentPublisher_Resource_Users');
