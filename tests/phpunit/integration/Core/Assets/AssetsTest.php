@@ -247,6 +247,113 @@ class AssetsTest extends TestCase {
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script, 'Legacy data should be localized in commons script.' );
 	}
 
+	/**
+	 * @dataProvider features_badge_data_provider
+	 */
+	public function test_get_inline_features_badge_data( $reset_session ) {
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $admin_id );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$input = new \Google\Site_Kit\Tests\MutableInput();
+
+		$_GET['googlesitekit_reset_session'] = $reset_session;
+
+		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $input ) );
+
+		add_filter(
+			'googlesitekit_connected_modules',
+			function () {
+				return array(
+					'search-console' => new \stdClass(),
+					'analytics-4'    => new \stdClass(),
+				);
+			}
+		);
+		$this->assets->register();
+		$this->assets->enqueue_asset( 'googlesitekit-features-badge-data' );
+
+		do_action( 'wp_print_scripts' );
+
+		$script = wp_scripts()->get_data( 'googlesitekit-features-badge-data', 'data' );
+		$data   = json_decode( substr( $script, strlen( 'var _googlesitekitFeaturesBadgeData = ' ), -1 ), true );
+
+		unset( $_GET['googlesitekit_reset_session'] );
+
+		$this->assertSame(
+			array(
+				'connectedModules' => array( 'search-console', 'analytics-4' ),
+				'pluginVersion'    => GOOGLESITEKIT_VERSION,
+				'resetSession'     => (bool) $reset_session,
+				'userID'           => $admin_id,
+			),
+			$data,
+			'Badge data should contain the current fingerprint and session reset state.'
+		);
+	}
+
+	public function features_badge_data_provider() {
+		return array(
+			'normal session' => array( null ),
+			'reset session'  => array( '1' ),
+		);
+	}
+
+	/**
+	 * @dataProvider features_badge_assets_provider
+	 */
+	public function test_features_badge_assets( $role, $enabled, $expected ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'featureDiscoveryHub' );
+		}
+
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => $role ) ) );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		set_current_screen( 'edit.php' );
+
+		$this->assets->register();
+
+		do_action( 'admin_enqueue_scripts' );
+
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge', 'enqueued' ), 'Badge should only load for administrators with the feature enabled.' );
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge-data', 'registered' ), 'Badge data should only be registered for eligible users.' );
+
+		if ( $expected ) {
+			$this->assertSame(
+				array( 'googlesitekit-i18n', 'googlesitekit-features-badge-data' ),
+				wp_scripts()->registered['googlesitekit-features-badge']->deps,
+				'Global badge must not depend on React or Site Kit data stores.'
+			);
+		}
+	}
+
+	public function features_badge_assets_provider() {
+		return array(
+			'admin enabled'  => array( 'administrator', true, true ),
+			'admin disabled' => array( 'administrator', false, false ),
+			'editor enabled' => array( 'editor', true, false ),
+		);
+	}
+
 	private function get_inline_base_data() {
 		remove_all_actions( 'wp_print_scripts' );
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );

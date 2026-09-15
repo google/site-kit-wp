@@ -593,7 +593,11 @@ final class Screens {
 						self::PREFIX . 'features',
 						array(
 							'title'            => __( 'Add Features', 'google-site-kit' ),
-							'menu_title'       => __( 'Add Features', 'google-site-kit' ),
+							'menu_title'       => sprintf(
+								/* translators: %s: New features count badge. */
+								__( 'Add Features %s', 'google-site-kit' ),
+								'<span class="menu-counter googlesitekit-features-badge count-0"><span aria-hidden="true" class="count"></span><span class="screen-reader-text"></span></span>'
+							),
 							'capability'       => Permissions::MANAGE_OPTIONS,
 							'enqueue_callback' => function ( Assets $assets ) {
 								$assets->enqueue_asset( 'googlesitekit-features' );
