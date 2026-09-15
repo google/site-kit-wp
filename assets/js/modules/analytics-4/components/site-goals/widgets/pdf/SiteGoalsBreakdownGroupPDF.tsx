@@ -30,63 +30,67 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import getPDFTileChange from '@/js/components/pdf-export/getPDFTileChange';
+import getPDFTileChange, {
+	getPDFChangeType,
+} from '@/js/components/pdf-export/getPDFTileChange';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import { PDF_CHANGE_COLORS } from '@/js/components/pdf-export/shared-react-pdf-components/PDFChangeBadge';
 import PDFMetricTile from '@/js/components/pdf-export/shared-react-pdf-components/PDFMetricTile';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { PDFChangeType } from '@/js/components/pdf-export/types';
 import { PERCENT_FORMAT } from '@/js/modules/analytics-4/components/site-goals/utils/formats';
 import { numFmt } from '@/js/util';
 import { SiteGoalsPDFGroup, SiteGoalsPDFMetric } from './shapeSiteGoalsPDFData';
+import SiteGoalsTileConnectorPDF from './SiteGoalsTileConnectorPDF';
 
 const styles = createPDFStyles( {
 	container: {
 		flexDirection: 'column',
 	},
 	label: {
-		marginBottom: 12,
+		marginBottom: 18,
+		marginTop: 2,
 	},
 	tiles: {
 		flexDirection: 'row',
+		gap: 42,
 	},
-	// The flex slot each tile occupies in the row: the rate tile directly, or
-	// the connector + content pair for the other two.
 	tile: {
-		flex: 1,
+		flexBasis: 0,
+		flexGrow: 1,
+		minWidth: 0,
 	},
-	// Every tile's own content box gets this padding, matching the dashboard's
-	// `.googlesitekit-site-goals-tile` padding for all three tile kinds.
 	tileContent: {
-		paddingVertical: 14,
-		paddingHorizontal: 18,
+		paddingVertical: 20,
 	},
-	// The rate tile is tinted by its own direction and drops the connector the
-	// other tiles carry, matching `.googlesitekit-site-goals-tile--primary__*`
-	// on the dashboard.
 	primaryTile: {
-		borderRadius: 8,
+		paddingHorizontal: 18,
 	},
 	connectedTile: {
 		flexDirection: 'row',
 	},
-	connector: {
-		width: 1,
-		backgroundColor: PDF_COLORS.SURFACES_SURFACE_1,
-		marginRight: 16,
-	},
 } );
+
+/** The background color behind the Site Goals rate tile, one per change type. */
+const RATE_TILE_BACKGROUND_BY_CHANGE_TYPE: Record< PDFChangeType, string > = {
+	positive: PDF_COLORS.GREEN_G_10,
+	negative: PDF_COLORS.RED_R_10,
+	noChange: PDF_COLORS.NEUTRAL_N_10,
+};
 
 /**
  * Formats a metric's change for the tile badge.
  *
  * @since 1.187.0
  *
- * @param metric Metric to compare, or `undefined` when the tile has no change.
- * @return Formatted change and its direction, empty when there is nothing to compare.
+ * @param {(Object|undefined)} metric The Site Goals PDF metric to compare, or `undefined` when the tile has none.
+ * @return {Object} Formatted change and its direction, empty when there is nothing to compare.
  */
 function getChange( metric: SiteGoalsPDFMetric | undefined ) {
-	if ( ! metric ) {
+	// A previous value of zero leaves nothing to compare against, so the tile
+	// shows no change badge, the same as the dashboard's `Tile`. We check for
+	// zero here because `calculateChange` reads zero to zero as no change.
+	if ( ! metric || metric.previous === 0 ) {
 		return {};
 	}
 
@@ -94,12 +98,61 @@ function getChange( metric: SiteGoalsPDFMetric | undefined ) {
 }
 
 /**
+ * Picks the background color behind the Site Goals rate tile.
+ *
+ * The color follows the direction the rate moved, matching the dashboard's
+ * `Tile`. A rate that rose from zero takes the green background, even though
+ * the tile shows no change badge.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(Object|undefined)} rate The Key action rate for the current and the previous period, or `undefined` when the tile has none.
+ * @return {(string|undefined)} The background color behind the rate tile, or `undefined` when the rate is zero in both periods.
+ */
+function getRateTileBackgroundColor(
+	rate: SiteGoalsPDFMetric | undefined
+): string | undefined {
+	if ( ! rate || ( rate.current === 0 && rate.previous === 0 ) ) {
+		return undefined;
+	}
+
+	return RATE_TILE_BACKGROUND_BY_CHANGE_TYPE[
+		getPDFChangeType( rate.current - rate.previous )
+	];
+}
+
+/**
+ * Builds the change props for one Site Goals PDF metric tile.
+ *
+ * `PDFMetricTile` renders its caption whenever `changeLabel` is set, and its
+ * badge only when there is a change.
+ *
+ * @since n.e.x.t
+ *
+ * @param {(Object|undefined)} metric          The Site Goals PDF metric to compare, or `undefined` when the tile has none.
+ * @param {(string|undefined)} comparisonLabel The caption under the badge, such as "Vs. prev. 28 days".
+ * @return {Object} The change and its direction, with the caption when the tile shows a badge.
+ */
+function getTileChangeProps(
+	metric: SiteGoalsPDFMetric | undefined,
+	comparisonLabel: string | undefined
+) {
+	const tileChange = getChange( metric );
+
+	if ( ! tileChange.change ) {
+		return tileChange;
+	}
+
+	return { ...tileChange, changeLabel: comparisonLabel };
+}
+
+/**
  * Builds the "of N total sessions" caption shown under a rate.
  *
  * @since 1.187.0
  *
- * @param sessions Sessions metric, or `undefined` when sessions are unknown.
- * @return Caption, or `undefined` when there are no sessions to report.
+ * @param {(Object|undefined)} sessions The sessions metric, or `undefined` when the group has none.
+ * @return {(string|undefined)} The caption, or `undefined` when the group has no sessions.
  */
 function getSessionsSubtitle(
 	sessions: SiteGoalsPDFMetric | undefined
@@ -118,9 +171,9 @@ function getSessionsSubtitle(
 export interface SiteGoalsBreakdownGroupPDFProps {
 	/** The group to render. */
 	group: SiteGoalsPDFGroup;
-	/** Title for the rate tile, e.g. "Sales Rate". */
+	/** Title for the rate tile, e.g. "Sales rate". */
 	rateLabel: string;
-	/** Title for the total tile, e.g. "Total Sales". */
+	/** Title for the total tile, e.g. "Total sales". */
 	totalLabel: string;
 	/** Caption under the total, e.g. "“purchase” events". */
 	totalSubtitle?: string;
@@ -144,12 +197,11 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 	const { label, rate, total, engagementRate, sessions } = group;
 
 	const sessionsSubtitle = getSessionsSubtitle( sessions );
-	const rateChange = getChange( rate );
 
 	return (
 		<View style={ styles.container }>
 			{ !! showLabel && !! label && (
-				<PDFTypography type="title" style={ styles.label }>
+				<PDFTypography type="title" size="large" style={ styles.label }>
 					{ label }
 				</PDFTypography>
 			) }
@@ -158,60 +210,59 @@ const SiteGoalsBreakdownGroupPDF: FC< SiteGoalsBreakdownGroupPDFProps > = ( {
 					<View
 						style={ [
 							styles.tile,
-							styles.tileContent,
-							styles.primaryTile,
 							{
 								backgroundColor:
-									PDF_CHANGE_COLORS[
-										rateChange.changeType ?? 'noChange'
-									].backgroundColor,
+									getRateTileBackgroundColor( rate ),
 							},
 						] }
 					>
-						<PDFMetricTile
-							title={ rateLabel }
-							value={
-								numFmt( rate.current, PERCENT_FORMAT ) as string
-							}
-							valueSize="small"
-							subtitle={ sessionsSubtitle }
-							changeLabel={ comparisonLabel }
-							{ ...rateChange }
-						/>
+						<View
+							style={ [ styles.tileContent, styles.primaryTile ] }
+						>
+							<PDFMetricTile
+								title={ rateLabel }
+								value={ numFmt( rate.current, PERCENT_FORMAT ) }
+								valueSize="small"
+								subtitle={ sessionsSubtitle }
+								{ ...getTileChangeProps(
+									rate,
+									comparisonLabel
+								) }
+							/>
+						</View>
 					</View>
 				) }
 				<View style={ [ styles.tile, styles.connectedTile ] }>
-					{ !! rate && <View style={ styles.connector } /> }
+					{ !! rate && <SiteGoalsTileConnectorPDF /> }
 					<View style={ [ styles.tile, styles.tileContent ] }>
 						<PDFMetricTile
 							title={ totalLabel }
-							value={ numFmt( total.current ) as string }
+							value={ numFmt( total.current ) }
 							valueSize="small"
 							subtitle={ totalSubtitle }
-							changeLabel={ comparisonLabel }
-							{ ...getChange( total ) }
+							{ ...getTileChangeProps( total, comparisonLabel ) }
 						/>
 					</View>
 				</View>
 				{ !! engagementRate && (
 					<View style={ [ styles.tile, styles.connectedTile ] }>
-						<View style={ styles.connector } />
+						<SiteGoalsTileConnectorPDF />
 						<View style={ [ styles.tile, styles.tileContent ] }>
 							<PDFMetricTile
 								title={ __(
 									'Engagement rate',
 									'google-site-kit'
 								) }
-								value={
-									numFmt(
-										engagementRate.current,
-										PERCENT_FORMAT
-									) as string
-								}
+								value={ numFmt(
+									engagementRate.current,
+									PERCENT_FORMAT
+								) }
 								valueSize="small"
 								subtitle={ sessionsSubtitle }
-								changeLabel={ comparisonLabel }
-								{ ...getChange( engagementRate ) }
+								{ ...getTileChangeProps(
+									engagementRate,
+									comparisonLabel
+								) }
 							/>
 						</View>
 					</View>

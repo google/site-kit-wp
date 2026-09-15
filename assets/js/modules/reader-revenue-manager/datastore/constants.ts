@@ -68,12 +68,18 @@ export const READER_REVENUE_MANAGER_NOTICES_FORM =
 
 export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
 
+export const SHOW_TERMS_OF_SERVICE = 'showTermsOfService';
+
 export const RESET_PUBLICATIONS = 'resetPublications';
 
 export const SYNC_PUBLICATION = 'syncPublication';
 
 export const EXPRESS_SETUP_CTAS = {
 	NEWSLETTER_SIGNUP: 'newsletter-signup',
+};
+
+export const EXPRESS_SETUP_CTA_FORMS = {
+	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',
 };
 
 export const enum EXPRESS_SETUP_STEPS {

@@ -17,37 +17,25 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { requireQueryArg } from '@/js/googlesitekit/data-requirements';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import SetupSuccessNotification from '@/js/modules/pagespeed-insights/components/notifications/SetupSuccessNotification';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+import { asyncRequireAll } from '@/js/util/async';
 
 export const NOTIFICATIONS = {
 	'setup-success-notification-psi': {
 		Component: SetupSuccessNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			if (
-				'authentication_success' === notification &&
-				slug === MODULE_SLUG_PAGESPEED_INSIGHTS
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireQueryArg( 'notification', 'authentication_success' ),
+			requireQueryArg( 'slug', MODULE_SLUG_PAGESPEED_INSIGHTS )
+		),
 	},
 };
 

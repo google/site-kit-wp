@@ -116,4 +116,31 @@ describe( 'SnippetModeSelect', () => {
 			).toEqual( mode );
 		} );
 	} );
+
+	it( 'should not render helper text by default', async () => {
+		const { container, waitForRegistry } = render( <SnippetModeSelect />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.mdc-select-helper-text' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render helper text when provided', async () => {
+		const { getByText, waitForRegistry } = render(
+			<SnippetModeSelect helperText="Choose where the CTAs appear." />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Choose where the CTAs appear.' )
+		).toBeInTheDocument();
+	} );
 } );

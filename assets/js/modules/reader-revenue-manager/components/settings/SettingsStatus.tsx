@@ -66,9 +66,8 @@ const SettingsStatus: FC< SettingsStatusProps > = ( { slug } ) => {
 	if ( isConnected && hasPolicyViolation ) {
 		return (
 			<Badge
-				// @ts-expect-error - The `Badge` component is not typed yet.
-				label={ __( 'Action needed', 'google-site-kit' ) }
 				className="googlesitekit-badge--warning"
+				label={ __( 'Action needed', 'google-site-kit' ) }
 			/>
 		);
 	}
