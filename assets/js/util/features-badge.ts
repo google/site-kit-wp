@@ -196,7 +196,7 @@ export function renderFeaturesBadge(
 
 	countElement.textContent = showCount ? String( count ) : '';
 
-	badge.classList.forEach( ( className ) => {
+	Array.from( badge.classList ).forEach( ( className ) => {
 		if ( className.startsWith( 'count-' ) ) {
 			badge.classList.remove( className );
 		}
