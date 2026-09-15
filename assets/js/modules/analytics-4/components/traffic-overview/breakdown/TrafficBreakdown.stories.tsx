@@ -24,42 +24,26 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TrafficBreakdown from './TrafficBreakdown';
 
-/**
- * Builds a breakdown report from label and visitor pairs, in the order given.
- *
- * @since n.e.x.t
- *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
- */
-function createReport( pairs: Array< [ string, number ] > ): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
-	};
-}
-
-const CHANNELS = createReport( [
+const CHANNELS = createBreakdownReport( [
 	[ 'Direct', 1200 ],
 	[ 'Organic Search', 900 ],
 	[ 'Organic Social', 700 ],
 	[ 'Referral', 400 ],
 ] );
-const LOCATIONS = createReport( [
+const LOCATIONS = createBreakdownReport( [
 	[ 'Singapore', 1100 ],
 	[ 'Brazil', 800 ],
 	[ 'China', 600 ],
 	[ 'United States', 400 ],
 ] );
-const DEVICES = createReport( [
+const DEVICES = createBreakdownReport( [
 	[ 'desktop', 1800 ],
 	[ 'mobile', 900 ],
 	[ 'tablet', 400 ],
@@ -106,7 +90,7 @@ export const WithOthers = Template.bind(
 WithOthers.storyName = 'With Others Row';
 WithOthers.args = {
 	reports: {
-		channels: createReport( [
+		channels: createBreakdownReport( [
 			[ 'Direct', 1200 ],
 			[ 'Organic Search', 900 ],
 			[ 'Organic Social', 700 ],
@@ -128,7 +112,7 @@ EmptyColumn.storyName = 'Empty Column';
 EmptyColumn.args = {
 	reports: {
 		channels: CHANNELS,
-		locations: createReport( [] ),
+		locations: createBreakdownReport( [] ),
 		devices: DEVICES,
 	},
 };
@@ -141,13 +125,13 @@ export const LongestNames = Template.bind(
 LongestNames.storyName = 'Longest Names';
 LongestNames.args = {
 	reports: {
-		channels: createReport( [
+		channels: createBreakdownReport( [
 			[ 'Cross-network', 1200 ],
 			[ 'Organic Shopping', 900 ],
 			[ 'Mobile Push Notifications', 700 ],
 			[ 'Organic Video', 400 ],
 		] ),
-		locations: createReport( [
+		locations: createBreakdownReport( [
 			[ 'South Georgia & South Sandwich Islands', 1100 ],
 			[ 'United States Minor Outlying Islands', 800 ],
 			[ 'Bonaire, Sint Eustatius and Saba', 600 ],

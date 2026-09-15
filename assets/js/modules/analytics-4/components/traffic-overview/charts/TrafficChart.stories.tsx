@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
@@ -32,7 +33,6 @@ import { Story } from '@/js/types/Story';
 import { getPreviousDate } from '@/js/util';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import { createDailyVisitorsReport } from './test-utils';
 import TrafficChart from './TrafficChart';
 
 /** The visitors on each day of the range, from its first day. */

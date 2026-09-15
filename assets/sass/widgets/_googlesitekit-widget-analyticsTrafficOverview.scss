@@ -193,6 +193,11 @@
 			overflow-wrap: anywhere;
 		}
 
+		.googlesitekit-traffic-overview__breakdown-column-loading {
+			display: grid;
+			gap: 4px;
+		}
+
 		.googlesitekit-traffic-overview__breakdown-row {
 			align-items: baseline;
 			display: flex;

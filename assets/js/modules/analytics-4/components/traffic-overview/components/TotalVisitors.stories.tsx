@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { createTotalsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Story } from '@/js/types/Story';
 import TotalVisitors from './TotalVisitors';
 
@@ -28,29 +28,6 @@ interface TotalVisitorsStoryProps {
 	currentValue: number;
 	/** Visitors over the range before it. */
 	previousValue: number;
-}
-
-/**
- * Builds a totals report holding the selected range then the range before it.
- *
- * The values are strings, the way the API returns them.
- *
- * @since n.e.x.t
- *
- * @param {number} currentValue  Visitors over the selected range.
- * @param {number} previousValue Visitors over the range before it.
- * @return {Object} The totals report.
- */
-function createTotalsReport(
-	currentValue: number,
-	previousValue: number
-): Report {
-	return {
-		totals: [
-			{ metricValues: [ { value: String( currentValue ) } ] },
-			{ metricValues: [ { value: String( previousValue ) } ] },
-		],
-	};
 }
 
 function Template( { currentValue, previousValue }: TotalVisitorsStoryProps ) {

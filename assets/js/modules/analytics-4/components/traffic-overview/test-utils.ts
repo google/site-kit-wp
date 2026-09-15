@@ -1,5 +1,5 @@
 /**
- * Traffic Overview chart test utility functions.
+ * Traffic Overview test utility functions.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,6 +20,27 @@
  * Internal dependencies
  */
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+
+/**
+ * Builds a breakdown report from label and visitor pairs, in the order given.
+ *
+ * The visitors are strings, the way the API returns them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @return {Object} The breakdown report.
+ */
+export function createBreakdownReport(
+	pairs: Array< [ string, number ] >
+): Report {
+	return {
+		rows: pairs.map( ( [ label, visitors ] ) => ( {
+			dimensionValues: [ { value: label } ],
+			metricValues: [ { value: String( visitors ) } ],
+		} ) ),
+	};
+}
 
 /**
  * Builds a daily-visitors report from day and visitor pairs.
@@ -45,5 +66,28 @@ export function createDailyVisitorsReport(
 			metricValues: [ { value: String( visitors ) } ],
 		} ) ),
 		totals: [ { metricValues: [ { value: String( totalUsers ) } ] } ],
+	};
+}
+
+/**
+ * Builds a totals report with the selected range then the range before it.
+ *
+ * The values are strings, the way the API returns them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} currentValue  Visitors over the selected range.
+ * @param {number} previousValue Visitors over the range before it.
+ * @return {Object} The totals report.
+ */
+export function createTotalsReport(
+	currentValue: number,
+	previousValue: number
+): Report {
+	return {
+		totals: [
+			{ metricValues: [ { value: String( currentValue ) } ] },
+			{ metricValues: [ { value: String( previousValue ) } ] },
+		],
 	};
 }

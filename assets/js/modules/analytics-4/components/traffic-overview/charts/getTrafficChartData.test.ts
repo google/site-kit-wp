@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
+import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getTrafficChartData } from './getTrafficChartData';
-import { createDailyVisitorsReport } from './test-utils';
 
 describe( 'getTrafficChartData', () => {
 	it( 'names the columns "Day" and "Users"', () => {
@@ -85,6 +85,20 @@ describe( 'getTrafficChartData', () => {
 			[ new Date( 2025, 0, 16 ), 0 ],
 		] );
 		expect( hasVisitors ).toBe( false );
+	} );
+
+	it( 'draws a flat line at zero across the whole date range when the report has no rows', () => {
+		const { chartData } = getTrafficChartData( {
+			report: { rows: [] },
+			startDate: '2025-01-13',
+			endDate: '2025-01-16',
+		} );
+
+		expect( chartData.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 13 ), 0 ],
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
 	} );
 
 	it( 'shows a date label on the second day and the last day when there is no report', () => {

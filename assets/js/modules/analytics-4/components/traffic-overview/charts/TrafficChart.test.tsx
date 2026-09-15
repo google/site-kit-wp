@@ -26,6 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { render, waitFor } from '@tests/js/test-utils';
@@ -34,7 +35,6 @@ import {
 	provideModules,
 	provideSiteInfo,
 } from '@tests/js/utils';
-import { createDailyVisitorsReport } from './test-utils';
 import TrafficChart from './TrafficChart';
 
 const mockGoogleChart = jest.fn();
@@ -347,6 +347,75 @@ describe( 'TrafficChart', () => {
 				'Google Analytics property created on November 2, 2024.'
 			)
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'reads no day to a screen reader while the report loads', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficChart loaded={ false } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const { loaded } = await getLastChartProps();
+
+		expect( loaded ).toBe( false );
+		expect(
+			container.querySelectorAll( '.screen-reader-text' )
+		).toHaveLength( 0 );
+	} );
+
+	it( 'draws a flat line at zero while the property is gathering data, even though the report has visitors', async () => {
+		render(
+			<TrafficChart
+				report={ createDailyVisitorsReport( [
+					[ '2025-01-14', 40 ],
+					[ '2025-01-15', 12 ],
+					[ '2025-01-16', 7 ],
+				] ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		const { data, options } = await getLastChartProps();
+
+		expect( data.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 15 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
+		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
+	} );
+
+	it( 'reads no day to a screen reader while the property is gathering data', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficChart
+				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const { gatheringData } = await getLastChartProps();
+
+		expect( gatheringData ).toBe( true );
+		expect(
+			container.querySelectorAll( '.screen-reader-text' )
+		).toHaveLength( 0 );
+	} );
+
+	it( 'draws the chart and its placeholder at the same height', async () => {
+		render( <TrafficChart loaded={ false } />, { registry } );
+
+		const { height, loadingHeight } = await getLastChartProps();
+
+		expect( height ).toBe( '256px' );
+		// `GoogleChart` sizes the placeholder to `height` when it receives no
+		// `loadingHeight`.
+		expect( loadingHeight ).toBeUndefined();
 	} );
 
 	it( 'leaves the chart with no click handler', async () => {
