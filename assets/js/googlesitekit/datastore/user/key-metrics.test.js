@@ -1243,9 +1243,9 @@ describe( 'core/user key metrics', () => {
 					registry.select( CORE_USER ).getKeyMetrics()
 				).toBeUndefined();
 				expect(
-					registry
-						.select( CORE_USER )
-						.getSavedViewableMetrics( false )
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
 				).toEqual( [] );
 			} );
 
@@ -1262,7 +1262,9 @@ describe( 'core/user key metrics', () => {
 				} );
 
 				expect(
-					registry.select( CORE_USER ).getSavedViewableMetrics( true )
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
 				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
 			} );
 
@@ -1273,9 +1275,9 @@ describe( 'core/user key metrics', () => {
 				} );
 
 				expect(
-					registry
-						.select( CORE_USER )
-						.getSavedViewableMetrics( false )
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
 				).toEqual( SAVED_WIDGET_SLUGS );
 			} );
 
@@ -1295,7 +1297,9 @@ describe( 'core/user key metrics', () => {
 					.receiveGetSettings( { adSenseLinked: false } );
 
 				expect(
-					registry.select( CORE_USER ).getSavedViewableMetrics( true )
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
 				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
 			} );
 
@@ -1315,7 +1319,9 @@ describe( 'core/user key metrics', () => {
 					.receiveGetSettings( { adSenseLinked: true } );
 
 				expect(
-					registry.select( CORE_USER ).getSavedViewableMetrics( true )
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
 				).toEqual( SAVED_WIDGET_SLUGS );
 			} );
 		} );

@@ -61,7 +61,9 @@ export default function FullScreenMetricSelectionApp() {
 
 	const savedViewableMetrics = useSelect(
 		( select ) =>
-			select( CORE_USER ).getSavedViewableMetrics( isViewOnlyDashboard ),
+			select( CORE_USER ).getSavedViewableMetrics( {
+				isViewOnlyDashboard,
+			} ),
 		[ isViewOnlyDashboard ]
 	);
 

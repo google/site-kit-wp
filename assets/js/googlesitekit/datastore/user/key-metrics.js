@@ -707,7 +707,6 @@ const baseSelectors = {
 		}
 	),
 
-	/* eslint-disable-next-line sitekit/jsdoc-no-unnamed-boolean-params */
 	/**
 	 * Gets the user's saved key metric slugs that are still displayable in the
 	 * Key Metrics selection panel.
@@ -718,38 +717,43 @@ const baseSelectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}  state               Data store's state.
-	 * @param {boolean} isViewOnlyDashboard Whether the current dashboard is view-only.
+	 * @param {Object}  state                       Data store's state.
+	 * @param {Object}  options                     Selector arguments.
+	 * @param {boolean} options.isViewOnlyDashboard Whether the current
+	 *                                              dashboard is view-only.
 	 * @return {Array<string>} The filtered key metric slugs.
 	 */
 	getSavedViewableMetrics: createRegistrySelector(
-		( select ) => ( state, isViewOnlyDashboard ) => {
-			const metrics = select( CORE_USER ).getKeyMetrics();
+		( select ) =>
+			( state, { isViewOnlyDashboard } ) => {
+				const metrics = select( CORE_USER ).getKeyMetrics();
 
-			if ( ! Array.isArray( metrics ) ) {
-				return [];
-			}
-
-			const { isKeyMetricAvailable } = select( CORE_USER );
-
-			return metrics.filter( ( slug ) => {
-				if ( ! isKeyMetricAvailable( slug ) ) {
-					return false;
+				if ( ! Array.isArray( metrics ) ) {
+					return [];
 				}
 
-				const widget = KEY_METRICS_WIDGETS[ slug ];
+				const { isKeyMetricAvailable } = select( CORE_USER );
 
-				if ( typeof widget?.displayInSelectionPanel !== 'function' ) {
-					return true;
-				}
+				return metrics.filter( ( slug ) => {
+					if ( ! isKeyMetricAvailable( slug ) ) {
+						return false;
+					}
 
-				return widget.displayInSelectionPanel( {
-					select,
-					isViewOnlyDashboard,
-					slug,
+					const widget = KEY_METRICS_WIDGETS[ slug ];
+
+					if (
+						typeof widget?.displayInSelectionPanel !== 'function'
+					) {
+						return true;
+					}
+
+					return widget.displayInSelectionPanel( {
+						select,
+						isViewOnlyDashboard,
+						slug,
+					} );
 				} );
-			} );
-		}
+			}
 	),
 };
 

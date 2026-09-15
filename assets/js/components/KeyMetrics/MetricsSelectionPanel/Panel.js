@@ -48,7 +48,9 @@ export default function Panel() {
 	);
 	const savedViewableMetrics = useInViewSelect(
 		( select ) =>
-			select( CORE_USER ).getSavedViewableMetrics( isViewOnlyDashboard ),
+			select( CORE_USER ).getSavedViewableMetrics( {
+				isViewOnlyDashboard,
+			} ),
 		[ isViewOnlyDashboard ]
 	);
 
