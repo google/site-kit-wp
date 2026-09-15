@@ -123,7 +123,7 @@ describe( 'WhatsNewTab', () => {
 		expect( getListedTitles( container ) ).toEqual( INITIAL_ORDER );
 	} );
 
-	it( 'should mark every listed feature as seen', async () => {
+	it( 'should mark the listed features that have not been seen yet', async () => {
 		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
 
 		provideFeatures( registry, TEST_FEATURES );
@@ -141,14 +141,6 @@ describe( 'WhatsNewTab', () => {
 					},
 					{
 						slug: getFeatureNewnessKey( 'unread-older' ),
-						expiration: WEEK_IN_SECONDS * 4,
-					},
-					{
-						slug: getFeatureNewnessKey( 'seen-newer' ),
-						expiration: WEEK_IN_SECONDS * 4,
-					},
-					{
-						slug: getFeatureNewnessKey( 'seen-older' ),
 						expiration: WEEK_IN_SECONDS * 4,
 					},
 				],
