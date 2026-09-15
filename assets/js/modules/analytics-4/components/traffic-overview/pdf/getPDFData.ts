@@ -1,5 +1,5 @@
 /**
- * DashboardAllTrafficWidgetGA4 PDF data loader.
+ * Traffic Overview PDF data loader.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -25,29 +25,29 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
-import {
-	PDF_COLORS,
-	PIE_CHART_COLORS,
-} from '@/js/components/pdf-export/pdf-theme';
+import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
-	CHANNELS_BREAKDOWN_REPORT_ID,
-	DEVICES_BREAKDOWN_REPORT_ID,
-	LOCATIONS_BREAKDOWN_REPORT_ID,
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import {
+	TrafficBreakdownRow,
+	getBreakdownRows,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import { extractAnalyticsDataForPieChart } from '@/js/modules/analytics-4/utils/chart';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
+
+export type { TrafficBreakdownRow };
 
 /**
  * The chart draws at 506 by 133, and the tile displays the image in a
@@ -56,42 +56,6 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
  */
 const LINE_CHART_WIDTH = 506;
 const LINE_CHART_HEIGHT = 133;
-
-/**
- * The size of the hole in the middle of each breakdown donut, from 0 to 1.
- */
-const BREAKDOWN_PIE_HOLE = 0.542;
-
-/**
- * The width and height of each breakdown donut, in PDF points.
- */
-const BREAKDOWN_CHART_SIZE = 72.85;
-
-/**
- * How many times bigger than its display size each donut renders, so its curved
- * edges stay sharp in the PDF.
- */
-const BREAKDOWN_CHART_SCALE_FACTOR = 4;
-
-/**
- * How many top slices to keep for each breakdown. The rest combine into one
- * "Others" slice, the same as the dashboard's All Traffic pie.
- */
-const BREAKDOWN_MAX_SLICES = 5;
-
-/**
- * The three GA4 breakdowns shown below the line chart, in the order they
- * render. Each pairs a dashboard dimension with its own report ID, so the three
- * reports load and cache on their own.
- */
-const BREAKDOWNS = [
-	{
-		dimensionName: 'sessionDefaultChannelGrouping',
-		reportID: CHANNELS_BREAKDOWN_REPORT_ID,
-	},
-	{ dimensionName: 'country', reportID: LOCATIONS_BREAKDOWN_REPORT_ID },
-	{ dimensionName: 'deviceCategory', reportID: DEVICES_BREAKDOWN_REPORT_ID },
-] as const;
 
 export interface GetPDFDataParams {
 	/** WordPress data registry. */
@@ -115,41 +79,24 @@ export interface GetPDFDataParams {
 	signal: AbortSignal;
 }
 
-/**
- * One legend row for a breakdown donut: a segment label and its share of the
- * total, as a fraction between 0 and 1.
- */
-export interface BreakdownRow {
-	/** Name of the donut segment, like a channel, country, or device. */
-	label: string;
-	/** The segment's share of the total, as a fraction between 0 and 1. */
-	percentage: number;
-}
-
 export interface AllTrafficPDFData {
-	/** Loaded reports and breakdown legend rows, or `null` when the export is canceled. */
+	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
 	data: {
 		/** GA4 totals report with the current and comparison range totals. */
 		totalsReport: Report;
 		/** GA4 report with one row per day, which the line chart is drawn from. */
 		graphReport: Report;
-		/** Legend rows for the channels donut, or `null` on a missing report, empty data, or a failed render. */
-		channelBreakdown: BreakdownRow[] | null;
-		/** Legend rows for the locations donut, or `null` on a missing report, empty data, or a failed render. */
-		locationBreakdown: BreakdownRow[] | null;
-		/** Legend rows for the devices donut, or `null` on a missing report, empty data, or a failed render. */
-		deviceBreakdown: BreakdownRow[] | null;
+		/** Ranked rows for the channels breakdown, or `null` on a missing report. */
+		channelBreakdown: TrafficBreakdownRow[] | null;
+		/** Ranked rows for the locations breakdown, or `null` on a missing report. */
+		locationBreakdown: TrafficBreakdownRow[] | null;
+		/** Ranked rows for the devices breakdown, or `null` on a missing report. */
+		deviceBreakdown: TrafficBreakdownRow[] | null;
 	} | null;
 	/** Rendered chart images as JPEG data URIs. */
 	chartImages?: {
 		/** The All visitors line chart image. */
 		lineChart: string;
-		/** The channels donut image, absent when `channelBreakdown` is `null`. */
-		channelChart?: string;
-		/** The locations donut image, absent when `locationBreakdown` is `null`. */
-		locationChart?: string;
-		/** The devices donut image, absent when `deviceBreakdown` is `null`. */
-		deviceChart?: string;
 	};
 }
 
@@ -160,20 +107,13 @@ interface LineChartPoint {
 	value: number;
 }
 
-interface BreakdownChart {
-	/** Legend rows for the donut, or `null` on a missing report, empty data, or a failed render. */
-	rows: BreakdownRow[] | null;
-	/** The donut as a JPEG data URI, absent when `rows` is `null`. */
-	chartImage?: string;
-}
-
 /**
  * Reduces the date-dimension graph report into parsed chart points.
  *
  * Rows whose date fails to parse are dropped, matching the dashboard's
  * tolerance for malformed dimension values.
  *
- * @since 1.182.0
+ * @since n.e.x.t
  *
  * @param graphReport Date-dimension GA4 report.
  * @return Points of `{ date, value }`, ordered as returned.
@@ -205,7 +145,7 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
  * Mirrors the dashboard's `UserCountGraph` shape: a date column followed by a
  * total-users column.
  *
- * @since 1.182.0
+ * @since n.e.x.t
  *
  * @param points Parsed chart points.
  * @return A `google.visualization.DataTable` instance.
@@ -227,9 +167,9 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
 }
 
 /**
- * Builds Google Charts options matching the dashboard's All Visitors line chart.
+ * Builds Google Charts options matching the Traffic Overview card's line chart.
  *
- * @since 1.182.0
+ * @since n.e.x.t
  *
  * @param points Parsed chart points.
  * @return Google Charts options object.
@@ -243,7 +183,9 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 
 	return {
 		curveType: 'function',
-		// Matches the dashboard's All Visitors line color.
+		// `PDF_COLORS.SITE_KIT_SK_500` holds the same hex as
+		// `TRAFFIC_CHART_LINE_COLOR` in traffic-overview/constants.ts, which is
+		// the color the dashboard's line chart draws in.
 		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
 		chartArea: {
 			left: 8,
@@ -300,138 +242,17 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 }
 
 /**
- * Builds the Google Charts `DataTable` for one breakdown donut.
- *
- * One row per legend entry, with the segment label and its share of the total.
- * The shares are proportions, so the donut draws the same slices whether the
- * values are fractions or whole counts.
- *
- * @since 1.183.0
- *
- * @param rows Legend rows of `{ label, percentage }`.
- * @return A `google.visualization.DataTable` instance.
- */
-function buildBreakdownChartDataTable( rows: BreakdownRow[] ): object {
-	const visualization = getVisualization();
-	if ( ! visualization?.DataTable ) {
-		throw new Error(
-			'Site Kit: Google Charts DataTable is unavailable after loading the library.'
-		);
-	}
-
-	const dataTable = new visualization.DataTable();
-	dataTable.addColumn( 'string', __( 'Source', 'google-site-kit' ) );
-	dataTable.addColumn( 'number', __( 'Percent', 'google-site-kit' ) );
-	dataTable.addRows(
-		rows.map( ( { label, percentage } ) => [ label, percentage ] )
-	);
-
-	return dataTable;
-}
-
-/**
- * Builds Google Charts options for a breakdown donut.
- *
- * Uses the same hole size and colors as the dashboard's All Traffic donut, with
- * the slice labels, legend, and clicks removed, so the rendered image is a
- * clean donut.
- *
- * @since 1.183.0
- *
- * @return Google Charts options object.
- */
-function getBreakdownChartOptions(): object {
-	return {
-		pieHole: BREAKDOWN_PIE_HOLE,
-		colors: PIE_CHART_COLORS,
-		// Google Charts draws a white border between slices by default. A
-		// transparent border makes the segments touch.
-		pieSliceBorderColor: 'transparent',
-		// JPEG output has no transparency, so a transparent background turns
-		// black. Fill it white to match the card behind the donut.
-		backgroundColor: PDF_COLORS.SURFACES_SURFACE,
-		chartArea: {
-			left: 0,
-			top: 0,
-			width: '100%',
-			height: '100%',
-		},
-		legend: {
-			position: 'none',
-		},
-		pieSliceText: 'none',
-		enableInteractivity: false,
-	};
-}
-
-/**
- * Builds the legend rows and the donut image for one breakdown.
- *
- * Uses the dashboard's helper, so the slices and their order match the
- * dashboard: the top slices plus an "Others" slice. Returns `{ rows: null }`
- * on a missing report, empty data, or a failed or canceled render, so the
- * widget skips that tile while the other tiles render.
- *
- * @since 1.183.0
- *
- * @param report The breakdown report, or `null` when its fetch failed.
- * @param signal Cancellation signal forwarded to the renderer.
- * @return The breakdown's legend rows and donut image.
- */
-async function loadBreakdownChart(
-	report: Report | null,
-	signal: AbortSignal
-): Promise< BreakdownChart > {
-	if ( ! report ) {
-		return { rows: null };
-	}
-
-	try {
-		const dataMap = extractAnalyticsDataForPieChart( report, {
-			keyColumnIndex: 0,
-			maxSlices: BREAKDOWN_MAX_SLICES,
-			withOthers: true,
-		} );
-
-		// The first row is the header. The rest are `[ label, percentage ]`.
-		const rows: BreakdownRow[] = dataMap
-			.slice( 1 )
-			.map( ( row: [ string, number ] ) => ( {
-				label: row[ 0 ],
-				percentage: row[ 1 ],
-			} ) );
-
-		if ( rows.length === 0 ) {
-			return { rows: null };
-		}
-
-		const chartImage = await renderGoogleChartToDataURI( {
-			chartType: 'PieChart',
-			dataTable: buildBreakdownChartDataTable( rows ),
-			options: getBreakdownChartOptions(),
-			width: BREAKDOWN_CHART_SIZE,
-			height: BREAKDOWN_CHART_SIZE,
-			scaleFactor: BREAKDOWN_CHART_SCALE_FACTOR,
-			signal,
-		} );
-
-		return { rows, chartImage };
-	} catch {
-		return { rows: null };
-	}
-}
-
-/**
- * Loads the GA4 reports and chart images for the All Visitors PDF widget.
+ * Loads the GA4 reports and the line chart image for the Traffic Overview PDF
+ * section.
  *
  * Fetches the totals, graph, and three breakdown reports (channels, locations,
  * and devices) at the same time, and stops early when the signal is aborted.
- * Then it draws the line chart and the three donuts as JPEG data URIs for the
- * PDF. If one breakdown's report or render fails, the widget skips that tile
- * and the other tiles still render.
+ * Then it draws the line chart as a JPEG data URI for the PDF. Each breakdown's
+ * rows are shaped with the same `getBreakdownRows()` the dashboard's columns
+ * use, so the printed rows always match. A breakdown whose report failed gives
+ * `null` rows, and the other breakdowns still render.
  *
- * @since 1.181.0
- * @since 1.183.0 Also loads the channel, location, and device breakdown donuts.
+ * @since n.e.x.t
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -466,16 +287,17 @@ export default async function getPDFData( {
 		url,
 	} );
 
-	const breakdownArgsList = BREAKDOWNS.map( ( { dimensionName, reportID } ) =>
-		getBreakdownReportArgs( {
-			dimensionName,
-			reportID,
-			startDate,
-			endDate,
-			compareStartDate,
-			compareEndDate,
-			url,
-		} )
+	// The columns this mirrors ask for the selected range only: there is no
+	// comparison range to pair a breakdown row against.
+	const breakdownArgsList = TRAFFIC_BREAKDOWN_COLUMNS.map(
+		( { dimensionName, reportID } ) =>
+			getBreakdownReportArgs( {
+				dimensionName,
+				reportID,
+				startDate,
+				endDate,
+				url,
+			} )
 	);
 
 	// The registry remembers each `getReport` call by its arguments, and
@@ -501,7 +323,7 @@ export default async function getPDFData( {
 				.resolveSelect( MODULES_ANALYTICS_4 )
 				.getReport( graphArgs, { signal } ),
 			// A breakdown report that fails is caught here, so the rest of
-			// the widget still renders and nothing renders for that tile.
+			// the widget still renders and that breakdown's rows are `null`.
 			...breakdownArgsList.map( ( args ) =>
 				registry
 					.resolveSelect( MODULES_ANALYTICS_4 )
@@ -516,7 +338,7 @@ export default async function getPDFData( {
 
 	await ensureGoogleChartsLoaded();
 
-	// Canceling during loading stops here, before any chart is drawn.
+	// Canceling during loading stops here, before the chart is drawn.
 	if ( signal.aborted ) {
 		return { data: null };
 	}
@@ -532,29 +354,25 @@ export default async function getPDFData( {
 		signal,
 	} );
 
-	const [ channel, location, device ] = await Promise.all(
-		breakdownReports.map( ( report ) =>
-			loadBreakdownChart( report, signal )
-		)
-	);
-
 	if ( signal.aborted ) {
 		return { data: null };
 	}
+
+	const [ channelBreakdown, locationBreakdown, deviceBreakdown ] =
+		breakdownReports.map( ( report ) =>
+			report ? getBreakdownRows( report ) : null
+		);
 
 	return {
 		data: {
 			totalsReport,
 			graphReport,
-			channelBreakdown: channel.rows,
-			locationBreakdown: location.rows,
-			deviceBreakdown: device.rows,
+			channelBreakdown,
+			locationBreakdown,
+			deviceBreakdown,
 		},
 		chartImages: {
 			lineChart,
-			channelChart: channel.chartImage,
-			locationChart: location.chartImage,
-			deviceChart: device.chartImage,
 		},
 	};
 }

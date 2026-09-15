@@ -31,3 +31,9 @@ export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
  * of a dimension as before.
  */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
+
+/**
+ * The hex value of the Sass colour token the traffic chart's line draws in:
+ * `$c-site-kit-sk-500`.
+ */
+export const TRAFFIC_CHART_LINE_COLOR = '#3c7251';
