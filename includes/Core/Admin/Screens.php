@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Permissions\Permissions;
@@ -67,6 +68,14 @@ final class Screens {
 	private $authentication;
 
 	/**
+	 * Intents instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Intents
+	 */
+	private $intents;
+
+	/**
 	 * User_Options instance.
 	 *
 	 * @since 1.167.0
@@ -91,6 +100,7 @@ final class Screens {
 	 * @param Assets         $assets  Optional. Assets API instance. Default is a new instance.
 	 * @param Modules        $modules Optional. Modules instance. Default is a new instance.
 	 * @param Authentication $authentication  Optional. Authentication instance. Default is a new instance.
+	 * @param Intents        $intents  Optional. Intents instance. Default is a new instance.
 	 * @param User_Options   $user_options  Optional. User_Options instance. Default is a new instance.
 	 */
 	public function __construct(
@@ -98,12 +108,14 @@ final class Screens {
 		?Assets $assets = null,
 		?Modules $modules = null,
 		?Authentication $authentication = null,
+		?Intents $intents = null,
 		?User_Options $user_options = null
 	) {
 		$this->context        = $context;
 		$this->assets         = $assets ?: new Assets( $this->context );
 		$this->modules        = $modules ?: new Modules( $this->context );
 		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->intents        = $intents ?: new Intents();
 		$this->user_options   = $user_options ?: new User_Options( $this->context );
 	}
 
@@ -437,6 +449,39 @@ final class Screens {
 	}
 
 	/**
+	 * Gets the intent slug and code to render on the main dashboard.
+	 *
+	 * Both are empty unless the request names an intent that is registered and available and the
+	 * current user may set up Site Kit.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Context $context Plugin context.
+	 * @return string[] Intent slug under `slug` and one-time code under `code`.
+	 */
+	private function get_intent_attributes( Context $context ) {
+		$intent = htmlspecialchars( $context->input()->filter( INPUT_GET, 'intent' ) ?: '' );
+		$code   = htmlspecialchars( $context->input()->filter( INPUT_GET, 'code' ) ?: '' );
+
+		if (
+			! $intent
+			|| ! $code
+			|| ! current_user_can( Permissions::SETUP )
+			|| null === $this->intents->get_intent( $intent )
+		) {
+			return array(
+				'slug' => '',
+				'code' => '',
+			);
+		}
+
+		return array(
+			'slug' => $intent,
+			'code' => $code,
+		);
+	}
+
+	/**
 	 * Gets available admin screens.
 	 *
 	 * @since 1.0.0
@@ -509,8 +554,10 @@ final class Screens {
 									wp_die( sprintf( '<span class="googlesitekit-notice">%s</span>', esc_html( $message ) ), 403 );
 								}
 							}
+
+							$intent_attributes = $this->get_intent_attributes( $context );
 							?>
-							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+							<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" data-intent-slug="<?php echo esc_attr( $intent_attributes['slug'] ); ?>" data-intent-code="<?php echo esc_attr( $intent_attributes['code'] ); ?>" class="googlesitekit-page"></div>
 							<?php
 						}
 					},
