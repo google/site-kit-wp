@@ -253,7 +253,6 @@ NewWithoutConversionTracking.args = {
 	goalTypes: [ GOAL_TYPES.LEAD ],
 	setupRegistry: noConversionTrackingSetup,
 };
-NewWithoutConversionTracking.scenario = {};
 
 export const NewWithoutConversionTrackingEcommerce = Template.bind(
 	{}
@@ -264,7 +263,6 @@ NewWithoutConversionTrackingEcommerce.args = {
 	goalTypes: [ GOAL_TYPES.ECOMMERCE ],
 	setupRegistry: noConversionTrackingSetup,
 };
-NewWithoutConversionTrackingEcommerce.scenario = {};
 
 export const CombinedNewWithoutConversionTracking = Template.bind(
 	{}
@@ -276,7 +274,6 @@ CombinedNewWithoutConversionTracking.args = {
 	goalTypes: [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
 	setupRegistry: noConversionTrackingSetup,
 };
-CombinedNewWithoutConversionTracking.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Notifications/BreakdownNoticeArea',

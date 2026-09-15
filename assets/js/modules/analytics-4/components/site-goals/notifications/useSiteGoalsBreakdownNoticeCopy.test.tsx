@@ -51,6 +51,14 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 		provideUserCapabilities( registry );
 	} );
 
+	/**
+	 * Renders the notice description for a scope and gets its text.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} scope The goal scope/type the notice is shown for.
+	 * @return {string} The description text, including the "Learn more" link.
+	 */
 	function getDescriptionText( scope: BreakdownScope ): string {
 		const { result } = renderHook(
 			() => useSiteGoalsBreakdownNoticeCopy( scope ),

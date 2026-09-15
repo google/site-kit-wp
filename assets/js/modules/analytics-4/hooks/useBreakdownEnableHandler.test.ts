@@ -76,16 +76,37 @@ describe( 'useBreakdownEnableHandler', () => {
 			.getValue( FORM_CUSTOM_DIMENSIONS_CREATE, key );
 	}
 
+	/**
+	 * Gets whether conversion tracking is enabled in the store.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {boolean|undefined} Whether conversion tracking is enabled, or `undefined` while it loads.
+	 */
 	function isConversionTrackingEnabled() {
 		return registry.select( CORE_SITE ).isConversionTrackingEnabled();
 	}
 
+	/**
+	 * Sets up a site that does not track conversions yet.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
 	function withoutConversionTracking() {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConversionTrackingSettings( { enabled: false } );
 	}
 
+	/**
+	 * Mocks the endpoints that create and sync the custom dimensions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
 	function mockDimensionCreation() {
 		fetchMock.post( createDimensionEndpoint, ( _url, opts ) => ( {
 			body: JSON.parse( opts.body as string ).data,
@@ -99,6 +120,13 @@ describe( 'useBreakdownEnableHandler', () => {
 		} );
 	}
 
+	/**
+	 * Renders the enable handler for the lead generation widget.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} The render result.
+	 */
 	function enableHandler() {
 		return renderHook(
 			() =>

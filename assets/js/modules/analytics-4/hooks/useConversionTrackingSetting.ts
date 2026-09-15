@@ -44,7 +44,7 @@ export interface ConversionTrackingSetting {
  *
  * @since n.e.x.t
  *
- * @return The capability, and the setting for a user who holds it.
+ * @return {ConversionTrackingSetting} The capability, and the setting for a user who holds it.
  */
 export function useConversionTrackingSetting(): ConversionTrackingSetting {
 	const canManageOptions = useSelect(
