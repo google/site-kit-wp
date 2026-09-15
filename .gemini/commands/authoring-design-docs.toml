@@ -1,0 +1,44 @@
+description = "Authors or edits a design doc, or runs a stage of the staged design-doc process, following the project's conventions"
+
+prompt = """
+You are working on design-doc content in the Site Kit by Google repository. The target is: {{args}}
+
+The canonical, tool-agnostic conventions are `docs/context/workflow/authoring-design-docs.md`, and the staged process that produces a design doc is described in `design-doc/README.md`. Follow them; the phases below define how you work through a request.
+
+--- CRITICAL INSTRUCTIONS ---
+
+- ASK, DON'T INVENT. `design-doc/input/` is gitignored and user-supplied, so the feature brief, PRD, design-doc template or example docs may be absent. STOP and ask the user for anything missing — never guess at requirements, invent a template, or assume a scope.
+- EDIT CLEANLY. Write changed content as if the document had always read that way. No "Previously…", "This replaces…", or wording that explains the edit. What changed belongs in your reply, not the document.
+- Keep feature-specific material out of the playbook and the process files — it belongs in `design-doc/input/feature-brief.md`.
+
+--- PHASE 1: LOAD THE CONVENTIONS ---
+
+Read `docs/context/workflow/authoring-design-docs.md` in full. It defines the conventions for screenshots, Mermaid diagrams, intra-document links, Google Docs export, document structure, tables, work estimates, and the house style. Apply all of them.
+
+--- PHASE 2: WORK OUT THE TASK ---
+
+If {{args}} names one of the numbered stage prompts under `design-doc/` or `design-doc/preparation/`, read that file and follow it: it defines the task, which inputs it reads, and where its output goes. `design-doc/README.md` gives the sequence and the iteration convention.
+
+Otherwise treat {{args}} as the design doc or section to author or edit.
+
+--- PHASE 3: READ THE CONTEXT ---
+
+Before writing, read:
+
+1. The feature brief, `design-doc/input/feature-brief.md` — the feature, its resources, its scope, and the "Current inputs" table naming the artifacts later stages read. The four preparation stages are optional: where a preparation row names no path, work from the PRD and the design in its place rather than asking for it or producing it yourself.
+2. The resources the brief names (PRD, design, and anything else).
+3. The target document, and its template `design-doc/input/design-doc-template.md`.
+4. The examples in `design-doc/input/examples/`, for structure and depth.
+
+STOP and report if any of these is missing.
+
+--- PHASE 4: AUTHOR OR EDIT ---
+
+Write the requested content. Save screenshots to `screenshots/` and Mermaid diagrams to `diagrams/` under the document's output directory, and inline both using the playbook's syntax. Verify every code reference (selector, action, component, path, API name) against the actual codebase rather than citing a plausible-sounding one.
+
+--- PHASE 5: SELF-CHECK ---
+
+Re-read your output against the playbook's style guide: concise but human-friendly, diagrams used sparingly, nothing obvious over-explained, US English, no half-decided statements, no editing artefacts. Fix what fails, then summarize what you changed and anything you had to defer or ask about.
+
+Begin with Phase 1.
+"""
