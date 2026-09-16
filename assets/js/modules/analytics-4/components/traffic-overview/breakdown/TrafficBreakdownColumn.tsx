@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC } from 'react';
 
 /**
@@ -36,6 +37,8 @@ import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/co
 import TrafficBreakdownRow from './TrafficBreakdownRow';
 
 export interface TrafficBreakdownColumnProps {
+	/** The column's dimension, such as `devices`, which its modifier class carries. */
+	id: string;
 	/** The column's heading, which also names it for a screen reader. */
 	heading: string;
 	/** The rows to render, empty when the report returned none. */
@@ -43,6 +46,7 @@ export interface TrafficBreakdownColumnProps {
 }
 
 const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
+	id,
 	heading,
 	rows,
 } ) => {
@@ -56,7 +60,10 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 
 	return (
 		<section
-			className="googlesitekit-traffic-overview__breakdown-column"
+			className={ classnames(
+				'googlesitekit-traffic-overview__breakdown-column',
+				`googlesitekit-traffic-overview__breakdown-column--${ id }`
+			) }
 			aria-labelledby={ headingID }
 		>
 			<Typography
