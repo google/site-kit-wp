@@ -281,19 +281,21 @@ export default function AudienceTiles( { Widget, widgetLoading } ) {
 
 	const { showErrorModal } = useCreateCustomDimension();
 
+	const reportsLoaded = [
+		reportLoaded,
+		siteKitAudiencesReportLoaded,
+		totalPageviewsReportLoaded,
+		topCitiesReportsLoaded,
+		topContentReportsLoaded,
+		topContentPageTitlesReportsLoaded,
+	].every( Boolean );
+
 	// Determine loading state.
 	const loading =
 		widgetLoading ||
 		isSyncingAvailableCustomDimensions ||
-		! [
-			reportLoaded,
-			siteKitAudiencesReportLoaded,
-			totalPageviewsReportLoaded,
-			topCitiesReportsLoaded,
-			topContentReportsLoaded,
-			topContentPageTitlesReportsLoaded,
-			partialDataBadgesLoading === false,
-		].every( Boolean );
+		! reportsLoaded ||
+		partialDataBadgesLoading !== false;
 
 	return (
 		<Fragment>

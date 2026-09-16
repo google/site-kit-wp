@@ -63,7 +63,7 @@ describe( 'PartialDataBadge', () => {
 		const registry = setupRegistry( 20200801 );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 
-		const { queryByText, getByText, rerender } = render(
+		const { queryByText, getByText } = render(
 			<PartialDataBadge customDimensionSlug={ SLUG } />,
 			{ registry }
 		);
@@ -73,8 +73,6 @@ describe( 'PartialDataBadge', () => {
 		act( () => {
 			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 		} );
-
-		rerender( <PartialDataBadge customDimensionSlug={ SLUG } /> );
 
 		expect( getByText( 'Partial data' ) ).toBeInTheDocument();
 	} );

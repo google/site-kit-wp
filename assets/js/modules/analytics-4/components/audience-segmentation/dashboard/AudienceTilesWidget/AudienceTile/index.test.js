@@ -437,7 +437,7 @@ describe( 'AudienceTile', () => {
 				},
 			} );
 
-			const { container, rerender } = render(
+			const { container } = render(
 				<WidgetWithComponentProps { ...props } isPartialData />,
 				{ registry }
 			);
@@ -476,8 +476,6 @@ describe( 'AudienceTile', () => {
 					);
 			} );
 
-			rerender( <WidgetWithComponentProps { ...props } isPartialData /> );
-
 			expect( topContent() ).toHaveTextContent( 'Partial data' );
 		} );
 
@@ -490,7 +488,7 @@ describe( 'AudienceTile', () => {
 					20201220
 				);
 
-			const { container, rerender } = render(
+			const { container } = render(
 				<WidgetWithComponentProps { ...props } isPartialData />,
 				{ registry }
 			);
@@ -522,8 +520,6 @@ describe( 'AudienceTile', () => {
 						)
 					);
 			} );
-
-			rerender( <WidgetWithComponentProps { ...props } isPartialData /> );
 
 			expect( topContent() ).not.toHaveTextContent( 'Partial data' );
 		} );

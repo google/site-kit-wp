@@ -379,7 +379,7 @@ const baseSelectors = {
 				] ),
 			];
 
-			function isDateStillComing( args ) {
+			function isDateLoading( args ) {
 				return (
 					select(
 						MODULES_ANALYTICS_4
@@ -392,7 +392,7 @@ const baseSelectors = {
 				);
 			}
 
-			return resources.some( isDateStillComing );
+			return resources.some( isDateLoading );
 		}
 	),
 
