@@ -43,7 +43,9 @@ declare global {
 	// yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekit:
 		| {
-				contentEvents?: ContentEventsConfig;
+				// A cached page still holds the configuration an older release
+				// wrote, so any field can be missing.
+				contentEvents?: Partial< ContentEventsConfig >;
 				gtagUserData?: boolean;
 				gtagEvent?: (
 					name: string,
