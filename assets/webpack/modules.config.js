@@ -180,7 +180,7 @@ module.exports = function ( mode, rules, ANALYZE ) {
 						new BundleAnalyzerPlugin( {
 							analyzerMode: 'static',
 							analyzerPort: 'auto',
-							openAnalyzer: false,
+							openAnalyzer: true,
 							reportFilename: 'modules-report.html',
 							reportTitle: 'Module Entry Points',
 						} ),
