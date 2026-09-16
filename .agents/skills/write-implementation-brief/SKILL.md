@@ -43,7 +43,10 @@ truth shared with the other AI tools.
 
 - **Instructions only.** No rationale, no trade-off discussion, no restated acceptance criteria,
   no background on how the existing system works.
-- **Omit what isn't needed.** Never write "no Storybook changes required" or similar — silence
+- **Say when nothing is needed.** Never leave Test Coverage empty and never drop the Storybook
+  line in silence — when the change needs no tests or no story, write one bullet that says so
+  with the reason.
+- **Omit work the issue never raised.** No "no migration needed", "no new settings" — silence
   says it.
 - **No routine commands.** Lint, build, test and VRT invocations belong to
   `docs/context/workflow/implement-issue.md`, not the brief.

@@ -215,9 +215,12 @@ Do **not** include:
 
 - **Rationale.** No "because", no "this keeps X out of Y", no trade-off discussion, no
   restatement of a decision's benefits. The design doc and the acceptance criteria hold the
-  *why*; the brief holds the *what*.
-- **Work that isn't needed.** No "no Storybook changes required", "no migration needed", "no new
-  settings". Silence already says that.
+  *why*; the brief holds the *what*. The one reason the brief does give is for a section the
+  issue template asks for that needs nothing — see the next bullet.
+- **Work that isn't needed.** No "no migration needed", "no new settings", "no REST route" for a
+  concern the issue never raised. Silence already says it. The exception is what the template
+  asks for by name — automated tests, and Storybook and VRT changes: when those aren't needed,
+  say so and say why (Step 6).
 - **Routine commands.** No lint, build, test or VRT invocations — `implement-issue.md` Step 6
   owns verification, and every engineer already knows to build. Mention a command only when it
   is unusual and specific to this issue.
@@ -278,6 +281,11 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   unmet, feature disabled, invalid input, empty or error response.
 - **Storybook stories belong here, not in the brief.** "Add a Story for `<Component>`", or list
   the states when there is more than one: "(default, loading, error)".
+- **Say so when nothing is needed, and say why.** Never leave Test Coverage empty, and never drop
+  the Storybook line in silence. When the change needs no tests or no story, write one bullet that
+  says so with the reason — "No tests required because the change only edits documentation", "No
+  Storybook story required because the change adds no UI". An empty section reads as a forgotten
+  section, and a moderator cannot tell the two apart.
 - Name any new fixture, fake or mock the coverage needs, and the directory it belongs in.
 - Call out **existing** tests the change will break, so the work is budgeted rather than
   discovered mid-implementation — "Fix any failing tests/snapshots" when the blast radius isn't
