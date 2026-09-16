@@ -40,7 +40,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.
  */
-function createReport( pairs: Array< [ string, number ] > ): Report {
+function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
 	return {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
@@ -49,16 +49,16 @@ function createReport( pairs: Array< [ string, number ] > ): Report {
 	};
 }
 
-const CHANNELS = createReport( [
+const CHANNELS = createBreakdownReport( [
 	[ 'Organic Search', 1200 ],
 	[ 'Direct', 600 ],
 	[ 'Paid Search', 400 ],
 ] );
-const LOCATIONS = createReport( [
+const LOCATIONS = createBreakdownReport( [
 	[ 'United States', 800 ],
 	[ 'Germany', 200 ],
 ] );
-const DEVICES = createReport( [
+const DEVICES = createBreakdownReport( [
 	[ 'desktop', 700 ],
 	[ 'mobile', 300 ],
 ] );
@@ -150,7 +150,7 @@ describe( 'TrafficBreakdown', () => {
 	it( 'shows the zero data message for a column with no rows, and the other two keep their rows', () => {
 		const { getByRole, getByText } = renderBreakdown( {
 			channels: CHANNELS,
-			locations: createReport( [] ),
+			locations: createBreakdownReport( [] ),
 			devices: DEVICES,
 		} );
 
@@ -187,7 +187,7 @@ describe( 'TrafficBreakdown', () => {
 
 	it( 'renders an "Others" row that is inert too', () => {
 		const { container, getByText } = renderBreakdown( {
-			channels: createReport( [
+			channels: createBreakdownReport( [
 				[ 'A', 50 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -210,7 +210,7 @@ describe( 'TrafficBreakdown', () => {
 
 	it( 'renders a dimension value named "Others" alongside the folded row', () => {
 		const { getAllByText } = renderBreakdown( {
-			channels: createReport( [
+			channels: createBreakdownReport( [
 				[ 'Others', 100 ],
 				[ 'B', 40 ],
 				[ 'C', 30 ],
@@ -224,6 +224,65 @@ describe( 'TrafficBreakdown', () => {
 
 		// Both survive: the real value and the row the tail folds into.
 		expect( getAllByText( 'Others' ) ).toHaveLength( 2 );
+	} );
+
+	it( 'renders every heading above placeholder rows while the reports load', () => {
+		const { container, getAllByRole, queryByText } = render(
+			<TrafficBreakdown
+				reports={ {
+					channels: CHANNELS,
+					locations: LOCATIONS,
+					devices: DEVICES,
+				} }
+				loaded={ false }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
+		).toEqual( [
+			'Traffic breakdown',
+			'Visitors by channels',
+			'Visitors by locations',
+			'Visitors by devices',
+		] );
+		// Five placeholder rows in each of the three columns.
+		expect(
+			container.querySelectorAll( '.googlesitekit-preview-block' )
+		).toHaveLength( 15 );
+		expect( queryByText( 'Organic Search' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders every column heading above its zero data message while the property is gathering data', () => {
+		const { getAllByRole, getAllByText, queryByText } = render(
+			<TrafficBreakdown
+				reports={ {
+					channels: CHANNELS,
+					locations: LOCATIONS,
+					devices: DEVICES,
+				} }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
+		).toEqual( [
+			'Traffic breakdown',
+			'Visitors by channels',
+			'Visitors by locations',
+			'Visitors by devices',
+		] );
+		expect(
+			getAllByText(
+				'No data to display: your site hasn’t received any visitors yet'
+			)
+		).toHaveLength( 3 );
+		// `CHANNELS` has an "Organic Search" row, and a property gathering data
+		// shows none.
+		expect( queryByText( 'Organic Search' ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'renders a column whose report has not arrived as its zero data message', () => {

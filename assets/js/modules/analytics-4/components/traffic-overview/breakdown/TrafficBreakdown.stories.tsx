@@ -38,7 +38,7 @@ import TrafficBreakdown from './TrafficBreakdown';
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.
  */
-function createReport( pairs: Array< [ string, number ] > ): Report {
+function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
 	return {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
@@ -47,19 +47,19 @@ function createReport( pairs: Array< [ string, number ] > ): Report {
 	};
 }
 
-const CHANNELS = createReport( [
+const CHANNELS = createBreakdownReport( [
 	[ 'Direct', 1200 ],
 	[ 'Organic Search', 900 ],
 	[ 'Organic Social', 700 ],
 	[ 'Referral', 400 ],
 ] );
-const LOCATIONS = createReport( [
+const LOCATIONS = createBreakdownReport( [
 	[ 'Singapore', 1100 ],
 	[ 'Brazil', 800 ],
 	[ 'China', 600 ],
 	[ 'United States', 400 ],
 ] );
-const DEVICES = createReport( [
+const DEVICES = createBreakdownReport( [
 	[ 'desktop', 1800 ],
 	[ 'mobile', 900 ],
 	[ 'tablet', 400 ],
@@ -106,7 +106,7 @@ export const WithOthers = Template.bind(
 WithOthers.storyName = 'With Others Row';
 WithOthers.args = {
 	reports: {
-		channels: createReport( [
+		channels: createBreakdownReport( [
 			[ 'Direct', 1200 ],
 			[ 'Organic Search', 900 ],
 			[ 'Organic Social', 700 ],
@@ -128,7 +128,7 @@ EmptyColumn.storyName = 'Empty Column';
 EmptyColumn.args = {
 	reports: {
 		channels: CHANNELS,
-		locations: createReport( [] ),
+		locations: createBreakdownReport( [] ),
 		devices: DEVICES,
 	},
 };
@@ -141,13 +141,13 @@ export const LongestNames = Template.bind(
 LongestNames.storyName = 'Longest Names';
 LongestNames.args = {
 	reports: {
-		channels: createReport( [
+		channels: createBreakdownReport( [
 			[ 'Cross-network', 1200 ],
 			[ 'Organic Shopping', 900 ],
 			[ 'Mobile Push Notifications', 700 ],
 			[ 'Organic Video', 400 ],
 		] ),
-		locations: createReport( [
+		locations: createBreakdownReport( [
 			[ 'South Georgia & South Sandwich Islands', 1100 ],
 			[ 'United States Minor Outlying Islands', 800 ],
 			[ 'Bonaire, Sint Eustatius and Saba', 600 ],
