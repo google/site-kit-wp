@@ -26,6 +26,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
+	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -77,9 +78,6 @@ describe( 'ExpressSetupSteps', () => {
 
 		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
 		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
-		expect(
-			queryByText( 'Accept terms of service' )
-		).not.toBeInTheDocument();
 
 		act( () => {
 			registry
@@ -91,6 +89,31 @@ describe( 'ExpressSetupSteps', () => {
 
 		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
 		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should show the terms step based on the form value', () => {
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_TERMS_OF_SERVICE ]: false,
+			} );
+
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect(
+			queryByText( 'Accept terms of service' )
+		).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_TERMS_OF_SERVICE ]: true,
+				} );
+		} );
+
 		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
 	} );
 

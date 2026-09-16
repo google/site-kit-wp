@@ -28,9 +28,10 @@ import {
 	forwardRef,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -71,6 +72,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -191,28 +193,6 @@ function getFormBreakdownTabs(
 			),
 		};
 	} );
-}
-
-// The single/plural subtitle for the Total form completions tile.
-function getTotalSubtitle( detectedLeadEvents: string[] ): string {
-	if ( detectedLeadEvents.length === 1 ) {
-		return sprintf(
-			/* translators: %s: GA4 event name */
-			__( '“%s” events', 'google-site-kit' ),
-			detectedLeadEvents[ 0 ]
-		);
-	}
-
-	return sprintf(
-		/* translators: %d: number of detected event types */
-		_n(
-			'%d event type',
-			'%d event types',
-			detectedLeadEvents.length,
-			'google-site-kit'
-		),
-		detectedLeadEvents.length
-	);
 }
 
 function getWidgetReportOptions(
@@ -348,6 +328,15 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 			[]
 		);
+
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames: string[] = useMemo(
+			() => detectedLeadEvents || [],
+			[ detectedLeadEvents ]
+		);
+
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
 				select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
@@ -374,6 +363,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			[]
 		);
 
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
 		const {
 			breakdownDimension,
 			breakdownValues,
@@ -390,7 +385,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			// needs no event scoping. The lead events only detect unattributed
 			// "Other sources" data.
 		} = useSiteGoalsBreakdown( GOAL_TYPES.LEAD, {
-			detectionEventNames: detectedLeadEvents || [],
+			detectionEventNames: keyActionEventNames,
 		} );
 
 		// Only the tabbed breakdown shows the partial-data badge, and only when
@@ -481,7 +476,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 		const { leadEventsReportOptions, engagementReportOptions } =
 			getWidgetReportOptions(
 				dates,
-				detectedLeadEvents || [],
+				keyActionEventNames,
 				breakdownFilter
 			);
 
@@ -634,8 +629,16 @@ const LeadGenerationPerformanceWidget = forwardRef<
 								'Total form completions',
 								'google-site-kit'
 							) }
-							totalSubtitle={ getTotalSubtitle(
+							totalSubtitle={ getLeadEventsSubtitle(
 								detectedLeadEvents
+							) }
+							chartTitle={ sprintf(
+								/* translators: %d: number of days in the selected date range, e.g. 28. */
+								__(
+									'Total form completions in the last %d days',
+									'google-site-kit'
+								),
+								dateRangeDays
 							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
@@ -646,6 +649,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.LEAD }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }

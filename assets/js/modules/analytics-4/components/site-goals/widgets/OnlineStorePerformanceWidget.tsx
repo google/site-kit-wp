@@ -71,6 +71,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { EcommerceKeyActionEvent } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	VisitorEngagementTiles,
@@ -100,19 +101,48 @@ interface DateRange {
 	compareEndDate?: string;
 }
 
-const EVENT_RATE_LABELS = {
-	purchase: __( 'Sales rate', 'google-site-kit' ),
-	add_to_cart: __( 'Add to cart rate', 'google-site-kit' ),
-};
-
 const EVENT_TOTAL_LABELS = {
 	purchase: __( 'Total sales', 'google-site-kit' ),
 	add_to_cart: __( 'Products added to cart', 'google-site-kit' ),
 };
 
+/**
+ * Builds the chart tile's title from the primary event and the date range.
+ *
+ * An event added to `EVENT_TOTAL_LABELS` needs a branch here too, or its chart
+ * tile falls back to the sales title.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} primaryEvent  The Key action's event, a key of `EVENT_TOTAL_LABELS`.
+ * @param {number} dateRangeDays The number of days the selected date range covers.
+ * @return {string} The chart tile's title.
+ */
+function getChartTitle(
+	primaryEvent: keyof typeof EVENT_TOTAL_LABELS,
+	dateRangeDays: number
+) {
+	if ( primaryEvent === 'add_to_cart' ) {
+		return sprintf(
+			/* translators: %d: number of days in the selected date range, e.g. 28. */
+			__(
+				'Products added to cart in the last %d days',
+				'google-site-kit'
+			),
+			dateRangeDays
+		);
+	}
+
+	return sprintf(
+		/* translators: %d: number of days in the selected date range, e.g. 28. */
+		__( 'Total sales in the last %d days', 'google-site-kit' ),
+		dateRangeDays
+	);
+}
+
 function getWidgetReportOptions(
 	dates: DateRange,
-	primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined,
+	primaryEvent: EcommerceKeyActionEvent | undefined,
 	breakdownFilter?: Record< string, unknown >
 ) {
 	const primaryEventReportOptions: ReportOptions | null = primaryEvent
@@ -236,12 +266,11 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		);
 
-		const primaryEvent: keyof typeof EVENT_TOTAL_LABELS | undefined =
-			useSelect(
-				( select: Select ) =>
-					select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
-				[]
-			);
+		const primaryEvent: EcommerceKeyActionEvent | undefined = useSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getPrimaryEcommerceEvent(),
+			[]
+		);
 
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
@@ -265,20 +294,19 @@ const OnlineStorePerformanceWidget = forwardRef<
 		const selectedVisitorEngagementEvents =
 			resolvedVisitorEngagement[ GOAL_TYPES.ECOMMERCE ];
 
-		const secondaryEcommerceEvents: ( keyof typeof EVENT_TOTAL_LABELS )[] =
-			useSelect(
-				( select: Select ) =>
-					primaryEvent
-						? select(
-								MODULES_ANALYTICS_4
-						  ).getSecondaryEcommerceEvents( primaryEvent )
-						: [],
-				[ primaryEvent ]
-			);
+		const secondaryEcommerceEvents: EcommerceKeyActionEvent[] = useSelect(
+			( select: Select ) =>
+				primaryEvent
+					? select( MODULES_ANALYTICS_4 ).getSecondaryEcommerceEvents(
+							primaryEvent
+					  )
+					: [],
+			[ primaryEvent ]
+		);
 		const enabledSecondaryEvents = selectedVisitorEngagementEvents.filter(
 			( eventName ) =>
 				secondaryEcommerceEvents.includes(
-					eventName as keyof typeof EVENT_TOTAL_LABELS
+					eventName as EcommerceKeyActionEvent
 				)
 		);
 
@@ -298,9 +326,16 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		) as DateRange;
 
-		// The "Other sources" metric mirrors the Key action's primary event, so detect
-		// unattributed events for that event only.
-		const detectionEventNames = useMemo(
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
+
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames = useMemo(
 			() => ( primaryEvent ? [ primaryEvent ] : [] ),
 			[ primaryEvent ]
 		);
@@ -321,7 +356,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			// Discovery is scoped to the known ecommerce events. The allowlist
 			// then restricts the tabs to supported ecommerce plugins.
 			eventNames: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-			detectionEventNames,
+			detectionEventNames: keyActionEventNames,
 			supportedValues: SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
 		} );
 
@@ -513,12 +548,38 @@ const OnlineStorePerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
-							rateTitle={ EVENT_RATE_LABELS[ primaryEvent ] }
-							totalTitle={ EVENT_TOTAL_LABELS[ primaryEvent ] }
+							rateTitle={
+								{
+									purchase: __(
+										'Sales rate',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Add to cart rate',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
+							totalTitle={
+								{
+									purchase: __(
+										'Total sales',
+										'google-site-kit'
+									),
+									add_to_cart: __(
+										'Products added to cart',
+										'google-site-kit'
+									),
+								}[ primaryEvent ]
+							}
 							totalSubtitle={ sprintf(
 								/* translators: %s: GA4 event name */
 								__( '“%s” events', 'google-site-kit' ),
 								primaryEvent
+							) }
+							chartTitle={ getChartTitle(
+								primaryEvent,
+								dateRangeDays
 							) }
 							currentRate={ currentRate }
 							previousRate={ previousRate }
@@ -529,6 +590,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 							otherSourcesPreviousCount={
 								otherSourcesPreviousCount
 							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
+							goalType={ GOAL_TYPES.ECOMMERCE }
+							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
 				) }

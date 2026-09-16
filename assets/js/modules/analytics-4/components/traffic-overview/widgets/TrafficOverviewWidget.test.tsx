@@ -71,6 +71,12 @@ describe( 'TrafficOverviewWidget', () => {
 		] );
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+		// Storing the creation time stops a request for the Analytics property.
+		// `2024-01-01` sits before the selected range, so the chart draws no
+		// marker.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -95,7 +101,7 @@ describe( 'TrafficOverviewWidget', () => {
 		).toBeNull();
 	} );
 
-	it( 'renders one tab labeled "Traffic Overview" at the top of the widget body', async () => {
+	it( 'renders one tab labeled "Traffic overview" at the top of the widget body', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -109,14 +115,14 @@ describe( 'TrafficOverviewWidget', () => {
 		const tabs = screen.getAllByRole( 'tab' );
 
 		expect( tabs ).toHaveLength( 1 );
-		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic Overview' );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
 		expect(
 			container.querySelector( '.googlesitekit-widget__body' )
 				?.firstElementChild
 		).toHaveClass( 'googlesitekit-scrollable-tabs' );
 	} );
 
-	it( 'names the tab panel after the "Traffic Overview" tab', async () => {
+	it( 'names the tab panel after the "Traffic overview" tab', async () => {
 		const { waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,
 			{
@@ -128,7 +134,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			screen.getByRole( 'tabpanel', { name: 'Traffic Overview' } )
+			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
 		).toBeInTheDocument();
 	} );
 

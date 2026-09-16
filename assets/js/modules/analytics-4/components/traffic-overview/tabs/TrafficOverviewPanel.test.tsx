@@ -25,9 +25,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTotalsReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+import {
+	getGraphReportArgs,
+	getTotalsReportArgs,
+} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { createTestRegistry, render, waitFor } from '@tests/js/test-utils';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import TrafficOverviewPanel from './TrafficOverviewPanel';
@@ -88,10 +92,11 @@ describe( 'TrafficOverviewPanel', () => {
 				connected: true,
 			},
 		] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
-	it( 'marks the panel as a tab panel and names it using the content in the "Traffic Overview" tab', async () => {
+	it( 'marks the panel as a tab panel and names it using the content in the "Traffic overview" tab', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
 			{ registry }
@@ -129,10 +134,6 @@ describe( 'TrafficOverviewPanel', () => {
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',
 		] );
-
-		// The chart lands in a later issue; the breakdown has since arrived.
-		expect( sections[ 1 ] ).toBeEmptyDOMElement();
-		expect( sections[ 2 ] ).not.toBeEmptyDOMElement();
 	} );
 
 	it( 'builds the visitor total and its badge from the totals report', async () => {
@@ -154,7 +155,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 		// Only the entity-scoped report is in the store, so these values can
-		// only come from the request that carries the URL.
+		// only come from the request that has the URL.
 		provideTotalsReport( 500, 400, entityURL );
 
 		const { getByText, waitForRegistry } = render(
@@ -166,6 +167,66 @@ describe( 'TrafficOverviewPanel', () => {
 
 		expect( getByText( '500' ) ).toBeInTheDocument();
 		expect( getByText( '+25%' ) ).toBeInTheDocument();
+	} );
+
+	it( "shows each day's visitors in the chart", async () => {
+		// `provideAnalytics4MockReport` builds the same numbers for the same
+		// options, so the report for `2025-01-09` to `2025-02-05` always opens
+		// with 55 and 14 visitors.
+		provideAnalytics4MockReport(
+			registry,
+			getGraphReportArgs( {
+				startDate: '2025-01-09',
+				endDate: '2025-02-05',
+			} )
+		);
+
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		// Google Charts draws nothing under Jest, so this test reads the
+		// chart's screen-reader lines instead.
+		expect(
+			getByText( 'January 9, 2025: 55 visitors' )
+		).toBeInTheDocument();
+		expect(
+			getByText( 'January 10, 2025: 14 visitors' )
+		).toBeInTheDocument();
+	} );
+
+	it( "shows each day's visitors to the current URL in the chart on the entity dashboard", async () => {
+		const entityURL = 'https://example.com/about/';
+
+		provideSiteInfo( registry, { currentEntityURL: entityURL } );
+		// The store has only the report for `entityURL`, so the 69 visitors on
+		// `2025-01-09` can come from no other report.
+		provideAnalytics4MockReport(
+			registry,
+			getGraphReportArgs( {
+				startDate: '2025-01-09',
+				endDate: '2025-02-05',
+				url: entityURL,
+			} )
+		);
+
+		const { getByText, waitForRegistry } = render(
+			<TrafficOverviewPanel />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'January 9, 2025: 69 visitors' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'sends a report request when the panel renders', async () => {

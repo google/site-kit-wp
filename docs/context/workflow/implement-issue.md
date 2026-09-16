@@ -22,16 +22,54 @@ verbatim:
 - **Feature Description** — the problem / publisher need.
 - **Acceptance criteria** — between `## Acceptance criteria` and `## Implementation Brief`.
 - **Implementation Brief** — between `## Implementation Brief` and `### Test Coverage` (the
-  technical checkboxes; this is your primary spec).
+  technical checkboxes; your plan of work).
 - **Test Coverage** — between `### Test Coverage` and `## QA Brief`.
 - **QA Brief** — between `## QA Brief` and `## Changelog entry`.
 
 Note: the **Changelog entry** section is filled in by the merge reviewer at PR-merge time,
 not when the issue is created — expect it to be empty and don't rely on it.
 
+**The acceptance criteria are the contract; the Implementation Brief is one route to satisfying
+them.** Read both before you write any code, and where the two disagree the criteria win — the
+brief is drafted first and the criteria keep moving through review, so the brief is the half that
+goes stale. The brief also leaves user-facing copy and observable behavior to the criteria on
+purpose rather than quoting them, so a heading, label or error message you cannot find in the
+brief is in the criteria, not missing. Where a criterion and a brief bullet genuinely cannot both
+be satisfied, stop and ask.
+
 **Stop and ask the user** if: the issue can't be found, the body is empty, the section
 markers are missing, or the Implementation Brief is ambiguous/contradictory. Do not guess
 at requirements.
+
+## Read every issue this one references — before writing any code
+
+Site Kit issues lean on their siblings: a brief says `(added in #12950)` for the store it
+builds on, `(see #13005)` for the extension point it leaves open, "the create variant is
+#13022" for the half that isn't yours. Those references carry requirements that the issue
+in front of you does not repeat.
+
+Collect every issue referenced anywhere in the Feature Description, Acceptance criteria,
+Implementation Brief and Test Coverage — `#12345`, a full `github.com/google/site-kit-wp/issues/…`
+URL, the parent epic, and anything GitHub lists as linked — and read each one with
+`gh issue view <number> --json title,body,state,url` **before** you start implementing. From
+each, take:
+
+- **What it delivered**, when it is closed — the classes, selectors, hooks and constants your
+  brief expects to already be there. Confirm they exist in the branch you are on; a closed
+  issue whose PR has not been merged into your base leaves you building on nothing.
+- **What it will deliver**, when it is still open — the work that is *not* yours. Stop at that
+  boundary rather than implementing it, and don't duplicate a symbol it is going to add.
+- **Its acceptance criteria**, where they constrain yours — a shared payload shape, a naming
+  scheme, an ordering guarantee. Where a referenced issue and your brief disagree, the code
+  wins if it is already written; otherwise ask.
+
+Read the referenced issues themselves, not their references — follow a second hop only when
+the first leaves a requirement genuinely unclear.
+
+**Stop and ask the user** if: a referenced issue can't be fetched; your brief depends on work
+that a referenced issue has not landed yet; or the issue refers to a sibling **indirectly**
+("the next issue", "issue 5", "the issue that adds the store") rather than by number — ask for
+the real number instead of guessing which issue is meant.
 
 ## Step 2 — Determine scope
 
@@ -145,7 +183,8 @@ and verification results.
 - **Local only.** Do **not** commit, push, or open a pull request unless the user explicitly
   asks. The deliverable is a working, verified local change on the feature branch.
 - **No scope creep.** Implement what the brief specifies; flag anything underspecified rather
-  than inventing behavior.
+  than inventing behavior. A referenced issue is context, never a work item — never implement
+  a sibling's brief because your issue mentions it.
 - **Commit messages** (only when asked to commit) must satisfy `bin/check-commit-msg.php`:
   start with a capital letter, begin with a present-tense verb, contain more than one word,
   and end with a full stop — e.g. `Track learn more about conversion tracking link.`
