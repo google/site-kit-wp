@@ -19,16 +19,38 @@
 /**
  * Internal dependencies
  */
+import {
+	STORY_INITIAL_VERSION,
+	storyFeatures,
+	storyModules,
+} from '@/js/components/feature-discovery/__fixtures__';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
-import { provideModules, provideSiteInfo } from '@tests/js/test-utils';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { Story } from '@/js/types/Story';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+} from '@tests/js/test-utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 
 function setupRegistry( registry: Registry ) {
-	provideModules( registry );
+	provideModules( registry, storyModules );
+	provideModuleRegistrations( registry );
 	provideSiteInfo( registry );
+
+	// Seeded so the cards resolve their newness state without a request.
+	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	registry
+		.dispatch( CORE_USER )
+		.receiveInitialSiteKitVersion( STORY_INITIAL_VERSION );
+
+	provideFeatures( registry, storyFeatures );
 }
 
 function Template() {
@@ -41,12 +63,12 @@ function Template() {
 	);
 }
 
-export const AllServices = Template.bind( {} );
+export const AllServices = Template.bind( {} ) as Story;
 AllServices.storyName = 'All services and features';
 AllServices.parameters = { route: '/all-services' };
 AllServices.scenario = {};
 
-export const WhatsNew = Template.bind( {} );
+export const WhatsNew = Template.bind( {} ) as Story;
 WhatsNew.storyName = 'What’s new?';
 WhatsNew.parameters = { route: '/whats-new' };
 WhatsNew.scenario = {};
