@@ -255,8 +255,30 @@ const fetchGetPublicationsStore = createFetchStore( {
 	),
 } );
 
+const fetchPublicationStoreReducerCallback = createReducer(
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
+		state.publications = state.publications || [];
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		const publicationID = publication.publicationId;
+
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( publicationIndex === -1 ) {
+			state.publications.push( publication );
+		} else {
+			state.publications[ publicationIndex ] = publication;
+		}
+
+		syncConnectedPublicationSettings( state, publication );
+	}
+);
+
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	controlCallback: ( {
 		displayName,
 		languageCode,
@@ -301,27 +323,6 @@ const fetchCreatePublicationStore = createFetchStore( {
 	},
 	isAction: true,
 } );
-
-const fetchPublicationStoreReducerCallback = createReducer(
-	( state: ReaderRevenueManagerState, publication: Publication ) => {
-		state.publications = state.publications || [];
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		const publicationIndex = state.publications.findIndex(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( publicationIndex === -1 ) {
-			state.publications.push( publication );
-		} else {
-			state.publications[ publicationIndex ] = publication;
-		}
-
-		syncConnectedPublicationSettings( state, publication );
-	}
-);
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',

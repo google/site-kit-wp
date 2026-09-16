@@ -37,6 +37,7 @@ import {
 	EXPRESS_SETUP_STEPS,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
+	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface ExpressSetupStepsProps {
@@ -51,16 +52,18 @@ const ExpressSetupSteps: FC< ExpressSetupStepsProps > = ( {
 		SHOW_PUBLICATION_CREATE
 	);
 
-	const [ step ] = useStep();
+	const [ showTermsOfService ] = useFormValue< boolean >(
+		READER_REVENUE_MANAGER_SETUP_FORM,
+		SHOW_TERMS_OF_SERVICE
+	);
 
-	const showTermsOfServiceStep =
-		showPublicationCreate || step === EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE;
+	const [ step ] = useStep();
 
 	const steps = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: showPublicationCreate
 			? __( 'Create publication', 'google-site-kit' )
 			: __( 'Connect publication', 'google-site-kit' ),
-		...( showTermsOfServiceStep
+		...( showTermsOfService
 			? {
 					[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: __(
 						'Accept terms of service',

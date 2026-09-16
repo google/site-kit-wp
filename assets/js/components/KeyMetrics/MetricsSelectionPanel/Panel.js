@@ -36,25 +36,23 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { trackEvent } from '@/js/util';
 import PanelContent from './PanelContent';
 
 export default function Panel() {
 	const viewContext = useViewContext();
+	const isViewOnlyDashboard = useViewOnly();
 	const isOpen = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( KEY_METRICS_SELECTION_PANEL_OPENED_KEY )
 	);
-	const savedViewableMetrics = useInViewSelect( ( select ) => {
-		const metrics = select( CORE_USER ).getKeyMetrics();
-
-		if ( ! Array.isArray( metrics ) ) {
-			return [];
-		}
-
-		const { isKeyMetricAvailable } = select( CORE_USER );
-
-		return metrics.filter( isKeyMetricAvailable );
-	} );
+	const savedViewableMetrics = useInViewSelect(
+		( select ) =>
+			select( CORE_USER ).getSavedViewableMetrics( {
+				isViewOnlyDashboard,
+			} ),
+		[ isViewOnlyDashboard ]
+	);
 
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setValue } = useDispatch( CORE_UI );

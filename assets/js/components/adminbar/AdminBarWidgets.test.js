@@ -45,6 +45,11 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import AdminBarWidgets from './AdminBarWidgets';
+import {
+	setupAnalytics4MockReports,
+	setupBaseRegistry,
+	setupSearchConsoleMockReports,
+} from './common-GA4-stories';
 
 const dismissItemEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
@@ -125,6 +130,45 @@ describe( 'AdminBarWidgets', () => {
 		expect( container ).toMatchSnapshot();
 
 		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the Set up Google Analytics CTA in a cell without `.mdc-layout-grid__cell--span-2-phone`', async () => {
+		const { getByText, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		const cta = getByText( /Set up Google Analytics/ );
+
+		expect( cta.closest( '.mdc-layout-grid__cell' ) ).not.toHaveClass(
+			'mdc-layout-grid__cell--span-2-phone'
+		);
+	} );
+
+	it( 'should render each data block widget in a `.mdc-layout-grid__cell--span-2-phone` cell, with Analytics connected', async () => {
+		setupBaseRegistry( registry );
+		setupSearchConsoleMockReports( registry );
+		setupAnalytics4MockReports( registry );
+
+		const { getByText, waitForRegistry } = render( <AdminBarWidgets />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		const dataBlockTitles = [
+			'Total Impressions',
+			'Total Clicks',
+			'Total Users',
+			'Total Sessions',
+		];
+
+		dataBlockTitles.forEach( ( title ) => {
+			expect(
+				getByText( title ).closest( '.mdc-layout-grid__cell' )
+			).toHaveClass( 'mdc-layout-grid__cell--span-2-phone' );
+		} );
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {

@@ -57,6 +57,8 @@ import {
 	requireGTGScriptAccessEnabled,
 	requireGoogleTagGatewayEnabled,
 	requireHasRecoverableModules,
+	requireHomeURLUsingHTTPS,
+	requireModuleNotConnected,
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
@@ -559,6 +561,50 @@ describe( 'data requirements', () => {
 		} );
 	} );
 
+	describe( 'requireModuleNotConnected', () => {
+		it( 'should return true when the module is not connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is connected', async () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			expect(
+				await requireModuleNotConnected( MODULE_SLUG_ANALYTICS_4 )(
+					registry
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return false when the connection state is not available', async () => {
+			provideModules( registry );
+
+			expect(
+				await requireModuleNotConnected( 'non-existent-module' )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
 	describe( 'requireModuleViewable', () => {
 		it( 'should return true when the module is shared with the user', async () => {
 			provideModules( registry, [
@@ -690,6 +736,22 @@ describe( 'data requirements', () => {
 					registry
 				)
 			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireHomeURLUsingHTTPS', () => {
+		it( 'should return true when the home URL uses HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'https://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when the home URL does not use HTTPS', async () => {
+			provideSiteInfo( registry, { homeURL: 'http://example.com' } );
+
+			expect( await requireHomeURLUsingHTTPS()( registry ) ).toBe(
+				false
+			);
 		} );
 	} );
 
