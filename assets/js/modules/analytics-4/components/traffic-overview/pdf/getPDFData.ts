@@ -287,8 +287,8 @@ export default async function getPDFData( {
 		url,
 	} );
 
-	// The columns this mirrors ask for the selected range only: there is no
-	// comparison range to pair a breakdown row against.
+	// Breakdown reports use the selected range only, since there's no
+	// comparison range for a row to pair against.
 	const breakdownArgsList = TRAFFIC_BREAKDOWN_COLUMNS.map(
 		( { dimensionName, reportID } ) =>
 			getBreakdownReportArgs( {

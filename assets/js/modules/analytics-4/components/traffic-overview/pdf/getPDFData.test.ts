@@ -89,6 +89,16 @@ const DATES = {
 	compareEndDate: '2025-01-07',
 };
 
+/**
+ * Builds one breakdown's report args at the shared `DATES`.
+ *
+ * @since n.e.x.t
+ *
+ * @param dimensionName Breakdown dimension name.
+ * @param reportID      Report ID for cache isolation.
+ * @param url           Current entity URL, when the test provides one.
+ * @return Args for `getBreakdownReportArgs()`.
+ */
 function breakdownArgsFor(
 	dimensionName: string,
 	reportID: string,
@@ -139,7 +149,7 @@ function setGoogle( value: unknown ) {
 
 /**
  * Seeds the totals and graph reports so `getPDFData` resolves them from state
- * without a network request, for tests that don't care about their content.
+ * without a network request.
  *
  * @since n.e.x.t
  *
@@ -165,8 +175,8 @@ function seedTotalsAndGraphReports( testRegistry: Registry ) {
 }
 
 /**
- * Seeds the three breakdown reports with one row each, for tests that need
- * non-empty breakdowns but don't care about their content.
+ * Seeds the channels, locations, and devices breakdown reports with one row
+ * each, so none of them resolve to `null`.
  *
  * @since n.e.x.t
  *
@@ -216,11 +226,6 @@ describe( 'Traffic Overview getPDFData', () => {
 	} );
 
 	it( 'builds the five reports with the selected range and no entity URL', async () => {
-		// The registry resolves a report already in state without fetching, so
-		// pre-seeding each report at its exact expected args and asserting no
-		// fetch happened proves `getPDFData` built that exact args shape. The
-		// breakdown args carry no comparison dates: there is no comparison
-		// range to pair a breakdown row against.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
@@ -397,10 +402,9 @@ describe( 'Traffic Overview getPDFData', () => {
 				options: devicesArgs,
 			} );
 
-		// Only the locations breakdown request fails: its `country` dimension
-		// is the only one of the three breakdowns' requests that names it. The
-		// report ID itself is a client-side cache key, not part of the request
-		// URL. The API layer logs an error when the request fails.
+		// The `country` dimension is unique to the locations request among the
+		// three breakdowns, since the report ID is a cache key, not part of the
+		// request URL.
 		fetchMock.get(
 			( url ) =>
 				reportEndpoint.test( url ) &&
@@ -517,9 +521,8 @@ describe( 'Traffic Overview getPDFData', () => {
 			signal,
 		} );
 
-		// The registry starts resolver runs from a timeout. Wait the
-		// timeouts out, so an extra run would add its request to the calls
-		// this test counts.
+		// Resolver runs start on a timeout; wait it out, or a delayed extra run
+		// would add to the count below.
 		await waitForDefaultTimeouts();
 
 		const signals = fetchMock
