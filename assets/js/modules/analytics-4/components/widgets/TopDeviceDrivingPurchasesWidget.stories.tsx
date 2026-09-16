@@ -1,7 +1,7 @@
 /**
- * TopDeviceDrivingPurchasesWidget Component Stories.
+ * TopDeviceDrivingPurchasesWidget component stories.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,17 +17,21 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ComponentType } from 'react';
+
+/**
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
-	getAnalytics4MockResponse,
-	provideAnalytics4MockReport,
-	provideAnalyticsReportWithoutDateRangeData,
-} from '@/js/modules/analytics-4/utils/data-mock';
+	ENUM_CONVERSION_EVENTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import { replaceValuesInAnalytics4ReportWithZeroData } from '@/js/util/zero-reports';
 import {
@@ -38,43 +42,44 @@ import {
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TopDeviceDrivingPurchasesWidget from './TopDeviceDrivingPurchasesWidget';
 
-const reportOptions = [
-	{
-		compareStartDate: '2020-07-14',
-		compareEndDate: '2020-08-10',
-		startDate: '2020-08-11',
-		endDate: '2020-09-07',
-		metrics: [
-			{
-				name: 'ecommercePurchases',
-			},
-		],
-		reportID:
-			'analytics-4_top-device-driving-purchases-widget_widget_totalPurchasesReportOptions',
+const detectedEvent = ENUM_CONVERSION_EVENTS.PURCHASE;
+
+const reportOptions = {
+	startDate: '2020-08-11',
+	endDate: '2020-09-07',
+	dimensions: [ 'deviceCategory' ],
+	dimensionFilters: {
+		eventName: {
+			filterType: 'inListFilter',
+			value: [ detectedEvent ],
+		},
 	},
-	{
-		compareStartDate: '2020-07-14',
-		compareEndDate: '2020-08-10',
-		startDate: '2020-08-11',
-		endDate: '2020-09-07',
-		dimensions: [ 'deviceCategory' ],
-		metrics: [
-			{
-				name: 'ecommercePurchases',
-			},
-		],
-		limit: 1,
-		orderBy: 'ecommercePurchases',
-		reportID:
-			'analytics-4_top-device-driving-purchases-widget_widget_deviceReportOptions',
-	},
-];
+	metrics: [ { name: 'eventCount' } ],
+	orderby: [
+		{
+			metric: { metricName: 'eventCount' },
+			desc: true,
+		},
+	],
+	limit: 6,
+	keepEmptyRows: false,
+	reportID: 'analytics-4_goal-driver-reports_device-type',
+};
 
 const WidgetWithComponentProps = withWidgetComponentProps(
 	'kmAnalyticsTopDeviceDrivingPurchases'
 )( TopDeviceDrivingPurchasesWidget );
 
-function Template( { setupRegistry, ...args } ) {
+interface TopDeviceDrivingPurchasesWidgetStoryArgs {
+	setupRegistry: (
+		registry: Parameters< typeof provideModules >[ 0 ]
+	) => void;
+}
+
+function Template( {
+	setupRegistry,
+	...args
+}: TopDeviceDrivingPurchasesWidgetStoryArgs ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<WidgetWithComponentProps { ...args } />
@@ -85,10 +90,12 @@ function Template( { setupRegistry, ...args } ) {
 export const Ready = Template.bind( {} );
 Ready.storyName = 'Ready';
 Ready.args = {
-	setupRegistry: ( registry ) => {
-		reportOptions.forEach( ( options ) =>
-			provideAnalytics4MockReport( registry, options )
-		);
+	setupRegistry: ( registry: Parameters< typeof provideModules >[ 0 ] ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( report, {
+			options: reportOptions,
+		} );
 	},
 };
 Ready.scenario = {};
@@ -96,12 +103,11 @@ Ready.scenario = {};
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
 		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions[ 0 ],
-		] );
-		dispatch( MODULES_ANALYTICS_4 ).startResolution( 'getReport', [
-			reportOptions[ 1 ],
+			reportOptions,
 		] );
 	},
 };
@@ -109,16 +115,15 @@ Loading.args = {
 export const ZeroData = Template.bind( {} );
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
-	setupRegistry: ( { dispatch } ) => {
-		reportOptions.forEach( ( options ) => {
-			dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-				replaceValuesInAnalytics4ReportWithZeroData(
-					getAnalytics4MockResponse( options )
-				),
-				{
-					options,
-				}
-			);
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
+		const report = getAnalytics4MockResponse( reportOptions );
+		const zeroReport =
+			replaceValuesInAnalytics4ReportWithZeroData( report );
+
+		dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( zeroReport, {
+			options: reportOptions,
 		} );
 	},
 };
@@ -126,7 +131,9 @@ ZeroData.args = {
 export const Error = Template.bind( {} );
 Error.storyName = 'Error';
 Error.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
 		const errorObject = {
 			code: 400,
 			message: 'Test error message. ',
@@ -139,11 +146,11 @@ Error.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
-			[ reportOptions[ 1 ] ]
+			[ reportOptions ]
 		);
 
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions[ 1 ],
+			reportOptions,
 		] );
 	},
 };
@@ -151,7 +158,9 @@ Error.args = {
 export const InsufficientPermissions = Template.bind( {} );
 InsufficientPermissions.storyName = 'Insufficient Permissions';
 InsufficientPermissions.args = {
-	setupRegistry: ( { dispatch } ) => {
+	setupRegistry: ( {
+		dispatch,
+	}: Parameters< typeof provideModules >[ 0 ] ) => {
 		const errorObject = {
 			code: 403,
 			message: 'Test error message. ',
@@ -164,37 +173,25 @@ InsufficientPermissions.args = {
 		dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			errorObject,
 			'getReport',
-			[ reportOptions[ 1 ] ]
+			[ reportOptions ]
 		);
 
 		dispatch( MODULES_ANALYTICS_4 ).finishResolution( 'getReport', [
-			reportOptions[ 1 ],
+			reportOptions,
 		] );
 	},
 };
 
-export const NoDataInComparisonDateRange = Template.bind( {} );
-NoDataInComparisonDateRange.storyName = 'NoDataInComparisonDateRange';
-NoDataInComparisonDateRange.args = {
-	setupRegistry: ( registry ) => {
-		provideAnalyticsReportWithoutDateRangeData(
-			registry,
-			reportOptions[ 0 ]
-		);
-		provideAnalyticsReportWithoutDateRangeData(
-			registry,
-			reportOptions[ 1 ],
-			{ emptyRowBehavior: 'remove' }
-		);
-	},
-};
-NoDataInComparisonDateRange.scenario = {};
-
 export default {
 	title: 'Key Metrics/TopDeviceDrivingPurchases',
 	decorators: [
-		( Story, { args } ) => {
-			function setupRegistry( registry ) {
+		(
+			Story: ComponentType,
+			{ args }: { args: TopDeviceDrivingPurchasesWidgetStoryArgs }
+		) => {
+			function setupRegistry(
+				registry: Parameters< typeof provideModules >[ 0 ]
+			) {
 				provideModules( registry, [
 					{
 						slug: MODULE_SLUG_ANALYTICS_4,
@@ -205,24 +202,18 @@ export default {
 
 				provideModuleRegistrations( registry );
 
-				const [ accountID, propertyID, webDataStreamID ] = [
-					'12345',
-					'34567',
-					'56789',
-				];
-
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setAccountID( accountID );
+					.setAccountID( '12345' );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setPropertyID( propertyID );
+					.setPropertyID( '34567' );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setWebDataStreamID( webDataStreamID );
+					.setWebDataStreamID( '56789' );
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setDetectedEvents( [ 'purchase' ] );
+					.setDetectedEvents( [ detectedEvent ] );
 
 				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 
