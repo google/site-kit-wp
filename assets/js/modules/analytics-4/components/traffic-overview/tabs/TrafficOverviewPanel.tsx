@@ -22,17 +22,53 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import ReportError from '@/js/components/ReportError';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
 import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useTrafficOverviewReports } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrafficOverviewReports';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TrafficOverviewPanel: FC = () => {
-	const { totalsReport, graphReport, breakdownReports } =
+	const viewOnly = useViewOnly();
+
+	const { totalsReport, graphReport, breakdownReports, loaded, errors } =
 		useTrafficOverviewReports();
+
+	const canViewSharedAnalytics4 = useSelect(
+		( select: Select ) => {
+			if ( ! viewOnly ) {
+				return true;
+			}
+
+			return select( CORE_USER ).canViewSharedModule(
+				MODULE_SLUG_ANALYTICS_4
+			);
+		},
+		[ viewOnly ]
+	);
+
+	const isGatheringData = useInViewSelect< boolean | undefined >(
+		( select: Select ) =>
+			canViewSharedAnalytics4
+				? select( MODULES_ANALYTICS_4 ).isGatheringData()
+				: undefined,
+		[ canViewSharedAnalytics4 ]
+	);
+
+	const isLoading = ! loaded || isGatheringData === undefined;
 
 	return (
 		<div
@@ -40,9 +76,31 @@ const TrafficOverviewPanel: FC = () => {
 			role="tabpanel"
 			aria-labelledby={ TRAFFIC_OVERVIEW_TAB_ID }
 		>
-			<TotalVisitors report={ totalsReport } />
-			<TrafficChart report={ graphReport } />
-			<TrafficBreakdown reports={ breakdownReports } />
+			{ errors.length > 0 && (
+				<ReportError
+					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
+					error={ errors }
+				/>
+			) }
+			{ errors.length === 0 && (
+				<Fragment>
+					<TotalVisitors
+						report={ totalsReport }
+						loaded={ ! isLoading }
+						gatheringData={ isGatheringData }
+					/>
+					<TrafficChart
+						report={ graphReport }
+						loaded={ ! isLoading }
+						gatheringData={ isGatheringData }
+					/>
+					<TrafficBreakdown
+						reports={ breakdownReports }
+						loaded={ ! isLoading }
+						gatheringData={ isGatheringData }
+					/>
+				</Fragment>
+			) }
 		</div>
 	);
 };
