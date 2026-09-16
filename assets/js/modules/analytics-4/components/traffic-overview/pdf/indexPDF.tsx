@@ -118,8 +118,8 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 	} = trafficData;
 
 	const [ current, previous ] = totalsReport?.totals || [];
-	const currentValue = Number( current?.metricValues?.[ 0 ]?.value );
-	const previousValue = Number( previous?.metricValues?.[ 0 ]?.value );
+const currentValue = Number( current?.metricValues?.[ 0 ]?.value ) || 0;
+const previousValue = Number( previous?.metricValues?.[ 0 ]?.value ) || 0;
 
 	const { change, changeType } = getPDFTileChange(
 		previousValue,
