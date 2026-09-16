@@ -89,9 +89,6 @@ export default async function getLeadGenerationPerformancePDFData( {
 	const breakdownDimension =
 		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ GOAL_TYPES.LEAD ];
 
-	// The property has `googlesitekit_form_id` only after the user asks for the
-	// breakdown. Analytics rejects a report by a dimension the property doesn't
-	// have, and one failed report leaves the whole section out of the file.
 	const hasBreakdownDimension =
 		registry
 			.select( MODULES_ANALYTICS_4 )

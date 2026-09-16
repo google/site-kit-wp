@@ -100,9 +100,6 @@ export default async function getOnlineStorePerformancePDFData( {
 			GOAL_TYPES.ECOMMERCE
 		];
 
-	// The property has `googlesitekit_event_provider` only after the user asks for
-	// the breakdown. Analytics rejects a report by a dimension the property doesn't
-	// have, and one failed report leaves the whole section out of the file.
 	const hasBreakdownDimension =
 		registry
 			.select( MODULES_ANALYTICS_4 )
