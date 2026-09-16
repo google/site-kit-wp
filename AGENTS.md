@@ -3,56 +3,35 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
-## Writing an issue
+## Workflow playbooks
+Each workflow below has a shared, tool-agnostic playbook in `docs/context/workflow/` that is its
+single source of truth: read that playbook and follow it exactly. Claude Code exposes each one as
+a skill of the same name; Antigravity as a workflow in `.agents/workflows/`.
+
+### Writing an issue
 When asked to create, draft, or write a GitHub issue from a design doc, from a bug report or from
 requirements in the message, to break an epic's design doc into issues, or to write **Acceptance
-criteria** for an existing issue, follow the shared, tool-agnostic playbook
-**`docs/context/workflow/write-issue.md`** (the single source of truth). Establish the type first:
-a **feature request** (`.github/ISSUE_TEMPLATE/feature_request.md`) gets a **Feature Description**
-and **Acceptance criteria**; a **bug report** (`.github/ISSUE_TEMPLATE/bug_report.md`) gets a
-**Bug Description**, **Steps to reproduce** and **Acceptance criteria** — **ask the user which one
-when the request doesn't make it clear**. Verify every class, hook, handle and path against the
-code before naming it, and for a bug confirm the wrong behavior is really what the code does
-today. Rationale belongs in the description; the **Acceptance criteria** are checkable outcomes
-only — no rationale, no technique notes, no cause or fix, no negative parentheticals, no work that
-isn't being done. The **scope boundary** is itself a criterion, written as the outcome at the edge
-("the cart and checkout pages render nothing"), never an "Out of scope" list and never a clause in
-the description. Never link local design docs or refer to a sibling by its design-doc position
-("issue 5") — that numbering isn't GitHub's. Touch **only** the type's authoring sections, leave
-an existing description alone, and do not create or edit a GitHub issue unless explicitly asked.
-(Claude Code exposes this as the `write-issue` skill; Gemini as `/write-issue`; Antigravity as the
-`/write-issue` workflow.)
+criteria** for an existing issue, follow **`docs/context/workflow/write-issue.md`**. Establish the
+type first — a **feature request** (`.github/ISSUE_TEMPLATE/feature_request.md`) or a **bug
+report** (`.github/ISSUE_TEMPLATE/bug_report.md`) — and **ask the user which one when the request
+doesn't make it clear**. Do not create or edit a GitHub issue unless explicitly asked.
 
-## Writing an implementation brief
-When asked to write, draft, adjust, update, or fill in the **Implementation Brief** and **Test Coverage**
-sections of an issue, follow the shared, tool-agnostic playbook
-**`docs/context/workflow/write-implementation-brief.md`** (the single source of truth). Verify
-every class, method, hook, handle and path against the code before naming it; where the design
-doc and the code disagree, the code wins. Write **instructions only** — no rationale, no work
-that isn't needed, no routine commands, no links to local design docs. Touch **only** those two
-sections, and do not edit the GitHub issue or post a comment unless explicitly asked. (Claude
-Code exposes this as the `write-implementation-brief` skill; Gemini as `/write-brief`;
-Antigravity as the `/write-implementation-brief` workflow.)
+### Writing an implementation brief
+When asked to write, draft, adjust, update, or fill in the **Implementation Brief** and **Test
+Coverage** sections of an issue, follow **`docs/context/workflow/write-implementation-brief.md`**.
+Touch **only** those two sections, and do not edit the GitHub issue or post a comment unless
+explicitly asked.
 
-## Implementing a GitHub issue
-When asked to implement, build, or work on a GitHub issue by number, follow the shared,
-tool-agnostic playbook **`docs/context/workflow/implement-issue.md`** (the single source of
-truth) and review against **`docs/context/workflow/review-checklist.md`**. Read only the
-`docs/context/{js,php}` convention docs the issue touches. Co-locate tests and Storybook
-stories; run lint, the specific test files touched, and `npm run build:dev`; and
-**never commit, push, or open a PR unless explicitly asked**. (Claude Code exposes this as
-the `implement-issue` skill; Gemini as `/implement`; Antigravity as the `/implement-issue`
-workflow.)
+### Implementing a GitHub issue
+When asked to implement, build, or work on a GitHub issue by number, follow
+**`docs/context/workflow/implement-issue.md`** and review against
+**`docs/context/workflow/review-checklist.md`**. **Never commit, push, or open a PR unless
+explicitly asked.**
 
-## Reviewing a pull request
-When asked to review a pull request by number, follow the shared, tool-agnostic playbook
-**`docs/context/workflow/review-pr.md`** (the single source of truth) and grade against
-**`docs/context/workflow/review-checklist.md`**. Read the issue the PR links under "Addresses
-issue:" and check the diff against its acceptance criteria and Implementation Brief first, then
-read only the `docs/context/{js,php}` convention docs the PR touches. Stay **read-only** — do
-not post comments, approve, or change the PR state unless explicitly asked. (Claude Code
-exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
-workflow.)
+### Reviewing a pull request
+When asked to review a pull request by number, follow **`docs/context/workflow/review-pr.md`** and
+grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
+comments, approve, or change the PR state unless explicitly asked.
 
 ## Architecture Essentials
 
