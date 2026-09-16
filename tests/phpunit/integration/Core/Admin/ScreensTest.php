@@ -585,8 +585,8 @@ class ScreensTest extends TestCase {
 		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
-		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
-		$_GET['code']   = 'abc123';
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'abc123';
 
 		$output = $this->render_dashboard_screen();
 
@@ -596,12 +596,12 @@ class ScreensTest extends TestCase {
 
 	public function data_requests_without_a_usable_intent() {
 		return array(
-			'no intent argument'    => array( array( 'code' => 'abc123' ) ),
+			'no intent argument'    => array( array( 'intent_code' => 'abc123' ) ),
 			'no code argument'      => array( array( 'intent' => Ads_Conversion_Tracking_Intent::INTENT_ID ) ),
 			'intent nothing claims' => array(
 				array(
-					'intent' => 'not-a-registered-intent',
-					'code'   => 'abc123',
+					'intent'      => 'not-a-registered-intent',
+					'intent_code' => 'abc123',
 				),
 			),
 		);
@@ -630,8 +630,8 @@ class ScreensTest extends TestCase {
 		$intents->register_intent( new FakeIntent( 'unavailable-intent', false ) );
 		$this->set_up_screens_with_intents( $intents );
 
-		$_GET['intent'] = 'unavailable-intent';
-		$_GET['code']   = 'abc123';
+		$_GET['intent']      = 'unavailable-intent';
+		$_GET['intent_code'] = 'abc123';
 
 		$output = $this->render_dashboard_screen();
 
@@ -642,8 +642,8 @@ class ScreensTest extends TestCase {
 	public function test_dashboard_render__intent_attributes_stay_empty_while_the_ads_feature_flag_is_off() {
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
-		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
-		$_GET['code']   = 'abc123';
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'abc123';
 
 		$output = $this->render_dashboard_screen();
 
@@ -660,8 +660,8 @@ class ScreensTest extends TestCase {
 
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
-		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
-		$_GET['code']   = 'abc123';
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'abc123';
 
 		$output = $this->render_dashboard_screen();
 
@@ -674,8 +674,8 @@ class ScreensTest extends TestCase {
 		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
-		$_GET['intent'] = Ads_Conversion_Tracking_Intent::INTENT_ID;
-		$_GET['code']   = '"><script>alert(1)</script>';
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = '"><script>alert(1)</script>';
 
 		$output = $this->render_dashboard_screen();
 
@@ -683,12 +683,26 @@ class ScreensTest extends TestCase {
 		$this->assertStringNotContainsString( '<script>alert(1)</script>', $output, 'The payload should never reach the page as markup.' );
 	}
 
+	public function test_dashboard_render__the_code_argument_is_escaped_only_on_output() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		// A code that already reads like an entity comes out as `a&amp;amp;b`
+		// if the value is escaped on the way in as well as on the way out.
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'a&amp;b';
+
+		$output = $this->render_dashboard_screen();
+
+		$this->assertStringContainsString( 'data-intent-code="a&amp;b"', $output, 'The code should reach the attribute escaped once.' );
+	}
+
 	public function test_dashboard_render__script_in_the_intent_argument_renders_nothing() {
 		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
 
-		$_GET['intent'] = '"><script>alert(1)</script>';
-		$_GET['code']   = 'abc123';
+		$_GET['intent']      = '"><script>alert(1)</script>';
+		$_GET['intent_code'] = 'abc123';
 
 		$output = $this->render_dashboard_screen();
 

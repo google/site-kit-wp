@@ -457,11 +457,12 @@ final class Screens {
 	 * @since n.e.x.t
 	 *
 	 * @param Context $context Plugin context.
-	 * @return string[] Intent slug under `slug` and one-time code under `code`.
+	 * @return string[] Intent slug from the `intent` argument under `slug`, and one-time code from
+	 *                  the `intent_code` argument under `code`.
 	 */
 	private function get_intent_attributes( Context $context ) {
-		$intent = htmlspecialchars( $context->input()->filter( INPUT_GET, 'intent' ) ?: '' );
-		$code   = htmlspecialchars( $context->input()->filter( INPUT_GET, 'code' ) ?: '' );
+		$intent = $context->input()->filter( INPUT_GET, 'intent' ) ?: '';
+		$code   = $context->input()->filter( INPUT_GET, 'intent_code' ) ?: '';
 
 		if (
 			! $intent
