@@ -245,6 +245,7 @@ export default function Navigation() {
 		}
 
 		setSelectedID( initialHash );
+		setIsJumpingTo( initialHash );
 		setValue( ACTIVE_CONTEXT_ID, initialHash );
 
 		const scrollTo = calculateScrollPosition( initialHash );
@@ -252,6 +253,9 @@ export default function Navigation() {
 
 		if ( global.scrollY !== scrollTo ) {
 			scrollToChip( initialHash );
+		} else {
+			setValue( ACTIVE_CONTEXT_ID, undefined );
+			setIsJumpingTo( undefined );
 		}
 	}, [
 		calculateScrollPosition,
@@ -259,7 +263,6 @@ export default function Navigation() {
 		isValidChipID,
 		scrollToChip,
 		setValue,
-		visibleSections,
 	] );
 
 	const onScroll = useCallback(
