@@ -574,7 +574,7 @@ export function requireQueryArg( name, value ) {
 /**
  * Returns a function that checks if the site's home URL uses HTTPS.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the home URL uses HTTPS or not.
  */

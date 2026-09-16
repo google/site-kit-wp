@@ -60,7 +60,7 @@ export interface LeadGenerationPerformancePDFData {
  * date range, or on a property without the breakdown dimension, the section
  * falls back to a single group for the whole site.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      params          Lead generation performance PDF loader parameters.
  * @param {Object}      params.registry WordPress data registry.

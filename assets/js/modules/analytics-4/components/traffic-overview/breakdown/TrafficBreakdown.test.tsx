@@ -35,7 +35,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.

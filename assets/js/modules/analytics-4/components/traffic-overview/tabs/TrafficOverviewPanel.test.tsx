@@ -42,7 +42,7 @@ describe( 'TrafficOverviewPanel', () => {
 	/**
 	 * Puts a totals report in the store under the arguments the panel requests.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {number} currentValue  Visitors over the selected range.
 	 * @param {number} previousValue Visitors over the range before it.

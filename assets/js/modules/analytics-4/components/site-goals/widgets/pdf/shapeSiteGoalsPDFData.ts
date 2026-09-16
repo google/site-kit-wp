@@ -266,7 +266,7 @@ export interface ShapeSiteGoalsPDFDataArgs {
  * only.
  *
  * @since 1.187.0
- * @since n.e.x.t Counted "Other sources" from the site-wide total, so it matches the dashboard.
+ * @since 1.188.0 Counted "Other sources" from the site-wide total, so it matches the dashboard.
  *
  * @param args                            Reports, breakdown values and labels.
  * @param args.eventsReport               Grouped event report.

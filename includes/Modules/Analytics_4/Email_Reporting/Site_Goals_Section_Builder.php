@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Analytics_4;
  * and counts them over the report period.
  *
  * @since 1.187.0
- * @since n.e.x.t Named the groups from the discovery report.
+ * @since 1.188.0 Named the groups from the discovery report.
  * @access private
  * @ignore
  */
@@ -303,7 +303,7 @@ class Site_Goals_Section_Builder {
 	 * Builds one section payload from the counts each group holds.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Added the "Other sources" counts to the section input.
+	 * @since 1.188.0 Added the "Other sources" counts to the section input.
 	 *
 	 * @param array $section_input {
 	 *     What the section is built from.
@@ -470,7 +470,7 @@ class Site_Goals_Section_Builder {
 	 * subtracts the group counts from the site-wide count. The dashboard's "Other sources"
 	 * tab subtracts the same way.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array $site_wide_rows Rows of the site-wide key action report.
 	 * @param array $group_counts   Key action counts, by group name and date range key.
@@ -499,7 +499,7 @@ class Site_Goals_Section_Builder {
 	 *
 	 * The discovery days decide this group, the same way they decide the named groups.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array $site_wide_discovery_rows Rows of the site-wide key action report over the
 	 *                                        discovery days.
@@ -518,7 +518,7 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Keeps the rows of one event name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array  $rows       Report rows.
 	 * @param string $event_name Event name to keep.

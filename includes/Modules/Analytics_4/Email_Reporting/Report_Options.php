@@ -36,7 +36,7 @@ class Report_Options extends Base_Report_Options {
 	 * The dashboard names a Site Goals widget's tabs over 90 days too, so the report period
 	 * never adds or removes a group.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const SITE_GOALS_DISCOVERY_DAYS = 90;
 
@@ -59,7 +59,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Site Goals widget types in the site-wide `activeWidgets` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var array
 	 */
 	private $active_site_goals_widgets = array();
@@ -166,7 +166,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets the Site Goals widget types from the site-wide `activeWidgets` setting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array $active_widgets Widget types, such as `ecommerce` or `lead`.
 	 */
@@ -177,7 +177,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Checks whether the site-wide `activeWidgets` setting lists a Site Goals widget type.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param string $widget_type Widget type, `ecommerce` or `lead`.
 	 * @return bool True when the setting lists the widget type, false otherwise.
@@ -499,7 +499,7 @@ class Report_Options extends Base_Report_Options {
 	 * The card counts one store event, but a plugin belongs on it when it sends either
 	 * store event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
 	 *                                 `googlesitekit_event_provider`. Default empty, which returns
@@ -521,7 +521,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets report options that name the groups the lead generation card shows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
 	 *                                 `googlesitekit_form_id`. Default empty, which returns one row
@@ -537,7 +537,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Gets the `eventName` filter that selects every lead event the site sends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return array Dimension filter array.
 	 */
@@ -551,7 +551,7 @@ class Report_Options extends Base_Report_Options {
 	/**
 	 * Sets the report to the discovery days, whatever the report period's length.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array $options Report request options array.
 	 * @return array Report request options array, covering the discovery days and ordered
@@ -628,7 +628,7 @@ class Report_Options extends Base_Report_Options {
 	 * Builds report options that count the events an `eventName` filter selects.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Left the date range to the caller, so a discovery report can cover
+	 * @since 1.188.0 Left the date range to the caller, so a discovery report can cover
 	 *                days of its own.
 	 *
 	 * @param string|array $event_filter     Value for the `eventName` dimension filter. One event name,

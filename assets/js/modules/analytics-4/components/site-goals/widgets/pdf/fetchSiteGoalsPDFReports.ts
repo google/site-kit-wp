@@ -57,7 +57,7 @@ export type SiteGoalsPDFReports = Pick<
  * a failure, so a cancelled export receives no report and no error (eg. an
  * empty object).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      params                         Analytics report request parameters.
  * @param {Object}      params.registry                WordPress data registry.

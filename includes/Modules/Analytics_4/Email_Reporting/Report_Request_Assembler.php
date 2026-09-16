@@ -54,14 +54,14 @@ class Report_Request_Assembler {
 	/**
 	 * Payload key of the report that names the groups the online store card shows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY = 'site_goals_online_store_discovery';
 
 	/**
 	 * Payload key of the report that names the groups the lead generation card shows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const SITE_GOALS_LEAD_DISCOVERY_KEY = 'site_goals_lead_discovery';
 
@@ -69,7 +69,7 @@ class Report_Request_Assembler {
 	 * Payload key of the report that counts online store key actions across the whole site,
 	 * over the discovery days.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const SITE_GOALS_ONLINE_STORE_DISCOVERY_SITE_WIDE_KEY = 'site_goals_online_store_discovery_site_wide';
 
@@ -77,7 +77,7 @@ class Report_Request_Assembler {
 	 * Payload key of the report that counts lead generation key actions across the whole site,
 	 * over the discovery days.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const SITE_GOALS_LEAD_DISCOVERY_SITE_WIDE_KEY = 'site_goals_lead_discovery_site_wide';
 
@@ -200,7 +200,7 @@ class Report_Request_Assembler {
 	 * minus what the named groups counted.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Added the discovery report of each widget that splits its results.
+	 * @since 1.188.0 Added the discovery report of each widget that splits its results.
 	 *                Skipped the reports of a widget the dashboard doesn't show.
 	 *                Added the site-wide counts the "Other sources" group is built from.
 	 *

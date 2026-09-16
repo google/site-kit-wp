@@ -113,7 +113,7 @@ const selectors = {
 	/**
 	 * Returns the edit link URL for a CTA.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} ctaID The CTA ID.
 	 * @return {string} CTA edit link URL.

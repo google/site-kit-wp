@@ -50,7 +50,7 @@ const AGGREGATED_REPORT_OPTIONS = getStoreAggregatedReportOptions(
 /**
  * Makes the four Online store performance report requests.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      registry The WordPress data registry the request runs against.
  * @param {AbortSignal} signal   Signal that cancels the PDF export. Defaults to a signal that never aborts.

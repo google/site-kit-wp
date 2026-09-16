@@ -34,7 +34,7 @@ import SiteGoalsSectionPDF from './SiteGoalsSectionPDF';
 /**
  * Builds a Site Goals PDF breakdown group that fills every tile.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} id    The breakdown group ID.
  * @param {string} label The breakdown group heading.
@@ -57,7 +57,7 @@ function buildSiteGoalsPDFGroup(
 /**
  * Builds the Site Goals PDF section for a set of breakdown groups.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<Object>} groups The breakdown groups the Site Goals PDF section renders.
  * @return {Object} The Site Goals PDF section element.

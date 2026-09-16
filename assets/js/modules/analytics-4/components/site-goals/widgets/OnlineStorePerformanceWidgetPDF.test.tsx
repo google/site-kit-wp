@@ -32,7 +32,7 @@ import { ONLINE_STORE_PDF_GROUPS } from './pdf/__fixtures__';
 /**
  * Renders the Online store performance PDF section and reads the text it outputs.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} primaryEvent The ecommerce event the Key action tiles count.
  * @return {string} The text the Online store performance section renders, joined in render order.

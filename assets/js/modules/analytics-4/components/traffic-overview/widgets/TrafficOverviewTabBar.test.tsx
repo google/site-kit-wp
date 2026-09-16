@@ -33,7 +33,7 @@ describe( 'TrafficOverviewTabBar', () => {
 	/**
 	 * Renders the tab bar with a mock `onTabChange`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} [activeTabID] Optional. The `id` of the tab to start on.
 	 * @return {Object} The render result, plus the mock `onTabChange`.

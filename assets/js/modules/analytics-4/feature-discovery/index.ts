@@ -38,7 +38,7 @@ import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
 /**
  * Registers Analytics module features in the Feature Discovery catalog.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}

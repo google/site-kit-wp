@@ -61,7 +61,7 @@ export interface TrafficReport {
  * view-only dashboard it sends no request until the user's role can view
  * Analytics.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} reportOptions The options for one report.
  * @return {Object} The report, and the arguments passed to the `getReport` selector.

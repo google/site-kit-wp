@@ -140,7 +140,7 @@ type ReaderRevenueManagerRegistry = WPDataRegistry & {
 /**
  * Syncs connected publication fields into settings and savedSettings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} state       Module state.
  * @param {Object} publication Publication to sync from.
