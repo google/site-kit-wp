@@ -78,7 +78,10 @@ import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-go
 import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MANAGE_SCOPE } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MANAGE_SCOPE,
+	WCP_READONLY_SCOPE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
@@ -352,7 +355,7 @@ export default function DashboardMainApp() {
 				expressSetup: true,
 				cta: 'newsletter-signup',
 			},
-			additionalScopes: [ MANAGE_SCOPE ],
+			additionalScopes: [ WCP_READONLY_SCOPE, MANAGE_SCOPE ],
 		}
 	);
 

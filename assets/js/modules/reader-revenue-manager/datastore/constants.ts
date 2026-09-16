@@ -22,8 +22,12 @@ export const MODULES_READER_REVENUE_MANAGER = 'modules/reader-revenue-manager';
 
 export const READONLY_SCOPE =
 	'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly';
+
+export const WCP_READONLY_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
+
 export const MANAGE_SCOPE =
-	'https://www.googleapis.com/auth/subscribewithgoogle.publications.entitlements.manage';
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';
 
 export const PUBLICATION_ONBOARDING_STATES = {
 	ONBOARDING_COMPLETE: 'ONBOARDING_COMPLETE',
