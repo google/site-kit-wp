@@ -141,7 +141,7 @@ class Google_Site_Kit_Proxy_Client extends Google_Site_Kit_Client {
 	 */
 	protected function handleAuthTokenErrorResponse( $error, array $data ) {
 		if ( ! empty( $data['code'] ) ) {
-			throw new Google_Proxy_Code_Exception( $error, 0, $data['code'] );
+			throw new Google_Proxy_Code_Exception( $error, 0, $data['code'] ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 		parent::handleAuthTokenErrorResponse( $error, $data );
 	}

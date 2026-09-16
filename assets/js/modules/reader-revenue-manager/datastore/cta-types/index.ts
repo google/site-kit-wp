@@ -75,7 +75,7 @@ const CTA_TYPE_HANDLERS: Record< CallToActionType, CallToActionTypeHandler > = {
 /**
  * Checks whether a value is a supported CTA type.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param  type Value to check.
  * @return {boolean} Whether the value is a supported CTA type.
@@ -90,7 +90,7 @@ export function isCTAType( type: unknown ): type is CallToActionType {
 /**
  * Gets the handler registered for a CTA type.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param  type CTA type.
  * @return {CallToActionTypeHandler} CTA type handler.

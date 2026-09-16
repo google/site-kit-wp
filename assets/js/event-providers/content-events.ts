@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { initializeLinkClicks } from './content-events/link-clicks';
 import { initializePagination } from './content-events/pagination';
 import { initializeReadArticleEventTracker } from './content-events/read-article';
 import { initializeVimeo } from './content-events/vimeo';
@@ -74,7 +75,7 @@ export function getContentEventsConfig(): ContentEventsConfig {
  * Runs one initializer, and reports a failure rather than throwing it.
  *
  * The initializers run one after another, so a throw from the first stops the
- * rest. Neither one throws today. We still catch, because they run on the
+ * rest. None of them throws today. We still catch, because they run on the
  * public frontend of any WordPress site, where another plugin can replace a
  * browser global they call, such as `IntersectionObserver` or `performance`.
  *
@@ -102,6 +103,11 @@ initializeVimeo( config );
 initializeSafely(
 	() => initializePagination( config ),
 	'Site Kit: failed to initialize pagination click tracking.'
+);
+
+initializeSafely(
+	() => initializeLinkClicks(),
+	'Site Kit: failed to initialize link click tracking.'
 );
 
 initializeSafely(

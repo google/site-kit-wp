@@ -424,13 +424,18 @@ test.describe(
 // credentials (no `proxy-auth.php`), so the dashboard is view-only. Search
 // Console is connected (owned by the admin, ID 1) and shared with the editor
 // role, while PageSpeed stays unshared. The editor has the shared-dashboard
-// splash pre-dismissed so it lands on the view-only dashboard directly.
+// splash pre-dismissed so it lands on the view-only dashboard directly, and the
+// introduction overlays pre-dismissed so they do not cover the features menu.
 test.describe(
 	'PDF Generation (view-only)',
 	{
 		annotation: [
 			asUser( 'editor', {
-				dismissedItems: [ 'shared_dashboard_splash' ],
+				dismissedItems: [
+					'shared_dashboard_splash',
+					'email_reports_setup_overlay_notification',
+					'pdf_introduction_overlay_notification',
+				],
 			} ),
 			featureFlags,
 			withPlugins( 'proxy-credentials.php' ),

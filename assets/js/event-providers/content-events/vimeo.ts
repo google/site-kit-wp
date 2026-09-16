@@ -41,7 +41,7 @@ interface VimeoEventBaseParams {
  * on a click-to-play thumbnail) is never missed while those requests are
  * in flight. Each event's emission simply waits for that data to resolve.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {VimeoPlayer} player        Vimeo player instance.
  * @param {number}      instanceIndex This player's index among the page's Vimeo embeds.
@@ -75,7 +75,7 @@ async function trackPlayer(
 	/**
 	 * Emits a video engagement event once the video's title/URL are known.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.187.0
 	 *
 	 * @param {string} name    Event name.
 	 * @param {number} percent Video watch percentage for this event.
@@ -142,7 +142,7 @@ async function trackPlayer(
  * `getVideoTitle()`/`getVideoUrl()` call silently results in no events for that
  * player, rather than surfacing an error to the caller.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {ContentEventsConfig} config Content events configuration.
  * @return {Promise<void>} Resolves once tracking has been wired up for every embed.
