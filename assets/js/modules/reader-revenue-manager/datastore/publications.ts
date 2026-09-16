@@ -736,29 +736,37 @@ const baseResolvers = {
 	},
 
 	*getPublication(
-		params: Partial< PublicationParams > = {}
+		params?: Partial< PublicationParams >
 	): Generator< unknown, void, unknown > {
+		const publicationParams = params || {};
+
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as ReaderRevenueManagerRegistry;
 
 		// Conditionally resolve settings so that the fetch reducer has
 		// the publication ID to key the list by.
-		const settingsResolution = maybeResolveSettings( registry, params );
+		const settingsResolution = maybeResolveSettings(
+			registry,
+			publicationParams
+		);
 
 		if ( settingsResolution ) {
 			yield commonActions.await( settingsResolution );
 		}
 
-		const publication = registry
-			.select( MODULES_READER_REVENUE_MANAGER )
-			.getPublication( params );
+		const select = registry.select( MODULES_READER_REVENUE_MANAGER );
+
+		// Preserve the original argument shape so resolution and error keys match.
+		const publication = params
+			? select.getPublication( publicationParams )
+			: select.getPublication();
 
 		if ( publication !== undefined ) {
 			return;
 		}
 
 		const publicationID =
-			params.publicationID ||
+			publicationParams.publicationID ||
 			registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationID();
@@ -769,7 +777,11 @@ const baseResolvers = {
 		}
 
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
+		const { fetchGetPublication } = fetchGetPublicationStore.actions;
+
+		yield params
+			? fetchGetPublication( publicationParams )
+			: fetchGetPublication();
 	},
 };
 
