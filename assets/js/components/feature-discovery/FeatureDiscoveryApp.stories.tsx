@@ -19,21 +19,41 @@
 /**
  * Internal dependencies
  */
+import {
+	PARTIALLY_SEEN_TIMERS,
+	SEEN_TIMERS,
+	WHATS_NEW_FEATURES,
+	provideFeatures,
+	provideWhatsNewState,
+} from '@/js/components/feature-discovery/__fixtures__/whats-new';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
-import { provideModules, provideSiteInfo } from '@tests/js/test-utils';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
+import { Story } from '@/js/types/Story';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+} from '@tests/js/test-utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 
-function setupRegistry( registry: Registry ) {
-	provideModules( registry );
-	provideSiteInfo( registry );
+interface StoryArgs {
+	setupRegistry?: ( registry: Registry ) => void;
 }
 
-function Template() {
+function Template( { setupRegistry = () => {} }: StoryArgs ) {
+	function setupStoryRegistry( registry: Registry ) {
+		provideSiteInfo( registry );
+		provideModuleRegistrations( registry );
+		provideModules( registry, [ { slug: MODULE_SLUG_ADS, name: 'Ads' } ] );
+
+		setupRegistry( registry );
+	}
+
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
+		<WithRegistrySetup func={ setupStoryRegistry }>
 			<ViewContextProvider value={ VIEW_CONTEXT_FEATURE_DISCOVERY }>
 				<FeatureDiscoveryApp />
 			</ViewContextProvider>
@@ -41,15 +61,42 @@ function Template() {
 	);
 }
 
-export const AllServices = Template.bind( {} );
+export const AllServices = Template.bind( {} ) as Story< StoryArgs >;
 AllServices.storyName = 'All services and features';
 AllServices.parameters = { route: '/all-services' };
 AllServices.scenario = {};
 
-export const WhatsNew = Template.bind( {} );
-WhatsNew.storyName = 'What’s new?';
-WhatsNew.parameters = { route: '/whats-new' };
-WhatsNew.scenario = {};
+export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
+WhatsNewUnread.storyName = 'What’s new?, unread features';
+WhatsNewUnread.parameters = { route: '/whats-new' };
+WhatsNewUnread.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+	},
+};
+WhatsNewUnread.scenario = {};
+
+export const WhatsNewSeen = Template.bind( {} ) as Story< StoryArgs >;
+WhatsNewSeen.storyName = 'What’s new?, seen features';
+WhatsNewSeen.parameters = { route: '/whats-new' };
+WhatsNewSeen.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, SEEN_TIMERS );
+	},
+};
+WhatsNewSeen.scenario = {};
+
+export const WhatsNewEmpty = Template.bind( {} ) as Story< StoryArgs >;
+WhatsNewEmpty.storyName = 'What’s new?, no features';
+WhatsNewEmpty.parameters = { route: '/whats-new' };
+WhatsNewEmpty.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideWhatsNewState( registry );
+	},
+};
+// TODO: #13327 -- Enable the VRT scenario once the empty tab's CTA lands.
 
 export default {
 	title: 'Components/FeatureDiscovery/FeatureDiscoveryApp',
