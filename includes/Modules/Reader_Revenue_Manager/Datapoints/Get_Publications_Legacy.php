@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronize_Publication;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\PaymentOptions;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
@@ -24,7 +24,7 @@ use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
 /**
  * Class for the legacy publications retrieval datapoint.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Options
 	 */
 	private $options;
@@ -41,7 +41,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -49,7 +49,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -63,7 +63,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -77,7 +77,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param mixed        $response Publications list response.
 	 * @param Data_Request $data     Data request object.
@@ -94,7 +94,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Returns the payment option for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return string Payment option.
@@ -118,7 +118,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Returns the product IDs for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Publication $publication Publication object.
 	 * @return array Product IDs.
@@ -139,7 +139,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Gets the filter for retrieving publications for the current site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return string Permutations for site hosts or URL.
 	 */
@@ -176,7 +176,7 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 	/**
 	 * Synchronizes the publication data with the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $publications Array of Publication objects.
 	 * @return void No return value.
@@ -229,14 +229,14 @@ class Get_Publications_Legacy extends Datapoint implements Executable_Datapoint 
 
 		$this->settings->merge( $new_settings );
 
-		$cron_event = wp_next_scheduled( Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+		$cron_event = wp_next_scheduled( Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		if ( $cron_event ) {
-			wp_unschedule_event( $cron_event, Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION );
+			wp_unschedule_event( $cron_event, Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION );
 		}
 
 		wp_schedule_single_event(
 			time() + HOUR_IN_SECONDS,
-			Synchronize_Publication::CRON_SYNCHRONIZE_PUBLICATION
+			Publication_Synchronization::CRON_SYNCHRONIZE_PUBLICATION
 		);
 	}
 }

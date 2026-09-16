@@ -356,6 +356,26 @@ describe( 'DashboardPageSpeed', () => {
 		).not.toHaveClass( activeClass );
 	} );
 
+	it( 'moves the "View details at PageSpeed Insights" link to the desktop report when the desktop tab is clicked', () => {
+		const { getByLabelText, getByText } = render( <DashboardPageSpeed />, {
+			registry,
+		} );
+
+		const detailsLink = getByText( 'PageSpeed Insights' ).closest( 'a' );
+
+		expect( detailsLink ).toHaveAttribute(
+			'href',
+			expect.stringContaining( `form_factor=${ STRATEGY_MOBILE }` )
+		);
+
+		fireEvent.click( getByLabelText( /desktop/i ) );
+
+		expect( detailsLink ).toHaveAttribute(
+			'href',
+			expect.stringContaining( `form_factor=${ STRATEGY_DESKTOP }` )
+		);
+	} );
+
 	it( 'displays a "Field data unavailable" message when field data is not available', () => {
 		setupRegistryNoFieldDataDesktop();
 

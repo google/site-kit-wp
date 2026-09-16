@@ -14,7 +14,7 @@ namespace Google\Site_Kit\Tests;
  * Fakes the Ninja Forms `NF_Abstracts_ModelFactory` class, which wraps the form
  * for one ID and returns it from `get()`.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -23,7 +23,7 @@ class Ninja_Forms_Model_Factory_Fake {
 	/**
 	 * The form this factory wraps.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 * @var Ninja_Forms_Form_Model_Fake
 	 */
 	private $form;
@@ -31,7 +31,7 @@ class Ninja_Forms_Model_Factory_Fake {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Ninja_Forms_Form_Model_Fake $form The form this factory wraps.
 	 */
@@ -42,7 +42,7 @@ class Ninja_Forms_Model_Factory_Fake {
 	/**
 	 * Gets the form this factory wraps.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return Ninja_Forms_Form_Model_Fake The form this factory wraps.
 	 */

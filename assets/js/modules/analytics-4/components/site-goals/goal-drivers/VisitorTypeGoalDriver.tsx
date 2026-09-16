@@ -22,152 +22,25 @@
 import { FC } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useEffect, useMemo } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { GOAL_DRIVER_IDS } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import useGoalDriverReport from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useGoalDriverReport';
 import {
-	GOAL_DRIVER_IDS,
-	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
-	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	GOAL_TYPES,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
-import {
-	GoalDriverComponentProps,
-	GoalDriverRow,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import {
-	getDimensionFiltersForEvents,
-	normalizePrimaryEvents,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
+	buildVisitorTypeReportOptions,
+	mapVisitorTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
+import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 
-interface ReportRow {
-	dimensionValues?: Array< { value?: string } >;
-	metricValues?: Array< { value?: string } >;
-}
-
-const VISITOR_TYPE_LABELS = {
-	new: __( 'New visitors', 'google-site-kit' ),
-	returning: __( 'Returning visitors', 'google-site-kit' ),
-};
-
-const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( {
-	title = '',
-	goalType,
-	limit,
-	rows: providedRows,
-	loading: providedLoading,
-	error: providedError,
-	primaryEvent,
-	breakdownFilter,
-	onExpandableRowsChange,
-} ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-	const eventNames = useMemo(
-		() => normalizePrimaryEvents( primaryEvent ),
-		[ primaryEvent ]
-	);
-	const dimensionFilters = useMemo(
-		() => getDimensionFiltersForEvents( eventNames, breakdownFilter ),
-		[ eventNames, breakdownFilter ]
-	);
-	const reportOptions = useMemo( () => {
-		if ( ! dates || ! eventNames.length ) {
-			return undefined;
-		}
-
-		return {
-			...dates,
-			dimensions: [ 'newVsReturning' ],
-			dimensionFilters,
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
-		};
-	}, [ dates, dimensionFilters, eventNames, goalType ] );
-	const report = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
-	const reportError = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-	const reportLoading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return false;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
-	const sourceRows: ReportRow[] = report?.rows || [];
-	const totalCount = sourceRows.reduce( ( total: number, row: ReportRow ) => {
-		return (
-			total + parseFloat( String( row.metricValues?.[ 0 ]?.value ?? 0 ) )
-		);
-	}, 0 );
-	const mappedRows: GoalDriverRow[] = sourceRows.map( ( row: ReportRow ) => {
-		const visitorType = row.dimensionValues?.[ 0 ]?.value || '';
-		const visitorTypeKey = visitorType as keyof typeof VISITOR_TYPE_LABELS;
-		const eventCount = parseFloat(
-			String( row.metricValues?.[ 0 ]?.value ?? 0 )
-		);
-
-		return {
-			label: VISITOR_TYPE_LABELS[ visitorTypeKey ] || visitorType || '-',
-			value: numFmt( totalCount > 0 ? eventCount / totalCount : 0, {
-				style: 'percent',
-				signDisplay: 'never',
-				maximumFractionDigits: 1,
-			} ),
-		};
+const VisitorTypeGoalDriver: FC< GoalDriverComponentProps > = ( props ) => {
+	const { title = '', limit } = props;
+	const { rows, loading, error, noDataMetricLabel } = useGoalDriverReport( {
+		...props,
+		id: GOAL_DRIVER_IDS.VISITOR_TYPE,
+		buildReportOptions: buildVisitorTypeReportOptions,
+		mapRows: mapVisitorTypeRows,
 	} );
-	const rows = providedRows || mappedRows;
-	const loading = providedLoading ?? reportLoading;
-	const error = providedError ?? reportError;
-
-	useEffect( () => {
-		onExpandableRowsChange?.(
-			GOAL_DRIVER_IDS.VISITOR_TYPE,
-			rows.length > GOAL_DRIVER_ROW_LIMIT_COLLAPSED
-		);
-	}, [ onExpandableRowsChange, rows.length ] );
-	const noDataMetricLabel =
-		goalType === GOAL_TYPES.ECOMMERCE ? 'sales' : 'leads';
 
 	return (
 		<TableTile

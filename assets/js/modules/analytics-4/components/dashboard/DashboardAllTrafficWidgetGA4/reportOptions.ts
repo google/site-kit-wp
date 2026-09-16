@@ -32,9 +32,16 @@ export const LOCATIONS_BREAKDOWN_REPORT_ID =
 export const DEVICES_BREAKDOWN_REPORT_ID =
 	'analytics-4_dashboard-all-traffic-widget-ga4_widget_devicesBreakdownArgs';
 
-const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
+export const TOTAL_USERS_METRIC: ReportOptions[ 'metrics' ] = [
 	{ name: 'totalUsers' },
 ];
+
+export interface BreakdownReportDescriptor {
+	/** The GA4 dimension that groups the breakdown report's `totalUsers` metric, such as `country`. */
+	dimensionName: string;
+	/** A label that says which part of the plugin asked for the breakdown report. */
+	reportID: string;
+}
 
 /**
  * Builds the report-options fragment for the All Visitors totals report.
@@ -102,6 +109,38 @@ export function getGraphReportOptions( {
 		args.dimensionFilters = dimensionFilters;
 	}
 	return args;
+}
+
+/**
+ * Builds the report-options fragment for one All Visitors breakdown dimension.
+ *
+ * The fragment holds no dates, so it stays the same for every date range.
+ * `getBreakdownReportArgs` and `useTrafficReport` add the dates, the metrics,
+ * and the entity URL.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to group the report by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @return {Object} Report-options fragment.
+ */
+export function getBreakdownReportOptions( {
+	dimensionName,
+	reportID,
+}: BreakdownReportDescriptor ): Partial< ReportOptions > {
+	return {
+		dimensions: [ dimensionName ],
+		orderby: [
+			{
+				metric: {
+					metricName: 'totalUsers',
+				},
+				desc: true,
+			},
+		],
+		reportID,
+	};
 }
 
 /**
@@ -217,27 +256,16 @@ export function getBreakdownReportArgs( {
 	compareStartDate,
 	compareEndDate,
 	url,
-}: {
-	dimensionName: string;
-	reportID: string;
-} & Pick<
-	ReportOptions,
-	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
-> ): ReportOptions {
+}: BreakdownReportDescriptor &
+	Pick<
+		ReportOptions,
+		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
+	> ): ReportOptions {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
 		metrics: TOTAL_USERS_METRIC,
-		dimensions: [ dimensionName ],
-		orderby: [
-			{
-				metric: {
-					metricName: 'totalUsers',
-				},
-				desc: true,
-			},
-		],
-		reportID,
+		...getBreakdownReportOptions( { dimensionName, reportID } ),
 	};
 	if ( compareStartDate ) {
 		args.compareStartDate = compareStartDate;

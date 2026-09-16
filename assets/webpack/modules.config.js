@@ -23,6 +23,7 @@ const CreateFileWebpack = require( 'create-file-webpack' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const path = require( 'path' );
 const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -54,7 +55,7 @@ const LAZY_PDF_REPORT_VENDOR_MODULES = [
 	/[\\/]node_modules[\\/]restructure[\\/]/,
 ];
 
-module.exports = function ( mode, rules ) {
+module.exports = function ( mode, rules, ANALYZE ) {
 	const isProduction = mode === 'production';
 
 	return {
@@ -78,6 +79,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.ts',
 			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-feature-discovery':
+				'./js/googlesitekit-feature-discovery.ts',
 			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
 			'googlesitekit-modules-adsense':
 				'./js/googlesitekit-modules-adsense.ts',
@@ -104,6 +107,7 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-metric-selection.tsx',
 			'googlesitekit-key-metrics-setup':
 				'./js/googlesitekit-key-metrics-setup.tsx',
+			'googlesitekit-features': './js/googlesitekit-features.tsx',
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
@@ -171,6 +175,17 @@ module.exports = function ( mode, rules ) {
 				chunkName: 'googlesitekit-vendor',
 				disallowed: LAZY_PDF_REPORT_VENDOR_MODULES,
 			} ),
+			...( ANALYZE
+				? [
+						new BundleAnalyzerPlugin( {
+							analyzerMode: 'static',
+							analyzerPort: 'auto',
+							openAnalyzer: true,
+							reportFilename: 'modules-report.html',
+							reportTitle: 'Module Entry Points',
+						} ),
+				  ]
+				: [] ),
 		],
 		optimization: {
 			minimizer: createMinimizerRules(),

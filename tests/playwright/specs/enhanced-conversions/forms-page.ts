@@ -38,7 +38,7 @@ export class FormsPage {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param page The page.
 	 */
@@ -49,7 +49,7 @@ export class FormsPage {
 	/**
 	 * Fills a form field with its raw sample value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param field The sample field data.
 	 * @return A promise that resolves when the field is filled.
@@ -61,7 +61,7 @@ export class FormsPage {
 	/**
 	 * Fills the supplied fields and submits the form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param fields The fields to fill before submitting.
 	 * @return A promise that resolves when the submission request succeeds.
@@ -85,7 +85,7 @@ export class FormsPage {
 	/**
 	 * Returns the payload for a named gtag event in the data layer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param eventName The gtag event name.
 	 * @return The event payload, or null when the event has not fired.

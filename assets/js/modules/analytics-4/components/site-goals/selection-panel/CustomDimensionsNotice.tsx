@@ -84,7 +84,7 @@ function getSelectedOptionsWithCustomDimensions(
 const CustomDimensionsNotice: FC = () => {
 	const registry = useRegistry();
 	const syncedCustomDimensionsKeyRef = useRef< string | null >( null );
-	const [ selectedDrivers ] = useFormValue(
+	const [ selectedDrivers ] = useFormValue< GoalDriverSelectionState >(
 		SITE_GOALS_SELECTION_FORM,
 		SITE_GOALS_SELECTED_DRIVERS
 	);

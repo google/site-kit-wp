@@ -73,12 +73,18 @@
 
 		.googlesitekit-rrm-newsletter-preview__title {
 			margin: 3px 0 0;
+			overflow: hidden;
 			text-align: center;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__body {
 			margin: 3px 0 0;
+			overflow: hidden;
 			text-align: center;
+			text-overflow: ellipsis;
+			white-space: nowrap;
 		}
 
 		.googlesitekit-rrm-newsletter-preview__consent {
@@ -104,6 +110,9 @@
 
 			.googlesitekit-rrm-newsletter-preview__consent-text {
 				font-size: 10px;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				white-space: nowrap;
 			}
 		}
 

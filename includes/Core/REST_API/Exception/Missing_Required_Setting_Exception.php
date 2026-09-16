@@ -17,7 +17,7 @@ use WP_Error;
 /**
  * Class for representing a missing required setting.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Missing_Required_Setting_Exception extends Exception implements WP_Errorab
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $setting_name Missing setting name.
 	 */
@@ -40,7 +40,7 @@ class Missing_Required_Setting_Exception extends Exception implements WP_Errorab
 	/**
 	 * Gets the WP_Error representation of this exception.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return WP_Error Error representation.
 	 */

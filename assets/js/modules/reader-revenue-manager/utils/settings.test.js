@@ -20,11 +20,42 @@
  * Internal dependencies
  */
 import {
+	getConfiguredCTAList,
 	getPaymentOption,
 	getPostTypesString,
 	getProductIDLabel,
 	getProductIDs,
 } from './settings';
+
+describe( 'getConfiguredCTAList', () => {
+	it( 'returns the CTA ID and display label for each configured CTA', () => {
+		expect(
+			getConfiguredCTAList( {
+				'cta-1': 'newsletter-signup',
+				'cta-2': 'newsletter-signup',
+			} )
+		).toEqual( [
+			{ ctaID: 'cta-1', label: 'Newsletter sign-up form' },
+			{ ctaID: 'cta-2', label: 'Newsletter sign-up form' },
+		] );
+	} );
+
+	it( 'omits CTAs with an unrecognised type', () => {
+		expect(
+			getConfiguredCTAList( {
+				'cta-1': 'newsletter-signup',
+				'cta-2': 'not-a-cta-type',
+			} )
+		).toEqual( [ { ctaID: 'cta-1', label: 'Newsletter sign-up form' } ] );
+	} );
+
+	it.each( [
+		[ 'undefined', undefined ],
+		[ 'an empty object', {} ],
+	] )( 'returns an empty array when configuredCTAs is %s', ( _, value ) => {
+		expect( getConfiguredCTAList( value ) ).toEqual( [] );
+	} );
+} );
 
 describe( 'getPostTypesString', () => {
 	it( 'returns post type labels for postTypes setting slugs', () => {

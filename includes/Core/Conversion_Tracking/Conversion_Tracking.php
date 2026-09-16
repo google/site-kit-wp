@@ -71,7 +71,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.126.0
 	 * @since 1.130.0 Added Ninja Forms class.
-	 * @since n.e.x.t Added Content_Events class.
+	 * @since 1.186.0 Added Content_Events class.
 	 * @var array
 	 */
 	public static $providers = array(
@@ -182,27 +182,31 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	}
 
 	/**
-	 * Adds active event provider category flags to the inline base data.
+	 * Adds the active event provider flags and slugs to the inline base data.
 	 *
 	 * @since 1.181.0
+	 * @since 1.187.0 Added the slugs of the active conversion event providers.
 	 *
 	 * @param array $data Inline base data.
 	 * @return array Filtered $data.
 	 */
 	protected function inline_js_base_data( $data ) {
 		$active_categories = $this->get_active_provider_categories();
+		$active_providers  = $this->get_active_providers();
 
 		$data['hasActiveLeadEventProviders']      = in_array( Conversion_Events_Provider::CATEGORY_LEAD, $active_categories, true );
 		$data['hasActiveEcommerceEventProviders'] = in_array( Conversion_Events_Provider::CATEGORY_ECOMMERCE, $active_categories, true );
 
 		$active_ecommerce_providers = count(
 			array_filter(
-				$this->get_active_providers(),
+				$active_providers,
 				fn( $provider ) => Conversion_Events_Provider::CATEGORY_ECOMMERCE === $provider->get_category()
 			)
 		);
 
 		$data['hasMultipleActiveEcommerceEventProviders'] = $active_ecommerce_providers > 1;
+
+		$data['activeConversionEventProviders'] = array_keys( $active_providers );
 
 		return $data;
 	}
@@ -222,9 +226,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! is_string( $provider_class ) || ! $provider_class ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: %s: provider slug */
-						__( 'A conversion event provider class name is required to instantiate a provider: %s', 'google-site-kit' ),
-						$provider_slug
+						'A conversion event provider class name is required to instantiate a provider: %s',
+						esc_html( $provider_slug )
 					)
 				);
 			}
@@ -232,9 +235,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! class_exists( $provider_class ) ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: %s: provider classname */
-						__( "The '%s' class does not exist", 'google-site-kit' ),
-						$provider_class
+						"The '%s' class does not exist",
+						esc_html( $provider_class )
 					)
 				);
 			}
@@ -242,9 +244,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			if ( ! is_subclass_of( $provider_class, Conversion_Events_Provider::class ) ) {
 				throw new LogicException(
 					sprintf(
-						/* translators: 1: provider classname 2: Conversion_Events_Provider classname */
-						__( "The '%1\$s' class must extend the base conversion event provider class: %2\$s", 'google-site-kit' ),
-						$provider_class,
+						"The '%1\$s' class must extend the base conversion event provider class: %2\$s",
+						esc_html( $provider_class ),
 						Conversion_Events_Provider::class
 					)
 				);

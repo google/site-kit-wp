@@ -28,7 +28,14 @@ import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import type { PDFChangeType } from '@/js/components/pdf-export/types';
 import PDFBadge from './PDFBadge';
 
-const BADGE_COLORS: Record<
+/**
+ * Background and text color for each change direction.
+ *
+ * Exported so callers that tint a larger area by the same direction (e.g. a
+ * metric tile's own background) can match the badge exactly, rather than
+ * picking colors independently.
+ */
+export const PDF_CHANGE_COLORS: Record<
 	PDFChangeType,
 	{ backgroundColor: string; color: string }
 > = {
@@ -57,7 +64,7 @@ const PDFChangeBadge: FC< PDFChangeBadgeProps > = ( {
 	change,
 	changeType = 'positive',
 } ) => {
-	const { backgroundColor, color } = BADGE_COLORS[ changeType ];
+	const { backgroundColor, color } = PDF_CHANGE_COLORS[ changeType ];
 
 	return (
 		<PDFBadge

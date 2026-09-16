@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\Google\Model;
 /**
  * Normalizes Web Content Publisher publication resources for existing consumers.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  * @access private
  * @ignore
  */
@@ -24,7 +24,7 @@ class Publication_Normalizer {
 	/**
 	 * Normalizes a publication resource.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param Model|array $publication Publication resource.
 	 * @return array Normalized publication resource.
@@ -47,7 +47,7 @@ class Publication_Normalizer {
 	/**
 	 * Maps a WCP onboarding state to the value persisted in settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $onboarding_state WCP onboarding state.
 	 * @return string Settings onboarding state.
@@ -64,7 +64,7 @@ class Publication_Normalizer {
 	/**
 	 * Maps a WCP payment option enum to the value persisted in settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $payment_option WCP payment option.
 	 * @return string Settings payment option.
@@ -82,7 +82,7 @@ class Publication_Normalizer {
 	/**
 	 * Maps a WCP content policy state to the value persisted in settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param string $state WCP content policy state.
 	 * @return string Settings content policy state.
@@ -100,7 +100,7 @@ class Publication_Normalizer {
 	/**
 	 * Normalizes onboarding state values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $publication Publication data.
 	 */
@@ -117,7 +117,7 @@ class Publication_Normalizer {
 	/**
 	 * Normalizes product strings to legacy product resources.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $publication Publication data.
 	 */
@@ -137,7 +137,7 @@ class Publication_Normalizer {
 	/**
 	 * Normalizes the payment option enum to the legacy payment options object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $publication Publication data.
 	 */
@@ -160,7 +160,7 @@ class Publication_Normalizer {
 	/**
 	 * Normalizes content policy status keys and values.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param array $publication Publication data.
 	 */

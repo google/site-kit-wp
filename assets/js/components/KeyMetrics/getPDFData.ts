@@ -46,7 +46,9 @@ interface KeyMetricPDFTileConfig {
 		} >;
 	};
 	/** Resolves the tile's data, or `null` when the report has no data. */
-	getTileData: ( params: PDFDataLoaderParams ) => Promise< unknown >;
+	getTileData: (
+		params: PDFDataLoaderParams & { viewOnly: boolean }
+	) => Promise< unknown >;
 }
 
 const keyMetricsWidgets = KEY_METRICS_WIDGETS as Record<
@@ -113,12 +115,14 @@ export interface KeyMetricsPDFData {
  * omits the whole section.
  *
  * @since 1.184.0
+ * @since 1.186.0 Passes `viewOnly` through to each tile's `getTileData`.
  *
  * @param params                 Loader parameters.
  * @param params.registry        WordPress data registry.
  * @param params.dates           Report date range.
  * @param params.signal          Cancellation signal.
  * @param params.viewableModules The modules the user can view, or `undefined` for the owner.
+ * @param params.viewOnly        Whether the export runs on a view-only dashboard.
  * @return The Key Metrics tiles, or `{ data: null }` when canceled or no tile has data.
  */
 export default async function getPDFData( {
@@ -126,6 +130,7 @@ export default async function getPDFData( {
 	dates,
 	signal,
 	viewableModules,
+	viewOnly,
 }: GetPDFDataParams ): Promise< KeyMetricsPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
@@ -182,7 +187,12 @@ export default async function getPDFData( {
 				// does not honour Suspense).
 				try {
 					const [ data, resolved ] = await Promise.all( [
-						pdfTile.getTileData( { registry, dates, signal } ),
+						pdfTile.getTileData( {
+							registry,
+							dates,
+							signal,
+							viewOnly,
+						} ),
 						typeof pdfTile.TileComponent.preload === 'function'
 							? pdfTile.TileComponent.preload()
 							: Promise.resolve( {

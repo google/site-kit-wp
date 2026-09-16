@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import {
+	GetPDFDataParams,
 	PDFDataLoaderParams,
 	PDFReportDates,
 } from '@/js/googlesitekit/widgets/types';
@@ -46,6 +47,18 @@ interface FetchReportResult {
 }
 
 /**
+ * Context `extract` receives alongside the resolved reports, for tiles that
+ * build a row's link (e.g. from `registry` and `dates`) rather than only
+ * reading the report response.
+ *
+ * @since 1.186.0
+ */
+export type TileExtractContext = Pick<
+	GetPDFDataParams,
+	'registry' | 'dates' | 'viewOnly'
+>;
+
+/**
  * Builds a `getTileData` loader for one Key Metrics PDF tile.
  *
  * The returned loader fetches every report from `buildReports` in parallel,
@@ -63,23 +76,27 @@ interface FetchReportResult {
  * such a failure reads as no data, not as a thrown error.
  *
  * @since 1.184.0
+ * @since 1.186.0 Passes `{ registry, dates, viewOnly }` to `extract` as a second argument.
  *
  * @param buildReports Returns the reports to fetch for the date range. It receives the registry too, so a tile whose report options depend on resolved state can await it; it may return a promise.
- * @param extract      Maps the resolved report responses to the tile's data, or `null` when the report has no data.
- * @return A `getTileData( { registry, dates, signal } )` loader.
+ * @param extract      Maps the resolved report responses to the tile's data, or `null` when the report has no data. Receives `{ registry, dates, viewOnly }` as a second argument for tiles that build a row's link.
+ * @return A `getTileData( { registry, dates, signal, viewOnly } )` loader.
  */
 export default function createKeyMetricTileDataLoader< TData >(
 	buildReports: (
 		dates: PDFReportDates,
 		registry: PDFDataLoaderParams[ 'registry' ]
 	) => TileReportRequest[] | Promise< TileReportRequest[] >,
-	extract: ( reports: unknown[] ) => TData | null
-): ( params: PDFDataLoaderParams ) => Promise< TData | null > {
+	extract: ( reports: unknown[], context: TileExtractContext ) => TData | null
+): (
+	params: PDFDataLoaderParams & { viewOnly?: boolean }
+) => Promise< TData | null > {
 	return async function getTileData( {
 		registry,
 		dates,
 		signal,
-	}: PDFDataLoaderParams ): Promise< TData | null > {
+		viewOnly = false,
+	}: PDFDataLoaderParams & { viewOnly?: boolean } ): Promise< TData | null > {
 		if ( signal.aborted ) {
 			return null;
 		}
@@ -110,6 +127,13 @@ export default function createKeyMetricTileDataLoader< TData >(
 			);
 		}
 
-		return extract( results.map( ( result ) => result.response ) );
+		return extract(
+			results.map( ( result ) => result.response ),
+			{
+				registry,
+				dates,
+				viewOnly,
+			}
+		);
 	};
 }

@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -74,14 +73,14 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		[ clientID, setClientID, debounceSetIsValid ]
 	);
 
-	let helperText;
-	if ( ! isValid ) {
-		helperText = __(
-			'A valid Client ID is required to use Sign in with Google',
-			'google-site-kit'
-		);
-	}
+	const errorMessage = ! isValid
+		? __(
+				'A valid Client ID is required to use Sign in with Google',
+				'google-site-kit'
+		  )
+		: undefined;
 
+	let helperText;
 	if ( existingClientID && clientID === existingClientID ) {
 		helperText = __(
 			'Sign in with Google was already set up on this site. We recommend using your existing Client ID.',
@@ -93,9 +92,8 @@ export default function ClientIDTextField( { existingClientID = '' } ) {
 		<div className="googlesitekit-settings-module__fields-group">
 			<TextField
 				label={ __( 'Client ID', 'google-site-kit' ) }
-				className={ classnames( 'googlesitekit-text-field-client-id', {
-					'mdc-text-field--error': ! isValid,
-				} ) }
+				className="googlesitekit-text-field-client-id"
+				errorMessage={ errorMessage }
 				helperText={ helperText }
 				value={ clientID }
 				onChange={ onChange }

@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -42,6 +42,16 @@ export default function LegacySplashViewOnlyContent( {
 	documentationURL,
 	onButtonClick,
 } ) {
+	useEffect( () => {
+		global.document.body.classList.add( 'googlesitekit-setup-splash' );
+
+		return () => {
+			global.document.body.classList.remove(
+				'googlesitekit-setup-splash'
+			);
+		};
+	}, [] );
+
 	return (
 		<Row className="googlesitekit-setup__content">
 			<Cell

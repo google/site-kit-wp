@@ -37,6 +37,11 @@ import {
 	KM_ANALYTICS_POPULAR_CONTENT,
 	KM_ANALYTICS_POPULAR_PRODUCTS,
 	KM_ANALYTICS_RETURNING_VISITORS,
+	KM_ANALYTICS_SALES_BY_COUNTRIES,
+	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
+	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
@@ -46,12 +51,15 @@ import {
 	KM_ANALYTICS_TOP_COUNTRIES,
 	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
@@ -136,6 +144,44 @@ function shouldDisplayWidgetWithCustomDimensions( {
 }
 
 /**
+ * Determines if a widget that requires both a conversion reporting event
+ * and custom dimensions in the key metrics selection panel should appear.
+ *
+ * This function is attached to the widget object that requires both and has
+ * the `requiredConversionEventName` and `requiredCustomDimensions` properties.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   options                     Options object.
+ * @param {Function} options.select              Data store select function.
+ * @param {boolean}  options.isViewOnlyDashboard Whether the current dashboard is view only.
+ * @return {boolean} Whether to display the widget.
+ */
+function shouldDisplayWidgetWithConversionEventAndCustomDimensions( {
+	select,
+	isViewOnlyDashboard,
+} ) {
+	const events = Array.isArray( this.requiredConversionEventName )
+		? this.requiredConversionEventName
+		: [ this.requiredConversionEventName ];
+	const hasRequiredConversionEvent = events.some( ( event ) =>
+		select( MODULES_ANALYTICS_4 ).isConversionEventCurrentlyActive( event )
+	);
+
+	if ( ! hasRequiredConversionEvent ) {
+		return false;
+	}
+
+	if ( ! isViewOnlyDashboard ) {
+		return true;
+	}
+
+	return select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
+		this.requiredCustomDimensions
+	);
+}
+
+/**
  * Key metric tile configurations, keyed by metric slug.
  *
  * Each entry configures how the metric appears in the selection panel and on the
@@ -149,9 +195,9 @@ function shouldDisplayWidgetWithCustomDimensions( {
  *   wrapped with `lazyWithPreload` so this module stays free of the PDF renderer
  *   on the dashboard bundle. It receives the tile `title` plus the fields
  *   returned by `getTileData`.
- * - `pdfTile.getTileData( { registry, dates, signal } )`: resolves the report(s)
- *   the tile needs and returns the normalised data the `TileComponent` consumes,
- *   or `null` when the export is canceled.
+ * - `pdfTile.getTileData( { registry, dates, signal, viewOnly } )`: resolves the
+ *   report(s) the tile needs and returns the normalised data the `TileComponent`
+ *   consumes, or `null` when the export is canceled.
  *
  * Entries without a `pdfTile` field do not render in the PDF and are skipped.
  *
@@ -546,6 +592,132 @@ const KEY_METRICS_WIDGETS = {
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_TOTAL_SALES ]: {
+		title: __( 'Total sales', 'google-site-kit' ),
+		description: __(
+			'Total visitors who successfully completed a purchase',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total visitors who successfully completed a purchase',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_SALES_RATE ]: {
+		title: __( 'Sales rate', 'google-site-kit' ),
+		description: __(
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
+			'google-site-kit'
+		),
+		documentationLinkSlug: 'site-goals-online-store-key-action',
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_SALES_ENGAGEMENT_RATE ]: {
+		title: __( 'Sales engagement rate', 'google-site-kit' ),
+		description: __(
+			'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action',
+			'google-site-kit'
+		),
+		documentationLinkSlug: 'site-goals-engagement-rate',
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE ]: {
+		title: __( 'Top traffic channels by sales rate', 'google-site-kit' ),
+		description: __(
+			'Which channels have the highest percentage of buyers?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which channels have the highest percentage of buyers?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_SALES_BY_VISITOR_TYPE ]: {
+		title: __( 'Sales by visitor type', 'google-site-kit' ),
+		description: __(
+			'Which types of visitors are most likely to buy?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which types of visitors are most likely to buy?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_SALES_BY_COUNTRIES ]: {
+		title: __( 'Sales by countries', 'google-site-kit' ),
+		description: __(
+			'Which countries bring in the most buyers?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which countries bring in the most buyers?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]: {
+		title: __( 'Top authors driving sales', 'google-site-kit' ),
+		description: __(
+			'Whose content is best at converting buyers?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Whose content is best at converting buyers?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInSelectionPanel:
+			shouldDisplayWidgetWithConversionEventAndCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
+		displayInList:
+			shouldDisplayWidgetWithConversionEventAndCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_PAGES_DRIVING_SALES ]: {
+		title: __( 'Top pages driving sales', 'google-site-kit' ),
+		description: __(
+			'Which pages bring in the most sales?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which pages bring in the most sales?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 };
 

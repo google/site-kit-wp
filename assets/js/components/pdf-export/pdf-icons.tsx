@@ -93,7 +93,7 @@ function createPDFIcon(
  * The icon uses `size` as the height, and multiplies `size` by `aspectRatio` for
  * the width. The image keeps its proportions at any size.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string} src         The image's URL, from a `.png` import.
  * @param {number} aspectRatio The image's width divided by its height.
@@ -156,7 +156,7 @@ export const PDFNavMonetizationIcon = createPDFIcon(
 /**
  * Gives the Google "G" its width from its height and keeps the letter from stretching.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const LOGO_G_ASPECT_RATIO = 23.599 / 24.1136;
 
@@ -174,7 +174,7 @@ export const PDFChevronRight = createPDFIcon(
  * The map covers the main-dashboard contexts that draw an icon in the report.
  * Site goals has no entry, so `PDFChip` renders its chip with a label only.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export const SECTION_ICONS: Record< string, PDFIcon > = {
 	[ CONTEXT_MAIN_DASHBOARD_KEY_METRICS ]: PDFNavKeyMetricsIcon,

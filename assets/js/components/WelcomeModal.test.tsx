@@ -53,8 +53,12 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import * as tracking from '@/js/util/tracking';
 import { provideGatheringDataState } from '@tests/js/gathering-data-utils';
-import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import {
+	mockBrowserScrolling,
+	mockIntersectionObserver,
+} from '@tests/js/mock-browser-utils';
+import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -86,38 +90,6 @@ const mockWelcomeTour = getWelcomeTour( {
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
 
-/**
- * The modal graphic is wrapped in `withIntersectionObserver`, which observes
- * its element with the native `IntersectionObserver`. jsdom has none, so use a
- * stub that reports the element as in view the moment it observes it. This
- * makes the modal send its `view_notice` event on render, as these tests
- * expect.
- */
-class InViewIntersectionObserver {
-	callback: IntersectionObserverCallback;
-
-	constructor( callback: IntersectionObserverCallback ) {
-		this.callback = callback;
-	}
-
-	observe( element: Element ) {
-		this.callback(
-			[
-				{
-					isIntersecting: true,
-					intersectionRatio: 1,
-					target: element,
-				} as IntersectionObserverEntry,
-			],
-			this as unknown as IntersectionObserver
-		);
-	}
-
-	unobserve() {}
-
-	disconnect() {}
-}
-
 describe( 'WelcomeModal', () => {
 	let registry: WPDataRegistry;
 
@@ -126,6 +98,7 @@ describe( 'WelcomeModal', () => {
 	);
 
 	mockBrowserScrolling();
+	const { simulateAllIntersections } = mockIntersectionObserver();
 
 	function provideDataAvailableVariantData() {
 		provideModules( registry, [
@@ -214,12 +187,7 @@ describe( 'WelcomeModal', () => {
 			] );
 	}
 
-	const originalIntersectionObserver = global.IntersectionObserver;
-
 	beforeEach( () => {
-		global.IntersectionObserver =
-			InViewIntersectionObserver as unknown as typeof IntersectionObserver;
-
 		registry = createTestRegistry();
 
 		fetchMock.post( dismissItemEndpoint, {
@@ -247,7 +215,6 @@ describe( 'WelcomeModal', () => {
 	} );
 
 	afterEach( () => {
-		global.IntersectionObserver = originalIntersectionObserver;
 		mockTrackEvent.mockClear();
 	} );
 
@@ -1182,6 +1149,12 @@ describe( 'WelcomeModal', () => {
 
 				await waitForRegistry();
 
+				act( () => {
+					simulateAllIntersections( true );
+				} );
+
+				await waitForRegistry();
+
 				// The `view_notice` event is also tracked on view.
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 3 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -1199,6 +1172,12 @@ describe( 'WelcomeModal', () => {
 					registry,
 					viewContext: 'test-context',
 				} );
+
+				act( () => {
+					simulateAllIntersections( true );
+				} );
+
+				await waitForRegistry();
 
 				// Only the `view_notice` event should be tracked the second time the modal is shown.
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

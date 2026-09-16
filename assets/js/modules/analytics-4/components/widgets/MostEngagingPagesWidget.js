@@ -51,7 +51,7 @@ import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
  * views, a value derived from the page views report at runtime, so it is
  * passed in rather than recomputed here.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} dates              The date range for the reports.
  * @param {number} [averagePageViews] The average page views threshold the engaging pages report filters on. Defaults to `0`.

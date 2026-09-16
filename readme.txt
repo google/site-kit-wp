@@ -2,9 +2,9 @@
 
 Contributors:      google
 Requires at least: 5.2
-Tested up to:      7.0
+Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        1.185.0
+Stable tag:        1.187.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,37 +112,30 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.185.0 =
+= 1.187.0 =
 
 **Enhanced**
 
-* Launch the Setup Flow Refresh Phase 4 feature by force-enabling the feature flag in the plugin. See [#13159](https://github.com/google/site-kit-wp/issues/13159).
-* Show the correct number of segments in the progress indicator on the service screens in the new setup flow. See [#13158](https://github.com/google/site-kit-wp/issues/13158).
-* Add the partial data badge to the Your visitor groups PDF widget. See [#13132](https://github.com/google/site-kit-wp/issues/13132).
-* Add subscribed users and unsubscribe user Email Reporting REST routes. See [#13100](https://github.com/google/site-kit-wp/issues/13100).
-* Add GA event tracking for the new Analytics and Audience Segmentation setup error notices. See [#13090](https://github.com/google/site-kit-wp/issues/13090).
-* Fix alignment of Online Store Performance Site Goals widget. See [#13062](https://github.com/google/site-kit-wp/issues/13062).
-* Add tab scrolling to breakdown tabs. See [#13060](https://github.com/google/site-kit-wp/issues/13060).
-* Add a reusable `CTAPreview` shell component for the Reader Revenue Manager express setup CTA preview. See [#13025](https://github.com/google/site-kit-wp/issues/13025).
-* Add the next scheduled report date to the "Current subscription" pill in Email Reporting frequency settings for subscribed users across desktop and mobile layouts. See [#13012](https://github.com/google/site-kit-wp/issues/13012).
-* Add REST controller and datastore infrastructure for RRM user settings. See [#13008](https://github.com/google/site-kit-wp/issues/13008).
-* Add necessary module settings to Reader Revenue Manager for the upcoming express setup feature. See [#12999](https://github.com/google/site-kit-wp/issues/12999).
-* Add the Reader Revenue Manager express setup screen shell with a two-column layout, header, and stepper rail. See [#12997](https://github.com/google/site-kit-wp/issues/12997).
-* Only shows links for users with appropriate dashboard access in PDF reports. See [#12958](https://github.com/google/site-kit-wp/issues/12958).
-* Update the Reader Revenue Manager service to accommodate the new and upcoming express setup flow. See [#12950](https://github.com/google/site-kit-wp/issues/12950).
-* Add a banner in the dashboard for the upcoming Reader Revenue Manager express setup. See [#12947](https://github.com/google/site-kit-wp/issues/12947).
-* Add several Key Metrics widgets to PDF reports. See [#12555](https://github.com/google/site-kit-wp/issues/12555).
-* Update the store permission error notices to match the new design. See [#12382](https://github.com/google/site-kit-wp/issues/12382).
-
-**Changed**
-
-* Update the Sign in with Google module to properly behave when Two Factor authentication is enabled. Props sudhanshugaikwad. See [#11032](https://github.com/google/site-kit-wp/issues/11032).
+* Remove "Site Goals" feature flag (feature is fully-available). See [#13420](https://github.com/google/site-kit-wp/issues/13420).
+* Add Site Health debug data for the Content_Events provider. See [#13292](https://github.com/google/site-kit-wp/issues/13292).
+* Add the `pagination_click` event tracking. See [#13289](https://github.com/google/site-kit-wp/issues/13289).
+* Add embedded video events tracking. See [#13288](https://github.com/google/site-kit-wp/issues/13288).
+* Add the "Add Features" admin menu item, and a placeholder screen for the Feature Discovery Hub. See [#13244](https://github.com/google/site-kit-wp/issues/13244).
+* Fix bugs with overlapping notifications. See [#13219](https://github.com/google/site-kit-wp/issues/13219).
+* Update the email report notice UI. See [#13086](https://github.com/google/site-kit-wp/issues/13086).
+* Implement the Reader Revenue Manager express setup step to connect an existing publication. See [#13021](https://github.com/google/site-kit-wp/issues/13021).
+* Add the "Subscribed users" tab to the email reporting settings. See [#13011](https://github.com/google/site-kit-wp/issues/13011).
+* Add Reader Revenue Manager Organization ID and Configured CTAs fields to Site Health debug information. See [#13000](https://github.com/google/site-kit-wp/issues/13000).
+* Improve page performance by decreasing preloaded subscriber content. See [#12857](https://github.com/google/site-kit-wp/issues/12857).
+* Add a warning notice to the Site Goals widget when event provider plugin is deactivated. See [#12773](https://github.com/google/site-kit-wp/issues/12773).
+* Fix error displaying issues for email reports. See [#12356](https://github.com/google/site-kit-wp/issues/12356).
+* Don't show the RRM introductory overlay if the selected publication has an extreme policy violation. See [#12291](https://github.com/google/site-kit-wp/issues/12291).
+* Improve UX/UI on Email subscription panel. See [#12188](https://github.com/google/site-kit-wp/issues/12188).
 
 **Fixed**
 
-* Fix bugs with the Site Goals banners/survey triggers. See [#13211](https://github.com/google/site-kit-wp/issues/13211).
-* Show spinner when retrying Analytics request in the Site Goals error UI. See [#13155](https://github.com/google/site-kit-wp/issues/13155).
-* Fix bug that caused Optin Monster IDs to show instead of their label in Site Goals. See [#13145](https://github.com/google/site-kit-wp/issues/13145).
-* Encode Proxy URL to prevent search + replace database issues. See [#12962](https://github.com/google/site-kit-wp/issues/12962).
+* Hide the "Tell us more" link in Site Goals Thumbs up / down feedback. See [#13448](https://github.com/google/site-kit-wp/issues/13448).
+* Fix bug that could cause the UI to remain in a loading state instead of showing an error when a request failed. See [#13293](https://github.com/google/site-kit-wp/issues/13293).
+* Ensure that the `useRefocus()` hook's callback fires consistently in all cases. See [#8297](https://github.com/google/site-kit-wp/issues/8297).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).

@@ -34,7 +34,7 @@ import PDFBadge from './PDFBadge';
 /**
  * Renders the badge and returns the rendered tree as a JSON string.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param props Props for the badge.
  * @return JSON string of the rendered tree.

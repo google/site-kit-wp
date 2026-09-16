@@ -18,7 +18,7 @@ use Google\Site_Kit\Core\REST_API\Data_Request;
  * Datapoint class for Search Console searchanalytics requests.
  *
  * @since 1.170.0
- * @since n.e.x.t Renamed from `SearchAnalytics` and refactored onto `Search_Analytics_Trait`.
+ * @since 1.186.0 Renamed from `SearchAnalytics` and refactored onto `Search_Analytics_Trait`.
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class Get_Search_Analytics extends Shareable_Datapoint implements Executable_Dat
 	 * Constructor.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Replaced request callbacks with the module settings and context.
+	 * @since 1.186.0 Replaced request callbacks with the module settings and context.
 	 *
 	 * @param array $definition Datapoint definition.
 	 */

@@ -27,7 +27,7 @@ use WP_User;
  * the single source of truth for that eligibility check.
  *
  * @since 1.145.0
- * @since n.e.x.t No longer overrides registration-eligibility or default-role
+ * @since 1.186.0 No longer overrides registration-eligibility or default-role
  *                logic; that now lives in the base `Authenticator` so it
  *                applies to every auth flow, not only this one.
  * @access private
@@ -93,7 +93,7 @@ class WooCommerce_Authenticator extends Authenticator {
 	 * grouped with the other two under WooCommerce's own "Account creation"
 	 * settings section).
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return bool True if any WooCommerce account-creation setting is enabled, false otherwise.
 	 */

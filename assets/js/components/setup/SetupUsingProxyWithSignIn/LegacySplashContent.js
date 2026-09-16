@@ -24,7 +24,7 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement, useEffect } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -49,6 +49,16 @@ export default function LegacySplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
+	useEffect( () => {
+		global.document.body.classList.add( 'googlesitekit-setup-splash' );
+
+		return () => {
+			global.document.body.classList.remove(
+				'googlesitekit-setup-splash'
+			);
+		};
+	}, [] );
+
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 8, lgSize: 6 }
 		: { smSize: 4, mdSize: 8, lgSize: 8 };

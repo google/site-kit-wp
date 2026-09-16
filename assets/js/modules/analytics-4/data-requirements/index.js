@@ -79,6 +79,21 @@ export function requireAudienceSegmentationSetupCompletedByUser() {
 }
 
 /**
+ * Returns a function that checks if AdSense is linked to the connected Analytics property.
+ *
+ * @since 1.187.0
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether AdSense is linked or not.
+ */
+export function requireAdSenseLinked() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+		return true === select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+	};
+}
+
+/**
  * Returns a function that checks if the connected web datastream is not available.
  *
  * @since 1.166.0

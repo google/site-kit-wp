@@ -37,7 +37,7 @@ const SetupMainExpress: FC = () => {
 	};
 
 	const ExpressSetupComponent =
-		ctaSetupComponents[ cta ] ?? ExpressSetupDefault;
+		( cta ? ctaSetupComponents[ cta ] : undefined ) ?? ExpressSetupDefault;
 
 	return <ExpressSetupComponent />;
 };

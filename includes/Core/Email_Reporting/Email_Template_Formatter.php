@@ -86,7 +86,7 @@ class Email_Template_Formatter {
 	 * Builds sections from raw payload grouped by module.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Removed $user parameter, locale switching is now handled by the Email_Log_Processor.
+	 * @since 1.186.0 Removed $user parameter, locale switching is now handled by the Email_Log_Processor.
 	 *
 	 * @param array   $raw_payload Raw payload.
 	 * @param WP_Post $email_log   Email log post.
@@ -169,6 +169,7 @@ class Email_Template_Formatter {
 	 * Prepares section payload for the template renderer.
 	 *
 	 * @since 1.170.0
+	 * @since 1.187.0 Added the `groups` and the `prompt` to the section payload.
 	 *
 	 * @param array $sections   Section instances.
 	 * @param array $date_range Date range used for the report.
@@ -207,6 +208,8 @@ class Email_Template_Formatter {
 				'dimension'        => isset( $dimensions[0] ) ? $dimensions[0] : '',
 				'dimension_value'  => $first_dimension_value,
 				'dimension_values' => $dimension_values ?? array(),
+				'groups'           => $section->get_groups(),
+				'prompt'           => $section->get_prompt(),
 				'change'           => $change,
 				'changes'          => $changes,
 				'change_context'   => $change_context,
@@ -230,7 +233,7 @@ class Email_Template_Formatter {
 	 * decimal-comma locale.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Hardened decimal-separator detection to support decimal-comma locales.
+	 * @since 1.186.0 Hardened decimal-separator detection to support decimal-comma locales.
 	 *
 	 * @param mixed $change Change value.
 	 * @return float|null Parsed change, or null when missing or unparseable.
@@ -368,7 +371,7 @@ class Email_Template_Formatter {
 	 * Builds template data for the subscription confirmation email.
 	 *
 	 * @since 1.174.0
-	 * @since n.e.x.t Wrapped the unsubscribe link within the localized footer copy.
+	 * @since 1.186.0 Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string $frequency Frequency slug.
 	 * @return array Template data.
@@ -422,7 +425,7 @@ class Email_Template_Formatter {
 	 * Builds template data for rendering.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Wrapped the unsubscribe link within the localized footer copy.
+	 * @since 1.186.0 Wrapped the unsubscribe link within the localized footer copy.
 	 *
 	 * @param string  $frequency  Frequency slug.
 	 * @param array   $date_range Date range.

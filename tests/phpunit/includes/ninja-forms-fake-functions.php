@@ -12,7 +12,7 @@ if ( ! function_exists( 'Ninja_Forms' ) ) {
 	/**
 	 * Returns the single `Ninja_Forms_Fake` instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @return \Google\Site_Kit\Tests\Ninja_Forms_Fake The Ninja Forms plugin fake.
 	 */

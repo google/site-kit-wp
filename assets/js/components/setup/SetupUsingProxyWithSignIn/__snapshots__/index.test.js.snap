@@ -27,7 +27,6 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -385,7 +384,6 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"
@@ -800,7 +798,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1214,7 +1211,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1585,7 +1581,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1875,7 +1870,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"
@@ -2247,7 +2241,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -2617,7 +2610,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 aria-hidden="true"
                 class="googlesitekit-logo"
               >
-                <svg />
                 <svg />
                 <span
                   class="screen-reader-text"

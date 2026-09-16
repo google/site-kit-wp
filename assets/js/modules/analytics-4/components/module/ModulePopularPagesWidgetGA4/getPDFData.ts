@@ -68,7 +68,7 @@ export interface PopularPagesPDFData {
  * for every user.
  *
  * @since 1.182.0
- * @since n.e.x.t Links the title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
+ * @since 1.186.0 Links the title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
  * @param {Object}   params           Link map parameters.
  * @param {Object}   params.registry  WordPress data registry.
@@ -129,7 +129,7 @@ function getPopularPageLinkMap( {
  *
  * @since 1.182.0
  * @since 1.183.0 Returns null data when the report has no rows.
- * @since n.e.x.t Links each title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
+ * @since 1.186.0 Links each title to the Analytics report for an administrator and to the entity dashboard for a view-only user.
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.

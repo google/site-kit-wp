@@ -45,7 +45,7 @@ type Registry = ReturnType< typeof createTestRegistry >;
  * A style passed as an array and a prop on a `@react-pdf` primitive never reach
  * the rendered DOM, so an assertion on either one reads the JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param element The PDF element to render.
  * @return The rendered tree, as a JSON string.
@@ -59,7 +59,7 @@ export function renderJSON( element: ReactElement ) {
  * survey trigger needs, and mocks the trigger endpoint.
  *
  * @since 1.184.0
- * @since n.e.x.t Added the `dismissedItems` parameter.
+ * @since 1.186.0 Added the `dismissedItems` parameter.
  *
  * @param  registry       The test registry the component under test renders with.
  * @param  dismissedItems The slugs already in WordPress user meta. They pick one of the three PDF export surveys.
@@ -97,7 +97,7 @@ export function setPDFExportStatus( registry: Registry, status: PDFStatus ) {
  * trigger ID and time to live.
  *
  * @since 1.184.0
- * @since n.e.x.t Added the `ttl` parameter.
+ * @since 1.186.0 Added the `ttl` parameter.
  *
  * @param triggerID The survey trigger ID the request body holds, such as `'view_pdf_export_downloaded'`.
  * @param ttl       The seconds the survey service waits before it offers the same survey again.
@@ -108,5 +108,102 @@ export function expectSurveyTriggerFetch( triggerID: string, ttl: number ) {
 		expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 			body: { data: { triggerID, ttl } },
 		} )
+	);
+}
+
+/**
+ * Collects every text string in a `react-test-renderer` tree, so a test can
+ * assert on rendered copy without walking the tree itself.
+ *
+ * @since 1.187.0
+ *
+ * @param node A tree's root, a child node, or a leaf, as returned by
+ *             `TestRenderer.create( element ).toJSON()`.
+ * @return The collected text strings, in render order.
+ */
+export function findTextStrings(
+	node:
+		| string
+		| number
+		| TestRenderer.ReactTestRendererJSON
+		| null
+		| undefined
+): string[] {
+	if ( node === null || node === undefined ) {
+		return [];
+	}
+	if ( typeof node === 'string' ) {
+		return [ node ];
+	}
+	if ( typeof node === 'number' ) {
+		return [ String( node ) ];
+	}
+	if ( ! Array.isArray( node.children ) ) {
+		return [];
+	}
+	return node.children.flatMap( ( child ) => findTextStrings( child ) );
+}
+
+/**
+ * Renders a PDF element and collects every text string it outputs.
+ *
+ * @since n.e.x.t
+ *
+ * @param element The PDF element to render.
+ * @return The rendered text strings, in render order. Empty when the element renders nothing.
+ */
+export function renderPDFText( element: ReactElement ): string[] {
+	const tree = TestRenderer.create( element ).toJSON();
+
+	if ( ! tree || Array.isArray( tree ) ) {
+		return [];
+	}
+
+	return findTextStrings( tree );
+}
+
+/**
+ * Renders a PDF element and flattens the style of its root node.
+ *
+ * A `@react-pdf` primitive takes its style as one object or as an array of
+ * them, so the style is flattened into a single object before a test reads it.
+ *
+ * @since n.e.x.t
+ *
+ * @param element The PDF element to render.
+ * @return The flattened style of the rendered root node.
+ */
+export function renderPDFStyle(
+	element: ReactElement
+): Record< string, unknown > {
+	const tree = TestRenderer.create(
+		element
+	).toJSON() as TestRenderer.ReactTestRendererJSON;
+
+	return Object.assign( {}, ...[ tree.props.style ].flat() );
+}
+
+/**
+ * Renders a PDF element and flattens the style of each of its children.
+ *
+ * @since n.e.x.t
+ *
+ * @param element The PDF element to render.
+ * @return The flattened style of every child node, in render order.
+ */
+export function renderPDFChildStyles(
+	element: ReactElement
+): Record< string, unknown >[] {
+	const tree = TestRenderer.create(
+		element
+	).toJSON() as TestRenderer.ReactTestRendererJSON;
+
+	return ( tree.children ?? [] ).map( ( child ) =>
+		Object.assign(
+			{},
+			...[
+				( child as TestRenderer.ReactTestRendererJSON ).props.style,
+			].flat()
+		)
 	);
 }

@@ -37,7 +37,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * starts.
  *
  * @since 1.184.0
- * @since n.e.x.t Required the goal type's widget to render, rather than only its category to be active, so the tour never points at a widget that is absent from the page.
+ * @since 1.186.0 Required the goal type's widget to render, rather than only its category to be active, so the tour never points at a widget that is absent from the page.
  *
  * @param select   The registry `select` function.
  * @param goalType The goal type whose widget to check.

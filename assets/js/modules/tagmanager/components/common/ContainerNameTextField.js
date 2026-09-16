@@ -33,7 +33,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { TextField } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
-import AccessibleWarningIcon from '@/js/components/AccessibleWarningIcon';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
 	FORM_SETUP,
@@ -60,22 +59,15 @@ export default function ContainerNameTextField( { label, name } ) {
 
 	const isUniqueName = isUniqueContainerName( containerName, containers );
 
-	const helperText =
-		containerName && ! isUniqueName
-			? __(
-					'A container with this name already exists',
-					'google-site-kit'
-			  )
-			: false;
-
-	const trailingIcon =
-		containerName && ! isUniqueName ? (
-			<span className="googlesitekit-text-field-icon--error">
-				<AccessibleWarningIcon />
-			</span>
-		) : (
-			false
+	let errorMessage;
+	if ( ! containerName ) {
+		errorMessage = __( 'A container name is required.', 'google-site-kit' );
+	} else if ( ! isUniqueName ) {
+		errorMessage = __(
+			'A container with this name already exists',
+			'google-site-kit'
 		);
+	}
 
 	return (
 		<div
@@ -85,12 +77,9 @@ export default function ContainerNameTextField( { label, name } ) {
 			) }
 		>
 			<TextField
-				className={ classnames( {
-					'mdc-text-field--error': ! containerName || ! isUniqueName,
-				} ) }
 				label={ label }
-				helperText={ helperText }
-				trailingIcon={ trailingIcon }
+				errorMessage={ errorMessage }
+				hasError={ ! containerName }
 				id={ name }
 				name={ name }
 				value={ containerName }

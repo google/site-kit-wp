@@ -27,7 +27,6 @@ exports[`ModuleSetup renders all elements correctly 1`] = `
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >

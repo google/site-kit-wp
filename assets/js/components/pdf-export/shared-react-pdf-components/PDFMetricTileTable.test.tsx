@@ -25,49 +25,14 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import PDFMetricTileTable from './PDFMetricTileTable';
-
-/**
- * Collects every text string rendered in a react-test-renderer tree, so a test
- * can assert on the tile copy without walking the tree itself.
- *
- * @since n.e.x.t
- *
- * @param {(string|number|Object|null)} node   The current tree node.
- * @param {string[]}                    output The strings collected so far.
- * @return {string[]} The collected text strings.
- */
-function findTextStrings(
-	node:
-		| string
-		| number
-		| TestRenderer.ReactTestRendererJSON
-		| null
-		| undefined,
-	output: string[] = []
-): string[] {
-	if ( node === null || node === undefined ) {
-		return output;
-	}
-	if ( typeof node === 'string' ) {
-		output.push( node );
-		return output;
-	}
-	if ( typeof node === 'number' ) {
-		output.push( String( node ) );
-		return output;
-	}
-	if ( Array.isArray( node.children ) ) {
-		node.children.forEach( ( child ) => findTextStrings( child, output ) );
-	}
-	return output;
-}
 
 /**
  * Renders `PDFMetricTileTable` with the given props and returns its collected
  * text strings.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {Object} props The tile props.
  * @return {string[]} The rendered text strings.
@@ -160,27 +125,54 @@ describe( 'PDFMetricTileTable', () => {
 		expect( json ).toContain( '"flexGrow":1' );
 	} );
 
-	it( 'colours the label like a link only when the dashboard tile links it', () => {
-		const linked = JSON.stringify(
-			TestRenderer.create(
-				<PDFMetricTileTable
-					title="Top pages"
-					rows={ [ { primary: '/home', metric: '37' } ] }
-					linked
-				/>
-			).toJSON()
-		);
-		const plain = JSON.stringify(
-			TestRenderer.create(
-				<PDFMetricTileTable
-					title="Top cities"
-					rows={ [ { primary: 'Dublin', metric: '37' } ] }
-				/>
-			).toJSON()
-		);
+	it( 'renders the label as a link to primaryURL when the row has one', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top pages"
+				rows={ [
+					{
+						primary: '/home',
+						metric: '37',
+						primaryURL: 'https://analytics.example.com/report',
+					},
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
 
-		expect( linked ).toContain( '#108080' );
-		expect( plain ).not.toContain( '#108080' );
+		expect( json ).toContain( '"type":"pdf-link"' );
+		expect( json ).toContain(
+			'"src":"https://analytics.example.com/report"'
+		);
+		expect( json ).toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when the row has no primaryURL', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [ { primary: 'Dublin', metric: '37' } ] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when primaryURL is null', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [
+					{ primary: 'Dublin', metric: '37', primaryURL: null },
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
 	} );
 
 	it( 'renders only the title when there are no rows', () => {

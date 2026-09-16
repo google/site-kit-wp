@@ -60,7 +60,7 @@ export type SharedModuleSettings = {
  * `google-site-kit-test-plugins/` directory.
  *
  * @since 1.175.0
- * @since n.e.x.t Support plugins outside the test plugins directory.
+ * @since 1.186.0 Support plugins outside the test plugins directory.
  *
  * @param {string[]} plugins Plugin file paths relative to the plugins directory (e.g. `my-plugin/my-plugin.php`).
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -144,7 +144,7 @@ export function withSharedModules(
  * One Analytics audience for a test, mirroring the shape Site Kit stores in the
  * `availableAudiences` setting.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  */
 export type TestAudience = {
 	name: string;
@@ -160,7 +160,7 @@ export type TestAudience = {
  * The `e2e-pdf-generation-state.php` must-use plugin applies the selection, so a
  * section that renders the configured metrics has a deterministic set of tiles.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {string[]} widgetSlugs The key metric widget slugs to select.
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -176,7 +176,7 @@ export function withKeyMetrics( widgetSlugs: string[] ): TestDetailsAnnotation {
  * Sets the Analytics audiences for the test: the given audiences become the
  * available and configured audiences, with audience segmentation marked complete.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param {TestAudience[]} audiences The audiences to make available and configured.
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -235,7 +235,7 @@ export function asUser(
 /**
  * Enables Conversion Tracking for the test.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @return {TestDetailsAnnotation} The annotation to use for the test.
  */

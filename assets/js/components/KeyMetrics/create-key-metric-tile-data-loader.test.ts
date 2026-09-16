@@ -78,9 +78,39 @@ describe( 'createKeyMetricTileDataLoader', () => {
 			{ signal }
 		);
 		// Extract receives the responses (not the `{ response }` wrappers), in
-		// the order the reports were built.
-		expect( extract ).toHaveBeenCalledWith( [ 'REPORT_A', 'REPORT_B' ] );
+		// the order the reports were built, plus the registry/dates/viewOnly
+		// context a tile can use to build a row's link.
+		expect( extract ).toHaveBeenCalledWith( [ 'REPORT_A', 'REPORT_B' ], {
+			registry,
+			dates: DATES,
+			viewOnly: false,
+		} );
 		expect( result ).toEqual( { reports: [ 'REPORT_A', 'REPORT_B' ] } );
+	} );
+
+	it( 'passes viewOnly through to extract, defaulting to false when omitted', async () => {
+		const fetchGetReport = jest.fn().mockResolvedValue( { response: 'R' } );
+		const { registry } = createRegistry( fetchGetReport );
+		const extract = jest.fn();
+		const getTileData = createKeyMetricTileDataLoader(
+			() => [ { moduleStore: 'test/store', options: {} } ],
+			extract
+		);
+		const { signal } = new AbortController();
+
+		await getTileData( { registry, dates: DATES, signal } );
+		expect( extract ).toHaveBeenCalledWith( [ 'R' ], {
+			registry,
+			dates: DATES,
+			viewOnly: false,
+		} );
+
+		await getTileData( { registry, dates: DATES, signal, viewOnly: true } );
+		expect( extract ).toHaveBeenCalledWith( [ 'R' ], {
+			registry,
+			dates: DATES,
+			viewOnly: true,
+		} );
 	} );
 
 	it( 'fetches every report in parallel', async () => {

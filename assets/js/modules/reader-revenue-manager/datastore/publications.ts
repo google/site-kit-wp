@@ -52,8 +52,9 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_ONBOARDING_STATES,
 } from './constants';
+import { type ReaderRevenueManagerSettings } from './types';
 
-interface Publication {
+export interface Publication {
 	/* eslint-disable sitekit/acronym-case -- `Id` is the identifier used by the API. */
 	publicationId: string;
 	organizationId?: string;
@@ -65,19 +66,20 @@ interface Publication {
 		contentPolicyState: string;
 		policyInfoLink?: string;
 	};
-}
-
-interface ReaderRevenueManagerSettings {
-	publicationID?: string;
-	publicationOnboardingState?: string;
-	publicationOnboardingStateChanged?: boolean;
-	publicationOnboardingStateLastSyncedAtMs?: number;
-	productIDs?: string[];
-	paymentOption?: string;
-	productID?: string;
-	organizationID?: string;
-	contentPolicyState?: string;
-	policyInfoLink?: string;
+	languageCode?: string;
+	regionCode?: string;
+	rrmProduct?: {
+		// eslint-disable-next-line sitekit/acronym-case -- `Url` is the normalized API field name.
+		productTosUrl?: string;
+		tosAcceptance?: {
+			emailOptIn?: boolean;
+			userAccepted: boolean;
+		};
+	};
+	/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+	publicationTosUrl?: string;
+	publicationPrivacyPolicyUrl?: string;
+	/* eslint-enable sitekit/acronym-case */
 }
 
 interface ReaderRevenueManagerState {
@@ -92,12 +94,12 @@ interface CreatePublicationParams {
 	regionCode: string;
 }
 
-interface PublicationParams {
+export interface PublicationParams {
 	organizationID: string;
 	publicationID: string;
 }
 
-interface UpdatePublicationParams extends Partial< PublicationParams > {
+export interface UpdatePublicationParams extends Partial< PublicationParams > {
 	data: Record< string, unknown >;
 }
 
@@ -109,12 +111,12 @@ interface SyncPublicationOnboardingStateParams {
 /**
  * Validates optional publication parameters.
  *
- * @since n.e.x.t
+ * @since 1.186.0
  *
  * @param  params Publication parameters to validate.
  * @return {void}
  */
-function validateOptionalPublicationParams(
+export function validateOptionalPublicationParams(
 	params: Partial< PublicationParams > = {}
 ): void {
 	const { organizationID, publicationID } = params;
@@ -135,6 +137,97 @@ type ReaderRevenueManagerRegistry = WPDataRegistry & {
 	resolveSelect: WPDataRegistry[ 'select' ];
 };
 
+/**
+ * Syncs connected publication fields into settings and savedSettings.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} state       Module state.
+ * @param {Object} publication Publication to sync from.
+ * @return {void}
+ */
+function syncConnectedPublicationSettings(
+	state: ReaderRevenueManagerState,
+	publication: Publication
+): void {
+	if (
+		! state.settings?.publicationID ||
+		// eslint-disable-next-line sitekit/acronym-case
+		publication.publicationId !== state.settings.publicationID
+	) {
+		return;
+	}
+
+	const newSettings: ReaderRevenueManagerSettings = {
+		publicationOnboardingState: publication.onboardingState,
+		productIDs: getProductIDs( publication.products! ),
+		paymentOption: getPaymentOption( publication.paymentOptions! ),
+	};
+
+	if ( publication.contentPolicyStatus ) {
+		newSettings.contentPolicyState =
+			publication.contentPolicyStatus.contentPolicyState;
+		newSettings.policyInfoLink =
+			publication.contentPolicyStatus.policyInfoLink || '';
+	}
+
+	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
+		// eslint-disable-next-line sitekit/acronym-case
+		newSettings.organizationID = publication.organizationId || '';
+	}
+
+	Object.assign( state.settings, newSettings );
+
+	if ( state.savedSettings ) {
+		Object.assign( state.savedSettings, newSettings );
+	}
+}
+
+/**
+ * Resolves the publication ID for a request, falling back to the saved setting.
+ *
+ * @since 1.187.0
+ *
+ * @param {Object} state            Store state.
+ * @param {Object} [state.settings] Module settings.
+ * @param {Object} [params]         Optional publication parameters.
+ * @return {string|undefined} Publication ID, if one can be resolved.
+ */
+export function getSelectedPublicationID(
+	state: { settings?: ReaderRevenueManagerSettings },
+	params: Partial< PublicationParams > = {}
+): string | undefined {
+	return params.publicationID || state.settings?.publicationID;
+}
+
+/**
+ * Resolves module settings when no publication ID was passed and settings
+ * are not already in the store.
+ *
+ * @since 1.187.0
+ *
+ * @param {Object} registry               Data registry.
+ * @param {Object} [params]               Optional publication parameters.
+ * @param {string} [params.publicationID] Publication ID.
+ * @return {Promise|undefined} Settings resolution, if needed.
+ */
+export function maybeResolveSettings(
+	registry: ReaderRevenueManagerRegistry,
+	params: Partial< PublicationParams > = {}
+): Promise< void > | undefined {
+	if (
+		params.publicationID ||
+		registry.select( MODULES_READER_REVENUE_MANAGER ).getSettings() !==
+			undefined
+	) {
+		return undefined;
+	}
+
+	return registry
+		.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+		.getSettings();
+}
+
 const fetchGetPublicationsStore = createFetchStore( {
 	baseName: 'getPublications',
 	controlCallback: () =>
@@ -149,43 +242,43 @@ const fetchGetPublicationsStore = createFetchStore( {
 		( state: ReaderRevenueManagerState, publications: Publication[] ) => {
 			state.publications = publications;
 
-			if ( state.settings?.publicationID ) {
-				const publication = publications?.find(
-					// eslint-disable-next-line sitekit/acronym-case
-					( { publicationId: id } ) =>
-						id === state.settings.publicationID
-				);
+			const publication = publications?.find(
+				// eslint-disable-next-line sitekit/acronym-case
+				( { publicationId: id } ) =>
+					id === state.settings?.publicationID
+			);
 
-				if ( publication ) {
-					const newSettings: ReaderRevenueManagerSettings = {
-						publicationOnboardingState: publication.onboardingState,
-						productIDs: getProductIDs( publication.products! ),
-						paymentOption: getPaymentOption(
-							publication.paymentOptions!
-						),
-					};
-
-					if ( publication.contentPolicyStatus ) {
-						newSettings.contentPolicyState =
-							publication.contentPolicyStatus.contentPolicyState;
-						newSettings.policyInfoLink =
-							publication.contentPolicyStatus.policyInfoLink ||
-							'';
-					}
-
-					Object.assign( state.settings, newSettings );
-
-					if ( state.savedSettings ) {
-						Object.assign( state.savedSettings, newSettings );
-					}
-				}
+			if ( publication ) {
+				syncConnectedPublicationSettings( state, publication );
 			}
 		}
 	),
 } );
 
+const fetchPublicationStoreReducerCallback = createReducer(
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
+		state.publications = state.publications || [];
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		const publicationID = publication.publicationId;
+
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( publicationIndex === -1 ) {
+			state.publications.push( publication );
+		} else {
+			state.publications[ publicationIndex ] = publication;
+		}
+
+		syncConnectedPublicationSettings( state, publication );
+	}
+);
+
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	controlCallback: ( {
 		displayName,
 		languageCode,
@@ -230,25 +323,6 @@ const fetchCreatePublicationStore = createFetchStore( {
 	},
 	isAction: true,
 } );
-
-const fetchPublicationStoreReducerCallback = createReducer(
-	( state: ReaderRevenueManagerState, publication: Publication ) => {
-		state.publications = state.publications || [];
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		const publicationIndex = state.publications.findIndex(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( publicationIndex === -1 ) {
-			state.publications.push( publication );
-		} else {
-			state.publications[ publicationIndex ] = publication;
-		}
-	}
-);
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
@@ -387,7 +461,7 @@ const baseActions = {
 	/**
 	 * Creates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params              Publication creation parameters.
 	 * @param {string} params.displayName  Publication display name.
@@ -426,7 +500,7 @@ const baseActions = {
 	/**
 	 * Updates a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} params                  Publication update parameters.
 	 * @param {string} [params.publicationID]  Publication ID. Defaults to the configured setting on the server.
@@ -524,6 +598,10 @@ const baseActions = {
 				.getPublications()
 		);
 		const publications = publicationsResult as Publication[];
+
+		if ( ! publications ) {
+			return null;
+		}
 
 		if ( publications.length === 0 ) {
 			return null;
@@ -661,17 +739,37 @@ const baseResolvers = {
 		params: Partial< PublicationParams > = {}
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as WPDataRegistry;
+		const registry = registryResult as ReaderRevenueManagerRegistry;
+
+		// Conditionally resolve settings so that the fetch reducer has
+		// the publication ID to key the list by.
+		const settingsResolution = maybeResolveSettings( registry, params );
+
+		if ( settingsResolution ) {
+			yield commonActions.await( settingsResolution );
+		}
+
 		const publication = registry
 			.select( MODULES_READER_REVENUE_MANAGER )
 			.getPublication( params );
 
-		if ( publication === undefined ) {
-			// @ts-expect-error createFetchStore is not properly typed yet.
-			yield fetchGetPublicationStore.actions.fetchGetPublication(
-				params
-			);
+		if ( publication !== undefined ) {
+			return;
 		}
+
+		const publicationID =
+			params.publicationID ||
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublicationID();
+
+		// No publication to look up; skip the fetch rather than looping on `undefined`.
+		if ( ! publicationID ) {
+			return;
+		}
+
+		// @ts-expect-error createFetchStore is not properly typed yet.
+		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
 	},
 };
 
@@ -691,7 +789,7 @@ const baseSelectors = {
 	/**
 	 * Gets a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.186.0
 	 *
 	 * @param {Object} state                   Data store's state.
 	 * @param {Object} params                  Publication parameters.
@@ -703,9 +801,7 @@ const baseSelectors = {
 		state: ReaderRevenueManagerState,
 		params: Partial< PublicationParams > = {}
 	) {
-		const { publicationID } = params;
-		const selectedPublicationID =
-			publicationID || state.settings?.publicationID;
+		const selectedPublicationID = getSelectedPublicationID( state, params );
 
 		if ( ! selectedPublicationID ) {
 			return undefined;

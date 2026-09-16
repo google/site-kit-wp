@@ -28,6 +28,7 @@ export const VIEW_CONTEXT_SPLASH = 'splash';
 export const VIEW_CONTEXT_ADMIN_BAR = 'adminBar';
 export const VIEW_CONTEXT_ADMIN_BAR_VIEW_ONLY = 'adminBarViewOnly';
 export const VIEW_CONTEXT_SETTINGS = 'settings';
+export const VIEW_CONTEXT_FEATURE_DISCOVERY = 'featureDiscovery';
 export const VIEW_CONTEXT_AD_BLOCKING_RECOVERY = 'adBlockingRecovery';
 export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
@@ -54,6 +55,7 @@ export const SITE_KIT_VIEW_CONTEXTS = [
 	VIEW_CONTEXT_USER_INPUT,
 	VIEW_CONTEXT_SPLASH,
 	VIEW_CONTEXT_SETTINGS,
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MODULE_SETUP,
 	VIEW_CONTEXT_METRIC_SELECTION,
 ];

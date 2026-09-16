@@ -108,6 +108,12 @@ describe( 'SettingsEdit', () => {
 				{ propertyID, webDataStreamID }
 			);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetExistingTag( null );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID } );
 
 		muteFetch( analyticsSettingsEndpoint );
 	} );

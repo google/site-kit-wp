@@ -382,7 +382,7 @@ class Setup {
 
 			$this->user_options->set( OAuth_Client::OPTION_ERROR_CODE, $error_code );
 
-			throw new Exchange_Site_Code_Exception( $error_code );
+			throw new Exchange_Site_Code_Exception( $error_code ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		$this->credentials->set(
