@@ -21,9 +21,18 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	 */
 	private $edd;
 
+	/**
+	 * The provider's script handle.
+	 *
+	 * @var string
+	 */
+	private $handle;
+
 	public function set_up() {
 		parent::set_up();
-		$this->edd = new Easy_Digital_Downloads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$this->edd    = new Easy_Digital_Downloads( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$this->handle = 'googlesitekit-events-provider-' . Easy_Digital_Downloads::CONVERSION_EVENT_PROVIDER_SLUG;
 	}
 
 	/**
@@ -58,6 +67,151 @@ class Easy_Digital_DownloadsTest extends TestCase {
 
 		$this->edd->register_hooks();
 		$this->assertTrue( has_action( 'wp_footer' ), 'Expected wp_footer action to be registered.' );
+	}
+
+	/**
+	 * @dataProvider data_currencies
+	 */
+	public function test_get_currency( $store_currency, $expected ) {
+		$edd = $this->create_provider( $store_currency );
+
+		$reflection = new \ReflectionClass( $edd );
+		$method     = $reflection->getMethod( 'get_currency' );
+		$method->setAccessible( true );
+
+		$this->assertSame(
+			$expected,
+			$method->invoke( $edd ),
+			'get_currency() should return a currency gtag accepts, or nothing at all.'
+		);
+	}
+
+	public function data_currencies() {
+		return array(
+			'a currency code'                    => array( 'EUR', 'EUR' ),
+			'a lowercase currency code'          => array( 'eur', 'EUR' ),
+			'a currency code with a symbol'      => array( 'EUR €', '' ),
+			'a currency symbol'                  => array( '€', '' ),
+			'a code of the wrong length'         => array( 'EURO', '' ),
+			'an empty currency'                  => array( '', '' ),
+			'a currency that is not even a code' => array( array( 'EUR' ), '' ),
+			'no currency at all'                 => array( null, '' ),
+		);
+	}
+
+	public function test_add_inline_data__currency() {
+		$this->assertStringContainsString(
+			'window._googlesitekit.edddata.currency = "EUR";',
+			$this->get_inline_script( $this->create_provider( 'EUR' ) ),
+			'The provider should add the store currency, JSON-encoded.'
+		);
+	}
+
+	public function test_add_inline_data__unusable_currency() {
+		$this->assertStringNotContainsString(
+			'edddata.currency',
+			$this->get_inline_script( $this->create_provider( 'Euros' ) ),
+			'The provider should add no currency at all when the store currency is not one gtag accepts.'
+		);
+	}
+
+	public function test_add_inline_data__no_purchase_outside_the_success_page() {
+		$inline_script = $this->get_inline_script( $this->create_provider( 'EUR' ) );
+
+		$this->assertStringNotContainsString(
+			'edddata.purchase',
+			$inline_script,
+			'The provider should add no purchase data outside the success page.'
+		);
+		$this->assertStringContainsString(
+			'edddata.currency',
+			$inline_script,
+			'The provider should still add the currency outside the success page.'
+		);
+	}
+
+	public function test_add_inline_data__purchase_on_the_success_page() {
+		$edd = $this->create_provider(
+			'EUR',
+			true,
+			array(
+				'price'        => 2.33,
+				'cart_details' => array(
+					array(
+						'name'       => 'Product',
+						'id'         => '1234',
+						'item_price' => '2.33',
+					),
+				),
+			)
+		);
+
+		$inline_script = $this->get_inline_script( $edd );
+
+		$this->assertStringContainsString(
+			'window._googlesitekit.edddata.purchase = {"items":[{"item_id":"1234","item_name":"Product","price":"2.33"}],"value":2.33};',
+			$inline_script,
+			'The provider should add the purchase data on the success page.'
+		);
+		$this->assertSame(
+			1,
+			substr_count( $inline_script, 'window._googlesitekit.edddata = window._googlesitekit.edddata || {};' ),
+			'The provider should set up the edddata namespace exactly once, however many fields it adds to it.'
+		);
+	}
+
+	public function test_add_inline_data__nothing_to_add() {
+		$this->assertSame(
+			'',
+			$this->get_inline_script( $this->create_provider() ),
+			'The provider should add no inline script when it has no data for it.'
+		);
+	}
+
+	/**
+	 * Creates a provider with the methods that read from Easy Digital Downloads stubbed.
+	 *
+	 * The plugin is not installed here, so those methods are the seam the tests
+	 * control instead. Everything the provider does with what they return is the
+	 * real implementation.
+	 *
+	 * @param mixed $currency         What the store reports as its currency.
+	 * @param bool  $is_success_page  Whether the current request is the purchase success page.
+	 * @param mixed $purchase_session What the store reports as the current purchase.
+	 *
+	 * @return Easy_Digital_Downloads The provider, reporting what the arguments describe.
+	 */
+	private function create_provider( $currency = null, $is_success_page = false, $purchase_session = null ) {
+		$edd = $this->getMockBuilder( Easy_Digital_Downloads::class )
+			->setConstructorArgs( array( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )
+			->setMethods( array( 'read_store_currency', 'is_success_page', 'read_purchase_session' ) )
+			->getMock();
+
+		$edd->method( 'read_store_currency' )->willReturn( $currency );
+		$edd->method( 'is_success_page' )->willReturn( $is_success_page );
+		$edd->method( 'read_purchase_session' )->willReturn( $purchase_session );
+
+		return $edd;
+	}
+
+	/**
+	 * Runs the provider's `wp_footer` callback and returns the inline script it added.
+	 *
+	 * @param Easy_Digital_Downloads $edd The provider to run.
+	 *
+	 * @return string The inline script, or an empty string when the provider added none.
+	 */
+	private function get_inline_script( $edd ) {
+		$edd->register_script();
+
+		// WordPress core and the active theme hook `wp_footer` too. Clear it, so the
+		// `do_action()` below runs only the callback `register_hooks()` adds.
+		remove_all_actions( 'wp_footer' );
+		$edd->register_hooks();
+
+		do_action( 'wp_footer' );
+
+		return join( "\n", (array) wp_scripts()->get_data( $this->handle, 'before' ) );
 	}
 
 	/**
