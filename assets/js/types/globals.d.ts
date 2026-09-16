@@ -44,6 +44,10 @@ declare global {
 	var _googlesitekit:
 		| {
 				contentEvents?: ContentEventsConfig;
+				edddata?: {
+					currency?: string;
+					purchase?: Record< string, unknown >;
+				};
 				gtagUserData?: boolean;
 				gtagEvent?: (
 					name: string,
