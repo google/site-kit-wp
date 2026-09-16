@@ -501,11 +501,12 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension Custom dimension slug the card groups by, such as
-	 *                                 `googlesitekit_event_provider`.
+	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
+	 *                                 `googlesitekit_event_provider`. Default empty, which returns
+	 *                                 one row per store event for the whole site.
 	 * @return array Report request options array.
 	 */
-	public function get_online_store_discovery_options( $custom_dimension ) {
+	public function get_online_store_discovery_options( $custom_dimension = '' ) {
 		return $this->with_discovery_range(
 			$this->build_event_count_options(
 				array(
@@ -522,11 +523,12 @@ class Report_Options extends Base_Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $custom_dimension Custom dimension slug the card groups by, such as
-	 *                                 `googlesitekit_form_id`.
+	 * @param string $custom_dimension Optional. Custom dimension slug the card groups by, such as
+	 *                                 `googlesitekit_form_id`. Default empty, which returns one row
+	 *                                 per detected lead event for the whole site.
 	 * @return array Report request options array.
 	 */
-	public function get_lead_discovery_options( $custom_dimension ) {
+	public function get_lead_discovery_options( $custom_dimension = '' ) {
 		return $this->with_discovery_range(
 			$this->build_event_count_options( $this->get_lead_event_filter(), $custom_dimension )
 		);
