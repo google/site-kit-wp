@@ -35,8 +35,6 @@ import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TrafficChart from './TrafficChart';
 
-// `last-28-days` against the `2025-02-05` reference date that `commonSetup` sets
-// runs from `2025-01-09` to `2025-02-05`.
 const dailyVisitorsReport = getAnalytics4MockResponse(
 	getGraphReportArgs( { startDate: '2025-01-09', endDate: '2025-02-05' } )
 );
