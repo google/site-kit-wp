@@ -20,7 +20,7 @@ type SiteKitGlobal = typeof global._googlesitekit;
 
 const mockInitializeVimeo = jest.fn();
 const mockInitializePagination = jest.fn();
-const mockInitializeReadArticle = jest.fn();
+const mockInitializeReadArticleEventTracker = jest.fn();
 
 jest.mock( './content-events/vimeo', () => ( {
 	__esModule: true,
@@ -35,8 +35,8 @@ jest.mock( './content-events/pagination', () => ( {
 
 jest.mock( './content-events/read-article', () => ( {
 	__esModule: true,
-	initializeReadArticle: ( ...args: unknown[] ) =>
-		mockInitializeReadArticle( ...args ),
+	initializeReadArticleEventTracker: ( ...args: unknown[] ) =>
+		mockInitializeReadArticleEventTracker( ...args ),
 } ) );
 
 function deleteSiteKitGlobal() {
@@ -55,7 +55,7 @@ describe( 'content-events', () => {
 		mockInitializeVimeo.mockReset();
 		mockInitializeVimeo.mockResolvedValue( undefined );
 		mockInitializePagination.mockReset();
-		mockInitializeReadArticle.mockReset();
+		mockInitializeReadArticleEventTracker.mockReset();
 	} );
 
 	afterEach( () => {
@@ -232,7 +232,7 @@ describe( 'content-events', () => {
 
 		await import( './content-events' );
 
-		expect( mockInitializeReadArticle ).toHaveBeenCalledWith( {
+		expect( mockInitializeReadArticleEventTracker ).toHaveBeenCalledWith( {
 			postID: 42,
 			isSinglePost: true,
 			hasVimeoEmbed: true,
@@ -269,7 +269,7 @@ describe( 'content-events', () => {
 			.spyOn( console, 'error' )
 			.mockImplementation( () => {} );
 
-		mockInitializeReadArticle.mockImplementation( () => {
+		mockInitializeReadArticleEventTracker.mockImplementation( () => {
 			throw new Error( 'boom' );
 		} );
 
@@ -296,7 +296,9 @@ describe( 'content-events', () => {
 
 		await import( './content-events' );
 
-		expect( mockInitializeReadArticle ).toHaveBeenCalledTimes( 1 );
+		expect( mockInitializeReadArticleEventTracker ).toHaveBeenCalledTimes(
+			1
+		);
 
 		consoleErrorSpy.mockRestore();
 	} );

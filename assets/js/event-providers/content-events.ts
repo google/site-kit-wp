@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { initializePagination } from './content-events/pagination';
-import { initializeReadArticle } from './content-events/read-article';
+import { initializeReadArticleEventTracker } from './content-events/read-article';
 import { initializeVimeo } from './content-events/vimeo';
 
 /** The Content Events configuration published by PHP on the frontend. */
@@ -63,7 +63,7 @@ export function getContentEventsConfig(): ContentEventsConfig {
 		// requires them. `Content_Events.php` always sends the real values.
 		// Only a page cached before this release falls back to these numbers.
 		// That page has no `isLastPageOfMultiPagePost` either, so
-		// `initializeReadArticle()` returns before it reads them.
+		// `initializeReadArticleEventTracker()` returns before it reads them.
 		readTimeThresholdPercent: 85,
 		minimumReadTimeSeconds: 5,
 		...( global._googlesitekit?.contentEvents || {} ),
@@ -105,6 +105,6 @@ initializeSafely(
 );
 
 initializeSafely(
-	() => initializeReadArticle( config ),
+	() => initializeReadArticleEventTracker( config ),
 	'Site Kit: failed to initialize read article tracking.'
 );

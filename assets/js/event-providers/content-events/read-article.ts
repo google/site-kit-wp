@@ -34,7 +34,9 @@ import { ContentEventsConfig } from '@/js/event-providers/content-events';
  * @param {ContentEventsConfig} config Content events configuration.
  * @return {void}
  */
-export function initializeReadArticle( config: ContentEventsConfig ): void {
+export function initializeReadArticleEventTracker(
+	config: ContentEventsConfig
+): void {
 	const {
 		postID,
 		isSinglePost,

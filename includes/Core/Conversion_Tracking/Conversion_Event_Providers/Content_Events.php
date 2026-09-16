@@ -72,10 +72,10 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Invisible marker appended to the end of a single post's content.
 	 *
-	 * `initializeReadArticle()` watches the marker to see when the end of the
-	 * article reaches the screen. A span with no height never comes into view,
-	 * so the marker is `1px` tall. The `-1px` margin keeps that pixel out of the
-	 * layout.
+	 * `initializeReadArticleEventTracker()` watches the marker to see when the
+	 * end of the article reaches the screen. A span with no height never comes
+	 * into view, so the marker is `1px` tall. The `-1px` margin keeps that
+	 * pixel out of the layout.
 	 *
 	 * @since n.e.x.t
 	 */

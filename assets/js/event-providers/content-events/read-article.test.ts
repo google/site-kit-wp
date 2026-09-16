@@ -25,7 +25,7 @@ import { intersectionObserver } from '@shopify/jest-dom-mocks';
  * Internal dependencies
  */
 import { ContentEventsConfig } from '@/js/event-providers/content-events';
-import { initializeReadArticle } from './read-article';
+import { initializeReadArticleEventTracker } from './read-article';
 
 type SiteKitGlobal = typeof global._googlesitekit;
 
@@ -63,7 +63,7 @@ function baseConfig(
 	};
 }
 
-describe( 'initializeReadArticle', () => {
+describe( 'initializeReadArticleEventTracker', () => {
 	let gtagEventMock: jest.Mock;
 	let windowListenerSpy: jest.SpyInstance;
 	let documentListenerSpy: jest.SpyInstance;
@@ -242,9 +242,10 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	afterEach( () => {
-		// `initializeReadArticle()` removes its own listeners only after it
-		// sends the event, and most tests here never send one. A listener left
-		// behind reacts to the next test's scrolls and focus changes.
+		// `initializeReadArticleEventTracker()` removes its own listeners only
+		// after it sends the event, and most tests here never send one. A
+		// listener left behind reacts to the next test's scrolls and focus
+		// changes.
 		windowListenerSpy.mock.calls.forEach( ( [ type, listener ] ) => {
 			global.removeEventListener( type, listener );
 		} );
@@ -260,7 +261,9 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'registers no observer, listener, or timer when the request is not for a single post', () => {
-		initializeReadArticle( baseConfig( { isSinglePost: false } ) );
+		initializeReadArticleEventTracker(
+			baseConfig( { isSinglePost: false } )
+		);
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
 		expect( windowListenerSpy ).not.toHaveBeenCalled();
@@ -273,7 +276,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'registers no observer, listener, or timer when the post is not on its last page', () => {
-		initializeReadArticle(
+		initializeReadArticleEventTracker(
 			baseConfig( { isLastPageOfMultiPagePost: false } )
 		);
 
@@ -288,7 +291,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'watches the end-of-content marker rather than the scroll position when the page has one', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
 		expect( intersectionObserver.observers[ 0 ].target ).toBe(
@@ -302,7 +305,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'sends the event when the end-of-content marker is scrolled into view and the waiting time is then reached', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -319,7 +322,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'sends the event when the waiting time is reached and the end-of-content marker is scrolled into view', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
 
@@ -336,7 +339,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'starts no new timer when the waiting time has already been reached', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
 
@@ -353,7 +356,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'sends nothing when the end-of-content marker has never been scrolled into view', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: false } );
 		jest.advanceTimersByTime( LONGER_THAN_ANY_WAIT_MS );
@@ -363,7 +366,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'stops watching the end-of-content marker once it has been viewed', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 1 );
 
@@ -373,7 +376,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'does not watch the end-of-content marker again when the visitor scrolls back up', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 		intersectionObserver.simulate( { isIntersecting: true } );
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
@@ -389,7 +392,9 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'waits 5100 ms for an estimate of 6 seconds', () => {
-		initializeReadArticle( baseConfig( { estimatedReadTimeSeconds: 6 } ) );
+		initializeReadArticleEventTracker(
+			baseConfig( { estimatedReadTimeSeconds: 6 } )
+		);
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -403,7 +408,9 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'never waits less than 5000 ms for an estimate of 3 seconds', () => {
-		initializeReadArticle( baseConfig( { estimatedReadTimeSeconds: 3 } ) );
+		initializeReadArticleEventTracker(
+			baseConfig( { estimatedReadTimeSeconds: 3 } )
+		);
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -418,7 +425,7 @@ describe( 'initializeReadArticle', () => {
 
 	it( 'falls back to the scroll position when the page has no end-of-content marker', () => {
 		renderPostWithoutMarker();
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( intersectionObserver.observers ).toHaveLength( 0 );
 		expect( windowListenerSpy ).toHaveBeenCalledWith(
@@ -451,7 +458,7 @@ describe( 'initializeReadArticle', () => {
 		delete ( global as { IntersectionObserver?: unknown } )
 			.IntersectionObserver;
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( windowListenerSpy ).toHaveBeenCalledWith(
 			'scroll',
@@ -472,7 +479,7 @@ describe( 'initializeReadArticle', () => {
 		renderPostWithoutMarker();
 		placePageAt( 1 );
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
 
@@ -480,7 +487,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'counts no time towards the waiting time when the page is hidden', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -502,7 +509,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'counts no time towards the waiting time when the window is in the background', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -524,7 +531,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'adds up the waiting time over several periods of reading', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -550,7 +557,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'waits 50000 ms for 50% of a 100-second estimate', () => {
-		initializeReadArticle(
+		initializeReadArticleEventTracker(
 			baseConfig( {
 				estimatedReadTimeSeconds: 100,
 				readTimeThresholdPercent: 50,
@@ -569,7 +576,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'waits 20000 ms when the shortest wait is 20 seconds', () => {
-		initializeReadArticle(
+		initializeReadArticleEventTracker(
 			baseConfig( {
 				estimatedReadTimeSeconds: 1,
 				minimumReadTimeSeconds: 20,
@@ -588,7 +595,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'keeps counting when the window loses the focus and the document keeps it', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -606,7 +613,7 @@ describe( 'initializeReadArticle', () => {
 	it( 'starts no waiting time when the page is hidden on load', () => {
 		markPageHidden();
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( jest.getTimerCount() ).toBe( 0 );
 
@@ -624,7 +631,7 @@ describe( 'initializeReadArticle', () => {
 	it( 'starts no waiting time when the window is in the background on load', () => {
 		mockHasFocusValue = false;
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		expect( jest.getTimerCount() ).toBe( 0 );
 
@@ -640,7 +647,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'keeps the waiting time stopped when the page is shown again and the window is still in the background', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 
@@ -660,7 +667,7 @@ describe( 'initializeReadArticle', () => {
 		renderPostWithoutMarker();
 		placePageAt( 1 );
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
 
@@ -674,7 +681,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'does not send another "read_article" event once the "read_article" event has been sent', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
@@ -690,7 +697,7 @@ describe( 'initializeReadArticle', () => {
 	} );
 
 	it( 'removes the observer, the timer, and the listeners when the "read_article" event has been sent', () => {
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
@@ -725,7 +732,7 @@ describe( 'initializeReadArticle', () => {
 			throw new Error( 'boom' );
 		} );
 
-		initializeReadArticle( baseConfig() );
+		initializeReadArticleEventTracker( baseConfig() );
 
 		intersectionObserver.simulate( { isIntersecting: true } );
 		jest.advanceTimersByTime( REQUIRED_WAIT_MS );
