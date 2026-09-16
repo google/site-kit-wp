@@ -22,12 +22,20 @@ verbatim:
 - **Feature Description** — the problem / publisher need.
 - **Acceptance criteria** — between `## Acceptance criteria` and `## Implementation Brief`.
 - **Implementation Brief** — between `## Implementation Brief` and `### Test Coverage` (the
-  technical checkboxes; this is your primary spec).
+  technical checkboxes; your plan of work).
 - **Test Coverage** — between `### Test Coverage` and `## QA Brief`.
 - **QA Brief** — between `## QA Brief` and `## Changelog entry`.
 
 Note: the **Changelog entry** section is filled in by the merge reviewer at PR-merge time,
 not when the issue is created — expect it to be empty and don't rely on it.
+
+**The acceptance criteria are the contract; the Implementation Brief is one route to satisfying
+them.** Read both before you write any code, and where the two disagree the criteria win — the
+brief is drafted first and the criteria keep moving through review, so the brief is the half that
+goes stale. The brief also leaves user-facing copy and observable behavior to the criteria on
+purpose rather than quoting them, so a heading, label or error message you cannot find in the
+brief is in the criteria, not missing. Where a criterion and a brief bullet genuinely cannot both
+be satisfied, stop and ask.
 
 **Stop and ask the user** if: the issue can't be found, the body is empty, the section
 markers are missing, or the Implementation Brief is ambiguous/contradictory. Do not guess

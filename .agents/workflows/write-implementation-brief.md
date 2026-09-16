@@ -30,8 +30,9 @@ of this project's AI tools). Follow it exactly. Summary of the steps:
    exemplar rather than describing one; cross-reference sibling issues inline; fence the scope
    in one line. No rationale, no unneeded work, no routine commands, no local design-doc links.
 6. **Write the Test Coverage** — short. One bullet per test file or area, cases nested and
-   phrased as behaviors, negative cases included, Storybook stories listed here (not in the
-   brief), plus any existing tests the change will break.
+   phrased as behaviors, negative cases included, Storybook stories and VRT expectations listed
+   here (not in the brief), plus any existing tests the change will break. Say when nothing is
+   needed and why; never `N/A` for tests, and a bare "No VRT changes expected" is fine for VRT.
 7. **Report separately** the discrepancies, unanticipated consequences, and assumptions that did
    not belong in the brief.
 

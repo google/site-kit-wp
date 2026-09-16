@@ -35,7 +35,7 @@ truth shared with the other AI tools.
 5. **Write the two sections** in place. The brief is grouped by path, one instruction per bullet,
    naming real symbols/components/strings and pointing at existing exemplars. Test Coverage is
    short: one bullet per test file or area, cases nested and phrased as behaviors, Storybook
-   stories listed there rather than in the brief.
+   stories and VRT expectations listed there rather than in the brief.
 6. **Report separately** the discrepancies, unanticipated consequences, and assumptions that did
    not belong in the brief.
 
@@ -44,8 +44,8 @@ truth shared with the other AI tools.
 - **Instructions only.** No rationale, no trade-off discussion, no restated acceptance criteria,
   no background on how the existing system works.
 - **Say when nothing is needed.** Never leave Test Coverage empty and never drop the Storybook
-  line in silence — when the change needs no tests or no story, write one bullet that says so
-  with the reason.
+  or VRT line in silence — when the change needs no tests or no story, write one bullet that says
+  so with the reason. Never `N/A` for tests; a bare "No VRT changes expected" is fine for VRT.
 - **Omit work the issue never raised.** No "no migration needed", "no new settings" — silence
   says it.
 - **No routine commands.** Lint, build, test and VRT invocations belong to

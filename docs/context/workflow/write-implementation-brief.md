@@ -69,12 +69,10 @@ confirm, by reading it:
 - Which existing tests, fixtures, snapshots or inline data the change will move.
 - **That the build can compile the kind of file you are about to name.** Open the build config
   that will include the new file, plus the lint config and `tsconfig.json`. A bundle can define
-  its own rules instead of using the shared `createRules()`:
-  `assets/webpack/frontendModules.config.js` defines a `babel-loader` rule that matches `.js`
-  only, so the first `.ts` file in that bundle needs a new rule, and adding that rule is part of
-  the brief. Check the globals the new file reads in the same pass: `_googlesitekit` has no
-  declaration in `assets/js/types/globals.d.ts`, so a TypeScript file that reads it fails
-  `npm run typecheck` until a declaration is added.
+  its own loader rules instead of using the shared `createRules()`, and where those rules do not
+  already match the extension you are naming, adding a rule is part of the brief. Check the
+  globals the new file reads in the same pass: a global with no declaration in
+  `assets/js/types/globals.d.ts` fails `npm run typecheck` until one is added.
 
 Where the code contradicts the design doc, the code wins: write the brief against reality and
 report the discrepancy (Step 7).
@@ -182,8 +180,7 @@ search for something the codebase has already decided.
   (`getCTAs( { organizationID, publicationID } )`), and the form/store constants they use;
 - components to reuse (`SpinnerButton`, `ProgressBar`, `Notice`), their props (`helperText`),
   and CSS class names (`mdc-text-field--error`);
-- inline-data globals and keys (`wpPrivacyURL` on `_googlesitekitBaseData`);
-- user-facing strings, quoted verbatim — headings, descriptions, CTA labels, error text.
+- inline-data globals and keys (`wpPrivacyURL` on `_googlesitekitBaseData`).
 
 **Spell out every name you invent.** A brief names things that do not exist yet: constants, config
 keys, event params, methods, variables, types. Write each of them in full words — no abbreviations,
@@ -239,7 +236,11 @@ Do **not** include:
   at different lines next week — so never use one. Naming the symbol is still better than linking
   to it: link only when there is no name to give, such as an unnamed block inside a long function.
 - **Restated acceptance criteria**, a recap of the Feature Description, or background on how the
-  existing system works.
+  existing system works. This covers the user-facing copy the criteria define — headings,
+  descriptions, CTA labels, error text. Copy gets reworded during brief review, and a verbatim
+  quote in the brief goes stale while the criterion it came from stays current; point at the
+  criterion instead ("the empty-state heading from the acceptance criteria"). A string that
+  already exists in the code is not an acceptance criterion — name it exactly, as above.
 - Prose paragraphs.
 
 Do include, when they apply:
@@ -253,8 +254,6 @@ Do include, when they apply:
   file that the issue only edits stays as it is, unless the issue asks for a rename.
 - The concrete shape of any data the change publishes — array keys, JSON payload, inline-script
   global, selector signature.
-- The exact insertion point when ordering matters: hook priority, array position, above or below
-  an early return.
 - Changes to existing files that the acceptance criteria imply but do not name.
 
 ## Step 6 — Write the Test Coverage
@@ -281,11 +280,20 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   unmet, feature disabled, invalid input, empty or error response.
 - **Storybook stories belong here, not in the brief.** "Add a Story for `<Component>`", or list
   the states when there is more than one: "(default, loading, error)".
+- **VRT belongs here too, not in a section of its own.** Say what the change does to the Backstop
+  scenarios and the reference images — a new scenario for a new story, new references for a
+  component whose rendering changes. "No VRT changes expected" is a complete answer when nothing
+  the VRT job renders can move.
 - **Say so when nothing is needed, and say why.** Never leave Test Coverage empty, and never drop
-  the Storybook line in silence. When the change needs no tests or no story, write one bullet that
-  says so with the reason — "No tests required because the change only edits documentation", "No
-  Storybook story required because the change adds no UI". An empty section reads as a forgotten
-  section, and a moderator cannot tell the two apart.
+  the Storybook or VRT line in silence. When the change needs no tests or no story, write one
+  bullet that says so with the reason — "No tests required because the change only edits
+  documentation", "No Storybook story required because the change adds no UI". VRT is the
+  exception: a bare "No VRT changes expected" needs no reason. An empty section reads as a
+  forgotten section, and a moderator cannot tell the two apart.
+- **Never write `N/A` for tests.** Tests are almost never inapplicable, so `N/A` reads as a
+  skipped question rather than an answer — give the reason instead, as above. The VRT line is
+  where `N/A` is allowed, because there it is often literally true: PHP-only changes, tooling and
+  build config, anything the VRT job never renders.
 - Name any new fixture, fake or mock the coverage needs, and the directory it belongs in.
 - Call out **existing** tests the change will break, so the work is budgeted rather than
   discovered mid-implementation — "Fix any failing tests/snapshots" when the blast radius isn't
