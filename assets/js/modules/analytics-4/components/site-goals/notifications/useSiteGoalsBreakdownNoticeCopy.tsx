@@ -78,7 +78,7 @@ export function useSiteGoalsBreakdownNoticeCopy(
 
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
 	// Only disclosed to someone who would actually have the setting switched on
-	// by the CTA. `undefined` means it has not loaded, so nothing is claimed yet.
+	// by the CTA. `undefined` means it has not loaded, so nothing is shown.
 	const showConversionTrackingDisclosure =
 		isConversionTrackingEnabled === false;
 	const learnMoreLink = (

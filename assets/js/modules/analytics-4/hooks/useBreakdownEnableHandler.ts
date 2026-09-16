@@ -60,6 +60,11 @@ export const ALL_CUSTOM_DIMENSIONS = Object.keys(
 );
 
 export interface BreakdownEnableHandler {
+	/**
+	 * Runs the enable flow, resolving `true` once it has finished here and
+	 * `false` when the OAuth redirect carries it on. `BreakdownNoticeArea`
+	 * keeps its CTA spinning from the click until one of the two happens.
+	 */
 	onEnable: () => Promise< boolean >;
 	inProgress: boolean;
 	disabled: boolean;
@@ -141,8 +146,8 @@ export function useBreakdownEnableHandler(
 			if ( error ) {
 				resetConversionTrackingSettings();
 
-				// No redirect follows a failed save, so report the attempt as
-				// settled and let the caller drop its busy state.
+				// A failed save stops here without reaching the OAuth
+				// redirect below, so this is where the flow ends.
 				return true;
 			}
 		}
@@ -169,7 +174,7 @@ export function useBreakdownEnableHandler(
 				},
 			} );
 
-			// Deferred to OAuth; the redirect keeps the busy state.
+			// The OAuth redirect finishes the flow, so it is not over here.
 			return false;
 		}
 
