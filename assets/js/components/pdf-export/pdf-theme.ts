@@ -63,11 +63,14 @@ export const PDF_COLORS = {
 	SURFACES_SURFACE_1: '#ebeef0', // $c-surfaces-surface-1
 	SURFACES_BACKGROUND: '#f3f5f7', // $c-surfaces-background
 	SURFACES_SURFACE: '#ffffff', // $c-surfaces-surface
+	GREEN_G_10: '#f5ffef', // $c-green-g-10
 	GREEN_G_50: '#d8ffc0', // $c-green-g-50
 	UTILITY_ON_SUCCESS_CONTAINER: '#1f4c04', // $c-utility-on-success-container
 	UTILITY_ERROR_CONTAINER: '#ffded3', // $c-utility-error-container
 	UTILITY_ON_ERROR_CONTAINER: '#7a1e00', // $c-utility-on-error-container
+	RED_R_10: '#fff8f6', // $c-red-r-10
 	SURFACES_INVERSE_ON_SURFACE: '#ebeef0', // $c-surfaces-inverse-on-surface
+	NEUTRAL_N_10: '#f3f5f7', // $c-neutral-n-10
 	NEUTRAL_N_700: '#333935', // $c-neutral-n-700
 	VIOLET_V_50: '#e3d1ff', // $c-violet-v-50
 	VIOLET_V_600: '#462083', // $c-violet-v-600

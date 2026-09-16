@@ -95,7 +95,7 @@
 		}
 
 		.googlesitekit-traffic-overview__total-visitors-metric {
-			align-items: center;
+			align-items: flex-start;
 			display: flex;
 			gap: 14px;
 		}
@@ -105,11 +105,15 @@
 		}
 
 		.googlesitekit-traffic-overview__total-visitors-change {
-			// The badge normally stacks under a figure, so it arrives with a
-			// top margin and takes the full width. Here it sits beside one,
-			// above a label wider than itself.
+			align-items: flex-start;
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			margin-top: 5px;
+
+			// The badge carries a top margin meant for sitting under a figure,
+			// which would push it out of place here.
 			.googlesitekit-change-badge {
-				display: inline-block;
 				margin-top: 0;
 			}
 		}

@@ -39,10 +39,12 @@ import PageHeader from '@/js/components/PageHeader';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
 
 export default function FullScreenMetricSelectionApp() {
 	const { setValues } = useDispatch( CORE_FORMS );
+	const isViewOnlyDashboard = useViewOnly();
 
 	const hasFinishedGettingInputSettings = useSelect( ( select ) => {
 		// This needs to be called here to check on its resolution,
@@ -57,17 +59,13 @@ export default function FullScreenMetricSelectionApp() {
 		);
 	} );
 
-	const savedViewableMetrics = useSelect( ( select ) => {
-		const metrics = select( CORE_USER ).getKeyMetrics();
-
-		if ( ! Array.isArray( metrics ) ) {
-			return [];
-		}
-
-		const { isKeyMetricAvailable } = select( CORE_USER );
-
-		return metrics.filter( isKeyMetricAvailable );
-	} );
+	const savedViewableMetrics = useSelect(
+		( select ) =>
+			select( CORE_USER ).getSavedViewableMetrics( {
+				isViewOnlyDashboard,
+			} ),
+		[ isViewOnlyDashboard ]
+	);
 
 	const isKeyMetricsSetupCompleted = useSelect( ( select ) =>
 		select( CORE_SITE ).isKeyMetricsSetupCompleted()
