@@ -24,7 +24,7 @@ an existing description alone, and do not create or edit a GitHub issue unless e
 `/write-issue` workflow.)
 
 ## Writing an implementation brief
-When asked to write, draft, fill in, or groom the **Implementation Brief** and **Test Coverage**
+When asked to write, draft, adjust, update, or fill in the **Implementation Brief** and **Test Coverage**
 sections of an issue, follow the shared, tool-agnostic playbook
 **`docs/context/workflow/write-implementation-brief.md`** (the single source of truth). Verify
 every class, method, hook, handle and path against the code before naming it; where the design
