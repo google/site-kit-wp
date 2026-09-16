@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { forwardRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -39,14 +40,13 @@ interface BreakdownSuccessNoticeProps {
 	className?: string;
 }
 
-const BreakdownSuccessNotice: FC< BreakdownSuccessNoticeProps > = ( {
-	title,
-	description,
-	onDismiss,
-	className,
-} ) => {
+const BreakdownSuccessNotice = forwardRef<
+	HTMLDivElement,
+	BreakdownSuccessNoticeProps
+>( ( { title, description, onDismiss, className }, ref ) => {
 	return (
 		<Notice
+			ref={ ref }
 			className={ className }
 			type={ NOTICE_TYPES.SUCCESS }
 			title={ title }
@@ -57,6 +57,6 @@ const BreakdownSuccessNotice: FC< BreakdownSuccessNoticeProps > = ( {
 			} }
 		/>
 	);
-};
+} );
 
 export default BreakdownSuccessNotice;

@@ -25,12 +25,12 @@ class CacheTest extends TestCase {
 		delete_option( 'googlesitekit_global_cache_keys' );
 
 		$cache = new Cache();
-		// Add a few cache entries
+		// Add a few cache entries.
 		$cache->set_cache_data( 'test-key-a', 'test-value-a' );
 		$cache->set_cache_data( 'test-key-b', 'test-value-b' );
 		$cache->set_cache_data( 'test-key-c', 'test-value-c' );
 
-		// Returns an associative array of transient name => transient value
+		// Returns an associative array of transient name => transient value.
 		$this->assertEqualSetsWithIndex(
 			array(
 				'test-key-a' => 'test-value-a',

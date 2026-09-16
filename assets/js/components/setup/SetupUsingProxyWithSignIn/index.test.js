@@ -47,6 +47,7 @@ import {
 	muteFetch,
 	provideModuleRegistrations,
 	provideModules,
+	provideNotifications,
 	provideSiteConnection,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -116,6 +117,19 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect(
 			getByText( /Connect Google Analytics as part of your setup/ )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should keep the words "Site Kit" in the splash header, by adding `googlesitekit-setup-splash` to the body', async () => {
+		const { waitForRegistry } = render( <SetupUsingProxyWithSignIn />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+		} );
+
+		await waitForRegistry();
+
+		expect( global.document.body ).toHaveClass(
+			'googlesitekit-setup-splash'
+		);
 	} );
 
 	it( 'should not render the Activate Analytics notice when the Analytics module is not available', async () => {
@@ -1257,4 +1271,84 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( segments.length ).toBe( 1 );
 		} );
 	} );
+
+	it( 'should show the splash setup error notification when a setup error is present with setupFlowRefreshPhase4 enabled', async () => {
+		provideSiteInfo( registry, {
+			setupErrorCode: 'access_denied',
+			setupErrorMessage:
+				'Setup was interrupted because you did not grant the necessary permissions',
+			setupErrorRedoURL: 'https://sitekit.withgoogle.com/setup/redo/',
+		} );
+		provideNotifications( registry );
+
+		const { container, getByText, queryByText, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-setup__splash-setup-error-message-notification'
+			)
+		).toBeInTheDocument();
+
+		expect( getByText( 'Site Kit setup failed' ) ).toBeInTheDocument();
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-banner-notification--error'
+			)
+		).not.toBeInTheDocument();
+
+		expect( queryByText( 'Permissions Error' ) ).not.toBeInTheDocument();
+	} );
+
+	it.each( [
+		[
+			'OAuth cancel',
+			'access_denied',
+			'Site Kit setup failed',
+			'https://example.com/?error=access_denied',
+		],
+		[
+			'generic OAuth error',
+			'oauth_error',
+			'Connecting Site Kit failed',
+			'https://example.com/?error=oauth_error',
+		],
+	] )(
+		'should retry plugin setup from the splash setup error notification CTA for %s states',
+		async ( _label, setupErrorCode, title, setupErrorRedoURL ) => {
+			provideSiteInfo( registry, {
+				setupErrorCode,
+				setupErrorMessage: 'Setup failed.',
+				setupErrorRedoURL,
+			} );
+
+			provideNotifications( registry );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyWithSignIn />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( title ) ).toBeInTheDocument();
+
+			expect(
+				getByRole( 'button', { name: /retry plugin setup/i } )
+			).toHaveAttribute( 'href', setupErrorRedoURL );
+		}
+	);
 } );

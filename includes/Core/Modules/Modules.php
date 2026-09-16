@@ -569,7 +569,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $modules[ $slug ];
@@ -607,7 +607,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $this->dependencies[ $slug ];
@@ -628,7 +628,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 		if ( ! isset( $modules[ $slug ] ) ) {
 			/* translators: %s: module slug */
-			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) );
+			throw new Exception( sprintf( __( 'Invalid module slug %s.', 'google-site-kit' ), $slug ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
 		return $this->dependants[ $slug ];
@@ -929,7 +929,7 @@ final class Modules implements Provides_Feature_Metrics {
 	 * - No user is identified by its owner ID
 	 * - the owner lacks the capability to authenticate
 	 * - the owner is no longer authenticated
-	 * - no user exists for the owner ID
+	 * - no user exists for the owner ID.
 	 *
 	 * @since 1.69.0
 	 *

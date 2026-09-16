@@ -1,0 +1,259 @@
+{
+	"/v1beta/properties/123456789:runReport": {
+		"POST::{\"keepemptyrows\":true,\"metricaggregations\":[\"total\",\"minimum\",\"maximum\"],\"property\":\"properties\\/123456789\",\"dimensionfilter\":{\"andgroup\":{\"expressions\":[{\"filter\":{\"fieldname\":\"hostname\",\"inlistfilter\":{\"values\":[\"localhost\",\"www.localhost\"]}}}]}},\"dateranges\":[{\"enddate\":\"2025-12-31\",\"startdate\":\"2025-12-04\"},{\"enddate\":\"2025-12-03\",\"startdate\":\"2025-11-06\"}],\"metrics\":[{\"name\":\"averagesessionduration\"},{\"name\":\"sessions\"}]}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "185.4"
+							},
+							{
+								"value": "3200"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "172.1"
+							},
+							{
+								"value": "2980"
+							}
+						]
+					}
+				],
+				"totals": [
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "185.4"
+							},
+							{
+								"value": "3200"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "172.1"
+							},
+							{
+								"value": "2980"
+							}
+						]
+					}
+				],
+				"rowCount": 2,
+				"metadata": {
+					"currencyCode": "USD",
+					"timeZone": "America/Los_Angeles"
+				},
+				"kind": "analyticsData#runReport"
+			}
+		},
+		"POST::{\"keepemptyrows\":true,\"metricaggregations\":[\"total\",\"minimum\",\"maximum\"],\"property\":\"properties\\/123456789\",\"dimensionfilter\":{\"andgroup\":{\"expressions\":[{\"filter\":{\"fieldname\":\"hostname\",\"inlistfilter\":{\"values\":[\"localhost\",\"www.localhost\"]}}}]}},\"dateranges\":[{\"enddate\":\"2025-12-31\",\"startdate\":\"2025-12-04\"},{\"enddate\":\"2025-12-03\",\"startdate\":\"2025-11-06\"}],\"metrics\":[{\"name\":\"sessionsperuser\"},{\"name\":\"sessions\"}]}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1.42"
+							},
+							{
+								"value": "3200"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2980"
+							}
+						]
+					}
+				],
+				"totals": [
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1.42"
+							},
+							{
+								"value": "3200"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1.35"
+							},
+							{
+								"value": "2980"
+							}
+						]
+					}
+				],
+				"rowCount": 2,
+				"metadata": {
+					"currencyCode": "USD",
+					"timeZone": "America/Los_Angeles"
+				},
+				"kind": "analyticsData#runReport"
+			}
+		},
+		"POST::{\"keepemptyrows\":true,\"metricaggregations\":[\"total\",\"minimum\",\"maximum\"],\"property\":\"properties\\/123456789\",\"dimensions\":[{\"name\":\"newvsreturning\"}],\"dimensionfilter\":{\"andgroup\":{\"expressions\":[{\"filter\":{\"fieldname\":\"hostname\",\"inlistfilter\":{\"values\":[\"localhost\",\"www.localhost\"]}}}]}},\"dateranges\":[{\"enddate\":\"2025-12-31\",\"startdate\":\"2025-12-04\"},{\"enddate\":\"2025-12-03\",\"startdate\":\"2025-11-06\"}],\"metrics\":[{\"name\":\"activeusers\"}]}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"dimensionValues": [
+							{
+								"value": "new"
+							},
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "820"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "returning"
+							},
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "430"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "new"
+							},
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "760"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "returning"
+							},
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "390"
+							}
+						]
+					}
+				],
+				"totals": [
+					{
+						"dimensionValues": [
+							{
+								"value": "RESERVED_TOTAL"
+							},
+							{
+								"value": "date_range_0"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1250"
+							}
+						]
+					},
+					{
+						"dimensionValues": [
+							{
+								"value": "RESERVED_TOTAL"
+							},
+							{
+								"value": "date_range_1"
+							}
+						],
+						"metricValues": [
+							{
+								"value": "1150"
+							}
+						]
+					}
+				],
+				"rowCount": 4,
+				"metadata": {
+					"currencyCode": "USD",
+					"timeZone": "America/Los_Angeles"
+				},
+				"kind": "analyticsData#runReport"
+			}
+		}
+	}
+}

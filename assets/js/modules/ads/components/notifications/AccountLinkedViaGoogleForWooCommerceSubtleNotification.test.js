@@ -182,6 +182,30 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 			expect( isActive ).toBe( true );
 		} );
 
+		it( 'should return false if the Ads module connection state is not available', async () => {
+			// With the `ads` module absent from the module list,
+			// isModuleConnected() resolves to `null` rather than `false`.
+			registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+			registry.dispatch( MODULES_ADS ).receiveModuleData( {
+				plugins: {
+					[ PLUGINS.WOOCOMMERCE ]: {
+						active: true,
+					},
+					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
+						active: true,
+						adsConnected: true,
+					},
+				},
+			} );
+
+			const isActive = await notification.checkRequirements(
+				registry,
+				VIEW_CONTEXT_MAIN_DASHBOARD
+			);
+
+			expect( isActive ).toBe( false );
+		} );
+
 		it( 'should return false if the Ads module is connected', async () => {
 			provideModules( registry, [
 				{

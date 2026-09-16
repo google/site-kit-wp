@@ -205,18 +205,9 @@ describe( 'InviteOthersToSubscribe', () => {
 		await act( waitForDefaultTimeouts );
 	} );
 
-	it( 'displays the info tooltip with eligibility explanation', async () => {
+	it( 'displays the info tooltip with eligibility explanation next to the empty state', async () => {
 		fetchMock.getOnce( eligibleSubscribersEndpoint, {
-			body: createSubscribersResponse( [
-				{
-					id: 2,
-					displayName: 'Eligible User',
-					email: 'eligible@example.com',
-					role: 'editor',
-					subscribed: false,
-					invited: false,
-				},
-			] ),
+			body: createSubscribersResponse( [], { total: 0, totalPages: 0 } ),
 			status: 200,
 		} );
 
@@ -224,7 +215,7 @@ describe( 'InviteOthersToSubscribe', () => {
 			registry,
 		} );
 
-		await findByText( 'Eligible User' );
+		await findByText( 'No users are eligible to receive invitations.' );
 
 		fireEvent.mouseOver( getByRole( 'tooltip' ) );
 

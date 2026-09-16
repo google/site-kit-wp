@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -65,14 +63,15 @@ class Audience_SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 			),
-			$default
+			$default,
+			'Analytics audience settings should use uninitialized audience defaults.'
 		);
 	}
 
 	public function test_get_type() {
 		$this->audience_settings->register();
 
-		$this->assertEquals( 'array', $this->audience_settings->get_type() );
+		$this->assertEquals( 'array', $this->audience_settings->get_type(), 'Analytics audience settings should use the array setting type.' );
 	}
 
 	public function test_get_sanitize_callback_with_valid_values() {
@@ -95,7 +94,8 @@ class Audience_SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 1,
 				'audienceSegmentationSetupCompletedBy' => 1,
 			),
-			$sanitized_settings
+			$sanitized_settings,
+			'Valid Analytics audience settings should be preserved during sanitization.'
 		);
 	}
 
@@ -119,7 +119,8 @@ class Audience_SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 			),
-			$sanitized_settings
+			$sanitized_settings,
+			'Invalid Analytics audience settings should be replaced with defaults.'
 		);
 	}
 
@@ -151,7 +152,8 @@ class Audience_SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 2,
 				'audienceSegmentationSetupCompletedBy' => 2,
 			),
-			$settings
+			$settings,
+			'Merge should update all Analytics audience settings.'
 		);
 	}
 
@@ -181,7 +183,8 @@ class Audience_SettingsTest extends SettingsTestCase {
 				'availableAudiencesLastSyncedAt'       => 0,
 				'audienceSegmentationSetupCompletedBy' => null,
 			),
-			$this->audience_settings->get()
+			$this->audience_settings->get(),
+			'Invalid merged Analytics audience values should be replaced with defaults.'
 		);
 	}
 }

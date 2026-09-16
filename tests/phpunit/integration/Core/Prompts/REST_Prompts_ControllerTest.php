@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Prompts;
 
 use Google\Site_Kit\Context;
@@ -63,8 +60,14 @@ class REST_Prompts_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Dismissed prompts REST routes should be registered.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'Dismissed prompts endpoint should be added to API fetch preload paths.'
+		);
 	}
 
 	public function test_get_dismissed_prompts() {
@@ -80,12 +83,12 @@ class REST_Prompts_ControllerTest extends TestCase {
 
 		$response_data = $response->get_data();
 		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
-		$this->assertArrayHasKey( 'foo', $response_data );
-		$this->assertArrayHasKey( 'bar', $response_data );
-		$this->assertEquals( 0, $response_data['foo']['expires'] );
-		$this->assertEquals( 1, $response_data['foo']['count'] );
-		$this->assertEqualsWithDelta( time() + 100, $response_data['bar']['expires'], 2 );
-		$this->assertEquals( 1, $response_data['bar']['count'] );
+		$this->assertArrayHasKey( 'foo', $response_data, 'Response should include the permanent prompt dismissal.' );
+		$this->assertArrayHasKey( 'bar', $response_data, 'Response should include the expiring prompt dismissal.' );
+		$this->assertEquals( 0, $response_data['foo']['expires'], 'Permanent prompt dismissal should have no expiry.' );
+		$this->assertEquals( 1, $response_data['foo']['count'], 'Permanent prompt should have been dismissed once.' );
+		$this->assertEqualsWithDelta( time() + 100, $response_data['bar']['expires'], 2, 'Expiring prompt should include its expiration timestamp.' );
+		$this->assertEquals( 1, $response_data['bar']['count'], 'Expiring prompt should have been dismissed once.' );
 	}
 
 	public function test_dismiss_new_prompt() {
@@ -107,7 +110,8 @@ class REST_Prompts_ControllerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array( 'foo', 'bar' ),
-			array_keys( rest_get_server()->dispatch( $request )->get_data() )
+			array_keys( rest_get_server()->dispatch( $request )->get_data() ),
+			'Dismissing a new prompt should preserve existing prompt dismissals.'
 		);
 	}
 
@@ -130,8 +134,8 @@ class REST_Prompts_ControllerTest extends TestCase {
 
 		$response_data = rest_get_server()->dispatch( $request )->get_data();
 		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
-		$this->assertArrayHasKey( 'foo', $response_data );
-		$this->assertEqualsWithDelta( time() + 100, $response_data['foo']['expires'], 2 );
-		$this->assertEquals( 2, $response_data['foo']['count'] );
+		$this->assertArrayHasKey( 'foo', $response_data, 'Response should include the repeatedly dismissed prompt.' );
+		$this->assertEqualsWithDelta( time() + 100, $response_data['foo']['expires'], 2, 'Repeated dismissal should update the prompt expiration.' );
+		$this->assertEquals( 2, $response_data['foo']['count'], 'Repeated dismissal should increment the prompt count.' );
 	}
 }

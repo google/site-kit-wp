@@ -35,6 +35,7 @@ import {
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import {
+	ExpressSetupResumeNewsletterNotification,
 	PolicyViolationNotification,
 	RRMSetupSuccessSubtleNotification,
 	ReaderRevenueManagerSetupCTABanner,
@@ -49,6 +50,7 @@ import RRMIntroductoryOverlayNotification, {
 } from '@/js/modules/reader-revenue-manager/components/dashboard/RRMIntroductoryOverlayNotification';
 import {
 	MODULE_SLUG_READER_REVENUE_MANAGER,
+	RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID,
 	RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID,
 	RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID,
@@ -59,11 +61,13 @@ import {
 import {
 	ACTIVE_POLICY_VIOLATION_STATES,
 	CONTENT_POLICY_STATES,
+	EXPRESS_SETUP_CTAS,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
 	PENDING_POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
 import { asyncRequireAll } from '@/js/util/async';
 
 /**
@@ -286,12 +290,25 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect } ) => {
+		checkRequirements: async ( { select, resolveSelect } ) => {
 			const rrmConnected = await resolveSelect(
 				CORE_MODULES
 			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
 
 			if ( ! rrmConnected ) {
+				return false;
+			}
+
+			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+
+			const contentPolicyState = select(
+				MODULES_READER_REVENUE_MANAGER
+			).getContentPolicyState();
+
+			if (
+				contentPolicyState ===
+				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
+			) {
 				return false;
 			}
 
@@ -390,6 +407,20 @@ export const NOTIFICATIONS = {
 				);
 			}
 		),
+	},
+	[ RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID ]: {
+		Component: ExpressSetupResumeNewsletterNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+		featureFlag: 'rrmExpressSetup',
+		isDismissible: true,
+		checkRequirements: async ( registry ) =>
+			await checkRequirementsForExpressSetupResumeNotification(
+				registry,
+				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+			),
 	},
 };
 

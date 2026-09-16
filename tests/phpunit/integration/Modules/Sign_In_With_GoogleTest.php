@@ -23,6 +23,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Error;
 use WP_User;
 use WPDieException;
 
@@ -355,7 +356,7 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$admin_id  = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 
 		// Multisite is more restrictive about editing other users, so we'll add the necessary cap.
-		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68
+		// See https://github.com/WordPress/WordPress/blob/9bc4fadffa05adc4bb72120bf335160639e46764/wp-includes/capabilities.php#L68.
 		if ( is_multisite() ) {
 			( new WP_User( $admin_id ) )->add_cap( 'manage_network_users' );
 		}
@@ -671,6 +672,26 @@ class Sign_In_With_GoogleTest extends TestCase {
 		}
 	}
 
+	public function test_handle_login_errors__adds_two_factor_error_message() {
+		$_GET['error'] = Authenticator::ERROR_TWO_FACTOR_ENABLED;
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertEquals(
+			'An account with that email address uses two-factor authentication. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
+			$error->get_error_message( 'sign-in-with-google' ),
+			'Should add the two-factor message for the two-factor error code.'
+		);
+	}
+
+	public function test_handle_login_errors__ignores_an_unrecognized_error_code() {
+		$_GET['error'] = 'unrecognized_error_code';
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertFalse( $error->has_errors(), 'Should leave the error object untouched for an unrecognized error code.' );
+	}
+
 	protected function create_disconnect_nonce( $user_id ) {
 		return wp_create_nonce( Sign_In_With_Google::ACTION_DISCONNECT . '-' . $user_id );
 	}
@@ -698,6 +719,86 @@ class Sign_In_With_GoogleTest extends TestCase {
 		$this->assertOptionNotExists( Existing_Client_ID::OPTION, 'Existing client ID option should not exist before deactivation.' );
 		$this->module->on_deactivation();
 		$this->assertEquals( 'test_client_id.apps.googleusercontent.com', get_option( Existing_Client_ID::OPTION ), 'Existing client ID should be persisted on deactivation.' );
+	}
+
+	public function test_register__adds_inline_base_data_filter() {
+		$this->module->register();
+
+		$this->assertTrue(
+			has_filter( 'googlesitekit_inline_base_data' ),
+			'The googlesitekit_inline_base_data filter should be registered.'
+		);
+	}
+
+	public function test_inline_js_base_data__anyone_can_register() {
+		$this->module->register();
+
+		add_filter( 'option_users_can_register', '__return_true' );
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertTrue( $data['anyoneCanRegister'], 'anyoneCanRegister should be true when users_can_register is enabled.' );
+
+		remove_all_filters( 'option_users_can_register' );
+		add_filter( 'option_users_can_register', '__return_false' );
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertFalse( $data['anyoneCanRegister'], 'anyoneCanRegister should be false when users_can_register is disabled.' );
+	}
+
+	public function test_inline_js_base_data__anyone_can_register_woocommerce_inactive() {
+		$this->module->register();
+
+		update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertFalse( $data['anyoneCanRegisterWooCommerce'], 'anyoneCanRegisterWooCommerce should be false when WooCommerce is not active, regardless of its options.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_inline_js_base_data__anyone_can_register_woocommerce_active() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			// `class_alias()` requires a user-defined source class, so alias
+			// this test case rather than an internal class like `stdClass`.
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$this->module->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertFalse( $data['anyoneCanRegisterWooCommerce'], 'anyoneCanRegisterWooCommerce should be false when WooCommerce is active but no signup option is enabled.' );
+
+		update_option( 'woocommerce_enable_myaccount_registration', 'yes' );
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		$this->assertTrue( $data['anyoneCanRegisterWooCommerce'], 'anyoneCanRegisterWooCommerce should be true when the My Account registration option is enabled.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_inline_js_base_data__anyone_can_register_woocommerce_delayed_account_creation_only() {
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$this->module->register();
+
+		update_option( 'woocommerce_enable_myaccount_registration', 'no' );
+		update_option( 'woocommerce_enable_signup_and_login_from_checkout', 'no' );
+		update_option( 'woocommerce_enable_delayed_account_creation', 'yes' );
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertTrue( $data['anyoneCanRegisterWooCommerce'], 'anyoneCanRegisterWooCommerce should be true when only delayed (after checkout) account creation is enabled.' );
+	}
+
+	public function test_inline_js_base_data__is_multisite() {
+		$this->module->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+
+		$this->assertArrayHasKey( 'isMultisite', $data, 'Base data should include isMultisite.' );
+		$this->assertSame( is_multisite(), $data['isMultisite'], 'isMultisite should match the actual multisite state.' );
 	}
 
 	public function test_inline_data_has_woocommerce() {

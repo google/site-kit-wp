@@ -248,7 +248,7 @@ class REST_Consent_Mode_ControllerTest extends TestCase {
 
 		$wp_consent_plugin = $response_data['wpConsentPlugin'];
 
-		// Plugin not installed (see mock_installed_plugins)
+		// Plugin not installed (see mock_installed_plugins).
 		$this->assertFalse( $wp_consent_plugin['installed'], 'WP Consent plugin should not be installed.' );
 		// Plugin is not installed, hence cannot be activated.
 		$this->assertFalse( $wp_consent_plugin['activateURL'], 'WP Consent plugin should not have an activate URL.' );

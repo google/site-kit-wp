@@ -1,0 +1,67 @@
+/**
+ * Reader Revenue Manager SetupMainExpressReady component tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { render } from '@tests/js/test-utils';
+import SetupMainExpressReady from './SetupMainExpressReady';
+
+jest.mock( './SetupMain', () => {
+	return function MockSetupMain() {
+		return <div>Legacy setup main</div>;
+	};
+} );
+
+jest.mock( './SetupMainExpress', () => {
+	return function MockSetupMainExpress() {
+		return <div>Express setup main</div>;
+	};
+} );
+
+describe( 'SetupMainExpressReady', () => {
+	mockLocation();
+
+	it( 'renders express setup when expressSetup=true', () => {
+		global.location.href = 'http://example.com/?expressSetup=true';
+
+		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
+
+		expect( getByText( 'Express setup main' ) ).toBeInTheDocument();
+		expect( queryByText( 'Legacy setup main' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders legacy setup when expressSetup is not present', () => {
+		global.location.href = 'http://example.com/';
+
+		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
+
+		expect( getByText( 'Legacy setup main' ) ).toBeInTheDocument();
+		expect( queryByText( 'Express setup main' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'renders legacy setup when expressSetup is not true', () => {
+		global.location.href = 'http://example.com/?expressSetup=false';
+
+		const { getByText, queryByText } = render( <SetupMainExpressReady /> );
+
+		expect( getByText( 'Legacy setup main' ) ).toBeInTheDocument();
+		expect( queryByText( 'Express setup main' ) ).not.toBeInTheDocument();
+	} );
+} );

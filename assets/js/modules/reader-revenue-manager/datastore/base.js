@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import Modules from 'googlesitekit-modules';
+import { isFeatureEnabled } from '@/js/features';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import { submitChanges, validateCanSubmitChanges } from './settings';
@@ -41,5 +42,8 @@ export default Modules.createModuleStore( MODULE_SLUG_READER_REVENUE_MANAGER, {
 		'productID',
 		'productIDs',
 		'paymentOption',
+		...( isFeatureEnabled( 'rrmExpressSetup' )
+			? [ 'organizationID', 'configuredCTAs' ]
+			: [] ),
 	],
 } );

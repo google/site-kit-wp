@@ -32,7 +32,7 @@ import PDFCard from './PDFCard';
 /**
  * Merges a style array into one object, so assertions read one flat style.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param style A style object, or the style array `@react-pdf` renders.
  * @return One object holding every style property.
@@ -46,7 +46,7 @@ function flattenStyle(
 /**
  * Renders the card and returns the test renderer's JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the card.
  * @return The rendered tree.

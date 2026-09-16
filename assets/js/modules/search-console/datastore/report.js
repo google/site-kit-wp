@@ -139,7 +139,7 @@ const baseSelectors = {
 	 *
 	 * @since 1.15.0
 	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
-	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
+	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.

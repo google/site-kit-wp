@@ -73,6 +73,9 @@ export default function SetupForm() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
+	const anyoneCanRegisterWooCommerce = useSelect( ( select ) =>
+		select( CORE_SITE ).getAnyoneCanRegisterWooCommerce()
+	);
 
 	// Ensure SiwG settings are resolved so defaults (shape/text/theme) are available.
 	const settingsLoaded = useSelect(
@@ -98,9 +101,13 @@ export default function SetupForm() {
 	);
 
 	useEffect( () => {
+		// One Tap can create new accounts through either registration path, so
+		// default it on when either is open (unlike the WordPress-only "show
+		// next to comments" effect below, which mirrors `handle_comments_form()`
+		// in PHP, which only ever checks `users_can_register`).
 		if (
 			settingsLoaded &&
-			anyoneCanRegister &&
+			( anyoneCanRegister || anyoneCanRegisterWooCommerce ) &&
 			! hasSetDefaultOneTap &&
 			oneTapEnabled === false
 		) {
@@ -110,6 +117,7 @@ export default function SetupForm() {
 	}, [
 		settingsLoaded,
 		anyoneCanRegister,
+		anyoneCanRegisterWooCommerce,
 		hasSetDefaultOneTap,
 		oneTapEnabled,
 		setOneTapEnabled,
@@ -201,10 +209,12 @@ export default function SetupForm() {
 				>
 					{ __( 'Get your client ID', 'google-site-kit' ) }
 				</Button>
-				{ anyoneCanRegister && (
+				{ ( anyoneCanRegister || anyoneCanRegisterWooCommerce ) && (
 					<div className="googlesitekit-setup-module__inputs">
 						<OneTapToggle />
-						<ShowNextToCommentsToggle />
+						{ /* Mirrors handle_comments_form() in PHP, which only ever
+						checks the WordPress users_can_register option. */ }
+						{ anyoneCanRegister && <ShowNextToCommentsToggle /> }
 					</div>
 				) }
 			</div>

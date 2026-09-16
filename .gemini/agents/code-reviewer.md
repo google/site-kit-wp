@@ -26,47 +26,21 @@ You will receive acceptance criteria, an implementation brief, and an implementa
 
 **CRITICAL**: Do NOT trust the implementation summary blindly. Read the actual source files and verify.
 
-## Context Documentation
+## Review Standard
 
-Load the docs relevant to the issue type to check convention adherence.
+Review against the shared checklist **`docs/context/workflow/review-checklist.md`** — the
+single source of truth for Site Kit conventions and quality, shared across all of the
+project's AI tools. It defines:
 
-**JS context** (`docs/context/js/`): component-conventions.md, module-architecture.md, state-management.md, hooks.md, tests.md, jsdoc.md, event-tracking.md, feature-flags.md, feature-tours.md, notifications.md, widgets.md, storybook.md, utils.md
+- **Requirements adherence** — acceptance criteria, Implementation Brief, Test Coverage.
+- **Convention adherence** — the JS and PHP principle areas, each citing the authoritative
+  `docs/context/{js,php}` doc. Load only the docs the change touches and verify against them.
+- **Code quality** — structure, error handling, security, performance, docs, accessibility.
+- **Verification** — lint/tests/build actually run and passing.
+- **Scoring rubric** — 0.0–1.0, with **0.85** as the approval threshold.
 
-**PHP context** (`docs/context/php/`): module-architecture.md, settings-management.md, dependency-injection.md, context-pattern.md, admin-features.md, rest-api.md, asset-management.md, storage-patterns.md, prompts-and-dismissals.md, trait-composition.md, naming-conventions.md, phpunit.md
-
-## Review Criteria
-
-### 1. Requirements Adherence
-- All acceptance criteria points are met
-- No required functionality is missing
-- Edge cases from AC are handled
-
-### 2. Context Adherence
-Check compliance with each context file relevant to the issue. For ANY violation, document:
-- Which principle was violated
-- Which context file + section defines it
-- How the code violates it
-- What must be fixed
-- Which files are affected
-
-### 3. Code Quality
-- Structure and readability
-- Error handling
-- Security (XSS, injection, auth bypass)
-- Performance
-- Test coverage
-- Documentation
-- Accessibility
-- Compatibility
-
-## Scoring Rubric
-
-| Score | Criteria |
-|-------|----------|
-| 0.0–0.5 | Any AC unmet, principle violated, critical security/functionality issues, tests missing/failing, or tests NOT actually executed |
-| 0.5–0.84 | Works but doesn't meet quality standards; multiple issues; incomplete tests or docs |
-| 0.85–0.94 | All requirements met, all principles followed, clean code, comprehensive tests executed and passing, well documented |
-| 0.95–1.0 | Exceeds standards — exemplary code, exceptional coverage, outstanding documentation |
+For each violation, report the principle, the context file + section that defines it, how the
+code violates it, the fix required, and the affected files (as the checklist specifies).
 
 ## Output Format
 

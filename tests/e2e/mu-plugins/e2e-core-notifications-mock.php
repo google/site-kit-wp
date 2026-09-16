@@ -117,7 +117,7 @@ add_action(
 	function () {
 		// Only run when Site Kit is loaded.
 		//
-		// See: https://github.com/google/site-kit-wp/issues/12258
+		// See: https://github.com/google/site-kit-wp/issues/12258.
 		if ( ! class_exists( 'REST_Routes' ) ) {
 			return;
 		}

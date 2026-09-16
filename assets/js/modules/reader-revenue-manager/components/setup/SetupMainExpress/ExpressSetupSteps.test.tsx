@@ -1,0 +1,186 @@
+/**
+ * Reader Revenue Manager ExpressSetupSteps component tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+	READER_REVENUE_MANAGER_SETUP_FORM,
+	SHOW_PUBLICATION_CREATE,
+	SHOW_TERMS_OF_SERVICE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import { mockLocation } from '@tests/js/mock-browser-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
+import ExpressSetupSteps from './ExpressSetupSteps';
+
+describe( 'ExpressSetupSteps', () => {
+	mockLocation();
+
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( {} );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.finishResolution( 'getSettings', [] );
+
+		providePublications( registry, [] );
+	} );
+
+	it( 'renders the default steps without extra steps', () => {
+		global.location.href = 'http://example.com/';
+
+		const { getByText, queryByText, container } = render(
+			<ExpressSetupSteps />,
+			{ registry }
+		);
+
+		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
+		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
+		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Set up a sign-up form' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelectorAll( '.googlesitekit-stepper__step' )
+		).toHaveLength( 3 );
+	} );
+
+	it( 'renders the correct steps when creating a new publication', () => {
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
+		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_PUBLICATION_CREATE ]: true,
+				} );
+		} );
+
+		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
+		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should show the terms step based on the form value', () => {
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+				[ SHOW_TERMS_OF_SERVICE ]: false,
+			} );
+
+		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+			registry,
+		} );
+
+		expect(
+			queryByText( 'Accept terms of service' )
+		).not.toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
+					[ SHOW_TERMS_OF_SERVICE ]: true,
+				} );
+		} );
+
+		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
+	} );
+
+	it( 'includes extra steps before setup complete', () => {
+		global.location.href = 'http://example.com/';
+
+		const { getByText, container } = render(
+			<ExpressSetupSteps
+				extraSteps={ {
+					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
+					'custom-step': 'Custom step',
+				} }
+			/>,
+			{ registry }
+		);
+
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
+		);
+
+		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
+		expect( getByText( 'Custom step' ) ).toBeInTheDocument();
+		expect( steps ).toHaveLength( 5 );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Custom step' );
+		expect( steps[ 4 ] ).toHaveTextContent( 'Setup complete' );
+	} );
+
+	it( 'marks the step matching the step query arg as active', () => {
+		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`;
+
+		const { container } = render( <ExpressSetupSteps />, { registry } );
+
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
+		);
+
+		expect( steps[ 0 ] ).toHaveClass(
+			'googlesitekit-stepper__step--completed'
+		);
+		expect( steps[ 1 ] ).toHaveClass(
+			'googlesitekit-stepper__step--active'
+		);
+		expect( steps[ 2 ] ).toHaveClass(
+			'googlesitekit-stepper__step--upcoming'
+		);
+	} );
+
+	it( 'marks an extra step as active when it is included and selected', () => {
+		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
+
+		const { container } = render(
+			<ExpressSetupSteps
+				extraSteps={ {
+					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
+				} }
+			/>,
+			{ registry }
+		);
+
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
+		);
+
+		expect( steps[ 2 ] ).toHaveClass(
+			'googlesitekit-stepper__step--active'
+		);
+		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
+	} );
+} );

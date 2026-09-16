@@ -587,11 +587,18 @@ const baseSelectors = {
 	 * Gets whether the key metrics widget is hidden.
 	 *
 	 * @since 1.103.0
-	 * @since n.e.x.t Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
+	 * @since 1.183.0 Returns `false` when the `setupFlowRefresh` feature flag is enabled, as the widget is now an integral part of the dashboard.
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
 	isKeyMetricsWidgetHidden: createRegistrySelector( ( select ) => () => {
+		const isWidgetAreaHidden =
+			select( CORE_SITE ).isKeyMetricsWidgetAreaHidden();
+
+		if ( isWidgetAreaHidden ) {
+			return true;
+		}
+
 		if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 			return false;
 		}
@@ -602,7 +609,7 @@ const baseSelectors = {
 	/**
 	 * Gets the stored value of whether the key metrics widget is hidden, without the `setupFlowRefresh` feature flag override.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @return {boolean|undefined} True if the key metrics widget is hidden, false if it is not, or undefined if the key metrics settings are not loaded.
 	 */
@@ -698,6 +705,55 @@ const baseSelectors = {
 				return true;
 			} );
 		}
+	),
+
+	/**
+	 * Gets the user's saved key metric slugs that are still displayable in the
+	 * Key Metrics selection panel.
+	 *
+	 * `getKeyMetrics()` returns everything the user has saved, and
+	 * `isKeyMetricAvailable()` only checks that a widget's module is connected
+	 * or shared.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  state                       Data store's state.
+	 * @param {Object}  options                     Selector arguments.
+	 * @param {boolean} options.isViewOnlyDashboard Whether the current
+	 *                                              dashboard is view-only.
+	 * @return {Array<string>} The filtered key metric slugs.
+	 */
+	getSavedViewableMetrics: createRegistrySelector(
+		( select ) =>
+			( state, { isViewOnlyDashboard } ) => {
+				const metrics = select( CORE_USER ).getKeyMetrics();
+
+				if ( ! Array.isArray( metrics ) ) {
+					return [];
+				}
+
+				const { isKeyMetricAvailable } = select( CORE_USER );
+
+				return metrics.filter( ( slug ) => {
+					if ( ! isKeyMetricAvailable( slug ) ) {
+						return false;
+					}
+
+					const widget = KEY_METRICS_WIDGETS[ slug ];
+
+					if (
+						typeof widget?.displayInSelectionPanel !== 'function'
+					) {
+						return true;
+					}
+
+					return widget.displayInSelectionPanel( {
+						select,
+						isViewOnlyDashboard,
+						slug,
+					} );
+				} );
+			}
 	),
 };
 

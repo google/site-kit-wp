@@ -45,13 +45,12 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
-	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -63,7 +62,11 @@ import {
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
-import { useBreakpoint } from '@/js/hooks/useBreakpoint';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
@@ -71,21 +74,22 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
-import SiteGoalsIntroModalBanner from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
+import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MANAGE_SCOPE } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
-import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
+import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import FeaturesMenu from './FeaturesMenu';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
@@ -93,12 +97,12 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
+import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PDFDownloadButton from './pdf-export/PDFDownloadButton';
 import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
-import WelcomeModal from './WelcomeModal';
 
 function getLastWidgetAnchor( {
 	isMonetizationActive,
@@ -137,8 +141,6 @@ function getLastWidgetAnchor( {
 // complexity for this component.
 // eslint-disable-next-line complexity
 export default function DashboardMainApp() {
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
-
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewContext = useViewContext();
@@ -252,12 +254,10 @@ export default function DashboardMainApp() {
 	);
 
 	const isSiteGoalsActive = useSelect( ( select ) =>
-		siteGoalsEnabled
-			? select( CORE_WIDGETS ).isWidgetContextActive(
-					CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
-					widgetContextOptions
-			  )
-			: false
+		select( CORE_WIDGETS ).isWidgetContextActive(
+			CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+			widgetContextOptions
+		)
 	);
 
 	const isContentActive = useSelect( ( select ) =>
@@ -302,59 +302,39 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const showWelcomeModal = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! hasAccessToFeatureTour ) {
-			return false;
-		}
-
-		return (
-			select( CORE_USER ).isDataGatheringCompleteModalActive() ||
-			isInitialWelcomeModalActive()
-		);
-	} );
-
-	const hideSetupCTAs = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
-
-		const initialSetupNotificationTimeoutDismissed = select(
-			CORE_USER
-		).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
-		const queuedHeaderNotifications = select(
-			CORE_NOTIFICATIONS
-		).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
-		const firstHeaderNotificationID =
-			queuedHeaderNotifications?.[ 0 ]?.id || null;
-
-		return (
-			initialSetupNotificationTimeoutDismissed ||
-			firstHeaderNotificationID === 'activate-analytics-notification' ||
-			firstHeaderNotificationID === 'connect-more-services-notification'
-		);
-	} );
+	const hideSetupCTAs = useSelect( ( select ) =>
+		shouldHideSetupCTAs( select, viewContext )
+	);
 
 	useMonitorInternetConnection();
 
-	const showSetupOverlays = useSelect( ( select ) => {
-		if ( hideSetupCTAs ) {
-			return false;
-		}
-
+	// The welcome tour renders its own overlay, so any queued overlays are
+	// hidden while it runs.
+	const isWelcomeTourActive = useSelect( ( select ) => {
 		const currentTour = select( CORE_USER ).getCurrentTour();
 
-		return ! [
+		return [
 			WELCOME_TOUR.WITHOUT_ANALYTICS,
 			WELCOME_TOUR.WITH_ANALYTICS,
 		].includes( currentTour?.slug );
 	} );
+
+	// The setup modals (Welcome and Site Goals intro) are intentionally
+	// decoupled from `hideSetupCTAs`: unlike the feature-introduction overlays,
+	// they are meant to appear during the initial setup flow (that's when the
+	// Welcome modal shows). They're only hidden while the welcome tour runs.
+	const showSetupModals = ! isWelcomeTourActive;
+
+	// On mobile and tablet the individual feature action icons collapse into
+	// the single three-dots features menu.
+	const isMobileOrTabletBreakpoint =
+		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
 
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
@@ -386,9 +366,25 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ pdfGenerationEnabled && <PDFDownloadButton /> }
-				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu showFeatureTour={ !! hasAccessToFeatureTour } />
+				{ isMobileOrTabletBreakpoint ? (
+					<Fragment>
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
+						<FeaturesMenu />
+					</Fragment>
+				) : (
+					<Fragment>
+						<ManageEmailReportsButton />
+						{ pdfGenerationEnabled && <PDFDownloadButton /> }
+						{ ! viewOnlyDashboard && (
+							<DashboardSharingSettingsButton />
+						) }
+						<HelpMenu
+							showFeatureTour={ !! hasAccessToFeatureTour }
+						/>
+					</Fragment>
+				) }
 			</Header>
 
 			<div className="googlesitekit-page-content">
@@ -407,12 +403,14 @@ export default function DashboardMainApp() {
 					/>
 				) }
 
-				{ showSetupOverlays && (
+				{ showSetupModals && (
 					<Notifications
 						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
 					/>
 				) }
+
+				{ ! hideSetupCTAs && <SetupCTAOverlays /> }
 
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer
@@ -432,16 +430,14 @@ export default function DashboardMainApp() {
 							lastWidgetAnchor === ANCHOR_ID_TRAFFIC,
 					} ) }
 				/>
-				{ siteGoalsEnabled && (
-					<WidgetContextRenderer
-						id={ ANCHOR_ID_SITE_GOALS }
-						slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
-						className={ classnames( {
-							'googlesitekit-widget-context--last':
-								lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
-						} ) }
-					/>
-				) }
+				<WidgetContextRenderer
+					id={ ANCHOR_ID_SITE_GOALS }
+					slug={ CONTEXT_MAIN_DASHBOARD_SITE_GOALS }
+					className={ classnames( {
+						'googlesitekit-widget-context--last':
+							lastWidgetAnchor === ANCHOR_ID_SITE_GOALS,
+					} ) }
+				/>
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_CONTENT }
 					slug={ CONTEXT_MAIN_DASHBOARD_CONTENT }
@@ -489,14 +485,12 @@ export default function DashboardMainApp() {
 
 			{ configuredAudiences && <AudienceSelectionPanel /> }
 
-			{ siteGoalsEnabled && hasAnalyticsAccess && (
+			{ hasAnalyticsAccess && (
 				<Fragment>
 					<SiteGoalsSelectionPanel />
-					<SiteGoalsIntroModalBanner />
+					<SiteGoalsSurveyTriggers />
 				</Fragment>
 			) }
-
-			{ showWelcomeModal && <WelcomeModal /> }
 
 			<OfflineNotification />
 		</Fragment>

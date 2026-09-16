@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Storage;
 
 use Google\Site_Kit\Plugin;
@@ -76,7 +73,7 @@ class User_TransientsTest extends TestCase {
 	public function test_get_using_external_cache() {
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "wptests_user_{$user_id}_testkey", 'qwerty', 'transient', 1000 );
-		$this->assertEquals( 'qwerty', $user_transients->get( 'testkey' ) );
+		$this->assertEquals( 'qwerty', $user_transients->get( 'testkey' ), 'User transient should read from the single-site object cache.' );
 	}
 
 	/**
@@ -90,13 +87,13 @@ class User_TransientsTest extends TestCase {
 
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "user_{$user_id}_testkey2", 'qwerty2', 'site-transient', 1000 );
-		$this->assertEquals( 'qwerty2', $user_transients->get( 'testkey2' ) );
+		$this->assertEquals( 'qwerty2', $user_transients->get( 'testkey2' ), 'User transient should read from the network object cache in network mode.' );
 	}
 
 	public function test_set_using_external_cache() {
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		$user_transients->set( 'testkey3', 'qwerty3', 1000 );
-		$this->assertEquals( 'qwerty3', wp_cache_get( "wptests_user_{$user_id}_testkey3", 'transient' ) );
+		$this->assertEquals( 'qwerty3', wp_cache_get( "wptests_user_{$user_id}_testkey3", 'transient' ), 'Saving a user transient should persist it in the single-site object cache.' );
 	}
 
 	/**
@@ -110,16 +107,19 @@ class User_TransientsTest extends TestCase {
 
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		$user_transients->set( 'testkey4', 'qwerty4', 1000 );
-		$this->assertEquals( 'qwerty4', wp_cache_get( "user_{$user_id}_testkey4", 'site-transient' ) );
+		$this->assertEquals( 'qwerty4', wp_cache_get( "user_{$user_id}_testkey4", 'site-transient' ), 'Saving a user transient should persist it in the network object cache in network mode.' );
 	}
 
 	public function test_delete_using_external_cache() {
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "wptests_user_{$user_id}_testkey5", 'qwerty5', 'transient', 1000 );
-		$this->assertEquals( 'qwerty5', wp_cache_get( "wptests_user_{$user_id}_testkey5", 'transient' ) );
+		$this->assertEquals( 'qwerty5', wp_cache_get( "wptests_user_{$user_id}_testkey5", 'transient' ), 'Single-site cached user transient should exist before deletion.' );
 
 		$user_transients->delete( 'testkey5' );
-		$this->assertFalse( wp_cache_get( "wptests_user_{$user_id}_testkey5", 'transient' ) );
+		$this->assertFalse(
+			wp_cache_get( "wptests_user_{$user_id}_testkey5", 'transient' ),
+			'Single-site cached user transient should no longer exist after deletion.'
+		);
 	}
 
 	/**
@@ -133,10 +133,13 @@ class User_TransientsTest extends TestCase {
 
 		list( $user_transients, $user_id ) = $this->using_external_cache();
 		wp_cache_set( "user_{$user_id}_testkey6", 'qwerty6', 'site-transient', 1000 );
-		$this->assertEquals( 'qwerty6', wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ) );
+		$this->assertEquals( 'qwerty6', wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ), 'Network cached user transient should exist before deletion.' );
 
 		$user_transients->delete( 'testkey6' );
-		$this->assertFalse( wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ) );
+		$this->assertFalse(
+			wp_cache_get( "user_{$user_id}_testkey6", 'site-transient' ),
+			'Network cached user transient should no longer exist after deletion.'
+		);
 	}
 
 	public function test_get_using_user_options() {
@@ -147,40 +150,62 @@ class User_TransientsTest extends TestCase {
 		$user_options->set( 'googlesitekit_transient_timeout_testkey7', time() + 1000 );
 
 		$value = $user_transients->get( 'testkey7' );
-		$this->assertEquals( 'qwerty7', $value );
+		$this->assertEquals( 'qwerty7', $value, 'Unexpired user transient should return its stored value.' );
 
 		// Test when timeout is expired.
 		$user_options->set( 'googlesitekit_transient_testkey8', 'qwerty8' );
 		$user_options->set( 'googlesitekit_transient_timeout_testkey8', time() - 1000 );
 
-		$this->assertNotEmpty( $user_options->get( 'googlesitekit_transient_testkey8' ) );
+		$this->assertNotEmpty(
+			$user_options->get( 'googlesitekit_transient_testkey8' ),
+			'Expired user transient value should exist before it is read.'
+		);
 
 		$value = $user_transients->get( 'testkey8' );
-		$this->assertFalse( $value );
-		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey8' ) );
+		$this->assertFalse( $value, 'Expired user transient should not return its stored value.' );
+		$this->assertEmpty(
+			$user_options->get( 'googlesitekit_transient_testkey8' ),
+			'Expired user transient value should be deleted when it is read.'
+		);
 
 		// Test when timeout is not set.
 		$user_options->set( 'googlesitekit_transient_testkey9', 'qwerty9' );
 
-		$this->assertNotEmpty( $user_options->get( 'googlesitekit_transient_testkey9' ) );
+		$this->assertNotEmpty(
+			$user_options->get( 'googlesitekit_transient_testkey9' ),
+			'User transient without a timeout should exist before it is read.'
+		);
 
 		$value = $user_transients->get( 'testkey9' );
-		$this->assertFalse( $value );
-		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey9' ) );
+		$this->assertFalse( $value, 'User transient without a timeout should be treated as expired.' );
+		$this->assertEmpty(
+			$user_options->get( 'googlesitekit_transient_testkey9' ),
+			'User transient without a timeout should be deleted when it is read.'
+		);
 	}
 
 	public function test_set_using_user_options() {
 		list( $user_transients, $user_options ) = $this->using_user_options();
 
-		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_testkey10' ) );
-		$this->assertEmpty( $user_options->get( 'googlesitekit_transient_timeout_testkey10' ) );
+		$this->assertEmpty(
+			$user_options->get( 'googlesitekit_transient_testkey10' ),
+			'User transient value should not exist before it is saved.'
+		);
+		$this->assertEmpty(
+			$user_options->get( 'googlesitekit_transient_timeout_testkey10' ),
+			'User transient timeout should not exist before it is saved.'
+		);
 
 		$user_transients->set( 'testkey10', 'qwerty10', 1000 );
-		$this->assertEquals( 'qwerty10', $user_options->get( 'googlesitekit_transient_testkey10' ) );
+		$this->assertEquals( 'qwerty10', $user_options->get( 'googlesitekit_transient_testkey10' ), 'Saving a user transient should persist its value in user options.' );
 
 		$timeout = $user_options->get( 'googlesitekit_transient_timeout_testkey10' );
-		$this->assertGreaterThan( time(), $timeout );
-		$this->assertLessThanOrEqual( time() + 1000, $timeout );
+		$this->assertGreaterThan(
+			time(),
+			$timeout,
+			'Saved user transient timeout should be in the future.'
+		);
+		$this->assertLessThanOrEqual( time() + 1000, $timeout, 'Saved user transient timeout should honor the requested lifetime.' );
 	}
 
 	public function test_delete_using_user_options() {
@@ -191,7 +216,13 @@ class User_TransientsTest extends TestCase {
 
 		$user_transients->delete( 'testkey11' );
 
-		$this->assertFalse( $user_options->get( 'googlesitekit_transient_testkey11' ) );
-		$this->assertFalse( $user_options->get( 'googlesitekit_transient_timeout_testkey11' ) );
+		$this->assertFalse(
+			$user_options->get( 'googlesitekit_transient_testkey11' ),
+			'Deleting a user transient should remove its stored value.'
+		);
+		$this->assertFalse(
+			$user_options->get( 'googlesitekit_transient_timeout_testkey11' ),
+			'Deleting a user transient should remove its timeout.'
+		);
 	}
 }

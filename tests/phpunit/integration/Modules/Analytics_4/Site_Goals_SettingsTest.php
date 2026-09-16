@@ -7,8 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -40,7 +38,7 @@ class Site_Goals_SettingsTest extends TestCase {
 	}
 
 	public function test_get_default() {
-		$this->assertEquals( array(), $this->site_goals_settings->get() );
+		$this->assertEquals( array(), $this->site_goals_settings->get(), 'Site goal settings should be empty by default.' );
 	}
 
 	public function test_merge__saves_goal_drivers_and_visitor_engagement() {
@@ -57,7 +55,7 @@ class Site_Goals_SettingsTest extends TestCase {
 
 		$this->site_goals_settings->merge( $settings );
 
-		$this->assertEqualSetsWithIndex( $settings, $this->site_goals_settings->get() );
+		$this->assertEqualSetsWithIndex( $settings, $this->site_goals_settings->get(), 'Merge should save goal drivers and visitor engagement settings.' );
 	}
 
 	public function test_merge__preserves_existing_settings() {
@@ -89,7 +87,8 @@ class Site_Goals_SettingsTest extends TestCase {
 					'ecommerce' => array( 'add_to_cart' ),
 				),
 			),
-			$this->site_goals_settings->get()
+			$this->site_goals_settings->get(),
+			'Partial merge should preserve existing site goal settings.'
 		);
 	}
 
@@ -109,7 +108,8 @@ class Site_Goals_SettingsTest extends TestCase {
 					'ecommerce' => array( 'topTrafficChannels' ),
 				),
 			),
-			$this->site_goals_settings->get()
+			$this->site_goals_settings->get(),
+			'Merge should ignore unsupported site goal setting keys.'
 		);
 	}
 
@@ -140,7 +140,8 @@ class Site_Goals_SettingsTest extends TestCase {
 					'ecommerce' => array( 'add_to_cart' ),
 				),
 			),
-			$this->site_goals_settings->get()
+			$this->site_goals_settings->get(),
+			'Merge should ignore null values while updating other site goal settings.'
 		);
 	}
 
@@ -218,6 +219,6 @@ class Site_Goals_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->site_goals_settings->set( $input );
-		$this->assertEquals( $expected, $this->site_goals_settings->get() );
+		$this->assertEquals( $expected, $this->site_goals_settings->get(), 'Site goal settings should retain only supported keys with valid string values.' );
 	}
 }

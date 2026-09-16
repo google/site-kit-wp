@@ -58,13 +58,11 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( {
 	dates,
 	breakdownFilter,
 } ) => {
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const engagementSupportURL = useSelect(
+	const engagementDocumentationURL = useSelect(
 		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-engagement-rate'
+			),
 		[]
 	);
 
@@ -140,7 +138,7 @@ const EngagementRateTile: FC< EngagementRateTileProps > = ( {
 						//
 						// eslint-disable-next-line jsx-a11y/anchor-has-content
 						<a
-							href={ engagementSupportURL }
+							href={ engagementDocumentationURL }
 							target="_blank"
 							rel="noreferrer noopener"
 						/>

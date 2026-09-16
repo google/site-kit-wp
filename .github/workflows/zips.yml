@@ -135,6 +135,14 @@ jobs:
         with:
           name: zip-files
           path: ${{ github.ref }}
+      - uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
+        with:
+          name: wporg-assets
+          path: .wordpress-org
+          retention-days: 1
+          # .wordpress-org is a dot-prefixed dir; without this its contents are
+          # treated as hidden files and silently excluded from the artifact.
+          include-hidden-files: true
 
   upload-to-cloud-storage:
     name: Upload to GCS
@@ -211,6 +219,10 @@ jobs:
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          name: wporg-assets
+          path: .wordpress-org
       - uses: 10up/action-wordpress-plugin-deploy@abb939a0d0bfd01063e8d1933833209201557381 # ratchet:10up/action-wordpress-plugin-deploy@2.2.2
         with:
           dry-run: true
@@ -240,6 +252,10 @@ jobs:
       - name: Extract
         run: |
           unzip /tmp/google-site-kit.zip
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          name: wporg-assets
+          path: .wordpress-org
       - uses: 10up/action-wordpress-plugin-deploy@abb939a0d0bfd01063e8d1933833209201557381 # ratchet:10up/action-wordpress-plugin-deploy@2.2.2
         env:
           BUILD_DIR: ./google-site-kit

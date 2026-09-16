@@ -24,7 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,13 +37,18 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useShowTooltip } from '@/js/components/AdminScreenTooltip';
+import Link from '@/js/components/Link';
 import useRetriableNotificationDismissButtonLabel from '@/js/components/notifications/useRetriableNotificationDismissButtonLabel';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCTA';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
+import BannerExpressSetupSVGMobile from '@/svg/graphics/banner-rrm-express-setup-cta-mobile.svg?url';
+import BannerExpressSetupSVGTablet from '@/svg/graphics/banner-rrm-express-setup-cta-tablet.svg?url';
+import BannerExpressSetupSVGDesktop from '@/svg/graphics/banner-rrm-express-setup-cta.svg?url';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-mobile.svg?url';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta.svg?url';
 
@@ -46,16 +56,32 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	id,
 	Notification,
 } ) {
+	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const onSetupActivate = useActivateModuleCallback(
 		MODULE_SLUG_READER_REVENUE_MANAGER
 	);
 
+	const onExpressSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER,
+		{
+			redirectQueryArgs: {
+				expressSetup: 'true',
+				cta: 'newsletter-signup',
+			},
+		}
+	);
+
 	const onSetupCallback = useCallback( () => {
 		setIsSaving( true );
-		onSetupActivate();
-	}, [ onSetupActivate, setIsSaving ] );
+		( rrmExpressSetupEnabled ? onExpressSetupActivate : onSetupActivate )();
+	}, [
+		onSetupActivate,
+		onExpressSetupActivate,
+		rrmExpressSetupEnabled,
+		setIsSaving,
+	] );
 
 	const tooltipSettings = {
 		tooltipSlug: 'rrm-setup-notification',
@@ -69,6 +95,18 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
+	const onExploreOtherFeaturesActivate = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER
+	);
+
+	const onExploreOtherFeaturesCallback = useCallback(
+		( event ) => {
+			event.preventDefault();
+			onExploreOtherFeaturesActivate();
+		},
+		[ onExploreOtherFeaturesActivate ]
+	);
+
 	const isDismissalFinal = useSelect( ( select ) =>
 		select( CORE_NOTIFICATIONS ).isNotificationDismissalFinal( id )
 	);
@@ -79,6 +117,61 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 	useEffect( () => {
 		triggerSurvey( 'view_reader_revenue_manager_cta' );
 	}, [ triggerSurvey ] );
+
+	if ( rrmExpressSetupEnabled ) {
+		return (
+			<Notification>
+				<SetupCTA
+					className="googlesitekit-rrm-setup-cta-banner"
+					notificationID={ id }
+					title={ __(
+						'Turn casual visitors into loyal readers',
+						'google-site-kit'
+					) }
+					description={ createInterpolateElement(
+						__(
+							'Add a simple signup form to your site to start building your email subscriber list, powered by Reader Revenue Manager. Want to do more? <link>Explore other features</link> like reader contributions, paywalls, or surveys.',
+							'google-site-kit'
+						),
+						{
+							link: (
+								<Link
+									href="#"
+									onClick={ onExploreOtherFeaturesCallback }
+									className="googlesitekit-rrm-setup-cta-banner__explore-link"
+								/>
+							),
+						}
+					) }
+					ctaButton={ {
+						label: __( 'Set up a sign-up form', 'google-site-kit' ),
+						onClick: onSetupCallback,
+						inProgress: isSaving,
+						dismissOnClick: true,
+						dismissOptions: {
+							skipHidingFromQueue: true,
+						},
+					} }
+					dismissButton={ {
+						label: dismissLabel,
+						onClick: showTooltip,
+						dismissOptions: {
+							expiresInSeconds: isDismissalFinal
+								? 0
+								: 2 * WEEK_IN_SECONDS,
+						},
+						disabled: isSaving,
+					} }
+					svg={ {
+						desktop: BannerExpressSetupSVGDesktop,
+						mobile: BannerExpressSetupSVGMobile,
+						tablet: BannerExpressSetupSVGTablet,
+						verticalPosition: 'center',
+					} }
+				/>
+			</Notification>
+		);
+	}
 
 	return (
 		<Notification>

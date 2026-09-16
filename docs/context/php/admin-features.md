@@ -11,40 +11,52 @@ The admin feature system provides:
 - **Pointer System**: WordPress pointer-based onboarding
 - **Dashboard Widget**: WordPress dashboard integration
 - **Plugin Customization**: Action links and meta links in plugin list
-- **Authorization Screen**: Custom Google authorization flow
+- **Authorization Screen**: Custom styling for the WordPress Authorize Application screen
 - **Tools Integration**: Reset utility in WordPress Tools page
 - **Standalone Mode**: Embedded iframe-ready admin pages
 
 **Location**: `includes/Core/Admin/`
 
+All of these classes are `@access private` / `@ignore` internals and each begins with the standard Apache 2.0 license header docblock. New files in this directory must keep that header.
+
 ## Screen Management
 
 ### Screen Class
 
-**Location**: `includes/Core/Admin/Screen.php:1-260`
+**Location**: `includes/Core/Admin/Screen.php`
 
-Represents a single admin screen (page) in Site Kit.
+Represents a single admin screen (page) in Site Kit. The class uses `Requires_Javascript_Trait` (to render the no-JS fallback markup) and exposes a `MENU_SLUG` constant used as the default parent.
 
 ```php
 final class Screen {
-    private $slug;
-    private $args;
+	use Requires_Javascript_Trait;
 
-    public function __construct( $slug, array $args = array() ) {
-        $this->slug = $slug;
-        $this->args = wp_parse_args(
-            $args,
-            array(
-                'title'           => '',
-                'capability'      => Permissions::MANAGE_OPTIONS,
-                'active_callback' => null,
-                'render_callback' => null,
-                'enqueue_callback' => null,
-                'initialize_callback' => null,
-                'parent'          => null,
-            )
-        );
-    }
+	const MENU_SLUG = 'googlesitekit';
+
+	private $slug;
+	private $args = array();
+
+	public function __construct( $slug, array $args ) {
+		$this->slug = $slug;
+		$this->args = wp_parse_args(
+			$args,
+			array(
+				'render_callback'     => null,
+				'title'               => '',
+				'capability'          => 'manage_options',
+				'menu_title'          => '',
+				'parent_slug'         => self::MENU_SLUG,
+				'enqueue_callback'    => null,
+				'initialize_callback' => null,
+			)
+		);
+
+		if ( empty( $this->args['menu_title'] ) ) {
+			$this->args['menu_title'] = $this->args['title'];
+		}
+
+		$this->args['title'] = __( 'Site Kit by Google', 'google-site-kit' ) . ' ' . $this->args['title'];
+	}
 }
 ```
 
@@ -52,232 +64,243 @@ final class Screen {
 
 | Argument | Type | Description |
 |----------|------|-------------|
-| `title` | string | Page title |
-| `capability` | string | Required user capability |
-| `active_callback` | callable | Function to determine if screen should be active |
-| `render_callback` | callable | Function to render page content |
-| `enqueue_callback` | callable | Function to enqueue assets |
-| `initialize_callback` | callable | Function called on page load |
-| `parent` | string | Parent menu slug (null for top-level) |
+| `render_callback` | callable | Callback to render the page content. Defaults to an empty `<div id="js-{slug}" class="googlesitekit-page">`. Receives the `Context` instance. |
+| `title` | string | Screen title. The constructor prefixes it with `Site Kit by Google`. A screen with an empty title is not added to the admin. |
+| `capability` | string | Required user capability. Default is the literal string `'manage_options'`. |
+| `menu_title` | string | Title to display in the menu. Defaults to `$title`. |
+| `parent_slug` | string | Parent menu slug. Defaults to `self::MENU_SLUG` (`'googlesitekit'`), which means it is added under the main Site Kit menu. |
+| `enqueue_callback` | callable | Callback to enqueue additional assets. The base admin stylesheet is always enqueued. Receives the `Assets` instance. |
+| `initialize_callback` | callable | Callback run on page load, before headers are sent. Receives the `Context` instance. |
+
+> Note: there is no `active_callback` or `parent` argument on `Screen`. Conditional visibility is handled by the `Screens` manager (e.g. via `capability` and the `PARENT_SLUG_NULL` sentinel) rather than per-screen callbacks.
 
 #### Menu Registration
 
-**Location**: `includes/Core/Admin/Screen.php:109-204`
+**Location**: `includes/Core/Admin/Screen.php` (`add()` method)
+
+The screen is registered via `add( Context $context )`, which returns the hook suffix (or an empty string if the screen has no title). The first screen whose `parent_slug` is `MENU_SLUG` registers the top-level menu via `add_menu_page()`; every screen is then added with `add_submenu_page()`. The menu icon uses the `Google_Icon` helper, and a `current_screen` action recolors the icon to match the admin color scheme.
 
 ```php
-public function register( Context $context ) {
-    // Check if screen should be active
-    if ( is_callable( $this->args['active_callback'] ) && ! call_user_func( $this->args['active_callback'] ) ) {
-        return;
-    }
+public function add( Context $context ) {
+	static $menu_slug = null;
 
-    $parent_slug = $this->args['parent'];
-    $menu_title  = $this->args['title'];
-    $capability  = $this->args['capability'];
-    $page_slug   = $this->slug;
+	if ( ! $this->args['title'] ) {
+		return '';
+	}
 
-    // Register menu
-    if ( null === $parent_slug ) {
-        // Top-level menu
-        $hook_suffix = add_menu_page(
-            $menu_title,
-            $menu_title,
-            $capability,
-            $page_slug,
-            array( $this, 'render' ),
-            $this->get_menu_icon( $context ),
-            99 // Position
-        );
-    } else {
-        // Submenu
-        $hook_suffix = add_submenu_page(
-            $parent_slug,
-            $menu_title,
-            $menu_title,
-            $capability,
-            $page_slug,
-            array( $this, 'render' )
-        );
-    }
+	$parent_slug = null;
 
-    // Register initialize callback
-    if ( is_callable( $this->args['initialize_callback'] ) ) {
-        add_action( "load-{$hook_suffix}", $this->args['initialize_callback'] );
-    }
+	if ( ! empty( $this->args['parent_slug'] ) ) {
+		$parent_slug = $this->args['parent_slug'];
 
-    // Register enqueue callback
-    if ( is_callable( $this->args['enqueue_callback'] ) ) {
-        add_action(
-            'admin_enqueue_scripts',
-            function ( $hook ) use ( $hook_suffix ) {
-                if ( $hook !== $hook_suffix ) {
-                    return;
-                }
-                call_user_func( $this->args['enqueue_callback'] );
-            }
-        );
-    }
+		if ( self::MENU_SLUG === $parent_slug ) {
+			if ( null === $menu_slug ) {
+				add_menu_page(
+					$this->args['title'],
+					__( 'Site Kit', 'google-site-kit' ),
+					$this->args['capability'],
+					$this->slug,
+					'',
+					'data:image/svg+xml;base64,' . Google_Icon::to_base64()
+				);
+				$menu_slug = $this->slug;
+
+				// Recolor the icon to match the admin color scheme on current_screen.
+				add_action( 'current_screen', /* ... */, 100 );
+			}
+
+			$parent_slug = $menu_slug;
+		}
+	}
+
+	return (string) add_submenu_page(
+		$parent_slug,
+		$this->args['title'],
+		$this->args['menu_title'],
+		$this->args['capability'],
+		$this->slug,
+		function () use ( $context ) {
+			$this->render( $context );
+		}
+	);
 }
 ```
 
 #### Menu Icon
 
-**Location**: `includes/Core/Admin/Screen.php:216-258`
+**Location**: `includes/Core/Util/Google_Icon.php`
 
-Site Kit uses a custom SVG icon with dynamic color matching WordPress admin theme:
+The menu icon is produced by the `Google_Icon` helper rather than reading an SVG file directly. `Google_Icon::to_base64()` returns the base64-encoded SVG, and `Google_Icon::with_fill( $color )` returns a copy of the SVG XML filled with the given color (used by the `current_screen` recolor logic so the icon matches the active admin color scheme):
 
 ```php
-private function get_menu_icon( Context $context ) {
-    $icon = file_get_contents( $context->path( 'dist/assets/svg/logo-g.svg' ) );
+// Initial (uncolored) icon when registering the menu.
+'data:image/svg+xml;base64,' . Google_Icon::to_base64();
 
-    // Replace color with WordPress menu color
-    $icon = str_replace(
-        'fill="#666"',
-        sprintf( 'fill="%s"', get_user_option( 'admin_color' ) === 'light' ? '#999' : '#a7aaad' ),
-        $icon
-    );
-
-    // Encode for data URI
-    return 'data:image/svg+xml;base64,' . base64_encode( $icon );
-}
+// Recolored icon, applied on the `current_screen` action.
+'data:image/svg+xml;base64,' . Google_Icon::to_base64( Google_Icon::with_fill( $color ) );
 ```
+
+#### Screen Lifecycle
+
+The `Screen` instance also exposes:
+
+- `get_slug()` — returns the screen slug.
+- `initialize( Context $context )` — runs the `initialize_callback` (called from `load-{$hook_suffix}`).
+- `enqueue_assets( Assets $assets )` — always enqueues `googlesitekit-admin-css`, then runs the `enqueue_callback` (or, by default, enqueues the asset matching the screen slug).
+- `render( Context $context )` — private; wraps the rendered content in `<div class="googlesitekit-plugin">`, prepended by the no-JS HTML from `Requires_Javascript_Trait`.
 
 ### Screens Class
 
-**Location**: `includes/Core/Admin/Screens.php:1-580`
+**Location**: `includes/Core/Admin/Screens.php`
 
 Central manager for all admin screens.
 
 ```php
 final class Screens {
-    private $context;
-    private $assets;
-    private $modules;
-    private $authentication;
 
-    public function __construct(
-        Context $context,
-        Assets $assets,
-        Modules $modules,
-        Authentication $authentication
-    ) {
-        $this->context        = $context;
-        $this->assets         = $assets;
-        $this->modules        = $modules;
-        $this->authentication = $authentication;
-    }
+	const PREFIX           = 'googlesitekit-';
+	const PARENT_SLUG_NULL = self::PREFIX . 'null';
 
-    public function register() {
-        add_action( 'admin_menu', array( $this, 'register_screens' ) );
-    }
+	private $context;
+	private $assets;
+	private $modules;
+	private $authentication;
+	private $user_options;
+	private $screens = array();
 
-    public function register_screens() {
-        $screens = $this->get_screens();
-
-        foreach ( $screens as $screen ) {
-            $screen->register( $this->context );
-        }
-    }
+	public function __construct(
+		Context $context,
+		?Assets $assets = null,
+		?Modules $modules = null,
+		?Authentication $authentication = null,
+		?User_Options $user_options = null
+	) {
+		$this->context        = $context;
+		$this->assets         = $assets ?: new Assets( $this->context );
+		$this->modules        = $modules ?: new Modules( $this->context );
+		$this->authentication = $authentication ?: new Authentication( $this->context );
+		$this->user_options   = $user_options ?: new User_Options( $this->context );
+	}
 }
 ```
 
+#### Registration
+
+**Location**: `includes/Core/Admin/Screens.php` (`register()` method)
+
+`register()` wires up several hooks rather than a single one:
+
+- `admin_menu` (and `network_admin_menu` in network mode) → `add_screens()`.
+- `admin_enqueue_scripts` → `enqueue_screen_assets( $hook_suffix )`.
+- `admin_page_access_denied` → redirect helpers (dashboard ↔ splash, module pages → dashboard).
+- `admin_head` → inline CSS to size the menu icon.
+- `admin_notices` / `network_admin_notices` / `all_admin_notices` at priority `-9999` → remove all admin notices on Site Kit screens.
+- `custom_menu_order` / `menu_order` → move the Site Kit menu directly below the WordPress dashboard item.
+
+```php
+public function register() {
+	if ( $this->context->is_network_mode() ) {
+		add_action( 'network_admin_menu', function () { $this->add_screens(); } );
+	}
+
+	add_action( 'admin_menu', function () { $this->add_screens(); } );
+
+	add_action(
+		'admin_enqueue_scripts',
+		function ( $hook_suffix ) {
+			$this->enqueue_screen_assets( $hook_suffix );
+		}
+	);
+
+	// ... admin_page_access_denied redirects, admin_head icon CSS,
+	// notice removal, and menu reordering.
+}
+```
+
+`add_screens()` calls `$screen->add( $this->context )` for each screen, registers a `load-{$hook_suffix}` action that calls `$screen->initialize( $this->context )`, and stores `$this->screens[ $hook_suffix ] = $screen`.
+
 #### Registered Screens
 
-**Location**: `includes/Core/Admin/Screens.php:80-184`
+**Location**: `includes/Core/Admin/Screens.php` (`get_screens()` method)
+
+The registered screens are: `dashboard`, `splash`, `settings`, `user-input`, `ad-blocking-recovery`, `metric-selection`, and `key-metrics-setup`. Screens not meant to appear in the menu use `parent_slug => self::PARENT_SLUG_NULL`. The splash screen is only shown in the menu when the user can view the splash but not the dashboard.
 
 ```php
 private function get_screens() {
-    return array(
-        // Dashboard screen
-        'googlesitekit-dashboard' => new Screen(
-            'googlesitekit-dashboard',
-            array(
-                'title'               => __( 'Dashboard', 'google-site-kit' ),
-                'capability'          => Permissions::VIEW_DASHBOARD,
-                'render_callback'     => function () {
-                    $this->render_dashboard();
-                },
-                'enqueue_callback'    => function () {
-                    $this->enqueue_dashboard_assets();
-                },
-                'initialize_callback' => function () {
-                    $this->initialize_dashboard();
-                },
-            )
-        ),
+	$show_splash_in_menu = current_user_can( Permissions::VIEW_SPLASH ) && ! current_user_can( Permissions::VIEW_DASHBOARD );
 
-        // Splash screen (onboarding)
-        'googlesitekit-splash' => new Screen(
-            'googlesitekit-splash',
-            array(
-                'title'            => __( 'Site Kit', 'google-site-kit' ),
-                'capability'       => Permissions::VIEW_SPLASH,
-                'active_callback'  => function () {
-                    return ! $this->authentication->is_authenticated();
-                },
-                'render_callback'  => function () {
-                    $this->render_splash();
-                },
-                'enqueue_callback' => function () {
-                    $this->enqueue_splash_assets();
-                },
-            )
-        ),
+	$screens = array(
+		new Screen(
+			self::PREFIX . 'dashboard',
+			array(
+				'title'               => __( 'Dashboard', 'google-site-kit' ),
+				'capability'          => Permissions::VIEW_DASHBOARD,
+				'enqueue_callback'    => function ( Assets $assets ) {
+					if ( $this->context->input()->filter( INPUT_GET, 'permaLink' ) ) {
+						$assets->enqueue_asset( 'googlesitekit-entity-dashboard' );
+					} else {
+						$assets->enqueue_asset( 'googlesitekit-main-dashboard' );
+					}
+				},
+				'initialize_callback' => function ( Context $context ) { /* setupFlowRefresh redirects */ },
+				'render_callback'     => function ( Context $context ) { /* renders the dashboard root element */ },
+			)
+		),
+		new Screen(
+			self::PREFIX . 'splash',
+			array(
+				'title'               => __( 'Dashboard', 'google-site-kit' ),
+				'capability'          => Permissions::VIEW_SPLASH,
+				'parent_slug'         => $show_splash_in_menu ? Screen::MENU_SLUG : self::PARENT_SLUG_NULL,
+				'initialize_callback' => function ( Context $context ) { /* redirect to dashboard when appropriate */ },
+			)
+		),
+		new Screen(
+			self::PREFIX . 'settings',
+			array(
+				'title'      => __( 'Settings', 'google-site-kit' ),
+				'capability' => Permissions::MANAGE_OPTIONS,
+			)
+		),
+	);
 
-        // Settings screen
-        'googlesitekit-settings' => new Screen(
-            'googlesitekit-settings',
-            array(
-                'title'            => __( 'Settings', 'google-site-kit' ),
-                'capability'       => Permissions::VIEW_DASHBOARD,
-                'render_callback'  => function () {
-                    $this->render_settings();
-                },
-                'enqueue_callback' => function () {
-                    $this->enqueue_settings_assets();
-                },
-                'parent'           => 'googlesitekit-dashboard',
-            )
-        ),
-    );
+	$screens[] = new Screen( self::PREFIX . 'user-input', /* ... PARENT_SLUG_NULL ... */ );
+	$screens[] = new Screen( self::PREFIX . 'ad-blocking-recovery', /* ... PARENT_SLUG_NULL ... */ );
+	$screens[] = new Screen( self::PREFIX . 'metric-selection', /* ... PARENT_SLUG_NULL ... */ );
+	$screens[] = new Screen( self::PREFIX . 'key-metrics-setup', /* ... PARENT_SLUG_NULL ... */ );
+
+	return $screens;
 }
 ```
 
 #### Screen Rendering
 
-**Location**: `includes/Core/Admin/Screens.php:372-467`
+Most screens rely on the default `render_callback`, which prints an empty `<div id="js-{slug}" class="googlesitekit-page">` element that the React app mounts onto. The dashboard screen provides a custom `render_callback` that switches between the main and entity dashboard roots and sets `data-view-only` / `data-setup-module-slug` attributes:
 
 ```php
-private function render_dashboard() {
-    ?>
-    <div id="js-googlesitekit-dashboard" class="googlesitekit-page">
-        <div class="googlesitekit-loading">
-            <div class="googlesitekit-loading__wrapper">
-                <div class="googlesitekit-loading__logo">
-                    <?php echo $this->get_logo_svg(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped ?>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php
-}
+'render_callback' => function ( Context $context ) {
+	$is_view_only = ! $this->authentication->is_authenticated();
+	// ...
+	?>
+	<div id="js-googlesitekit-main-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" data-setup-module-slug="<?php echo esc_attr( $setup_module_slug ); ?>" class="googlesitekit-page"></div>
+	<?php
+},
 ```
 
 #### Asset Enqueueing
 
-**Location**: `includes/Core/Admin/Screens.php:196-234`
+**Location**: `includes/Core/Admin/Screens.php` (`enqueue_screen_assets()` method)
+
+Asset enqueueing is delegated to the matching `Screen` (via its `enqueue_callback`), and module assets are enqueued on top:
 
 ```php
-private function enqueue_dashboard_assets() {
-    // Enqueue core dashboard script
-    $this->assets->enqueue_asset( 'googlesitekit-dashboard' );
+private function enqueue_screen_assets( $hook_suffix ) {
+	if ( ! isset( $this->screens[ $hook_suffix ] ) ) {
+		return;
+	}
 
-    // Enqueue fonts and admin CSS
-    $this->assets->enqueue_asset( 'googlesitekit-fonts' );
-    $this->assets->enqueue_asset( 'googlesitekit-admin-css' );
-
-    // Enqueue module assets
-    $this->modules->enqueue_assets();
+	$this->screens[ $hook_suffix ]->enqueue_assets( $this->assets );
+	$this->modules->enqueue_assets();
 }
 ```
 
@@ -285,32 +308,32 @@ private function enqueue_dashboard_assets() {
 
 ### Notice Class
 
-**Location**: `includes/Core/Admin/Notice.php:1-132`
+**Location**: `includes/Core/Admin/Notice.php`
 
 Represents a single admin notice.
 
 ```php
 final class Notice {
-    const TYPE_SUCCESS = 'success';
-    const TYPE_INFO    = 'info';
-    const TYPE_WARNING = 'warning';
-    const TYPE_ERROR   = 'error';
+	const TYPE_SUCCESS = 'success';
+	const TYPE_INFO    = 'info';
+	const TYPE_WARNING = 'warning';
+	const TYPE_ERROR   = 'error';
 
-    private $slug;
-    private $args;
+	private $slug;
+	private $args = array();
 
-    public function __construct( $slug, array $args = array() ) {
-        $this->slug = $slug;
-        $this->args = wp_parse_args(
-            $args,
-            array(
-                'content'         => '',
-                'type'            => self::TYPE_INFO,
-                'active_callback' => null,
-                'dismissible'     => false,
-            )
-        );
-    }
+	public function __construct( $slug, array $args ) {
+		$this->slug = $slug;
+		$this->args = wp_parse_args(
+			$args,
+			array(
+				'content'         => '',
+				'type'            => self::TYPE_INFO,
+				'active_callback' => null,
+				'dismissible'     => false,
+			)
+		);
+	}
 }
 ```
 
@@ -318,93 +341,102 @@ final class Notice {
 
 | Argument | Type | Description |
 |----------|------|-------------|
-| `content` | string\|callable | Notice content (HTML allowed) or callback returning content |
-| `type` | string | Notice type: success, info, warning, error |
-| `active_callback` | callable | Function to determine if notice should show |
-| `dismissible` | bool | Whether notice can be dismissed |
+| `content` | string\|callable | Notice content. A string is wrapped in `<p>` and passed through `wp_kses( ..., 'googlesitekit_admin_notice' )`. A callable should return the (already-escaped) markup; if it returns empty, nothing is rendered. |
+| `type` | string | Notice type: success, info, warning, error. Default `info`. |
+| `active_callback` | callable | Function to determine if the notice should show. Receives the current admin screen hook suffix. |
+| `dismissible` | bool | Whether the notice is dismissible (adds the `is-dismissible` class). Default `false`. |
 
-#### Notice Rendering
+#### Notice Activation and Rendering
 
-**Location**: `includes/Core/Admin/Notice.php:76-130`
+**Location**: `includes/Core/Admin/Notice.php` (`is_active()` and `render()` methods)
+
+Whether a notice should display is determined by `is_active( $hook_suffix )` (called by the `Notices` manager), not inside `render()`. `render()` builds the content, applies the type/dismissible classes, and prints the markup with an id of `googlesitekit-notice-{slug}`.
 
 ```php
+public function is_active( $hook_suffix ) {
+	if ( ! $this->args['content'] ) {
+		return false;
+	}
+
+	if ( ! $this->args['active_callback'] ) {
+		return true;
+	}
+
+	return (bool) call_user_func( $this->args['active_callback'], $hook_suffix );
+}
+
 public function render() {
-    // Check active callback
-    if ( is_callable( $this->args['active_callback'] ) && ! call_user_func( $this->args['active_callback'] ) ) {
-        return;
-    }
+	if ( is_callable( $this->args['content'] ) ) {
+		$content = call_user_func( $this->args['content'] );
+		if ( empty( $content ) ) {
+			return;
+		}
+	} else {
+		$content = '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_notice' ) . '</p>';
+	}
 
-    $content = $this->args['content'];
+	$class = 'notice notice-' . $this->args['type'];
+	if ( $this->args['dismissible'] ) {
+		$class .= ' is-dismissible';
+	}
 
-    // Get content from callable
-    if ( is_callable( $content ) ) {
-        ob_start();
-        call_user_func( $content );
-        $content = ob_get_clean();
-    }
-
-    // Build CSS classes
-    $classes = array(
-        'notice',
-        'googlesitekit-notice',
-        'notice-' . $this->args['type'],
-    );
-
-    if ( $this->args['dismissible'] ) {
-        $classes[] = 'is-dismissible';
-    }
-
-    printf(
-        '<div class="%s">%s</div>',
-        esc_attr( implode( ' ', $classes ) ),
-        wp_kses(
-            $content,
-            array(
-                'a'      => array( 'href' => true, 'onclick' => true ),
-                'p'      => array(),
-                'strong' => array(),
-                'em'     => array(),
-                'br'     => array(),
-            )
-        )
-    );
+	?>
+	<div id="<?php echo esc_attr( 'googlesitekit-notice-' . $this->slug ); ?>" class="<?php echo esc_attr( $class ); ?>">
+		<?php echo $content; /* phpcs:ignore WordPress.Security.EscapeOutput */ ?>
+	</div>
+	<?php
 }
 ```
 
 ### Notices Class
 
-**Location**: `includes/Core/Admin/Notices.php:1-93`
+**Location**: `includes/Core/Admin/Notices.php`
 
-Central manager for all admin notices.
+Central manager for all admin notices. It hooks both `admin_notices` and `network_admin_notices`, reads the global `$hook_suffix`, and renders each active notice. The notice list comes from the `googlesitekit_admin_notices` filter and is filtered down to `Notice` instances.
 
 ```php
 final class Notices {
-    private $notices = array();
 
-    public function register() {
-        add_action(
-            'admin_notices',
-            function () {
-                $this->render_notices();
-            }
-        );
-    }
+	public function register() {
+		$callback = function () {
+			global $hook_suffix;
 
-    private function render_notices() {
-        $notices = $this->get_notices();
+			if ( empty( $hook_suffix ) ) {
+				return;
+			}
 
-        foreach ( $notices as $notice ) {
-            $notice->render();
-        }
-    }
+			$this->render_notices( $hook_suffix );
+		};
 
-    private function get_notices() {
-        if ( empty( $this->notices ) ) {
-            $this->notices = apply_filters( 'googlesitekit_admin_notices', array() );
-        }
+		add_action( 'admin_notices', $callback );
+		add_action( 'network_admin_notices', $callback );
+	}
 
-        return $this->notices;
-    }
+	private function render_notices( $hook_suffix ) {
+		$notices = $this->get_notices();
+		if ( empty( $notices ) ) {
+			return;
+		}
+
+		foreach ( $notices as $notice ) {
+			if ( ! $notice->is_active( $hook_suffix ) ) {
+				continue;
+			}
+
+			$notice->render();
+		}
+	}
+
+	private function get_notices() {
+		$notices = apply_filters( 'googlesitekit_admin_notices', array() );
+
+		return array_filter(
+			$notices,
+			function ( $notice ) {
+				return $notice instanceof Notice;
+			}
+		);
+	}
 }
 ```
 
@@ -412,139 +444,132 @@ final class Notices {
 
 #### Activation Notice
 
-**Location**: `includes/Core/Util/Activation_Notice.php:112-156`
+**Location**: `includes/Core/Util/Activation_Notice.php`
+
+`Activation_Notice` registers a notice on the `googlesitekit_admin_notices` filter and only shows it on `plugins.php` when the activation flag is set. The notice content is rendered via a callable, and the `active_callback` clears the activation flag so the notice only appears once.
 
 ```php
-add_filter(
-    'googlesitekit_admin_notices',
-    function ( $notices ) {
-        global $pagenow;
+public function register() {
+	add_filter(
+		'googlesitekit_admin_notices',
+		function ( $notices ) {
+			$notices[] = $this->get_activation_notice();
+			return $notices;
+		}
+	);
 
-        // Only show on plugins.php
-        if ( 'plugins.php' !== $pagenow ) {
-            return $notices;
-        }
+	// ... enqueue assets on plugins.php ...
+}
 
-        $notices[] = new Notice(
-            'googlesitekit-activation-notice',
-            array(
-                'content'         => function () {
-                    printf(
-                        '<p>%s</p>',
-                        sprintf(
-                            /* translators: %s: setup screen URL */
-                            __( 'Thank you for installing Site Kit by Google! <a href="%s">Start setup now</a>', 'google-site-kit' ),
-                            esc_url( $this->context->admin_url( 'splash' ) )
-                        )
-                    );
-                },
-                'type'            => Notice::TYPE_SUCCESS,
-                'active_callback' => function () {
-                    return $this->activation->get() && current_user_can( Permissions::SETUP );
-                },
-                'dismissible'     => true,
-            )
-        );
-
-        return $notices;
-    }
-);
+private function get_activation_notice() {
+	return new Notice(
+		'activated',
+		array(
+			'content'         => function () {
+				ob_start();
+				// ... renders the googlesitekit-activation loading markup ...
+				return ob_get_clean();
+			},
+			'type'            => Notice::TYPE_SUCCESS,
+			'active_callback' => function ( $hook_suffix ) {
+				if ( 'plugins.php' !== $hook_suffix ) {
+					return false;
+				}
+				$network_wide = is_network_admin();
+				$flag         = $this->activation_flag->get_activation_flag( $network_wide );
+				if ( $flag ) {
+					$this->activation_flag->delete_activation_flag( $network_wide );
+				}
+				return $flag;
+			},
+			'dismissible'     => true,
+		)
+	);
+}
 ```
 
 #### Re-authentication Notice
 
-**Location**: `includes/Core/Authentication/Authentication.php:1128-1160`
+**Location**: `includes/Core/Authentication/Authentication.php` (`get_reauthentication_needed_notice()` method)
+
+Authentication registers its notices via `authentication_admin_notices()` on the `googlesitekit_admin_notices` filter. The re-authentication notice uses the slug `needs_reauthentication`, renders its content via a callable, and prints an inline script through `BC_Functions::wp_print_inline_script_tag()`.
 
 ```php
-$notices[] = new Notice(
-    'needs_reauthentication',
-    array(
-        'content'         => sprintf(
-            '<p>%s <a href="#" onclick="%s">%s</a></p>',
-            esc_html__( 'Site Kit needs to re-authenticate with Google.', 'google-site-kit' ),
-            "googlesitekit.modules.forEach( function( module ) { if ( module.reauthenticate ) { module.reauthenticate(); } } ); return false;",
-            esc_html__( 'Click here', 'google-site-kit' )
-        ),
-        'type'            => Notice::TYPE_WARNING,
-        'active_callback' => function () {
-            $credentials = $this->credentials()->get();
-            return (
-                current_user_can( Permissions::AUTHENTICATE )
-                && empty( $credentials['oauth2_client_id'] )
-            );
-        },
-    )
-);
+private function get_reauthentication_needed_notice() {
+	return new Notice(
+		'needs_reauthentication',
+		array(
+			'content'         => function () {
+				ob_start();
+				?>
+				<p>
+					<?php /* ... "You need to reauthenticate your Google account." ... */ ?>
+					<a href="#" onclick="reauthenticateAndContinueSetup()"><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
+				</p>
+				<?php
+				BC_Functions::wp_print_inline_script_tag( /* reauthenticateAndContinueSetup() */ );
+				return ob_get_clean();
+			},
+			// ...
+		)
+	);
+}
 ```
 
 #### URL Mismatch Notice
 
-**Location**: `includes/Core/Authentication/Authentication.php:1074-1118`
+**Location**: `includes/Core/Authentication/Authentication.php` (`get_reconnect_after_url_mismatch_notice()` method)
+
+The URL mismatch notice uses the slug `reconnect_after_url_mismatch` and an `active_callback` that checks the disconnected reason and credentials. It is of type `info`.
 
 ```php
-$notices[] = new Notice(
-    'url_mismatch',
-    array(
-        'content'         => function () use ( $old_url, $new_url ) {
-            ?>
-            <p>
-                <?php
-                printf(
-                    /* translators: 1: old URL, 2: new URL */
-                    esc_html__( 'Your Site URL has changed from %1$s to %2$s. In order to continue using Site Kit, you will need to reconnect.', 'google-site-kit' ),
-                    '<code>' . esc_html( $old_url ) . '</code>',
-                    '<code>' . esc_html( $new_url ) . '</code>'
-                );
-                ?>
-            </p>
-            <p>
-                <a href="<?php echo esc_url( $reconnect_url ); ?>" class="button button-primary">
-                    <?php esc_html_e( 'Reconnect Site Kit', 'google-site-kit' ); ?>
-                </a>
-                <a href="<?php echo esc_url( $support_url ); ?>" class="button button-secondary">
-                    <?php esc_html_e( 'Get help', 'google-site-kit' ); ?>
-                </a>
-            </p>
-            <?php
-        },
-        'type'            => Notice::TYPE_ERROR,
-        'active_callback' => function () use ( $old_url, $new_url ) {
-            return (
-                $old_url !== $new_url
-                && current_user_can( Permissions::SETUP )
-            );
-        },
-    )
-);
+private function get_reconnect_after_url_mismatch_notice() {
+	return new Notice(
+		'reconnect_after_url_mismatch',
+		array(
+			'content'         => function () {
+				// ... builds the "Looks like the URL of your site has changed ..." content,
+				// optionally appending an old URL / new URL comparison list.
+			},
+			'type'            => Notice::TYPE_INFO,
+			'active_callback' => function () {
+				return $this->disconnected_reason->get() === Disconnected_Reason::REASON_CONNECTED_URL_MISMATCH
+					&& $this->credentials->has();
+			},
+		)
+	);
+}
 ```
 
 ## Pointer System
 
 ### Pointer Class
 
-**Location**: `includes/Core/Admin/Pointer.php:1-175`
+**Location**: `includes/Core/Admin/Pointer.php`
 
-Represents a WordPress pointer for onboarding.
+Represents a WordPress pointer for onboarding (`@since 1.83.0`).
 
 ```php
 final class Pointer {
-    private $slug;
-    private $args;
+	private $slug;
+	private $args = array();
 
-    public function __construct( $slug, array $args = array() ) {
-        $this->slug = $slug;
-        $this->args = wp_parse_args(
-            $args,
-            array(
-                'active_callback' => null,
-                'content'         => '',
-                'target'          => '',
-                'edge'            => 'left',
-                'align'           => 'middle',
-                'pointer_class'   => '',
-            )
-        );
-    }
+	public function __construct( $slug, array $args ) {
+		$this->slug = $slug;
+		$this->args = wp_parse_args(
+			$args,
+			array(
+				'title'           => '',
+				'content'         => '',
+				'target_id'       => '',
+				'position'        => 'top',
+				'active_callback' => null,
+				'buttons'         => null,
+				'class'           => '',
+				'tracking'        => array(),
+			)
+		);
+	}
 }
 ```
 
@@ -552,143 +577,154 @@ final class Pointer {
 
 | Argument | Type | Description |
 |----------|------|-------------|
-| `active_callback` | callable | Function to determine if pointer should show |
-| `content` | string\|callable | Pointer content (HTML) or callback |
-| `target` | string | jQuery selector for pointer target |
-| `edge` | string | Edge to align to: left, right, top, bottom |
-| `align` | string | Alignment: top, bottom, left, right, middle, center |
-| `pointer_class` | string | Additional CSS classes |
+| `title` | string | Required. Pointer title (rendered inside an `<h3>`). |
+| `content` | string\|callable | Required. Pointer content. A string is wrapped in `<p>` and passed through `wp_kses( ..., 'googlesitekit_admin_pointer' )`; a callable should return the markup. |
+| `target_id` | string | Required. ID of the element the pointer attaches to (resolved as `#{target_id}` in JS). |
+| `position` | string\|array | Position of the pointer: `'top'`, `'bottom'`, `'left'`, `'right'`, or an array of `edge`/`align`. Default `'top'`. |
+| `active_callback` | callable | Determines whether the pointer is active. Receives the current admin screen hook suffix. |
+| `buttons` | string | Optional HTML for the pointer buttons (rendered in a `googlesitekit-pointer-buttons` container). Default `null`. |
+| `class` | string\|array | Optional additional CSS class(es). Default `''`. |
+| `tracking` | array | Optional tracking config for `view`, `dismiss`, and `click` events. Default `array()`. |
 
-#### Pointer Data
+> Note: the real argument names are `target_id` and `position`, not `target`/`edge`/`align`/`pointer_class`.
 
-**Location**: `includes/Core/Admin/Pointer.php:90-149`
+#### Pointer Accessors and Activation
+
+**Location**: `includes/Core/Admin/Pointer.php`
+
+`Pointer` is a value object with getters (`get_slug()`, `get_title()`, `get_content()`, `get_target_id()`, `get_position()`, `get_buttons()`, `get_class()`, `get_tracking()`) and an `is_active( $hook_suffix )` method. There is no `get_pointer_data()` method, and dismissal is not checked here — individual pointers check `dismissed_wp_pointers` user meta in their own `active_callback` (see the view-only example below).
 
 ```php
-public function get_pointer_data() {
-    // Check if already dismissed
-    $dismissed = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
-    $dismissed = explode( ',', (string) $dismissed );
+public function get_content() {
+	if ( is_callable( $this->args['content'] ) ) {
+		return call_user_func( $this->args['content'] );
+	} else {
+		return '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
+	}
+}
 
-    if ( in_array( $this->slug, $dismissed, true ) ) {
-        return null;
-    }
+public function is_active( $hook_suffix ) {
+	if ( empty( $this->args['title'] ) || empty( $this->args['content'] ) || empty( $this->args['target_id'] ) ) {
+		return false;
+	}
 
-    // Check active callback
-    if ( is_callable( $this->args['active_callback'] ) && ! call_user_func( $this->args['active_callback'] ) ) {
-        return null;
-    }
+	if ( ! is_callable( $this->args['active_callback'] ) ) {
+		return true;
+	}
 
-    $content = $this->args['content'];
-
-    // Get content from callable
-    if ( is_callable( $content ) ) {
-        ob_start();
-        call_user_func( $content );
-        $content = ob_get_clean();
-    }
-
-    return array(
-        'target'        => $this->args['target'],
-        'content'       => $content,
-        'edge'          => $this->args['edge'],
-        'align'         => $this->args['align'],
-        'pointerClass'  => $this->args['pointer_class'],
-    );
+	return (bool) call_user_func( $this->args['active_callback'], $hook_suffix );
 }
 ```
 
 ### Pointers Class
 
-**Location**: `includes/Core/Admin/Pointers.php:1-197`
+**Location**: `includes/Core/Admin/Pointers.php`
 
-Central manager for all pointers.
+Central manager for all pointers. It uses `Method_Proxy_Trait`, hooks only `admin_enqueue_scripts`, filters the pointers down to the active ones for the current screen, enqueues the WordPress `wp-pointer` assets plus Site Kit's dashboard styles and the `googlesitekit-admin-pointers-tracking` script, then prints one script per active pointer on `admin_print_footer_scripts`.
 
 ```php
-final class Pointers {
-    private $pointers = array();
+class Pointers {
 
-    public function register() {
-        add_action(
-            'admin_enqueue_scripts',
-            function () {
-                $this->enqueue_pointer_script();
-            }
-        );
+	use Method_Proxy_Trait;
 
-        add_action(
-            'admin_print_footer_scripts',
-            function () {
-                $this->print_pointer_script();
-            }
-        );
-    }
+	public function register() {
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
+	}
 
-    private function get_pointers() {
-        if ( empty( $this->pointers ) ) {
-            $this->pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
-        }
+	private function enqueue_pointers( $hook_suffix ) {
+		if ( empty( $hook_suffix ) ) {
+			return;
+		}
 
-        return $this->pointers;
-    }
+		$pointers = $this->get_pointers();
+		if ( empty( $pointers ) ) {
+			return;
+		}
+
+		$active_pointers = array_filter(
+			$pointers,
+			function ( Pointer $pointer ) use ( $hook_suffix ) {
+				return $pointer->is_active( $hook_suffix );
+			}
+		);
+
+		if ( empty( $active_pointers ) ) {
+			return;
+		}
+
+		wp_enqueue_style( 'wp-pointer' );
+		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
+		wp_enqueue_script( 'wp-pointer' );
+		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
+
+		add_action(
+			'admin_print_footer_scripts',
+			function () use ( $active_pointers ) {
+				foreach ( $active_pointers as $pointer ) {
+					$this->print_pointer_script( $pointer );
+				}
+			}
+		);
+	}
+
+	private function get_pointers() {
+		$pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
+
+		return array_filter(
+			$pointers,
+			function ( $pointer ) {
+				return $pointer instanceof Pointer;
+			}
+		);
+	}
 }
 ```
 
 #### Pointer Script Generation
 
-**Location**: `includes/Core/Admin/Pointers.php:112-196`
+**Location**: `includes/Core/Admin/Pointers.php` (`print_pointer_script()` method)
+
+Each pointer is printed as a single inline script via `BC_Functions::wp_print_inline_script_tag()`. The pointer's data (slug, class, target id, `wp_kses`-escaped title/content, JSON-encoded position, and optional tracking config) is passed through `data-*` attributes and read back via `document.currentScript.dataset`. The inline JS initializes the WordPress pointer and (when tracking is configured) registers handlers with `window.googlesitekitAdminPointersTracking`.
 
 ```php
-private function print_pointer_script() {
-    $pointers = $this->get_pointers();
-    $data     = array();
+private function print_pointer_script( $pointer ) {
+	$content = $pointer->get_content();
+	if ( empty( $content ) ) {
+		return;
+	}
 
-    foreach ( $pointers as $pointer ) {
-        $pointer_data = $pointer->get_pointer_data();
-        if ( $pointer_data ) {
-            $data[ $pointer->get_slug() ] = $pointer_data;
-        }
-    }
+	$buttons = $pointer->get_buttons();
+	if ( $buttons ) {
+		$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
+	}
 
-    if ( empty( $data ) ) {
-        return;
-    }
+	$class      = array( 'wp-pointer' );
+	$class[]    = sanitize_html_class( $pointer->get_slug() );
+	if ( $pointer->get_class() ) {
+		$class[] = $pointer->get_class();
+	}
 
-    ?>
-    <script type="text/javascript">
-    ( function( $ ) {
-        var pointers = <?php echo wp_json_encode( $data ); ?>;
+	// ... build $kses_title / $kses_content allowlists ...
 
-        $.each( pointers, function( id, pointer ) {
-            var $target = $( pointer.target );
+	$data = array(
+		'data-slug'      => $pointer->get_slug(),
+		'data-class'     => implode( ' ', $class ),
+		'data-target-id' => $pointer->get_target_id(),
+		'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
+		'data-content'   => wp_kses( $content, $kses_content ),
+		'data-position'  => wp_json_encode( $pointer->get_position() ),
+	);
 
-            if ( ! $target.length ) {
-                return;
-            }
+	if ( ! empty( $pointer->get_tracking() ) ) {
+		$data['data-tracking'] = wp_json_encode( $pointer->get_tracking() );
+	}
 
-            var options = {
-                content: pointer.content,
-                position: {
-                    edge:  pointer.edge,
-                    align: pointer.align
-                },
-                close: function() {
-                    $.post( ajaxurl, {
-                        action: 'dismiss-wp-pointer',
-                        pointer: id,
-                        _ajax_nonce: '<?php echo wp_create_nonce( 'dismiss-wp-pointer' ); ?>'
-                    } );
-                }
-            };
-
-            if ( pointer.pointerClass ) {
-                options.pointerClass = pointer.pointerClass;
-            }
-
-            $target.pointer( options ).pointer( 'open' );
-        } );
-    } )( jQuery );
-    </script>
-    <?php
+	BC_Functions::wp_print_inline_script_tag(
+		// inline JS that calls target.pointer( options ).pointer( 'open' )
+		// and dismisses via wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } )
+		$inline_js,
+		$data
+	);
 }
 ```
 
@@ -696,159 +732,139 @@ private function print_pointer_script() {
 
 #### View-Only Dashboard Pointer
 
-**Location**: `includes/Core/Dashboard_Sharing/View_Only_Pointer.php:70-117`
+**Location**: `includes/Core/Dashboard_Sharing/View_Only_Pointer.php`
+
+`View_Only_Pointer` registers a pointer (slug constant `View_Only_Pointer::SLUG === 'googlesitekit-view-only-pointer'`) on the `googlesitekit_admin_pointers` filter. It targets the Site Kit top-level menu item (`toplevel_page_googlesitekit-dashboard`), only shows on the WordPress dashboard (`index.php`) for view-only users, checks `dismissed_wp_pointers` in its `active_callback`, and supplies `buttons` and `tracking`.
 
 ```php
-add_filter(
-    'googlesitekit_admin_pointers',
-    function ( $pointers ) {
-        if ( ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
-            return $pointers;
-        }
+private function get_view_only_pointer() {
+	return new Pointer(
+		self::SLUG,
+		array(
+			'title'           => sprintf(
+				'%s %s',
+				__( 'You now have access to Site Kit', 'google-site-kit' ),
+				'<button type="button" class="googlesitekit-pointer-cta--dismiss dashicons dashicons-no" data-action="dismiss">' .
+					'<span class="screen-reader-text">' . esc_html__( 'Dismiss this notice.', 'google-site-kit' ) . '</span>' .
+				'</button>'
+			),
+			'content'         => __( 'Check Site Kit’s dashboard to find out how much traffic your site is getting, …', 'google-site-kit' ),
+			'target_id'       => 'toplevel_page_googlesitekit-dashboard',
+			'active_callback' => function ( $hook_suffix ) {
+				if ( 'index.php' !== $hook_suffix
+					|| current_user_can( Permissions::AUTHENTICATE )
+					|| ! current_user_can( Permissions::VIEW_SPLASH )
+				) {
+					return false;
+				}
 
-        if ( current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) {
-            return $pointers;
-        }
-
-        $pointers[] = new Pointer(
-            'googlesitekit-view-only-dashboard',
-            array(
-                'target'  => '#toplevel_page_googlesitekit-dashboard',
-                'edge'    => 'left',
-                'align'   => 'middle',
-                'content' => function () {
-                    ?>
-                    <h3><?php esc_html_e( 'Welcome to Site Kit!', 'google-site-kit' ); ?></h3>
-                    <p>
-                        <?php
-                        esc_html_e(
-                            'You have view-only access to Site Kit. This means you can view analytics and insights, but you cannot change settings or connect new modules.',
-                            'google-site-kit'
-                        );
-                        ?>
-                    </p>
-                    <div class="wp-pointer-buttons">
-                        <a class="button button-primary" href="<?php echo esc_url( $this->context->admin_url( 'dashboard' ) ); ?>">
-                            <?php esc_html_e( 'Go to Dashboard', 'google-site-kit' ); ?>
-                        </a>
-                    </div>
-                    <?php
-                },
-            )
-        );
-
-        return $pointers;
-    }
-);
+				$dismissed_wp_pointers = get_user_meta( get_current_user_id(), 'dismissed_wp_pointers', true );
+				if ( ! is_array( $dismissed_wp_pointers ) ) {
+					$dismissed_wp_pointers = explode( ',', (string) $dismissed_wp_pointers );
+				}
+				return ! in_array( self::SLUG, $dismissed_wp_pointers, true );
+			},
+			'class'           => 'googlesitekit-view-only-pointer',
+			'tracking'        => array( /* view / dismiss / click events */ ),
+			'buttons'         => sprintf(
+				'<a class="googlesitekit-pointer-cta button-primary" href="%s" data-action="dismiss">%s</a>',
+				esc_attr( $this->context->admin_url( 'dashboard' ) ),
+				esc_html__( 'View dashboard', 'google-site-kit' )
+			),
+		)
+	);
+}
 ```
 
 ## Dashboard Widget
 
-**Location**: `includes/Core/Admin/Dashboard.php:1-203`
+**Location**: `includes/Core/Admin/Dashboard.php`
 
-WordPress dashboard widget integration.
+WordPress dashboard widget integration. The class uses `Requires_Javascript_Trait`. Its constructor takes `Context` plus optional `Assets`, `Modules`, and `Dismissed_Items` (note: `Authentication` is constructed internally, not injected).
 
 ```php
 final class Dashboard {
-    private $context;
-    private $assets;
-    private $modules;
-    private $authentication;
+	use Requires_Javascript_Trait;
 
-    public function __construct(
-        Context $context,
-        Assets $assets,
-        Modules $modules,
-        Authentication $authentication
-    ) {
-        $this->context        = $context;
-        $this->assets         = $assets;
-        $this->modules        = $modules;
-        $this->authentication = $authentication;
-    }
+	private $context;
+	private $assets;
+	private $modules;
+	private $authentication;
+	private $dismissed_items;
 
-    public function register() {
-        add_action( 'wp_dashboard_setup', array( $this, 'add_widget' ) );
-    }
+	public function __construct(
+		Context $context,
+		?Assets $assets = null,
+		?Modules $modules = null,
+		?Dismissed_Items $dismissed_items = null
+	) {
+		$this->context = $context;
+		$this->assets  = $assets ?: new Assets( $this->context );
+		$this->modules = $modules ?: new Modules( $this->context );
+
+		$this->authentication  = new Authentication( $this->context );
+		$this->dismissed_items = $dismissed_items;
+	}
+
+	public function register() {
+		add_action(
+			'wp_dashboard_setup',
+			function () {
+				$this->add_widgets();
+			}
+		);
+	}
 }
 ```
 
 ### Widget Registration
 
-**Location**: `includes/Core/Admin/Dashboard.php:102-121`
+**Location**: `includes/Core/Admin/Dashboard.php` (`add_widgets()` method)
 
 ```php
-public function add_widget() {
-    // Check permissions
-    if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
-        return;
-    }
+private function add_widgets() {
+	if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
+		return;
+	}
 
-    // Enqueue assets
-    $this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
-    $this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
+	$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard-css' );
+	$this->assets->enqueue_asset( 'googlesitekit-wp-dashboard' );
+	$this->modules->enqueue_assets();
 
-    // Enqueue module assets
-    $this->modules->enqueue_assets();
-
-    // Register widget
-    wp_add_dashboard_widget(
-        'google_dashboard_widget',
-        __( 'Site Kit Summary', 'google-site-kit' ),
-        array( $this, 'render_widget' )
-    );
+	wp_add_dashboard_widget(
+		'google_dashboard_widget',
+		__( 'Site Kit Summary – last 28 days', 'google-site-kit' ),
+		function () {
+			$this->render_googlesitekit_wp_dashboard();
+		}
+	);
 }
 ```
 
 ### Widget Rendering
 
-**Location**: `includes/Core/Admin/Dashboard.php:129-187`
+**Location**: `includes/Core/Admin/Dashboard.php` (`render_googlesitekit_wp_dashboard()` method)
+
+The widget renders a single React root (`#js-googlesitekit-wp-dashboard`) plus preview/loading blocks. It computes connection state from the active modules and view-only / shared-data permissions, optionally suppressing the Analytics setup CTA when `analytics-setup-cta-wp-dashboard` has been dismissed. The React app (not PHP) renders the Analytics / Search Console widgets into the loading containers.
 
 ```php
-public function render_widget() {
-    $analytics_module = $this->modules->get_module( 'analytics-4' );
-    $search_module    = $this->modules->get_module( 'search-console' );
+private function render_googlesitekit_wp_dashboard() {
+	$active_modules                 = $this->modules->get_active_modules();
+	$analytics_connected            = isset( $active_modules['analytics-4'] ) && $active_modules['analytics-4']->is_connected();
+	$search_console_connected       = isset( $active_modules['search-console'] ) && $active_modules['search-console']->is_connected();
+	$is_view_only                   = ! $this->authentication->is_authenticated();
+	$can_view_shared_analytics      = current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'analytics-4' );
+	$can_view_shared_search_console = current_user_can( Permissions::READ_SHARED_MODULE_DATA, 'search-console' );
+	// ... compute $display_* flags and $class_names ...
 
-    ?>
-    <div id="js-googlesitekit-wp-dashboard" class="googlesitekit-wp-dashboard">
-        <?php if ( $analytics_module && $analytics_module->is_connected() ) : ?>
-            <div class="googlesitekit-wp-dashboard__analytics">
-                <h3><?php esc_html_e( 'Analytics', 'google-site-kit' ); ?></h3>
-                <div id="googlesitekit-analytics-widget"></div>
-            </div>
-        <?php else : ?>
-            <div class="googlesitekit-wp-dashboard__cta">
-                <p>
-                    <?php
-                    printf(
-                        /* translators: %s: module name */
-                        esc_html__( 'Connect %s to see your site analytics here.', 'google-site-kit' ),
-                        esc_html__( 'Analytics', 'google-site-kit' )
-                    );
-                    ?>
-                </p>
-                <a href="<?php echo esc_url( $this->context->admin_url( 'dashboard' ) ); ?>" class="button button-primary">
-                    <?php esc_html_e( 'Go to Site Kit', 'google-site-kit' ); ?>
-                </a>
-            </div>
-        <?php endif; ?>
-
-        <?php if ( $search_module && $search_module->is_connected() ) : ?>
-            <div class="googlesitekit-wp-dashboard__search-console">
-                <h3><?php esc_html_e( 'Search Console', 'google-site-kit' ); ?></h3>
-                <div id="googlesitekit-search-console-widget"></div>
-            </div>
-        <?php endif; ?>
-
-        <?php if ( ! current_user_can( Permissions::VIEW_AUTHENTICATED_DASHBOARD ) ) : ?>
-            <div class="googlesitekit-wp-dashboard__view-only">
-                <p>
-                    <?php esc_html_e( 'You have view-only access to Site Kit data.', 'google-site-kit' ); ?>
-                </p>
-            </div>
-        <?php endif; ?>
-    </div>
-    <?php
+	$this->render_noscript_html();
+	?>
+	<div id="js-googlesitekit-wp-dashboard" data-view-only="<?php echo esc_attr( $is_view_only ); ?>" class="googlesitekit-plugin <?php echo esc_attr( $class_names ); ?>">
+		<div class="googlesitekit-wp-dashboard googlesitekit-wp-dashboard-loading">
+			<?php // render_loading_container( ... ) preview blocks ?>
+		</div>
+	</div>
+	<?php
 }
 ```
 
@@ -856,624 +872,317 @@ public function render_widget() {
 
 ### Plugin_Action_Links
 
-**Location**: `includes/Core/Admin/Plugin_Action_Links.php:1-71`
+**Location**: `includes/Core/Admin/Plugin_Action_Links.php`
 
-Adds action links to plugin row on plugins.php.
+Adds action links to the Site Kit plugin row on plugins.php. The filter callback adds a "Start setup" link for users who can set up but cannot view the dashboard, and a "Settings" link for users who can manage options. Links are prepended with `array_unshift()`.
 
 ```php
-final class Plugin_Action_Links {
-    private $context;
+class Plugin_Action_Links {
 
-    public function __construct( Context $context ) {
-        $this->context = $context;
-    }
+	private $context;
 
-    public function register() {
-        $plugin_basename = $this->context->get_plugin_basename();
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
 
-        add_filter(
-            "plugin_action_links_{$plugin_basename}",
-            function ( $links ) {
-                return $this->add_links( $links );
-            }
-        );
-    }
+	public function register() {
+		add_filter(
+			'plugin_action_links_' . GOOGLESITEKIT_PLUGIN_BASENAME,
+			function ( $links ) {
+				if ( current_user_can( Permissions::SETUP ) && ! current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+					$setup_link = sprintf(
+						'<a href="%s">%s</a>',
+						esc_url( $this->context->admin_url() ),
+						esc_html__( 'Start setup', 'google-site-kit' )
+					);
+					array_unshift( $links, $setup_link );
+				}
 
-    private function add_links( $links ) {
-        if ( ! current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-            return $links;
-        }
+				if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
+					$settings_link = sprintf(
+						'<a href="%s">%s</a>',
+						esc_url( $this->context->admin_url( 'settings' ) ),
+						esc_html__( 'Settings', 'google-site-kit' )
+					);
+					array_unshift( $links, $settings_link );
+				}
 
-        $settings_url = $this->context->admin_url( 'settings' );
-
-        $action_links = array(
-            'settings' => sprintf(
-                '<a href="%s">%s</a>',
-                esc_url( $settings_url ),
-                esc_html__( 'Settings', 'google-site-kit' )
-            ),
-        );
-
-        // Add to beginning of array
-        return array_merge( $action_links, $links );
-    }
+				return $links;
+			}
+		);
+	}
 }
 ```
 
 ### Plugin_Row_Meta
 
-**Location**: `includes/Core/Admin/Plugin_Row_Meta.php:1-54`
+**Location**: `includes/Core/Admin/Plugin_Row_Meta.php`
 
-Adds meta links to plugin row on plugins.php.
+Adds "Rate Site Kit" and "Support" meta links to the Site Kit plugin row. The callback matches on `GOOGLESITEKIT_PLUGIN_BASENAME` and appends the links with `array_merge()`.
 
 ```php
-final class Plugin_Row_Meta {
-    public function register() {
-        add_filter( 'plugin_row_meta', array( $this, 'add_links' ), 10, 2 );
-    }
+class Plugin_Row_Meta {
 
-    public function add_links( $links, $file ) {
-        if ( GOOGLESITEKIT_PLUGIN_BASENAME !== $file ) {
-            return $links;
-        }
+	public function register() {
+		add_filter(
+			'plugin_row_meta',
+			function ( $meta, $plugin_file ) {
+				if ( GOOGLESITEKIT_PLUGIN_BASENAME === $plugin_file ) {
+					return array_merge( $meta, $this->get_plugin_row_meta() );
+				}
+				return $meta;
+			},
+			10,
+			2
+		);
+	}
 
-        $meta_links = array(
-            'rate' => sprintf(
-                '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-                'https://wordpress.org/support/plugin/google-site-kit/reviews/#new-post',
-                esc_html__( 'Rate Site Kit', 'google-site-kit' )
-            ),
-            'support' => sprintf(
-                '<a href="%s" target="_blank" rel="noopener noreferrer">%s</a>',
-                'https://wordpress.org/support/plugin/google-site-kit/',
-                esc_html__( 'Support', 'google-site-kit' )
-            ),
-        );
-
-        return array_merge( $links, $meta_links );
-    }
+	private function get_plugin_row_meta() {
+		return array(
+			'<a href="https://wordpress.org/support/plugin/google-site-kit/reviews/#new-post">' . __( 'Rate Site Kit', 'google-site-kit' ) . '</a>',
+			'<a href="https://wordpress.org/support/plugin/google-site-kit/#new-post">' . __( 'Support', 'google-site-kit' ) . '</a>',
+		);
+	}
 }
 ```
 
 ## Authorization Screen
 
-**Location**: `includes/Core/Admin/Authorize_Application.php:1-129`
+**Location**: `includes/Core/Admin/Authorize_Application.php` (`@since 1.126.0`)
 
-Custom authorization screen for Google OAuth flow.
+Custom styling and footer for the WordPress Authorize Application screen when the request targets a Google service. The class uses `Method_Proxy_Trait` and takes `Context` plus an optional `Assets` instance.
 
 ```php
 final class Authorize_Application {
-    private $context;
-    private $assets;
 
-    public function __construct( Context $context, Assets $assets ) {
-        $this->context = $context;
-        $this->assets  = $assets;
-    }
+	use Method_Proxy_Trait;
 
-    public function register() {
-        add_action(
-            'admin_enqueue_scripts',
-            function () {
-                if ( $this->is_authorize_application_screen() ) {
-                    $this->enqueue_assets();
-                }
-            }
-        );
+	private $context;
+	private $assets;
 
-        add_action(
-            'admin_footer',
-            function () {
-                if ( $this->is_authorize_application_screen() ) {
-                    $this->render_custom_footer();
-                }
-            }
-        );
-    }
+	public function __construct( Context $context, ?Assets $assets = null ) {
+		$this->context = $context;
+		$this->assets  = $assets ?: new Assets( $this->context );
+	}
+
+	public function register() {
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_assets' ) );
+		add_action( 'admin_footer', $this->get_method_proxy( 'render_custom_footer' ) );
+	}
 }
 ```
 
 ### Screen Detection
 
-**Location**: `includes/Core/Admin/Authorize_Application.php:62-87`
+**Location**: `includes/Core/Admin/Authorize_Application.php` (`is_authorize_application_screen()` / `is_google_service()` methods)
+
+Screen detection uses the `Current_Screen` helper (it checks the screen id is `authorize-application`), and the Google-service check parses the `success_url` query parameter for a `*.google.com` host.
 
 ```php
-private function is_authorize_application_screen() {
-    // Must be on admin.php
-    if ( ! isset( $_SERVER['REQUEST_URI'] ) || ! strpos( $_SERVER['REQUEST_URI'], 'admin.php' ) ) {
-        return false;
-    }
+protected function is_authorize_application_screen() {
+	$current_screen = Current_Screen::get();
 
-    // Get redirect URL parameter
-    $redirect = $this->context->input()->filter( INPUT_GET, 'redirect' );
-
-    if ( empty( $redirect ) ) {
-        return false;
-    }
-
-    // Parse URL
-    $parsed = wp_parse_url( esc_url_raw( $redirect ) );
-
-    if ( empty( $parsed['host'] ) ) {
-        return false;
-    }
-
-    // Check if Google service
-    return $this->is_google_service( $parsed['host'] );
+	return null !== $current_screen && 'authorize-application' === $current_screen->id;
 }
 
-private function is_google_service( $host ) {
-    return (bool) preg_match( '/^(.+\.)?google\.com$/', $host );
+protected function is_google_service() {
+	$success_url = isset( $_GET['success_url'] ) ? esc_url_raw( wp_unslash( $_GET['success_url'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification
+	$success_url = sanitize_text_field( $success_url );
+
+	$parsed_url = wp_parse_url( $success_url );
+
+	if ( empty( $parsed_url['host'] ) ) {
+		return false;
+	}
+
+	return preg_match( '/\.google\.com$/', $parsed_url['host'] ) === 1;
 }
 ```
 
-### Custom Styling
+### Custom Styling and Footer
 
-**Location**: `includes/Core/Admin/Authorize_Application.php:89-105`
+**Location**: `includes/Core/Admin/Authorize_Application.php` (`enqueue_assets()` / `render_custom_footer()` methods)
+
+Both the stylesheet and the footer only apply when on the authorize-application screen for a Google service. The custom styling is delivered via the `googlesitekit-authorize-application-css` asset (not inline `<style>` here), and the footer renders a simple "Powered by Site Kit" block.
 
 ```php
 private function enqueue_assets() {
-    $this->assets->enqueue_asset( 'googlesitekit-authorize-application-css' );
-
-    // Hide admin menu and header
-    add_action(
-        'admin_head',
-        function () {
-            ?>
-            <style>
-                #wpadminbar, #adminmenumain, .update-nag {
-                    display: none !important;
-                }
-                html.wp-toolbar {
-                    padding-top: 0 !important;
-                }
-            </style>
-            <?php
-        }
-    );
+	if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
+		$this->assets->enqueue_asset( 'googlesitekit-authorize-application-css' );
+	}
 }
-```
 
-### Custom Footer
-
-**Location**: `includes/Core/Admin/Authorize_Application.php:107-127`
-
-```php
 private function render_custom_footer() {
-    ?>
-    <div class="googlesitekit-authorize-application__footer">
-        <p>
-            <?php
-            printf(
-                /* translators: %s: Site Kit logo */
-                esc_html__( 'Powered by %s', 'google-site-kit' ),
-                '<strong>' . esc_html__( 'Site Kit', 'google-site-kit' ) . '</strong>'
-            );
-            ?>
-        </p>
-    </div>
-    <?php
+	if ( $this->is_authorize_application_screen() && $this->is_google_service() ) {
+		echo '<div class="googlesitekit-authorize-application__footer"><p>' . esc_html__( 'Powered by Site Kit', 'google-site-kit' ) . '</p></div>';
+	}
 }
 ```
 
 ## Tools Page Integration
 
-**Location**: `includes/Core/Admin/Available_Tools.php:1-67`
+**Location**: `includes/Core/Admin/Available_Tools.php` (`@since 1.30.0`)
 
-Adds Site Kit tools to WordPress Tools page.
+Adds a "Reset Site Kit" card to the WordPress Tools page. The class uses `Method_Proxy_Trait`, hooks `tool_box`, gates rendering on `Permissions::SETUP`, and links to the reset URL from `Reset::url()`.
 
 ```php
-final class Available_Tools {
-    private $context;
+class Available_Tools {
+	use Method_Proxy_Trait;
 
-    public function __construct( Context $context ) {
-        $this->context = $context;
-    }
+	public function register() {
+		add_action( 'tool_box', $this->get_method_proxy( 'render_tool_box' ) );
+	}
 
-    public function register() {
-        add_action( 'tool_box', array( $this, 'render_tool' ) );
-    }
-
-    public function render_tool() {
-        if ( ! current_user_can( Permissions::SETUP ) ) {
-            return;
-        }
-
-        ?>
-        <div class="card">
-            <h2 class="title"><?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?></h2>
-            <p>
-                <?php
-                esc_html_e(
-                    'Reset Site Kit and disconnect all users. This will remove all Site Kit settings and data.',
-                    'google-site-kit'
-                );
-                ?>
-            </p>
-            <p>
-                <a href="<?php echo esc_url( $this->context->admin_url( 'settings', array( 'reset' => '1' ) ) ); ?>" class="button">
-                    <?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?>
-                </a>
-            </p>
-        </div>
-        <?php
-    }
+	private function render_tool_box() {
+		if ( ! current_user_can( Permissions::SETUP ) ) {
+			return;
+		}
+		?>
+		<div class="card">
+			<h2 class="title"><?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?></h2>
+			<p>
+				<?php
+				esc_html_e(
+					'Resetting will disconnect all users and remove all Site Kit settings and data within WordPress. You and any other users who wish to use Site Kit will need to reconnect to restore access.',
+					'google-site-kit'
+				)
+				?>
+			</p>
+			<p>
+				<a class="button button-primary" href="<?php echo esc_url( Reset::url() ); ?>">
+					<?php esc_html_e( 'Reset Site Kit', 'google-site-kit' ); ?>
+				</a>
+			</p>
+		</div>
+		<?php
+	}
 }
 ```
 
 ## Standalone Mode
 
-**Location**: `includes/Core/Admin/Standalone.php:1-122`
+**Location**: `includes/Core/Admin/Standalone.php` (`@since 1.8.0`)
 
-Enables standalone/embedded admin pages (perfect for iframes).
+Enables standalone/embedded admin pages (useful for iframes). `register()` no-ops unless in standalone mode, then appends a body class, removes the admin bar, empties the footer text, and prints inline styles.
 
 ```php
 final class Standalone {
-    private $context;
 
-    public function __construct( Context $context ) {
-        $this->context = $context;
-    }
+	private $context;
 
-    public function register() {
-        // Only register if in standalone mode
-        if ( ! $this->is_standalone() ) {
-            return;
-        }
+	public function __construct( Context $context ) {
+		$this->context = $context;
+	}
 
-        // Hide admin menu
-        add_filter(
-            'admin_body_class',
-            function ( $classes ) {
-                return "$classes googlesitekit-standalone";
-            }
-        );
+	public function register() {
+		if ( ! $this->is_standalone() ) {
+			return;
+		}
 
-        // Remove admin header
-        add_action( 'in_admin_header', array( $this, 'remove_admin_header' ), 1000 );
+		add_filter(
+			'admin_body_class',
+			function ( $admin_body_classes ) {
+				return "{$admin_body_classes} googlesitekit-standalone";
+			}
+		);
 
-        // Remove admin footer text
-        add_filter( 'admin_footer_text', '__return_empty_string', 1000 );
+		remove_action( 'in_admin_header', 'wp_admin_bar_render', 0 );
 
-        // Add standalone styles
-        add_action( 'admin_head', array( $this, 'add_styles' ) );
-    }
+		add_filter( 'admin_footer_text', '__return_empty_string', PHP_INT_MAX );
+		add_filter( 'update_footer', '__return_empty_string', PHP_INT_MAX );
+
+		add_action(
+			'admin_head',
+			function () {
+				$this->print_standalone_styles();
+			}
+		);
+	}
 }
 ```
 
 ### Detection Logic
 
-**Location**: `includes/Core/Admin/Standalone.php:91-98`
+**Location**: `includes/Core/Admin/Standalone.php` (`is_standalone()` method)
+
+Standalone mode requires `admin.php`, a `page` query arg containing `googlesitekit`, and a truthy `googlesitekit-standalone` query arg (validated as a boolean).
 
 ```php
-private function is_standalone() {
-    global $pagenow;
+public function is_standalone() {
+	global $pagenow;
 
-    // Must be on admin.php
-    if ( 'admin.php' !== $pagenow ) {
-        return false;
-    }
+	$page       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'page' ) ?: '' );
+	$standalone = $this->context->input()->filter( INPUT_GET, 'googlesitekit-standalone', FILTER_VALIDATE_BOOLEAN );
 
-    // Must have googlesitekit page
-    $page = $this->context->input()->filter( INPUT_GET, 'page' );
-    if ( ! $page || ! strpos( $page, 'googlesitekit-' ) === 0 ) {
-        return false;
-    }
-
-    // Must have standalone query param
-    $standalone = $this->context->input()->filter( INPUT_GET, 'googlesitekit-standalone' );
-    return 'true' === $standalone;
+	return ( 'admin.php' === $pagenow && false !== strpos( $page, 'googlesitekit' ) && $standalone );
 }
 ```
 
 ### Standalone Styling
 
-**Location**: `includes/Core/Admin/Standalone.php:100-120`
+**Location**: `includes/Core/Admin/Standalone.php` (`print_standalone_styles()` method)
 
 ```php
-public function add_styles() {
-    ?>
-    <style>
-        /* Hide WordPress admin UI */
-        #wpadminbar,
-        #adminmenumain,
-        #wpcontent #wpfooter,
-        .update-nag,
-        .notice {
-            display: none !important;
-        }
+private function print_standalone_styles() {
+	?>
+	<style type="text/css">
+	html {
+		padding-top: 0 !important;
+	}
 
-        /* Adjust layout */
-        #wpcontent {
-            margin-left: 0 !important;
-            padding-left: 0 !important;
-        }
+	body.googlesitekit-standalone #adminmenumain {
+		display: none;
+	}
 
-        html.wp-toolbar {
-            padding-top: 0 !important;
-        }
-    </style>
-    <?php
+	body.googlesitekit-standalone #wpcontent {
+		margin-left: 0;
+	}
+	</style>
+	<?php
 }
 ```
 
 ## Initialization
 
-All admin features are initialized in `Plugin.php`:
+All admin features are registered from `Plugin.php`. Most are instantiated inside the `init`-time bootstrap closure (priority `-999`); `Plugin_Row_Meta` and `Plugin_Action_Links` are registered outside that closure.
 
-**Location**: `includes/Plugin.php:193-216`
+**Location**: `includes/Plugin.php`
 
 ```php
-// Register admin features
-add_action(
-    'init',
-    function () use ( $context, $options, $user_options ) {
-        $assets         = new Core\Assets\Assets( $context );
-        $authentication = new Core\Authentication\Authentication( $context, $options, $user_options );
-        $modules        = new Core\Modules\Modules( $context, $options, $user_options, $authentication, $assets );
+// Inside the init bootstrap closure:
+$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
+$screens->register();
 
-        // Screens
-        $screens = new Core\Admin\Screens( $context, $assets, $modules, $authentication );
-        $screens->register();
+// ...
 
-        // Notices
-        $notices = new Core\Admin\Notices();
-        $notices->register();
+( new Core\Admin\Available_Tools() )->register();
+( new Core\Admin\Notices() )->register();
+( new Core\Admin\Pointers() )->register();
+( new Core\Admin\Dashboard( $this->context, $assets, $modules, $dismissed_items ) )->register();
+( new Core\Admin\Authorize_Application( $this->context, $assets ) )->register();
+( new Core\Admin\Standalone( $this->context ) )->register();
+( new Core\Util\Activation_Notice( $this->context, $activation_flag, $assets ) )->register();
 
-        // Pointers
-        $pointers = new Core\Admin\Pointers();
-        $pointers->register();
-
-        // Dashboard widget
-        $dashboard = new Core\Admin\Dashboard( $context, $assets, $modules, $authentication );
-        $dashboard->register();
-
-        // Authorization screen
-        $authorize_app = new Core\Admin\Authorize_Application( $context, $assets );
-        $authorize_app->register();
-
-        // Standalone mode
-        $standalone = new Core\Admin\Standalone( $context );
-        $standalone->register();
-
-        // Tools page
-        $available_tools = new Core\Admin\Available_Tools( $context );
-        $available_tools->register();
-    }
-);
-
-// Early registration (before init)
-$plugin_action_links = new Core\Admin\Plugin_Action_Links( $context );
-$plugin_action_links->register();
-
-$plugin_row_meta = new Core\Admin\Plugin_Row_Meta();
-$plugin_row_meta->register();
+// Outside the closure (plugin row meta and action links):
+( new Core\Admin\Plugin_Row_Meta() )->register();
+( new Core\Admin\Plugin_Action_Links( $this->context ) )->register();
 ```
+
+> Note: `Notices`, `Pointers`, and the various notice/pointer providers (e.g. `Activation_Notice`, `Authentication`, `View_Only_Pointer`) are registered independently. The providers add their notices/pointers through the `googlesitekit_admin_notices` and `googlesitekit_admin_pointers` filters; the `Notices`/`Pointers` managers consume those filters.
 
 ## Best Practices
 
-### DO
-
-1. **Use active callbacks for conditional features**
-
-    ```php
-    new Notice(
-        'my-notice',
-        array(
-            'content'         => 'Notice content',
-            'active_callback' => function () {
-                return current_user_can( Permissions::MANAGE_OPTIONS );
-            },
-        )
-    )
-    ```
-
-2. **Check permissions before rendering**
-
-    ```php
-    public function add_widget() {
-        if ( ! current_user_can( Permissions::VIEW_WP_DASHBOARD_WIDGET ) ) {
-            return;
-        }
-
-        wp_add_dashboard_widget( /* ... */ );
-    }
-    ```
-
-3. **Use callable content for dynamic data**
-
-    ```php
-    new Notice(
-        'dynamic-notice',
-        array(
-            'content' => function () {
-                $count = $this->get_pending_items_count();
-                printf( 'You have %d pending items.', $count );
-            },
-        )
-    )
-    ```
-
-4. **Escape all output properly**
-
-    ```php
-    // Good
-    echo esc_html( $title );
-    echo esc_url( $link );
-    echo esc_attr( $class );
-
-    // Good - allow specific tags
-    echo wp_kses(
-        $content,
-        array(
-            'a'      => array( 'href' => true ),
-            'strong' => array(),
-        )
-    );
-    ```
-
-5. **Use consistent slug prefixes**
-    ```php
-    // Screens
-    'googlesitekit-dashboard'
-
-    // Notices
-    'googlesitekit-activation-notice'
-
-    // Pointers
-    'googlesitekit-view-only-dashboard'
-    ```
-
-### DON'T
-
-1. **Don't hardcode capability checks**
-
-    ```php
-    // Bad
-    if ( current_user_can( 'manage_options' ) ) {
-        // ...
-    }
-
-    // Good
-    if ( current_user_can( Permissions::MANAGE_OPTIONS ) ) {
-        // ...
-    }
-    ```
-
-2. **Don't output unescaped user input**
-
-    ```php
-    // Bad
-    echo $user_input;
-
-    // Good
-    echo esc_html( $user_input );
-    ```
-
-3. **Don't skip active callbacks for conditional features**
-
-    ```php
-    // Bad - notice always renders
-    new Notice(
-        'my-notice',
-        array(
-            'content' => 'This only applies to authenticated users',
-        )
-    )
-
-    // Good - conditional rendering
-    new Notice(
-        'my-notice',
-        array(
-            'content'         => 'This only applies to authenticated users',
-            'active_callback' => function () {
-                return $this->authentication->is_authenticated();
-            },
-        )
-    )
-    ```
-
-4. **Don't register assets globally for screen-specific features**
-
-    ```php
-    // Bad - enqueues everywhere
-    add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-
-    // Good - screen-specific
-    new Screen(
-        'my-screen',
-        array(
-            'enqueue_callback' => array( $this, 'enqueue_assets' ),
-        )
-    )
-    ```
-
-5. **Don't create screens without parent for submenu pages**
-    ```php
-    // Bad - creates top-level menu
-    new Screen(
-        'googlesitekit-settings',
-        array(
-            'title' => 'Settings',
-        )
-    )
-
-    // Good - creates submenu
-    new Screen(
-        'googlesitekit-settings',
-        array(
-            'title'  => 'Settings',
-            'parent' => 'googlesitekit-dashboard',
-        )
-    )
-    ```
+- **Gate on active/permission callbacks**, don't render unconditionally — see the `active_callback` examples for `Notice`, `Pointer`, and the permission check in `Dashboard::add_widgets()` above.
+- **Check capabilities via `Permissions` constants** (e.g. `Permissions::MANAGE_OPTIONS`), never hardcoded strings like `'manage_options'`.
+- **Escape all output**: `esc_html()`, `esc_url()`, `esc_attr()`, or `wp_kses( $content, 'googlesitekit_admin_notice' )` for content that allows specific tags.
+- **Use callables for dynamic notice/pointer content** (see `Activation_Notice::get_activation_notice()` above) rather than pre-building the string.
+- **Scope assets to the screen that needs them** via a `Screen`'s `enqueue_callback`, not a global `admin_enqueue_scripts` hook.
+- **Hide screens that shouldn't appear in the menu** with `parent_slug => self::PARENT_SLUG_NULL` (see `Screens::get_screens()` above), and keep slugs consistently prefixed (`googlesitekit-*`).
 
 ## Extensibility
 
-### Adding Custom Notices
+New notices/pointers/screens are added the same way the built-in ones are:
 
-```php
-add_filter(
-    'googlesitekit_admin_notices',
-    function ( $notices ) {
-        $notices[] = new Notice(
-            'my-custom-notice',
-            array(
-                'content'         => 'My custom notice content',
-                'type'            => Notice::TYPE_INFO,
-                'active_callback' => function () {
-                    return is_admin();
-                },
-            )
-        );
-
-        return $notices;
-    }
-);
-```
-
-### Adding Custom Pointers
-
-```php
-add_filter(
-    'googlesitekit_admin_pointers',
-    function ( $pointers ) {
-        $pointers[] = new Pointer(
-            'my-custom-pointer',
-            array(
-                'target'  => '#my-menu-item',
-                'edge'    => 'left',
-                'align'   => 'middle',
-                'content' => '<h3>Welcome!</h3><p>Check out this feature.</p>',
-            )
-        );
-
-        return $pointers;
-    }
-);
-```
-
-### Adding Custom Screens
-
-Custom screens must be added by modifying the `Screens::get_screens()` method:
-
-```php
-private function get_screens() {
-    $screens = array(
-        // ... existing screens
-
-        'googlesitekit-custom' => new Screen(
-            'googlesitekit-custom',
-            array(
-                'title'            => __( 'Custom Page', 'google-site-kit' ),
-                'capability'       => Permissions::VIEW_DASHBOARD,
-                'render_callback'  => array( $this, 'render_custom' ),
-                'enqueue_callback' => array( $this, 'enqueue_custom_assets' ),
-                'parent'           => 'googlesitekit-dashboard',
-            )
-        ),
-    );
-
-    return $screens;
-}
-```
+- **Notices**: append a `Notice` instance on the `googlesitekit_admin_notices` filter (see `Activation_Notice::register()` above).
+- **Pointers**: append a `Pointer` instance on the `googlesitekit_admin_pointers` filter (see `View_Only_Pointer` above).
+- **Screens**: add a `Screen` instance in `Screens::get_screens()` (see that method above), using `self::PARENT_SLUG_NULL` to keep it out of the menu.

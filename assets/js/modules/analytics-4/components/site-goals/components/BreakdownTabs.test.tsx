@@ -103,4 +103,23 @@ describe( 'BreakdownTabs', () => {
 		} );
 		expect( getByText( 'Other sources' ) ).toBeInTheDocument();
 	} );
+
+	it( 'renders the tab bar inside the scrollable tabs container', () => {
+		const { container } = render(
+			<BreakdownTabs
+				tabs={ tabs }
+				activeTabID="woocommerce"
+				onTabChange={ () => {} }
+			/>
+		);
+
+		const wrapper = container.querySelector(
+			'.googlesitekit-site-goals-breakdown-tabs'
+		);
+
+		expect( wrapper ).toHaveClass( 'googlesitekit-scrollable-tabs' );
+		expect(
+			container.querySelector( '.mdc-tab-scroller__scroll-area' )
+		).toBeInTheDocument();
+	} );
 } );

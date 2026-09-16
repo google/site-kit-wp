@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings as Module_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_4_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\FakeHttp;
@@ -128,6 +129,56 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayHasKey( 'total_visitors', $payload[ Analytics_4::MODULE_SLUG ], 'Total visitors payload should be included.' );
 		$this->assertArrayHasKey( 'traffic_channels', $payload[ Analytics_4::MODULE_SLUG ], 'Traffic channels payload should be included.' );
 		$this->assertArrayHasKey( 'popular_content', $payload[ Analytics_4::MODULE_SLUG ], 'Popular content payload should be included.' );
+	}
+
+	public function test_get_user_payload__search_console_batch_wp_error_returns_categorized_error() {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Search_Console::MODULE_SLUG );
+		$this->set_active_modules( array( Search_Console::MODULE_SLUG ) );
+		$this->set_search_console_settings_connected( array( 'ownerID' => $admin_id ) );
+
+		$search_console = $this->modules->get_module( Search_Console::MODULE_SLUG );
+		$search_console->register();
+
+		FakeHttp::fake_google_http_handler(
+			$this->authentication->get_oauth_client()->get_client(),
+			function ( Request $request ) {
+				if ( 'searchconsole.googleapis.com' !== $request->getUri()->getHost() ) {
+					return new FulfilledPromise( new Response( 200 ) );
+				}
+
+				return new FulfilledPromise(
+					new Response(
+						403,
+						array( 'Content-Type' => 'application/json' ),
+						json_encode(
+							array(
+								'error' => array(
+									'code'    => 403,
+									'message' => 'Request had insufficient authentication scopes.',
+									'errors'  => array(
+										array(
+											'message' => 'Insufficient Permission',
+											'domain'  => 'global',
+											'reason'  => 'insufficientPermissions',
+										),
+									),
+								),
+							)
+						)
+					)
+				);
+			}
+		);
+
+		$data_requests = $this->create_data_requests();
+		$payload       = $data_requests->get_user_payload( $admin_id, $this->date_range );
+
+		$this->assertWPError( $payload, 'Whole-batch Search Console failure should surface as WP_Error instead of causing a fatal error.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], '403 batch failure should be categorized as a permissions error.' );
+		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'Categorized error should carry the Search Console module slug.' );
 	}
 
 	public function test_user_without_shared_roles_gets_empty_payload() {
@@ -277,14 +328,156 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertArrayNotHasKey( Search_Console::MODULE_SLUG, $payload, 'Recoverable Search Console should be skipped.' );
 	}
 
-	public function test_secondary_admin_without_service_entity_access_gets_no_module_payload_and_no_error() {
+	public function test_get_user_payload__denied_service_entity_access_returns_permissions_error() {
 		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
 		$modules = $this->create_modules_with_fake_service_entity_access(
 			array(
-				Analytics_4::MODULE_SLUG    => false,
-				Search_Console::MODULE_SLUG => false,
+				'analytics-4'    => false,
+				'search-console' => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'Secondary admin denied access to every connected module should get a categorized error instead of a fatal error.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Denied service-entity access should be categorized as a permissions error.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__unverified_admin_with_denied_access_returns_permissions_error() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		// A secondary admin who only connects their own Google account (rather than
+		// running Site Kit's full setup wizard) never completes site verification.
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id, false );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => false,
+				'search-console' => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'An unverified secondary admin denied access should still get a categorized error instead of an empty payload.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'Site verification should not be required to detect denied service-entity access.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'Categorized error should name the first denied module slug.' );
+	}
+
+	public function test_get_user_payload__returns_the_permissions_error_when_pagespeed_insights_is_also_connected() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		// PageSpeed Insights adds no section to the report, so it must not hide the
+		// permissions error for Analytics and Search Console.
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => false,
+				'search-console' => false,
+			),
+			$owner_id,
+			array( 'pagespeed-insights' )
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array( 'total_visitors' => array( 'value' => 10 ) ),
+				'search-console' => array( 'total_impressions' => array( 'value' => 10 ) ),
+			)
+		);
+
+		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when the recipient cannot read either report module.' );
+		$this->assertEquals( 'permissions_error', $payload->get_error_data()['category_id'], 'get_user_payload() should categorize denied access as a permissions error.' );
+		$this->assertEquals( 'analytics-4', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `analytics-4`, the first module the recipient cannot read.' );
+	}
+
+	public function test_get_user_payload__returns_an_empty_array_when_only_adsense_is_denied() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => true,
+				'search-console' => true,
+				'adsense'        => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4'    => array(),
+				'search-console' => array(),
+			)
+		);
+
+		$this->assertSame( array(), $payload, 'get_user_payload() should return an empty array when only AdSense is denied, because AdSense adds no section to the report.' );
+	}
+
+	public function test_get_user_payload__returns_the_permissions_error_when_search_console_is_denied_and_analytics_has_no_data() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				'analytics-4'    => true,
+				'search-console' => false,
+			),
+			$owner_id
+		);
+
+		$data_requests = $this->create_data_requests_with_modules( $modules );
+		$payload       = $data_requests->get_user_payload(
+			$secondary_admin_id,
+			$this->date_range,
+			array(
+				'analytics-4' => array(),
+			)
+		);
+
+		$this->assertWPError( $payload, 'get_user_payload() should return a WP_Error when Analytics returns no data and Search Console is denied.' );
+		$this->assertEquals( 'search-console', $payload->get_error_data()['module_slug'], 'get_user_payload() should name `search-console`, the module the recipient cannot read.' );
+	}
+
+	public function test_get_user_payload__service_entity_access_check_error_returns_empty_array() {
+		$owner_id           = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$secondary_admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $secondary_admin_id );
+		$modules = $this->create_modules_with_fake_service_entity_access(
+			array(
+				Analytics_4::MODULE_SLUG    => new WP_Error( 'missing_required_setting', 'No connected Google Analytics property ID.', array( 'status' => 500 ) ),
+				Search_Console::MODULE_SLUG => new WP_Error( 'missing_required_setting', 'No connected Search Console property.', array( 'status' => 500 ) ),
 			),
 			$owner_id
 		);
@@ -299,8 +492,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			)
 		);
 
-		$this->assertIsArray( $payload, 'Secondary admin with no service-entity access should not fail the request.' );
-		$this->assertSame( array(), $payload, 'Modules without service-entity access should be excluded from payload.' );
+		$this->assertSame( array(), $payload, 'A service-entity access check that errors out should return an empty payload, not a permissions error.' );
 	}
 
 	public function test_secondary_admin_with_partial_service_entity_access_gets_only_accessible_modules() {
@@ -399,6 +591,129 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		$this->assertEquals( Search_Console::MODULE_SLUG, $categorized_other_error->get_error_data()['module_slug'], 'Module slug should be set correctly in categorized error.' );
 	}
 
+	public function test_get_user_payload__adds_the_site_goals_breakdown_reports_when_the_breakdown_dimensions_have_data() {
+		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_FORM_ID );
+
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary_by_provider', $payload, 'get_user_payload() should return the store count split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement_by_provider', $payload, 'get_user_payload() should return the sessions split by provider when the event provider dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary_by_form', $payload, 'get_user_payload() should return the lead count split by form when the form ID dimension has data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement_by_form', $payload, 'get_user_payload() should return the sessions split by form when the form ID dimension has data.' );
+	}
+
+	public function test_get_user_payload__adds_the_site_wide_site_goals_reports_when_the_breakdown_dimensions_have_no_data() {
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return the site-wide store count when the event provider dimension has no data.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary', $payload, 'get_user_payload() should return the site-wide lead count when the form ID dimension has no data.' );
+		$this->assertArrayHasKey( 'site_goals_engagement', $payload, 'get_user_payload() should return one site-wide sessions report for both widgets when neither breakdown dimension has data.' );
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary_by_provider', $payload, 'get_user_payload() should return no store breakdown when the event provider dimension has no data.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary_by_form', $payload, 'get_user_payload() should return no lead breakdown when the form ID dimension has no data.' );
+	}
+
+	public function test_get_user_payload__adds_no_site_goals_report_when_analytics_detected_no_conversion_event() {
+		$payload = $this->get_analytics_payload_for_detected_events( array() );
+
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, 'get_user_payload() should return no store report when Analytics detected no store event.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $payload, 'get_user_payload() should return no lead report when Analytics detected no lead event.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload, 'get_user_payload() should still return the total visitors report when Analytics detected no conversion event.' );
+	}
+
+	public function test_get_user_payload__adds_no_site_goals_report_when_no_site_goals_widget_is_active() {
+		$payload = $this->get_analytics_payload_for_detected_events( array( 'purchase', 'contact' ), array() );
+
+		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $payload, '`get_user_payload()` should return no online store report when `activeWidgets` is empty, even though `detectedEvents` has `purchase`.' );
+		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $payload, '`get_user_payload()` should return no lead generation report when `activeWidgets` is empty, even though `detectedEvents` has `contact`.' );
+		$this->assertArrayHasKey( 'total_visitors', $payload, '`get_user_payload()` should still return the total visitors report when `activeWidgets` is empty.' );
+	}
+
+	public function test_get_user_payload__adds_the_site_goals_reports_only_for_a_role_that_analytics_is_shared_with() {
+		$admin_id  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$editor_id = self::factory()->user->create( array( 'role' => 'editor' ) );
+		$author_id = self::factory()->user->create( array( 'role' => 'author' ) );
+
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Analytics_4::MODULE_SLUG );
+		$this->set_analytics_settings_connected(
+			array(
+				'ownerID'        => $admin_id,
+				'detectedEvents' => array( 'purchase', 'contact' ),
+			)
+		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => array( 'ecommerce', 'lead' ) ) );
+		$this->options->set(
+			Module_Sharing_Settings::OPTION,
+			array(
+				Analytics_4::MODULE_SLUG => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+
+		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
+		$analytics->register();
+		$this->fake_analytics_report( $analytics );
+
+		$editor_payload = $this->create_data_requests()->get_user_payload( $editor_id, $this->date_range );
+		$author_payload = $this->create_data_requests()->get_user_payload( $author_id, $this->date_range );
+
+		$this->assertArrayHasKey( 'site_goals_online_store_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the online store count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertArrayHasKey( 'site_goals_lead_primary', $editor_payload['analytics-4'], '`get_user_payload()` should return the lead generation count to an editor, because Analytics is shared with the editor role.' );
+		$this->assertSame( array(), $author_payload, "`get_user_payload()` should return an empty payload to an author, because Analytics isn't shared with the author role." );
+	}
+
+	public function test_get_user_payload__adds_the_author_and_category_reports_when_the_post_dimensions_have_data() {
+		$custom_dimension_data = new Custom_Dimensions_Data_Available( $this->transients );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_AUTHOR );
+		$custom_dimension_data->set_data_available( Analytics_4::CUSTOM_DIMENSION_POST_CATEGORIES );
+
+		$payload = $this->get_analytics_payload_for_detected_events( array() );
+
+		$this->assertArrayHasKey( 'top_authors', $payload, 'get_user_payload() should return the top authors report when the post author dimension has data.' );
+		$this->assertArrayHasKey( 'top_categories', $payload, 'get_user_payload() should return the top categories report when the post categories dimension has data.' );
+	}
+
+	/**
+	 * Gets the Analytics payload for an owner, with the given `detectedEvents` and `activeWidgets` settings.
+	 *
+	 * @param array $detected_events Detected event names to store in the Analytics settings.
+	 * @param array $active_widgets  Optional. Site Goals widget types to store in `activeWidgets`. Default `ecommerce` and `lead`.
+	 * @return array Analytics payload keyed by request key.
+	 */
+	private function get_analytics_payload_for_detected_events( array $detected_events, array $active_widgets = array( 'ecommerce', 'lead' ) ) {
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$this->authenticate_and_grant_required_scopes_for_user( $admin_id );
+
+		$this->activate_modules( Analytics_4::MODULE_SLUG );
+		$this->set_analytics_settings_connected(
+			array(
+				'ownerID'        => $admin_id,
+				'detectedEvents' => $detected_events,
+			)
+		);
+		$this->options->set( Site_Goals_Site_Settings::OPTION, array( 'activeWidgets' => $active_widgets ) );
+
+		$analytics = $this->modules->get_module( Analytics_4::MODULE_SLUG );
+		$analytics->register();
+		$this->fake_analytics_report( $analytics );
+
+		$payload = $this->create_data_requests()->get_user_payload(
+			$admin_id,
+			$this->date_range,
+			array(),
+			array( Analytics_4::MODULE_SLUG )
+		);
+
+		$this->assertArrayHasKey( Analytics_4::MODULE_SLUG, $payload, 'get_user_payload() should return the Analytics data under the analytics-4 module key.' );
+
+		return $payload[ Analytics_4::MODULE_SLUG ];
+	}
+
 	private function create_data_requests() {
 		return new Email_Reporting_Data_Requests(
 			$this->context,
@@ -445,7 +760,44 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
-	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id ) {
+	/**
+	 * Creates a fake module with no service entity, so no access check runs on it.
+	 *
+	 * @param string $slug     Module slug.
+	 * @param int    $owner_id Module owner user ID.
+	 * @return FakeModule Fake module instance.
+	 */
+	private function create_module_without_service_entity( $slug, $owner_id ) {
+		return new class( $this->context, $this->options, $this->user_options, $this->authentication, $slug, $owner_id ) extends FakeModule {
+			private $module_slug;
+
+			public function __construct( Context $context, Options $options, User_Options $user_options, Authentication $authentication, $slug, $owner_id ) {
+				$this->module_slug = $slug;
+				parent::__construct( $context, $options, $user_options, $authentication );
+				$this->owner_id = (int) $owner_id;
+			}
+
+			protected function setup_info() {
+				return array(
+					'slug'        => $this->module_slug,
+					'name'        => 'Fake Module',
+					'description' => 'Fake Module',
+					'order'       => 0,
+					'homepage'    => 'https://example.com',
+				);
+			}
+		};
+	}
+
+	/**
+	 * Creates a Modules instance holding fake modules and activates them.
+	 *
+	 * @param array $access_map                   Service entity access, keyed by module slug.
+	 * @param int   $owner_id                     Module owner user ID.
+	 * @param array $slugs_without_service_entity Optional. Slugs to create with no service entity. Default empty.
+	 * @return Modules Modules instance.
+	 */
+	private function create_modules_with_fake_service_entity_access( array $access_map, $owner_id, array $slugs_without_service_entity = array() ) {
 		$modules_instance = new Modules(
 			$this->context,
 			$this->options,
@@ -459,11 +811,15 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$module_objects[ $slug ] = $this->create_service_entity_module( $slug, $owner_id, $access );
 		}
 
+		foreach ( $slugs_without_service_entity as $slug ) {
+			$module_objects[ $slug ] = $this->create_module_without_service_entity( $slug, $owner_id );
+		}
+
 		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
 		$modules_property->setAccessible( true );
 		$modules_property->setValue( $modules_instance, $module_objects );
 
-		$this->set_active_modules( array_keys( $access_map ) );
+		$this->set_active_modules( array_keys( $module_objects ) );
 
 		return $modules_instance;
 	}
@@ -483,9 +839,14 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		);
 	}
 
-	private function set_search_console_settings_connected() {
+	private function set_search_console_settings_connected( array $overrides = array() ) {
 		$settings = new Search_Console_Settings( $this->options );
-		$settings->merge( array( 'propertyID' => home_url( '/' ) ) );
+		$settings->merge(
+			wp_parse_args(
+				$overrides,
+				array( 'propertyID' => home_url( '/' ) )
+			)
+		);
 	}
 
 	private function set_active_modules( array $slugs ) {
@@ -650,7 +1011,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 		};
 	}
 
-	private function authenticate_and_grant_required_scopes_for_user( $user_id ) {
+	private function authenticate_and_grant_required_scopes_for_user( $user_id, $verified = true ) {
 		$previous_user = get_current_user_id();
 		wp_set_current_user( $user_id );
 		$this->user_options->switch_user( $user_id );
@@ -668,7 +1029,9 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			}
 		}
 
-		$this->authentication->verification()->set( true );
+		if ( $verified ) {
+			$this->authentication->verification()->set( true );
+		}
 
 		$scopes = array_values( array_unique( $scopes ) );
 		$oauth_client->set_token( array( 'access_token' => 'valid-auth-token' ) );

@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ElementType, FC, ReactNode } from 'react';
+import type { ComponentType, ElementType, FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -32,10 +32,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
+import Notice, { NoticeProps } from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
+import useViewContext from '@/js/hooks/useViewContext';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 
 interface AudienceSegmentationSetupErrorWidgetError {
 	code?: string | number;
@@ -52,18 +55,52 @@ type AudienceSegmentationSetupErrorWidgetErrors =
 export interface AudienceSegmentationSetupErrorWidgetProps {
 	Widget: ElementType;
 	errors: AudienceSegmentationSetupErrorWidgetErrors;
-	isAudienceCreationVariant: boolean;
+	isAudienceCreationVariant?: boolean;
 	onRetry: () => void;
 	onDismiss: () => void;
 }
 
+const AudienceSegmentationSetupErrorNoticeWithObserver =
+	withIntersectionObserver< NoticeProps >(
+		Notice as unknown as ComponentType< NoticeProps >
+	);
+
 const AudienceSegmentationSetupErrorWidget: FC<
 	AudienceSegmentationSetupErrorWidgetProps
-> = ( { Widget, errors, isAudienceCreationVariant, onRetry, onDismiss } ) => {
+> = ( {
+	Widget,
+	errors,
+	isAudienceCreationVariant = false,
+	onRetry,
+	onDismiss,
+} ) => {
 	const normalizedErrors = Array.isArray( errors ) ? errors : [ errors ];
 	const isPermissionsError = isInsufficientPermissionsError(
 		normalizedErrors[ 0 ]
 	);
+	const viewContext = useViewContext();
+
+	const trackEvents = useNotificationEvents(
+		'audience-segmentation-setup-error',
+		viewContext,
+		{
+			viewAction: 'audience_segmentation_setup_error',
+			confirmAction: 'audience_segmentation_setup_error_retry',
+			dismissAction: 'audience_segmentation_setup_error_dismiss',
+		}
+	);
+
+	// Determine label based on variant and error type
+	let label = '';
+	if ( isAudienceCreationVariant ) {
+		label = isPermissionsError
+			? 'audience_creation_permissions'
+			: 'audience_creation_generic';
+	} else {
+		label = isPermissionsError
+			? 'data_loading_permissions'
+			: 'data_loading_generic';
+	}
 
 	const visitorGroupsDocumentationLinkURL = useSelect(
 		( select: Select ) =>
@@ -78,7 +115,7 @@ const AudienceSegmentationSetupErrorWidget: FC<
 		title = __( 'Creating visitor groups failed', 'google-site-kit' );
 		descriptionText = isPermissionsError
 			? __(
-					'It seems that you don’t have the required permissions to create visitor groups. You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
+					'It seems that you don’t have the required permissions to create visitor groups. <br />You can contact your administrator and ask for Analytics write permissions and then retry. <a>Learn more</a>',
 					'google-site-kit'
 			  )
 			: __(
@@ -111,23 +148,34 @@ const AudienceSegmentationSetupErrorWidget: FC<
 		br: <br />,
 	} ) as ReactNode;
 
+	function handleRetry( eventLabel: string ) {
+		trackEvents.confirm( eventLabel );
+		onRetry();
+	}
+
+	function handleDismiss( eventLabel: string ) {
+		trackEvents.dismiss( eventLabel );
+		onDismiss();
+	}
+
 	return (
 		<Widget
 			className="googlesitekit-audience-segmentation-setup-error-widget"
 			noPadding
 		>
-			<Notice
+			<AudienceSegmentationSetupErrorNoticeWithObserver
 				type={ NOTICE_TYPES.ERROR }
 				title={ title }
 				description={ description }
 				ctaButton={ {
 					label: __( 'Retry', 'google-site-kit' ),
-					onClick: onRetry,
+					onClick: () => handleRetry( label ),
 				} }
 				dismissButton={ {
 					label: __( 'No thanks', 'google-site-kit' ),
-					onClick: onDismiss,
+					onClick: () => handleDismiss( label ),
 				} }
+				onInView={ () => trackEvents.view( label ) }
 			/>
 		</Widget>
 	);

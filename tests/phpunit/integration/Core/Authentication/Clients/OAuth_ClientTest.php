@@ -41,12 +41,12 @@ class OAuth_ClientTest extends TestCase {
 		$client       = new OAuth_Client( $context );
 		$user_options = new User_Options( $context );
 
-		// Make sure we're starting with a clean slate
+		// Make sure we're starting with a clean slate.
 		$this->assertFalse( get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ), 'Refresh should start without a stored OAuth error.' );
 
 		$client->refresh_token();
 
-		// Make sure we're getting the expected error
+		// Make sure we're getting the expected error.
 		$this->assertEquals( 'refresh_token_not_exist', get_user_option( OAuth_Client::OPTION_ERROR_CODE, $user_id ), 'Refresh without refresh token should store expected error.' );
 
 		$this->assertTrue(
@@ -105,7 +105,7 @@ class OAuth_ClientTest extends TestCase {
 			$user_options->set( $key, "test-$key-value" );
 		}
 
-		// Initialize Google Client
+		// Initialize Google Client.
 		$client->get_client();
 		// Nothing to assert here other than to make sure no errors are raised or exceptions thrown.
 		$client->revoke_token();
@@ -242,7 +242,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertLessThanOrEqual( $current_time_after, $created_at, 'Access token created without an explicit timestamp should use current time.' );
 		$this->assertEquals( 123, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, $user_id ), 'Stored token expiry should match provided value.' );
 
-		// Created at can be passed explicitly when setting
+		// Created at can be passed explicitly when setting.
 		$created_at = $current_time_before - HOUR_IN_SECONDS;
 		$this->assertTrue( $client->set_access_token( 'new-test-access-token', 789, $created_at ), 'Client should report successful access token storage with explicit timestamp.' );
 		$this->assertEquals( 789, get_user_option( OAuth_Client::OPTION_ACCESS_TOKEN_EXPIRES_IN, $user_id ), 'Stored token expiry should match provided value.' );
@@ -402,7 +402,7 @@ class OAuth_ClientTest extends TestCase {
 		// If GET[error] is set, it redirects to admin URL.
 		$client        = new OAuth_Client( $context, null, $user_options );
 		$_GET['error'] = 'callback_error';
-		$this->fake_site_connection(); // required by get_authentication_url
+		$this->fake_site_connection(); // required by get_authentication_url.
 
 		try {
 			$client->authorize_user();
@@ -426,7 +426,7 @@ class OAuth_ClientTest extends TestCase {
 
 		$_GET['code'] = 'test-code';
 		$this->fake_site_connection();
-		// If all goes smooth, we expect to be redirected to $success_redirect
+		// If all goes smooth, we expect to be redirected to $success_redirect.
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
 
@@ -669,7 +669,7 @@ class OAuth_ClientTest extends TestCase {
 		// Need to instantiate after current user is set so that User_Options inherits.
 		$client = new OAuth_Client( $context, null, $user_options, null, null, $profile );
 
-		// No other way around this but to mock the Google_Site_Kit_Client
+		// No other way around this but to mock the Google_Site_Kit_Client.
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
 								->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
 		// Deferred request execution is false by default.
@@ -685,7 +685,7 @@ class OAuth_ClientTest extends TestCase {
 				if ( 'people.googleapis.com' !== $url['host'] || '/v1/people/me' !== $url['path'] ) {
 					return new FulfilledPromise( new Response( 200 ) );
 				}
-				// Return a failing response
+				// Return a failing response.
 				return new FulfilledPromise( new Response( 500 ) );
 			}
 		);

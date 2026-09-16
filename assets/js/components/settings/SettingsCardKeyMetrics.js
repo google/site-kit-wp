@@ -97,7 +97,7 @@ export default function SettingsCardKeyMetrics() {
 			title={
 				setupFlowRefreshEnabled
 					? __( 'Personalized metrics', 'google-site-kit' )
-					: __( 'Key Metrics', 'google-site-kit' )
+					: __( 'Key metrics', 'google-site-kit' )
 			}
 			header
 			rounded

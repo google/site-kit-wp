@@ -20,10 +20,14 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { createTestRegistry } from '@tests/js/utils';
+import { enabledFeatures } from '@/js/features';
+import { createTestRegistry, untilResolved } from '@tests/js/utils';
+import { publications } from './__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
 import {
+	INVARIANT_INVALID_CONFIGURED_CTAS,
 	INVARIANT_INVALID_CONTENT_POLICY_STATE,
+	INVARIANT_INVALID_ORGANIZATION_ID,
 	INVARIANT_INVALID_PAYMENT_OPTION,
 	INVARIANT_INVALID_POLICY_INFO_LINK,
 	INVARIANT_INVALID_POST_TYPES,
@@ -53,6 +57,14 @@ describe( 'modules/reader-revenue-manager settings', () => {
 		productID: 'valid-id',
 		productIDs: [ 'valid' ],
 		paymentOption: 'valid-option',
+	};
+
+	const validExpressSetupSettings = {
+		...validSettings,
+		organizationID: 'ABCD1234',
+		configuredCTAs: {
+			'cta-id': 'newsletter-signup',
+		},
 	};
 
 	beforeAll( () => {
@@ -279,9 +291,111 @@ describe( 'modules/reader-revenue-manager settings', () => {
 				INVARIANT_INVALID_POLICY_INFO_LINK
 			);
 		} );
+
+		it( 'should throw invariant error for an invalid organization ID', () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+
+			registry.dispatch( MODULES_READER_REVENUE_MANAGER ).setSettings( {
+				...validExpressSetupSettings,
+				organizationID: 123,
+			} );
+
+			expect( () => validateCanSubmitChanges( registry.select ) ).toThrow(
+				INVARIANT_INVALID_ORGANIZATION_ID
+			);
+		} );
+
+		it.each( [
+			[ 'not-an-object', 'not-an-object' ],
+			[ 'an array', [] ],
+			[ 'a non-string CTA type', { 'cta-id': 123 } ],
+		] )(
+			'should throw invariant error when configured CTAs is %s',
+			( _, configuredCTAs ) => {
+				enabledFeatures.add( 'rrmExpressSetup' );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.setSettings( {
+						...validExpressSetupSettings,
+						configuredCTAs,
+					} );
+
+				expect( () =>
+					validateCanSubmitChanges( registry.select )
+				).toThrow( INVARIANT_INVALID_CONFIGURED_CTAS );
+			}
+		);
+
+		it( 'should not throw invariant errors for valid express setup settings', () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( validExpressSetupSettings );
+
+			expect( () =>
+				validateCanSubmitChanges( registry.select )
+			).not.toThrow();
+		} );
 	} );
 
 	describe( 'submitChanges', () => {
+		it( 'should invalidate getPublication when changing publication settings', async () => {
+			const dispatch = registry.dispatch(
+				MODULES_READER_REVENUE_MANAGER
+			);
+
+			const select = registry.select( MODULES_READER_REVENUE_MANAGER );
+
+			const publicationA = publications[ 0 ];
+			const publicationB = publications[ 3 ];
+
+			const publicationEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+			);
+
+			dispatch.receiveGetSettings( {
+				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationA.publicationId,
+			} );
+
+			dispatch.receiveGetPublication( publicationA );
+
+			select.getPublication();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication();
+
+			expect( select.getPublication() ).toEqual( publicationA );
+
+			const newSettings = {
+				...validSettings,
+				// eslint-disable-next-line sitekit/acronym-case -- API field name.
+				publicationID: publicationB.publicationId,
+			};
+
+			fetchMock.postOnce( settingsEndpoint, { body: newSettings } );
+			fetchMock.getOnce( publicationEndpoint, { body: publicationB } );
+
+			dispatch.setSettings( newSettings );
+
+			await dispatch.submitChanges();
+
+			select.getPublication();
+
+			await untilResolved(
+				registry,
+				MODULES_READER_REVENUE_MANAGER
+			).getPublication();
+
+			expect( select.getPublication() ).toEqual( publicationB );
+			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
+		} );
+
 		it( 'should dispatch saveSettings', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -305,6 +419,27 @@ describe( 'modules/reader-revenue-manager settings', () => {
 					.select( MODULES_READER_REVENUE_MANAGER )
 					.haveSettingsChanged()
 			).toBe( false );
+		} );
+
+		it( 'should save the organization ID when the `rrmExpressSetup` feature flag is enabled', async () => {
+			enabledFeatures.add( 'rrmExpressSetup' );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.setSettings( validExpressSetupSettings );
+
+			fetchMock.postOnce( settingsEndpoint, {
+				body: validExpressSetupSettings,
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.submitChanges();
+
+			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+				body: { data: validExpressSetupSettings },
+			} );
 		} );
 
 		it( 'should save selected post types', async () => {

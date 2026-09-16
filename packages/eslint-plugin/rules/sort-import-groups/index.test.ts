@@ -503,6 +503,50 @@ import { createTestRegistry } from '@tests/js/utils';
 `,
 		},
 
+		// Bare tests alias in an import should use the canonical alias.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+import { createTestRegistry } from 'tests/js/utils';
+`,
+			errors: [
+				{
+					message:
+						"Import source 'tests/js/utils' should use the '@tests' alias.",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+import { createTestRegistry } from '@tests/js/utils';
+`,
+		},
+
+		// Bare tests alias in a require should use the canonical alias.
+		{
+			code: `
+/**
+ * External dependencies
+ */
+const { createTestRegistry } = require( 'tests/js/utils' );
+`,
+			errors: [
+				{
+					message:
+						"Import source 'tests/js/utils' should use the '@tests' alias.",
+				},
+			],
+			output: `
+/**
+ * External dependencies
+ */
+const { createTestRegistry } = require( '@tests/js/utils' );
+`,
+		},
+
 		// Mixed require and import - will need two passes to fully fix.
 		{
 			code: `

@@ -1,0 +1,166 @@
+/**
+ * Reader Revenue Manager CTA Preview styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-cta-preview {
+		background-color: $c-surfaces-background;
+		border-radius: $br-xs;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		max-width: 320px;
+		padding: 16px;
+
+		.googlesitekit-rrm-cta-preview__header {
+			align-items: center;
+			color: $c-neutral-n-900;
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+			text-align: center;
+		}
+
+		.googlesitekit-rrm-cta-preview__title,
+		.googlesitekit-rrm-cta-preview__description {
+			margin: 0;
+		}
+
+		.googlesitekit-rrm-cta-preview__description {
+			text-align: left;
+		}
+
+		.googlesitekit-rrm-cta-preview__tabs {
+			display: flex;
+			justify-content: center;
+
+			.mdc-tab-bar {
+				background-color: $c-surfaces-background;
+				border: 1px solid $c-neutral-n-200;
+				border-radius: 100px;
+				max-width: 180px;
+				width: 100%;
+
+				.mdc-tab-scroller__scroll-content {
+					gap: 0;
+					justify-content: stretch;
+					padding: 0;
+					width: 100%;
+				}
+
+				.mdc-tab-indicator .mdc-tab-indicator__content--underline {
+					display: none;
+				}
+
+				.mdc-tab {
+					border-radius: 0;
+					flex: 1 1 50%;
+					height: 34px;
+					min-width: 0;
+					padding: 0;
+
+					.mdc-tab__content {
+						border-radius: 0;
+						height: 100%;
+						justify-content: center;
+						width: 100%;
+
+						.mdc-tab__text-label {
+							color: $c-neutral-n-500;
+						}
+					}
+
+					&.mdc-tab--active .mdc-tab__content {
+						background-color: $c-content-primary-container;
+						border-radius: 0;
+						padding: 0 12px;
+
+						.mdc-tab__text-label {
+							color: $c-content-on-primary-container;
+						}
+					}
+
+					&:first-child {
+						border-bottom-left-radius: 100px;
+						border-top-left-radius: 100px;
+
+						.mdc-tab__content {
+							border-bottom-left-radius: 100px;
+							border-top-left-radius: 100px;
+						}
+					}
+
+					&:last-child {
+						border-bottom-right-radius: 100px;
+						border-left: 1px solid $c-neutral-n-200;
+						border-top-right-radius: 100px;
+
+						.mdc-tab__content {
+							border-bottom-right-radius: 100px;
+							border-top-right-radius: 100px;
+						}
+					}
+				}
+			}
+		}
+
+		.googlesitekit-rrm-cta-preview__stage {
+			min-height: 350px;
+		}
+
+		.googlesitekit-rrm-cta-preview__panel {
+			height: 100%;
+			min-height: 350px;
+			overflow: hidden;
+			position: relative;
+
+			&.googlesitekit-rrm-cta-preview__panel--popup {
+				background-color: $c-site-kit-sk-200;
+			}
+
+			&.googlesitekit-rrm-cta-preview__panel--inline {
+				background-color: $c-content-primary-container;
+			}
+		}
+
+		.googlesitekit-rrm-cta-preview__panel-content {
+			position: relative;
+			z-index: 1;
+		}
+
+		.googlesitekit-rrm-cta-preview__background-image {
+			height: 100%;
+			inset: 0;
+			left: 0;
+			pointer-events: none;
+			position: absolute;
+			top: 0;
+			user-select: none;
+			width: 100%;
+			z-index: 0;
+		}
+
+		.googlesitekit-rrm-cta-preview__footer {
+			color: $c-neutral-n-500;
+			font-size: $fs-body-sm;
+			line-height: $lh-body-sm;
+			margin: 0;
+			text-align: left;
+		}
+	}
+}

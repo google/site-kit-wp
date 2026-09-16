@@ -55,13 +55,11 @@ const DATA = {
 	titles: { '/home-page': 'Home Title', '/about-page': 'About Title' },
 	links: {
 		'/home-page': {
-			detailsURL:
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page',
+			titleURL: 'https://example.com/analytics-report/report-1',
 			permaLink: 'http://example.com/home-page',
 		},
 		'/about-page': {
-			detailsURL:
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fabout-page',
+			titleURL: 'https://example.com/analytics-report/report-2',
 			permaLink: 'http://example.com/about-page',
 		},
 	},
@@ -126,16 +124,29 @@ describe( 'ModulePopularPagesWidgetGA4PDF', () => {
 		);
 	} );
 
-	it( 'links each title to its entity dashboard and each URL to its page', () => {
+	it( 'links each title to its Analytics report and each URL to its page', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// The title links to the entity dashboard.
-		expect( json ).toContain(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2Fhome-page'
-		);
+		// The title links to the page's Analytics report.
+		expect( json ).toContain( DATA.links[ '/home-page' ].titleURL );
 		// The URL line links to the page itself.
 		expect( json ).toContain( 'http://example.com/home-page' );
 		expect( json ).toContain( 'http://example.com/about-page' );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the lines rendered
+		// as links, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders the title and the URL as plain text when a row has no links', () => {
+		// An empty `links` map gives the row empty links, so neither line
+		// links out.
+		const json = renderJSON( { data: { ...DATA, links: {} } } );
+
+		expect( json ).toContain( 'Home Title' );
+		expect( json ).toContain( '/home-page' );
+		// No `pdf-link` in the tree means both lines rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
 	} );
 
 	it( 'renders the title and URL links without an underline', () => {

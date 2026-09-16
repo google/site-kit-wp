@@ -1,0 +1,274 @@
+/**
+ * Analytics Traffic Overview widget stylesheet.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__tabs {
+		position: relative;
+
+		&::after {
+			border-bottom: 1px solid $c-utility-divider;
+			bottom: 0;
+			content: "";
+			display: block;
+			left: 0;
+			position: absolute;
+			width: 100%;
+			z-index: 0;
+		}
+
+		.mdc-tab-bar {
+			position: relative;
+			z-index: 1;
+		}
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				.mdc-tab-scroller__scroll-content {
+					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				}
+			}
+		}
+
+		.mdc-tab {
+			height: 54px;
+			padding: 0 28px;
+		}
+
+		.mdc-tab .mdc-tab__content {
+			height: 52px;
+		}
+
+		.mdc-tab .mdc-tab__text-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+		}
+
+		.mdc-tab--active .mdc-tab__text-label {
+			color: $c-content-primary;
+			font-weight: $fw-medium;
+			letter-spacing: 0;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel {
+		display: flex;
+		flex-direction: column;
+		padding-top: 20px;
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				padding-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				padding-right: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+
+		// Every element below carries its own typography classes, so only the
+		// colors and the layout are set here.
+		.googlesitekit-traffic-overview__total-visitors-title {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-metric {
+			align-items: flex-start;
+			display: flex;
+			gap: 14px;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-figure {
+			color: $c-surfaces-on-surface;
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-change {
+			align-items: flex-start;
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			margin-top: 5px;
+
+			// The badge carries a top margin meant for sitting under a figure,
+			// which would push it out of place here.
+			.googlesitekit-change-badge {
+				margin-top: 0;
+			}
+		}
+
+		.googlesitekit-traffic-overview__total-visitors-comparison {
+			color: $c-surfaces-on-background-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart {
+			margin-top: 70px;
+		}
+
+		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
+			margin-left: -$grid-gap-phone;
+		}
+
+		.googlesitekit-traffic-overview__chart .googlesitekit-chart-loading {
+			margin-left: $grid-gap-phone;
+		}
+
+		.googlesitekit-traffic-overview__chart svg text {
+			letter-spacing: 0.4px;
+		}
+
+		.googlesitekit-traffic-overview__chart div[dir]::after {
+			background-color: $c-neutral-n-200;
+			content: "";
+			height: 12px;
+			position: absolute;
+			right: 40px;
+			top: -4px;
+			width: 1px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend {
+			list-style: none;
+			margin: 4px 0 0;
+			padding: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-item {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-line {
+			height: 3px;
+			width: 29px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-label.googlesitekit-typography {
+			color: $c-surfaces-on-surface;
+			font-size: 10px;
+			letter-spacing: 0.4px;
+			line-height: 16px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown {
+			margin-top: 62px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-columns {
+			display: grid;
+			gap: 24px;
+
+			// Stacked through tablet; three columns from desktop up.
+			grid-template-columns: 1fr;
+			margin-top: 18px;
+
+			@media (min-width: $bp-desktop) {
+				gap: 42px;
+
+				// Equal fractions, so a column with no rows keeps its width.
+				grid-template-columns: repeat(3, 1fr);
+			}
+		}
+
+		// Every column carries its own connector on the left, the same rail and
+		// dot the site goals goal drivers use, so the third column is marked the
+		// same way as the two that follow a neighbour.
+		.googlesitekit-traffic-overview__breakdown-column {
+			min-width: 0;
+
+			// The dot is 9px and its gap to the text is 10px, so a row starts
+			// 19px past the column's left edge.
+			padding: 8px 0 8px 19px;
+			position: relative;
+
+			// The rail is a `::before` rather than a border, so it and the dot
+			// centered on it both sit inside the column's own box. `left`
+			// centers the 2px rail in the 9px dot: (9px - 2px) / 2.
+			&::before {
+				background: $c-utility-divider;
+				bottom: 0;
+				content: "";
+				left: 3.5px;
+				position: absolute;
+				top: 0;
+				width: 2px;
+			}
+
+			&::after {
+				background: $c-utility-divider;
+				border-radius: 50%;
+				content: "";
+				height: 9px;
+				left: 0;
+				position: absolute;
+				top: 15px;
+				width: 9px;
+			}
+		}
+
+		// The typography classes carry the font; only colour and spacing here.
+		.googlesitekit-traffic-overview__breakdown-column-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 14px;
+
+			// A long channel or country name wraps instead of being cut off.
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row {
+			align-items: baseline;
+			display: flex;
+			gap: 12px;
+			justify-content: space-between;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row
+			+ .googlesitekit-traffic-overview__breakdown-row {
+			margin-top: 4px;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-label {
+			color: $c-surfaces-on-surface;
+
+			// A long value wraps rather than pushing the share out of the row.
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-row-percentage {
+			color: $c-surfaces-on-surface;
+
+			// The share stays on one line however long the label gets.
+			flex-shrink: 0;
+			white-space: nowrap;
+		}
+	}
+}

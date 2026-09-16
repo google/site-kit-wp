@@ -258,7 +258,8 @@ class Email_Reporting implements Provides_Feature_Metrics {
 			$eligible_subscribers_query,
 			$email_sender,
 			$this->golinks,
-			$health_check
+			$health_check,
+			$this->subscribed_users_query
 		);
 		$this->email_log         = new Email_Log();
 		$this->initiator_task    = new Initiator_Task( $this->scheduler, $this->subscribed_users_query );

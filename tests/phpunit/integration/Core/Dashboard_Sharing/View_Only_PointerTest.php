@@ -66,7 +66,7 @@ class View_Only_PointerTest extends TestCase {
 
 		$this->assertIsCallable( array( $view_only_pointer, 'is_active' ), 'View-only pointer active callback should be callable.' );
 
-		// Should Return false because hook suffix is not index.php
+		// Should Return false because hook suffix is not index.php.
 		$this->assertFalse( $view_only_pointer->is_active( 'settings.php' ), 'View-only pointer should not be active on wrong hook suffix.' );
 	}
 

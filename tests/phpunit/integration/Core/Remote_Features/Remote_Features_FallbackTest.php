@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
@@ -49,8 +47,13 @@ class Remote_Features_FallbackTest extends TestCase {
 
 		$fallback->remote_features_sync_fallback();
 
-		$this->assertEquals( array( 'enabled' => true ), $this->setting->get()['testFeature'] );
-		$this->assertEqualsWithDelta( time(), $this->setting->get()['last_updated_at'], 2 );
+		$this->assertEquals( array( 'enabled' => true ), $this->setting->get()['testFeature'], 'Stale remote features should be refreshed by the fallback sync.' );
+		$this->assertEqualsWithDelta(
+			time(),
+			$this->setting->get()['last_updated_at'],
+			2,
+			'Fallback sync should record the current timestamp.'
+		);
 	}
 
 	public function test_remote_features_sync_fallback__less_than_24h_since_last_sync() {
@@ -63,7 +66,7 @@ class Remote_Features_FallbackTest extends TestCase {
 
 		$fallback->remote_features_sync_fallback();
 
-		$this->assertEqualsWithDelta( time() - HOUR_IN_SECONDS, $this->setting->get()['last_updated_at'], 2 );
-		$this->assertTrue( ! isset( $this->setting->get()['testFeature'] ) );
+		$this->assertEqualsWithDelta( time() - HOUR_IN_SECONDS, $this->setting->get()['last_updated_at'], 2, 'Recent remote features should retain their previous update timestamp.' );
+		$this->assertTrue( ! isset( $this->setting->get()['testFeature'] ), 'Fallback sync should not refresh remote features updated within the last day.' );
 	}
 }

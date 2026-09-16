@@ -28,7 +28,7 @@ const GA4_VISITORS_REPORT_ID =
  * Returned as a fresh object so callers never share (and risk mutating) a
  * single instance across reports.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return {Object} Dimension filters scoped to the Organic Search channel.
  */
@@ -41,7 +41,7 @@ function organicSearchDimensionFilters() {
 /**
  * Search Console report options.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type SearchConsoleReportOptions = {
 	startDate: string;
@@ -53,7 +53,7 @@ export type SearchConsoleReportOptions = {
 /**
  * Analytics 4 report params.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 interface Analytics4ReportDates {
 	startDate: string;
@@ -67,7 +67,7 @@ interface Analytics4ReportDates {
 /**
  * Analytics 4 report options.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type Analytics4ReportOptions = {
 	startDate: string;
@@ -100,7 +100,7 @@ export type Analytics4ReportOptions = {
  * The report spans the current and previous periods (starting at the comparison
  * start date) so it can be partitioned for both the totals and the chart.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} options                  Options.
  * @param {string} options.compareStartDate Comparison start date (report start).
@@ -133,7 +133,7 @@ export function getSearchConsoleReportOptions( {
 /**
  * Builds the GA4 `getReport` args for the Key Events overview (totals) report.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} dates                  Report dates.
  * @param {string} dates.startDate        Report start date.
@@ -173,7 +173,7 @@ export function getGA4KeyEventsOverviewReportOptions( {
  * Inherits the overview report's metrics and dimension filters, adding the date
  * dimension and ordering used to draw the chart.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} dates                  Report dates.
  * @param {string} dates.startDate        Report start date.
@@ -215,7 +215,7 @@ export function getGA4KeyEventsReportOptions( {
  * A single report provides both the totals (via the comparison dates) and the
  * date-dimension series used to draw the chart.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object} dates                  Report dates.
  * @param {string} dates.startDate        Report start date.

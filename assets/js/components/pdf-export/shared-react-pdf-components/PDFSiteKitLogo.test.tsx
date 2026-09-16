@@ -17,56 +17,32 @@
  */
 
 /**
- * External dependencies
- */
-import TestRenderer from 'react-test-renderer';
-
-/**
  * Internal dependencies
  */
+import { PDFLogoG } from '@/js/components/pdf-export/pdf-icons';
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import { render } from '@tests/js/test-utils';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
 
 describe( 'PDFSiteKitLogo', () => {
-	it( 'renders the colour Google "G" and the "Site Kit" wordmark', () => {
-		const { container, getByText } = render( <PDFSiteKitLogo /> );
+	it( 'renders the "Site Kit" wordmark', () => {
+		const { getByText } = render( <PDFSiteKitLogo /> );
 
-		// The "G" is four coloured paths.
-		const svgs = Array.from( container.querySelectorAll( 'pdf-svg' ) );
-		expect(
-			svgs.find(
-				( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 4
-			)
-		).toBeTruthy();
-		// The wordmark is rendered as text rather than SVG paths.
 		expect( getByText( 'Site Kit' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the "G" with the brand colours', () => {
-		const { container } = render( <PDFSiteKitLogo /> );
-
-		const gPaths = Array.from(
-			container.querySelectorAll( 'pdf-svg' )
-		).find( ( svg ) => svg.querySelectorAll( 'pdf-path' ).length === 4 );
-
-		const fills = Array.from(
-			gPaths?.querySelectorAll( 'pdf-path' ) ?? []
-		).map( ( path ) => path.getAttribute( 'fill' ) );
-
-		expect( fills ).toEqual( [
-			'#FBBC05',
-			'#EA4335',
-			'#34A853',
-			'#4285F4',
-		] );
+	it( 'renders the Google "G" at its size and color', () => {
+		// `?pdf` imports resolve to a shared mock, so this assertion covers
+		// the icon's size and color.
+		expect( renderJSON( <PDFSiteKitLogo /> ) ).toContain(
+			renderJSON( <PDFLogoG size={ 24 } /> )
+		);
 	} );
 
 	it( 'scales the gap between the wordmark and the icon', () => {
-		const logoJSON = JSON.stringify(
-			TestRenderer.create( <PDFSiteKitLogo /> ).toJSON()
+		expect( renderJSON( <PDFSiteKitLogo /> ) ).toContain(
+			`"marginLeft":${ scalePDFValue( 7 ) }`
 		);
-
-		expect( logoJSON ).toContain( `"marginLeft":${ scalePDFValue( 7 ) }` );
 	} );
 } );

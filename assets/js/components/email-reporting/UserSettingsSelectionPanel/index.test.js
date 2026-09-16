@@ -28,7 +28,10 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -43,21 +46,43 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 
-// This suite tests panel behavior; mock the invite list to avoid async datastore
-// updates from child-level fetching that are covered in InviteOthersToSubscribe tests.
+// This suite tests panel behavior; stub the invite and subscribed-users tabs
+// to avoid async datastore updates from child-level fetching that are
+// covered in their own test suites. Each stub renders an identifiable marker
+// so the tab-switching tests can tell them apart.
 jest.mock(
 	'@/js/components/email-reporting/InviteOthersToSubscribe',
-	() => () => null
+	() =>
+		function () {
+			return <div data-testid="invite-others-to-subscribe-tab" />;
+		}
+);
+jest.mock(
+	'@/js/components/email-reporting/SubscribedUsers',
+	() =>
+		function () {
+			return <div data-testid="subscribed-users-tab" />;
+		}
 );
 
 describe( 'UserSettingsSelectionPanel', () => {
 	const emailReportingSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/core/user/data/email-reporting-settings'
 	);
+	const emailReportingNextReportEndpoint = new RegExp(
+		'^/google-site-kit/v1/core/user/data/email-reporting-next-report'
+	);
 	let registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		// Saving settings invalidates the cached next report timestamp,
+		// triggering a refetch; keep this mocked so real (non-spied) saves
+		// in these tests don't hit the network unexpectedly.
+		fetchMock.get( emailReportingNextReportEndpoint, {
+			body: { timestamp: 0 },
+		} );
 
 		provideModules( registry );
 		provideSiteInfo( registry );
@@ -68,6 +93,10 @@ describe( 'UserSettingsSelectionPanel', () => {
 		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
 			subscribed: false,
 			frequency: 'monthly',
+		} );
+
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingNextReport( {
+			timestamp: 0,
 		} );
 
 		registry
@@ -125,6 +154,103 @@ describe( 'UserSettingsSelectionPanel', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'renders both subscriber management tabs for admins, defaulting to the invite tab', () => {
+		const { getByRole, getByTestID, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		expect(
+			getByRole( 'tab', { name: 'Invite others to subscribe' } )
+		).toBeInTheDocument();
+		expect(
+			getByRole( 'tab', { name: 'Subscribed users' } )
+		).toBeInTheDocument();
+
+		expect(
+			getByTestID( 'invite-others-to-subscribe-tab' )
+		).toBeInTheDocument();
+		expect(
+			queryByTestID( 'subscribed-users-tab' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'switches to the Subscribed users tab content when clicked', () => {
+		const { getByRole, getByTestID, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'tab', { name: 'Subscribed users' } ) );
+
+		expect( getByTestID( 'subscribed-users-tab' ) ).toBeInTheDocument();
+		expect(
+			queryByTestID( 'invite-others-to-subscribe-tab' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'resets to the invite tab when the panel closes and reopens', () => {
+		const { getByRole, getByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		fireEvent.click( getByRole( 'tab', { name: 'Subscribed users' } ) );
+		expect( getByTestID( 'subscribed-users-tab' ) ).toBeInTheDocument();
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		expect(
+			getByTestID( 'invite-others-to-subscribe-tab' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders neither subscriber management tab for view-only users', () => {
+		provideUserCapabilities( registry, {
+			[ PERMISSION_MANAGE_OPTIONS ]: false,
+		} );
+
+		const { queryByRole, queryByTestID } = render(
+			<UserSettingsSelectionPanel />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		expect(
+			queryByRole( 'tab', { name: 'Invite others to subscribe' } )
+		).not.toBeInTheDocument();
+		expect(
+			queryByRole( 'tab', { name: 'Subscribed users' } )
+		).not.toBeInTheDocument();
+		expect(
+			queryByTestID( 'invite-others-to-subscribe-tab' )
+		).not.toBeInTheDocument();
+		expect(
+			queryByTestID( 'subscribed-users-tab' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'displays the user email in the explanatory copy when available', () => {
 		const { getByText } = render( <UserSettingsSelectionPanel />, {
 			registry,
@@ -175,6 +301,68 @@ describe( 'UserSettingsSelectionPanel', () => {
 			expect(
 				registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
 			).toMatchObject( { isTooltipVisible: false } )
+		);
+	} );
+
+	it( 'invalidates and re-fetches the next report timestamp each time the panel opens', async () => {
+		// The panel is opened by other components by setting the UI key to true,
+		// so we simulate that here.
+		//
+		// In case any developer looks at this later and wonders why we don't
+		// simulate a user clicking elements in this component to trigger the
+		// open/close behavior, it's because the panel is a side sheet that is
+		// rendered outside of the component tree of the button that opens it.
+		//
+		// This is the most direct way to test the behavior of the panel itself,
+		// without relying on other components to trigger it (which doesn't add
+		// any value as they'd just be triggering this CORE_UI update anyway).
+		registry
+			.dispatch( CORE_UI )
+			.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+
+		const coreUserDispatch = registry.dispatch( CORE_USER );
+		const invalidateSpy = jest.spyOn(
+			coreUserDispatch,
+			'invalidateEmailReportingNextReport'
+		);
+
+		render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 1 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			1,
+			emailReportingNextReportEndpoint
+		);
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, false );
+		} );
+
+		act( () => {
+			registry
+				.dispatch( CORE_UI )
+				.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+		} );
+
+		await waitFor( () =>
+			expect( invalidateSpy ).toHaveBeenCalledTimes( 2 )
+		);
+		expect( fetchMock ).toHaveFetchedTimes(
+			2,
+			emailReportingNextReportEndpoint
 		);
 	} );
 
@@ -276,6 +464,30 @@ describe( 'UserSettingsSelectionPanel', () => {
 
 		await waitFor( () => expect( saveSpy ).toHaveBeenCalledTimes( 1 ) );
 		expect( saveSpy.mock.calls[ 0 ] ).toHaveLength( 0 );
+	} );
+
+	it( 'enables the "Update Settings" button when the user clicks another frequency card', async () => {
+		registry.dispatch( CORE_USER ).receiveGetEmailReportingSettings( {
+			subscribed: true,
+			frequency: 'monthly',
+		} );
+
+		const { getByRole } = render( <UserSettingsSelectionPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		expect(
+			getByRole( 'button', { name: 'Update Settings' } )
+		).toBeDisabled();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Weekly' } ) );
+
+		await waitFor( () =>
+			expect(
+				getByRole( 'button', { name: 'Update Settings' } )
+			).toBeEnabled()
+		);
 	} );
 
 	it( 'closes the panel when clicking "Go to settings" in report error notice', async () => {

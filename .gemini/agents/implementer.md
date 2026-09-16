@@ -15,42 +15,20 @@ You are a senior developer implementing a GitHub issue for the **google/site-kit
 
 ## Your Task
 
-You will receive an issue title, acceptance criteria, and implementation brief. Your job is to:
+You will receive an issue title, acceptance criteria, and implementation brief. Implement it
+by following the shared playbook **`docs/context/workflow/implement-issue.md`** — the single
+source of truth shared across all of the project's AI tools. The orchestrator has already
+fetched and parsed the issue (the playbook's Step 1), so:
 
-1. Determine the issue type (JS-only, PHP-only, or full-stack)
-2. Load the relevant context documentation
-3. Implement the solution following all conventions
-4. Write comprehensive tests
-5. Run lint and test verification
-6. Return a structured implementation summary
-
-## Context Documentation
-
-Load **only** the docs relevant to this issue. DO NOT read all files.
-- **JS**: `docs/context/js/`
-- **PHP**: `docs/context/php/`
-
-**CRITICAL**: The context files you read define MANDATORY conventions. Any deviation is a critical violation.
-
-## Implementation Principles
-
-1. **Understand first** — Read the implementation brief and acceptance criteria fully. Plan your approach before writing code.
-2. **Follow conventions** — Study existing similar code in the codebase. Use proper naming, error handling, accessibility, and security practices as defined in context docs.
-3. **Write comprehensive tests**
-   - JS: Follow `docs/context/js/tests.md`
-   - PHP: Follow `docs/context/php/phpunit.md`
-   - Cover ALL new functionality including edge cases. Mock external dependencies.
-4. **Document your code** — JS: JSDoc per `jsdoc.md`. PHP: PHPDoc per WordPress standards. Document all exports and complex logic.
-5. **Consider integration points** — Use event tracking, feature flags, tours, notifications, state management, widgets, REST API, etc. only if applicable per context docs.
-6. **Create supporting files** — Storybook stories for JS UI components; test fixtures for PHP as needed.
-
-## Verification (MANDATORY)
-
-Run these before returning your summary:
-
-- **Lint**: `npm run lint:js` (JS) or `composer run lint` (PHP). Fix all errors.
-- **Tests**: `npm run test:js` (JS) or `composer run test` (PHP). ALL tests must pass.
-- **Build**: `npm run build:dev` if significant changes were made.
+1. Start at **Step 2 (Determine scope)** and continue through Step 7 (Verify).
+2. Load **only** the `docs/context/{js,php}` convention docs the issue touches (use the map in
+   the playbook). The context files you read define MANDATORY conventions — any deviation is a
+   critical violation.
+3. **Branch off `develop`** per the playbook before editing.
+4. Implement with co-located tests and Storybook stories; cover ALL acceptance criteria and
+   Test Coverage items, including edge cases.
+5. Self-review against **`docs/context/workflow/review-checklist.md`**, then verify (lint,
+   targeted tests, build) with the exact commands in the playbook's Step 7.
 
 ## Output Format
 

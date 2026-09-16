@@ -6,7 +6,8 @@ Site Kit uses Storybook for component documentation, visual testing, and develop
 
 ### File Structure and Naming
 
-Stories follow consistent patterns:
+Stories are co-located with the component they document, using the
+`*.stories.js` (or, for TypeScript components, `*.stories.tsx`) suffix:
 
 ```
 assets/js/
@@ -16,7 +17,7 @@ assets/js/
 ├── googlesitekit/
 │   └── components-gm2/
 │       └── Button/
-│           └── index.stories.js      // Material Design stories
+│           └── index.stories.js      // GM2 (Material) component stories
 └── modules/
     └── analytics-4/
         └── components/
@@ -24,15 +25,22 @@ assets/js/
                 └── Widget.stories.js // Module-specific stories
 ```
 
+New and migrated components increasingly ship `*.stories.tsx` files
+(e.g. `assets/js/components/Notice/index.stories.tsx`,
+`assets/js/googlesitekit/widgets/components/Widget.stories.tsx`). Both
+extensions are picked up by Storybook — see the `stories` globs in
+`storybook/main.js`.
+
 ### Story Categories
 
-Stories are organized by hierarchical categories:
+Stories are organized into a hierarchy via the `title` field of the default
+export. Common top-level categories include:
 
-- **Components**: Basic UI components (`Components/Badge`, `Components/Link`)
+- **Components**: Basic and GM2 UI components (`Components/Link`, `Components/Button`, `Components/Text Fields`)
 - **Key Metrics**: Metric widgets (`Key Metrics/WidgetTiles/MetricTileNumeric`)
-- **Material Design**: GM2 components (`Material Design/Button`, `Material Design/TextField`)
-- **Module Components**: Module-specific UI (`Analytics 4/Dashboard Widget`)
-- **Blocks**: WordPress block components (`Blocks/Reader Revenue Manager`)
+- **Modules**: Module-specific UI (`Modules/Analytics4/Setup/KeyMetricsSetupApp`, `Modules/Ads/WooCommerceRedirectModal`)
+- **Views**: Top-level app views (`Views/AdminBarApp/AdminBarImpressions`)
+- **Blocks**: WordPress block components (`Blocks/Reader Revenue Manager/EditorButton`)
 
 ## Story Creation Patterns
 
@@ -163,10 +171,10 @@ Widget components often use higher-order components:
 /**
  * MetricTileNumeric Component Stories.
  */
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import MetricTileNumeric from './MetricTileNumeric';
-import { withWidgetComponentProps } from '../../googlesitekit/widgets/util';
 
-const WidgetWithComponentProps = 
+const WidgetWithComponentProps =
     withWidgetComponentProps( 'test' )( MetricTileNumeric );
 
 function Template( { ...args } ) {
@@ -182,6 +190,8 @@ Positive.args = {
     currentValue: 100,
     previousValue: 91,
 };
+// An empty `scenario` object opts this story into visual regression testing.
+Positive.scenario = {};
 
 export const Loading = Template.bind( {} );
 Loading.storyName = 'Loading';
@@ -189,6 +199,7 @@ Loading.args = {
     title: 'New Visitors',
     loading: true,
 };
+Loading.scenario = {};
 Loading.decorators = [
     ( Story ) => {
         // Ensure animation is paused for VRT tests
@@ -210,44 +221,65 @@ export default {
 
 ### Main Configuration
 
-Storybook is configured in `storybook/main.js`:
+Storybook is configured in `storybook/main.js` (Storybook 8 with the
+React + Webpack 5 framework). Stories are matched for both `.stories.js` and
+`.stories.tsx`:
 
 ```javascript
 module.exports = {
+    framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
     stories: [
-        '../assets/js/**/*.stories.js',
-        '../assets/blocks/**/*.stories.js',
+        path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
+        path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
+        path.resolve( rootDir, 'assets/js/**/*.stories.tsx' ),
+        path.resolve( rootDir, 'assets/blocks/**/*.stories.tsx' ),
     ],
-    addons: [ '@storybook/addon-viewport', '@storybook/addon-postcss' ],
-    previewHead: ( head ) => {
+    addons: [
+        getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
+        getModuleAbsolutePath( '@storybook/addon-viewport' ),
+    ],
+    previewHead( head ) {
         if ( process.env.VRT === '1' ) {
             return `${ head }\n${ vrtHead() }`;
         }
         return head;
     },
+    // `webpackFinal` wires up the `@`/`@tests` aliases, the Site Kit package
+    // aliases, the SVG rule and SCSS/PostCSS loaders.
 };
 ```
 
 ### Preview Configuration
 
-Global decorators and parameters in `storybook/preview.js`:
+Global decorators and parameters live in `storybook/preview.js`. The shared
+test utilities are imported through the `@tests` alias, and feature flags are
+toggled via the `enabledFeatures` set from `assets/js/features` (the same set
+the app reads at runtime):
 
 ```javascript
 /**
  * Storybook preview config.
  */
-import { createTestRegistry, provideUserInfo, setEnabledFeatures } from '../tests/js/test-utils';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
 import { RegistryProvider } from 'googlesitekit-data';
-import InViewProvider from '../assets/js/components/InViewProvider';
+import { createTestRegistry, provideUserInfo } from '@tests/js/test-utils';
 import FeaturesProvider from '../assets/js/components/FeaturesProvider';
+import InViewProvider from '../assets/js/components/InViewProvider';
+import { enabledFeatures } from '../assets/js/features';
+import { Cell, Grid, Row } from '../assets/js/material-components';
 
-// Decorators run from last added to first (reverse order)
+// Decorators run from last added to first. (Eg. In reverse order as listed.)
 export const decorators = [
     ( Story, { parameters, kind } ) => {
-        const { padding } = parameters || {};
-        const styles = padding !== undefined ? { padding } : {};
+        const styles = {};
 
-        // Different layout for block stories
+        const { padding } = parameters || {};
+        if ( padding !== undefined ) {
+            styles.padding = padding;
+        }
+
+        // Render block stories in non-Site Kit context.
         if ( kind.startsWith( 'Blocks/' ) ) {
             return (
                 <Grid style={ styles }>
@@ -266,16 +298,25 @@ export const decorators = [
             </Grid>
         );
     },
-    
-    // Features and registry setup
+    // Features must be set up before the test registry is initialized.
     ( Story, { parameters } ) => {
         const { features = [], route } = parameters;
+
+        enabledFeatures.clear();
+        for ( const feature of features ) {
+            enabledFeatures.add( feature );
+        }
+
         const registry = createTestRegistry();
+        const history = createMemoryHistory();
         const featuresToEnable = new Set( features );
 
-        // Populate basic test data
+        // Populate most basic data which should not affect any tests.
         provideUserInfo( registry );
-        setEnabledFeatures( features );
+
+        if ( route ) {
+            history.push( route );
+        }
 
         return (
             <InViewProvider value={ inViewState }>
@@ -294,14 +335,22 @@ export const decorators = [
 export const parameters = {
     layout: 'fullscreen',
     options: {
-        storySort: {
-            method: 'alphabetical',
-        },
+        // Custom comparator that sorts folders before files, then alphabetically.
+        storySort: ( a, b ) => { /* ... */ },
     },
 };
 ```
 
 ## Visual Regression Testing
+
+BackstopJS scenarios are generated automatically from stories by
+`tests/backstop/scenarios.js`, which parses every story file and emits one VRT
+scenario for each story that declares a `scenario` **object**. An empty
+`scenario = {}` opts a story in with default capture behaviour; properties on
+the object (such as `delay`, `readySelector`, `hoverSelector`, `clickSelector`,
+`postInteractionWait`, `onReadyScript`) customise the capture. A story with no
+`scenario` property — or one whose `scenario` is anything other than a plain
+object — is rendered in Storybook but not captured for VRT.
 
 ### VRT Story Patterns
 
@@ -383,9 +432,9 @@ Stories can accept configuration through parameters:
 // Story with custom parameters
 export const FeatureStory = Template.bind( {} );
 FeatureStory.parameters = {
-    features: [ 'userInput', 'keyMetrics' ],  // Enable feature flags
-    route: '/dashboard',                       // Set router location
-    padding: '20px',                          // Custom styling
+    features: [ 'pdfGeneration' ], // Enable feature flags (see feature-flags.json)
+    route: '/dashboard',           // Set router history location
+    padding: '20px',               // Custom padding applied by the layout decorator
 };
 ```
 
@@ -394,34 +443,48 @@ FeatureStory.parameters = {
 1. **Comprehensive Coverage**: Create stories for all component states (default, loading, error, empty)
 2. **Descriptive Names**: Use clear story names that explain the variant
 3. **Minimal Props**: Provide only necessary props to demonstrate the specific state
-4. **VRT Considerations**: Include VRT stories for visual regression testing
+4. **VRT Considerations**: Add `scenario` to the stories that should be captured for visual regression testing
 5. **Documentation**: Add comments explaining complex story setups
 6. **Consistent Structure**: Follow established patterns for similar component types
 
+### TypeScript Stories
+
+When the component is TypeScript, name the story file `*.stories.tsx`. The CSF
+authoring pattern is identical to the JavaScript form above — a `Template`
+function, `export const X = Template.bind( {} )`, story-level `args`/`scenario`,
+and a default export with `title`/`component`. Import the component (and any
+helpers) with the `@/` alias and standard `import` statements; for component
+prop typing, follow `component-conventions.md` (the source of truth for TS
+component conventions) rather than redefining it here.
+
 ### Testing Integration
 
-Stories can be tested alongside regular unit tests:
+Every story is smoke-tested by the Storybook **test-runner**
+(`@storybook/test-runner`, driven through Playwright). Running
+`npm run test:storybook` builds Storybook, serves it locally and visits each
+story, failing if a story throws while rendering. The shared assertion lives in
+the `puppeteerTest` parameter in `storybook/preview.js`, which checks that the
+story rendered without Storybook's error overlay:
 
 ```javascript
-// stories.test.js - validates all stories can render
-import { composeStories } from '@storybook/testing-react';
-import { render } from '@testing-library/react';
-import * as stories from './Component.stories';
+// storybook/preview.js
+export const parameters = {
+    async puppeteerTest( page ) {
+        await page.waitForTimeout( 50 );
 
-const { Default, Loading, Error } = composeStories( stories );
-
-describe( 'Component Stories', () => {
-    it( 'should render Default story', () => {
-        render( <Default /> );
-        // Assertions...
-    } );
-
-    it( 'should render Loading story', () => {
-        render( <Loading /> );
-        // Assertions...
-    } );
-} );
+        expect(
+            await page.$eval( 'body', ( element ) =>
+                element.classList.contains( 'sb-show-errordisplay' )
+            )
+        ).toBe( false );
+    },
+};
 ```
+
+Component behaviour is otherwise covered by the co-located Jest +
+React Testing Library tests (`Component.test.js` / `Component.test.tsx`) that
+import and render the component directly — Site Kit does not compose stories
+into Jest tests.
 
 ### Development Workflow
 

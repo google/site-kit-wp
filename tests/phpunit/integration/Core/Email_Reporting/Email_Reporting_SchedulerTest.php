@@ -244,6 +244,60 @@ class Email_Reporting_SchedulerTest extends TestCase {
 		$this->assertSame( $scheduled, wp_next_scheduled( Email_Reporting_Scheduler::ACTION_CLEANUP ), 'Cleanup scheduling should be idempotent.' );
 	}
 
+	public function test_get_next_report_timestamp_returns_scheduled_initiator_timestamp() {
+		$frequency = Email_Reporting_Settings::FREQUENCY_WEEKLY;
+
+		$this->scheduler->schedule_initiator_once( $frequency );
+		$scheduled = $this->scheduler->get_initiator_timestamp_for_frequency( $frequency );
+
+		$this->assertSame(
+			$scheduled,
+			$this->scheduler->get_next_report_timestamp( $frequency ),
+			'Should return the timestamp of the currently scheduled initiator event.'
+		);
+	}
+
+	public function test_get_next_report_timestamp_falls_back_when_scheduled_initiator_is_overdue() {
+		$frequency     = Email_Reporting_Settings::FREQUENCY_MONTHLY;
+		$due_timestamp = time() - HOUR_IN_SECONDS;
+
+		// Simulate an initiator that WP-Cron hasn't processed yet (e.g. no
+		// site traffic to trigger it), which leaves a past timestamp in the
+		// cron table until it eventually runs.
+		wp_schedule_single_event( $due_timestamp, Email_Reporting_Scheduler::ACTION_INITIATOR, array( $frequency, $due_timestamp ) );
+
+		$this->assertSame(
+			$due_timestamp,
+			$this->scheduler->get_initiator_timestamp_for_frequency( $frequency ),
+			'Precondition: overdue initiator event should still be present in the cron table.'
+		);
+
+		$before = time();
+
+		$this->assertGreaterThanOrEqual(
+			$before + $this->offsets[ $frequency ],
+			$this->scheduler->get_next_report_timestamp( $frequency ),
+			'Should fall back to a freshly calculated future occurrence rather than returning an overdue timestamp.'
+		);
+	}
+
+	public function test_get_next_report_timestamp_falls_back_to_freshly_calculated_occurrence() {
+		$frequency = Email_Reporting_Settings::FREQUENCY_MONTHLY;
+
+		$this->assertFalse(
+			$this->scheduler->get_initiator_timestamp_for_frequency( $frequency ),
+			'No initiator event should be scheduled yet for frequency "' . $frequency . '".'
+		);
+
+		$before = time();
+
+		$this->assertGreaterThanOrEqual(
+			$before + $this->offsets[ $frequency ],
+			$this->scheduler->get_next_report_timestamp( $frequency ),
+			'Should fall back to a freshly calculated occurrence when no initiator event is scheduled.'
+		);
+	}
+
 	public function test_unschedule_all_clears_events() {
 		$this->scheduler->schedule_initiator_once( Email_Reporting_Settings::FREQUENCY_WEEKLY );
 		$worker_timestamp   = time();

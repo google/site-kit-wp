@@ -23,7 +23,7 @@ use WP_User;
 use WP_Error;
 
 /**
- * Class Migration_1_8_1
+ * Class Migration_1_8_1.
  *
  * @since 1.8.1
  * @access private

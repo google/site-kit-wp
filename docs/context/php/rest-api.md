@@ -16,29 +16,20 @@ The REST API system consists of:
 
 ### REST Routes Registry
 
-**Location**: `includes/Core/REST_API/REST_Routes.php:1-127`
+**Location**: `includes/Core/REST_API/REST_Routes.php`
 
-The `REST_Routes` class aggregates all routes using WordPress filters.
+The `REST_Routes` class aggregates all routes using WordPress filters. It is
+constructed with only a `Context` instance (see `includes/Plugin.php`) and other
+classes contribute their routes via the `googlesitekit_rest_routes` filter.
 
 ```php
 final class REST_Routes {
     const REST_ROOT = 'google-site-kit/v1';
 
     private $context;
-    private $authentication;
-    private $modules;
-    private $user_options;
 
-    public function __construct(
-        Context $context,
-        Authentication $authentication,
-        Modules $modules,
-        User_Options $user_options
-    ) {
-        $this->context        = $context;
-        $this->authentication = $authentication;
-        $this->modules        = $modules;
-        $this->user_options   = $user_options;
+    public function __construct( Context $context ) {
+        $this->context = $context;
     }
 
     public function register() {
@@ -48,11 +39,13 @@ final class REST_Routes {
                 $this->register_routes();
             }
         );
+
+        // (Also registers a `do_parse_request` filter to unset conflicting
+        // public query vars for Site Kit REST requests.)
     }
 
     private function register_routes() {
         $routes = $this->get_routes();
-
         foreach ( $routes as $route ) {
             $route->register();
         }
@@ -73,9 +66,15 @@ final class REST_Routes {
 
 ### REST Route Object
 
-**Location**: `includes/Core/REST_API/REST_Route.php:1-172`
+**Location**: `includes/Core/REST_API/REST_Route.php`
 
-The `REST_Route` class wraps WordPress REST route registration.
+The `REST_Route` class wraps WordPress REST route registration. A single endpoint
+may be passed as a flat array — `REST_Route` wraps it in a list automatically — and
+route-wide options (`args`, `schema`) are passed as the optional third argument.
+Note there is no `permission_callback` default in the endpoint defaults; each
+endpoint should define its own. Per-parameter defaults are filled in by
+`parse_param_arg()` (including WordPress's `rest_validate_request_arg` /
+`rest_sanitize_request_arg` callbacks).
 
 ```php
 final class REST_Route {
@@ -85,43 +84,47 @@ final class REST_Route {
     /**
      * Constructor.
      *
-     * \@param string $uri       Route URI pattern.
-     * \@param array  $endpoints Route endpoints configuration.
-     * \@param array  $args      Optional route arguments.
+     * \@param string $uri       Unique route URI.
+     * \@param array  $endpoints One endpoint array, or a list of endpoint arrays.
+     * \@param array  $args      Optional route options, e.g. `args` and `schema`.
      */
     public function __construct( $uri, array $endpoints, array $args = array() ) {
         $this->uri = trim( $uri, '/' );
 
+        $this->args = $args;
+
+        if ( isset( $this->args['args'] ) ) {
+            $this->args['args'] = $this->parse_param_args( $this->args['args'] );
+        }
+
+        // A single endpoint passed as a string-keyed array is wrapped into a list.
+        if ( ! wp_is_numeric_array( $endpoints ) ) {
+            $endpoints = array( $endpoints );
+        }
+
         $endpoint_defaults = array(
-            'methods'             => WP_REST_Server::READABLE,  // GET by default
-            'callback'            => null,
-            'permission_callback' => '__return_true',
-            'args'                => array(),
+            'methods'  => WP_REST_Server::READABLE, // GET by default.
+            'callback' => null,
+            'args'     => array(),
         );
 
         foreach ( $endpoints as $endpoint ) {
             $endpoint = wp_parse_args( $endpoint, $endpoint_defaults );
 
-            // Parse parameter schema
             $endpoint['args'] = $this->parse_param_args( $endpoint['args'] );
+            if ( ! empty( $this->args['args'] ) ) {
+                $endpoint['args'] = array_merge( $this->args['args'], $endpoint['args'] );
+            }
 
             $this->args[] = $endpoint;
-        }
-
-        if ( isset( $args['schema'] ) ) {
-            $this->args['schema'] = $args['schema'];
         }
     }
 
     /**
-     * Register this route with WordPress.
+     * Registers the REST route.
      */
     public function register() {
-        register_rest_route(
-            REST_Routes::REST_ROOT,
-            $this->get_uri(),
-            $this->get_args()
-        );
+        register_rest_route( REST_Routes::REST_ROOT, $this->get_uri(), $this->get_args() );
     }
 
     public function get_uri() {
@@ -133,23 +136,33 @@ final class REST_Route {
     }
 
     /**
-     * Parse parameter arguments to ensure proper schema.
+     * Parses all supported request arguments and their data.
      *
-     * \@param array $args Parameter arguments.
+     * \@param array $args Associative array of $arg => $data pairs.
      * \@return array Parsed arguments.
      */
-    private function parse_param_args( $args ) {
-        $parsed_args = array();
+    protected function parse_param_args( array $args ) {
+        return array_map( array( $this, 'parse_param_arg' ), $args );
+    }
 
-        foreach ( $args as $key => $arg ) {
-            if ( ! is_array( $arg ) ) {
-                $arg = array( 'type' => $arg );
-            }
-
-            $parsed_args[ $key ] = $arg;
-        }
-
-        return $parsed_args;
+    /**
+     * Parses data for a single supported request argument, filling in defaults.
+     *
+     * \@param array $data Request argument data.
+     * \@return array Parsed data.
+     */
+    protected function parse_param_arg( array $data ) {
+        return wp_parse_args(
+            $data,
+            array(
+                'type'              => 'string',
+                'description'       => '',
+                'validate_callback' => 'rest_validate_request_arg',
+                'sanitize_callback' => 'rest_sanitize_request_arg',
+                'required'          => false,
+                'default'           => null,
+            )
+        );
     }
 }
 ```
@@ -159,6 +172,14 @@ final class REST_Route {
 Controllers provide route definitions and callbacks for specific features.
 
 ### Basic Controller Structure
+
+Controllers are typically named `REST_<Feature>_Controller`, live alongside the
+feature they serve (e.g. `includes/Core/Feature_Tours/REST_Feature_Tours_Controller.php`),
+and expose `get_rest_routes()` as a `protected` or `private` method (private is
+common when the controller is not designed to be subclassed — e.g.
+`REST_Modules_Controller` uses `private`). Callbacks are most often defined as
+inline closures rather than named methods, but referencing instance methods via
+`array( $this, 'method' )` is equally valid.
 
 ```php
 class REST_Feature_Controller {
@@ -185,9 +206,9 @@ class REST_Feature_Controller {
     /**
      * Get REST route definitions.
      *
-     * \@return array Array of REST_Route objects.
+     * \@return REST_Route[] Array of REST_Route objects.
      */
-    private function get_rest_routes() {
+    protected function get_rest_routes() {
         // Permission callbacks
         $can_setup = function () {
             return current_user_can( Permissions::SETUP );
@@ -276,10 +297,18 @@ class REST_Feature_Controller {
 
 ### Real Example: Modules Controller
 
-**Location**: `includes/Core/Modules/REST_Modules_Controller.php:1-200+`
+**Location**: `includes/Core/Modules/REST_Modules_Controller.php`
+
+The actual controller defines its callbacks as inline closures and reads write
+payloads from a single `data` object parameter (e.g. `$request['data']['slug']`),
+rather than from top-level params. The example below is condensed from the real
+file.
 
 ```php
-final class REST_Modules_Controller {
+class REST_Modules_Controller {
+
+    const REST_ROUTE_CHECK_ACCESS = 'core/modules/data/check-access';
+
     protected $modules;
 
     public function __construct( Modules $modules ) {
@@ -293,6 +322,9 @@ final class REST_Modules_Controller {
                 return array_merge( $routes, $this->get_rest_routes() );
             }
         );
+
+        // Also registers `googlesitekit_apifetch_preload_paths` to preload
+        // module data routes.
     }
 
     private function get_rest_routes() {
@@ -300,54 +332,90 @@ final class REST_Modules_Controller {
             return current_user_can( Permissions::SETUP );
         };
 
-        $can_authenticate = function () {
-            return current_user_can( Permissions::AUTHENTICATE );
+        // Allows splash or dashboard viewers to read module listings/settings.
+        $can_list_data = function () {
+            return current_user_can( Permissions::VIEW_SPLASH )
+                || current_user_can( Permissions::VIEW_DASHBOARD );
+        };
+
+        // Allows users who can manage options, with a SETUP shortcut for
+        // routes that must be callable before setup is complete.
+        $can_manage_options = function () {
+            if ( current_user_can( Permissions::SETUP ) ) {
+                return true;
+            }
+            return current_user_can( Permissions::MANAGE_OPTIONS );
+        };
+
+        // Pre-assign schema closure so it can be reused across multiple routes.
+        $get_module_schema = function () {
+            return $this->get_module_schema();
         };
 
         return array(
-            // List modules
+            // List modules.
             new REST_Route(
                 'core/modules/data/list',
                 array(
                     array(
                         'methods'             => WP_REST_Server::READABLE,
-                        'callback'            => array( $this, 'get_modules' ),
-                        'permission_callback' => $can_authenticate,
+                        'callback'            => function () {
+                            $modules = array_map(
+                                array( $this, 'prepare_module_data_for_response' ),
+                                $this->modules->get_available_modules()
+                            );
+                            return new WP_REST_Response( array_values( $modules ) );
+                        },
+                        'permission_callback' => $can_list_data,
                     ),
+                ),
+                array(
+                    'schema' => $get_module_schema,
                 )
             ),
 
-            // Activate module
+            // Activate / deactivate a module.
             new REST_Route(
                 'core/modules/data/activation',
                 array(
                     array(
                         'methods'             => WP_REST_Server::EDITABLE,
-                        'callback'            => array( $this, 'activate_module' ),
+                        'callback'            => function ( WP_REST_Request $request ) {
+                            $data = $request['data'];
+                            $slug = isset( $data['slug'] ) ? $data['slug'] : '';
+
+                            try {
+                                $this->modules->get_module( $slug );
+                            } catch ( Exception $e ) {
+                                return new WP_Error( 'invalid_module_slug', $e->getMessage() );
+                            }
+
+                            // ...activate or deactivate based on $data['active']...
+
+                            return new WP_REST_Response( /* ... */ );
+                        },
+                        'permission_callback' => $can_manage_options,
+                    ),
+                )
+            ),
+
+            // Check module access.
+            new REST_Route(
+                self::REST_ROUTE_CHECK_ACCESS,
+                array(
+                    array(
+                        'methods'             => WP_REST_Server::EDITABLE,
+                        'callback'            => function ( WP_REST_Request $request ) {
+                            $data = $request['data'];
+                            $slug = isset( $data['slug'] ) ? $data['slug'] : '';
+                            // ...resolve module, check service entity access...
+                            return new WP_REST_Response( array( 'access' => true ) );
+                        },
                         'permission_callback' => $can_setup,
                         'args'                => array(
                             'slug' => array(
                                 'type'              => 'string',
-                                'required'          => true,
-                                'sanitize_callback' => 'sanitize_key',
-                            ),
-                        ),
-                    ),
-                )
-            ),
-
-            // Check module access
-            new REST_Route(
-                'core/modules/data/check-access',
-                array(
-                    array(
-                        'methods'             => WP_REST_Server::EDITABLE,
-                        'callback'            => array( $this, 'check_module_access' ),
-                        'permission_callback' => $can_authenticate,
-                        'args'                => array(
-                            'slug' => array(
-                                'type'              => 'string',
-                                'required'          => true,
+                                'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
                                 'sanitize_callback' => 'sanitize_key',
                             ),
                         ),
@@ -355,37 +423,6 @@ final class REST_Modules_Controller {
                 )
             ),
         );
-    }
-
-    /**
-     * Get list of modules.
-     *
-     * \@return WP_REST_Response Response with modules list.
-     */
-    public function get_modules() {
-        $modules = array_values(
-            $this->modules->get_available_modules()
-        );
-
-        return new WP_REST_Response( $modules );
-    }
-
-    /**
-     * Activate a module.
-     *
-     * \@param WP_REST_Request $request REST request.
-     * \@return WP_REST_Response|WP_Error Response or error.
-     */
-    public function activate_module( WP_REST_Request $request ) {
-        $slug = $request->get_param( 'slug' );
-
-        $result = $this->modules->activate_module( $slug );
-
-        if ( is_wp_error( $result ) ) {
-            return $result;
-        }
-
-        return new WP_REST_Response( array( 'success' => true ) );
     }
 }
 ```
@@ -613,42 +650,73 @@ if ( ! $this->validate( $data ) ) {
 
 ## Module Data Endpoints
 
-Modules use a datapoint pattern for REST endpoints.
-
-**Location**: `includes/Core/Modules/REST_Module_Data_Controller.php`
+Modules use a datapoint pattern for REST endpoints. A single route — registered in
+`REST_Modules_Controller` (`includes/Core/Modules/REST_Modules_Controller.php`) —
+captures both the module `slug` and the `datapoint` from the URI and dispatches to
+the resolved module's `get_data()` / `set_data()` methods. The shared `slug` and
+`datapoint` parameters are declared once at the route level (third constructor
+argument). Per-datapoint permission checks are delegated through a
+`$datapoint_permission_callback` closure, which honors a datapoint that implements
+`Permission_Aware_Datapoint` (otherwise falling back to the method default —
+`$can_view_insights` for reads, `$can_manage_options` for writes).
 
 ```php
-// Route pattern: modules/{module-slug}/data/{datapoint}
+// Route pattern: modules/{slug}/data/{datapoint}
 // Example: modules/analytics-4/data/accounts
 
 new REST_Route(
-    sprintf( 'modules/%s/data/(?P<datapoint>[a-z-]+)', $module->slug ),
+    'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
     array(
         array(
             'methods'             => WP_REST_Server::READABLE,
-            'callback'            => array( $this, 'get_data' ),
-            'permission_callback' => $this->can_access_datapoint(),
-            'args'                => array(
-                'datapoint' => array(
-                    'type'              => 'string',
-                    'required'          => true,
-                    'sanitize_callback' => 'sanitize_key',
-                ),
-            ),
+            'callback'            => function ( WP_REST_Request $request ) {
+                $module = $this->modules->get_module( $request['slug'] );
+                $data   = $module->get_data( $request['datapoint'], $request->get_params() );
+                if ( is_wp_error( $data ) ) {
+                    return $data;
+                }
+                return new WP_REST_Response( $data );
+            },
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_view_insights ) {
+                return $datapoint_permission_callback( $request, $can_view_insights );
+            },
         ),
         array(
             'methods'             => WP_REST_Server::EDITABLE,
-            'callback'            => array( $this, 'set_data' ),
-            'permission_callback' => $this->can_access_datapoint(),
+            'callback'            => function ( WP_REST_Request $request ) {
+                $module = $this->modules->get_module( $request['slug'] );
+                $data   = isset( $request['data'] ) ? (array) $request['data'] : array();
+                $data   = $module->set_data( $request['datapoint'], $data );
+                if ( is_wp_error( $data ) ) {
+                    return $data;
+                }
+                return new WP_REST_Response( $data );
+            },
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_manage_options ) {
+                return $datapoint_permission_callback( $request, $can_manage_options );
+            },
             'args'                => array(
-                'datapoint' => array(
-                    'type'     => 'string',
-                    'required' => true,
-                ),
                 'data' => array(
-                    'type'     => 'object',
-                    'required' => false,
+                    'type'              => 'object',
+                    'description'       => __( 'Data to set.', 'google-site-kit' ),
+                    'validate_callback' => function ( $value ) {
+                        return is_array( $value );
+                    },
                 ),
+            ),
+        ),
+    ),
+    array(
+        'args' => array(
+            'slug'      => array(
+                'type'              => 'string',
+                'description'       => __( 'Identifier for the module.', 'google-site-kit' ),
+                'sanitize_callback' => 'sanitize_key',
+            ),
+            'datapoint' => array(
+                'type'              => 'string',
+                'description'       => __( 'Module data point to address.', 'google-site-kit' ),
+                'sanitize_callback' => 'sanitize_key',
             ),
         ),
     )

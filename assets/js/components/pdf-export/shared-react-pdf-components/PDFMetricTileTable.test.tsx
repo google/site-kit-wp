@@ -1,0 +1,183 @@
+/**
+ * PDFMetricTileTable tests.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
+ * Internal dependencies
+ */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import PDFMetricTileTable from './PDFMetricTileTable';
+
+/**
+ * Renders `PDFMetricTileTable` with the given props and returns its collected
+ * text strings.
+ *
+ * @since 1.186.0
+ *
+ * @param {Object} props The tile props.
+ * @return {string[]} The rendered text strings.
+ */
+function renderTable(
+	props: React.ComponentProps< typeof PDFMetricTileTable >
+): string[] {
+	const renderer = TestRenderer.create( <PDFMetricTileTable { ...props } /> );
+	const tree = renderer.toJSON();
+	if ( Array.isArray( tree ) ) {
+		throw new Error( 'Unexpected render output.' );
+	}
+	return findTextStrings( tree );
+}
+
+const ROWS = [
+	{ primary: 'New York', metric: '40%' },
+	{ primary: 'London', metric: '30%' },
+	{ primary: 'Tokyo', metric: '20%' },
+	{ primary: 'Paris', metric: '10%' },
+];
+
+describe( 'PDFMetricTileTable', () => {
+	it( 'renders the title and every ranked row with its metric', () => {
+		const text = renderTable( {
+			title: 'Top cities',
+			rows: ROWS,
+		} ).join( ' ' );
+
+		expect( text ).toContain( 'Top cities' );
+		ROWS.forEach( ( { primary, metric } ) => {
+			expect( text ).toContain( primary );
+			expect( text ).toContain( metric );
+		} );
+	} );
+
+	it( 'caps the rendered rows at the limit', () => {
+		const text = renderTable( {
+			title: 'Top cities',
+			rows: ROWS,
+			limit: 2,
+		} ).join( ' ' );
+
+		expect( text ).toContain( 'New York' );
+		expect( text ).toContain( 'London' );
+		// Rows beyond the limit are not rendered.
+		expect( text ).not.toContain( 'Tokyo' );
+		expect( text ).not.toContain( 'Paris' );
+	} );
+
+	it( 'matches the dashboard tile typography and truncates a long label', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top pages"
+				rows={ [ { primary: 'A very long page title', metric: '37' } ] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		// Lengths are scaled to PDF points, so compare against the scaled value:
+		// 12px text with 0.2px letter spacing, as on the dashboard.
+		expect( json ).toContain( `"fontSize":${ scalePDFValue( 12 ) }` );
+		expect( json ).toContain( `"letterSpacing":${ scalePDFValue( 0.2 ) }` );
+		// Line height is a multiplier, so it is not scaled: 12 × 1.33 ≈ 16px.
+		expect( json ).toContain( '"lineHeight":1.33' );
+		// The label truncates on one line rather than wrapping, which needs a
+		// bounded cell around it.
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"flexGrow":1,"flexShrink":1' );
+		// The row carries no padding of its own; the line height spaces the
+		// entries, as the design intends.
+		expect( json ).toContain(
+			'"style":{"flexDirection":"row","justifyContent":"space-between"}'
+		);
+	} );
+
+	it( 'gives the card the dashboard tile min height so a row of tiles is uniform', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top pages"
+				rows={ [ { primary: 'A page', metric: '1' } ] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		// The dashboard tile is `min-height: 150px` and fills its grid cell, so the
+		// card carries the scaled min height and grows to the row's tallest tile.
+		expect( json ).toContain( `"minHeight":${ scalePDFValue( 150 ) }` );
+		expect( json ).toContain( '"flexGrow":1' );
+	} );
+
+	it( 'renders the label as a link to primaryURL when the row has one', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top pages"
+				rows={ [
+					{
+						primary: '/home',
+						metric: '37',
+						primaryURL: 'https://analytics.example.com/report',
+					},
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).toContain( '"type":"pdf-link"' );
+		expect( json ).toContain(
+			'"src":"https://analytics.example.com/report"'
+		);
+		expect( json ).toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when the row has no primaryURL', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [ { primary: 'Dublin', metric: '37' } ] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
+	} );
+
+	it( 'renders the label as plain text when primaryURL is null', () => {
+		const tree = TestRenderer.create(
+			<PDFMetricTileTable
+				title="Top cities"
+				rows={ [
+					{ primary: 'Dublin', metric: '37', primaryURL: null },
+				] }
+			/>
+		).toJSON();
+		const json = JSON.stringify( tree );
+
+		expect( json ).not.toContain( '"type":"pdf-link"' );
+		expect( json ).not.toContain( '#108080' );
+	} );
+
+	it( 'renders only the title when there are no rows', () => {
+		const strings = renderTable( { title: 'Top cities', rows: [] } );
+
+		expect( strings ).toEqual( [ 'Top cities' ] );
+	} );
+} );

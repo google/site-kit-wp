@@ -23,18 +23,31 @@ Setting (base class)
 
 ## Base Setting Class
 
-**Location**: `includes/Core/Storage/Setting.php:1-182`
+**Location**: `includes/Core/Storage/Setting.php`
 
-The base `Setting` class provides fundamental setting operations.
+The base `Setting` class provides fundamental setting operations. It is constructed with an
+`Options_Interface` instance and delegates storage to it.
 
 ### Core Methods
 
 ```php
 abstract class Setting {
-    const OPTION = '';  // Must be defined in subclass
+
+    const OPTION = '';  // Override in a sub-class.
 
     /**
-     * Register the setting with WordPress.
+     * Options instance implementing Options_Interface.
+     *
+     * \@var Options_Interface
+     */
+    protected $options;
+
+    public function __construct( Options_Interface $options ) {
+        $this->options = $options;
+    }
+
+    /**
+     * Registers the setting in WordPress.
      */
     public function register() {
         register_setting(
@@ -49,83 +62,83 @@ abstract class Setting {
     }
 
     /**
-     * Check if setting exists in database.
+     * Subscribes to updates for this setting.
      *
-     * \@return bool True if setting exists.
-     */
-    public function has() {
-        $value = $this->get();
-        $cache_key = $this->is_network_mode() ? 'notoptions' : 'notoptions';
-        $notoptions = wp_cache_get( $cache_key, 'options' );
-        return ! isset( $notoptions[ static::OPTION ] );
-    }
-
-    /**
-     * Get setting value.
-     *
-     * \@return mixed Setting value.
-     */
-    public function get() {
-        $option = $this->get_option();
-
-        if ( false === $option ) {
-            return $this->get_default();
-        }
-
-        return $option;
-    }
-
-    /**
-     * Set setting value.
-     *
-     * \@param mixed $value New value.
-     * \@return bool True on success.
-     */
-    public function set( $value ) {
-        return $this->update_option( $value );
-    }
-
-    /**
-     * Delete setting.
-     *
-     * \@return bool True on success.
-     */
-    public function delete() {
-        return $this->delete_option();
-    }
-
-    /**
-     * Register callback for setting changes.
-     *
-     * \@param callable $callback Function to call when setting changes.
-     * \@return callable Unsubscribe function.
+     * \@param callable $callback Function taking $old_value & $new_value parameters.
+     * \@return \Closure Function to remove the added listeners.
      */
     public function on_change( callable $callback ) {
-        // Observer pattern implementation
+        // Observer pattern implementation; see "Observer Pattern" section below.
     }
 
     /**
-     * Get setting type.
+     * Checks whether or not the option is set with a valid value.
      *
-     * \@return string Setting type (string, number, integer, boolean, array, object).
+     * \@return bool True on success, false on failure.
+     */
+    public function has() {
+        return $this->options->has( static::OPTION );
+    }
+
+    /**
+     * Gets the value of the setting.
+     *
+     * \@return mixed Value set for the option, or registered default if not set.
+     */
+    public function get() {
+        return $this->options->get( static::OPTION );
+    }
+
+    /**
+     * Sets the value of the setting with the given value.
+     *
+     * \@param mixed $value Setting value. Must be serializable if non-scalar.
+     * \@return bool True on success, false on failure.
+     */
+    public function set( $value ) {
+        return $this->options->set( static::OPTION, $value );
+    }
+
+    /**
+     * Deletes the setting.
+     *
+     * \@return bool True on success, false on failure.
+     */
+    public function delete() {
+        return $this->options->delete( static::OPTION );
+    }
+
+    /**
+     * Gets the expected value type.
+     *
+     * Returns 'string' by default for consistency with register_setting.
+     * Override in a sub-class if different.
+     *
+     * \@return string The type name.
      */
     protected function get_type() {
-        return 'array';
+        return 'string';
     }
 
     /**
-     * Get default value.
+     * Gets the default value.
      *
-     * \@return mixed Default value.
+     * Returns false by default for consistency with get_option.
+     * Override in a sub-class if different.
+     *
+     * \@return mixed The default value.
      */
     protected function get_default() {
-        return array();
+        return false;
     }
 
     /**
-     * Get sanitization callback.
+     * Gets the callback for sanitizing the setting's value before saving.
      *
-     * \@return callable Sanitization function.
+     * Returns null for consistency with the default in register_setting.
+     * Override in a sub-class.
+     *
+     * \@return callable|null
      */
     protected function get_sanitize_callback() {
         return null;
@@ -163,60 +176,48 @@ $setting->delete();
 
 ## Module Settings
 
-**Location**: `includes/Core/Modules/Module_Settings.php:1-100`
+**Location**: `includes/Core/Modules/Module_Settings.php`
 
-The `Module_Settings` class extends `Setting` to provide module-specific functionality.
+The `Module_Settings` class extends `Setting` to provide module-specific functionality. Its
+`register()` method calls `parent::register()` and then `add_option_default_filters()`, and it
+overrides `get_type()` to return `'object'` (module settings are always associative arrays).
 
 ### Key Features
 
 ```php
 abstract class Module_Settings extends Setting {
+
     /**
-     * Merge partial settings with existing settings.
+     * Registers the setting in WordPress.
+     */
+    public function register() {
+        parent::register();
+        $this->add_option_default_filters();
+    }
+
+    /**
+     * Merges an array of settings to update.
      *
-     * \@param array $partial Partial settings to merge.
-     * \@return bool True on success.
+     * Only existing keys will be updated.
+     *
+     * \@param array $partial Partial settings array to save.
+     * \@return bool True on success, false on failure.
      */
     public function merge( array $partial ) {
         $settings = $this->get();
-
-        // Filter out null values
-        $partial = array_filter(
+        $partial  = array_filter(
             $partial,
             function ( $value ) {
                 return null !== $value;
             }
         );
-
-        // Only merge keys that exist in the settings
-        $updated = array_intersect_key( $partial, $settings );
+        $updated  = array_intersect_key( $partial, $settings );
 
         return $this->set( array_merge( $settings, $updated ) );
     }
 
     /**
-     * Check if any settings have changed from their saved values.
-     *
-     * \@return bool True if any setting has changed.
-     */
-    public function have_changed() {
-        $settings = $this->get();
-        $saved    = $this->get_saved();
-
-        return ! empty( array_diff_assoc( $settings, $saved ) );
-    }
-
-    /**
-     * Get saved settings (before any modifications).
-     *
-     * \@return array Saved settings.
-     */
-    protected function get_saved() {
-        return $this->get();
-    }
-
-    /**
-     * Add default value filters for array settings.
+     * Registers a filter to ensure default values are present in the saved option.
      */
     protected function add_option_default_filters() {
         add_filter(
@@ -230,19 +231,39 @@ abstract class Module_Settings extends Setting {
             0
         );
 
+        // Fill in any missing keys with defaults.
+        // Must run later to not conflict with legacy key migration.
         add_filter(
-            'default_option_' . static::OPTION,
-            function () {
-                return $this->get_default();
-            }
+            'option_' . static::OPTION,
+            function ( $option ) {
+                if ( is_array( $option ) ) {
+                    return $option + $this->get_default();
+                }
+                return $option;
+            },
+            99
         );
+    }
+
+    /**
+     * Gets the expected value type.
+     *
+     * \@return string The type name.
+     */
+    protected function get_type() {
+        return 'object';
     }
 }
 ```
 
+> Note: `Module_Settings` does **not** provide a `have_changed()`/`get_saved()` change-detection
+> API. Change detection for "owned" settings is handled by `Setting_With_Owned_Keys_Trait`
+> (see below); change detection for the settings form in general is handled on the JavaScript
+> side via the data store.
+
 ## Concrete Settings Implementation
 
-**Location**: `includes/Modules/Analytics_4/Settings.php:1-150+`
+**Location**: `includes/Modules/Analytics_4/Settings.php`
 
 ### Example: Analytics 4 Settings
 
@@ -365,10 +386,8 @@ final class Analytics_4 extends Module implements Module_With_Settings {
             'propertyID' => 'properties/123456789',
         ) );
 
-        // Check if settings have changed
-        if ( $this->get_settings()->have_changed() ) {
-            // Show save button
-        }
+        // Check current setting value
+        $use_snippet = $settings['useSnippet'];
     }
 }
 ```
@@ -393,20 +412,18 @@ trait Setting_With_Owned_Keys_Trait {
     }
 
     /**
-     * Check if owned settings have changed.
+     * Determines whether the owned settings have changed.
      *
-     * \@return bool True if owned settings changed.
+     * \@param array $settings     The new settings.
+     * \@param array $old_settings The old settings.
+     * \@return bool TRUE if owned settings have changed, otherwise FALSE.
      */
-    public function have_owned_settings_changed() {
-        $settings = $this->get();
-        $saved    = $this->get_saved();
-        $owned_keys = $this->get_owned_keys();
+    protected function have_owned_settings_changed( $settings, $old_settings ) {
+        $keys = $this->get_owned_keys();
 
-        foreach ( $owned_keys as $key ) {
-            if ( isset( $settings[ $key ], $saved[ $key ] ) ) {
-                if ( $settings[ $key ] !== $saved[ $key ] ) {
-                    return true;
-                }
+        foreach ( $keys as $key ) {
+            if ( isset( $settings[ $key ], $old_settings[ $key ] ) && $settings[ $key ] !== $old_settings[ $key ] ) {
+                return true;
             }
         }
 
@@ -471,7 +488,7 @@ final class Settings extends Module_Settings implements Setting_With_ViewOnly_Ke
 
 The `on_change` method allows subscribing to setting changes.
 
-**Location**: `includes/Core/Storage/Setting.php:72-89`
+**Location**: `includes/Core/Storage/Setting.php`
 
 ```php
 public function on_change( callable $callback ) {
@@ -499,7 +516,7 @@ public function on_change( callable $callback ) {
 
 ### Usage Example
 
-**Location**: `includes/Modules/Analytics_4.php:277-301`
+**Location**: `includes/Modules/Analytics_4.php`
 
 ```php
 // In module registration

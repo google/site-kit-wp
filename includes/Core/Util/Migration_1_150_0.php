@@ -16,7 +16,7 @@ use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 
 /**
- * Class Migration_1_150_0
+ * Class Migration_1_150_0.
  *
  * @since 1.151.0
  * @access private

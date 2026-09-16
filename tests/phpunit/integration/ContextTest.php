@@ -159,7 +159,7 @@ class ContextTest extends TestCase {
 
 		$home_url = $context->get_canonical_home_url();
 
-		// By default, the reference site_url uses the home_url
+		// By default, the reference site_url uses the home_url.
 		$this->assertEquals( $home_url, $context->get_reference_site_url(), 'get_reference_site_url() should return canonical home URL by default' );
 
 		$other_url_filter = function () {
@@ -188,7 +188,7 @@ class ContextTest extends TestCase {
 	public function test_get_reference_entity__in_admin_context() {
 		$user = $this->factory()->user->create_and_get( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user->ID );
-		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions)
+		// The only way to change the current user in bootstrapped Site Kit class instances (e.g. Permissions).
 		do_action( 'wp_login', $user->user_login, $user );
 
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -380,7 +380,7 @@ class ContextTest extends TestCase {
 		$this->assertEquals( 'nl', $context->get_locale( 'user', 'language-code' ), 'get_locale() with "user" type and "language-code" format should return language code only' );
 		$this->assertEquals( 'nl_NL', $context->get_locale( 'user', 'language-variant' ), 'get_locale() with "user" type and "language-variant" format should return language and region' );
 
-		// Change site locale
+		// Change site locale.
 		$GLOBALS['locale'] = 'te';
 		$this->assertEquals( 'te', $context->get_locale(), 'get_locale() should reflect changes to site locale' );
 		$this->assertEquals( 'te', $context->get_locale( 'site' ), 'get_locale() with "site" type should reflect changes to site locale' );

@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Conversion_Reporting;
 
 use Google\Site_Kit\Context;
@@ -43,6 +41,24 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 	protected $analytics_4;
 	/** @var Context */
 	protected $context;
+	/**
+	 * Default providers list.
+	 *
+	 * @var array
+	 */
+	private static $default_providers = array();
+
+	public static function set_up_before_class() {
+		parent::set_up_before_class();
+
+		self::$default_providers = Conversion_Tracking::$providers;
+	}
+
+	public static function tear_down_after_class() {
+		parent::tear_down_after_class();
+
+		Conversion_Tracking::$providers = self::$default_providers;
+	}
 
 	public function set_up() {
 		parent::set_up();
@@ -72,7 +88,10 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 		$provider->register();
 
-		$this->assertTrue( has_action( 'load-toplevel_page_googlesitekit-dashboard' ) );
+		$this->assertTrue(
+			has_action( 'load-toplevel_page_googlesitekit-dashboard' ),
+			'Loading the Site Kit dashboard should initialize conversion reporting synchronization.'
+		);
 	}
 
 	public function test_cron_callback__does_not_update_site_goals_when_no_active_providers() {
@@ -299,6 +318,6 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 
 	public function tear_down() {
 		parent::tear_down();
-		Conversion_Tracking::$providers = array();
+		Conversion_Tracking::$providers = self::$default_providers;
 	}
 }

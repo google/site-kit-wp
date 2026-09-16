@@ -22,10 +22,20 @@
 import { combineStores } from 'googlesitekit-data';
 import baseModuleStore from './base';
 import { MODULES_READER_REVENUE_MANAGER } from './constants';
+import ctas from './ctas';
 import publications from './publications';
 import service from './service';
+import termsOfService from './terms-of-service';
+import userSettings from './user-settings';
 
-const store = combineStores( baseModuleStore, publications, service );
+const store = combineStores(
+	baseModuleStore,
+	ctas,
+	publications,
+	service,
+	termsOfService,
+	userSettings
+);
 
 export const initialState = store.initialState;
 export const actions = store.actions;

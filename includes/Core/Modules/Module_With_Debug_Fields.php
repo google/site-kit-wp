@@ -13,7 +13,7 @@
 namespace Google\Site_Kit\Core\Modules;
 
 /**
- * Interface Module_With_Debug_Fields
+ * Interface Module_With_Debug_Fields.
  *
  * @since 1.5.0
  */

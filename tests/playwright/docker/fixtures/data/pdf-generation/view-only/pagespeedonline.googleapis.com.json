@@ -1,0 +1,80 @@
+{
+	"/pagespeedonline/v5/runPagespeed?url=http%3A%2F%2Flocalhost%3A9002%2F&locale=en&strategy=desktop": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"lighthouseResult": {
+					"audits": {
+						"largest-contentful-paint": {
+							"displayValue": "0.8 s",
+							"score": 0.98
+						},
+						"cumulative-layout-shift": {
+							"displayValue": "0.01",
+							"score": 1
+						},
+						"total-blocking-time": {
+							"displayValue": "0 ms",
+							"score": 1
+						}
+					}
+				},
+				"loadingExperience": {
+					"metrics": {
+						"LARGEST_CONTENTFUL_PAINT_MS": {
+							"percentile": 900,
+							"category": "FAST"
+						},
+						"CUMULATIVE_LAYOUT_SHIFT_SCORE": {
+							"percentile": 3,
+							"category": "FAST"
+						},
+						"INTERACTION_TO_NEXT_PAINT": {
+							"percentile": 90,
+							"category": "FAST"
+						}
+					}
+				}
+			}
+		}
+	},
+	"/pagespeedonline/v5/runPagespeed?url=http%3A%2F%2Flocalhost%3A9002%2F&locale=en&strategy=mobile": {
+		"GET": {
+			"status": 200,
+			"body": {
+				"lighthouseResult": {
+					"audits": {
+						"largest-contentful-paint": {
+							"displayValue": "2.4 s",
+							"score": 0.72
+						},
+						"cumulative-layout-shift": {
+							"displayValue": "0.09",
+							"score": 0.88
+						},
+						"total-blocking-time": {
+							"displayValue": "210 ms",
+							"score": 0.66
+						}
+					}
+				},
+				"loadingExperience": {
+					"metrics": {
+						"LARGEST_CONTENTFUL_PAINT_MS": {
+							"percentile": 2400,
+							"category": "AVERAGE"
+						},
+						"CUMULATIVE_LAYOUT_SHIFT_SCORE": {
+							"percentile": 9,
+							"category": "FAST"
+						},
+						"INTERACTION_TO_NEXT_PAINT": {
+							"percentile": 220,
+							"category": "AVERAGE"
+						}
+					}
+				}
+			}
+		}
+	}
+}

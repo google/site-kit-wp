@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
@@ -83,7 +80,10 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 
 		$this->controller->register();
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'User survey REST routes should be registered.'
+		);
 	}
 
 	public function test_register_routes() {
@@ -99,34 +99,59 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 				'survey-timeouts',
 				'survey',
 			),
-			array_keys( $routes )
+			array_keys( $routes ),
+			'User survey controller should register all survey REST routes.'
 		);
 
 		$args = $routes['survey-event']->get_args();
-		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
-		$this->assertTrue( is_callable( $args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
+		$this->assertEquals( 'core/user/data/survey-event', $routes['survey-event']->get_uri(), 'Survey event route should use the expected URI.' );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'], 'Survey event route should accept write requests.' );
+		$this->assertTrue(
+			is_callable( $args[0]['callback'] ),
+			'Survey event route should have a callable request handler.'
+		);
+		$this->assertTrue(
+			is_callable( $args[0]['permission_callback'] ),
+			'Survey event route should have a callable permission check.'
+		);
+		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ), 'Survey event route should define request arguments.' );
 
 		$args = $routes['survey-trigger']->get_args();
-		$this->assertEquals( 'core/user/data/survey-trigger', $routes['survey-trigger']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'] );
-		$this->assertTrue( is_callable( $args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
-		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ) );
+		$this->assertEquals( 'core/user/data/survey-trigger', $routes['survey-trigger']->get_uri(), 'Survey trigger route should use the expected URI.' );
+		$this->assertEquals( \WP_REST_Server::CREATABLE, $args[0]['methods'], 'Survey trigger route should accept write requests.' );
+		$this->assertTrue(
+			is_callable( $args[0]['callback'] ),
+			'Survey trigger route should have a callable request handler.'
+		);
+		$this->assertTrue(
+			is_callable( $args[0]['permission_callback'] ),
+			'Survey trigger route should have a callable permission check.'
+		);
+		$this->assertTrue( is_array( $args[0]['args'] ) && ! empty( $args[0]['args'] ), 'Survey trigger route should define request arguments.' );
 
 		$args = $routes['survey-timeouts']->get_args();
-		$this->assertEquals( 'core/user/data/survey-timeouts', $routes['survey-timeouts']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
-		$this->assertTrue( is_callable( $args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+		$this->assertEquals( 'core/user/data/survey-timeouts', $routes['survey-timeouts']->get_uri(), 'Survey timeouts route should use the expected URI.' );
+		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'], 'Survey timeouts route should accept read requests.' );
+		$this->assertTrue(
+			is_callable( $args[0]['callback'] ),
+			'Survey timeouts route should have a callable request handler.'
+		);
+		$this->assertTrue(
+			is_callable( $args[0]['permission_callback'] ),
+			'Survey timeouts route should have a callable permission check.'
+		);
 
 		$args = $routes['survey']->get_args();
-		$this->assertEquals( 'core/user/data/survey', $routes['survey']->get_uri() );
-		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'] );
-		$this->assertTrue( is_callable( $args[0]['callback'] ) );
-		$this->assertTrue( is_callable( $args[0]['permission_callback'] ) );
+		$this->assertEquals( 'core/user/data/survey', $routes['survey']->get_uri(), 'Current survey route should use the expected URI.' );
+		$this->assertEquals( \WP_REST_Server::READABLE, $args[0]['methods'], 'Current survey route should accept read requests.' );
+		$this->assertTrue(
+			is_callable( $args[0]['callback'] ),
+			'Current survey route should have a callable request handler.'
+		);
+		$this->assertTrue(
+			is_callable( $args[0]['permission_callback'] ),
+			'Current survey route should have a callable permission check.'
+		);
 	}
 
 	protected function send_request( $endpoint, $data ) {
@@ -168,12 +193,15 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
 
-		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
-		$this->assertEqualSets( $survey, $this->queue->front() );
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data(), 'Successful survey trigger request should return a success response.' );
+		$this->assertEqualSets( $survey, $this->queue->front(), 'Triggered survey should be added to the front of the survey queue.' );
 	}
 
 	public function test_survey_trigger__adds_timeout_when_ttl_provided() {
-		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+		$this->assertEmpty(
+			$this->timeouts->get_survey_timeouts(),
+			'Survey trigger should not have a timeout before it is requested.'
+		);
 
 		$this->subscribe_to_wp_http_requests(
 			function () {},
@@ -191,12 +219,15 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		);
 		$response = $this->send_request( 'survey-trigger', $data );
 
-		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
-		$this->assertContains( 'test_trigger', $this->timeouts->get_survey_timeouts() );
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data(), 'Survey trigger with a lifetime should return a success response.' );
+		$this->assertContains( 'test_trigger', $this->timeouts->get_survey_timeouts(), 'Survey trigger should be timed out when the request includes a lifetime.' );
 	}
 
 	public function test_survey_trigger__no_timeout_when_no_ttl_provided() {
-		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+		$this->assertEmpty(
+			$this->timeouts->get_survey_timeouts(),
+			'Survey trigger should not have a timeout before it is requested.'
+		);
 
 		$this->subscribe_to_wp_http_requests(
 			function () {},
@@ -210,8 +241,11 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 		$response = $this->send_request( 'survey-trigger', array( 'triggerID' => 'test_trigger' ) );
 
-		$this->assertEqualSets( array( 'success' => true ), $response->get_data() );
-		$this->assertEmpty( $this->timeouts->get_survey_timeouts() );
+		$this->assertEqualSets( array( 'success' => true ), $response->get_data(), 'Survey trigger without a lifetime should return a success response.' );
+		$this->assertEmpty(
+			$this->timeouts->get_survey_timeouts(),
+			'Survey trigger should remain available when the request omits a lifetime.'
+		);
 	}
 
 	public function data_survey_event_response_codes() {
@@ -250,7 +284,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertEquals(
 			array( Survey_Timeouts::GLOBAL_KEY ),
-			$this->timeouts->get_survey_timeouts()
+			$this->timeouts->get_survey_timeouts(),
+			'Showing a survey should establish the global survey timeout.'
 		);
 	}
 
@@ -324,7 +359,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertEquals(
 			array( $survey1, $survey3 ),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Completing a survey should remove only its matching session from the queue.'
 		);
 	}
 
@@ -342,7 +378,8 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 
 		$this->assertEqualSets(
 			array( 'bar' ),
-			$response->get_data()
+			$response->get_data(),
+			'Survey timeouts response should contain only unexpired triggers.'
 		);
 	}
 
@@ -379,6 +416,6 @@ class REST_User_Surveys_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/survey' );
 		$response = rest_get_server()->dispatch( $request )->get_data();
 
-		$this->assertEqualSets( array( 'survey' => $survey ), $response );
+		$this->assertEqualSets( array( 'survey' => $survey ), $response, 'Current survey response should contain the first queued survey.' );
 	}
 }

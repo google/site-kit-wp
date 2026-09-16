@@ -55,6 +55,7 @@ describe( 'all modules', () => {
 			( component ) =>
 				component !== 'audience-segmentation' &&
 				component !== 'site-goals' &&
+				component !== 'traffic-overview' &&
 				component !== 'custom-dimensions-report-options'
 		);
 

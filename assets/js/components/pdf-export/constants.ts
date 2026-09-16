@@ -16,7 +16,102 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import {
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
+
 export const PDF_DOWNLOAD_PANEL_OPENED_KEY = 'pdfDownloadPanelOpened';
+
+/**
+ * Class name on the header button that opens the PDF download panel.
+ *
+ * The introduction overlay anchors to this button, so the class is shared
+ * rather than repeated as a selector string.
+ *
+ * @since 1.187.0
+ */
+export const PDF_DOWNLOAD_BUTTON_CLASS = 'googlesitekit-pdf-download__button';
+
+export const PDF_INTRODUCTION_OVERLAY_NOTIFICATION =
+	'pdf_introduction_overlay_notification';
+
+/**
+ * The dashboard asks for the survey written for a user who never opened the
+ * PDF export panel.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since 1.186.0
+ */
+export const PDF_EXPORT_NOT_USED_SURVEY_TRIGGER_ID = 'view_pdf_export_not_used';
+
+/**
+ * The dashboard asks for the survey written for a user who opened the PDF
+ * export panel and never downloaded a report.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since 1.186.0
+ */
+export const PDF_EXPORT_INCOMPLETE_SURVEY_TRIGGER_ID =
+	'view_pdf_export_incomplete';
+
+/**
+ * The dashboard asks for the survey written for a user who downloaded at
+ * least one PDF report.
+ *
+ * The survey service holds that survey under this ID.
+ *
+ * @since 1.186.0
+ */
+export const PDF_EXPORT_DOWNLOADED_SURVEY_TRIGGER_ID =
+	'view_pdf_export_downloaded';
+
+/**
+ * The PDF export panel saves this slug to WordPress user meta the first time
+ * a user opens the panel.
+ *
+ * The `core/pdf` data store holds the export state in memory, and this slug
+ * persists. The survey trigger component reads the slug to pick a survey.
+ *
+ * @since 1.186.0
+ */
+export const PDF_EXPORT_PANEL_OPENED_ITEM_SLUG = 'pdf-export-panel-opened';
+
+/**
+ * The export saves this slug to WordPress user meta the first time a user
+ * downloads a PDF report.
+ *
+ * @since 1.186.0
+ */
+export const PDF_EXPORT_DOWNLOADED_ITEM_SLUG = 'pdf-export-downloaded';
+
+/**
+ * Main-dashboard context slugs in the dashboard's own order.
+ *
+ * The PDF report renders one section per selected context, in this order.
+ * Both the selection panel and the export orchestrator read this list, so the
+ * exported section order always follows the dashboard's order, whatever order
+ * the user selected the widgets in.
+ *
+ * @since 1.184.0
+ */
+export const ORDERED_MAIN_DASHBOARD_CONTEXTS = [
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_MAIN_DASHBOARD_SITE_GOALS,
+	CONTEXT_MAIN_DASHBOARD_CONTENT,
+	CONTEXT_MAIN_DASHBOARD_SPEED,
+	CONTEXT_MAIN_DASHBOARD_MONETIZATION,
+];
 
 export interface PDFSectionWidget {
 	slug: string;

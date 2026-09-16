@@ -33,25 +33,25 @@ class ScopesTest extends TestCase {
 
 	public function is_satisfied_by_provider() {
 		return array(
-			// adsense.readonly satisfies itself
+			// adsense.readonly satisfies itself.
 			array(
 				'https://www.googleapis.com/auth/adsense.readonly',
 				array( 'https://www.googleapis.com/auth/adsense.readonly' ),
 				true,
 			),
-			// adsense scope satisfies adsense.readonly
+			// adsense scope satisfies adsense.readonly.
 			array(
 				'https://www.googleapis.com/auth/adsense.readonly',
 				array( 'https://www.googleapis.com/auth/adsense' ),
 				true,
 			),
-			// adsense.readonly does not satisfy adsense
+			// adsense.readonly does not satisfy adsense.
 			array(
 				'https://www.googleapis.com/auth/adsense',
 				array( 'https://www.googleapis.com/auth/adsense.readonly' ),
 				false,
 			),
-			// analytics.readonly only satisfied by analytics and analytics.edit
+			// analytics.readonly only satisfied by analytics and analytics.edit.
 			array(
 				'https://www.googleapis.com/auth/analytics.readonly',
 				array(
@@ -74,7 +74,7 @@ class ScopesTest extends TestCase {
 				),
 				false,
 			),
-			// tagmanager.readonly is satisfied by tagmanager.edit.containers
+			// tagmanager.readonly is satisfied by tagmanager.edit.containers.
 			array(
 				'https://www.googleapis.com/auth/tagmanager.readonly',
 				array(
@@ -82,7 +82,7 @@ class ScopesTest extends TestCase {
 				),
 				true,
 			),
-			// tagmanager.edit.containers is not satisfied by tagmanager.readonly
+			// tagmanager.edit.containers is not satisfied by tagmanager.readonly.
 			array(
 				'https://www.googleapis.com/auth/tagmanager.edit.containers',
 				array(
@@ -90,7 +90,7 @@ class ScopesTest extends TestCase {
 				),
 				false,
 			),
-			// webmasters.readonly is satisfied by webmasters
+			// webmasters.readonly is satisfied by webmasters.
 			array(
 				'https://www.googleapis.com/auth/webmasters.readonly',
 				array(
@@ -98,7 +98,7 @@ class ScopesTest extends TestCase {
 				),
 				true,
 			),
-			// webmasters is not satisfied by webmasters.readonly
+			// webmasters is not satisfied by webmasters.readonly.
 			array(
 				'https://www.googleapis.com/auth/webmasters',
 				array(
@@ -160,7 +160,7 @@ class ScopesTest extends TestCase {
 					'https://www.googleapis.com/auth/webmasters',
 					'https://www.googleapis.com/auth/analytics',
 				),
-				false, // missing analytics.edit
+				false, // missing analytics.edit.
 			),
 		);
 	}

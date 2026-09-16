@@ -25,6 +25,7 @@ use WP_CLI;
  */
 class Authentication_CLI_Command extends CLI_Command {
 
+	// phpcs:disable PHPCS.Commenting.DocCommentFullStop.MissingFullStop -- Command examples should not include trailing punctuation.
 	/**
 	 * Disconnects a user from Site Kit, removing their relevant user options and revoking their token.
 	 *
@@ -45,6 +46,7 @@ class Authentication_CLI_Command extends CLI_Command {
 	 * @param array $assoc_args Array of associated arguments.
 	 */
 	public function disconnect( $args, $assoc_args ) {
+		// phpcs:enable PHPCS.Commenting.DocCommentFullStop.MissingFullStop
 		$user_id = absint( $assoc_args['id'] );
 
 		$authentication = new Authentication(

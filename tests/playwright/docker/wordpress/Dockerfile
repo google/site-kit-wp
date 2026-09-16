@@ -22,5 +22,14 @@ RUN set -eux; \
     curl -fsSL "https://downloads.wordpress.org/theme/twentynineteen.latest-stable.zip" -o /tmp/twentynineteen.zip; \
     unzip -o /tmp/twentynineteen.zip -d /usr/src/wordpress/wp-content/themes/; \
     rm /tmp/twentynineteen.zip; \
+    curl -fsSL "https://downloads.wordpress.org/plugin/woocommerce.4.4.4.zip" -o /tmp/woocommerce.zip; \
+    unzip -o /tmp/woocommerce.zip -d /usr/src/wordpress/wp-content/plugins/; \
+    rm /tmp/woocommerce.zip; \
+    curl -fsSL "https://downloads.wordpress.org/plugin/wpforms-lite.1.8.3.1.zip" -o /tmp/wpforms-lite.zip; \
+    unzip -o /tmp/wpforms-lite.zip -d /usr/src/wordpress/wp-content/plugins/; \
+    rm /tmp/wpforms-lite.zip; \
+    curl -fsSL "https://downloads.wordpress.org/plugin/amp.2.4.3.zip" -o /tmp/amp.zip; \
+    unzip -o /tmp/amp.zip -d /usr/src/wordpress/wp-content/plugins/; \
+    rm /tmp/amp.zip; \
     curl -fsSL "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar" -o /usr/local/bin/wp; \
     chmod +x /usr/local/bin/wp

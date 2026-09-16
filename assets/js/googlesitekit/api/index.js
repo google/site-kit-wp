@@ -25,6 +25,7 @@ import invariant from 'invariant';
  * WordPress dependencies
  */
 import apiFetch from '@wordpress/api-fetch';
+import { __ } from '@wordpress/i18n';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -109,6 +110,7 @@ export function dispatchAPIError( error ) {
  * Makes a request to a WP REST API Site Kit endpoint.
  *
  * @since 1.5.0
+ * @since 1.187.0 Normalizes falsy errors returned by the API fetch implementation.
  * @private
  *
  * @param {string}  type                The data to access. One of 'core' or 'modules'.
@@ -185,6 +187,14 @@ export async function siteKitRequest(
 			throw error;
 		}
 
+		// A failed request can reject with a falsy value, e.g. when an error
+		// response has a body that parses to `false` or `0`. Substitute a
+		// generic error so that the error is always set and reported.
+		error = error || {
+			code: 'unknown_error',
+			message: __( 'An unknown error occurred.', 'google-site-kit' ),
+		};
+
 		if ( error?.data?.cacheTTL ) {
 			await setItem( cacheKey, error, {
 				ttl: error.data.cacheTTL,
@@ -218,14 +228,14 @@ export async function siteKitRequest(
  *
  * @since 1.5.0
  *
- * @param {string}  type             The data to access. One of 'core' or 'modules'.
- * @param {string}  identifier       The data identifier, eg. a module slug like `search-console`.
- * @param {string}  datapoint        The endpoint to request data from.
- * @param {Object}  data             Data (query params) to send with the request.
- * @param {Object}  options          Extra options for this request.
- * @param {number}  options.cacheTTL The oldest cache data to use, in seconds.
- * @param {boolean} options.useCache Enable or disable caching for this request only.
- * @param {Object}  options.signal   Abort the fetch request.
+ * @param {string}  type               The data to access. One of 'core' or 'modules'.
+ * @param {string}  identifier         The data identifier, eg. a module slug like `search-console`.
+ * @param {string}  datapoint          The endpoint to request data from.
+ * @param {Object}  data               Data (query params) to send with the request.
+ * @param {Object}  options            Extra options for this request.
+ * @param {number}  [options.cacheTTL] Optional. The oldest cache data to use, in seconds.
+ * @param {boolean} [options.useCache] Optional. Enable or disable caching for this request only.
+ * @param {Object}  [options.signal]   Optional. Abort the fetch request.
  * @return {Promise} A promise for the `fetch` request.
  */
 export function get(

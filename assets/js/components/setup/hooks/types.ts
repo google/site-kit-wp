@@ -26,7 +26,7 @@ import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
  *
  * Requires `category` and `action`; `label` and `value` remain optional.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type ModuleSetupGATrackingEventArgs = Required<
 	Pick< GATrackingEventArgs, 'category' | 'action' >
@@ -36,7 +36,7 @@ export type ModuleSetupGATrackingEventArgs = Required<
 /**
  * Options for the `useFinishSetup` hook.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export interface UseFinishSetupOptions {
 	gaTrackingEventArgs?: ModuleSetupGATrackingEventArgs;
@@ -45,7 +45,7 @@ export interface UseFinishSetupOptions {
 /**
  * Options for the `useModuleSetupTracking` hook.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export interface UseModuleSetupTrackingOptions {
 	viewGATrackingEventArgs?: ModuleSetupGATrackingEventArgs;
@@ -58,14 +58,14 @@ export interface UseModuleSetupTrackingOptions {
  * Clears the module setup cache, tracks a completion event, and redirects
  * the user to the Site Kit dashboard or an optional custom URL.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export type FinishSetupCallback = ( redirectURL?: string ) => Promise< void >;
 
 /**
  * Return value of the `useModuleSetupTracking` hook.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  */
 export interface UseModuleSetupTrackingReturn {
 	trackCancel: () => Promise< void >;

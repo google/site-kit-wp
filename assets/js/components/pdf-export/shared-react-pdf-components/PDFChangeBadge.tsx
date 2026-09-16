@@ -19,48 +19,59 @@
 /**
  * External dependencies
  */
-import { View } from '@react-pdf/renderer';
 import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
-import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFTypography from './PDFTypography';
+import type { PDFChangeType } from '@/js/components/pdf-export/types';
+import PDFBadge from './PDFBadge';
 
-const styles = createPDFStyles( {
-	badge: {
-		borderRadius: 100,
-		paddingVertical: 4,
-		paddingHorizontal: 8,
+/**
+ * Background and text color for each change direction.
+ *
+ * Exported so callers that tint a larger area by the same direction (e.g. a
+ * metric tile's own background) can match the badge exactly, rather than
+ * picking colors independently.
+ */
+export const PDF_CHANGE_COLORS: Record<
+	PDFChangeType,
+	{ backgroundColor: string; color: string }
+> = {
+	positive: {
+		backgroundColor: PDF_COLORS.GREEN_G_50,
+		color: PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER,
 	},
-} );
+	negative: {
+		backgroundColor: PDF_COLORS.UTILITY_ERROR_CONTAINER,
+		color: PDF_COLORS.UTILITY_ON_ERROR_CONTAINER,
+	},
+	noChange: {
+		backgroundColor: PDF_COLORS.SURFACES_INVERSE_ON_SURFACE,
+		color: PDF_COLORS.NEUTRAL_N_700,
+	},
+};
 
 export interface PDFChangeBadgeProps {
 	/** The formatted, signed change string, e.g. "+5.1%". */
 	change: string;
-	/** Whether the change is negative. Controls the badge colors. */
-	isNegative?: boolean;
+	/** The change's type (`'positive'`, `'negative'`, or `'noChange'`). Controls the badge colors. */
+	changeType?: PDFChangeType;
 }
 
 const PDFChangeBadge: FC< PDFChangeBadgeProps > = ( {
 	change,
-	isNegative = false,
+	changeType = 'positive',
 } ) => {
-	const backgroundColor = isNegative
-		? PDF_COLORS.UTILITY_ERROR_CONTAINER
-		: PDF_COLORS.GREEN_G_50;
-	const color = isNegative
-		? PDF_COLORS.UTILITY_ON_ERROR_CONTAINER
-		: PDF_COLORS.UTILITY_ON_SUCCESS_CONTAINER;
+	const { backgroundColor, color } = PDF_CHANGE_COLORS[ changeType ];
 
 	return (
-		<View style={ [ styles.badge, { backgroundColor } ] }>
-			<PDFTypography type="label" size="small" style={ { color } }>
-				{ change }
-			</PDFTypography>
-		</View>
+		<PDFBadge
+			label={ change }
+			backgroundColor={ backgroundColor }
+			color={ color }
+		/>
 	);
 };
 

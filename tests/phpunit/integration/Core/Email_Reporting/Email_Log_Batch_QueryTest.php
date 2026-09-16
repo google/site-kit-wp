@@ -106,35 +106,51 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertSame( Email_Log::STATUS_SENT, get_post_status( $post_id ), 'Update status should persist new post status.' );
 	}
 
-	public function test_get_latest_batch_error__all_logs_failed() {
-		$batch_id   = 'batch-error';
-		$test_error = '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}';
+	public function test_get_latest_batch_error__returns_requesting_users_own_error() {
+		$batch_id     = 'batch-error';
+		$first_admin  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$second_admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$first_error  = '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}';
+		$second_error = '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}';
 
-		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $test_error );
-		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $first_error, $first_admin );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $second_error, $second_admin );
 
-		$latest_error = $this->query->get_latest_batch_error();
-		$this->assertSame( $test_error, $latest_error, 'Latest batch error should return the most recent error details.' );
+		$this->assertSame( $first_error, $this->query->get_latest_batch_error( $first_admin ), 'Latest batch error should return the requesting user\'s own error details.' );
+		$this->assertSame( $second_error, $this->query->get_latest_batch_error( $second_admin ), 'Latest batch error should be independent of other users\' logs.' );
 	}
 
-	public function test_get_latest_batch_error__not_all_logs_failed() {
-		$batch_id = 'batch-no-error';
+	public function test_get_latest_batch_error__independent_of_post_id_order() {
+		$batch_id     = 'batch-error-order';
+		$first_admin  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$second_admin = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$second_error = '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}';
 
-		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
-		$this->create_log_post( $batch_id, Email_Log::STATUS_SENT, 1 );
+		// Create the second admin's log first, so its post ID is lower than the first admin's.
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, $second_error, $second_admin );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_SENT, 1, '', $first_admin );
 
-		$latest_error = $this->query->get_latest_batch_error();
-		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have failed.' );
+		$this->assertSame( $second_error, $this->query->get_latest_batch_error( $second_admin ), 'Latest batch error should resolve by post_author, independent of post ID order.' );
+		$this->assertNull( $this->query->get_latest_batch_error( $first_admin ), 'A user whose own log did not fail should get no error, even though another user\'s log failed.' );
 	}
 
-	public function test_get_latest_batch_error__number_of_attempts_not_exceeded() {
+	public function test_get_latest_batch_error__returns_null_when_user_has_no_log() {
+		$batch_id  = 'batch-no-log-for-user';
+		$log_owner = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		$other_id  = self::factory()->user->create( array( 'role' => 'administrator' ) );
+
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 3, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}', $log_owner );
+
+		$this->assertNull( $this->query->get_latest_batch_error( $other_id ), 'A user with no log in the batch should get null, not another user\'s error.' );
+	}
+
+	public function test_get_latest_batch_error__returns_null_when_not_failed_after_max_attempts() {
 		$batch_id = 'batch-attempts-not-exceeded';
+		$admin_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
 
-		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}' );
-		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 1, '{"errors":{"some_other_error_code":["other_message"]},"error_data":[]}' );
+		$this->create_log_post( $batch_id, Email_Log::STATUS_FAILED, 2, '{"errors":{"test_error_code":["test_error_message"]},"error_data":[]}', $admin_id );
 
-		$latest_error = $this->query->get_latest_batch_error();
-		$this->assertNull( $latest_error, 'Latest batch error should return null if not all logs have exceeded max attempts.' );
+		$this->assertNull( $this->query->get_latest_batch_error( $admin_id ), 'Latest batch error should return null if the user\'s log has not exceeded max attempts.' );
 	}
 
 	public function test_has_stale_pending_logs_returns_true_when_scheduled_log_is_older_than_a_day() {
@@ -202,12 +218,13 @@ class Email_Log_Batch_QueryTest extends TestCase {
 		$this->assertSame( 1, $counts['failed'], 'Expected failed count to match completed batch.' );
 	}
 
-	private function create_log_post( $batch_id, $status, $attempts, $errors = '' ) {
+	private function create_log_post( $batch_id, $status, $attempts, $errors = '', $author_id = 0 ) {
 		$post_id = $this->factory()->post->create(
 			array(
 				'post_type'   => Email_Log::POST_TYPE,
 				'post_status' => $status,
 				'post_title'  => 'Log ' . uniqid(),
+				'post_author' => $author_id,
 			)
 		);
 

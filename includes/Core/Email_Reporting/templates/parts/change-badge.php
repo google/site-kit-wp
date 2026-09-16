@@ -7,8 +7,12 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  *
- * @var float|null $value The percentage change value.
+ * @var float|null $value The percentage change value; renders nothing when `null`.
  */
+
+if ( null === $value ) {
+	return;
+}
 
 $change_value = (float) $value;
 $color        = '#1F4C04';

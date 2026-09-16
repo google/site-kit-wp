@@ -1,0 +1,113 @@
+/**
+ * `useKeyCodesInside` hook tests.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * WordPress dependencies
+ */
+import { useRef } from '@wordpress/element';
+import { ENTER, ESCAPE, SPACE, TAB } from '@wordpress/keycodes';
+
+/**
+ * Internal dependencies
+ */
+import { fireEvent, render } from '@tests/js/test-utils';
+import { useKeyCodesInside } from './useKeyCodesInside';
+
+interface TestComponentProps {
+	onKeyCodeInside: () => void;
+	/** Set to `false` to return early, leaving the ref unattached. */
+	renderTarget?: boolean;
+}
+
+function TestComponent( {
+	onKeyCodeInside,
+	renderTarget = true,
+}: TestComponentProps ) {
+	const wrapperRef = useRef< HTMLDivElement >( null );
+	useKeyCodesInside( [ ESCAPE, TAB ], wrapperRef, onKeyCodeInside );
+
+	if ( ! renderTarget ) {
+		return null;
+	}
+
+	return <div ref={ wrapperRef }>TestComponent</div>;
+}
+
+describe( 'useKeyCodesInside', () => {
+	let getByText: ReturnType< typeof render >[ 'getByText' ];
+	let testComponent: Element;
+	const onKeyCodeInsideMock = jest.fn();
+	beforeEach( () => {
+		onKeyCodeInsideMock.mockReset();
+		getByText = render(
+			<TestComponent onKeyCodeInside={ onKeyCodeInsideMock } />
+		).getByText;
+		testComponent = getByText( 'TestComponent' );
+	} );
+
+	it( 'should call handler when included keycode is pressed inside ref', () => {
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+
+		fireEvent.keyDown( testComponent, { keyCode: ESCAPE } );
+
+		expect( onKeyCodeInsideMock ).toHaveBeenCalled();
+
+		fireEvent.keyDown( testComponent, { keyCode: TAB } );
+
+		expect( onKeyCodeInsideMock ).toHaveBeenCalledTimes( 2 );
+	} );
+
+	it( 'should not call handler when included keycode is pressed outside ref', () => {
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+
+		fireEvent.keyDown( document, { keyCode: ESCAPE } );
+		fireEvent.keyDown( document, { keyCode: TAB } );
+
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not call handler when another keycode is pressed inside or outside ref', () => {
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+
+		// We only listen for `ESCAPE` and `TAB`, so these should never trigger.
+		fireEvent.keyDown( testComponent, { keyCode: ENTER } );
+		fireEvent.keyDown( testComponent, { keyCode: SPACE } );
+		fireEvent.keyDown( document, { keyCode: ENTER } );
+		fireEvent.keyDown( document, { keyCode: SPACE } );
+
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should not call handler or throw when the ref has no current element', () => {
+		// Components that call the hook and then return early never attach the
+		// ref, but the key listener is registered as soon as the hook runs.
+		render(
+			<TestComponent
+				onKeyCodeInside={ onKeyCodeInsideMock }
+				renderTarget={ false }
+			/>
+		);
+
+		expect( () => {
+			fireEvent.keyDown( document, { keyCode: ESCAPE } );
+			fireEvent.keyDown( document, { keyCode: TAB } );
+		} ).not.toThrow();
+
+		expect( onKeyCodeInsideMock ).not.toHaveBeenCalled();
+	} );
+} );

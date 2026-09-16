@@ -14,23 +14,32 @@ The widgets system follows a hierarchical structure:
 ### Three-Tier Hierarchy
 
 #### 1. Contexts
-Contexts represent major dashboard sections or pages:
+Contexts represent major dashboard sections or pages. Their slugs are defined as
+constants in `assets/js/googlesitekit/widgets/default-contexts.js`:
 
 ```javascript
-// Widget contexts are the highest level containers
-const contextSlug = 'googlesitekit-dashboard-view-only';
-const contextSlug = 'googlesitekit-dashboard';
-const contextSlug = 'googlesitekit-module-page-analytics-4';
+// Widget contexts are the highest level containers.
+import {
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,    // 'mainDashboardTraffic'
+	CONTEXT_MAIN_DASHBOARD_KEY_METRICS, // 'mainDashboardKeyMetrics'
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,   // 'entityDashboardTraffic'
+} from '@/js/googlesitekit/widgets/default-contexts';
 ```
 
+Note: a context slug (e.g. `mainDashboardTraffic`) is distinct from the WordPress
+admin page slug `googlesitekit-dashboard` used with `CORE_SITE`'s `getAdminURL`.
+
 #### 2. Areas
-Areas are subsections within contexts that group related widgets:
+Areas are subsections within contexts that group related widgets. Their slugs are
+defined as constants in `assets/js/googlesitekit/widgets/default-areas.js`:
 
 ```javascript
-// Widget areas group widgets within a context
-const areaSlug = 'googlesitekit-dashboard-header';
-const areaSlug = 'googlesitekit-dashboard-traffic';
-const areaSlug = 'googlesitekit-dashboard-monetization';
+// Widget areas group widgets within a context.
+import {
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,    // 'mainDashboardTrafficPrimary'
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY, // 'mainDashboardKeyMetricsPrimary'
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY, // 'mainDashboardMonetizationPrimary'
+} from '@/js/googlesitekit/widgets/default-areas';
 ```
 
 #### 3. Widgets
@@ -45,113 +54,158 @@ const widgetSlug = 'searchConsolePopularKeywords';
 
 ## Widget Registration System
 
+Each module registers its widgets via an exported `registerWidgets( widgets )`
+function (e.g. `assets/js/modules/analytics-4/widgets/index.js`). The `widgets`
+argument is a registry-bound API object created by `createWidgets()`
+(`assets/js/googlesitekit/widgets/index.js`) which exposes `registerWidget`,
+`registerWidgetArea`, `assignWidget`, `assignWidgetArea`, the
+`WIDGET_WIDTHS`/`WIDGET_AREA_STYLES` constants, and the `isWidget*Registered`
+checks. These API methods proxy to the underlying `core/widgets`
+(`CORE_WIDGETS`) datastore actions documented below; prefer the `widgets` API
+when registering from a module.
+
 ### Widget Registration
 
-Widgets are registered using the `registerWidget` action:
+Widgets are registered with the `registerWidget` API method (or the
+`CORE_WIDGETS` action of the same name). The third argument optionally assigns
+the widget to one or more areas in a single call:
 
 ```javascript
-import { useDispatch } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+} from '@/js/hooks/useBreakpoint';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 
-...
-
-const { registerWidget } = useDispatch( CORE_WIDGETS );
-
-registerWidget(
-    'analyticsPopularContent',  // Widget slug
-    {
-        Component: PopularContentWidget,        // React component
-        priority: 10,                          // Display priority (lower = higher priority)
-        width: WIDGET_WIDTHS.HALF,            // Width: QUARTER, HALF, FULL
-        wrapWidget: true,                     // Whether to wrap with Widget component
-        modules: ['analytics-4'],             // Associated modules
-        isActive: ( select ) => {             // Activation callback
-            return select( MODULES_ANALYTICS_4 ).isConnected();
-        },
-        isPreloaded: ( select ) => {          // Preload callback (requires isActive)
-            return select( MODULES_ANALYTICS_4 ).hasDataForLastMonth();
-        },
-        hideOnBreakpoints: [                  // Hide on specific screen sizes
-            BREAKPOINT_SMALL,
-            BREAKPOINT_TABLET
-        ]
-    }
-);
+export function registerWidgets( widgets ) {
+	widgets.registerWidget(
+		'analyticsPopularContent', // Widget slug
+		{
+			Component: PopularContentWidget,        // React component
+			priority: 10,                           // Display priority (lower = higher priority)
+			width: widgets.WIDGET_WIDTHS.HALF,      // Width: QUARTER, HALF, FULL
+			wrapWidget: true,                       // Whether to wrap with Widget component
+			modules: [ 'analytics-4' ],             // Associated modules
+			isActive: ( select ) => {               // Activation callback
+				return select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+			},
+			isPreloaded: ( select ) => {            // Preload callback (requires isActive)
+				return select( MODULES_ANALYTICS_4 ).isGatheringData() === false;
+			},
+			hideOnBreakpoints: [                    // Hide on specific screen sizes
+				BREAKPOINT_SMALL,
+				BREAKPOINT_TABLET,
+			],
+		},
+		[ AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY ]     // Optional: area slug(s) to assign to
+	);
+}
 ```
+
+The same registration can be done directly against the datastore action via
+`useDispatch( CORE_WIDGETS ).registerWidget( slug, settings )`, but the datastore
+action does not accept the area-assignment argument (use `assignWidget`
+separately for that). `registerWidget` also accepts an optional `pdf` setting
+(`{ Component, getData, label }`) for widgets that support PDF export.
 
 ### Widget Area Registration
 
-Widget areas are registered using the `registerWidgetArea` action:
+Widget areas are registered with the `registerWidgetArea` API method (or the
+`CORE_WIDGETS` action of the same name). The third argument optionally assigns
+the area to one or more contexts in a single call:
 
 ```javascript
-import { useDispatch } from 'googlesitekit-data';
-import { CORE_WIDGETS, WIDGET_AREA_STYLES } from '../../googlesitekit/widgets/datastore/constants';
+import { WIDGET_AREA_STYLES } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 
-...
-
-const { registerWidgetArea } = useDispatch( CORE_WIDGETS );
-
-registerWidgetArea(
-    'googlesitekit-dashboard-traffic',  // Area slug
-    {
-        title: 'Traffic insights',         // Area title
-        subtitle: 'How your users found your site',  // Subtitle
-        Icon: TrafficIcon,                 // Icon component
-        style: WIDGET_AREA_STYLES.BOXES,  // BOXES or COMPOSITE
-        priority: 20,                     // Display priority
-        hasNewBadge: false,               // Show "new" badge
-        CTA: TrafficCTAComponent,         // Call-to-action component
-        Footer: TrafficFooterComponent,   // Footer component
-        filterActiveWidgets: ( select, widgets ) => {  // Custom filtering
-            return widgets.filter( widget => 
-                select( MODULES_ANALYTICS_4 ).hasDataForWidget( widget.slug )
-            );
-        }
-    }
-);
+export function registerWidgets( widgets ) {
+	widgets.registerWidgetArea(
+		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY, // Area slug
+		{
+			title: 'Traffic insights',        // Area title (optional)
+			subtitle: 'How your users found your site', // Subtitle (optional)
+			Icon: TrafficIcon,                // Icon component (optional)
+			style: WIDGET_AREA_STYLES.BOXES,  // BOXES or COMPOSITE
+			priority: 20,                     // Display priority
+			hasNewBadge: false,               // Show "new" badge
+			CTA: TrafficCTAComponent,         // Call-to-action component (optional)
+			Footer: TrafficFooterComponent,   // Footer component (optional)
+			pdfTitle: 'Traffic',              // Short title for PDF export (optional)
+			filterActiveWidgets: ( select, areaWidgets ) => { // Custom filtering
+				return areaWidgets.filter( ( widget ) =>
+					select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+				);
+			},
+		},
+		[ CONTEXT_MAIN_DASHBOARD_TRAFFIC ]    // Optional: context slug(s) to assign to
+	);
+}
 ```
+
+As with `registerWidget`, the underlying `CORE_WIDGETS` action does not accept
+the context-assignment argument; use `assignWidgetArea` separately when
+dispatching the datastore action directly.
 
 ### Widget Assignment to Areas
 
-Widgets are assigned to areas using the `assignWidget` action:
+Widgets are assigned to areas using the `assignWidget` action (or the `widgets`
+API method of the same name). Area slugs are the `AREA_*` constants from
+`default-areas.js`:
 
 ```javascript
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import {
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+} from '@/js/googlesitekit/widgets/default-areas';
 
 ...
 
 const { assignWidget } = useDispatch( CORE_WIDGETS );
 
 // Assign single widget to single area
-assignWidget( 'analyticsPopularContent', 'googlesitekit-dashboard-traffic' );
+assignWidget( 'analyticsPopularContent', AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY );
 
 // Assign single widget to multiple areas
 assignWidget( 'analyticsPopularContent', [
-    'googlesitekit-dashboard-traffic',
-    'googlesitekit-module-analytics-4-main'
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
 ] );
 ```
 
 ### Widget Area Assignment to Contexts
 
-Areas are assigned to contexts using the `assignWidgetArea` action:
+Areas are assigned to contexts using the `assignWidgetArea` action (or the
+`widgets` API method of the same name). Context slugs are the `CONTEXT_*`
+constants from `default-contexts.js`:
 
 ```javascript
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_WIDGETS } from '../../googlesitekit/widgets/datastore/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
+import {
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
+} from '@/js/googlesitekit/widgets/default-contexts';
 
 ...
 
 const { assignWidgetArea } = useDispatch( CORE_WIDGETS );
 
 // Assign area to context
-assignWidgetArea( 'googlesitekit-dashboard-traffic', 'googlesitekit-dashboard' );
+assignWidgetArea(
+	AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC
+);
 
 // Assign area to multiple contexts
-assignWidgetArea( 'googlesitekit-dashboard-traffic', [
-    'googlesitekit-dashboard',
-    'googlesitekit-dashboard-view-only'
+assignWidgetArea( AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY, [
+	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
+	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 ] );
 ```
 
@@ -187,45 +241,51 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import { useSelect, useInViewSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../../datastore/constants';
-import whenActive from '../../../../util/when-active';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function PopularContentWidget( props ) {
     const { Widget } = props;  // Widget wrapper component passed automatically
-    
-    // Use data selectors to fetch required data
+
+    // Use data selectors to fetch required data.
     const reportOptions = {
         startDate: '2024-01-01',
         endDate: '2024-01-31',
-        metrics: ['screenPageViews'],
-        dimensions: ['pagePath']
+        metrics: [ 'screenPageViews' ],
+        dimensions: [ 'pagePath' ],
     };
-    
+
     const report = useInViewSelect(
         ( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
         [ reportOptions ]
     );
-    
-    const loading = useSelect( ( select ) =>
-        ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [ reportOptions ] )
+
+    const loading = useSelect(
+        ( select ) =>
+            ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+                'getReport',
+                [ reportOptions ]
+            )
     );
-    
+
     const error = useSelect( ( select ) =>
-        select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [ reportOptions ] )
+        select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+            reportOptions,
+        ] )
     );
-    
-    // Handle loading state
+
+    // Handle loading state.
     if ( loading ) {
         return <Widget>Loading...</Widget>;
     }
-    
-    // Handle error state
+
+    // Handle error state.
     if ( error ) {
-        return <Widget>Error: {error.message}</Widget>;
+        return <Widget>Error: { error.message }</Widget>;
     }
-    
-    // Render widget content
+
+    // Render widget content.
     return (
         <Widget>
             <h3>Popular Content</h3>
@@ -238,12 +298,19 @@ PopularContentWidget.propTypes = {
     Widget: PropTypes.elementType.isRequired,  // Always required
 };
 
-// Use whenActive HOC to show fallback when module is not connected
+// Use whenActive HOC to show fallback when module is not connected.
 export default whenActive( {
     moduleName: 'analytics-4',
     FallbackComponent: ConnectGA4CTATileWidget,
 } )( PopularContentWidget );
 ```
+
+> **TypeScript:** Newer widget components are written in TypeScript (e.g. the
+> base `Widget` wrapper is `Widget.tsx`, which types its props with an
+> `interface` and an `FC<WidgetProps>` signature). In a `.tsx` widget, replace
+> the `propTypes` block with a props `interface`. See
+> [`component-conventions.md`](./component-conventions.md) for the authoritative
+> TypeScript component conventions.
 
 ### Widget Props Interface
 
@@ -260,16 +327,17 @@ const widgetProps = {
     WidgetRecoverableModules: WidgetRecoverableModules,  // Recovery component
 };
 
-// These components are automatically scoped to the widget slug
+// These components are automatically scoped to the widget slug.
 function MyWidget( { Widget, WidgetReportZero, WidgetReportError, widgetSlug } ) {
-    const hasData = useSelect( ( select ) => 
-        select( MODULES_ANALYTICS_4 ).hasDataForWidget( widgetSlug )
+    const report = useInViewSelect(
+        ( select ) => select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
+        [ reportOptions ]
     );
-    
-    if ( !hasData ) {
+
+    if ( ! report?.rows?.length ) {
         return <WidgetReportZero />;  // Automatically includes widgetSlug
     }
-    
+
     return (
         <Widget>  {/* Automatically includes widgetSlug */}
             Widget content
@@ -278,13 +346,16 @@ function MyWidget( { Widget, WidgetReportZero, WidgetReportError, widgetSlug } )
 }
 ```
 
+The list of scoped props is defined by `getWidgetComponentProps` in
+`assets/js/googlesitekit/widgets/util/get-widget-component-props.js`.
+
 ### Higher-Order Components for Widgets
 
 #### withWidgetComponentProps
 Automatically injects widget props:
 
 ```javascript
-import { withWidgetComponentProps } from '../../../googlesitekit/widgets/util';
+import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 
 function BasicWidget( { Widget, WidgetReportError, widgetSlug } ) {
     return <Widget>Content for {widgetSlug}</Widget>;
@@ -297,8 +368,8 @@ export default withWidgetComponentProps( 'analyticsPopularContent' )( BasicWidge
 Shows widget only when associated module is active:
 
 ```javascript
-import whenActive from '../../../util/when-active';
-import ConnectAnalyticsCTA from './ConnectAnalyticsCTA';
+import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
 
 function AnalyticsWidget( props ) {
     // Only rendered when Analytics is connected
@@ -307,7 +378,7 @@ function AnalyticsWidget( props ) {
 
 export default whenActive( {
     moduleName: 'analytics-4',
-    FallbackComponent: ConnectAnalyticsCTA,  // Shown when module inactive
+    FallbackComponent: ConnectGA4CTATileWidget,  // Shown when module inactive
 } )( AnalyticsWidget );
 ```
 
@@ -318,17 +389,19 @@ export default whenActive( {
 The `WidgetContextRenderer` renders an entire context with its areas and widgets:
 
 ```javascript
-import WidgetContextRenderer from '../../../googlesitekit/widgets/components/WidgetContextRenderer';
+import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
+import { ANCHOR_ID_TRAFFIC } from '@/js/googlesitekit/constants';
+import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
 
 function DashboardPage() {
     return (
         <div className="googlesitekit-dashboard">
             <WidgetContextRenderer
-                id="googlesitekit-dashboard-main"
-                slug="googlesitekit-dashboard"
+                id={ ANCHOR_ID_TRAFFIC }                   // DOM id / scroll anchor
+                slug={ CONTEXT_MAIN_DASHBOARD_TRAFFIC }     // Context slug
                 className="dashboard-context"
-                Header={ DashboardHeader }     // Optional header component
-                Footer={ DashboardFooter }     // Optional footer component
+                Header={ DashboardHeader }                 // Optional header component
+                Footer={ DashboardFooter }                 // Optional footer component
             />
         </div>
     );
@@ -340,13 +413,15 @@ function DashboardPage() {
 The `WidgetAreaRenderer` renders a specific widget area:
 
 ```javascript
-import WidgetAreaRenderer from '../../../googlesitekit/widgets/components/WidgetAreaRenderer';
+import WidgetAreaRenderer from '@/js/googlesitekit/widgets/components/WidgetAreaRenderer';
+import { ANCHOR_ID_TRAFFIC } from '@/js/googlesitekit/constants';
+import { AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 
 function CustomArea() {
     return (
         <WidgetAreaRenderer
-            slug="googlesitekit-dashboard-traffic"
-            contextID="googlesitekit-dashboard-main"
+            slug={ AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY }
+            contextID={ ANCHOR_ID_TRAFFIC }
         />
     );
 }
@@ -357,7 +432,7 @@ function CustomArea() {
 Individual widgets are rendered through the `WidgetRenderer`:
 
 ```javascript
-import WidgetRenderer from '../../../googlesitekit/widgets/components/WidgetRenderer';
+import WidgetRenderer from '@/js/googlesitekit/widgets/components/WidgetRenderer';
 
 function SingleWidget() {
     return (
@@ -376,24 +451,30 @@ function SingleWidget() {
 Widgets can be conditionally active based on various factors:
 
 ```javascript
-// Widget registration with activation logic
-registerWidget( 'analyticsPopularContent', {
+// Widget registration with activation logic.
+widgets.registerWidget( 'analyticsPopularContent', {
     Component: PopularContentWidget,
     isActive: ( select ) => {
-        const isConnected = select( MODULES_ANALYTICS_4 ).isConnected();
-        const hasData = select( MODULES_ANALYTICS_4 ).hasReportData();
-        return isConnected && hasData;
+        const isConnected =
+            select( CORE_MODULES ).isModuleConnected( 'analytics-4' );
+        const isGathering = select( MODULES_ANALYTICS_4 ).isGatheringData();
+        return isConnected && isGathering === false;
     },
     isPreloaded: ( select ) => {
-        // Preload widget data even if not active (requires isActive)
-        return select( MODULES_ANALYTICS_4 ).shouldPreloadData();
-    }
+        // Keep the widget in the rendered (but hidden) tree so its data is
+        // fetched even when it is not active. Requires isActive.
+        return select( MODULES_ANALYTICS_4 ).isGatheringData() === true;
+    },
 } );
 ```
 
 ### Widget State Actions
 
-Widgets can set temporary state for special rendering:
+`setWidgetState` / `unsetWidgetState` are marked `@private` and are used
+internally (e.g. via the `useWidgetStateEffect` hook in
+`assets/js/googlesitekit/widgets/hooks/`) by components a widget can return,
+rather than being called directly from feature code. Widgets can set temporary
+state for special rendering:
 
 ```javascript
 import { useDispatch } from 'googlesitekit-data';
@@ -533,18 +614,21 @@ registerWidget( 'detailedAnalytics', {
 Filter widgets by associated modules:
 
 ```javascript
-// Get widgets for specific modules only
+// Get widgets for specific modules only.
 const analyticsWidgets = useSelect( ( select ) =>
-    select( CORE_WIDGETS ).getWidgets( 'dashboard-main', {
-        modules: ['analytics-4', 'search-console']
+    select( CORE_WIDGETS ).getWidgets( AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY, {
+        modules: [ 'analytics-4', 'search-console' ],
     } )
 );
 
-// Check if area is active for specific modules
+// Check if area is active for specific modules.
 const isActiveForModules = useSelect( ( select ) =>
-    select( CORE_WIDGETS ).isWidgetAreaActive( 'dashboard-main', {
-        modules: ['analytics-4']
-    } )
+    select( CORE_WIDGETS ).isWidgetAreaActive(
+        AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+        {
+            modules: [ 'analytics-4' ],
+        }
+    )
 );
 ```
 
@@ -553,16 +637,15 @@ const isActiveForModules = useSelect( ( select ) =>
 Areas can implement custom widget filtering:
 
 ```javascript
-registerWidgetArea( 'conditional-area', {
+widgets.registerWidgetArea( AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY, {
     title: 'Conditional Widgets',
-    filterActiveWidgets: ( select, widgets ) => {
-        // Only show widgets that have recent data
-        return widgets.filter( widget => {
-            const hasRecentData = select( `modules/${widget.modules[0]}` )
-                .hasDataForLastWeek();
-            return hasRecentData;
-        } );
-    }
+    // `filterActiveWidgets` receives the registry `select` and the area's
+    // already-resolved active widgets, and returns the subset to keep.
+    filterActiveWidgets: ( select, areaWidgets ) => {
+        return areaWidgets.filter( ( widget ) =>
+            select( CORE_WIDGETS ).isWidgetActive( widget.slug )
+        );
+    },
 } );
 ```
 

@@ -62,8 +62,8 @@ interface PopularPageRow {
 	title: string;
 	/** Page path shown under the title, shortened with an ellipsis when longer than `MAX_URL_LENGTH`. */
 	displayURL: string;
-	/** URL of the page's entity dashboard, which the title links to. */
-	detailsURL: string;
+	/** The link the title points to: the Analytics report for an administrator, the entity dashboard for a view-only user. */
+	titleURL: string;
 	/** The page's own public URL, which the URL line links to. */
 	permaLink: string;
 	/** Pageviews count, as the report's raw string. */
@@ -87,7 +87,7 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 
 	const tableRows: PopularPageRow[] = rows.map( ( row, index ) => {
 		const url = row.dimensionValues?.[ 0 ]?.value ?? '';
-		const { detailsURL = '', permaLink = '' } = links[ url ] ?? {};
+		const { titleURL = '', permaLink = '' } = links[ url ] ?? {};
 		const displayURL =
 			url.length > MAX_URL_LENGTH
 				? `${ url.slice( 0, MAX_URL_LENGTH ) }…`
@@ -97,7 +97,7 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			rank: index + 1,
 			title: titles[ url ] ?? '',
 			displayURL,
-			detailsURL,
+			titleURL,
 			permaLink,
 			pageviews: row.metricValues?.[ 0 ]?.value ?? '',
 			sessions: row.metricValues?.[ 1 ]?.value ?? '',
@@ -112,15 +112,18 @@ const ModulePopularPagesWidgetGA4PDF: FC< PDFWidgetComponentProps > = ( {
 			// 42.8% of the 1084px row, about 464px.
 			width: '42.8%',
 			// Shows the page title above its URL, with the row rank to the
-			// left. The title links to the page's Site Kit entity dashboard,
-			// and the URL links to the page itself.
+			// left. The title links to the page's Analytics report for an
+			// administrator and to its entity dashboard for a view-only user,
+			// like the dashboard widget, and the URL links to the page itself.
+			// When a row has no link, `PDFLink` renders the line as plain text
+			// instead of as a link.
 			cell: ( row ) => (
 				<View style={ styles.titleCell }>
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
 					<View style={ styles.titleGroup }>
-						<PDFLink href={ row.detailsURL }>{ row.title }</PDFLink>
+						<PDFLink href={ row.titleURL }>{ row.title }</PDFLink>
 						<PDFLink href={ row.permaLink } size="small">
 							{ row.displayURL }
 						</PDFLink>

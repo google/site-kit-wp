@@ -78,9 +78,9 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 
 	const documentationURL = useSelect(
 		( select: Select ) =>
-			// TODO: Replace the `site-goals` slug once the Site Goals
-			// documentation page is available.
-			select( CORE_SITE ).getDocumentationLinkURL( 'site-goals' ),
+			select( CORE_SITE ).getDocumentationLinkURL(
+				'site-goals-gathering-breakdown-data'
+			),
 		[]
 	);
 

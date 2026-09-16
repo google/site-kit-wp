@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4;
 
 use Google\Site_Kit\Context;
@@ -33,16 +31,28 @@ class Advanced_TrackingTest extends TestCase {
 
 		$advanced_tracking->register();
 
-		$this->assertTrue( has_action( 'googlesitekit_analytics-4_init_tag' ) );
-		$this->assertTrue( has_action( 'googlesitekit_analytics-4_init_tag_amp' ) );
+		$this->assertTrue(
+			has_action( 'googlesitekit_analytics-4_init_tag' ),
+			'Web Analytics tag initialization should register advanced tracking.'
+		);
+		$this->assertTrue(
+			has_action( 'googlesitekit_analytics-4_init_tag_amp' ),
+			'AMP Analytics tag initialization should register advanced tracking.'
+		);
 
 		remove_all_actions( 'wp_footer' );
 		do_action( 'googlesitekit_analytics-4_init_tag', 'G-1A2BCD345E' );
-		$this->assertTrue( has_action( 'wp_footer' ) );
+		$this->assertTrue(
+			has_action( 'wp_footer' ),
+			'Web Analytics tag initialization should schedule the advanced tracking script.'
+		);
 
 		remove_all_filters( 'googlesitekit_amp_gtag_opt' );
 		do_action( 'googlesitekit_analytics-4_init_tag_amp', 'G-1A2BCD345E' );
-		$this->assertTrue( has_filter( 'googlesitekit_amp_gtag_opt' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_amp_gtag_opt' ),
+			'AMP Analytics tag initialization should extend the AMP gtag configuration.'
+		);
 	}
 
 	public function test_register_event_lists_fixed() {
@@ -56,7 +66,7 @@ class Advanced_TrackingTest extends TestCase {
 		// Triggers Advanced_Tracking::register_event_lists() call.
 		do_action( 'googlesitekit_analytics-4_init_tag', 'G-1A2BCD345E' );
 
-		$this->assertCount( 2, $event_list->get_events() ); // The class adds 2 events during registration.
+		$this->assertCount( 2, $event_list->get_events(), 'Fixed event list should register its two link events during initialization.' );
 	}
 
 	public function test_register_event_lists_dynamic() {
@@ -82,8 +92,14 @@ class Advanced_TrackingTest extends TestCase {
 		// Reset original query after change above and check whether the 'the_post' hook from
 		// Dynamic_Blog_Post_Link_Event_List was added.
 		$wp_query = $orig_wp_query;
-		$this->assertTrue( has_action( 'the_post' ) );
-		$this->assertEmpty( $event_list->get_events() ); // Events will only be added on 'the_post'.
+		$this->assertTrue(
+			has_action( 'the_post' ),
+			'Dynamic event list should wait for each post before registering link events.'
+		);
+		$this->assertEmpty(
+			$event_list->get_events(),
+			'Dynamic event list should not contain events before a post is processed.'
+		);
 	}
 
 	public function test_compile_events() {
@@ -102,7 +118,7 @@ class Advanced_TrackingTest extends TestCase {
 		apply_filters( 'googlesitekit_amp_gtag_opt', array() );
 
 		// The class adds 2 unique events, registered 3 times.
-		$this->assertCount( 2, $advanced_tracking->get_events() );
+		$this->assertCount( 2, $advanced_tracking->get_events(), 'Compiled advanced tracking events should be deduplicated across event lists.' );
 	}
 
 	private function add_action_register_event_list( $event_list ) {

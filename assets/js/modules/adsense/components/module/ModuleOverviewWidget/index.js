@@ -25,7 +25,6 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -44,6 +43,13 @@ import whenActive from '@/js/util/when-active';
 import Footer from './Footer';
 import Header from './Header';
 import Overview from './Overview';
+import {
+	MODULE_OVERVIEW_METRICS,
+	getCurrentRangeArgs,
+	getCurrentRangeChartArgs,
+	getPreviousRangeArgs,
+	getPreviousRangeChartArgs,
+} from './reportOptions';
 import Stats from './Stats';
 import StatusMigration from './StatusMigration';
 
@@ -69,36 +75,16 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		legacyAccountStatuses.includes( accountStatus ) ||
 		siteStatus === SITE_STATUS_ADDED;
 
-	const { startDate, endDate, compareStartDate, compareEndDate } = useSelect(
-		( select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				compare: true,
-			} )
+	const dates = useSelect( ( select ) =>
+		select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} )
 	);
 
-	const currentRangeArgs = {
-		metrics: Object.keys( ModuleOverviewWidget.metrics ),
-		startDate,
-		endDate,
-		reportID: 'adsense_module-overview-widget_widget_currentRangeArgs',
-	};
-	const previousRangeArgs = {
-		metrics: Object.keys( ModuleOverviewWidget.metrics ),
-		startDate: compareStartDate,
-		endDate: compareEndDate,
-		reportID: 'adsense_module-overview-widget_widget_previousRangeArgs',
-	};
-	const currentRangeChartArgs = {
-		...currentRangeArgs,
-		dimensions: [ 'DATE' ],
-		reportID: 'adsense_module-overview-widget_widget_currentRangeChartArgs',
-	};
-	const previousRangeChartArgs = {
-		...previousRangeArgs,
-		dimensions: [ 'DATE' ],
-		reportID:
-			'adsense_module-overview-widget_widget_previousRangeChartArgs',
-	};
+	const currentRangeArgs = getCurrentRangeArgs( dates );
+	const previousRangeArgs = getPreviousRangeArgs( dates );
+	const currentRangeChartArgs = getCurrentRangeChartArgs( dates );
+	const previousRangeChartArgs = getPreviousRangeChartArgs( dates );
 
 	const currentRangeData = useInViewSelect(
 		( select ) => select( MODULES_ADSENSE ).getReport( currentRangeArgs ),
@@ -179,7 +165,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 		<Widget Header={ Header } Footer={ Footer } noPadding>
 			{ ! viewOnlyDashboard && legacyStatus && <StatusMigration /> }
 			<Overview
-				metrics={ ModuleOverviewWidget.metrics }
+				metrics={ MODULE_OVERVIEW_METRICS }
 				currentRangeData={ currentRangeData }
 				previousRangeData={ previousRangeData }
 				selectedStats={ selectedStats }
@@ -187,7 +173,7 @@ function ModuleOverviewWidget( { Widget, WidgetReportError } ) {
 			/>
 
 			<Stats
-				metrics={ ModuleOverviewWidget.metrics }
+				metrics={ MODULE_OVERVIEW_METRICS }
 				currentRangeData={ currentRangeChartData }
 				previousRangeData={ previousRangeChartData }
 				selectedStats={ selectedStats }
@@ -200,13 +186,6 @@ ModuleOverviewWidget.propTypes = {
 	Widget: PropTypes.elementType.isRequired,
 	WidgetReportZero: PropTypes.elementType.isRequired,
 	WidgetReportError: PropTypes.elementType.isRequired,
-};
-
-ModuleOverviewWidget.metrics = {
-	ESTIMATED_EARNINGS: __( 'Earnings', 'google-site-kit' ),
-	PAGE_VIEWS_RPM: __( 'Page RPM', 'google-site-kit' ),
-	IMPRESSIONS: __( 'Impressions', 'google-site-kit' ),
-	PAGE_VIEWS_CTR: __( 'Page CTR', 'google-site-kit' ),
 };
 
 export default whenActive( {

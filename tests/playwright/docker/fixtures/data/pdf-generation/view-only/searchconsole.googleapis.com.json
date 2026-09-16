@@ -1,0 +1,74 @@
+{
+	"/webmasters/v3/sites/http%3A%2F%2Flocalhost%3A9002/searchAnalytics/query": {
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"date\"],\"enddate\":\"2025-12-31\",\"rowlimit\":1000,\"startdate\":\"2025-11-06\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [ "2025-11-06" ],
+						"clicks": 21,
+						"impressions": 1035,
+						"ctr": 0.0203,
+						"position": 16.8
+					},
+					{
+						"keys": [ "2025-11-20" ],
+						"clicks": 18,
+						"impressions": 1471,
+						"ctr": 0.0122,
+						"position": 17.9
+					},
+					{
+						"keys": [ "2025-12-04" ],
+						"clicks": 26,
+						"impressions": 1620,
+						"ctr": 0.016,
+						"position": 14.2
+					},
+					{
+						"keys": [ "2025-12-18" ],
+						"clicks": 31,
+						"impressions": 1780,
+						"ctr": 0.0174,
+						"position": 12.6
+					},
+					{
+						"keys": [ "2025-12-31" ],
+						"clicks": 29,
+						"impressions": 1699,
+						"ctr": 0.0171,
+						"position": 13.1
+					}
+				]
+			}
+		},
+		"POST::{\"datastate\":\"all\",\"dimensions\":[\"query\"],\"enddate\":\"2025-12-31\",\"rowlimit\":\"10\",\"startdate\":\"2025-12-04\"}": {
+			"status": 200,
+			"body": {
+				"rows": [
+					{
+						"keys": [ "site kit" ],
+						"clicks": 120,
+						"impressions": 3400,
+						"ctr": 0.0353,
+						"position": 3.2
+					},
+					{
+						"keys": [ "google analytics wordpress" ],
+						"clicks": 84,
+						"impressions": 2900,
+						"ctr": 0.029,
+						"position": 5.7
+					},
+					{
+						"keys": [ "search console plugin" ],
+						"clicks": 61,
+						"impressions": 2100,
+						"ctr": 0.029,
+						"position": 6.9
+					}
+				]
+			}
+		}
+	}
+}

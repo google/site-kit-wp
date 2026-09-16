@@ -34,9 +34,8 @@ import {
 	DATA_SRC_FIELD,
 	DATA_SRC_LAB,
 	DATA_SRC_RECOMMENDATIONS,
-	STRATEGY_MOBILE,
+	MODULES_PAGESPEED_INSIGHTS,
 	UI_DATA_SOURCE,
-	UI_STRATEGY,
 } from '@/js/modules/pagespeed-insights/datastore/constants';
 
 export default function Content( {
@@ -49,9 +48,9 @@ export default function Content( {
 		select( CORE_SITE ).getCurrentReferenceURL()
 	);
 
-	const strategy =
-		useSelect( ( select ) => select( CORE_UI ).getValue( UI_STRATEGY ) ) ||
-		STRATEGY_MOBILE;
+	const strategy = useSelect( ( select ) =>
+		select( MODULES_PAGESPEED_INSIGHTS ).getActiveTab()
+	);
 
 	const dataSrc =
 		useSelect( ( select ) =>

@@ -83,6 +83,45 @@ describe( 'BreakdownErrorNotice', () => {
 		expect( getByText( /insufficient permissions/ ) ).toBeInTheDocument();
 	} );
 
+	it( 'renders the retry CTA in its in-progress state and blocks re-clicks while a retry runs', () => {
+		const { getByRole } = render(
+			<BreakdownErrorNotice
+				error={ permissionsError }
+				permissionsTitle="Individual form tracking setup failed"
+				onRetry={ () => {} }
+				onDismiss={ () => {} }
+				ctaInProgress
+			/>,
+			{ registry }
+		);
+
+		const retryButton = getByRole( 'button', { name: 'Retry' } );
+
+		expect( retryButton ).toHaveClass(
+			'googlesitekit-notice__cta--spinner__running'
+		);
+		expect( retryButton ).toBeDisabled();
+	} );
+
+	it( 'renders the retry CTA in its normal state when no retry is running', () => {
+		const { getByRole } = render(
+			<BreakdownErrorNotice
+				error={ permissionsError }
+				permissionsTitle="Individual form tracking setup failed"
+				onRetry={ () => {} }
+				onDismiss={ () => {} }
+			/>,
+			{ registry }
+		);
+
+		const retryButton = getByRole( 'button', { name: 'Retry' } );
+
+		expect( retryButton ).not.toHaveClass(
+			'googlesitekit-notice__cta--spinner__running'
+		);
+		expect( retryButton ).toBeEnabled();
+	} );
+
 	it( 'invokes onRetry and onDismiss from their respective buttons', () => {
 		const onRetry = jest.fn();
 		const onDismiss = jest.fn();

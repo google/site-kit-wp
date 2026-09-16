@@ -72,10 +72,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: DashboardPopularKeywordsWidgetPDF,
 				getData: getPopularKeywordsPDFData,
-				label: __(
-					'Top search queries for your site',
-					'google-site-kit'
-				),
+				label: __( 'Top search queries', 'google-site-kit' ),
 			},
 		},
 		[
@@ -96,7 +93,7 @@ export function registerWidgets( widgets ) {
 			pdf: {
 				Component: SearchFunnelWidgetGA4PDF,
 				getData: getSearchFunnelPDFData,
-				label: __( 'Search traffic over time', 'google-site-kit' ),
+				label: __( 'Search traffic', 'google-site-kit' ),
 			},
 		},
 		[

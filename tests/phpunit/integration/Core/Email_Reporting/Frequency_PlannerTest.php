@@ -74,11 +74,13 @@ class Frequency_PlannerTest extends TestCase {
 
 	public function weekly_provider() {
 		return array(
-			'sunday start, mid-week'                 => array( 0, '2024-05-15 15:00:00', '2024-05-19 09:00:00', 'Should reach upcoming Sunday at the trigger hour.' ),
-			'monday start, morning of same day'      => array( 1, '2024-05-13 09:30:00', '2024-05-20 09:00:00', 'Once the day has started, schedule for the following week.' ),
-			'monday start, afternoon of same day'    => array( 1, '2024-05-13 12:00:00', '2024-05-20 09:00:00', 'Past the target weekday should roll to next week.' ),
-			'wednesday start from sunday'            => array( 3, '2024-05-12 18:00:00', '2024-05-15 09:00:00', 'Start on Wednesday from Sunday evening.' ),
-			'saturday start from saturday afternoon' => array( 6, '2024-05-11 16:45:00', '2024-05-18 09:00:00', 'Hit Saturday afternoon and schedule for following Saturday.' ),
+			'sunday start, mid-week'                     => array( 0, '2024-05-15 15:00:00', '2024-05-19 09:00:00', 'Should reach upcoming Sunday at the trigger hour.' ),
+			'monday start, morning of same day'          => array( 1, '2024-05-13 09:30:00', '2024-05-20 09:00:00', 'Once the day has started, schedule for the following week.' ),
+			'monday start, afternoon of same day'        => array( 1, '2024-05-13 12:00:00', '2024-05-20 09:00:00', 'Past the target weekday should roll to next week.' ),
+			'wednesday start from sunday'                => array( 3, '2024-05-12 18:00:00', '2024-05-15 09:00:00', 'Start on Wednesday from Sunday evening.' ),
+			'saturday start from saturday afternoon'     => array( 6, '2024-05-11 16:45:00', '2024-05-18 09:00:00', 'Hit Saturday afternoon and schedule for following Saturday.' ),
+			'monday start, before trigger hour same day' => array( 1, '2024-05-13 07:30:00', '2024-05-13 09:00:00', 'Before the trigger hour on the target weekday, the report should run later today, not the following week.' ),
+			'sunday start, before trigger hour same day' => array( 0, '2024-05-12 00:00:00', '2024-05-12 09:00:00', 'At midnight on the target weekday, the report should run later today rather than jumping a full week ahead.' ),
 		);
 	}
 

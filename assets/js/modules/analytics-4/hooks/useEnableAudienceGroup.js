@@ -51,6 +51,8 @@ export default function useEnableAudienceGroup( {
 
 	const [ apiErrors, setApiErrors ] = useState( [] );
 	const [ failedAudiences, setFailedAudiences ] = useState( [] );
+	const [ isAudienceCreationError, setIsAudienceCreationError ] =
+		useState( false );
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const hasAnalytics4EditScope = useSelect( ( select ) =>
@@ -102,10 +104,17 @@ export default function useEnableAudienceGroup( {
 
 		setAutoSubmit( false );
 
-		const { error, failedSiteKitAudienceSlugs } =
-			( await enableAudienceGroup( failedAudiences ) ) || {};
+		const {
+			error,
+			failedSiteKitAudienceSlugs,
+			isAudienceCreationError: isCreationError,
+		} = ( await enableAudienceGroup( failedAudiences ) ) || {};
 
-		return { error, failedSiteKitAudienceSlugs };
+		return {
+			error,
+			failedSiteKitAudienceSlugs,
+			isAudienceCreationError: isCreationError,
+		};
 	}, [
 		enableAudienceGroup,
 		failedAudiences,
@@ -119,8 +128,12 @@ export default function useEnableAudienceGroup( {
 	const onEnableGroups = useCallback( async () => {
 		setIsSaving( true );
 
-		const { error, needsScope, failedSiteKitAudienceSlugs } =
-			await maybeEnableAudienceGroup();
+		const {
+			error,
+			needsScope,
+			failedSiteKitAudienceSlugs,
+			isAudienceCreationError: isCreationError,
+		} = await maybeEnableAudienceGroup();
 
 		if ( needsScope ) {
 			setAutoSubmit( true );
@@ -163,12 +176,15 @@ export default function useEnableAudienceGroup( {
 			if ( error ) {
 				setApiErrors( [ error ] );
 				setFailedAudiences( newArrayIfNotEmpty );
+				setIsAudienceCreationError( !! isCreationError );
 			} else if ( Array.isArray( failedSiteKitAudienceSlugs ) ) {
 				setFailedAudiences( failedSiteKitAudienceSlugs );
 				setApiErrors( newArrayIfNotEmpty );
+				setIsAudienceCreationError( true );
 			} else {
 				setApiErrors( newArrayIfNotEmpty );
 				setFailedAudiences( newArrayIfNotEmpty );
+				setIsAudienceCreationError( false );
 			}
 
 			setIsSaving( false );
@@ -195,6 +211,7 @@ export default function useEnableAudienceGroup( {
 	return {
 		apiErrors,
 		failedAudiences,
+		isAudienceCreationError,
 		isSaving,
 		onEnableGroups,
 	};

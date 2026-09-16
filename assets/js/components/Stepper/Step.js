@@ -27,30 +27,43 @@ import PropTypes from 'prop-types';
 import Typography from '@/js/components/Typography';
 import { STEP_STATUS } from './constants';
 
-export default function Step( { children, title, stepStatus } ) {
+export default function Step( { children, title, stepStatus, variant } ) {
+	const isActive = stepStatus === STEP_STATUS.ACTIVE;
+	const isRail = variant === 'rail';
+
+	const railTitleSize = isActive ? 'large' : 'medium';
+	const railTitleType = isActive ? 'label' : 'body';
+
+	const titleAs = isRail ? 'div' : 'h2';
+	const titleSize = isRail ? railTitleSize : 'medium';
+	const titleType = isRail ? railTitleType : 'title';
+
 	return (
 		<div className="googlesitekit-stepper__step-info">
 			<Typography
-				as="h2"
+				as={ titleAs }
 				className="googlesitekit-stepper__step-title"
-				size="medium"
-				type="title"
+				size={ titleSize }
+				type={ titleType }
 			>
 				{ title }
 			</Typography>
-			<div className="googlesitekit-stepper__step-content-container">
-				{ stepStatus === STEP_STATUS.ACTIVE && (
-					<div className="googlesitekit-stepper__step-content">
-						{ children }
-					</div>
-				) }
-			</div>
+			{ ! isRail && (
+				<div className="googlesitekit-stepper__step-content-container">
+					{ children && stepStatus === STEP_STATUS.ACTIVE && (
+						<div className="googlesitekit-stepper__step-content">
+							{ children }
+						</div>
+					) }
+				</div>
+			) }
 		</div>
 	);
 }
 
 Step.propTypes = {
-	children: PropTypes.node.isRequired,
+	children: PropTypes.node,
 	title: PropTypes.string.isRequired,
 	stepStatus: PropTypes.oneOf( Object.values( STEP_STATUS ) ),
+	variant: PropTypes.string,
 };

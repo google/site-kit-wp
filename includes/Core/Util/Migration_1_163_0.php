@@ -15,7 +15,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
- * Class Migration_1_163_0
+ * Class Migration_1_163_0.
  *
  * @since 1.163.0
  * @access private

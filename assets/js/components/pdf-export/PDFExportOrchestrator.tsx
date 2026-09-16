@@ -31,6 +31,7 @@ import { useCallback, useEffect, useReducer, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import {
+	Registry,
 	Select,
 	useDispatch,
 	useRegistry,
@@ -39,6 +40,7 @@ import {
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
 	PDFReportDates,
@@ -48,12 +50,25 @@ import {
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { getPreviousDate, trackEvent } from '@/js/util';
+import {
+	ORDERED_MAIN_DASHBOARD_CONTEXTS,
+	PDF_EXPORT_DOWNLOADED_ITEM_SLUG,
+} from './constants';
+import extractPDFSectionAnchors from './extract-pdf-section-anchors';
+import measurePDFContentHeight from './measure-pdf-content-height';
 import { registerPDFFonts } from './pdf-fonts-react';
+import { SECTION_ICONS } from './pdf-icons';
+import { PDF_PAGE_BOTTOM_PADDING } from './pdf-scale';
+import { PDF_MEASURE_PAGE_HEIGHT } from './pdf-theme';
 import { getPDFFilename, triggerDownload } from './pdf-utils';
 import { WidgetWithPDF, isActivePDFWidget } from './pdf-widget-eligibility';
-import { SECTION_ICONS } from './section-icons';
 import DashboardReport from './shared-react-pdf-components/DashboardReport';
-import { PDFHeaderSection, PDFReportArea, PDFReportWidget } from './types';
+import {
+	PDFHeaderSection,
+	PDFReportArea,
+	PDFReportWidget,
+	PDFSectionAnchor,
+} from './types';
 
 const STAGE_IDLE = 'IDLE' as const;
 const STAGE_LOADING = 'LOADING' as const;
@@ -77,7 +92,7 @@ const VALID_TRANSITIONS: Record< Stage, readonly Stage[] > = {
 };
 
 const LOADING_TIMEOUT_MS = 45 * 1000;
-const BUILDING_TIMEOUT_MS = 15 * 1000;
+const BUILDING_TIMEOUT_MS = 30 * 1000;
 const COMPLETE_UNMOUNT_DELAY_MS = 2 * 1000;
 const BLOB_REVOKE_DELAY_MS = 30 * 1000;
 // Progress budget reserved for the data-loading stage; BUILDING fills the rest.
@@ -182,9 +197,13 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 	onComplete,
 } ) => {
 	const [ , dispatch ] = useReducer( reducer, initialState );
-	const registry = useRegistry();
+	// `@wordpress/data` types `useRegistry()` as `Function`, which does not
+	// overlap with Site Kit's `Registry` type, so TypeScript needs the
+	// `unknown` step between the two.
+	const registry = useRegistry() as unknown as Registry;
 	const { setStatus, setProgress, setBlob, clearExport, clearCancelRequest } =
 		useDispatch( CORE_PDF );
+	const { dismissItem } = useDispatch( CORE_USER );
 
 	const viewContext = useViewContext();
 	const viewOnly = useViewOnly();
@@ -330,6 +349,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registry,
 				dates,
 				signal,
+				viewOnly,
+				// The same module visibility the area discovery used, so a
+				// loader that composes several modules' tiles (Key Metrics) can
+				// keep only the tiles the user can view, as the dashboard does.
+				viewableModules,
 			} );
 
 			throwIfAborted( signal );
@@ -339,6 +363,25 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				data: result?.data ?? null,
 				chartImages: result?.chartImages,
 			};
+		}
+
+		/**
+		 * Saves the `pdf-export-downloaded` slug to WordPress user meta.
+		 *
+		 * @since 1.186.0
+		 *
+		 * @return {Promise<void>} A promise that resolves after the save.
+		 */
+		async function recordDownload() {
+			const dismissedItems = await registry
+				.resolveSelect( CORE_USER )
+				.getDismissedItems();
+
+			if (
+				! dismissedItems?.includes( PDF_EXPORT_DOWNLOADED_ITEM_SLUG )
+			) {
+				await dismissItem( PDF_EXPORT_DOWNLOADED_ITEM_SLUG );
+			}
 		}
 
 		async function run() {
@@ -359,10 +402,17 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// PDF-aware selector). `selectedContextSlugs`,
 				// `selectedWidgetSlugs`, `dates` and `viewableModules` are
 				// snapshotted once above. Nothing below re-reads reactive state.
-				const { select } = registry as unknown as {
-					// eslint-disable-next-line @typescript-eslint/no-explicit-any -- The registry `select` is loosely typed, so `isActive` predicates can read store selectors without casting.
-					select: ( storeName: string ) => any;
-				};
+				const { resolveSelect } = registry;
+				// `Registry` types `select` as `Function`. Narrow it to
+				// `Select` so `isActivePDFWidget` can take it.
+				const select = registry.select as Select;
+
+				// Wait for modules to load, or `isModuleConnected` returns
+				// `undefined` and `isActivePDFWidget` drops every widget
+				// that needs a module from the report.
+				await resolveSelect( CORE_MODULES ).getModules();
+				throwIfAborted( signal );
+
 				const widgetsSelect = select( CORE_WIDGETS ) as {
 					getWidgetAreas: ( contextSlug: string ) => WidgetArea[];
 					getWidgets: (
@@ -384,7 +434,15 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				// user kept checked, not every widget in the area.
 				const selectedWidgetSlugSet = new Set( selectedWidgetSlugs );
 
-				selectedContextSlugs.forEach( ( contextSlug: string ) => {
+				// Reorder the selected contexts into the dashboard's order, so
+				// the report's sections follow that order, not the stored order.
+				const selectedContextSlugSet = new Set( selectedContextSlugs );
+				const orderedSelectedContextSlugs =
+					ORDERED_MAIN_DASHBOARD_CONTEXTS.filter( ( contextSlug ) =>
+						selectedContextSlugSet.has( contextSlug )
+					);
+
+				orderedSelectedContextSlugs.forEach( ( contextSlug ) => {
 					const contextAreas: WidgetArea[] =
 						widgetsSelect.getWidgetAreas( contextSlug ) || [];
 
@@ -412,7 +470,11 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						discoveredAreas.push( {
 							areaSlug: area.slug,
 							areaContextSlug: contextSlug,
-							areaTitle: area.pdfTitle || area.title || '',
+							areaTitle:
+								area.pdfReportTitle ||
+								area.pdfTitle ||
+								area.title ||
+								'',
 							widgets: pdfWidgets,
 						} );
 					} );
@@ -481,11 +543,38 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 				registerPDFFonts();
 				throwIfAborted( signal );
 
-				const areas: PDFReportArea[] = discoveredAreas.map(
-					( area ) => ( {
-						areaSlug: area.areaSlug,
-						areaTitle: area.areaTitle,
-						widgets: area.widgets.map( ( widget ) => {
+				// Group the discovered areas by dashboard context, so a context
+				// with more than one area renders as one section under one chip,
+				// not a chip per area. Traffic is the case, since it holds the
+				// traffic charts and the audience tiles. The `Map` keeps the
+				// first-seen order.
+				const contextGroups = new Map<
+					string,
+					{ title: string; widgets: WidgetWithPDF[] }
+				>();
+
+				discoveredAreas.forEach( ( area ) => {
+					const group = contextGroups.get( area.areaContextSlug ) ?? {
+						title: '',
+						widgets: [],
+					};
+
+					// The title comes from the first area that has one. The areas
+					// of a PDF context share the same `pdfTitle`, so this is the
+					// context's title.
+					if ( ! group.title && area.areaTitle ) {
+						group.title = area.areaTitle;
+					}
+					group.widgets.push( ...area.widgets );
+					contextGroups.set( area.areaContextSlug, group );
+				} );
+
+				const areas: PDFReportArea[] = Array.from(
+					contextGroups,
+					( [ contextSlug, group ] ) => ( {
+						areaSlug: contextSlug,
+						areaTitle: group.title,
+						widgets: group.widgets.map( ( widget ) => {
 							const entry = loaded.get( widget.slug );
 							return {
 								slug: widget.slug,
@@ -498,13 +587,14 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					} )
 				);
 
-				// One header chip per area, in area order, with the icon looked
-				// up by the area's dashboard context slug.
-				const sections: PDFHeaderSection[] = discoveredAreas.map(
-					( area ) => ( {
-						slug: area.areaSlug,
-						label: area.areaTitle,
-						Icon: SECTION_ICONS[ area.areaContextSlug ],
+				// One header chip per context, in context order, with the icon
+				// from the context slug.
+				const sections: PDFHeaderSection[] = Array.from(
+					contextGroups,
+					( [ contextSlug, group ] ) => ( {
+						slug: contextSlug,
+						label: group.title,
+						Icon: SECTION_ICONS[ contextSlug ],
 					} )
 				);
 
@@ -513,24 +603,77 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					resolvedDateRange
 				);
 
-				const document = (
+				const reportProps = {
+					siteName: reportSiteName,
+					siteURL: referenceSiteURL || '',
+					dashboardURL: dashboardURL || '',
+					dateRange: {
+						startDate: dates.startDate,
+						endDate: dates.endDate,
+					},
+					sections,
+					helpCenterURL:
+						'https://sitekit.withgoogle.com/support/?doc=get-support',
+					privacyPolicyURL: 'https://policies.google.com/privacy',
+					areas,
+					emailReportingSetupURL,
+				};
+
+				/*
+				 * The report renders twice: a discarded measurement pass
+				 * captures the content height and the sections' absolute
+				 * positions via `onRender`, then the final pass renders the
+				 * page bounded to the measured height, with the header chips'
+				 * anchor targets pinned at those positions.
+				 */
+				let measuredHeight = 0;
+				let sectionAnchors: PDFSectionAnchor[] = [];
+				// `@react-pdf` runs `onRender` inside its own render
+				// pipeline, so an error thrown there may never leave
+				// `toBlob()`. Capture it and rethrow it here instead.
+				let measureError: unknown = null;
+
+				await pdf(
 					<DashboardReport
-						siteName={ reportSiteName }
-						siteURL={ referenceSiteURL || '' }
-						dashboardURL={ dashboardURL || '' }
-						dateRange={ {
-							startDate: dates.startDate,
-							endDate: dates.endDate,
+						{ ...reportProps }
+						pageHeight={ PDF_MEASURE_PAGE_HEIGHT }
+						onRender={ ( layout ) => {
+							try {
+								measuredHeight =
+									measurePDFContentHeight( layout );
+								sectionAnchors =
+									extractPDFSectionAnchors( layout );
+							} catch ( error ) {
+								measureError = error;
+							}
 						} }
-						sections={ sections }
-						helpCenterURL="https://sitekit.withgoogle.com/support/?doc=get-support"
-						privacyPolicyURL="https://policies.google.com/privacy"
-						areas={ areas }
-						emailReportingSetupURL={ emailReportingSetupURL }
 					/>
+				).toBlob();
+
+				throwIfAborted( signal );
+
+				if ( measureError ) {
+					throw measureError;
+				}
+
+				if ( measuredHeight <= 0 ) {
+					throw new Error(
+						'The PDF measurement pass produced no layout.'
+					);
+				}
+
+				const finalPageHeight = Math.min(
+					measuredHeight + PDF_PAGE_BOTTOM_PADDING,
+					PDF_MEASURE_PAGE_HEIGHT
 				);
 
-				const blob = await pdf( document ).toBlob();
+				const blob = await pdf(
+					<DashboardReport
+						{ ...reportProps }
+						pageHeight={ finalPageHeight }
+						sectionAnchors={ sectionAnchors }
+					/>
+				).toBlob();
 
 				throwIfAborted( signal );
 
@@ -551,6 +694,12 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 					selectedContextSlugs.join( ',' )
 				);
 				setStatus( 'success' );
+
+				// `recordDownload` saves `pdf-export-downloaded` in WordPress
+				// user meta, and this call sits inside the export's `try`.
+				// Awaiting it would report a finished export as an error
+				// whenever that save failed.
+				recordDownload().catch( () => null );
 
 				completeTimeoutRef.current = setTimeout( () => {
 					completeTimeoutRef.current = null;

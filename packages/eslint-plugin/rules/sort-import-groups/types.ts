@@ -44,6 +44,7 @@ type TSImportDeclaration = ESTree.ImportDeclaration & {
 export type ImportNode = Located<
 	TSImportDeclaration | ESTree.VariableDeclaration
 >;
+export type SourceLiteral = Located< ESTree.Literal >;
 export type AnyNode = Located< ESTree.Node >;
 export type LComment = Located< ESTree.Comment >;
 

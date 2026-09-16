@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\User_Input;
 
 use Google\Site_Kit\Context;
@@ -87,8 +84,14 @@ class REST_User_Input_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'User input settings REST routes should be registered.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'User input settings endpoint should be added to API fetch preload paths.'
+		);
 	}
 
 	public function test_get_answers() {
@@ -128,7 +131,8 @@ class REST_User_Input_ControllerTest extends TestCase {
 					'values' => array(),
 				),
 			),
-			$response->get_data()
+			$response->get_data(),
+			'User input settings response should include the stored site and user answers.'
 		);
 	}
 
@@ -170,7 +174,10 @@ class REST_User_Input_ControllerTest extends TestCase {
 		);
 
 		// Ensure KM setup is not completed yet to test below.
-		$this->assertFalse( $this->key_metrics_setup_completed_by->get() );
+		$this->assertFalse(
+			$this->key_metrics_setup_completed_by->get(),
+			'Key Metrics setup should be incomplete before user input is submitted.'
+		);
 
 		$this->assertEqualSets(
 			array(
@@ -193,16 +200,22 @@ class REST_User_Input_ControllerTest extends TestCase {
 					'answeredBy' => get_current_user_id(),
 				),
 			),
-			rest_get_server()->dispatch( $request )->get_data()
+			rest_get_server()->dispatch( $request )->get_data(),
+			'User input update response should include the submitted answers with their scopes.'
 		);
 
 		// Verify that the `user_input_answered_other_survey` survey is dequeued.
 		$this->assertEquals(
 			array(),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'User input survey should be removed from the queue after answers are submitted.'
 		);
 
 		// Verify KM setup is marked as completed.
-		$this->assertEquals( get_current_user_id(), $this->key_metrics_setup_completed_by->get() );
+		$this->assertEquals(
+			get_current_user_id(),
+			$this->key_metrics_setup_completed_by->get(),
+			'Submitting user input should record the current user as completing Key Metrics setup.'
+		);
 	}
 }

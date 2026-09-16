@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
@@ -34,7 +32,7 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertEmpty( $output );
+		$this->assertEmpty( $output, 'Ad blocking recovery markup should not render when no tag data is available.' );
 	}
 
 	public function test_renders_tags() {
@@ -54,10 +52,10 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery snippet added by Site Kit', $output );
-		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output );
-		$this->assertStringContainsString( 'test-tag', $output );
-		$this->assertStringContainsString( 'test-error-protection-code', $output );
+		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery snippet added by Site Kit', $output, 'Recovery markup should identify the Site Kit recovery snippet.' );
+		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output, 'Recovery markup should identify the Site Kit error protection snippet.' );
+		$this->assertStringContainsString( 'test-tag', $output, 'Recovery markup should include the configured recovery tag.' );
+		$this->assertStringContainsString( 'test-error-protection-code', $output, 'Recovery markup should include configured error protection code.' );
 	}
 
 	public function test_does_not_render_error_protection_tag_when_disabled() {
@@ -77,9 +75,9 @@ class Ad_Blocking_Recovery_Web_TagTest extends TestCase {
 
 		$output = $this->capture_action( 'wp_head' );
 
-		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery snippet added by Site Kit', $output );
-		$this->assertStringNotContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output );
-		$this->assertStringContainsString( 'test-tag', $output );
-		$this->assertStringNotContainsString( 'test-error-protection-code', $output );
+		$this->assertStringContainsString( 'Google AdSense Ad Blocking Recovery snippet added by Site Kit', $output, 'Recovery snippet should still render when error protection is disabled.' );
+		$this->assertStringNotContainsString( 'Google AdSense Ad Blocking Recovery Error Protection snippet added by Site Kit', $output, 'Error protection snippet marker should not render when error protection is disabled.' );
+		$this->assertStringContainsString( 'test-tag', $output, 'Configured recovery tag should still render when error protection is disabled.' );
+		$this->assertStringNotContainsString( 'test-error-protection-code', $output, 'Error protection code should not render when error protection is disabled.' );
 	}
 }

@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import {
 	GOAL_DRIVER_IDS,
@@ -49,6 +50,7 @@ import {
 	provideKeyMetrics,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
@@ -143,7 +145,11 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {} );
+	// Pairs with the detected event above, so the state matches one where the
+	// widget renders. `isSiteGoalsWidgetRenderable` needs both.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+		activeWidgets: [ GOAL_TYPES.LEAD ],
+	} );
 
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-07' );
 	registry
@@ -173,18 +179,41 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// Add the chart tile's report for both sets of lead events, once with no
+	// tab filter and once per form tab.
+	[
+		[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+		[
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+	].forEach( ( leadEvents ) => {
+		[
+			{},
+			...FORM_IDS.map( ( formID ) => ( { [ FORM_DIMENSION ]: formID } ) ),
+		].forEach( ( breakdownFilter ) => {
+			provideAnalytics4MockReport(
+				registry,
+				getKeyActionChartReportOptions( {
+					dates,
+					eventNames: leadEvents,
+					goalType: GOAL_TYPES.LEAD,
+					breakdownFilter,
+				} )
+			);
+		} );
+	} );
 }
 
 function seedGoalDriverReports(
 	registry: WPDataRegistry,
 	eventNames: string[],
 	{
-		goalType = GOAL_TYPES.LEAD,
 		empty = false,
 		loading = false,
 		breakdownFilter = {},
 	}: {
-		goalType?: string;
 		empty?: boolean;
 		loading?: boolean;
 		breakdownFilter?: Record< string, unknown >;
@@ -211,14 +240,15 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-traffic-channels_lead',
 	};
 
 	const topTrafficTotalOptions = {
 		...goalDriverDates,
 		dimensionFilters,
 		metrics: [ { name: 'eventCount' } ],
-		reportID: `analytics-4_site-goals_top-traffic-channels-total_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-total_lead',
 	};
 
 	const topTrafficRateOptions = {
@@ -229,7 +259,8 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ goalType }`,
+		reportID:
+			'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 	};
 
 	const topPagesOptions = {
@@ -240,7 +271,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_top-pages_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_top-pages_lead',
 	};
 
 	const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -264,7 +295,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_visitor-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_visitor-type_lead',
 	};
 
 	const citiesOptions = {
@@ -281,7 +312,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_cities_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_cities_lead',
 	};
 
 	const countriesOptions = {
@@ -298,7 +329,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_countries_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_countries_lead',
 	};
 
 	const deviceTypeOptions = {
@@ -309,7 +340,7 @@ function seedGoalDriverReports(
 		orderby: [ { metric: { metricName: 'eventCount' }, desc: true } ],
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		keepEmptyRows: false,
-		reportID: `analytics-4_site-goals_device-type_${ goalType }`,
+		reportID: 'analytics-4_goal-driver-reports_device-type_lead',
 	};
 
 	if ( loading ) {
@@ -566,6 +597,9 @@ function seedGoalDriverReports(
 
 const FORM_DIMENSION = 'customEvent:googlesitekit_form_id';
 
+/** The form IDs the tabbed breakdown stories show as tabs. */
+const FORM_IDS = [ '5', '12' ];
+
 // A metrics-only compare report whose totals carry one row per date range.
 function buildTotals( count: number ) {
 	return {
@@ -595,8 +629,6 @@ function seedTabbedBreakdown(
 		unattributedCount?: number;
 	} = {}
 ) {
-	const formIDs = [ '5', '12' ];
-
 	// Discovery with form IDs (overrides the empty report from commonSetup,
 	// switching the widget into tabbed mode).
 	const discoveryOptions = {
@@ -615,7 +647,7 @@ function seedTabbedBreakdown(
 	};
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{
-			rows: formIDs.map( ( value, index ) => ( {
+			rows: FORM_IDS.map( ( value, index ) => ( {
 				dimensionValues: [ { value } ],
 				metricValues: [ { value: String( 100 - index ) } ],
 			} ) ),
@@ -632,7 +664,7 @@ function seedTabbedBreakdown(
 			5: { title: 'Contact' },
 			12: { title: 'Newsletter signup' },
 		},
-		{ formIDs }
+		{ formIDs: FORM_IDS }
 	);
 
 	// Pages each form appears on: form 5 on two pages (the "as an example"
@@ -643,7 +675,7 @@ function seedTabbedBreakdown(
 		dimensionFilters: {
 			[ FORM_DIMENSION ]: {
 				filterType: 'inListFilter',
-				value: formIDs,
+				value: FORM_IDS,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
@@ -688,7 +720,7 @@ function seedTabbedBreakdown(
 		dimensionFilters: {
 			[ FORM_DIMENSION ]: {
 				filterType: 'inListFilter',
-				value: formIDs,
+				value: FORM_IDS,
 			},
 		},
 		metrics: [ { name: 'eventCount' } ],
@@ -761,7 +793,7 @@ function seedTabbedBreakdown(
 					? {
 							[ FORM_DIMENSION ]: {
 								filterType: 'inListFilter',
-								value: formIDs,
+								value: FORM_IDS,
 							},
 					  }
 					: {} ),
@@ -803,7 +835,7 @@ function seedTabbedBreakdown(
 	);
 
 	// Section reports for every form tab, so each is clickable.
-	formIDs.forEach( ( formID ) => {
+	FORM_IDS.forEach( ( formID ) => {
 		const breakdownFilter = { [ FORM_DIMENSION ]: formID };
 
 		provideAnalytics4MockReport(
@@ -858,6 +890,10 @@ Ready.args = {
 		] );
 	},
 };
+Ready.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
+};
 
 export const GatheringBreakdownData = Template.bind( {} ) as Story;
 GatheringBreakdownData.storyName = 'Gathering Breakdown Data';
@@ -893,6 +929,24 @@ TabbedBreakdown.args = {
 		commonSetup( registry );
 		seedTabbedBreakdown( registry );
 	},
+};
+
+export const TabbedBreakdownDeactivatedPlugin = Template.bind( {} ) as Story;
+TabbedBreakdownDeactivatedPlugin.storyName =
+	'Tabbed Breakdown (Deactivated Plugin)';
+TabbedBreakdownDeactivatedPlugin.args = {
+	selectedGoalDriverIDs: THREE_VISIBLE_GOAL_DRIVERS,
+	setupRegistry: ( registry ) => {
+		commonSetup( registry );
+		provideSiteInfo( registry, {
+			activeConversionEventProviders: [],
+		} );
+		seedTabbedBreakdown( registry );
+	},
+};
+TabbedBreakdownDeactivatedPlugin.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	delay: 400,
 };
 
 export const TabbedBreakdownPartialData = Template.bind( {} ) as Story;
@@ -1004,6 +1058,19 @@ ZeroData.args = {
 			.receiveGetReport( zeroSessionsReport, {
 				options: engagementReportOptions,
 			} );
+
+		// An empty chart report makes the tile show its zero data message.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [] },
+			{
+				options: getKeyActionChartReportOptions( {
+					dates,
+					eventNames: [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],
+					goalType: GOAL_TYPES.LEAD,
+				} ),
+			}
+		);
+
 		seedGoalDriverReports(
 			registry,
 			[ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ],

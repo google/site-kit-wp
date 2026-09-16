@@ -82,7 +82,7 @@ class Audience_UtilitiesTest extends TestCase {
 		$this->assertEquals( 'New Visitors', $processed[1]['displayName'], 'Site Kit audience should be second.' );
 		$this->assertEquals( 'SITE_KIT_AUDIENCE', $processed[1]['audienceType'], 'Second audience should be SITE_KIT_AUDIENCE.' );
 
-		$this->assertEquals( 'All visitors', $processed[2]['displayName'], 'Default audience should be last and renamed.' ); // "All Users" is renamed to "All visitors"
+		$this->assertEquals( 'All visitors', $processed[2]['displayName'], 'Default audience should be last and renamed.' ); // "All Users" is renamed to "All visitors".
 		$this->assertEquals( 'DEFAULT_AUDIENCE', $processed[2]['audienceType'], 'Last audience should be DEFAULT_AUDIENCE.' );
 
 		$settings = $this->audience_settings->get();

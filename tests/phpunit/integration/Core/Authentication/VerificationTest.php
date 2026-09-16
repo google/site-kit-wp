@@ -16,21 +16,21 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
- * VerificationTest
+ * VerificationTest.
  *
  * @group Authentication
  */
 class VerificationTest extends TestCase {
 
 	/**
-	 * User ID
+	 * User ID.
 	 *
 	 * @var int User ID.
 	 */
 	private static $user_id;
 
 	/**
-	 * User Options object
+	 * User Options object.
 	 *
 	 * @var User_Options
 	 */

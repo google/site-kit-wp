@@ -19,14 +19,29 @@
 /**
  * Internal dependencies
  */
+import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
 import {
 	AREA_ENTITY_DASHBOARD_SPEED_PRIMARY,
 	AREA_MAIN_DASHBOARD_SPEED_PRIMARY,
 } from '@/js/googlesitekit/widgets/default-areas';
 import DashboardPageSpeedWidget from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget';
 import getPDFData from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/getPDFData';
-import DashboardPageSpeedWidgetPDF from '@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/indexPDF';
 import { MODULE_SLUG_PAGESPEED_INSIGHTS } from '@/js/modules/pagespeed-insights/constants';
+
+/**
+ * Lazy-loaded PDF component for the PageSpeed Insights widget.
+ *
+ * Lazy-load the component so `@react-pdf/renderer` isn't included in
+ * the main vendor bundle.
+ *
+ * See: https://github.com/google/site-kit-wp/issues/13193.
+ */
+const DashboardPageSpeedWidgetPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/pagespeed-insights/components/dashboard/DashboardPageSpeedWidget/indexPDF'
+	)
+);
 
 export function registerWidgets( widgets ) {
 	widgets.registerWidget(

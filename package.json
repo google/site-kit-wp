@@ -19,6 +19,7 @@
 		"test": "npm run -w tests/js test:js:watch",
 		"test:visualtest": "npm run -w tests/backstop test:visualtest",
 		"test:visualapprove": "npm run -w tests/backstop test:visualapprove",
+		"test:analyze": "npm run -w assets build:production -- --env ANALYZE",
 		"test:js": "npm run -w tests/js test:js",
 		"test:js:watch": "npm run -w tests/js test:js:watch",
 		"test:storybook": "npm run -w storybook test",
@@ -34,6 +35,7 @@
 		"lint": "npm run lint:js && npm run lint:css",
 		"lint:js": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore --ext js,jsx,ts,tsx .",
 		"lint:js-fix": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore --ext js,jsx,ts,tsx --fix \"**/*.{js,jsx,ts,tsx,.yml,.yaml}\"",
+		"lint:js:files": "eslint --no-eslintrc --config .eslintrc.json --ignore-path .eslintignore",
 		"lint:css": "stylelint ./assets/sass ./storybook/assets/sass",
 		"lint:css-fix": "stylelint ./assets/sass ./storybook/assets/sass --fix",
 		"env:start": "npm run -w tests/e2e start",
@@ -45,7 +47,7 @@
 		"postinstall": "node -e \"process.env.SKIP_PATCH_PACKAGE || require('child_process').execSync('patch-package', {stdio:'inherit'})\"",
 		"preinstall": "./bin/check-node-version.js",
 		"typecheck": "tsc --noEmit",
-		"typecheck-staged": "tsc-files assets/js/types/globals.d.ts assets/js/types/svg.d.ts assets/js/types/ttf.d.ts assets/js/types/equivalent-key-map.d.ts assets/js/types/external-modules.d.ts tests/js/types/jest-matchers.d.ts"
+		"typecheck-staged": "tsc-files assets/js/types/globals.d.ts assets/js/types/svg.d.ts assets/js/types/ttf.d.ts assets/js/types/png.d.ts assets/js/types/equivalent-key-map.d.ts assets/js/types/external-modules.d.ts tests/js/types/jest-matchers.d.ts"
 	},
 	"browserslist": [
 		"extends @wordpress/browserslist-config"

@@ -56,7 +56,7 @@ class Frequency_Planner {
 				return $this->get_next_quarterly_occurrence( $timestamp, $time_zone );
 		}
 
-		throw new InvalidArgumentException( sprintf( 'Unsupported frequency "%s".', $frequency ) );
+		throw new InvalidArgumentException( sprintf( 'Unsupported frequency "%s".', esc_html( $frequency ) ) );
 	}
 
 	/**

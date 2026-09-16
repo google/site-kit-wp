@@ -54,7 +54,7 @@ interface SearchQueryRow {
 	rank: number;
 	/** The search query text. */
 	query: string;
-	/** Search Console report link for the query. */
+	/** Search Console report link for the query. Empty when the query has no link, so the query renders as plain text. */
 	queryURL: string;
 	/** Number of clicks for the query. */
 	clicks: number;
@@ -85,8 +85,7 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 
 	const columns: Array< PDFTableColumn< SearchQueryRow > > = [
 		{
-			// The query column has no header.
-			header: '',
+			header: __( 'Search query', 'google-site-kit' ),
 			// 66.7% of the 1084px row (723px).
 			width: '66.7%',
 			// Show the rank number before the query. The query links to its
@@ -96,7 +95,9 @@ const DashboardPopularKeywordsWidgetPDF: FC< PDFWidgetComponentProps > = ( {
 					<PDFTypography style={ styles.rank }>
 						{ `${ row.rank }.` }
 					</PDFTypography>
-					<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
+					<PDFTypography truncateContent>
+						<PDFLink href={ row.queryURL }>{ row.query }</PDFLink>
+					</PDFTypography>
 				</View>
 			),
 		},

@@ -53,6 +53,7 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import CoreDashboardEffects from './CoreDashboardEffects';
 import DashboardSharingSettingsButton from './dashboard-sharing/DashboardSharingSettingsButton';
 import DateRangeSelector from './DateRangeSelector';
+import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
 import Header from './Header';
@@ -61,6 +62,7 @@ import Layout from './layout/Layout';
 import Link from './Link';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import OfflineNotification from './notifications/OfflineNotification';
+import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PageHeader from './PageHeader';
 import P from './Typography/P';
 import VisuallyHidden from './VisuallyHidden';
@@ -219,11 +221,14 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
+				<ManageEmailReportsButton />
 				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
 				<HelpMenu />
 			</Header>
 
 			<div className="googlesitekit-page-content">
+				<SetupCTAOverlays />
+
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_TRAFFIC }
 					slug={ CONTEXT_ENTITY_DASHBOARD_TRAFFIC }

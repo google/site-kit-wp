@@ -29,6 +29,18 @@ import type { WPDataRegistry } from '@wordpress/data/build-types/registry';
 export type Select = ( select: any ) => any;
 
 /**
+ * Site Kit `useSelect` signature, with an optional `deps` argument.
+ *
+ * The `@wordpress/data` types require `deps`, but it can be left out. Without
+ * it, `mapSelect` runs on every render instead of only when `deps` change.
+ * Hooks that want that cast `useSelect` to this type.
+ */
+export type UseSelect = < T >(
+	mapSelect: ( select: Select ) => T,
+	deps?: unknown[]
+) => T;
+
+/**
  * Site Kit data registry type.
  *
  * Extends WordPress's `WPDataRegistry` with `resolveSelect`, which exists on

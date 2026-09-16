@@ -27,7 +27,7 @@ import { useKey } from 'react-use';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 
 export type PopperPlacement =
 	| 'top'
@@ -54,6 +54,10 @@ interface PopperProps {
 	offset?: number;
 	resetKey?: number | string;
 	className?: string;
+	rootClassName?: string;
+	arrow?: boolean;
+	skidding?: number;
+	positionFixed?: boolean;
 }
 
 /**
@@ -71,6 +75,10 @@ interface PopperProps {
  * @param [props.resetKey]      Changing this value resets the auto-dismiss timer.
  * @param props.children        Popper content.
  * @param [props.className]     Additional CSS class for the content wrapper.
+ * @param [props.rootClassName] Additional CSS class for the popper root.
+ * @param [props.arrow]         Whether to render a caret aligned to the anchor's centre, defaults to `false`.
+ * @param [props.skidding]      Shift along the anchor's edge in px, defaults to 0. The arrow stays aligned to the anchor.
+ * @param [props.positionFixed] Whether to position against the viewport instead of the page, defaults to `false`. Avoids scroll jank for anchors in sticky/fixed containers.
  * @return React element, or null when `anchorElement` is null.
  */
 const Popper: FC< PopperProps > = ( {
@@ -82,9 +90,17 @@ const Popper: FC< PopperProps > = ( {
 	resetKey,
 	children,
 	className,
+	rootClassName,
+	arrow = false,
+	skidding = 0,
+	positionFixed = false,
 } ) => {
 	const hasAnchorElement = Boolean( anchorElement );
 	const contentRef = useRef< HTMLDivElement >( null );
+	// eslint-disable-next-line sitekit/acronym-case
+	const [ arrowElement, setArrowElement ] = useState< HTMLElement | null >(
+		null
+	);
 	const timerRef = useRef< ReturnType< typeof setTimeout > >();
 	const onCloseRef = useRef( onClose );
 	onCloseRef.current = onClose;
@@ -163,13 +179,18 @@ const Popper: FC< PopperProps > = ( {
 			open={ hasAnchorElement }
 			anchorEl={ anchorElement }
 			placement={ placement }
-			className="googlesitekit-popper-root"
+			className={ classnames(
+				'googlesitekit-popper-root',
+				rootClassName
+			) }
 			// MUI Popper sets `role="tooltip"` by default. Clear it because this is a notification panel, not a tooltip.
 			role={ undefined }
 			modifiers={ {
-				offset: { offset: `0, ${ offset }` },
+				offset: { offset: `${ skidding }, ${ offset }` },
 				preventOverflow: { boundariesElement: 'window' },
+				arrow: { enabled: arrow, element: arrowElement },
 			} }
+			popperOptions={ { positionFixed } }
 			disablePortal
 		>
 			<div
@@ -181,6 +202,13 @@ const Popper: FC< PopperProps > = ( {
 				onBlur={ handleBlur }
 			>
 				{ children }
+				{ /* After the content so its fill paints above the content's box-shadow. */ }
+				{ arrow && (
+					<span
+						className="googlesitekit-popper__arrow"
+						ref={ setArrowElement }
+					/>
+				) }
 			</div>
 		</MuiPopper>
 	);

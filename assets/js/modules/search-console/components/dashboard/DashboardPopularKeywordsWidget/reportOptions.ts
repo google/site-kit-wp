@@ -48,7 +48,7 @@ export interface PopularKeywordsReportDates {
  * Returns the query dimension, the limit of 10 rows, and the report ID. The
  * caller adds the date range.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @return The report options, without the date range.
  */
@@ -67,7 +67,7 @@ export function getPopularKeywordsReportOptions(): PopularKeywordsReportOptions 
  * report with the same dimensions, limit, and report ID the dashboard widget
  * uses.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param dates           Report date range.
  * @param dates.startDate Report start date (YYYY-MM-DD).

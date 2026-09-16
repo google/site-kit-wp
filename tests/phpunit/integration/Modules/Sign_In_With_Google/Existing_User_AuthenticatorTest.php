@@ -18,6 +18,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Hashed_User_ID;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Profile_Reader_Interface;
 use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit\Tests\Two_Factor_Plugin_Trait;
 use WP_Error;
 
 /**
@@ -25,6 +26,8 @@ use WP_Error;
  * @group Sign_In_With_Google
  */
 class Existing_User_AuthenticatorTest extends TestCase {
+
+	use Two_Factor_Plugin_Trait;
 
 	private static $payload = array(
 		'sub'   => 'google-sub-12345',
@@ -111,6 +114,32 @@ class Existing_User_AuthenticatorTest extends TestCase {
 			md5( self::$payload['sub'] ),
 			get_user_option( Hashed_User_ID::OPTION, $user_id ),
 			'Current user should be linked regardless of email mismatch.'
+		);
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__links_current_user_who_uses_two_factor() {
+		$this->activate_two_factor_plugin();
+
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$this->enable_two_factor_for_user( $user_id );
+
+		$expected = get_edit_user_link( $user_id );
+		$actual   = $this->do_authenticate_user( self::$payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the user edit link after connecting.' );
+		$this->assertEquals(
+			md5( self::$payload['sub'] ),
+			get_user_option( Hashed_User_ID::OPTION, $user_id ),
+			'Should connect the Google account of a user who uses two-factor authentication.'
+		);
+		$this->assertEquals(
+			array( self::two_factor_provider() ),
+			$this->get_two_factor_providers_for_user( $user_id ),
+			'Should leave the two-factor settings of the connected user alone.'
 		);
 	}
 

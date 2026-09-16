@@ -914,7 +914,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make search-console a recoverable module
+		// Make search-console a recoverable module.
 		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
@@ -948,7 +948,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make search-console a recoverable module
+		// Make search-console a recoverable module.
 		$search_console = $this->modules->get_module( 'search-console' );
 		$search_console->get_settings()->merge(
 			array(
@@ -963,7 +963,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		);
 		add_option( 'googlesitekit_dashboard_sharing', $test_sharing_settings );
 
-		// Make search-console service requests accessible
+		// Make search-console service requests accessible.
 		FakeHttp::fake_google_http_handler( $search_console->get_client() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );
@@ -994,7 +994,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->controller->register();
 		$this->register_rest_routes();
 
-		// Make analytics-4 a recoverable module
+		// Make analytics-4 a recoverable module.
 		$analytics_4 = $this->modules->get_module( 'analytics-4' );
 		$analytics_4->get_settings()->merge(
 			array(
@@ -1016,7 +1016,7 @@ class REST_Modules_ControllerTest extends TestCase {
 			$analytics_4->get_scopes()
 		);
 
-		// Make analytics-4 service requests accessible
+		// Make analytics-4 service requests accessible.
 		FakeHttp::fake_google_http_handler( $analytics_4->get_client() );
 
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/modules/data/recover-modules' );

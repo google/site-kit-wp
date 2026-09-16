@@ -116,6 +116,7 @@ describe( 'useEnableAudienceGroup', () => {
 		expect( Object.keys( result.current ) ).toEqual( [
 			'apiErrors',
 			'failedAudiences',
+			'isAudienceCreationError',
 			'isSaving',
 			'onEnableGroups',
 		] );

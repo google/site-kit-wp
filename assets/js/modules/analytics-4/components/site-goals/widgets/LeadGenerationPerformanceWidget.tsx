@@ -17,7 +17,7 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { FC, ReactNode, Ref } from 'react';
 
 /**
  * WordPress dependencies
@@ -25,11 +25,13 @@ import { FC, ReactNode } from 'react';
 import {
 	Fragment,
 	createInterpolateElement,
+	forwardRef,
 	useCallback,
 	useEffect,
+	useMemo,
 	useState,
 } from '@wordpress/element';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -45,6 +47,7 @@ import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goal
 import BreakdownTabs, {
 	BreakdownTab,
 } from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
+import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
 import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/site-goals/components/GatheringBreakdownDataBadge';
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
@@ -52,6 +55,7 @@ import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/com
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
+	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
 	SITE_GOALS_DEFAULT_SELECTED_DRIVERS,
 	SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
@@ -68,6 +72,7 @@ import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goa
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { VisitorEngagementTiles } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -80,21 +85,9 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
 interface LeadGenerationPerformanceWidgetProps extends WidgetComponentProps {
 	selectedGoalDriverIDs?: GoalDriverID[];
+	/** Set by `withIntersectionObserver` once the widget is in view. */
+	hasBeenInView?: boolean;
 }
-
-// Maps a lead-form event provider slug (the `googlesitekit_event_provider`
-// dimension value carried on every form conversion event) to its plugin's
-// display name, so the form tooltip can name the source from the report alone.
-// Keep this in sync with the lead-form providers in `assets/js/event-providers/`:
-// a slug missing here silently omits the form tab's source tooltip.
-const LEAD_PROVIDER_LABELS: Record< string, string > = {
-	'contact-form-7': 'Contact Form 7',
-	'ninja-forms': 'Ninja Forms',
-	wpforms: 'WPForms',
-	mailchimp: 'Mailchimp for WordPress',
-	'popup-maker': 'Popup Maker',
-	'optin-monster': 'OptinMonster',
-};
 
 // Builds the info-tooltip for a form tab. Has three variants depending on how
 // many pages the form was seen on, and falls back to the plugin-only variant
@@ -186,7 +179,7 @@ function getFormBreakdownTabs(
 		// display name for the tooltip.
 		const providerSlug = formProviders?.[ formID ];
 		const plugin = providerSlug
-			? LEAD_PROVIDER_LABELS[ providerSlug ]
+			? SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS[ providerSlug ]
 			: undefined;
 
 		return {
@@ -200,28 +193,6 @@ function getFormBreakdownTabs(
 			),
 		};
 	} );
-}
-
-// The single/plural subtitle for the Total form completions tile.
-function getTotalSubtitle( detectedLeadEvents: string[] ): string {
-	if ( detectedLeadEvents.length === 1 ) {
-		return sprintf(
-			/* translators: %s: GA4 event name */
-			__( '“%s” events', 'google-site-kit' ),
-			detectedLeadEvents[ 0 ]
-		);
-	}
-
-	return sprintf(
-		/* translators: %d: number of detected event types */
-		_n(
-			'%d event type',
-			'%d event types',
-			detectedLeadEvents.length,
-			'google-site-kit'
-		),
-		detectedLeadEvents.length
-	);
 }
 
 function getWidgetReportOptions(
@@ -269,408 +240,478 @@ function getWidgetReportOptions(
 	};
 }
 
-const LeadGenerationPerformanceWidget: FC<
+const LeadGenerationPerformanceWidget = forwardRef<
+	HTMLDivElement,
 	LeadGenerationPerformanceWidgetProps
-> = ( { Widget, WidgetNull, WidgetReportError, selectedGoalDriverIDs } ) => {
-	const WidgetComponent = Widget as FC< {
-		Header?: unknown;
-		headerContents?: ReactNode;
-		collapsible?: boolean;
-		onToggleCollapsed?: ( isCollapsed: boolean ) => void;
-	} >;
-	const WidgetNullComponent = WidgetNull as FC;
-	const WidgetReportErrorComponent = WidgetReportError as FC< {
-		moduleSlug: string;
-		error: unknown;
-		onRetry?: () => void;
-		onRequestAccess?: () => void;
-	} >;
+>(
+	(
+		{
+			Widget,
+			WidgetNull,
+			WidgetReportError,
+			selectedGoalDriverIDs,
+			hasBeenInView,
+		},
+		ref
+	) => {
+		const WidgetComponent = Widget as FC< {
+			ref?: Ref< HTMLDivElement >;
+			Header?: unknown;
+			headerContents?: ReactNode;
+			collapsible?: boolean;
+			onToggleCollapsed?: ( isCollapsed: boolean ) => void;
+		} >;
+		const WidgetNullComponent = WidgetNull as FC;
+		const WidgetReportErrorComponent = WidgetReportError as FC< {
+			moduleSlug: string;
+			error: unknown;
+			onRetry?: () => void;
+			onRequestAccess?: () => void;
+		} >;
 
-	const WidgetComponentWithIntersectionObserver =
-		withIntersectionObserver( WidgetComponent );
+		const viewContext = useViewContext();
+		const widgetEventCategory = `${ viewContext }_site-goals-widget`;
 
-	const viewContext = useViewContext();
-	const widgetEventCategory = `${ viewContext }_site-goals-widget`;
+		const handleToggleCollapsed = useCallback(
+			( isCollapsed: boolean ) => {
+				trackEvent(
+					widgetEventCategory,
+					isCollapsed ? 'collapse_widget' : 'expand_widget',
+					GOAL_TYPES.LEAD
+				);
+			},
+			[ widgetEventCategory ]
+		);
 
-	const handleToggleCollapsed = useCallback(
-		( isCollapsed: boolean ) => {
+		const handleRetryError = useCallback( () => {
 			trackEvent(
 				widgetEventCategory,
-				isCollapsed ? 'collapse_widget' : 'expand_widget',
+				'data_loading_error_retry',
 				GOAL_TYPES.LEAD
 			);
-		},
-		[ widgetEventCategory ]
-	);
+		}, [ widgetEventCategory ] );
 
-	const handleRetryError = useCallback( () => {
-		trackEvent(
-			widgetEventCategory,
-			'data_loading_error_retry',
-			GOAL_TYPES.LEAD
+		const handleRequestAccess = useCallback( () => {
+			trackEvent(
+				widgetEventCategory,
+				'insufficient_permissions_error_request_access',
+				GOAL_TYPES.LEAD
+			);
+		}, [ widgetEventCategory ] );
+
+		const keyActionDocumentationURL = useSelect(
+			( select: Select ) =>
+				select( CORE_SITE ).getDocumentationLinkURL(
+					'site-goals-lead-generation-key-action'
+				),
+			[]
 		);
-	}, [ widgetEventCategory ] );
 
-	const handleRequestAccess = useCallback( () => {
-		trackEvent(
-			widgetEventCategory,
-			'insufficient_permissions_error_request_access',
-			GOAL_TYPES.LEAD
+		const otherFormCompletionsDocumentationURL = useSelect(
+			( select: Select ) =>
+				select( CORE_SITE ).getDocumentationLinkURL(
+					'site-goals-other-form-completions'
+				),
+			[]
 		);
-	}, [ widgetEventCategory ] );
 
-	// TODO: Update the link to the relevant support URL once it's created.
-	// See: https://github.com/google/site-kit-wp/issues/12727
-	const keyActionSupportURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getGoogleSupportURL( {
-				path: '/TODO-SUPPORT-PATH',
-			} ),
-		[]
-	);
+		const pluginConversionTrackingDocumentationURL = useSelect(
+			( select: Select ) =>
+				select( CORE_SITE ).getDocumentationLinkURL(
+					'plugin-conversion-tracking'
+				),
+			[]
+		);
 
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-	const effectiveSelectedDrivers = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
-		[]
-	) as GoalDriverSelectionState | undefined;
-	const resolvedSelections = resolveGoalDriverSelectionState(
-		effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
-	);
+		const detectedLeadEvents = useSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+			[]
+		);
 
-	const hasLeadEvents = !! detectedLeadEvents?.length;
-	const drivers = resolveGoalDriverIDs(
-		selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.LEAD ],
-		GOAL_TYPES.LEAD
-	).map( ( driverID ) => ( {
-		...GOAL_DRIVER_CATALOG[ driverID ],
-		title: getGoalDriverTitle( GOAL_TYPES.LEAD, driverID ),
-	} ) );
+		// `useSiteGoalsBreakdown` and `KeyActionChartTile` both hold
+		// `keyActionEventNames` in a dependency array, so it has to stay the
+		// same array between renders.
+		const keyActionEventNames: string[] = useMemo(
+			() => detectedLeadEvents || [],
+			[ detectedLeadEvents ]
+		);
 
-	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( {
-				compare: true,
-			} ),
-		[]
-	);
+		const effectiveSelectedDrivers = useSelect(
+			( select: Select ) =>
+				select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
+			[]
+		) as GoalDriverSelectionState | undefined;
+		const resolvedSelections = resolveGoalDriverSelectionState(
+			effectiveSelectedDrivers || SITE_GOALS_DEFAULT_SELECTED_DRIVERS
+		);
 
-	const {
-		breakdownDimension,
-		breakdownValues,
-		hasBreakdownTabs,
-		activeTabID,
-		setSelectedTab,
-		isOtherSourcesTab,
-		hasOtherSources,
-		otherSourcesCount,
-		otherSourcesPreviousCount,
-		breakdownFilter,
-		// The form ID dimension is set only on form events, so discovery needs no
-		// event scoping (unlike the ecommerce provider dimension); the lead events
-		// are only used to detect unattributed "Other sources" data.
-	} = useSiteGoalsBreakdown( GOAL_TYPES.LEAD, {
-		detectionEventNames: detectedLeadEvents || [],
-	} );
+		const hasLeadEvents = !! detectedLeadEvents?.length;
+		const drivers = resolveGoalDriverIDs(
+			selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.LEAD ],
+			GOAL_TYPES.LEAD
+		).map( ( driverID ) => ( {
+			...GOAL_DRIVER_CATALOG[ driverID ],
+			title: getGoalDriverTitle( GOAL_TYPES.LEAD, driverID ),
+		} ) );
 
-	// Only the tabbed breakdown shows the partial-data badge; the badge itself
-	// renders nothing unless the dimension is in partial-data state.
-	const partialDataBadge = hasBreakdownTabs ? (
-		<PartialDataBadge customDimensionSlug={ breakdownDimension } />
-	) : undefined;
+		const dates = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeDates( {
+					compare: true,
+				} ),
+			[]
+		);
 
-	const handleTabChange = useCallback(
-		( tabID: string ) => {
-			trackEvent( widgetEventCategory, 'breakdown_tab_select', tabID );
-			setSelectedTab( tabID );
-		},
-		[ widgetEventCategory, setSelectedTab ]
-	);
+		const dateRangeDays = useSelect(
+			( select: Select ) =>
+				select( CORE_USER ).getDateRangeNumberOfDays(),
+			[]
+		) as number;
 
-	// The widget's header/tabs area is always in exactly one of four mutually
-	// exclusive states; `viewAction` resolves which one, so only a single
-	// `view_widget*` event fires per widget view.
-	const viewAction = useSiteGoalsWidgetViewAction( {
-		breakdownDimension,
-		hasBreakdownTabs,
-	} );
-	// Repeating this logic from the withIntersectionObserver HOC because
-	// the `viewAction` relies on several async selectors, so we need to ensure
-	// it is resolved before tracking the event. So simply calling `trackEvent`
-	// in the HOC's `onInView` callback would be too early.
-	const [ isWidgetInView, setIsWidgetInView ] = useState( false );
-	const [ hasTrackedView, setHasTrackedView ] = useState( false );
+		const {
+			breakdownDimension,
+			breakdownValues,
+			hasBreakdownTabs,
+			activeTabID,
+			setSelectedTab,
+			isOtherSourcesTab,
+			isBreakdownValueTab,
+			hasOtherSources,
+			otherSourcesCount,
+			otherSourcesPreviousCount,
+			breakdownFilter,
+			// The form ID dimension is set only on form events, so discovery
+			// needs no event scoping. The lead events only detect unattributed
+			// "Other sources" data.
+		} = useSiteGoalsBreakdown( GOAL_TYPES.LEAD, {
+			detectionEventNames: keyActionEventNames,
+		} );
 
-	const handleViewWidget = useCallback( () => {
-		setIsWidgetInView( true );
-	}, [] );
+		// Only the tabbed breakdown shows the partial-data badge, and only when
+		// the dimension is in the partial-data state.
+		const partialDataBadge = hasBreakdownTabs ? (
+			<PartialDataBadge customDimensionSlug={ breakdownDimension } />
+		) : undefined;
 
-	useEffect( () => {
-		if ( isWidgetInView && ! hasTrackedView && viewAction ) {
-			trackEvent( widgetEventCategory, viewAction, GOAL_TYPES.LEAD );
-			setHasTrackedView( true );
+		const handleTabChange = useCallback(
+			( tabID: string ) => {
+				trackEvent(
+					widgetEventCategory,
+					'breakdown_tab_select',
+					tabID
+				);
+				setSelectedTab( tabID );
+			},
+			[ widgetEventCategory, setSelectedTab ]
+		);
+
+		// The widget's header and tabs area is always in exactly one of four
+		// states. `viewAction` resolves which one, so the widget sends a single
+		// `view_widget*` event per view.
+		const viewAction = useSiteGoalsWidgetViewAction( {
+			breakdownDimension,
+			hasBreakdownTabs,
+		} );
+		// `hasBeenInView` comes from the `withIntersectionObserver` wrapper
+		// around this widget's export. `viewAction` depends on several async
+		// selectors, so the view event waits until `viewAction` resolves.
+		const [ hasTrackedView, setHasTrackedView ] = useState( false );
+
+		useEffect( () => {
+			if ( hasBeenInView && ! hasTrackedView && viewAction ) {
+				trackEvent( widgetEventCategory, viewAction, GOAL_TYPES.LEAD );
+				setHasTrackedView( true );
+			}
+		}, [ hasBeenInView, hasTrackedView, viewAction, widgetEventCategory ] );
+
+		const formTitles = useSelect(
+			( select: Select ) =>
+				breakdownValues
+					? select( MODULES_ANALYTICS_4 ).getFormTitles(
+							breakdownValues
+					  )
+					: undefined,
+			[ breakdownValues ]
+		) as Record< string, string > | undefined;
+
+		const formProviders = useInViewSelect(
+			( select: Select ) =>
+				breakdownValues?.length
+					? select( MODULES_ANALYTICS_4 ).getFormProviders(
+							breakdownDimension,
+							breakdownValues
+					  )
+					: undefined,
+			[ breakdownDimension, breakdownValues ]
+		) as Record< string, string > | undefined;
+
+		// These are the pages each form appears on. The widget uses them to
+		// pick the tooltip variant.
+		const formPagePaths = useInViewSelect(
+			( select: Select ) =>
+				breakdownValues?.length
+					? select( MODULES_ANALYTICS_4 ).getFormPagePaths(
+							breakdownDimension,
+							breakdownValues
+					  )
+					: undefined,
+			[ breakdownDimension, breakdownValues ]
+		) as Record< string, string[] > | undefined;
+
+		const referenceSiteURL = useSelect(
+			( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
+			[]
+		) as string;
+
+		const breakdownTabs = getFormBreakdownTabs(
+			breakdownValues,
+			formTitles,
+			formProviders,
+			formPagePaths,
+			referenceSiteURL,
+			pluginConversionTrackingDocumentationURL
+		);
+
+		const { leadEventsReportOptions, engagementReportOptions } =
+			getWidgetReportOptions(
+				dates,
+				keyActionEventNames,
+				breakdownFilter
+			);
+
+		const leadEventsReport =
+			useInViewSelect(
+				( select: Select ) =>
+					leadEventsReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								leadEventsReportOptions
+						  )
+						: null,
+				[ leadEventsReportOptions ]
+			) || [];
+
+		const engagementReport =
+			useInViewSelect(
+				( select: Select ) =>
+					engagementReportOptions
+						? select( MODULES_ANALYTICS_4 ).getReport(
+								engagementReportOptions
+						  )
+						: null,
+				[ engagementReportOptions ]
+			) || [];
+
+		const [ loading, error ] = useSelect(
+			( select: Select ) => {
+				const reportsToCheck: ReportOptions[] = [];
+				if ( leadEventsReportOptions ) {
+					reportsToCheck.push( leadEventsReportOptions );
+				}
+				if ( engagementReportOptions ) {
+					reportsToCheck.push( engagementReportOptions );
+				}
+
+				return [
+					select( MODULES_ANALYTICS_4 ).areReportsLoading(
+						...reportsToCheck
+					),
+					select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						...reportsToCheck
+					),
+				];
+			},
+			[ leadEventsReportOptions, engagementReportOptions ]
+		);
+
+		useEffect( () => {
+			if ( error ) {
+				trackEvent(
+					widgetEventCategory,
+					'data_loading_error',
+					GOAL_TYPES.LEAD
+				);
+			}
+		}, [ error, widgetEventCategory ] );
+
+		if ( ! hasLeadEvents ) {
+			return <WidgetNullComponent />;
 		}
-	}, [ isWidgetInView, hasTrackedView, viewAction, widgetEventCategory ] );
 
-	const formTitles = useSelect(
-		( select: Select ) =>
-			breakdownValues
-				? select( MODULES_ANALYTICS_4 ).getFormTitles( breakdownValues )
-				: undefined,
-		[ breakdownValues ]
-	) as Record< string, string > | undefined;
-
-	const formProviders = useInViewSelect(
-		( select: Select ) =>
-			breakdownValues?.length
-				? select( MODULES_ANALYTICS_4 ).getFormProviders(
-						breakdownDimension,
-						breakdownValues
-				  )
-				: undefined,
-		[ breakdownDimension, breakdownValues ]
-	) as Record< string, string > | undefined;
-
-	// Which pages each form appears on, used to pick the tooltip variant.
-	const formPagePaths = useInViewSelect(
-		( select: Select ) =>
-			breakdownValues?.length
-				? select( MODULES_ANALYTICS_4 ).getFormPagePaths(
-						breakdownDimension,
-						breakdownValues
-				  )
-				: undefined,
-		[ breakdownDimension, breakdownValues ]
-	) as Record< string, string[] > | undefined;
-
-	const referenceSiteURL = useSelect(
-		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
-		[]
-	) as string;
-
-	const breakdownTabs = getFormBreakdownTabs(
-		breakdownValues,
-		formTitles,
-		formProviders,
-		formPagePaths,
-		referenceSiteURL,
-		keyActionSupportURL
-	);
-
-	const { leadEventsReportOptions, engagementReportOptions } =
-		getWidgetReportOptions(
-			dates,
-			detectedLeadEvents || [],
-			breakdownFilter
-		);
-
-	const leadEventsReport =
-		useInViewSelect(
-			( select: Select ) =>
-				leadEventsReportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							leadEventsReportOptions
-					  )
-					: null,
-			[ leadEventsReportOptions ]
-		) || [];
-
-	const engagementReport =
-		useInViewSelect(
-			( select: Select ) =>
-				engagementReportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							engagementReportOptions
-					  )
-					: null,
-			[ engagementReportOptions ]
-		) || [];
-
-	const [ loading, error ] = useSelect(
-		( select: Select ) => {
-			const reportsToCheck: ReportOptions[] = [];
-			if ( leadEventsReportOptions ) {
-				reportsToCheck.push( leadEventsReportOptions );
-			}
-			if ( engagementReportOptions ) {
-				reportsToCheck.push( engagementReportOptions );
-			}
-
-			return [
-				select( MODULES_ANALYTICS_4 ).areReportsLoading(
-					...reportsToCheck
-				),
-				select( MODULES_ANALYTICS_4 ).getFirstReportError(
-					...reportsToCheck
-				),
-			];
-		},
-		[ leadEventsReportOptions, engagementReportOptions ]
-	);
-
-	useEffect( () => {
 		if ( error ) {
-			trackEvent(
-				widgetEventCategory,
-				'data_loading_error',
-				GOAL_TYPES.LEAD
+			return (
+				<WidgetComponent>
+					<WidgetReportErrorComponent
+						moduleSlug="analytics-4"
+						error={ error }
+						onRetry={ handleRetryError }
+						onRequestAccess={ handleRequestAccess }
+					/>
+				</WidgetComponent>
 			);
 		}
-	}, [ error, widgetEventCategory ] );
 
-	if ( ! hasLeadEvents ) {
-		return <WidgetNullComponent />;
-	}
+		const {
+			currentPrimaryCount,
+			previousPrimaryCount,
+			currentSessions,
+			currentRate,
+			previousRate,
+		} = processReports( leadEventsReport, engagementReport, {
+			aggregate: true,
+		} );
 
-	if ( error ) {
 		return (
-			<WidgetComponent>
-				<WidgetReportErrorComponent
-					moduleSlug="analytics-4"
-					error={ error }
-					onRetry={ handleRetryError }
-					onRequestAccess={ handleRequestAccess }
-				/>
-			</WidgetComponent>
-		);
-	}
-
-	const {
-		currentPrimaryCount,
-		previousPrimaryCount,
-		currentSessions,
-		currentRate,
-		previousRate,
-	} = processReports( leadEventsReport, engagementReport, {
-		aggregate: true,
-	} );
-
-	return (
-		<WidgetComponentWithIntersectionObserver
-			onInView={ handleViewWidget }
-			onToggleCollapsed={ handleToggleCollapsed }
-			Header={ WidgetHeaderTitle }
-			headerContents={
-				<Fragment>
-					<span>
-						{ __(
-							'Lead generation performance',
-							'google-site-kit'
-						) }
-					</span>
-					<GatheringBreakdownDataBadge
-						goalType={ GOAL_TYPES.LEAD }
-						variant="widget"
-					/>
-				</Fragment>
-			}
-			collapsible
-		>
-			{ breakdownTabs && (
-				<BreakdownTabs
-					tabs={ breakdownTabs }
-					activeTabID={ activeTabID }
-					onTabChange={ handleTabChange }
-					showOtherSources={ hasOtherSources }
-					otherSourcesLabel={ __(
-						'Other form completions',
-						'google-site-kit'
-					) }
-				/>
-			) }
-
-			{ isOtherSourcesTab && (
-				<OtherSourcesNotice learnMoreURL={ keyActionSupportURL } />
-			) }
-
-			{ loading ? (
-				<PreviewBlock width="100%" height="130px" />
-			) : (
-				<TilesGroup
-					className="googlesitekit-site-goals-primary-action"
-					title={ __( 'Key action', 'google-site-kit' ) }
-					badge={ partialDataBadge }
-				>
-					<KeyActionTiles
-						isOtherSourcesTab={ isOtherSourcesTab }
-						supportURL={ keyActionSupportURL }
-						rateTitle={ __(
-							'Form completion rate',
-							'google-site-kit'
-						) }
-						totalTitle={ __(
-							'Total form completions',
-							'google-site-kit'
-						) }
-						totalSubtitle={ getTotalSubtitle( detectedLeadEvents ) }
-						currentRate={ currentRate }
-						previousRate={ previousRate }
-						currentSessions={ currentSessions }
-						currentCount={ currentPrimaryCount }
-						previousCount={ previousPrimaryCount }
-						otherSourcesCount={ otherSourcesCount }
-						otherSourcesPreviousCount={ otherSourcesPreviousCount }
-					/>
-				</TilesGroup>
-			) }
-
-			<BreakdownNoticeArea
-				origin={ BREAKDOWN_ORIGIN_WIDGET }
-				goalTypes={ [ GOAL_TYPES.LEAD ] }
-			/>
-
-			{ /* The "Other sources" tab aggregates events without a form ID, so
-			     it shows the Key action only. */ }
-			{ ! isOtherSourcesTab && (
-				<Fragment>
-					<TilesGroup
-						className="googlesitekit-site-goals-visitor-engagement"
-						title={ __(
-							'How are your visitors engaging?',
-							'google-site-kit'
-						) }
-						badge={ partialDataBadge }
-					>
-						<VisitorEngagementTiles
-							dates={ dates }
-							breakdownFilter={ breakdownFilter }
+			<WidgetComponent
+				ref={ ref }
+				onToggleCollapsed={ handleToggleCollapsed }
+				Header={ WidgetHeaderTitle }
+				headerContents={
+					<Fragment>
+						<span>
+							{ __(
+								'Lead generation performance',
+								'google-site-kit'
+							) }
+						</span>
+						<GatheringBreakdownDataBadge
+							goalType={ GOAL_TYPES.LEAD }
+							variant="widget"
 						/>
-					</TilesGroup>
+					</Fragment>
+				}
+				collapsible
+			>
+				{ breakdownTabs && (
+					<Fragment>
+						<BreakdownTabs
+							tabs={ breakdownTabs }
+							activeTabID={ activeTabID }
+							onTabChange={ handleTabChange }
+							showOtherSources={ hasOtherSources }
+							otherSourcesLabel={ __(
+								'Other form completions',
+								'google-site-kit'
+							) }
+						/>
 
-					<TilesGroup
-						className="googlesitekit-site-goals-goal-drivers-group"
-						title={ __(
-							'What’s helping you reach your goals?',
-							'google-site-kit'
-						) }
-						headerCTA={
-							<ChangeGoalDriversLink
+						{ isBreakdownValueTab && (
+							<EventProviderDeactivatedNotice
 								goalType={ GOAL_TYPES.LEAD }
+								providerSlug={ formProviders?.[ activeTabID ] }
 							/>
-						}
+						) }
+					</Fragment>
+				) }
+
+				{ isOtherSourcesTab && (
+					<OtherSourcesNotice
+						learnMoreURL={ otherFormCompletionsDocumentationURL }
+					/>
+				) }
+
+				{ loading ? (
+					<PreviewBlock width="100%" height="130px" />
+				) : (
+					<TilesGroup
+						className="googlesitekit-site-goals-primary-action"
+						title={ __( 'Key action', 'google-site-kit' ) }
 						badge={ partialDataBadge }
 					>
-						<GoalDriverTiles
-							drivers={ drivers }
-							primaryEvent={ detectedLeadEvents }
+						<KeyActionTiles
+							isOtherSourcesTab={ isOtherSourcesTab }
+							supportURL={ keyActionDocumentationURL }
+							rateTitle={ __(
+								'Form completion rate',
+								'google-site-kit'
+							) }
+							totalTitle={ __(
+								'Total form completions',
+								'google-site-kit'
+							) }
+							totalSubtitle={ getLeadEventsSubtitle(
+								detectedLeadEvents
+							) }
+							chartTitle={ sprintf(
+								/* translators: %d: number of days in the selected date range, e.g. 28. */
+								__(
+									'Total form completions in the last %d days',
+									'google-site-kit'
+								),
+								dateRangeDays
+							) }
+							currentRate={ currentRate }
+							previousRate={ previousRate }
+							currentSessions={ currentSessions }
+							currentCount={ currentPrimaryCount }
+							previousCount={ previousPrimaryCount }
+							otherSourcesCount={ otherSourcesCount }
+							otherSourcesPreviousCount={
+								otherSourcesPreviousCount
+							}
+							dates={ dates }
+							eventNames={ keyActionEventNames }
 							goalType={ GOAL_TYPES.LEAD }
 							breakdownFilter={ breakdownFilter }
 						/>
 					</TilesGroup>
-				</Fragment>
-			) }
+				) }
 
-			<WidgetFeedbackPrompt
-				voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
-				goalType={ GOAL_TYPES.LEAD }
-			/>
-		</WidgetComponentWithIntersectionObserver>
-	);
-};
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>
 
-export default LeadGenerationPerformanceWidget;
+				{ /* The "Other sources" tab aggregates events without a form ID, so
+			     it shows the Key action only. */ }
+				{ ! isOtherSourcesTab && (
+					<Fragment>
+						<TilesGroup
+							className="googlesitekit-site-goals-visitor-engagement"
+							title={ __(
+								'How are your visitors engaging?',
+								'google-site-kit'
+							) }
+							badge={ partialDataBadge }
+						>
+							<VisitorEngagementTiles
+								dates={ dates }
+								breakdownFilter={ breakdownFilter }
+							/>
+						</TilesGroup>
+
+						<TilesGroup
+							className="googlesitekit-site-goals-goal-drivers-group"
+							title={ __(
+								'What’s helping you reach your goals?',
+								'google-site-kit'
+							) }
+							headerCTA={
+								<ChangeGoalDriversLink
+									goalType={ GOAL_TYPES.LEAD }
+								/>
+							}
+							badge={ partialDataBadge }
+						>
+							<GoalDriverTiles
+								drivers={ drivers }
+								primaryEvent={ detectedLeadEvents }
+								goalType={ GOAL_TYPES.LEAD }
+								breakdownFilter={ breakdownFilter }
+							/>
+						</TilesGroup>
+					</Fragment>
+				) }
+
+				<WidgetFeedbackPrompt
+					voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
+					goalType={ GOAL_TYPES.LEAD }
+				/>
+			</WidgetComponent>
+		);
+	}
+);
+
+LeadGenerationPerformanceWidget.displayName = 'LeadGenerationPerformanceWidget';
+
+export default withIntersectionObserver( LeadGenerationPerformanceWidget );

@@ -17,3 +17,7 @@
 export const dismissItemEndpoint = new RegExp(
 	'^/google-site-kit/v1/core/user/data/dismiss-item'
 );
+
+export const dismissedItemsEndpoint = new RegExp(
+	'^/google-site-kit/v1/core/user/data/dismissed-items'
+);

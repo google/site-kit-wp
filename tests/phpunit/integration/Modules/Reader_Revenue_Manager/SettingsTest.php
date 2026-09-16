@@ -73,6 +73,79 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get_default__with_express_setup_flag() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'contentPolicyState'                => '',
+				'policyInfoLink'                    => '',
+				'ownerID'                           => 0,
+				'organizationID'                    => '',
+				'publicationID'                     => '',
+				'publicationOnboardingState'        => '',
+				'publicationOnboardingStateChanged' => false,
+				'snippetMode'                       => 'post_types',
+				'postTypes'                         => array( 'post' ),
+				'productID'                         => 'openaccess',
+				'productIDs'                        => array(),
+				'paymentOption'                     => '',
+				'configuredCTAs'                    => array(),
+			),
+			get_option( Settings::OPTION ),
+			'RRM Settings should include the express setup settings when the flag is enabled.'
+		);
+	}
+
+	public function test_get__casts_empty_configured_ctas_to_object() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$settings = $this->settings->get();
+
+		$this->assertEquals(
+			(object) array(),
+			$settings['configuredCTAs'],
+			'Empty configuredCTAs should be cast to an object on get().'
+		);
+
+		$this->assertEquals(
+			'{}',
+			wp_json_encode( $settings['configuredCTAs'] ),
+			'Empty configuredCTAs should JSON-encode as an object.'
+		);
+
+		// Stored value remains an empty array.
+		$this->assertSame(
+			array(),
+			get_option( Settings::OPTION )['configuredCTAs'],
+			'Empty configuredCTAs should remain stored as an array.'
+		);
+	}
+
+	public function test_get__preserves_non_empty_configured_ctas() {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->settings->register();
+
+		$configured_ctas = array(
+			'9d2418415-ab3a' => 'newsletter-signup',
+			'8j8152411-cd4b' => 'survey',
+		);
+
+		$options                   = $this->settings->get();
+		$options['configuredCTAs'] = $configured_ctas;
+		$this->settings->set( $options );
+
+		$settings = $this->settings->get();
+
+		$this->assertSame(
+			$configured_ctas,
+			$settings['configuredCTAs'],
+			'Non-empty configuredCTAs should be returned as an associative array.'
+		);
+	}
+
 	public function test_view_only_keys() {
 		$this->assertEqualSets(
 			array(
@@ -172,6 +245,41 @@ class SettingsTest extends SettingsTestCase {
 				'policyInfoLink',
 				true,
 				'',
+			),
+
+			// Validate organizationID.
+			'organizationID with valid string'             => array( 'organizationID', 'ABCD1234', 'ABCD1234' ),
+			'organizationID with empty string'             => array( 'organizationID', '', '' ),
+			'organizationID with number'                   => array( 'organizationID', 123, '' ),
+			'organizationID with boolean'                  => array( 'organizationID', true, '' ),
+			'organizationID with array'                    => array( 'organizationID', array(), '' ),
+
+			// Validate configuredCTAs.
+			'configuredCTAs with valid entries'            => array(
+				'configuredCTAs',
+				array(
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 'survey',
+				),
+				array(
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 'survey',
+				),
+			),
+			'configuredCTAs with empty array'              => array( 'configuredCTAs', array(), array() ),
+			'configuredCTAs with invalid type'             => array( 'configuredCTAs', 'not-an-array', array() ),
+			'configuredCTAs with number'                   => array( 'configuredCTAs', 123, array() ),
+			'configuredCTAs with invalid entries dropped'  => array(
+				'configuredCTAs',
+				array(
+					'9d2418415-ab3a' => 'newsletter-signup',
+					'8j8152411-cd4b' => 123,
+					'7f1042311-ef5c' => array( 'survey' ),
+					0                => 'numeric-key',
+				),
+				array(
+					'9d2418415-ab3a' => 'newsletter-signup',
+				),
 			),
 		);
 	}

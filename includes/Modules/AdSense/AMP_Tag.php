@@ -152,7 +152,7 @@ class AMP_Tag extends Module_AMP_Tag {
 	}
 
 	/**
-	 * Set Web Story Ad Slot ID
+	 * Set Web Story Ad Slot ID.
 	 *
 	 * @since 1.27.0
 	 *

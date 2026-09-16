@@ -36,17 +36,15 @@ describe( 'SettingsNotice', () => {
 		registry = createTestRegistry();
 
 		provideUserCapabilities( registry );
-		provideSiteInfo( registry, { anyoneCanRegister: false } );
+		provideSiteInfo( registry, {
+			anyoneCanRegister: false,
+			anyoneCanRegisterWooCommerce: false,
+		} );
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveGetSettings( {
 			oneTapEnabled: false,
-		} );
-
-		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveModuleData( {
-			isWooCommerceActive: false,
-			isWooCommerceRegistrationEnabled: false,
 		} );
 	} );
 
@@ -60,7 +58,24 @@ describe( 'SettingsNotice', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false and WooCommerce is not active', () => {
+	it( 'should not render anything when anyoneCanRegister is false but anyoneCanRegisterWooCommerce is true', () => {
+		provideSiteInfo( registry, {
+			anyoneCanRegister: false,
+			anyoneCanRegisterWooCommerce: true,
+		} );
+
+		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
+			oneTapEnabled: true,
+		} );
+
+		const { container } = render( <SettingsNotice />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false and WooCommerce registration is closed', () => {
 		const { container } = render( <SettingsNotice />, {
 			registry,
 		} );
@@ -70,72 +85,10 @@ describe( 'SettingsNotice', () => {
 		).toContain( 'to allow your visitors to create an account' );
 	} );
 
-	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true and WooCommerce is active but isWooCommerceRegistrationEnabled is true', () => {
+	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, One Tap is enabled and WooCommerce registration is closed', () => {
 		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
 			oneTapEnabled: true,
 		} );
-
-		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).receiveModuleData( {
-			isWooCommerceActive: true,
-			isWooCommerceRegistrationEnabled: true,
-		} );
-
-		const { container } = render( <SettingsNotice />, {
-			registry,
-		} );
-
-		expect(
-			container.querySelector( '.googlesitekit-notice--info' ).textContent
-		).toContain( 'to allow your visitors to create an account' );
-	} );
-
-	it( 'should render AnyoneCanRegisterDisabledNotice when anyoneCanRegister is false, both One Tap settings are true, WooCommerce is active but isWooCommerceRegistrationEnabled is already true', async () => {
-		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
-			oneTapEnabled: true,
-		} );
-
-		await registry
-			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-			.receiveModuleData( {
-				isWooCommerceActive: true,
-				isWooCommerceRegistrationEnabled: true,
-			} );
-
-		const { container } = render( <SettingsNotice />, {
-			registry,
-		} );
-
-		expect(
-			container.querySelector( '.googlesitekit-notice--info' ).textContent
-		).toContain( 'to allow your visitors to create an account' );
-	} );
-
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, One Tap is enabled and WooCommerce is not active', () => {
-		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
-			oneTapEnabled: true,
-		} );
-
-		const { container } = render( <SettingsNotice />, {
-			registry,
-		} );
-
-		expect(
-			container.querySelector( '.googlesitekit-notice--warning' )
-				.textContent
-		).toContain( 'Using “One Tap sign in” will cause' );
-	} );
-
-	it( 'should render RegistrationDisabledNotice when anyoneCanRegister is false, One Tap is enabled, WooCommerce is active and isWooCommerceRegistrationEnabled is false', async () => {
-		registry.dispatch( MODULES_SIGN_IN_WITH_GOOGLE ).setSettings( {
-			oneTapEnabled: true,
-		} );
-
-		await registry
-			.dispatch( MODULES_SIGN_IN_WITH_GOOGLE )
-			.receiveModuleData( {
-				isWooCommerceActive: true,
-				isWooCommerceRegistrationEnabled: false,
-			} );
 
 		const { container } = render( <SettingsNotice />, {
 			registry,

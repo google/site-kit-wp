@@ -20,30 +20,17 @@
  * External dependencies
  */
 import { Text } from '@react-pdf/renderer';
-import { ReactElement } from 'react';
-import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import PDFTable, { PDFTableColumn } from './PDFTable';
 
 interface TestRow {
 	name: string;
 	count: string;
-}
-
-/**
- * Renders a PDF element to a JSON string for content and style assertions.
- *
- * @since 1.182.0
- *
- * @param element PDF element to render.
- * @return JSON string of the rendered tree.
- */
-function renderJSON( element: ReactElement ) {
-	return JSON.stringify( TestRenderer.create( element ).toJSON() );
 }
 
 /**

@@ -31,10 +31,12 @@ import {
 	requireItemDismissed,
 	requireModuleAccess,
 	requireModuleConnected,
+	requireModuleNotConnected,
 	requireModuleOwnership,
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -57,6 +59,10 @@ import {
 import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ANALYTICS,
 } from '@/js/modules/analytics-4/components/notifications/EnhancedConversionsNotification';
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import IntroModal, {
+	SITE_GOALS_INTRO_MODAL_BANNER,
+} from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
@@ -69,7 +75,11 @@ import {
 	requireMismatchedGoogleTag,
 	requireWebDataStreamUnavailable,
 } from '@/js/modules/analytics-4/data-requirements';
-import { GTM_SCOPE } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	GTM_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import { HOUR_IN_SECONDS } from '@/js/util';
 import {
 	asyncRequire,
 	asyncRequireAll,
@@ -206,10 +216,99 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			asyncRequire( false, requireModuleConnected( MODULE_SLUG_ADS ) )
+			requireModuleNotConnected( MODULE_SLUG_ADS )
 		),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',
+	},
+	[ SITE_GOALS_INTRO_MODAL_BANNER ]: {
+		Component: IntroModal,
+		// Shown after the welcome modal, which has a higher priority (lower
+		// number), so the two modals never appear at the same time.
+		priority: PRIORITY.SETUP_CTA_SITE_GOALS_INTRO_MODAL,
+		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
+		groupID: NOTIFICATION_GROUPS.SETUP_MODALS,
+		viewContexts: [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		],
+		isDismissible: true,
+		checkRequirements: asyncRequireAll(
+			// The welcome modal takes precedence. When it is active, defer the
+			// Site Goals intro modal for 72 hours so the two are never shown at
+			// the same time. Modeled on the audience segmentation introductory
+			// overlay above. `shouldNotificationBeAddedToQueue` already filters
+			// dismissed/still-deferred notifications out before
+			// `checkRequirements` runs, so once the 72-hour dismissal is set
+			// this code won't run again until it expires. This way: no separate
+			// "already dismissed" check is needed.
+			( { select, dispatch } ) => {
+				if (
+					! isFeatureEnabled( 'setupFlowRefresh' ) ||
+					! isInitialWelcomeModalActive()
+				) {
+					return true;
+				}
+
+				const isDismissing = select( CORE_USER ).isDismissingItem(
+					SITE_GOALS_INTRO_MODAL_BANNER
+				);
+
+				if ( ! isDismissing ) {
+					dispatch( CORE_NOTIFICATIONS ).dismissNotification(
+						SITE_GOALS_INTRO_MODAL_BANNER,
+						{
+							expiresInSeconds: 72 * HOUR_IN_SECONDS,
+						}
+					);
+				}
+
+				return false;
+			},
+			// The modal introduces Analytics-backed widgets, so it should not
+			// show for a disconnected module.
+			//
+			// Require Analytics 4 module to be connected to show this notifications.
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			// At least one Site Goals widget must render. This is the same
+			// condition the widget registrations apply, so the modal never
+			// introduces a section that won't appear. `activeWidgets` comes from
+			// the site goals settings endpoint, so that needs resolving too.
+			async ( { select, resolveSelect } ) => {
+				await Promise.all( [
+					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+					resolveSelect( MODULES_ANALYTICS_4 ).getSiteGoalsSettings(),
+				] );
+
+				return (
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.ECOMMERCE
+					) === true ||
+					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
+						GOAL_TYPES.LEAD
+					) === true
+				);
+			},
+			async ( { select, resolveSelect } ) => {
+				await resolveSelect( CORE_USER ).getAuthentication();
+
+				// If the user is not signed in, the check is skipped.
+				//
+				// The shared dashboard already limits view-only users appropriately,
+				// we don't need to check their access here.
+				if ( ! select( CORE_USER ).isAuthenticated() ) {
+					return true;
+				}
+
+				// Make sure the user has access to the Analytics 4 module,
+				// which is required to view the Site Goals modal.
+				return (
+					( await resolveSelect( CORE_MODULES ).hasModuleAccess(
+						MODULE_SLUG_ANALYTICS_4
+					) ) === true
+				);
+			}
+		),
 	},
 };
 

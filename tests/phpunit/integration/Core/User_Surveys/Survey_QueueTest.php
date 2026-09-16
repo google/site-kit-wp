@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\User_Surveys;
 
 use Google\Site_Kit\Context;
@@ -83,12 +81,13 @@ class Survey_QueueTest extends TestCase {
 	public function test_enqueue() {
 		$added = $this->queue->enqueue( $this->survey1 );
 
-		$this->assertTrue( $added );
+		$this->assertTrue( $added, 'New survey should be added to the queue.' );
 		$this->assertEquals(
 			array(
 				$this->survey1,
 			),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Queue should persist the newly added survey.'
 		);
 	}
 
@@ -97,12 +96,13 @@ class Survey_QueueTest extends TestCase {
 
 		$added = $this->queue->enqueue( $this->survey1 );
 
-		$this->assertFalse( $added );
+		$this->assertFalse( $added, 'Survey already in the queue should not be added again.' );
 		$this->assertEquals(
 			array(
 				$this->survey1,
 			),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Duplicate enqueue should leave the existing queue unchanged.'
 		);
 	}
 
@@ -118,10 +118,11 @@ class Survey_QueueTest extends TestCase {
 
 		$survey = $this->queue->dequeue( $this->survey2['survey_id'] );
 
-		$this->assertEquals( $survey, $this->survey2 );
+		$this->assertEquals( $survey, $this->survey2, 'Dequeue should return the survey matching the requested ID.' );
 		$this->assertEquals(
 			array( $this->survey1, $this->survey3 ),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Dequeue should remove only the matching survey.'
 		);
 	}
 
@@ -133,10 +134,11 @@ class Survey_QueueTest extends TestCase {
 
 		$survey = $this->queue->dequeue( 'survey_id_4' );
 
-		$this->assertNull( $survey );
+		$this->assertNull( $survey, 'Dequeue should return null when no survey matches the requested ID.' );
 		$this->assertEquals(
 			array( $this->survey1, $this->survey2, $this->survey3 ),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Dequeue of an unknown survey should leave the queue unchanged.'
 		);
 	}
 
@@ -152,16 +154,17 @@ class Survey_QueueTest extends TestCase {
 
 		$survey = $this->queue->front();
 
-		$this->assertEquals( $survey, $this->survey2 );
+		$this->assertEquals( $survey, $this->survey2, 'Front should return the first survey in the queue.' );
 		$this->assertEquals(
 			array( $this->survey2, $this->survey1, $this->survey3 ),
-			$this->user_options->get( Survey_Queue::OPTION )
+			$this->user_options->get( Survey_Queue::OPTION ),
+			'Reading the front survey should not modify queue order.'
 		);
 	}
 
 	public function test_front_empty_queue() {
 		$survey = $this->queue->front();
-		$this->assertNull( $survey );
+		$this->assertNull( $survey, 'Front should return null for an empty queue.' );
 	}
 
 	public function test_find_by_session() {
@@ -171,7 +174,7 @@ class Survey_QueueTest extends TestCase {
 		);
 
 		$survey = $this->queue->find_by_session( $this->survey3['session'] );
-		$this->assertEquals( $survey, $this->survey3 );
+		$this->assertEquals( $survey, $this->survey3, 'Session lookup should return the survey with the matching session.' );
 	}
 
 	public function test_find_by_session_not_found() {
@@ -181,6 +184,6 @@ class Survey_QueueTest extends TestCase {
 		);
 
 		$survey = $this->queue->find_by_session( $this->survey3['session'] );
-		$this->assertNull( $survey );
+		$this->assertNull( $survey, 'Session lookup should return null when the session is not queued.' );
 	}
 }

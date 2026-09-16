@@ -128,7 +128,9 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 			},
 		] );
 
-		mocked( useQueryArg ).mockImplementation( ( arg ) => {
+		// `useQueryArg` is generic over the query arg value, so its mock
+		// implementation is cast to the hook's own signature.
+		mocked( useQueryArg ).mockImplementation( ( ( arg: string ) => {
 			switch ( arg ) {
 				case 'notification':
 					return [ 'authentication_success', setValueMock ];
@@ -137,7 +139,7 @@ describe( 'RRMSetupSuccessSubtleNotification', () => {
 				default:
 					return [ null, setValueMock ];
 			}
-		} );
+		} ) as unknown as typeof useQueryArg );
 
 		// Provide fallback for `window.open`.
 		global.open = jest.fn();

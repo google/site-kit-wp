@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Core\Authentication\Credentials;
@@ -52,10 +50,16 @@ trait OptionsTestTrait {
 		foreach ( $this->get_option_keys() as $option_name ) {
 			if ( $is_network_mode ) {
 				remove_all_filters( "default_site_option_$option_name" );
-				$this->assertFalse( get_network_option( null, $option_name ) );
+				$this->assertFalse(
+					get_network_option( null, $option_name ),
+					"{$option_name} network option should no longer exist."
+				);
 			} else {
 				remove_all_filters( "default_option_$option_name" );
-				$this->assertFalse( get_option( $option_name ) );
+				$this->assertFalse(
+					get_option( $option_name ),
+					"{$option_name} option should no longer exist."
+				);
 			}
 		}
 	}

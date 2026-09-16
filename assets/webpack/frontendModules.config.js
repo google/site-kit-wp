@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -31,28 +32,30 @@ const {
 	resolve,
 } = require( '../../webpack/common' );
 
-module.exports = ( mode ) => ( {
+module.exports = ( mode, ANALYZE ) => ( {
 	name: 'Frontend Modules',
 	entry: {
 		// Consent mode
-		'googlesitekit-consent-mode': './js/consent-mode/consent-mode.js',
+		'googlesitekit-consent-mode': './js/consent-mode/consent-mode.ts',
 		// Event Providers
 		'googlesitekit-events-provider-contact-form-7':
-			'./js/event-providers/contact-form-7.js',
+			'./js/event-providers/contact-form-7.ts',
+		'googlesitekit-events-provider-content-events':
+			'./js/event-providers/content-events.ts',
 		'googlesitekit-events-provider-easy-digital-downloads':
-			'./js/event-providers/easy-digital-downloads.js',
+			'./js/event-providers/easy-digital-downloads.ts',
 		'googlesitekit-events-provider-mailchimp':
-			'./js/event-providers/mailchimp.js',
+			'./js/event-providers/mailchimp.ts',
 		'googlesitekit-events-provider-ninja-forms':
-			'./js/event-providers/ninja-forms.js',
+			'./js/event-providers/ninja-forms.ts',
 		'googlesitekit-events-provider-optin-monster':
-			'./js/event-providers/optin-monster.js',
+			'./js/event-providers/optin-monster.ts',
 		'googlesitekit-events-provider-popup-maker':
-			'./js/event-providers/popup-maker.js',
+			'./js/event-providers/popup-maker.ts',
 		'googlesitekit-events-provider-woocommerce':
-			'./js/event-providers/woocommerce.js',
+			'./js/event-providers/woocommerce.ts',
 		'googlesitekit-events-provider-wpforms':
-			'./js/event-providers/wpforms.js',
+			'./js/event-providers/wpforms.ts',
 	},
 	externals,
 	output: {
@@ -64,7 +67,7 @@ module.exports = ( mode ) => ( {
 	module: {
 		rules: [
 			{
-				test: /\.js$/,
+				test: /\.tsx?$/,
 				exclude: /node_modules/,
 				use: [
 					{
@@ -75,6 +78,7 @@ module.exports = ( mode ) => ( {
 							configFile: false,
 							cacheDirectory: true,
 							presets: [
+								'@babel/preset-typescript',
 								[
 									'@babel/preset-env',
 									{
@@ -97,6 +101,17 @@ module.exports = ( mode ) => ( {
 				return ( file.name || '' ).match( /\.js$/ );
 			},
 		} ),
+		...( ANALYZE
+			? [
+					new BundleAnalyzerPlugin( {
+						analyzerMode: 'static',
+						analyzerPort: 'auto',
+						openAnalyzer: true,
+						reportFilename: 'frontend-modules-report.html',
+						reportTitle: 'Frontend Modules',
+					} ),
+			  ]
+			: [] ),
 	],
 	optimization: {
 		concatenateModules: true,

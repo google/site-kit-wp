@@ -278,6 +278,10 @@ class WooCommerce extends Conversion_Events_Provider {
 						sprintf( 'window._googlesitekit.wcdata.products = %s;', wp_json_encode( $this->products ) ),
 						sprintf( 'window._googlesitekit.wcdata.add_to_cart = %s;', wp_json_encode( $this->add_to_cart ) ),
 						sprintf( 'window._googlesitekit.wcdata.currency = "%s";', esc_js( get_woocommerce_currency() ) ),
+						// `get_formatted_price()` multiplies every price on this page by ten to the power
+						// of the store's decimal places. `assets/js/event-providers/woocommerce.js` needs
+						// this number to divide the price back out.
+						sprintf( 'window._googlesitekit.wcdata.currencyMinorUnit = %s;', wp_json_encode( absint( wc_get_price_decimals() ) ) ),
 						sprintf( 'window._googlesitekit.wcdata.eventsToTrack = %s;', wp_json_encode( $events_to_track ) ),
 					)
 				);
@@ -295,7 +299,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of product data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -366,7 +370,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Returns an array of order data in the required format.
-	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Adapted from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -581,7 +585,7 @@ class WooCommerce extends Conversion_Events_Provider {
 
 	/**
 	 * Formats a price the same way WooCommerce Blocks does.
-	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration
+	 * Taken from https://github.com/woocommerce/woocommerce-google-analytics-integration.
 	 *
 	 * @since 1.153.0
 	 *
@@ -620,7 +624,11 @@ class WooCommerce extends Conversion_Events_Provider {
 		// If there isn't a valid order for this ID, or if this order
 		// already has a purchase event tracked for it, return early
 		// and don't output the script tag to track the purchase event.
-		if ( ! $order || $order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1' ) {
+		if (
+			! $order ||
+			! $order instanceof WC_Order ||
+			$order->get_meta( '_googlesitekit_ga_purchase_event_tracked' ) === '1'
+		) {
 			return;
 		}
 

@@ -61,6 +61,18 @@ export const SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS = Object.keys(
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDER_LABELS
 );
 
+export const SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS: Record<
+	string,
+	string
+> = {
+	'contact-form-7': 'Contact Form 7',
+	'ninja-forms': 'Ninja Forms',
+	wpforms: 'WPForms',
+	mailchimp: 'Mailchimp for WordPress',
+	'popup-maker': 'Popup Maker',
+	'optin-monster': 'OptinMonster',
+};
+
 export const SITE_GOALS_BREAKDOWN_NOTIFICATION = 'site_goals_breakdown';
 
 export const BREAKDOWN_ORIGIN_WIDGET = 'widget';
@@ -90,6 +102,13 @@ export const SITE_GOALS_DEFAULT_SELECTED_VISITOR_ENGAGEMENT = {
 	[ GOAL_TYPES.LEAD ]: [],
 };
 
+export const SITE_GOALS_SURVEY_TRIGGER_NOT_INTERACTED =
+	'view_site_goals_not_interacted';
+export const SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN =
+	'view_site_goals_no_breakdown';
+export const SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED =
+	'view_site_goals_breakdown_enabled';
+
 export const SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE =
 	'site_goals_widget_online_store';
 export const SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION =
@@ -105,5 +124,5 @@ export const SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE = {
 };
 
 // Placeholder for the downvote "Tell us more" Google Form URL. Replace it once
-// the real URL is ready. Tracked in #12727.
+// the real URL is ready. Tracked in #13447. (Currently unused.)
 export const SITE_GOALS_THUMBS_DOWNVOTE_FORM_URL = '#';

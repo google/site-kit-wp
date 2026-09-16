@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies.
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -32,7 +27,9 @@ import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixture
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	muteFetch,
@@ -43,13 +40,10 @@ import {
 import { AUDIENCE_INFO_NOTICES, AUDIENCE_INFO_NOTICE_SLUG } from './constants';
 import InfoNoticeWidget from '.';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
 
 describe( 'InfoNoticeWidget', () => {
 	let registry;
@@ -57,11 +51,6 @@ describe( 'InfoNoticeWidget', () => {
 	let dismissPromptSpy;
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -376,7 +365,7 @@ describe( 'InfoNoticeWidget', () => {
 	)(
 		'for the "%s" notice, when dismiss count is %d',
 		( content, dismissCount, slug ) => {
-			let getByText, getByRole, rerender;
+			let getByText, getByRole;
 
 			beforeEach( () => {
 				registry
@@ -397,7 +386,7 @@ describe( 'InfoNoticeWidget', () => {
 					},
 				} );
 
-				( { getByRole, getByText, rerender } = render(
+				( { getByRole, getByText } = render(
 					<WidgetWithComponentProps />,
 					{
 						registry,
@@ -413,13 +402,10 @@ describe( 'InfoNoticeWidget', () => {
 			it( 'should track an event when the notice is viewed', () => {
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
-				// Simulate the CTA becoming visible.
-				mockUseIntersection.mockImplementation( () => ( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} ) );
-
-				rerender( <WidgetWithComponentProps /> );
+				// Simulate the notice coming into view.
+				act( () => {
+					simulateAllIntersections( true );
+				} );
 
 				expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 				expect( mockTrackEvent ).toHaveBeenCalledWith(

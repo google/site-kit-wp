@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
@@ -30,6 +25,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -43,24 +39,16 @@ import {
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import AudienceSegmentationErrorWidget from '.';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
 
 describe( 'AudienceSegmentationErrorWidget', () => {
 	let registry;
 	let originalViewportWidth;
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -87,12 +75,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	)( AudienceSegmentationErrorWidget );
 
 	describe( 'default error state', () => {
-		let container,
-			getByText,
-			getByRole,
-			queryByText,
-			rerender,
-			waitForRegistry;
+		let container, getByText, getByRole, queryByText, waitForRegistry;
 
 		beforeEach( async () => {
 			await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
@@ -129,7 +112,6 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 				getByText,
 				getByRole,
 				queryByText,
-				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
@@ -158,17 +140,12 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		} );
 
 		it( 'should track an event when the widget is viewed', () => {
-			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
-
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps errors={ errors } /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-all-tiles',
@@ -192,12 +169,7 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 	} );
 
 	describe( 'insufficient permissions error state', () => {
-		let container,
-			getByText,
-			getByRole,
-			queryByText,
-			rerender,
-			waitForRegistry;
+		let container, getByText, getByRole, queryByText, waitForRegistry;
 
 		beforeEach( async () => {
 			const [ accountID, propertyID, measurementID, webDataStreamID ] = [
@@ -237,7 +209,6 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 				getByText,
 				getByRole,
 				queryByText,
-				rerender,
 				waitForRegistry,
 			} = render( <WidgetWithComponentProps errors={ errors } />, {
 				registry,
@@ -272,17 +243,12 @@ describe( 'AudienceSegmentationErrorWidget', () => {
 		} );
 
 		it( 'should track an event when the widget is viewed', () => {
-			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
-
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps errors={ errors } /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				'mainDashboard_audiences-all-tiles',

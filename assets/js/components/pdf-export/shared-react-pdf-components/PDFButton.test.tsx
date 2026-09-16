@@ -31,7 +31,7 @@ import PDFButton from './PDFButton';
 /**
  * Renders the button and returns the test renderer's JSON tree.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the button.
  * @return The rendered tree.

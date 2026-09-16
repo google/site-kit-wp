@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Prompts;
 
 use Google\Site_Kit\Context;
@@ -41,7 +38,10 @@ class Dismissed_PromptsTest extends TestCase {
 	}
 
 	public function test_add() {
-		$this->assertEmpty( $this->user_options->get( Dismissed_Prompts::OPTION ) );
+		$this->assertEmpty(
+			$this->user_options->get( Dismissed_Prompts::OPTION ),
+			'Dismissed prompts should initially be empty.'
+		);
 
 		$this->dismissed_prompts->add( 'foo' );
 		$this->assertEquals(
@@ -51,19 +51,20 @@ class Dismissed_PromptsTest extends TestCase {
 					'count'   => 1,
 				),
 			),
-			$this->user_options->get( Dismissed_Prompts::OPTION )
+			$this->user_options->get( Dismissed_Prompts::OPTION ),
+			'Prompt without an expiration should be stored with one dismissal and no expiry.'
 		);
 
 		$this->dismissed_prompts->add( 'bar', 100 );
 
 		$prompt_response = $this->user_options->get( Dismissed_Prompts::OPTION );
 		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
-		$this->assertArrayHasKey( 'foo', $prompt_response );
-		$this->assertArrayHasKey( 'bar', $prompt_response );
-		$this->assertEquals( 0, $prompt_response['foo']['expires'] );
-		$this->assertEquals( 1, $prompt_response['foo']['count'] );
-		$this->assertEqualsWithDelta( time() + 100, $prompt_response['bar']['expires'], 2 );
-		$this->assertEquals( 1, $prompt_response['bar']['count'] );
+		$this->assertArrayHasKey( 'foo', $prompt_response, 'Previously dismissed prompt should remain stored.' );
+		$this->assertArrayHasKey( 'bar', $prompt_response, 'Newly dismissed prompt should be stored.' );
+		$this->assertEquals( 0, $prompt_response['foo']['expires'], 'Prompt dismissed without expiration should not expire.' );
+		$this->assertEquals( 1, $prompt_response['foo']['count'], 'First prompt dismissal should have a count of one.' );
+		$this->assertEqualsWithDelta( time() + 100, $prompt_response['bar']['expires'], 2, 'Prompt expiration should be based on the requested duration.' );
+		$this->assertEquals( 1, $prompt_response['bar']['count'], 'New prompt dismissal should have a count of one.' );
 	}
 
 	public function test_remove() {
@@ -83,12 +84,12 @@ class Dismissed_PromptsTest extends TestCase {
 
 		$prompt_response = $this->user_options->get( Dismissed_Prompts::OPTION );
 		// The asserts are split to use assertEqualsWithDelta for the time based assertion.
-		$this->assertArrayHasKey( 'foo', $prompt_response );
-		$this->assertArrayHasKey( 'bar', $prompt_response );
-		$this->assertEquals( 0, $prompt_response['foo']['expires'] );
-		$this->assertEquals( 1, $prompt_response['foo']['count'] );
-		$this->assertEqualsWithDelta( time() + 100, $prompt_response['bar']['expires'], 2 );
-		$this->assertEquals( 1, $prompt_response['bar']['count'] );
+		$this->assertArrayHasKey( 'foo', $prompt_response, 'Permanent prompt dismissal should exist before removal.' );
+		$this->assertArrayHasKey( 'bar', $prompt_response, 'Expiring prompt dismissal should exist before removal.' );
+		$this->assertEquals( 0, $prompt_response['foo']['expires'], 'Permanent prompt dismissal should have no expiry.' );
+		$this->assertEquals( 1, $prompt_response['foo']['count'], 'Permanent prompt should have been dismissed once.' );
+		$this->assertEqualsWithDelta( time() + 100, $prompt_response['bar']['expires'], 2, 'Expiring prompt should retain its expiration timestamp.' );
+		$this->assertEquals( 1, $prompt_response['bar']['count'], 'Expiring prompt should have been dismissed once.' );
 
 		$this->dismissed_prompts->remove( 'bar' );
 
@@ -99,7 +100,8 @@ class Dismissed_PromptsTest extends TestCase {
 					'count'   => 1,
 				),
 			),
-			$this->user_options->get( Dismissed_Prompts::OPTION )
+			$this->user_options->get( Dismissed_Prompts::OPTION ),
+			'Removing a prompt dismissal should preserve other dismissed prompts.'
 		);
 
 		// If the prompt is not in dismissed prompts, there should be no change.
@@ -112,7 +114,8 @@ class Dismissed_PromptsTest extends TestCase {
 					'count'   => 1,
 				),
 			),
-			$this->user_options->get( Dismissed_Prompts::OPTION )
+			$this->user_options->get( Dismissed_Prompts::OPTION ),
+			'Removing an unknown prompt dismissal should not change stored prompts.'
 		);
 	}
 }

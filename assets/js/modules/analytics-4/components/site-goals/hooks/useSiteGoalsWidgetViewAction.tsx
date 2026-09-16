@@ -44,7 +44,7 @@ interface UseSiteGoalsWidgetViewActionOptions {
  * data" badge, or the tabbed breakdown with the full selected date range
  * covered.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param {Object}  options                    Hook options.
  * @param {string}  options.breakdownDimension The breakdown custom dimension slug for this goal type.

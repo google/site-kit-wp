@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * Internal dependencies
  */
 import {
@@ -36,8 +31,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { availableAudiences } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
-import { fireEvent, render } from '@tests/js/test-utils';
+import {
+	mockIntersectionObserver,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	muteFetch,
@@ -48,16 +46,13 @@ import {
 } from '@tests/js/utils';
 import NoAudienceBannerWidget from '.';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'NoAudienceBannerWidget', () => {
 	mockLocation();
+
+	const { simulateAllIntersections } = mockIntersectionObserver();
 
 	let registry;
 
@@ -70,11 +65,6 @@ describe( 'NoAudienceBannerWidget', () => {
 	);
 
 	beforeEach( () => {
-		mockUseIntersection.mockImplementation( () => ( {
-			isIntersecting: false,
-			intersectionRatio: 0,
-		} ) );
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -180,7 +170,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with an authenticated user who's never populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -194,7 +184,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -247,12 +237,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -292,7 +279,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with an authenticated user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			provideSiteInfo( registry );
@@ -306,7 +293,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -363,12 +350,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -410,7 +394,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with a view-only user who's never populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			registry
@@ -422,7 +406,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: false,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -462,12 +446,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
@@ -493,7 +474,7 @@ describe( 'NoAudienceBannerWidget', () => {
 	} );
 
 	describe( "with a view-only user who's previously populated their audience selection", () => {
-		let container, getByRole, getByText, rerender;
+		let container, getByRole, getByText;
 
 		beforeEach( () => {
 			registry
@@ -505,7 +486,7 @@ describe( 'NoAudienceBannerWidget', () => {
 				didSetAudiences: true,
 			} );
 
-			( { container, getByRole, getByText, rerender } = render(
+			( { container, getByRole, getByText } = render(
 				<WidgetWithComponentProps />,
 				{
 					registry,
@@ -549,12 +530,9 @@ describe( 'NoAudienceBannerWidget', () => {
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 0 );
 
 			// Simulate the CTA becoming visible.
-			mockUseIntersection.mockImplementation( () => ( {
-				isIntersecting: true,
-				intersectionRatio: 1,
-			} ) );
-
-			rerender( <WidgetWithComponentProps /> );
+			act( () => {
+				simulateAllIntersections( true );
+			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

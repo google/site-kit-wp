@@ -7,9 +7,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Tags\Google_Tag_Gateway;
 
 use Google\Site_Kit\Context;
@@ -76,8 +73,14 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		$this->controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Google tag gateway settings REST routes should be registered.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'Google tag gateway settings endpoint should be added to API fetch preload paths.'
+		);
 	}
 
 	public function test_get_settings() {
@@ -99,7 +102,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/gtg-settings' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'Google tag gateway settings response should contain the stored settings.' );
 	}
 
 	public function test_get_settings__requires_authenticated_admin() {
@@ -121,7 +124,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated users should not be able to read Google tag gateway settings.' );
 	}
 
 	public function test_set_settings() {
@@ -158,7 +161,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $response->get_data(), 'Google tag gateway settings update response should contain the changed settings.' );
 	}
 
 	public function test_set_settings__requires_authenticated_admin() {
@@ -190,7 +193,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated users should not be able to update Google tag gateway settings.' );
 	}
 
 	/**
@@ -211,8 +214,8 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 		);
 
 		$response = rest_get_server()->dispatch( $request );
-		$this->assertEquals( 400, $response->get_status() );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'] );
+		$this->assertEquals( 400, $response->get_status(), 'Invalid Google tag gateway settings should return a bad-request response.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'Invalid Google tag gateway settings should identify the invalid parameter.' );
 	}
 
 	public function provider_wrong_settings_data() {
@@ -288,7 +291,8 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 				'isGTGHealthy'          => $expected_settings['isGTGHealthy'],
 				'isScriptAccessEnabled' => $expected_settings['isScriptAccessEnabled'],
 			),
-			$response->get_data()
+			$response->get_data(),
+			'Server requirement response should contain the detected Google tag gateway health states.'
 		);
 	}
 
@@ -357,7 +361,7 @@ class REST_Google_Tag_Gateway_ControllerTest extends TestCase {
 
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated users should not be able to check Google tag gateway server requirements.' );
 	}
 
 	private function grant_manage_options_permission() {

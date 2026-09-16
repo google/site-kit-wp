@@ -35,6 +35,12 @@ async function proceedToSetUpAnalytics() {
 
 async function assertSetupSuccessful() {
 	await step( 'see setup success notification', async () => {
+		// Completing setup redirects to the dashboard where the success notice
+		// is shown. Wait for that navigation to finish before querying for the
+		// notice, otherwise the execution context can be destroyed mid-query
+		// ("Cannot find context with specified id"). Mirrors the pattern used
+		// in setup-with-account-no-tag.test.js.
+		await page.waitForNavigation();
 		// While a 10s wait has not been observed, the default 5s timeout often failed here.
 		await page.waitForSelector( '.googlesitekit-notice__title', {
 			timeout: 10_000,

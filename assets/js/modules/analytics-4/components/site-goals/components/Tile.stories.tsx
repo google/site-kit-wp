@@ -52,7 +52,7 @@ function Template( {
 export const DefaultTile = Template.bind( {} ) as Story< TileProps >;
 DefaultTile.storyName = 'Default Tile';
 DefaultTile.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 1234,
 	previousValue: 1100,
@@ -98,7 +98,7 @@ PrimaryNeutralTile.scenario = {};
 export const PercentFormat = Template.bind( {} ) as Story< TileProps >;
 PercentFormat.storyName = 'Percent Format';
 PercentFormat.args = {
-	title: 'Conversion Rate',
+	title: 'Conversion rate',
 	subtitle: 'Of sessions',
 	currentValue: 0.042,
 	previousValue: 0.038,
@@ -108,7 +108,7 @@ PercentFormat.args = {
 export const WithInfoTooltip = Template.bind( {} ) as Story< TileProps >;
 WithInfoTooltip.storyName = 'With Info Tooltip';
 WithInfoTooltip.args = {
-	title: 'Add to Cart',
+	title: 'Add to cart',
 	subtitle: 'Total events',
 	infoTooltip: 'Number of times users added a product to their cart.',
 	currentValue: 874,
@@ -120,7 +120,7 @@ WithInfoTooltip.scenario = {};
 export const NegativeChange = Template.bind( {} ) as Story< TileProps >;
 NegativeChange.storyName = 'Negative Change';
 NegativeChange.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 980,
 	previousValue: 1200,
@@ -130,7 +130,7 @@ NegativeChange.args = {
 export const NoChange = Template.bind( {} ) as Story< TileProps >;
 NoChange.storyName = 'No Change';
 NoChange.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 980,
 	previousValue: 980,
@@ -141,7 +141,7 @@ NoChange.scenario = {};
 export const ZeroDataPreviousRange = Template.bind( {} ) as Story< TileProps >;
 ZeroDataPreviousRange.storyName = 'Zero Data (Previous Range)';
 ZeroDataPreviousRange.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 980,
 	previousValue: 0,
@@ -151,7 +151,7 @@ ZeroDataPreviousRange.args = {
 export const ZeroDataBothRanges = Template.bind( {} ) as Story< TileProps >;
 ZeroDataBothRanges.storyName = 'Zero Data (Both Ranges)';
 ZeroDataBothRanges.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 0,
 	previousValue: 0,
@@ -162,7 +162,7 @@ ZeroDataBothRanges.scenario = {};
 export const CustomDateRange = Template.bind( {} ) as Story< TileProps >;
 CustomDateRange.storyName = 'Custom Date Range (90 days)';
 CustomDateRange.args = {
-	title: 'Form Submissions',
+	title: 'Form submissions',
 	subtitle: 'Total submissions',
 	currentValue: 3600,
 	previousValue: 3100,

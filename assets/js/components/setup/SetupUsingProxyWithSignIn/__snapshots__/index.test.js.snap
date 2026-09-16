@@ -27,7 +27,6 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -189,27 +188,6 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -407,7 +385,6 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -569,27 +546,6 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -842,7 +798,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1004,27 +959,6 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -1277,7 +1211,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1358,27 +1291,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -1669,7 +1581,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -1750,27 +1661,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -1981,7 +1871,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -2062,27 +1951,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -2373,7 +2241,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -2454,27 +2321,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li
@@ -2765,7 +2611,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 class="googlesitekit-logo"
               >
                 <svg />
-                <svg />
                 <span
                   class="screen-reader-text"
                 >
@@ -2846,27 +2691,6 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                         wapuu.wordpress@gmail.com
                       </p>
                     </div>
-                  </div>
-                </li>
-                <li
-                  class="mdc-list-item"
-                  id="manage-email-reports"
-                  role="menuitem"
-                  tabindex="-1"
-                >
-                  <div
-                    class="googlesitekit-user-menu__item"
-                  >
-                    <div
-                      class="googlesitekit-user-menu__item-icon"
-                    >
-                      <svg />
-                    </div>
-                    <span
-                      class="googlesitekit-user-menu__item-label"
-                    >
-                      Manage email reports
-                    </span>
                   </div>
                 </li>
                 <li

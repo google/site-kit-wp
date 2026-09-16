@@ -30,10 +30,10 @@ class ScreenTest extends TestCase {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$this->assertFalse( is_user_logged_in(), 'No user should be logged in initially.' );
 
-		// No args, no user
+		// No args, no user.
 		$screen = new Screen( 'test-slug', array() );
 		$this->assertEquals( '', $screen->add( $context ), 'Screen should not be added when no user is logged in.' );
-		// With callback, no user
+		// With callback, no user.
 		$screen = new Screen(
 			'test-slug',
 			array(
@@ -43,25 +43,25 @@ class ScreenTest extends TestCase {
 		);
 		$this->assertEquals( '', $screen->add( $context ), 'Screen should not be added when no user is logged in, even with callback.' );
 
-		// Login basic user
+		// Login basic user.
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 
-		// No args, with user
+		// No args, with user.
 		$screen = new Screen( 'test-slug', array() );
 		$this->assertEquals( '', $screen->add( $context ), 'Screen should not be added when user lacks permissions.' );
-		// With callback, user without permission
+		// With callback, user without permission.
 		$this->assertFalse( user_can( $user_id, 'manage_options' ), 'Basic user should not have manage_options capability.' );
 		$this->assertEquals( '', $screen->add( $context ), 'Screen should not be added when user lacks permissions, even with callback.' );
 
-		// Login admin
+		// Login admin.
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $admin_id );
 		$this->assertTrue( user_can( $admin_id, 'manage_options' ), 'Administrator should have manage_options capability.' );
-		// No callback, with user, with permission
+		// No callback, with user, with permission.
 		$this->assertEquals( 'toplevel_page_test-slug', $screen->add( $context ), 'Screen should be added when admin user is logged in.' );
 
-		// With callback, with user, with permission
+		// With callback, with user, with permission.
 		$screen = new Screen(
 			'test-slug',
 			array(

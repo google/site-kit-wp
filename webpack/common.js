@@ -159,6 +159,7 @@ exports.manifestArgs = ( mode ) => ( {
 const siteKitExternals = {
 	'googlesitekit-api': [ 'googlesitekit', 'api' ],
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
+	'googlesitekit-feature-discovery': [ 'googlesitekit', 'featureDiscovery' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
@@ -170,6 +171,61 @@ exports.siteKitExternals = siteKitExternals;
 
 exports.externals = { ...siteKitExternals };
 
+/**
+ * SVGR replaces its default SVGO configuration with a custom one rather than
+ * merging the two. So this object sets SVGR's own defaults,
+ * `removeViewBox: false` and `prefixIds`, next to the override below.
+ */
+const svgoConfig = {
+	plugins: [
+		{
+			name: 'preset-default',
+			params: {
+				overrides: {
+					removeViewBox: false,
+					// Curve-to-arc conversion is lossy and visibly distorts
+					// exactly overlapping shapes.
+					convertPathData: false,
+					// A path-level `fill="none"` duplicates the root's value,
+					// but it is what protects stroke-based icons from
+					// container CSS that sets `fill` on the svg element.
+					removeUnknownsAndDefaults: {
+						uselessOverrides: false,
+					},
+				},
+			},
+		},
+		'prefixIds',
+	],
+};
+
+/**
+ * Renders a source SVG file with `@react-pdf/renderer` primitives.
+ *
+ * The library parses no SVG markup and draws its own `Svg`, `Path`, and `G`
+ * components. SVGR's `native` mode already renames each element to that set, so
+ * this template only redirects the import. An element that the library doesn't
+ * export fails at render, rather than dropping a shape with no error.
+ *
+ * @since 1.184.0
+ *
+ * @param {Object}   variables               The component name and the JSX that SVGR built from the file.
+ * @param {string}   variables.componentName The generated component's name.
+ * @param {Object}   variables.jsx           The drawing, as JSX.
+ * @param {Object}   context                 SVGR's template helpers.
+ * @param {Function} context.tpl             SVGR's Babel template tag.
+ * @return {Object} The generated module's AST.
+ */
+function reactPDFTemplate( variables, { tpl } ) {
+	return tpl`
+import { Circle, ClipPath, Defs, Ellipse, G, Image, Line, LinearGradient, Path, Polygon, Polyline, RadialGradient, Rect, Stop, Svg, Text, Tspan } from '@react-pdf/renderer';
+
+const ${ variables.componentName } = ( props ) => ${ variables.jsx };
+
+export default ${ variables.componentName };
+`;
+}
+
 const svgRule = {
 	test: /\.svg$/,
 	oneOf: [
@@ -178,12 +234,41 @@ const svgRule = {
 			use: 'url-loader',
 		},
 		{
+			// A PDF icon imports its source SVG with `?pdf`. The report then
+			// renders the whole drawing: every shape, each shape's own fill,
+			// and the fill rule. `currentColor` becomes the caller's `color`.
+			resourceQuery: /pdf/,
 			use: [
 				{
 					loader: '@svgr/webpack',
 					options: {
-						// strip width & height to allow manual override using props
+						native: true,
 						dimensions: false,
+						template: reactPDFTemplate,
+						replaceAttrValues: {
+							currentColor: '{props.color}',
+						},
+						svgoConfig,
+					},
+				},
+			],
+		},
+		{
+			resourceQuery: /path/,
+			type: 'asset/resource',
+			generator: {
+				filename: 'images/[name]-[contenthash][ext]',
+			},
+		},
+		{
+			use: [
+				{
+					loader: '@svgr/webpack',
+					options: {
+						// Strip width & height attributes in SVGs to allow
+						// manual override using props.
+						dimensions: false,
+						svgoConfig,
 					},
 				},
 			],
@@ -203,9 +288,24 @@ const ttfRule = {
 
 exports.ttfRule = ttfRule;
 
+/**
+ * An import of a PNG never reads the picture. Webpack copies the file into the
+ * build folder under a unique name, and the import holds the URL of that copy.
+ */
+const pngRule = {
+	test: /\.png$/,
+	type: 'asset/resource',
+	generator: {
+		filename: 'images/[name]-[contenthash][ext]',
+	},
+};
+
+exports.pngRule = pngRule;
+
 exports.createRules = ( mode ) => [
 	svgRule,
 	ttfRule,
+	pngRule,
 	{
 		test: /\.tsx?$/,
 		exclude: /node_modules/,

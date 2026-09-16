@@ -110,56 +110,6 @@
 			height: 26px;
 		}
 
-		.googlesitekit-view-only-menu__email-reporting {
-			padding: 0;
-			transition: background-color 0.3s;
-
-			&:hover {
-				background-color: $c-interactive-tertiary-hover;
-			}
-		}
-
-		.googlesitekit-view-only-menu__email-reporting-item {
-			color: $c-surfaces-on-surface;
-			display: flex;
-			gap: 8px;
-			justify-content: flex-start;
-			margin-bottom: 0;
-			padding: 0 $grid-gap-phone;
-			width: 100%;
-
-			&:hover {
-				background: transparent;
-			}
-
-			&::after,
-			&::before {
-				background-color: transparent;
-			}
-
-			&.mdc-ripple-upgraded--background-focused {
-				background-color: transparent;
-			}
-
-			svg {
-				padding: 2px;
-				width: 24px;
-			}
-		}
-
-		.googlesitekit-view-only-menu__email-reporting-item--icon {
-			align-items: center;
-			display: flex;
-			flex: 0 0 24px;
-			justify-content: center;
-			margin-right: 7px;
-		}
-
-		.googlesitekit-view-only-menu__email-reporting-item--name {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
-		}
-
 		.googlesitekit-view-only-menu__service--name {
 			color: $c-surfaces-on-background-variant;
 			font-size: $fs-body-md;

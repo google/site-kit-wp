@@ -31,12 +31,14 @@ import {
 	PDF_FONT_FAMILY_DISPLAY,
 	PDF_FONT_FAMILY_TEXT,
 } from '@/js/components/pdf-export/pdf-theme';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
+import PDFLink from './PDFLink';
 import PDFTypography from './PDFTypography';
 
 /**
  * Merges a style array into one object, so assertions read one flat style.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param style A style object, or the style array `@react-pdf` renders.
  * @return One object holding every style property.
@@ -50,7 +52,7 @@ function flattenStyle(
 /**
  * Renders the text and returns its flattened style object.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props for the text.
  * @return One object holding every style property of the text.
@@ -145,5 +147,78 @@ describe( 'PDFTypography', () => {
 			color: '#108080',
 			marginTop: 4,
 		} );
+	} );
+
+	it( 'truncates the text to one line with an ellipsis when truncateContent is true', () => {
+		const json = renderJSON(
+			<PDFTypography truncateContent>
+				A very long page title
+			</PDFTypography>
+		);
+
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain( '"maxLines":1' );
+	} );
+
+	it( 'sizes the text to the width the row leaves and keeps a 20px gap after it when truncateContent is true', () => {
+		const json = renderJSON(
+			<PDFTypography truncateContent>
+				A very long page title
+			</PDFTypography>
+		);
+
+		expect( json ).toContain(
+			`"flexGrow":1,"flexShrink":1,"flexBasis":0,"marginRight":${
+				20 * PDF_SCALE
+			}`
+		);
+	} );
+
+	it( 'cuts a linked text at one line and keeps its link when truncateContent is true', () => {
+		const json = renderJSON(
+			<PDFTypography truncateContent>
+				<PDFLink href="https://example.com/report/home">
+					A very long page title
+				</PDFLink>
+			</PDFTypography>
+		);
+
+		expect( json ).toContain( '"src":"https://example.com/report/home"' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain( '"maxLines":1' );
+	} );
+
+	it( "renders the text in the style's color without dropping the ellipsis style when truncateContent is true", () => {
+		const json = renderJSON(
+			<PDFTypography
+				style={ { color: PDF_COLORS.CONTENT_SECONDARY } }
+				truncateContent
+			>
+				A very long page title
+			</PDFTypography>
+		);
+
+		expect( json ).toContain( PDF_COLORS.CONTENT_SECONDARY );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+	} );
+
+	it( 'cuts the text at the maxLines limit and ends it in an ellipsis when truncateContent is true and maxLines is set', () => {
+		const json = renderJSON(
+			<PDFTypography maxLines={ 2 } truncateContent>
+				A very long page title
+			</PDFTypography>
+		);
+
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).toContain( '"maxLines":2' );
+	} );
+
+	it( 'renders the whole text and adds no ellipsis when truncateContent is false', () => {
+		const json = renderJSON(
+			<PDFTypography>A very long page title</PDFTypography>
+		);
+
+		expect( json ).not.toContain( '"textOverflow":"ellipsis"' );
+		expect( json ).not.toContain( 'pdf-view' );
 	} );
 } );

@@ -56,7 +56,7 @@ export default function SettingsPlugin() {
 	return (
 		<Layout
 			className="googlesitekit-settings-meta"
-			title={ __( 'Plugin Settings', 'google-site-kit' ) }
+			title={ __( 'Plugin settings', 'google-site-kit' ) }
 			header
 			fill
 			rounded

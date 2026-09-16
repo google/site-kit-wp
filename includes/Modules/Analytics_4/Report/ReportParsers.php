@@ -19,7 +19,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricOrderBy as G
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\OrderBy as Google_Service_AnalyticsData_OrderBy;
 
 /**
- * A class with helper methods to parse report properties
+ * A class with helper methods to parse report properties.
  *
  * @since 1.130.0
  * @access private

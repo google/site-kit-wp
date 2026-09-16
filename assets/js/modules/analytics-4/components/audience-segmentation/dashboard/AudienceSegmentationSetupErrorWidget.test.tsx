@@ -29,11 +29,22 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { trackEvent } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
-import { fireEvent, render } from '@tests/js/test-utils';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import { createTestRegistry, provideSiteInfo } from '@tests/js/utils';
 import AudienceSegmentationSetupErrorWidget from './AudienceSegmentationSetupErrorWidget';
+
+jest.mock( '@/js/util', () => ( {
+	...( jest.requireActual( '@/js/util' ) as Record< string, unknown > ),
+	trackEvent: jest.fn(),
+} ) );
+
+const { getObservedElements, simulateIntersection } =
+	mockIntersectionObserver();
 
 const MockWidget: FC< {
 	className?: string;
@@ -49,6 +60,7 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
+		( trackEvent as jest.Mock ).mockReset();
 	} );
 
 	it.each( [
@@ -195,4 +207,99 @@ describe( 'AudienceSegmentationSetupErrorWidget', () => {
 
 		expect( onDismiss ).toHaveBeenCalledTimes( 1 );
 	} );
+
+	it.each( [
+		{
+			testName:
+				'tracks view, retry, and dismiss for audience creation permissions error',
+			errors: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+			},
+			isAudienceCreationVariant: true,
+			expectedLabel: 'audience_creation_permissions',
+		},
+		{
+			testName:
+				'tracks view, retry, and dismiss for audience creation generic error',
+			errors: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			isAudienceCreationVariant: true,
+			expectedLabel: 'audience_creation_generic',
+		},
+		{
+			testName:
+				'tracks view, retry, and dismiss for data loading permissions error',
+			errors: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
+			},
+			isAudienceCreationVariant: false,
+			expectedLabel: 'data_loading_permissions',
+		},
+		{
+			testName:
+				'tracks view, retry, and dismiss for data loading generic error',
+			errors: {
+				code: 'test_error',
+				message: 'Error message.',
+				data: { status: 500 },
+			},
+			isAudienceCreationVariant: false,
+			expectedLabel: 'data_loading_generic',
+		},
+	] )(
+		'$testName',
+		async ( { errors, isAudienceCreationVariant, expectedLabel } ) => {
+			const { getByRole } = render(
+				<AudienceSegmentationSetupErrorWidget
+					Widget={ MockWidget }
+					errors={ errors }
+					isAudienceCreationVariant={ isAudienceCreationVariant }
+					onRetry={ () => {} }
+					onDismiss={ () => {} }
+				/>,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			const observedErrorWidget = getObservedElements()[ 0 ];
+			expect( observedErrorWidget ).toBeDefined();
+
+			act( () => {
+				simulateIntersection( observedErrorWidget, true );
+			} );
+
+			await waitFor( () => {
+				expect( trackEvent ).toHaveBeenCalledWith(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					'audience_segmentation_setup_error',
+					expectedLabel
+				);
+			} );
+
+			fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+			expect( trackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				'audience_segmentation_setup_error_retry',
+				expectedLabel
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'No thanks' } ) );
+
+			expect( trackEvent ).toHaveBeenCalledWith(
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				'audience_segmentation_setup_error_dismiss',
+				expectedLabel
+			);
+		}
+	);
 } );

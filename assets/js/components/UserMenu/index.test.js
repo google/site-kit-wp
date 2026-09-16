@@ -84,9 +84,10 @@ describe( 'UserMenu', () => {
 				} );
 			} );
 
+			// The account details section and the disconnect item.
 			expect(
 				container.querySelector( '#user-menu' ).children.length
-			).toEqual( 3 );
+			).toEqual( 2 );
 		} );
 
 		it( 'should open the menu when clicked', () => {
@@ -106,7 +107,7 @@ describe( 'UserMenu', () => {
 
 		describe( 'clicking the disconnect menu item', () => {
 			beforeEach( async () => {
-				fireEvent.click( menu.children[ 3 ] );
+				fireEvent.click( menu.children[ 2 ] );
 
 				await waitFor( () => {
 					expect(
@@ -172,7 +173,7 @@ describe( 'UserMenu', () => {
 				.select( CORE_SITE )
 				.getProxyPermissionsURL();
 
-			fireEvent.click( menu.children[ 2 ] );
+			fireEvent.click( menu.children[ 1 ] );
 
 			await waitFor( () => {
 				expect( locationAssignMock ).toHaveBeenCalled();
@@ -183,7 +184,7 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing space', async () => {
-			fireEvent.keyDown( menu.children[ 3 ], { keyCode: SPACE } );
+			fireEvent.keyDown( menu.children[ 2 ], { keyCode: SPACE } );
 
 			await waitFor( () => {
 				expect(
@@ -193,74 +194,13 @@ describe( 'UserMenu', () => {
 		} );
 
 		it( 'should select a menu option on pressing enter', async () => {
-			fireEvent.keyDown( menu.children[ 3 ], { keyCode: ENTER } );
+			fireEvent.keyDown( menu.children[ 2 ], { keyCode: ENTER } );
 
 			await waitFor( () => {
 				expect(
 					document.querySelector( '.mdc-dialog--open' )
 				).toBeInTheDocument();
 			} );
-		} );
-	} );
-
-	describe( 'Manage email reports visibility with `showProgress` and `setupFlowRefresh`', () => {
-		beforeEach( () => {
-			provideUserInfo( registry );
-			provideSiteInfo( registry );
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard';
-		} );
-
-		it( 'should hide Manage email reports when `showProgress` is "true" and `setupFlowRefresh` is enabled', () => {
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
-
-			const { container, queryByText } = render( <UserMenu />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			} );
-
-			fireEvent.click(
-				container.querySelector(
-					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
-				)
-			);
-
-			expect(
-				queryByText( 'Manage email reports' )
-			).not.toBeInTheDocument();
-		} );
-
-		it( 'should show Manage email reports when `showProgress` is not "true" and `setupFlowRefresh` is enabled', () => {
-			const { container, getByText } = render( <UserMenu />, {
-				registry,
-				features: [ 'setupFlowRefresh' ],
-			} );
-
-			fireEvent.click(
-				container.querySelector(
-					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
-				)
-			);
-
-			expect( getByText( 'Manage email reports' ) ).toBeInTheDocument();
-		} );
-
-		it( 'should show Manage email reports when `setupFlowRefresh` is disabled even if `showProgress` is "true"', () => {
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
-
-			const { container, getByText } = render( <UserMenu />, {
-				registry,
-			} );
-
-			fireEvent.click(
-				container.querySelector(
-					'.googlesitekit-user-selector .googlesitekit-header__dropdown'
-				)
-			);
-
-			expect( getByText( 'Manage email reports' ) ).toBeInTheDocument();
 		} );
 	} );
 } );

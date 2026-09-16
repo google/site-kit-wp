@@ -191,13 +191,17 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
+				wpPrivacyURL,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -230,13 +234,17 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				keyMetricsSetupCompletedBy,
+				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
 				consentModeRegions,
 				anyoneCanRegister,
+				anyoneCanRegisterWooCommerce,
 				isMultisite,
 				hasActiveLeadEventProviders,
 				hasActiveEcommerceEventProviders,
 				hasMultipleActiveEcommerceEventProviders,
+				activeConversionEventProviders,
+				wpPrivacyURL,
 			};
 			break;
 
@@ -325,13 +333,17 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
+			wpPrivacyURL,
 		} = baseData;
 
 		const {
@@ -371,13 +383,17 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			keyMetricsSetupCompletedBy,
+			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
 			consentModeRegions,
 			anyoneCanRegister,
+			anyoneCanRegisterWooCommerce,
 			isMultisite,
 			hasActiveLeadEventProviders,
 			hasActiveEcommerceEventProviders,
 			hasMultipleActiveEcommerceEventProviders,
+			activeConversionEventProviders,
+			wpPrivacyURL,
 		} );
 	},
 };
@@ -994,6 +1010,48 @@ export const selectors = {
 	getAnyoneCanRegister: getSiteInfoProperty( 'anyoneCanRegister' ),
 
 	/**
+	 * Checks if WooCommerce allows new accounts to be created, independently
+	 * of the WordPress "Anyone can register" setting.
+	 *
+	 * `false` when:
+	 *  - WooCommerce is inactive.
+	 *  - WooCommerce is active but account-creation in WooCommerce is
+	 *    disabled.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean|undefined} `true` if WooCommerce registration is open; `false` if not. Returns `undefined` if not yet loaded.
+	 */
+	getAnyoneCanRegisterWooCommerce: getSiteInfoProperty(
+		'anyoneCanRegisterWooCommerce'
+	),
+
+	/**
+	 * Checks if new user registration is open, via either WordPress's own
+	 * "Anyone can register" setting or WooCommerce's own account-creation
+	 * setting.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @return {boolean|undefined} `true` if registration is open via either path; `false` if neither is open. Returns `undefined` if not yet loaded.
+	 */
+	isRegistrationOpen: createRegistrySelector( ( select ) => () => {
+		const anyoneCanRegister = select( CORE_SITE ).getAnyoneCanRegister();
+		const anyoneCanRegisterWooCommerce =
+			select( CORE_SITE ).getAnyoneCanRegisterWooCommerce();
+
+		if (
+			anyoneCanRegister === undefined ||
+			anyoneCanRegisterWooCommerce === undefined
+		) {
+			return undefined;
+		}
+
+		return anyoneCanRegister || anyoneCanRegisterWooCommerce;
+	} ),
+
+	/**
 	 * Checks if WordPress site is running in the multisite mode.
 	 *
 	 * @since 1.142.0
@@ -1038,6 +1096,52 @@ export const selectors = {
 	hasMultipleActiveEcommerceEventProviders: getSiteInfoProperty(
 		'hasMultipleActiveEcommerceEventProviders'
 	),
+
+	/**
+	 * Gets the slug of every active conversion event provider plugin.
+	 *
+	 * @since 1.187.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Array.<string>|undefined)} One slug for each active provider, such as `woocommerce`. Returns `undefined` if not yet loaded.
+	 */
+	getActiveConversionEventProviders: getSiteInfoProperty(
+		'activeConversionEventProviders'
+	),
+
+	/**
+	 * Gets value of the setting for whether the key metrics widget area is
+	 * hidden.
+	 *
+	 * @since 1.184.0
+	 *
+	 * @return {boolean|undefined} Whether the widget area is hidden.
+	 */
+	getKeyMetricsSetupIsWidgetAreaHidden: getSiteInfoProperty(
+		'keyMetricsSetupIsWidgetAreaHidden'
+	),
+
+	/**
+	 * Checks whether setup has hidden the key metrics widget area.
+	 *
+	 * @since 1.184.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} Whether the widget area is hidden.
+	 */
+	isKeyMetricsWidgetAreaHidden: ( state ) => {
+		return !! selectors.getKeyMetricsSetupIsWidgetAreaHidden( state );
+	},
+
+	/**
+	 * Gets a site's privacy policy URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} The privacy policy URL.
+	 */
+	getPrivacyPolicyURL: getSiteInfoProperty( 'wpPrivacyURL' ),
 };
 
 export default {

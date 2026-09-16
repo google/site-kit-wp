@@ -13,7 +13,7 @@
 namespace Google\Site_Kit\Core\REST_API;
 
 /**
- * Class Data_Request
+ * Class Data_Request.
  *
  * @since 1.0.0
  *

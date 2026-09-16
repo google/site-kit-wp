@@ -76,6 +76,7 @@ class REST_Email_Reporting_Controller {
 					$paths,
 					array(
 						'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings',
+						'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report',
 					)
 				);
 			}
@@ -86,6 +87,7 @@ class REST_Email_Reporting_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.162.0
+	 * @since 1.185.0 Added the `email-reporting-next-report` route.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
@@ -155,6 +157,21 @@ class REST_Email_Reporting_Controller {
 								),
 							),
 						),
+					),
+				)
+			),
+			new REST_Route(
+				'core/user/data/email-reporting-next-report',
+				array(
+					array(
+						'methods'             => WP_REST_Server::READABLE,
+						'callback'            => function () {
+							$frequency = $this->settings->get()['frequency'];
+							$timestamp = $this->scheduler->get_next_report_timestamp( $frequency );
+
+							return new WP_REST_Response( array( 'timestamp' => $timestamp ) );
+						},
+						'permission_callback' => $can_view_dashboard,
 					),
 				)
 			),

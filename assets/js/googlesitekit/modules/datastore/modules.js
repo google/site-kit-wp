@@ -89,6 +89,7 @@ const moduleDefaults = {
 	SettingsSetupIncompleteComponent: DefaultSettingsSetupIncomplete,
 	SettingsStatusComponent: DefaultSettingsStatus,
 	SetupComponent: null,
+	SetupLayout: null,
 	onCompleteSetup: undefined,
 	checkRequirements: () => true,
 	DashboardMainEffectComponent: null,
@@ -349,6 +350,7 @@ const baseActions = {
 	 * @param {WPComponent}    [settings.SettingsSetupIncompleteComponent] Optional. React component to render the incomplete settings panel. Default none.
 	 * @param {WPComponent}    [settings.SettingsStatusComponent]          Optional. React component to render the module status. Default none.
 	 * @param {WPComponent}    [settings.SetupComponent]                   Optional. React component to render the setup panel. Default none.
+	 * @param {WPComponent}    [settings.SetupLayout]                      Optional. React component to render the module setup screen layout. Default none.
 	 * @param {boolean}        [settings.overrideSetupSuccessNotification] Optional. Flag to denote whether to render a custom setup success notification. Default `false`.
 	 * @param {Function}       [settings.onCompleteSetup]                  Optional. Function to use as a complete CTA callback. Default `undefined`.
 	 * @param {Function}       [settings.checkRequirements]                Optional. Function to check requirements for the module. Throws a WP error object for error or returns on success.
@@ -375,6 +377,7 @@ const baseActions = {
 				SettingsSetupIncompleteComponent,
 				SettingsStatusComponent,
 				SetupComponent,
+				SetupLayout,
 				overrideSetupSuccessNotification = false,
 				onCompleteSetup,
 				checkRequirements,
@@ -396,6 +399,7 @@ const baseActions = {
 				SettingsSetupIncompleteComponent,
 				SettingsStatusComponent,
 				SetupComponent,
+				SetupLayout,
 				overrideSetupSuccessNotification,
 				onCompleteSetup,
 				checkRequirements,

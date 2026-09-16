@@ -49,7 +49,7 @@ class Compatibility_ChecksTest extends TestCase {
 
 		$result = $this->datapoint->create_request( $data_request );
 
-		$this->assertWPError( $result );
+		$this->assertWPError( $result, 'Compatibility checks request from an unauthorized user should return a WP_Error.' );
 		$this->assertEquals( 'rest_forbidden', $result->get_error_code(), 'Error code should be rest_forbidden' );
 		$this->assertEquals( 'You are not allowed to access this resource.', $result->get_error_message(), 'Error message should indicate access denial' );
 		$this->assertEquals( 403, $result->get_error_data()['status'], 'Status code should be 403' );

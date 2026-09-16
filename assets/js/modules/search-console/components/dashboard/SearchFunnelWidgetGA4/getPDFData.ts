@@ -60,15 +60,6 @@ import {
 } from './reportOptions';
 
 /**
- * Per-metric line colors matching the dashboard's Search Funnel widget. The
- * PDF widget reads them too, so each legend swatch matches its chart line.
- */
-export const IMPRESSIONS_COLOR = '#6380b8';
-export const CLICKS_COLOR = '#4bbbbb';
-export const UNIQUE_VISITORS_COLOR = '#3c7251';
-export const KEY_EVENTS_COLOR = '#8e68cb';
-
-/**
  * The chart draws at 506 by 133, and the tile displays the image in a
  * box of the same size, so the image never stretches and no empty
  * space appears around it.
@@ -212,7 +203,7 @@ interface MetricCardResult {
  * The current period draws as a solid smoothed line and the previous period as a
  * dotted line of the same color, mirroring the dashboard.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options         Options.
  * @param options.color   Series color for both lines.
@@ -299,7 +290,7 @@ function getLineChartOptions( {
  * Accepts the dashboard's chart-data rows (a date, a tooltip, the current value
  * and the previous value) and keeps only the columns the PDF chart needs.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param dataRows     Chart data rows (without the header row).
  * @param currentLabel Column label for the current-period series.
@@ -334,7 +325,7 @@ function buildChartDataTable(
 /**
  * Renders a metric's current and previous line chart to a JPEG data URI.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options              Options.
  * @param options.dataRows     Chart data rows (without the header row).
@@ -376,7 +367,7 @@ function renderMetricChart( {
 /**
  * Resolves a report and reads its resolved value plus any selector error.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param registry  WordPress data registry.
  * @param storeName Datastore name to query.
@@ -408,7 +399,7 @@ async function resolveReport< T = unknown >(
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                 Options for building the card.
  * @param options.report          Resolved Search Console report.
@@ -489,7 +480,7 @@ async function buildSearchConsoleCard( {
  * Failures are isolated to the card: the returned `metric` and `chartImage` are
  * both `null`, so the widget skips that card.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param options                    Options for building the card.
  * @param options.statsReport        Resolved date-series report.
@@ -588,7 +579,7 @@ async function buildAnalyticsCard( {
  * A failed report or chart render is isolated to its own metric, and the
  * widget skips that card. The loader only throws when all four metrics fail.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters.
  * @param params.registry WordPress data registry.
@@ -705,7 +696,7 @@ export default async function getPDFData( {
 			reportError: searchConsole.error,
 			metricKey: 'impressions',
 			currentLabel: __( 'Impressions', 'google-site-kit' ),
-			color: IMPRESSIONS_COLOR,
+			color: PDF_COLORS.BLUE_B_400,
 			dateRangeLength,
 			signal,
 		} ),
@@ -714,7 +705,7 @@ export default async function getPDFData( {
 			reportError: searchConsole.error,
 			metricKey: 'clicks',
 			currentLabel: __( 'Clicks', 'google-site-kit' ),
-			color: CLICKS_COLOR,
+			color: PDF_COLORS.TEAL_T_300,
 			dateRangeLength,
 			signal,
 		} ),
@@ -731,7 +722,7 @@ export default async function getPDFData( {
 				dataLabels: [ __( 'Unique visitors', 'google-site-kit' ) ],
 				tooltipDataFormats: [ numericTooltipFormatter ],
 				chartDataFormats: [ identity ],
-				color: UNIQUE_VISITORS_COLOR,
+				color: PDF_COLORS.SITE_KIT_SK_500,
 				dateRangeLength,
 				referenceDate,
 				signal,
@@ -760,7 +751,7 @@ export default async function getPDFData( {
 					percentageTooltipFormatter,
 				],
 				chartDataFormats: [ identity, ( x ) => x * 100 ],
-				color: KEY_EVENTS_COLOR,
+				color: PDF_COLORS.VIOLET_V_300,
 				dateRangeLength,
 				referenceDate,
 				signal,

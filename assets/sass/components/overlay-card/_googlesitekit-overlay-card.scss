@@ -114,6 +114,24 @@
 	}
 }
 
+// The drop-shadow wraps the card and the caret as one shape; the anchored
+// card's own box-shadow is disabled so the two shadows don't stack.
+.googlesitekit-popper.googlesitekit-popper--overlay-notification {
+	background-color: transparent;
+	border-radius: 0;
+	box-shadow: none;
+	filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.25));
+	padding: 0;
+}
+
+.googlesitekit-popper--overlay-notification .googlesitekit-popper__arrow {
+	color: $c-white;
+}
+
+.googlesitekit-popper-root.googlesitekit-popper-root--overlay-notification {
+	z-index: $z-index-sk-anchored-overlay-notification;
+}
+
 .folded .googlesitekit-overlay-card {
 	@media (min-width: $bp-xxlarge) {
 		inset-inline-end: calc(((100vw - #{$page-content-max-width} + 124px ) / 2));
@@ -121,5 +139,16 @@
 
 	@media (min-width: $bp-xxxlarge) {
 		inset-inline-end: calc(((100vw - #{$page-content-max-width} + 124px ) / 2) - (#{$grid-gap-desktop}));
+	}
+}
+
+// `relative` (not `static`) so the card paints after the popper caret and
+// hides the caret's drop shadow along its base, leaving it on the edges only.
+.googlesitekit-overlay-card.googlesitekit-overlay-card--anchored {
+	@media (min-width: $bp-tablet) {
+		bottom: auto;
+		box-shadow: none;
+		inset-inline-end: auto;
+		position: relative;
 	}
 }

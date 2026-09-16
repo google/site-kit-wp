@@ -337,6 +337,7 @@ $max-width-settings-notice-content: 1098px;
 // Ensures header does not interfere with important wp dashboard menu elements.
 $z-index-sk-side-sheet: 10000;
 $z-index-sk-side-sheet-overlay: 9990;
+$z-index-sk-anchored-overlay-notification: 9985;
 $z-index-sk-header: 9980;
 $z-index-sk-overlay-notification: 9970;
 $z-index-sk-popper: 9;

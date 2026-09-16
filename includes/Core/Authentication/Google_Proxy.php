@@ -134,10 +134,27 @@ class Google_Proxy {
 	 */
 	public function setup_url( array $query_params = array() ) {
 		if ( empty( $query_params['code'] ) ) {
-			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) );
+			throw new Exception( __( 'Missing code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 		if ( empty( $query_params['site_id'] ) && empty( $query_params['site_code'] ) ) {
-			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) );
+			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
+		}
+
+		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
+			$query_params['service_version'] = 'v3';
+			$query_params['steps']           = 5;
+
+			/**
+			 * Filters parameters included in the proxy setup URL.
+			 *
+			 * @since 1.184.0
+			 *
+			 * @param array $query_params Query parameters.
+			 */
+			$query_params = apply_filters(
+				'googlesitekit_proxy_setup_url_params',
+				$query_params,
+			);
 		}
 
 		return add_query_arg(

@@ -95,4 +95,7 @@ export type Report = {
 	totals?: ReportRow[];
 	maximums?: ReportRow[];
 	minimums?: ReportRow[];
+	metadata?: {
+		currencyCode?: string;
+	};
 };

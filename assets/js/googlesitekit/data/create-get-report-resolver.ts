@@ -56,7 +56,7 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
  * one. That call decides when its request is cancelled, so sharing would let
  * one call's cancellation abort another call's report.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param storeName Report datastore name, such as `modules/analytics-4`.
  * @return Generator resolver for the store's `getReport` selector.

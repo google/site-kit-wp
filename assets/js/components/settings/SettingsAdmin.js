@@ -45,7 +45,9 @@ import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
+	const setupFlowRefreshPhase4Enabled = useFeature(
+		'setupFlowRefreshPhase4'
+	);
 	const configuredAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).getConfiguredAudiences()
 	);
@@ -68,10 +70,14 @@ export default function SettingsAdmin() {
 		return select( MODULES_ANALYTICS_4 ).isGatheringData();
 	} );
 
-	const showKeyMetricsSettings =
-		( isAnalyticsConnected || hasSitePurposeAnswer ) &&
+	const hasAvailableKeyMetricsData =
 		isSearchConsoleGatheringData === false &&
 		isAnalyticsGatheringData === false;
+
+	const showKeyMetricsSettings =
+		( isAnalyticsConnected && hasAvailableKeyMetricsData ) ||
+		( isAnalyticsConnected && setupFlowRefreshEnabled ) ||
+		( hasSitePurposeAnswer && setupFlowRefreshPhase4Enabled );
 
 	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
 		if (
@@ -171,7 +177,7 @@ export default function SettingsAdmin() {
 
 			<Cell size={ 12 }>
 				<Layout
-					title={ __( 'Plugin Status', 'google-site-kit' ) }
+					title={ __( 'Plugin status', 'google-site-kit' ) }
 					header
 					rounded
 				>

@@ -26,12 +26,12 @@ class REST_RoutesTest extends TestCase {
 
 	public function test_register() {
 		$rest_routes = new REST_Routes( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		// Clear out initial REST server, and remove all existing actions on rest_api_init
+		// Clear out initial REST server, and remove all existing actions on rest_api_init.
 		unset( $GLOBALS['wp_rest_server'] );
 		remove_all_actions( 'rest_api_init' );
 
 		$rest_routes->register();
-		// Re-init a new REST Server (triggers rest_api_init)
+		// Re-init a new REST Server (triggers rest_api_init).
 		$server = rest_get_server();
 
 		// Assert that routes with the site-kit namespace were registered.

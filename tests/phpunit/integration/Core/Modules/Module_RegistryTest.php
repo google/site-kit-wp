@@ -61,7 +61,7 @@ class Module_RegistryTest extends TestCase {
 
 		$mock_module       = $this->getMockBuilder( FakeModule::class )
 								->disableOriginalConstructor()
-								->setMethods( array( 'foo' ) ) // required to prevent ReflectionType::__toString() deprecation error
+								->setMethods( array( 'foo' ) ) // required to prevent ReflectionType::__toString() deprecation error.
 								->getMock();
 		$mock_module_class = get_class( $mock_module );
 

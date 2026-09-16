@@ -19,12 +19,13 @@ The notification system is built around several key concepts:
 Notifications are rendered in specific areas defined by `NOTIFICATION_AREAS`:
 
 ```javascript
-import { NOTIFICATION_AREAS } from '../googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 
 const NOTIFICATION_AREAS = {
-    HEADER: 'notification-area-header',           // Top of page notifications
-    DASHBOARD_TOP: 'notification-area-dashboard-top',  // Dashboard banner area
-    OVERLAYS: 'notification-area-overlays',       // Full-screen overlay notifications
+    HEADER: 'notification-area-header',                  // Top of page notifications
+    DASHBOARD_TOP: 'notification-area-dashboard-top',    // Dashboard banner area
+    OVERLAYS: 'notification-area-overlays',              // Full-screen overlay notifications
+    SPLASH_CONTENT: 'notification-area-splash-content',  // Splash/setup screen content
 };
 ```
 
@@ -33,7 +34,7 @@ const NOTIFICATION_AREAS = {
 Notifications are organized into groups for queue management:
 
 ```javascript
-import { NOTIFICATION_GROUPS } from '../googlesitekit/notifications/constants';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 
 const NOTIFICATION_GROUPS = {
     DEFAULT: 'default',        // Standard notifications
@@ -46,7 +47,7 @@ const NOTIFICATION_GROUPS = {
 Notifications use a priority system where lower numbers have higher priority:
 
 ```javascript
-import { PRIORITY } from '../googlesitekit/notifications/constants';
+import { PRIORITY } from '@/js/googlesitekit/notifications/constants';
 
 const PRIORITY = {
     ERROR_HIGH: 30,      // Critical errors
@@ -62,10 +63,17 @@ const PRIORITY = {
 
 ### Basic Registration
 
+Notifications are typically registered up front via the `registerNotification`
+action on the `core/notifications` store. The shared defaults live in
+`assets/js/googlesitekit/notifications/register-defaults.js` (registered through
+`registerDefaults( notificationsAPI )`), and modules register their own via
+`createRegisterNotifications` in
+`assets/js/googlesitekit/notifications/util/create-register-notifications.js`.
+
 ```javascript
-import { useSelect, useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
-import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS, PRIORITY } from '../googlesitekit/notifications/constants';
+import { useDispatch } from 'googlesitekit-data';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS, PRIORITY } from '@/js/googlesitekit/notifications/constants';
 
 const { registerNotification } = useDispatch(CORE_NOTIFICATIONS);
 
@@ -78,8 +86,11 @@ registerNotification('my-notification-id', {
         VIEW_CONTEXT_MAIN_DASHBOARD,
         VIEW_CONTEXT_ENTITY_DASHBOARD
     ],
-    checkRequirements: async ({ select, resolveSelect }) => {
-        // Async function to determine if notification should show
+    checkRequirements: async ({ select, resolveSelect }, viewContext) => {
+        // Async callback to determine if the notification should be queued.
+        // Receives the full data registry (destructured here as `{ select,
+        // resolveSelect, dispatch }`) and the current `viewContext` as the
+        // second argument. Return true to show the notification.
         await resolveSelect(CORE_MODULES).getModules();
         const isConnected = select(CORE_MODULES).isModuleConnected('analytics-4');
         return !isConnected;
@@ -133,7 +144,7 @@ registerNotification('setup-success-banner', {
 Full-width banner notifications with rich content and actions:
 
 ```javascript
-import BannerNotification, { TYPES } from '../googlesitekit/notifications/components/layout/BannerNotification';
+import BannerNotification, { TYPES } from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 
 function MyBannerNotification({ id, Notification }) {
     return (
@@ -145,7 +156,7 @@ function MyBannerNotification({ id, Notification }) {
                 description="Your Analytics connection needs to be updated to continue receiving data."
 
                 learnMoreLink={{
-                    url: 'https://example.com/docs',
+                    href: 'https://example.com/docs',
                     label: 'Learn more about this update',
                     external: true
                 }}
@@ -183,16 +194,20 @@ function MyBannerNotification({ id, Notification }) {
 
 Compact notice-style notifications:
 
+`NoticeNotification` is a TypeScript component (`NoticeNotification.tsx`) that
+wraps the shared `Notice` component, so its `type` values come from the
+`NOTICE_TYPES` enum (not the `TYPES` export used by `BannerNotification`).
+
 ```javascript
-import NoticeNotification from '../googlesitekit/notifications/components/layout/NoticeNotification';
-import { TYPES } from '../components/Notice/constants';
+import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
+import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 
 function MyNoticeNotification({ id, Notification }) {
     return (
         <Notification>
             <NoticeNotification
                 notificationID={id}
-                type={TYPES.SUCCESS}  // SUCCESS, WARNING, ERROR, INFO
+                type={NOTICE_TYPES.SUCCESS}  // NEW, SUCCESS, WARNING, INFO, INFO_ALT, INFO_ALT_2, ERROR
                 title="Connection Successful"
                 description="Your Analytics account has been connected successfully."
                 ctaButton={{
@@ -217,7 +232,7 @@ function MyNoticeNotification({ id, Notification }) {
 Full-screen overlay notifications for important messages:
 
 ```javascript
-import OverlayNotification from '../googlesitekit/notifications/components/layout/OverlayNotification';
+import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 
 function MyOverlayNotification({ id, Notification }) {
     return (
@@ -291,7 +306,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import BannerNotification from '../googlesitekit/notifications/components/layout/BannerNotification';
+import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 
 export default function MyNotification({ id, Notification }) {
     return (
@@ -312,11 +327,18 @@ MyNotification.propTypes = {
 };
 ```
 
+> **TypeScript:** New notification components are written as `.tsx` files (e.g.
+> `ActivateAnalyticsNotification.tsx`, `ConnectMoreServicesNotification.tsx`).
+> In TS files, replace the `propTypes` block with a props `interface` and type
+> the component accordingly. See `docs/context/js/component-conventions.md`
+> (the "TypeScript Components" section) for the canonical pattern — both `id`
+> and `Notification` are injected automatically by the rendering layer.
+
 ### Advanced Notification with Data Integration
 
 ```javascript
 import { useSelect } from 'googlesitekit-data';
-import { MODULES_ANALYTICS_4 } from '../modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 function DataDrivenNotification({ id, Notification }) {
     // Fetch data for notification content
@@ -369,8 +391,8 @@ function DataDrivenNotification({ id, Notification }) {
 The main component for rendering notifications in specific areas:
 
 ```javascript
-import Notifications from '../components/notifications/Notifications';
-import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '../googlesitekit/notifications/constants';
+import Notifications from '@/js/components/notifications/Notifications';
+import { NOTIFICATION_AREAS, NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
 
 function DashboardHeader() {
     return (
@@ -407,7 +429,8 @@ For specific notification instances:
 
 ```javascript
 import { useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { getNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 
 function SpecificNotificationRenderer() {
     const notification = useSelect((select) =>
@@ -419,6 +442,8 @@ function SpecificNotificationRenderer() {
     }
 
     const { Component } = notification;
+    // `getNotificationComponentProps` returns the `{ id, Notification }` props
+    // that every notification component expects.
     const props = getNotificationComponentProps('my-notification-id');
 
     return <Component {...props} />;
@@ -431,7 +456,7 @@ function SpecificNotificationRenderer() {
 
 ```javascript
 import { useDispatch } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 function useNotificationActions() {
     const { dismissNotification } = useDispatch(CORE_NOTIFICATIONS);
@@ -466,7 +491,7 @@ function useNotificationActions() {
 
 ```javascript
 import { useSelect } from 'googlesitekit-data';
-import { CORE_NOTIFICATIONS } from '../googlesitekit/notifications/datastore/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 function useNotificationState(notificationId) {
     const notification = useSelect((select) =>
@@ -501,40 +526,55 @@ function useNotificationState(notificationId) {
 
 Notifications automatically track user interactions:
 
+The `Notification` wrapper and the layout components (`BannerNotification`,
+`NoticeNotification`, `OverlayNotification`) wire these up through
+`useNotificationEvents`. The underlying `trackEvent` signature is
+`trackEvent( category, action, label, value )`, and the default action names are:
+
 ```javascript
-// These events are automatically tracked when users interact with notifications:
+// These events are automatically tracked when users interact with notifications.
+// `category` defaults to `${viewContext}_${id}` unless overridden via
+// `gaTrackingEventArgs.category`.
 
-// View events - when notification becomes visible
-trackEvent('notification_view', 'notification_category', 'notification_label');
+// View events - when the notification becomes visible.
+trackEvent(category, 'view_notification', label, value);
 
-// Dismiss events - when user dismisses notification
-trackEvent('notification_dismiss', 'notification_category', 'notification_label');
+// CTA events - when the user clicks the main action button.
+trackEvent(category, 'confirm_notification', label, value);
 
-// CTA events - when user clicks main action button
-trackEvent('notification_confirm', 'notification_category', 'notification_label');
+// Dismiss events - when the user dismisses the notification.
+trackEvent(category, 'dismiss_notification', label, value);
 
-// Learn More events - when user clicks learn more link
-trackEvent('notification_learn_more', 'notification_category', 'notification_label');
+// Learn More events - when the user clicks the learn more link.
+trackEvent(category, 'click_learn_more_link', label, value);
 ```
 
 ### Custom Tracking
 
+`useNotificationEvents( id, category, actions )` returns an object with
+`view`, `confirm`, `dismiss`, and `clickLearnMore` callbacks. Each accepts the
+GA event label and value as arguments. The optional third argument overrides the
+default action names (`view_notification`, `confirm_notification`,
+`dismiss_notification`, `click_learn_more_link`). When `category` is omitted it
+defaults to `${viewContext}_${id}`.
+
 ```javascript
-import useNotificationEvents from '../googlesitekit/notifications/hooks/useNotificationEvents';
+import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
 
 function TrackedNotification({ id, Notification }) {
     const trackEvents = useNotificationEvents(
         id,
         'Custom Category',  // Event category
         {
-            viewAction: 'custom_view',       // Custom view action
-            confirmAction: 'custom_confirm', // Custom confirm action
-            dismissAction: 'custom_dismiss'  // Custom dismiss action
+            viewAction: 'custom_view',              // Custom view action
+            confirmAction: 'custom_confirm',        // Custom confirm action
+            dismissAction: 'custom_dismiss',        // Custom dismiss action
+            clickLearnMoreAction: 'custom_learn_more', // Custom learn more action
         }
     );
 
     const handleCustomAction = async () => {
-        // Track custom event
+        // Track custom event (args are GA label and value).
         trackEvents.confirm('Custom Label', 1);
 
         // Perform action
@@ -566,7 +606,7 @@ function TrackedNotification({ id, Notification }) {
 ### Creating Module Notification Store
 
 ```javascript
-import { createNotificationsStore } from '../googlesitekit/data/create-notifications-store';
+import { createNotificationsStore } from '@/js/googlesitekit/data/create-notifications-store';
 
 // Create notifications store for a module
 const notificationsStore = createNotificationsStore(
@@ -621,8 +661,8 @@ function ModuleNotifications() {
 ### Context-Aware Notifications
 
 ```javascript
-import useViewContext from '../hooks/useViewContext';
-import useViewOnly from '../hooks/useViewOnly';
+import useViewContext from '@/js/hooks/useViewContext';
+import useViewOnly from '@/js/hooks/useViewOnly';
 
 function ContextAwareNotification({ id, Notification }) {
     const viewContext = useViewContext();
@@ -669,39 +709,60 @@ function ContextAwareNotification({ id, Notification }) {
 
 ### Server Notification Structure
 
-Server notifications follow a specific format:
+Server notifications are created with the
+`Google\Site_Kit\Core\Notifications\Notification` class (see
+`includes/Core/Notifications/Notification.php`). The constructor takes a slug and
+a snake_case args array; `prepare_for_js()` converts those into the camelCase
+keys consumed by the JS `NotificationFromServer` component:
 
 ```php
-// PHP server-side notification example
-$notification = [
-    'id' => 'server-notification-id',
-    'type' => 'warning',
-    'title' => 'Server Warning',
-    'content' => 'Important server-side message',
-    'ctaURL' => 'https://example.com/action',
-    'ctaLabel' => 'Take Action',
-    'learnMoreURL' => 'https://example.com/docs',
-    'dismissExpires' => 86400, // 24 hours
-    'showOnce' => false,
-];
+// PHP server-side notification example.
+use Google\Site_Kit\Core\Notifications\Notification;
+
+$notification = new Notification(
+    'server-notification-id', // Slug, exposed to JS as `id`.
+    array(
+        'title'            => 'Server Warning',
+        'content'          => 'Important server-side message',
+        'cta_url'          => 'https://example.com/action',
+        'cta_label'        => 'Take Action',
+        'cta_target'       => '_blank',
+        'learn_more_url'   => 'https://example.com/docs',
+        'learn_more_label' => 'Learn more',
+        'dismissible'      => true,
+        'dismiss_label'    => 'Dismiss',
+    )
+);
 ```
 
 ### Rendering Server Notifications
 
+`NotificationFromServer` (see `assets/js/components/NotificationFromServer.js`)
+maps the camelCase server fields to the `BannerNotification` layout component. It
+expects the server fields spread as individual props (not a single
+`notification` object), and supports `onCTAClick` / `onDismissClick` callbacks:
+
 ```javascript
-import NotificationFromServer from '../components/NotificationFromServer';
+import NotificationFromServer from '@/js/components/NotificationFromServer';
 
 function ServerNotificationRenderer({ notification }) {
     return (
         <NotificationFromServer
-            notification={notification}
-            onView={() => {
-                // Track server notification view
-                trackEvent('server_notification_view', notification.type, notification.id);
+            id={notification.id}
+            title={notification.title}
+            content={notification.content}
+            ctaLabel={notification.ctaLabel}
+            ctaURL={notification.ctaURL}
+            ctaTarget={notification.ctaTarget}
+            learnMoreLabel={notification.learnMoreLabel}
+            learnMoreURL={notification.learnMoreURL}
+            dismissible={notification.dismissible}
+            dismissLabel={notification.dismissLabel}
+            onCTAClick={async () => {
+                // Custom CTA handling.
             }}
-            onDismiss={() => {
-                // Track server notification dismissal
-                trackEvent('server_notification_dismiss', notification.type, notification.id);
+            onDismissClick={async () => {
+                // Custom dismiss handling.
             }}
         />
     );

@@ -28,8 +28,19 @@ import { Button } from 'googlesitekit-components';
 import Step from './Step';
 import Stepper from '.';
 
-function Template( { activeStep: initialActiveStep } ) {
+function Template( { activeStep: initialActiveStep, variant } ) {
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
+
+	if ( variant === 'rail' ) {
+		return (
+			<Stepper activeStep={ activeStep } variant={ variant }>
+				<Step title="Connect publication" />
+				<Step title="Add publication policies" />
+				<Step title="Set up a sign-up form" />
+				<Step title="Setup complete" />
+			</Stepper>
+		);
+	}
 
 	return (
 		<Stepper activeStep={ activeStep }>
@@ -74,6 +85,31 @@ export const Complete = Template.bind( {} );
 Complete.storyName = 'Complete';
 Complete.args = { activeStep: 3 };
 Complete.scenario = {};
+
+export const RailInactive = Template.bind( {} );
+RailInactive.storyName = 'Rail Inactive';
+RailInactive.args = { variant: 'rail' };
+RailInactive.scenario = {};
+
+export const RailFirstStepActive = Template.bind( {} );
+RailFirstStepActive.storyName = 'Rail First Step Active';
+RailFirstStepActive.args = { activeStep: 0, variant: 'rail' };
+RailFirstStepActive.scenario = {};
+
+export const RailMiddleStepActive = Template.bind( {} );
+RailMiddleStepActive.storyName = 'Rail Middle Step Active';
+RailMiddleStepActive.args = { activeStep: 1, variant: 'rail' };
+RailMiddleStepActive.scenario = {};
+
+export const RailLastStepActive = Template.bind( {} );
+RailLastStepActive.storyName = 'Rail Last Step Active';
+RailLastStepActive.args = { activeStep: 3, variant: 'rail' };
+RailLastStepActive.scenario = {};
+
+export const RailComplete = Template.bind( {} );
+RailComplete.storyName = 'Rail Complete';
+RailComplete.args = { activeStep: 4, variant: 'rail' };
+RailComplete.scenario = {};
 
 export default {
 	title: 'Components/Stepper',

@@ -56,128 +56,140 @@ Prompts (orchestrator)
 
 ### Dismissed_Prompts Class
 
-**Location**: `includes/Core/Prompts/Dismissed_Prompts.php:1-139`
+**Location**: `includes/Core/Prompts/Dismissed_Prompts.php`
 
-Storage layer extending `User_Setting`.
+Storage layer extending `User_Setting`. Note that `add()`, `remove()` and the
+sanitize callback are `void` — they call `$this->set()` but do not return its result.
+Sanitizing is exposed via `get_sanitize_callback()` (which returns a closure), not a
+`sanitize_callback()` method.
 
 ```php
-final class Dismissed_Prompts extends User_Setting {
-    const OPTION = 'googlesitekitpersistent_dismissed_prompts';
+class Dismissed_Prompts extends User_Setting {
+
+    const OPTION                     = 'googlesitekitpersistent_dismissed_prompts';
     const DISMISS_PROMPT_PERMANENTLY = 0;
 
     /**
-     * Add or update a dismissed prompt.
+     * Adds one prompt to the list of dismissed prompts or updates the triggered count.
      *
-     * \@param string $prompt              Prompt slug.
-     * \@param int    $expires_in_seconds  Expiration in seconds (0 = permanent).
-     * \@return bool True on success.
+     * \@param string $prompt             Prompt to dismiss.
+     * \@param int    $expires_in_seconds TTL for the prompt.
      */
     public function add( $prompt, $expires_in_seconds = self::DISMISS_PROMPT_PERMANENTLY ) {
         $prompts = $this->get();
 
-        if ( isset( $prompts[ $prompt ] ) ) {
-            // Increment count if already exists
-            $prompts[ $prompt ]['count']++;
+        if ( array_key_exists( $prompt, $prompts ) ) {
+            $prompts[ $prompt ]['expires'] = $expires_in_seconds ? time() + $expires_in_seconds : 0;
+            $prompts[ $prompt ]['count']   = $prompts[ $prompt ]['count'] + 1;
         } else {
-            // Initialize new prompt
             $prompts[ $prompt ] = array(
-                'count' => 1,
+                'expires' => $expires_in_seconds ? time() + $expires_in_seconds : 0,
+                'count'   => 1,
             );
         }
 
-        // Set expiration
-        if ( 0 === $expires_in_seconds ) {
-            $prompts[ $prompt ]['expires'] = 0;
-        } else {
-            $prompts[ $prompt ]['expires'] = time() + $expires_in_seconds;
-        }
-
-        return $this->set( $prompts );
+        $this->set( $prompts );
     }
 
     /**
-     * Remove a dismissed prompt.
+     * Removes one or more prompts from the list of dismissed prompts.
      *
-     * \@param string $prompt Prompt slug.
-     * \@return bool True on success.
+     * \@param string $prompt Item to remove.
      */
     public function remove( $prompt ) {
         $prompts = $this->get();
 
-        if ( isset( $prompts[ $prompt ] ) ) {
-            unset( $prompts[ $prompt ] );
-            return $this->set( $prompts );
+        // If the prompt is not in dismissed prompts, there's nothing to do.
+        if ( ! array_key_exists( $prompt, $prompts ) ) {
+            return;
         }
 
-        return true;
+        unset( $prompts[ $prompt ] );
+
+        $this->set( $prompts );
     }
 
     /**
-     * Get all dismissed prompts.
+     * Gets the value of the setting.
      *
-     * \@return array Dismissed prompts with metadata.
+     * \@return array Value set for the option, or default if not set.
      */
     public function get() {
-        return parent::get() ?: array();
+        $value = parent::get();
+        return is_array( $value ) ? $value : $this->get_default();
     }
 
     /**
-     * Get default value.
+     * Gets the expected value type.
      *
-     * \@return array Empty array.
+     * \@return string The type name.
+     */
+    protected function get_type() {
+        return 'array';
+    }
+
+    /**
+     * Gets the default value.
+     *
+     * \@return array The default value.
      */
     protected function get_default() {
         return array();
     }
 
     /**
-     * Sanitize prompts data.
+     * Gets the callback for sanitizing the setting's value before saving.
      *
-     * \@param array $prompts Prompts data.
-     * \@return array Sanitized prompts.
+     * \@return callable Sanitize callback.
      */
-    protected function sanitize_callback( $prompts ) {
-        if ( ! is_array( $prompts ) ) {
-            return array();
-        }
-
-        $sanitized = array();
-
-        foreach ( $prompts as $key => $value ) {
-            if ( ! is_string( $key ) || ! is_array( $value ) ) {
-                continue;
+    protected function get_sanitize_callback() {
+        return function ( $prompts ) {
+            if ( ! is_array( $prompts ) ) {
+                return $this->get_default();
             }
 
-            // Ensure required keys exist
-            if ( ! isset( $value['expires'], $value['count'] ) ) {
-                continue;
+            $sanitized_prompts = array();
+
+            foreach ( $prompts as $prompt => $data ) {
+                if ( is_array( $data ) && isset( $data['expires'], $data['count'] ) && is_numeric( $data['expires'] ) && is_numeric( $data['count'] ) ) {
+                    $sanitized_prompts[ $prompt ] = array(
+                        'expires' => $data['expires'],
+                        'count'   => $data['count'],
+                    );
+                }
             }
 
-            $sanitized[ $key ] = array(
-                'expires' => (int) $value['expires'],
-                'count'   => (int) $value['count'],
-            );
-        }
-
-        return $sanitized;
+            return $sanitized_prompts;
+        };
     }
 }
 ```
 
 ### REST API Endpoints
 
+The controller receives a `Dismissed_Prompts` instance via its constructor and registers
+all routes through the `googlesitekit_rest_routes` filter inside `get_rest_routes()`. Each
+route's `callback` is an inline closure (there are no named `get_dismissed_prompts()` /
+`dismiss_prompt()` methods). It also preloads the `dismissed-prompts` path via
+`googlesitekit_apifetch_preload_paths`.
+
 **GET `/wp-json/google-site-kit/v1/core/user/data/dismissed-prompts`**
 
 Returns full prompts object with counts and expiration.
 
-**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php:51-75`
+**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
 ```php
-public function get_dismissed_prompts( WP_REST_Request $request ) {
-    $dismissed_prompts = new Dismissed_Prompts( $this->user_options );
-
-    return new WP_REST_Response( $dismissed_prompts->get() );
-}
+new REST_Route(
+    'core/user/data/dismissed-prompts',
+    array(
+        'methods'             => WP_REST_Server::READABLE,
+        'callback'            => function () {
+            return new WP_REST_Response( $this->dismissed_prompts->get() );
+        },
+        'permission_callback' => $can_dismiss_prompt,
+    )
+);
 ```
 
 **Response Example**:
@@ -197,24 +209,47 @@ public function get_dismissed_prompts( WP_REST_Request $request ) {
 
 **POST `/wp-json/google-site-kit/v1/core/user/data/dismiss-prompt`**
 
-Dismiss a prompt with optional expiration.
+Dismiss a prompt with optional expiration. A missing/empty `slug` returns a
+`missing_required_param` `WP_Error` (HTTP 400). Only a positive integer `expiration` is
+used; otherwise the dismissal is permanent.
 
-**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php:84-120`
+**Location**: `includes/Core/Prompts/REST_Prompts_Controller.php`
 
 ```php
-public function dismiss_prompt( WP_REST_Request $request ) {
-    $data = $request['data'];
+new REST_Route(
+    'core/user/data/dismiss-prompt',
+    array(
+        'methods'             => WP_REST_Server::CREATABLE,
+        'callback'            => function ( WP_REST_Request $request ) {
+            $data = $request['data'];
 
-    $slug       = $data['slug'];
-    $expiration = isset( $data['expiration'] )
-        ? (int) $data['expiration']
-        : Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
+            if ( empty( $data['slug'] ) ) {
+                return new WP_Error(
+                    'missing_required_param',
+                    /* translators: %s: Missing parameter name */
+                    sprintf( __( 'Request parameter is empty: %s.', 'google-site-kit' ), 'slug' ),
+                    array( 'status' => 400 )
+                );
+            }
 
-    $dismissed_prompts = new Dismissed_Prompts( $this->user_options );
-    $dismissed_prompts->add( $slug, $expiration );
+            $expiration = Dismissed_Prompts::DISMISS_PROMPT_PERMANENTLY;
+            if ( isset( $data['expiration'] ) && intval( $data['expiration'] ) > 0 ) {
+                $expiration = $data['expiration'];
+            }
 
-    return new WP_REST_Response( $dismissed_prompts->get() );
-}
+            $this->dismissed_prompts->add( $data['slug'], $expiration );
+
+            return new WP_REST_Response( $this->dismissed_prompts->get() );
+        },
+        'permission_callback' => $can_dismiss_prompt,
+        'args'                => array(
+            'data' => array(
+                'type'     => 'object',
+                'required' => true,
+            ),
+        ),
+    )
+);
 ```
 
 **Request Body**:
@@ -228,7 +263,7 @@ public function dismiss_prompt( WP_REST_Request $request ) {
 }
 ```
 
-**Parameters**:
+**Parameters** (sent inside the `data` object):
 
 | Parameter    | Type   | Required | Description                              |
 | ------------ | ------ | -------- | ---------------------------------------- |
@@ -239,17 +274,15 @@ public function dismiss_prompt( WP_REST_Request $request ) {
 
 #### PHP: Reset Prompt with Display Limit
 
-**Location**: `includes/Modules/AdSense.php:1148-1156`
+**Location**: `includes/Modules/AdSense.php`
 
 ```php
 public function reset_ad_blocking_recovery_notification() {
-    $dismissed_prompts = new Dismissed_Prompts( $this->user_options );
+    $dismissed_prompts = ( new Dismissed_Prompts( $this->user_options ) );
 
     $current_dismissals = $dismissed_prompts->get();
 
-    // Only remove if shown less than 3 times
-    if ( isset( $current_dismissals['ad-blocking-recovery-notification'] )
-         && $current_dismissals['ad-blocking-recovery-notification']['count'] < 3 ) {
+    if ( isset( $current_dismissals['ad-blocking-recovery-notification'] ) && $current_dismissals['ad-blocking-recovery-notification']['count'] < 3 ) {
         $dismissed_prompts->remove( 'ad-blocking-recovery-notification' );
     }
 }
@@ -257,7 +290,7 @@ public function reset_ad_blocking_recovery_notification() {
 
 #### JavaScript: Check Dismissal Status
 
-**Location**: `assets/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupCTAWidget.js:79-94`
+**Location**: `assets/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupCTAWidget.js`
 
 ```javascript
 import { useSelect, useDispatch } from 'googlesitekit-data';
@@ -401,7 +434,7 @@ function MyComponent() {
 
 #### Expiration Filtering
 
-**Location**: `assets/js/googlesitekit/datastore/user/prompts.js:158-176`
+**Location**: `assets/js/googlesitekit/datastore/user/prompts.js`
 
 Prompts are filtered client-side in selectors:
 
@@ -452,7 +485,7 @@ Dismissals (orchestrator)
 
 ### Dismissed_Items Class
 
-**Location**: `includes/Core/Dismissals/Dismissed_Items.php:1-185`
+**Location**: `includes/Core/Dismissals/Dismissed_Items.php`
 
 Storage layer extending `User_Setting`.
 
@@ -591,7 +624,7 @@ final class Dismissed_Items extends User_Setting {
 
 Returns array of active (non-expired) item slugs.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:51-75`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function get_dismissed_items( WP_REST_Request $request ) {
@@ -611,7 +644,7 @@ public function get_dismissed_items( WP_REST_Request $request ) {
 
 Dismiss an item with optional expiration.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:84-120`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function dismiss_item( WP_REST_Request $request ) {
@@ -644,7 +677,7 @@ public function dismiss_item( WP_REST_Request $request ) {
 
 Remove multiple dismissed items.
 
-**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php:129-165`
+**Location**: `includes/Core/Dismissals/REST_Dismissals_Controller.php`
 
 ```php
 public function remove_dismissed_items( WP_REST_Request $request ) {
@@ -675,7 +708,7 @@ public function remove_dismissed_items( WP_REST_Request $request ) {
 
 #### PHP: Check Dismissal Status
 
-**Location**: `includes/Core/Email_Reporting/Email_Reporting_Pointer.php:92-157`
+**Location**: `includes/Core/Email_Reporting/Email_Reporting_Pointer.php`
 
 ```php
 final class Email_Reporting_Pointer {
@@ -732,7 +765,7 @@ final class Email_Reporting_Pointer {
 
 #### PHP: Bulk Remove with Wildcard Matching
 
-**Location**: `includes/Modules/Analytics_4/Reset_Audiences.php:60-130`
+**Location**: `includes/Modules/Analytics_4/Reset_Audiences.php`
 
 ```php
 const AUDIENCE_SEGMENTATION_DISMISSED_ITEMS = array(

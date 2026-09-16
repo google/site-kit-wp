@@ -109,16 +109,16 @@ class CredentialsTest extends TestCase {
 		$this->assertFalse( $encrypted_options->has( Credentials::OPTION ), 'Encrypted options should not have credentials option initially.' );
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist initially.' );
 		// Credentials missing all required keys are considered missing
-		// Test placeholder credentials
+		// Test placeholder credentials.
 		$this->assertTrue( $credentials->set( array( 'test-credentials' ) ), 'Setting placeholder credentials should return true.' );
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist with placeholder data.' );
-		// Test client id only
+		// Test client id only.
 		$encrypted_options->set( Credentials::OPTION, array( 'oauth2_client_id' => 'test-client-id' ) );
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist with only client ID.' );
-		// Test client secret only
+		// Test client secret only.
 		$encrypted_options->set( Credentials::OPTION, array( 'oauth2_client_secret' => 'test-client-secret' ) );
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist with only client secret.' );
-		// Test client id and empty secret
+		// Test client id and empty secret.
 		$encrypted_options->set(
 			Credentials::OPTION,
 			array(
@@ -127,7 +127,7 @@ class CredentialsTest extends TestCase {
 			)
 		);
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist with client ID and empty secret.' );
-		// Test empty client id with a secret
+		// Test empty client id with a secret.
 		$encrypted_options->set(
 			Credentials::OPTION,
 			array(
@@ -136,7 +136,7 @@ class CredentialsTest extends TestCase {
 			)
 		);
 		$this->assertFalse( $credentials->has(), 'Credentials should not exist with empty client ID and secret.' );
-		// Test with provided client id and secret
+		// Test with provided client id and secret.
 		$encrypted_options->set(
 			Credentials::OPTION,
 			array(

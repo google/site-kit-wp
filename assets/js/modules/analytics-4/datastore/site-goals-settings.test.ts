@@ -29,8 +29,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	provideModules,
 	subscribeUntil,
 	untilResolved,
 } from '@tests/js/utils';
@@ -45,6 +47,9 @@ describe( 'modules/analytics-4 site goals settings', () => {
 	const saveSiteGoalsSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/save-site-goals-settings'
 	);
+	const settingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/settings'
+	);
 
 	const goalDrivers = {
 		ecommerce: [ 'topTrafficChannels' ],
@@ -57,6 +62,14 @@ describe( 'modules/analytics-4 site goals settings', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: true,
+			},
+		] );
 	} );
 
 	describe( 'actions', () => {
@@ -147,6 +160,32 @@ describe( 'modules/analytics-4 site goals settings', () => {
 
 	describe( 'selectors', () => {
 		describe( 'getSiteGoalsSettings', () => {
+			it( 'should not fetch the settings when Analytics is not connected', async () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: false,
+						connected: false,
+					},
+				] );
+
+				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
+
+				expect( fetchMock ).not.toHaveFetched(
+					getSiteGoalsSettingsEndpoint
+				);
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getSiteGoalsSettings()
+				).toBeUndefined();
+			} );
+
 			it( 'should fetch the settings from the endpoint when not yet loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
 					body: {
@@ -267,7 +306,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 			} );
 		} );
 
-		describe( 'isSiteGoalWidgetActive', () => {
+		describe( 'isSiteGoalsWidgetActive', () => {
 			it( 'should return undefined before settings are loaded', async () => {
 				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
 					body: { activeWidgets: [] },
@@ -277,7 +316,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBeUndefined();
 
 				await untilResolved(
@@ -296,12 +335,12 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBe( true );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( true );
 			} );
 
@@ -315,7 +354,7 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( false );
 			} );
 
@@ -329,13 +368,154 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'ecommerce' )
+						.isSiteGoalsWidgetActive( 'ecommerce' )
 				).toBe( false );
 				expect(
 					registry
 						.select( MODULES_ANALYTICS_4 )
-						.isSiteGoalWidgetActive( 'lead' )
+						.isSiteGoalsWidgetActive( 'lead' )
 				).toBe( false );
+			} );
+		} );
+
+		describe( 'isSiteGoalsWidgetRenderable', () => {
+			function receiveSettings(
+				activeWidgets: string[],
+				detectedEvents: string[]
+			) {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( { activeWidgets } );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { detectedEvents } );
+			}
+
+			it( 'should return true when the category is active and its events are detected', () => {
+				receiveSettings(
+					[ 'ecommerce', 'lead' ],
+					[ 'purchase', 'contact' ]
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'lead' )
+				).toBe( true );
+			} );
+
+			it( 'should return true for either event of a category', () => {
+				receiveSettings(
+					[ 'ecommerce', 'lead' ],
+					[ 'add_to_cart', 'submit_lead_form' ]
+				);
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBe( true );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'lead' )
+				).toBe( true );
+			} );
+
+			it( 'should return false when the category is active but its events are not detected', () => {
+				receiveSettings( [ 'ecommerce', 'lead' ], [ 'purchase' ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'lead' )
+				).toBe( false );
+			} );
+
+			it( 'should return false when the events are detected but the category is not active', () => {
+				receiveSettings( [ 'lead' ], [ 'purchase', 'contact' ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBe( false );
+			} );
+
+			it( 'should return false when no events are detected at all', () => {
+				receiveSettings( [ 'ecommerce', 'lead' ], [] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBe( false );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'lead' )
+				).toBe( false );
+			} );
+
+			it( 'should return false for an unknown category', () => {
+				receiveSettings( [ 'ecommerce' ], [ 'purchase' ] );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'unknown' )
+				).toBe( false );
+			} );
+
+			it( 'should return undefined while the site goals settings are unresolved', async () => {
+				fetchMock.getOnce( getSiteGoalsSettingsEndpoint, {
+					body: { activeWidgets: [ 'ecommerce' ] },
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { detectedEvents: [ 'purchase' ] } );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSiteGoalsSettings();
+			} );
+
+			it( 'should return undefined while the detected events are unresolved', async () => {
+				fetchMock.getOnce( settingsEndpoint, {
+					body: { detectedEvents: [ 'purchase' ] },
+					status: 200,
+				} );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce' ],
+					} );
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isSiteGoalsWidgetRenderable( 'ecommerce' )
+				).toBeUndefined();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getSettings();
 			} );
 		} );
 

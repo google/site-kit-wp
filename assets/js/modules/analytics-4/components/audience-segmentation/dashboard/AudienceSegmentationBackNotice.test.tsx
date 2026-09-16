@@ -17,12 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { mocked } from 'jest-mock';
-import { useIntersection as mockUseIntersection } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -35,7 +29,9 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	render,
@@ -46,13 +42,10 @@ import AudienceSegmentationBackNotice, {
 } from './AudienceSegmentationBackNotice';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from './AudienceSelectionPanel/constants';
 
-jest.mock( 'react-use', () => ( {
-	...jest.requireActual( 'react-use' ),
-	useIntersection: jest.fn(),
-} ) );
-
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
 
 describe( 'AudienceSegmentationBackNotice', () => {
 	let registry: WPDataRegistry;
@@ -165,30 +158,17 @@ describe( 'AudienceSegmentationBackNotice', () => {
 	} );
 
 	it( 'should track the view_notice event when the notice is viewed', async () => {
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: false,
-					intersectionRatio: 0,
-				} as IntersectionObserverEntry )
-		);
-
-		const { rerender } = render( <WidgetWithComponentProps />, {
+		render( <WidgetWithComponentProps />, {
 			registry,
 			viewContext,
 		} );
 
 		expect( mockTrackEvent ).not.toHaveBeenCalled();
 
-		mocked( mockUseIntersection ).mockImplementation(
-			() =>
-				( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} as IntersectionObserverEntry )
-		);
-
-		rerender( <WidgetWithComponentProps /> );
+		// Simulate the notice coming into view.
+		act( () => {
+			simulateAllIntersections( true );
+		} );
 
 		await waitFor( () => {
 			expect( mockTrackEvent ).toHaveBeenCalledWith(

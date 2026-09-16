@@ -40,7 +40,6 @@ use Google\Site_Kit_Dependencies\Google\Service\Adsense\Alert;
 use Google\Site_Kit_Dependencies\Google\Service\Adsense\ListAlertsResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use ReflectionMethod;
 use WP_REST_Request;
 
 /**
@@ -640,70 +639,6 @@ class AdSenseTest extends TestCase {
 				'accountID' => 'pub-12345678',
 			)
 		);
-	}
-
-	public function test_parse_earnings_orderby() {
-		$adsense = new AdSense( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$reflected_parse_earnings_orderby_method = new ReflectionMethod( 'Google\Site_Kit\Modules\AdSense', 'parse_earnings_orderby' );
-		$reflected_parse_earnings_orderby_method->setAccessible( true );
-
-		// When there is no orderby in the request.
-		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, array() );
-		$this->assertTrue( is_array( $result ), 'Result should be an array when no orderby provided.' );
-		$this->assertEmpty( $result, 'Result should be empty when no orderby provided.' );
-
-		// When a single order object is used.
-		$order  = array(
-			'fieldName' => 'views',
-			'sortOrder' => 'ASCENDING',
-		);
-		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $order );
-		$this->assertTrue( is_array( $result ), 'Result should be an array for single order.' );
-		$this->assertEquals( 1, count( $result ), 'Single order should produce one parsed order string.' );
-		$this->assertEquals( '+views', $result[0], 'Ascending order should be prefixed with +.' );
-
-		// When multiple orders are passed.
-		$orders = array(
-			array(
-				'fieldName' => 'pages',
-				'sortOrder' => 'DESCENDING',
-			),
-			array(
-				'fieldName' => 'sessions',
-				'sortOrder' => 'ASCENDING',
-			),
-		);
-		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
-		$this->assertTrue( is_array( $result ), 'Result should be an array for multiple orders.' );
-		$this->assertEquals( 2, count( $result ), 'Two orders should produce two parsed order strings.' );
-		$this->assertEquals( '-pages', $result[0], 'Descending order should be prefixed with -.' );
-		$this->assertEquals( '+sessions', $result[1], 'Ascending order should be prefixed with +.' );
-
-		// Check that it skips invalid orders.
-		$orders = array(
-			array(
-				'fieldName' => 'views',
-				'sortOrder' => '',
-			),
-			array(
-				'fieldName' => 'pages',
-				'sortOrder' => 'DESCENDING',
-			),
-			array(
-				'fieldName' => '',
-				'sortOrder' => 'DESCENDING',
-			),
-			array(
-				'fieldName' => 'sessions',
-				'sortOrder' => 'ASCENDING',
-			),
-		);
-		$result = $reflected_parse_earnings_orderby_method->invoke( $adsense, $orders );
-		$this->assertTrue( is_array( $result ), 'Result should be an array when skipping invalid orders.' );
-		$this->assertEquals( 2, count( $result ), 'Invalid orders should be skipped leaving two valid orders.' );
-		$this->assertEquals( '-pages', $result[0], 'Valid descending order should be retained.' );
-		$this->assertEquals( '+sessions', $result[1], 'Valid ascending order should be retained.' );
 	}
 
 	public function test_get_sites_no_account_id_from_rest_api() {

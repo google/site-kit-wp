@@ -49,7 +49,7 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 		);
 
 		expect( result.current.title ).toBe(
-			'Using both WooCommerce and Easy Digital Downloads to sell products or services?'
+			'See how different plugins contribute to your goals'
 		);
 	} );
 
@@ -90,7 +90,7 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 		);
 
 		expect( result.current.title ).toBe(
-			'Have multiple forms, or Using both WooCommerce and Easy Digital Downloads for your site?'
+			'Have multiple forms, or using both WooCommerce and Easy Digital Downloads for your site?'
 		);
 	} );
 

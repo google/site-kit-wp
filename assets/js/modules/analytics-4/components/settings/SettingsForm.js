@@ -58,7 +58,6 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
 	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const siteGoalsEnabled = useFeature( 'siteGoals' );
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -122,11 +121,9 @@ export default function SettingsForm( { hasModuleAccess } ) {
 				<SettingsEnhancedMeasurementSwitch
 					hasModuleAccess={ hasModuleAccess }
 				/>
-				{ siteGoalsEnabled && (
-					<SettingsAdvancedDataBreakdowns
-						hasModuleAccess={ hasModuleAccess }
-					/>
-				) }
+				<SettingsAdvancedDataBreakdowns
+					hasModuleAccess={ hasModuleAccess }
+				/>
 				{ gtgEnabled && <GoogleTagGatewayToggle /> }
 				{ gtagUserDataEnabled && (
 					<EnhancedConversionsSettingsNotice

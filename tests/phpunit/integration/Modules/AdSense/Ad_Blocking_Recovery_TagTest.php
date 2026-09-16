@@ -10,8 +10,6 @@
  * phpcs:disable PHPCS.Commenting.RequireDocTagDescription -- Pre-existing violations; tracked for follow-up cleanup.
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\AdSense;
 
 use Google\Site_Kit\Context;
@@ -46,7 +44,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 				'tag'                   => '',
 				'error_protection_code' => '',
 			),
-			get_option( Ad_Blocking_Recovery_Tag::OPTION )
+			get_option( Ad_Blocking_Recovery_Tag::OPTION ),
+			'Ad blocking recovery tag settings should default to empty values.'
 		);
 	}
 
@@ -64,7 +63,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
-			$this->ad_blocking_recovery_tag->get()
+			$this->ad_blocking_recovery_tag->get(),
+			'Ad blocking recovery tag settings should return the configured values.'
 		);
 	}
 
@@ -82,7 +82,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 				'tag'                   => '',
 				'error_protection_code' => '',
 			),
-			$this->ad_blocking_recovery_tag->get()
+			$this->ad_blocking_recovery_tag->get(),
+			'Invalid ad blocking recovery tag settings should be replaced with defaults.'
 		);
 	}
 
@@ -93,7 +94,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 					'tag'                   => $this->test_recovery_tag,
 					'error_protection_code' => $this->test_error_protection_code,
 				)
-			)
+			),
+			'Valid ad blocking recovery tag data should be saved successfully.'
 		);
 
 		$this->assertEqualSetsWithIndex(
@@ -101,7 +103,8 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 				'tag'                   => $this->test_recovery_tag,
 				'error_protection_code' => $this->test_error_protection_code,
 			),
-			get_option( Ad_Blocking_Recovery_Tag::OPTION )
+			get_option( Ad_Blocking_Recovery_Tag::OPTION ),
+			'Saving ad blocking recovery tag settings should persist the configured values.'
 		);
 	}
 
@@ -111,7 +114,10 @@ class Ad_Blocking_Recovery_TagTest extends SettingsTestCase {
 	 * @param mixed $value
 	 */
 	public function test_set_invalid_values( $value ) {
-		$this->assertFalse( $this->ad_blocking_recovery_tag->set( $value ) );
+		$this->assertFalse(
+			$this->ad_blocking_recovery_tag->set( $value ),
+			'Invalid ad blocking recovery tag data should be rejected.'
+		);
 	}
 
 	public function data_invalid_values() {

@@ -46,6 +46,9 @@ export default function SettingsView() {
 	const anyoneCanRegister = useSelect( ( select ) =>
 		select( CORE_SITE ).getAnyoneCanRegister()
 	);
+	const isRegistrationOpen = useSelect( ( select ) =>
+		select( CORE_SITE ).isRegistrationOpen()
+	);
 
 	const buttonShapeLabel = useSelect( ( select ) => {
 		const shape = select( MODULES_SIGN_IN_WITH_GOOGLE ).getShape();
@@ -208,11 +211,11 @@ export default function SettingsView() {
 					>
 						{ __( 'User registration', 'google-site-kit' ) }
 					</Typography>
-					{ anyoneCanRegister !== undefined && (
+					{ isRegistrationOpen !== undefined && (
 						<p className="googlesitekit-settings-module__meta-item-data">
 							<DisplaySetting
 								value={
-									anyoneCanRegister
+									isRegistrationOpen
 										? __( 'Enabled', 'google-site-kit' )
 										: __( 'Disabled', 'google-site-kit' )
 								}

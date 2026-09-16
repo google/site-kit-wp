@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Site_Health;
 
 use Google\Site_Kit\Context;
@@ -60,7 +58,10 @@ class Tag_PlacementTest extends TestCase {
 		remove_all_filters( 'site_status_tests' );
 		$this->tag_placement->register();
 
-		$this->assertTrue( has_filter( 'site_status_tests' ) );
+		$this->assertTrue(
+			has_filter( 'site_status_tests' ),
+			'Tag placement check should be registered with WordPress Site Health.'
+		);
 	}
 
 	public function test_site_status_tests__wp_version_5_5() {
@@ -74,9 +75,9 @@ class Tag_PlacementTest extends TestCase {
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
-		$this->assertArrayHasKey( 'direct', $modified_tests );
-		$this->assertArrayHasKey( 'tag_placement', $modified_tests['direct'] );
-		$this->assertIsArray( $modified_tests['direct']['tag_placement'] );
+		$this->assertArrayHasKey( 'direct', $modified_tests, 'WordPress 5.5 should receive synchronous Site Health tests.' );
+		$this->assertArrayHasKey( 'tag_placement', $modified_tests['direct'], 'Tag placement should be registered as a synchronous test on WordPress 5.5.' );
+		$this->assertIsArray( $modified_tests['direct']['tag_placement'], 'Synchronous tag placement test should use a valid Site Health definition.' );
 	}
 
 	public function test_site_status_tests__wp_version_5_6_or_over() {
@@ -90,10 +91,13 @@ class Tag_PlacementTest extends TestCase {
 
 		$modified_tests = apply_filters( 'site_status_tests', array() );
 
-		$this->assertTrue( version_compare( $wp_version, '5.6', '>=' ) );
-		$this->assertArrayHasKey( 'async', $modified_tests );
-		$this->assertArrayHasKey( 'tag_placement', $modified_tests['async'] );
-		$this->assertIsArray( $modified_tests['async']['tag_placement'] );
+		$this->assertTrue(
+			version_compare( $wp_version, '5.6', '>=' ),
+			'Test should exercise a WordPress version that supports asynchronous Site Health tests.'
+		);
+		$this->assertArrayHasKey( 'async', $modified_tests, 'WordPress 5.6 or newer should receive asynchronous Site Health tests.' );
+		$this->assertArrayHasKey( 'tag_placement', $modified_tests['async'], 'Tag placement should be registered as an asynchronous test on supported WordPress versions.' );
+		$this->assertIsArray( $modified_tests['async']['tag_placement'], 'Asynchronous tag placement test should use a valid Site Health definition.' );
 	}
 
 	public function test_tag_placement_test__wp_version_bellow_5_6() {
@@ -110,7 +114,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array() );
 
-		$this->assertEquals( '<p>This feature requires WordPress version 5.6 or higher</p>', $result['description'] );
+		$this->assertEquals( '<p>This feature requires WordPress version 5.6 or higher</p>', $result['description'], 'Unsupported WordPress versions should receive the minimum-version message.' );
 	}
 
 	public function test_get_active_modules_with_tags() {
@@ -137,7 +141,8 @@ class Tag_PlacementTest extends TestCase {
 				'adsense',
 				'analytics-4',
 			),
-			array_keys( $result )
+			array_keys( $result ),
+			'Only active modules that place tags should be checked.'
 		);
 
 		update_option(
@@ -150,7 +155,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $get_active_modules->invokeArgs( $site_status, array() );
 
-		$this->assertTrue( empty( $result ) );
+		$this->assertTrue( empty( $result ), 'Active modules without tags should not be checked for tag placement.' );
 	}
 
 	public function test_check_if_tag_exists__no_tag() {
@@ -162,7 +167,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, 'body content' ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: No tag detected.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: No tag detected.</li>', $result, 'Missing Analytics tag should be reported as not detected.' );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_by_sitekit() {
@@ -189,7 +194,7 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected and placed by Site Kit.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected and placed by Site Kit.</li>', $result, 'Analytics tag with Site Kit marker should be attributed to Site Kit.' );
 	}
 
 	public function test_check_if_tag_exists__has_tag_placed_no_sitekit_headers() {
@@ -215,6 +220,6 @@ class Tag_PlacementTest extends TestCase {
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, $response_body ) );
 
-		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result );
+		$this->assertEquals( '<li><strong>Analytics</strong>: Tag detected but could not verify that Site Kit placed the tag.</li>', $result, 'Analytics tag without Site Kit marker should be reported as unattributed.' );
 	}
 }

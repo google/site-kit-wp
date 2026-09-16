@@ -625,6 +625,16 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-feature-discovery',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-feature-discovery.js',
+					'dependencies' => array(
+						'googlesitekit-data',
+						'googlesitekit-i18n',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-user-input',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-user-input.js',
@@ -665,6 +675,16 @@ final class Assets {
 				array(
 					'src'          => $base_url . 'js/googlesitekit-settings.js',
 					'dependencies' => $this->get_asset_dependencies( 'dashboard-sharing' ),
+				)
+			),
+			new Script(
+				'googlesitekit-features',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-features.js',
+					'dependencies' => array_merge(
+						$this->get_asset_dependencies( 'dashboard-sharing' ),
+						array( 'googlesitekit-feature-discovery' )
+					),
 				)
 			),
 			new Script(
@@ -795,26 +815,25 @@ final class Assets {
 		$site_url = $this->context->get_reference_site_url();
 
 		$inline_data = array(
-			'homeURL'           => trailingslashit( $this->context->get_canonical_home_url() ),
-			'referenceSiteURL'  => esc_url_raw( trailingslashit( $site_url ) ),
-			'adminURL'          => esc_url_raw( trailingslashit( admin_url() ) ),
-			'assetsURL'         => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
-			'widgetsAdminURL'   => esc_url_raw( $this->get_widgets_admin_url() ),
-			'blogPrefix'        => $wpdb->get_blog_prefix(),
-			'ampMode'           => $this->context->get_amp_mode(),
-			'isNetworkMode'     => $this->context->is_network_mode(),
-			'timezone'          => get_option( 'timezone_string' ),
-			'startOfWeek'       => (int) get_option( 'start_of_week' ),
-			'siteName'          => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
-			'siteLocale'        => $this->context->get_locale(),
-			'enabledFeatures'   => Feature_Flags::get_enabled_features(),
-			'webStoriesActive'  => defined( 'WEBSTORIES_VERSION' ),
-			'postTypes'         => $this->get_post_types(),
-			'storagePrefix'     => $this->get_storage_prefix(),
-			'referenceDate'     => Date::reference_date(),
-			'productPostType'   => $this->get_product_post_type(),
-			'anyoneCanRegister' => (bool) get_option( 'users_can_register' ),
-			'isMultisite'       => is_multisite(),
+			'homeURL'          => trailingslashit( $this->context->get_canonical_home_url() ),
+			'referenceSiteURL' => esc_url_raw( trailingslashit( $site_url ) ),
+			'adminURL'         => esc_url_raw( trailingslashit( admin_url() ) ),
+			'assetsURL'        => esc_url_raw( $this->context->url( 'dist/assets/' ) ),
+			'widgetsAdminURL'  => esc_url_raw( $this->get_widgets_admin_url() ),
+			'blogPrefix'       => $wpdb->get_blog_prefix(),
+			'ampMode'          => $this->context->get_amp_mode(),
+			'isNetworkMode'    => $this->context->is_network_mode(),
+			'timezone'         => get_option( 'timezone_string' ),
+			'startOfWeek'      => (int) get_option( 'start_of_week' ),
+			'siteName'         => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
+			'siteLocale'       => $this->context->get_locale(),
+			'enabledFeatures'  => Feature_Flags::get_enabled_features(),
+			'webStoriesActive' => defined( 'WEBSTORIES_VERSION' ),
+			'postTypes'        => $this->get_post_types(),
+			'storagePrefix'    => $this->get_storage_prefix(),
+			'wpPrivacyURL'     => get_privacy_policy_url(),
+			'referenceDate'    => Date::reference_date(),
+			'productPostType'  => $this->get_product_post_type(),
 		);
 
 		/**
@@ -892,7 +911,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline data specific to the current user
+	 * Gets the inline data specific to the current user.
 	 *
 	 * @since 1.9.0
 	 *
@@ -924,7 +943,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the inline dashboard sharing data
+	 * Gets the inline dashboard sharing data.
 	 *
 	 * @since 1.49.0
 	 *

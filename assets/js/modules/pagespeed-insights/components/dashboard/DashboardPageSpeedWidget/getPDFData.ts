@@ -95,7 +95,7 @@ export interface SpeedPDFData {
  * only when both strategies fail so the orchestrator can transition the whole
  * widget to its error state.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param params          Loader parameters from the PDF orchestrator.
  * @param params.registry Registry with resolveSelect and dispatch for Site Kit stores.

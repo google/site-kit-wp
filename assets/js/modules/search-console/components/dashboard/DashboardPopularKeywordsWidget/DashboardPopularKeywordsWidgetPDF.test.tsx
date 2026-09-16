@@ -37,17 +37,15 @@ const DATA = {
 		{ keys: [ 'dog toys' ], clicks: 300, impressions: 900 },
 	],
 	links: {
-		'cat food':
-			'https://search.google.com/search-console/performance/search-analytics?cat-food',
-		'dog toys':
-			'https://search.google.com/search-console/performance/search-analytics?dog-toys',
+		'cat food': 'https://example.com/search-console-report/cat-food',
+		'dog toys': 'https://example.com/search-console-report/dog-toys',
 	},
 };
 
 /**
  * Renders the widget to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props passed to the widget.
  * @return JSON string of the rendered tree.
@@ -69,18 +67,17 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 		expect( json ).toContain( 'Top search queries for your site' );
 	} );
 
-	it( 'renders the Clicks and Impressions headers in order, with no header on the query column', () => {
+	it( 'renders the Search query, Clicks, and Impressions headers in order', () => {
 		const json = renderJSON( { data: DATA } );
 
-		// The query column has no header.
-		expect( json ).not.toContain( 'Search query' );
+		expect( json ).toContain( 'Search query' );
 
-		const headerPositions = [ 'Clicks', 'Impressions' ].map( ( header ) =>
-			json.indexOf( header )
+		const headerPositions = [ 'Search query', 'Clicks', 'Impressions' ].map(
+			( header ) => json.indexOf( header )
 		);
 
-		// The Clicks and Impressions headers both appear, with Clicks before
-		// Impressions.
+		// All three headers appear, in the order Search query, then Clicks,
+		// then Impressions.
 		expect( headerPositions ).not.toContain( -1 );
 		expect( headerPositions ).toEqual(
 			[ ...headerPositions ].sort(
@@ -109,12 +106,34 @@ describe( 'DashboardPopularKeywordsWidgetPDF', () => {
 
 		expect( json ).toContain( DATA.links[ 'cat food' ] );
 		expect( json ).toContain( DATA.links[ 'dog toys' ] );
+		// The `Link` primitive from `@react-pdf` renders as `pdf-link` under
+		// the test mock. So a `pdf-link` in the tree means the query rendered
+		// as a link, not as text that happens to hold the URL.
+		expect( json ).toContain( 'pdf-link' );
+	} );
+
+	it( 'renders each query as plain text when a query has no link', () => {
+		// An empty `links` map gives every query an empty link, so each one
+		// renders as plain text.
+		const json = renderJSON( { data: { ...DATA, links: {} } } );
+
+		expect( json ).toContain( 'cat food' );
+		expect( json ).toContain( 'dog toys' );
+		// No `pdf-link` in the tree means every query rendered as plain text.
+		expect( json ).not.toContain( 'pdf-link' );
 	} );
 
 	it( 'renders each query link in the link color', () => {
 		const json = renderJSON( { data: DATA } );
 
 		expect( json ).toContain( '#108080' );
+	} );
+
+	it( 'truncates each query to one line with an ellipsis', () => {
+		const json = renderJSON( { data: DATA } );
+
+		expect( json ).toContain( '"maxLines":1' );
+		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 	} );
 
 	it( 'formats Clicks and Impressions with thousands separators', () => {

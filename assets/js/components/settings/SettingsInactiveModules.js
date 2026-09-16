@@ -66,7 +66,7 @@ export default function SettingsInactiveModules() {
 	return (
 		<Layout
 			title={ __(
-				'Connect More Services to Gain More Insights',
+				'Connect more services to gain more insights',
 				'google-site-kit'
 			) }
 			header

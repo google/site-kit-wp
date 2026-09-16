@@ -23,6 +23,7 @@ const CreateFileWebpack = require( 'create-file-webpack' );
 const ESLintPlugin = require( 'eslint-webpack-plugin' );
 const path = require( 'path' );
 const { DefinePlugin, ProvidePlugin, ProgressPlugin } = require( 'webpack' );
+const { BundleAnalyzerPlugin } = require( 'webpack-bundle-analyzer' );
 const { WebpackManifestPlugin } = require( 'webpack-manifest-plugin' );
 
 /**
@@ -38,8 +39,23 @@ const {
 	resolve,
 } = require( '../../webpack/common' );
 const { createMinimizerRules } = require( './common' );
+const LazyLoadVendorModulesPlugin = require( './plugins/LazyLoadVendorModulesPlugin' );
 
-module.exports = function ( mode, rules ) {
+/**
+ * PDF report dependencies that should not be bundled into the main
+ * `googlesitekit-vendor` chunk.
+ *
+ * These should always be loaded in the lazy-loaded
+ * `googlesitekit-vendor-lazy-pdf` chunk instead, which is only
+ * loaded when a PDF report is generated.
+ */
+const LAZY_PDF_REPORT_VENDOR_MODULES = [
+	/[\\/]node_modules[\\/]@react-pdf[\\/]/,
+	/[\\/]node_modules[\\/]fontkit[\\/]/,
+	/[\\/]node_modules[\\/]restructure[\\/]/,
+];
+
+module.exports = function ( mode, rules, ANALYZE ) {
 	const isProduction = mode === 'production';
 
 	return {
@@ -63,6 +79,8 @@ module.exports = function ( mode, rules ) {
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.ts',
 			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',
+			'googlesitekit-feature-discovery':
+				'./js/googlesitekit-feature-discovery.ts',
 			'googlesitekit-modules-ads': './js/googlesitekit-modules-ads.ts',
 			'googlesitekit-modules-adsense':
 				'./js/googlesitekit-modules-adsense.ts',
@@ -89,6 +107,7 @@ module.exports = function ( mode, rules ) {
 				'./js/googlesitekit-metric-selection.tsx',
 			'googlesitekit-key-metrics-setup':
 				'./js/googlesitekit-key-metrics-setup.tsx',
+			'googlesitekit-features': './js/googlesitekit-features.tsx',
 			// Old Modules
 			'googlesitekit-activation': './js/googlesitekit-activation.tsx',
 			'googlesitekit-adminbar': './js/googlesitekit-adminbar.tsx',
@@ -150,6 +169,23 @@ module.exports = function ( mode, rules ) {
 				emitWarning: true,
 				failOnError: true,
 			} ),
+			// Warn if any of the disallowed PDF dependencies are bundled into the
+			// main `googlesitekit-vendor` chunk.
+			new LazyLoadVendorModulesPlugin( {
+				chunkName: 'googlesitekit-vendor',
+				disallowed: LAZY_PDF_REPORT_VENDOR_MODULES,
+			} ),
+			...( ANALYZE
+				? [
+						new BundleAnalyzerPlugin( {
+							analyzerMode: 'static',
+							analyzerPort: 'auto',
+							openAnalyzer: true,
+							reportFilename: 'modules-report.html',
+							reportTitle: 'Module Entry Points',
+						} ),
+				  ]
+				: [] ),
 		],
 		optimization: {
 			minimizer: createMinimizerRules(),

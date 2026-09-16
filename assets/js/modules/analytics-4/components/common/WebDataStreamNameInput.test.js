@@ -95,9 +95,12 @@ describe( 'WebDataStreamNameInput', () => {
 			webDataStreamName: 'Test GA4 WebDataStream',
 		} );
 
-		const { container } = render( <WebDataStreamNameInput />, {
-			registry,
-		} );
+		const { container, getByRole, getByText } = render(
+			<WebDataStreamNameInput />,
+			{
+				registry,
+			}
+		);
 
 		expect(
 			container
@@ -109,13 +112,25 @@ describe( 'WebDataStreamNameInput', () => {
 			'A web data stream with this name already exists.'
 		);
 
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-invalid',
+			'true'
+		);
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-errormessage',
+			getByText( 'A web data stream with this name already exists.' ).id
+		);
+
 		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should show error state if web data stream name is not set', () => {
-		const { container } = render( <WebDataStreamNameInput />, {
-			registry,
-		} );
+		const { container, getByRole, getByText } = render(
+			<WebDataStreamNameInput />,
+			{
+				registry,
+			}
+		);
 
 		// Update web data stream name to empty after initial render.
 		act( () => {
@@ -132,6 +147,15 @@ describe( 'WebDataStreamNameInput', () => {
 
 		expect( container ).toHaveTextContent(
 			'A web data stream name is required.'
+		);
+
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-invalid',
+			'true'
+		);
+		expect( getByRole( 'textbox' ) ).toHaveAttribute(
+			'aria-errormessage',
+			getByText( 'A web data stream name is required.' ).id
 		);
 
 		expect( container ).toMatchSnapshot();

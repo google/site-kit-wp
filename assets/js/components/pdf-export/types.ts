@@ -32,6 +32,14 @@ import type {
 export type { PDFWidgetComponentProps };
 
 /**
+ * The direction of a metric's period-over-period change, controlling the
+ * change badge colors.
+ *
+ * @since 1.186.0
+ */
+export type PDFChangeType = 'positive' | 'negative' | 'noChange';
+
+/**
  * A section icon rendered with `@react-pdf/renderer` SVG primitives.
  *
  * @since 1.182.0
@@ -42,6 +50,23 @@ export type PDFIcon = FC< {
 } >;
 
 /**
+ * The props a `?pdf` SVG import accepts.
+ *
+ * `assets/js/types/svg.d.ts` types every `?pdf` import with this interface, so
+ * an import and the icon that wraps it always take the same props.
+ *
+ * @since 1.184.0
+ */
+export interface PDFSvgFileProps {
+	/** The drawing's width, in page points. */
+	width?: number;
+	/** The drawing's height, in page points. */
+	height?: number;
+	/** The color that replaces `currentColor` in the source file. */
+	color?: string;
+}
+
+/**
  * One header section chip: a dashboard area surfaced in the PDF.
  *
  * @since 1.182.0
@@ -50,6 +75,17 @@ export interface PDFHeaderSection {
 	slug: string;
 	label: string;
 	Icon?: PDFIcon;
+}
+
+/**
+ * A named-destination anchor for one report section: the anchor `id` the
+ * header chips link to, and the section's absolute top on the page in points.
+ *
+ * @since 1.186.0
+ */
+export interface PDFSectionAnchor {
+	id: string;
+	top: number;
 }
 
 /**

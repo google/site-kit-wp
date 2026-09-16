@@ -80,7 +80,7 @@ export interface FieldMetrics {
  * Extracts lab metric display values, scores, and score categories from a
  * PageSpeed Insights report's `lighthouseResult.audits` object.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param report Raw PSI API response.
  * @return Lab metrics with displayValue, score, and category for each metric.
@@ -118,7 +118,7 @@ export function extractLabMetrics( report: PSIReport | null ): LabMetrics {
  * key is absent — CrUX can return any subset. The function returns `null` only
  * when there is no field data at all.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param report Raw PSI API response.
  * @return Field metrics with per-metric values, or null when field data is unavailable.

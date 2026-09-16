@@ -31,7 +31,7 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import { Cell, Grid, Row } from '@/js/material-components';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 
-interface NoticeNotificationProps {
+export interface NoticeNotificationProps {
 	notificationID: string;
 	children?: ReactNode;
 	title?: ReactNode;

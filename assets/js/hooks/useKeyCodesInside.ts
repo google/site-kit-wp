@@ -1,0 +1,48 @@
+/**
+ * `useKeyCodesInside` hook.
+ *
+ * Site Kit by Google, Copyright 2021 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import type { RefObject } from 'react';
+import { useKey } from 'react-use';
+
+/**
+ * Calls handler when event happens with a given keyCode inside a target ref.
+ *
+ * @since 1.32.0
+ *
+ * @param {Array}    keyCodes Array of keyCodes.
+ * @param {Object}   ref      React ref to element containing target.
+ * @param {Function} handler  Callback function.
+ * @return {void}
+ */
+export function useKeyCodesInside(
+	keyCodes: number[],
+	ref: RefObject< Element | null >,
+	handler: ( event: KeyboardEvent ) => void
+): void {
+	useKey( ( event ) => {
+		// `useKey` listens globally as soon as this hook runs, which can be
+		// before the ref is attached, so the current element may be missing.
+		return (
+			keyCodes.includes( event.keyCode ) &&
+			!! ref.current?.contains( event.target as Node )
+		);
+	}, handler );
+}

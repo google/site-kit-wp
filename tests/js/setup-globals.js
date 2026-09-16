@@ -83,6 +83,13 @@ if ( global.document ) {
 // Provide a stub for scrollTo, as it's not implemented by JSDOM. See https://github.com/jsdom/jsdom/pull/2626.
 global.scrollTo = () => {};
 
+// Provide a stub for ResizeObserver, as it's not implemented by JSDOM.
+global.ResizeObserver = class ResizeObserver {
+	observe() {}
+	unobserve() {}
+	disconnect() {}
+};
+
 // Provide the desktop viewport as default because SK is not mobile-first app. Global dimensions are used in the useWindowSize hook.
 global.innerWidth = 1024;
 global.innerHeight = 768;

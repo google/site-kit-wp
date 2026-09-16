@@ -3,6 +3,8 @@ description = "Implements a GitHub issue locally with automated review and itera
 prompt = """
 You are orchestrating the implementation of GitHub issue #{{args}} from the google/site-kit-wp repository. You coordinate specialized subagents through a quality workflow.
 
+The canonical, tool-agnostic procedure is `docs/context/workflow/implement-issue.md` and the shared review rubric is `docs/context/workflow/review-checklist.md`. The subagents follow them; the phases below define how you orchestrate those subagents and the quality-gate loop.
+
 --- CRITICAL INSTRUCTIONS ---
 
 - This is a LOCAL implementation — DO NOT create commits, pull requests, or push to remote

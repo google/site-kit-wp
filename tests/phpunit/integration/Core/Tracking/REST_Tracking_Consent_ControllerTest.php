@@ -8,9 +8,6 @@
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
-
 namespace Google\Site_Kit\Tests\Core\Tracking;
 
 use Google\Site_Kit\Context;
@@ -44,8 +41,14 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 
 		$controller->register();
 
-		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ) );
-		$this->assertTrue( has_filter( 'googlesitekit_rest_routes' ) );
+		$this->assertTrue(
+			has_filter( 'googlesitekit_apifetch_preload_paths' ),
+			'Tracking consent endpoint should be added to API fetch preload paths.'
+		);
+		$this->assertTrue(
+			has_filter( 'googlesitekit_rest_routes' ),
+			'Tracking consent REST routes should be registered.'
+		);
 	}
 
 	public function test_unauthorized_get_request() {
@@ -55,9 +58,9 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $response->get_data() );
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertNotEquals( 200, $response->get_status(), 'Unauthenticated tracking consent read should not succeed.' );
+		$this->assertArrayHasKey( 'code', $response->get_data(), 'Rejected tracking consent read should include an error code.' );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated users should not be able to read tracking consent.' );
 	}
 
 	public function test_read_tracking_status_from_rest_api() {
@@ -72,9 +75,9 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'enabled', $response->get_data() );
-		$this->assertFalse( $response->get_data()['enabled'] );
+		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to read tracking consent.' );
+		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Tracking consent response should include enabled state.' );
+		$this->assertFalse( $response->get_data()['enabled'], 'Tracking consent should be disabled by default.' );
 	}
 
 	public function test_unauthorized_post_request() {
@@ -97,9 +100,9 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request->set_body( $body );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertNotEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'code', $response->get_data() );
-		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'] );
+		$this->assertNotEquals( 200, $response->get_status(), 'Unauthenticated tracking consent update should not succeed.' );
+		$this->assertArrayHasKey( 'code', $response->get_data(), 'Rejected tracking consent update should include an error code.' );
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Unauthenticated users should not be able to update tracking consent.' );
 	}
 
 	public function test_modify_status_of_tracking() {
@@ -114,9 +117,9 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'enabled', $response->get_data() );
-		$this->assertFalse( $response->get_data()['enabled'] );
+		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to read tracking consent before updating it.' );
+		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Initial tracking consent response should include enabled state.' );
+		$this->assertFalse( $response->get_data()['enabled'], 'Tracking consent should initially be disabled.' );
 
 		$request = new WP_REST_Request(
 			WP_REST_Server::CREATABLE,
@@ -134,16 +137,16 @@ class REST_Tracking_Consent_ControllerTest extends TestCase {
 		$request->set_body( $body );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'enabled', $response->get_data() );
-		$this->assertTrue( $response->get_data()['enabled'] );
+		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to enable tracking consent.' );
+		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Tracking consent update response should include enabled state.' );
+		$this->assertTrue( $response->get_data()['enabled'], 'Tracking consent update should return the enabled state.' );
 
 		$request  = new WP_REST_Request( WP_REST_Server::READABLE, '/' . REST_Routes::REST_ROOT . '/core/user/data/tracking' );
 		$response = rest_get_server()->dispatch( $request );
 
-		$this->assertEquals( 200, $response->get_status() );
-		$this->assertArrayHasKey( 'enabled', $response->get_data() );
-		$this->assertTrue( $response->get_data()['enabled'] );
+		$this->assertEquals( 200, $response->get_status(), 'Authenticated user should be able to read updated tracking consent.' );
+		$this->assertArrayHasKey( 'enabled', $response->get_data(), 'Updated tracking consent response should include enabled state.' );
+		$this->assertTrue( $response->get_data()['enabled'], 'Enabled tracking consent should persist across subsequent reads.' );
 	}
 
 	protected function get_rest_controller_instance() {

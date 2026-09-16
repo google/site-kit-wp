@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Tracking\Tracking_Consent;
 
 /**
- * Class Migration_1_3_0
+ * Class Migration_1_3_0.
  *
  * @since 1.3.0
  * @access private

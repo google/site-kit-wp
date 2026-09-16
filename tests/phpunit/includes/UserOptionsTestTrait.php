@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
@@ -51,9 +49,15 @@ trait UserOptionsTestTrait {
 	protected function assertUserOptionsDeleted( $user_id, $is_network_mode ) {
 		foreach ( $this->get_user_option_keys() as $option_name ) {
 			if ( $is_network_mode ) {
-				$this->assertFalse( metadata_exists( 'user', $user_id, $option_name ) );
+				$this->assertFalse(
+					metadata_exists( 'user', $user_id, $option_name ),
+					"{$option_name} user option should no longer exist."
+				);
 			} else {
-				$this->assertFalse( get_user_option( $option_name, $user_id ) );
+				$this->assertFalse(
+					get_user_option( $option_name, $user_id ),
+					"{$option_name} user option should no longer exist."
+				);
 			}
 		}
 	}

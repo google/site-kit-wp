@@ -18,7 +18,7 @@ use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 
 /**
- * Class Migration_1_129_0
+ * Class Migration_1_129_0.
  *
  * @since 1.129.0
  * @access private

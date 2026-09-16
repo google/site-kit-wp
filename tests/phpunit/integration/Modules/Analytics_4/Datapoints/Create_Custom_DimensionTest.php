@@ -247,7 +247,7 @@ class Create_Custom_DimensionTest extends TestCase {
 			$data_request
 		);
 
-		$this->assertNotWPError( $response );
+		$this->assertNotWPError( $response, 'Successful custom dimension creation should not return a WP_Error.' );
 		$this->assertInstanceOf( GoogleAnalyticsAdminV1betaCustomDimension::class, $response, 'Create custom dimension parse_response should return the original custom dimension response object.' );
 		$this->assertEquals( 'googlesitekit_post_author', $response->getParameterName(), 'Parsed custom dimension response should contain the expected parameterName value.' );
 	}

@@ -126,16 +126,84 @@ class REST_Email_Reporting_ControllerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_apifetch_preload_paths' ), 'Expected API fetch preload paths filter to be registered' );
 	}
 
+	public function test_register_preload_paths() {
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+
+		$paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
+
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings',
+			$paths,
+			'Expected email-reporting-settings path to be preloaded'
+		);
+		$this->assertContains(
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report',
+			$paths,
+			'Expected email-reporting-next-report path to be preloaded'
+		);
+	}
+
 	public function test_get_routes() {
 		$this->controller->register();
 
 		$server     = rest_get_server();
 		$routes     = array(
 			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-settings',
+			'/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report',
 		);
 		$get_routes = array_intersect( $routes, array_keys( $server->get_routes() ) );
 
-		$this->assertEqualSets( $routes, $get_routes, 'Expected route for user email reporting settings to be registered' );
+		$this->assertEqualSets( $routes, $get_routes, 'Expected routes for user email reporting settings and next report to be registered' );
+	}
+
+	public function test_get_next_report_returns_scheduled_initiator_timestamp() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$frequency = Email_Reporting_Settings::FREQUENCY_MONTHLY;
+		$this->settings->merge( array( 'frequency' => $frequency ) );
+
+		$scheduler = new Email_Reporting_Scheduler( new Frequency_Planner() );
+		$scheduler->schedule_initiator_once( $frequency );
+		$expected_timestamp = $scheduler->get_initiator_timestamp_for_frequency( $frequency );
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'Fetching next report timestamp should return success response.' );
+		$this->assertSame(
+			$expected_timestamp,
+			$response->get_data()['timestamp'],
+			'Response should return the timestamp of the currently scheduled initiator event for the saved frequency.'
+		);
+	}
+
+	public function test_get_next_report_falls_back_when_no_initiator_scheduled() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		remove_all_filters( 'googlesitekit_apifetch_preload_paths' );
+
+		$this->controller->register();
+		$this->register_rest_routes();
+
+		$frequency = Email_Reporting_Settings::FREQUENCY_QUARTERLY;
+		$this->settings->merge( array( 'frequency' => $frequency ) );
+
+		$before = time();
+
+		$request  = new \WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/user/data/email-reporting-next-report' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'Fetching next report timestamp should return success response.' );
+		$this->assertGreaterThanOrEqual(
+			$before,
+			$response->get_data()['timestamp'],
+			'Response should fall back to a freshly calculated occurrence when no initiator event is scheduled.'
+		);
 	}
 
 	public function test_set_settings_subscribe_schedules_subscription_confirmation_batch() {

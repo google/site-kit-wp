@@ -7,8 +7,9 @@
 # This script:
 # 1. Starts Docker services with WP 5.2.21 (oldest supported version)
 # 2. Installs WordPress and configures it via WP-CLI
-# 3. Exports the database to backup.sql
-# 4. Tears down the containers
+# 3. Seeds WPForms forms and their frontend pages
+# 4. Exports the database to backup.sql
+# 5. Tears down the containers
 
 set -euo pipefail
 
@@ -76,17 +77,24 @@ wp post create --post_status=publish --post_title="Hello Milky Way!" --quiet
 wp post create --post_status=publish --post_title="Hello Universe!" --quiet
 wp post create --post_status=publish --post_title="Hello Spéçïåł čhāràćtęrß!" --quiet
 
-echo "Activating theme and plugin..."
+echo "Activating theme and plugins..."
 wp theme activate twentynineteen --quiet
 wp plugin activate google-site-kit --quiet
+wp plugin activate wpforms-lite --quiet
 
 echo "Setting permalink structure..."
 wp rewrite structure '%postname%' --hard --quiet
+
+echo "Creating WPForms forms and pages..."
+cat "$SCRIPT_DIR/create-wpforms-fixtures.php" | wp eval-file - --user=admin
+
+wp plugin deactivate wpforms-lite --quiet
 
 # Normalize the database so the dump is deterministic across runs.
 echo "Normalizing database for deterministic output..."
 
 FIXED_DATE="2025-01-01 00:00:00"
+FIXED_TIMESTAMP="1735689600"
 
 # Fix password hashes to a pre-computed phpass hash of "password".
 FIXED_PASS_HASH='\$P\$BVGAi9V8sCdRMhCPxhAnRLpqqMBk720'
@@ -101,15 +109,30 @@ wp db query "UPDATE wp_comments SET comment_date = '$FIXED_DATE', comment_date_g
 # Clear session_tokens so they don't vary between runs.
 wp db query "DELETE FROM wp_usermeta WHERE meta_key = 'session_tokens'"
 
-# Replace the cron option with a fixed empty cron array and remove transients.
-wp option update cron --format=json '{"version":2}'
-wp db query "DELETE FROM wp_options WHERE option_name LIKE '_transient_%' OR option_name LIKE '_site_transient_%'"
+# Remove transient activation data and normalize WPForms timestamps.
+wp db query "DELETE FROM wp_options WHERE option_name LIKE '_transient_%' OR option_name LIKE '_site_transient_%' OR option_name = 'recently_activated'"
+wp db query "UPDATE wp_options SET option_value = '6.0.$FIXED_TIMESTAMP' WHERE option_name = 'schema-ActionScheduler_StoreSchema'"
+wp db query "UPDATE wp_options SET option_value = '3.0.$FIXED_TIMESTAMP' WHERE option_name = 'schema-ActionScheduler_LoggerSchema'"
+wp db query "UPDATE wp_options SET option_value = 'a:1:{s:4:\"lite\";i:$FIXED_TIMESTAMP;}' WHERE option_name = 'wpforms_activated'"
+wp db query "UPDATE wp_options SET option_value = '$FIXED_TIMESTAMP' WHERE option_name = 'wpforms_forms_first_created'"
+
+# Remove scheduled activation work that is irrelevant to the form tests.
+wp db query "TRUNCATE TABLE wp_actionscheduler_logs"
+wp db query "TRUNCATE TABLE wp_actionscheduler_actions"
+wp db query "TRUNCATE TABLE wp_actionscheduler_claims"
+wp db query "TRUNCATE TABLE wp_actionscheduler_groups"
+
+# Replace the cron option last so no subsequent WordPress bootstrap can add
+# environment-dependent timestamps back to it before the export.
+wp db query "UPDATE wp_options SET option_value = 'a:1:{s:7:\"version\";i:2;}' WHERE option_name = 'cron'"
 
 echo "Exporting database to backup.sql..."
 docker compose exec -T mysql mysqldump -u root -pexample wordpress > "$BACKUP_FILE"
 
-# Strip the mysqldump timestamp comment from the last line so diffs are clean.
-sed -i '/^-- Dump completed on /d' "$BACKUP_FILE"
+# Normalize the platform header and strip the mysqldump timestamp comment so
+# the generated fixture is identical on macOS and Linux hosts.
+sed -i.bak -e '1s/ ([^()]*)$//' -e '/^-- Dump completed on /d' "$BACKUP_FILE"
+rm -f "$BACKUP_FILE.bak"
 
 echo "Tearing down containers..."
 docker compose --profile generate down -v

@@ -12,11 +12,12 @@
 		"generate-backup": "./bin/generate-backup-sql.sh"
 	},
 	"dependencies": {
-		"@playwright/test": "^1.59.1",
+		"@playwright/test": "^1.61.1",
 		"lodash": "^4.18.1",
-		"mysql2": "^3.21.1"
+		"mysql2": "^3.22.6"
 	},
 	"devDependencies": {
-		"@types/node": "^24.0.0"
+		"@types/node": "^24.0.0",
+		"pdf-to-png-converter": "^4.1.1"
 	}
 }

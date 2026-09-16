@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Core\Remote_Features;
 
 use Google\Site_Kit\Context;
@@ -28,7 +26,8 @@ class Remote_FeaturesTest extends SettingsTestCase {
 
 		$this->assertSame(
 			array( 'last_updated_at' => 0 ),
-			$this->get_option()
+			$this->get_option(),
+			'Remote features should default to a never-updated state.'
 		);
 	}
 
@@ -38,14 +37,20 @@ class Remote_FeaturesTest extends SettingsTestCase {
 
 		$this->assertSame(
 			array( 'last_updated_at' => 0 ),
-			$this->get_option()
+			$this->get_option(),
+			'Remote features should be unset before the first update.'
 		);
 
 		$update = $setting->update( array( 'testFeature' => array( 'enabled' => false ) ) );
 
-		$this->assertEquals( array( 'enabled' => false ), $setting->get()['testFeature'] );
-		$this->assertEqualsWithDelta( time(), $setting->get()['last_updated_at'], 2 );
-		$this->assertTrue( $update );
+		$this->assertEquals( array( 'enabled' => false ), $setting->get()['testFeature'], 'Updated feature should persist its enabled state.' );
+		$this->assertEqualsWithDelta(
+			time(),
+			$setting->get()['last_updated_at'],
+			2,
+			'Successful update should record the current timestamp.'
+		);
+		$this->assertTrue( $update, 'Valid remote feature data should update successfully.' );
 	}
 
 	/**
@@ -60,7 +65,7 @@ class Remote_FeaturesTest extends SettingsTestCase {
 		$this->update_option( $input );
 		$actual = $this->get_option();
 
-		$this->assertEquals( $expected, $actual );
+		$this->assertEquals( $expected, $actual, 'Remote feature input should be reduced to its supported fields and value types.' );
 	}
 
 	public function data_sanitize_callback() {

@@ -9,11 +9,41 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// Set the E2E test username.
-$e2e_test_username = 'admin';
+// Set the E2E test user.
+$e2e_test_user = array(
+	'login' => 'admin',
+);
+
 if ( ! empty( $_COOKIE['_wp_test_user'] ) ) {
-	$e2e_test_username = sanitize_user( $_COOKIE['_wp_test_user'], true );
+	$raw_user = rawurldecode( wp_unslash( $_COOKIE['_wp_test_user'] ) );
+	$decoded  = json_decode( $raw_user, true );
+
+	if ( is_array( $decoded ) && ! empty( $decoded['login'] ) ) {
+		$e2e_test_user['login'] = sanitize_user( $decoded['login'], true );
+
+		if ( isset( $decoded['email'] ) && is_string( $decoded['email'] ) ) {
+			$e2e_test_user['email'] = $decoded['email'];
+		}
+
+		if ( isset( $decoded['firstName'] ) && is_string( $decoded['firstName'] ) ) {
+			$e2e_test_user['firstName'] = sanitize_text_field( $decoded['firstName'] );
+		}
+
+		if ( isset( $decoded['lastName'] ) && is_string( $decoded['lastName'] ) ) {
+			$e2e_test_user['lastName'] = sanitize_text_field( $decoded['lastName'] );
+		}
+
+		if ( isset( $decoded['dismissedItems'] ) && is_array( $decoded['dismissedItems'] ) ) {
+			$e2e_test_user['dismissedItems'] = array_values(
+				array_filter( array_map( 'sanitize_key', $decoded['dismissedItems'] ) )
+			);
+		}
+	} else {
+		$e2e_test_user['login'] = sanitize_user( $raw_user, true );
+	}
 }
+
+$e2e_test_username = $e2e_test_user['login'];
 
 // Make the current request appear authenticated as the specified user.
 add_filter(
@@ -27,6 +57,79 @@ add_filter(
 
 		return $user ? $user->ID : $user_id;
 	}
+);
+
+add_action(
+	'init',
+	function () use ( $e2e_test_user ) {
+		if ( ! is_user_logged_in() ) {
+			return;
+		}
+
+		$user = wp_get_current_user();
+		if ( ! $user || ! $user->ID ) {
+			return;
+		}
+
+		if ( array_key_exists( 'firstName', $e2e_test_user ) ) {
+			$user->user_firstname = (string) $e2e_test_user['firstName'];
+		}
+
+		if ( array_key_exists( 'lastName', $e2e_test_user ) ) {
+			$user->user_lastname = (string) $e2e_test_user['lastName'];
+		}
+
+		if ( ! array_key_exists( 'email', $e2e_test_user ) ) {
+			return;
+		}
+
+		if ( '' === $e2e_test_user['email'] ) {
+			$user->user_email = '';
+			if ( isset( $user->data ) && is_object( $user->data ) ) {
+				$user->data->user_email = '';
+			}
+			return;
+		}
+
+		$sanitized_email  = sanitize_email( $e2e_test_user['email'] );
+		$user->user_email = $sanitized_email;
+		if ( isset( $user->data ) && is_object( $user->data ) ) {
+			$user->data->user_email = $sanitized_email;
+		}
+	},
+	1
+);
+
+// Mark the requested items as dismissed for the current user on read (no
+// database writes), so a test can land past interstitials (e.g. the
+// shared-dashboard splash) without clicking through them. Site Kit reads
+// dismissed items through the user-meta layer, so this hooks `get_user_metadata`
+// rather than `get_user_option` (whose filter is never invoked for this read).
+// Returning `array( $items )` is how the metadata layer expects a short-circuit
+// value: for a single read it is unwrapped to `$items` (its first element).
+add_filter(
+	'get_user_metadata',
+	function ( $value, $object_id, $meta_key ) use ( $e2e_test_user ) {
+		if ( empty( $e2e_test_user['dismissedItems'] ) ) {
+			return $value;
+		}
+
+		// The key is blog-prefixed (e.g. `wp_googlesitekitpersistent_dismissed_items`).
+		if ( false === strpos( (string) $meta_key, 'googlesitekitpersistent_dismissed_items' ) ) {
+			return $value;
+		}
+
+		$items = array();
+
+		// `0` never expires, matching a permanently dismissed item.
+		foreach ( $e2e_test_user['dismissedItems'] as $slug ) {
+			$items[ $slug ] = 0;
+		}
+
+		return array( $items );
+	},
+	10,
+	3
 );
 
 // Set a persistent auth cookie so wp-admin pages (which check for a real cookie

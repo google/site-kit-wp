@@ -40,7 +40,6 @@ import {
 	MenuWithHeading,
 } from '@/js/components/HeaderMenu';
 import Typography from '@/js/components/Typography';
-import ManageEmailReports from '@/js/components/ViewOnlyMenu/ManageEmailReports';
 import {
 	CORE_USER,
 	PERMISSION_AUTHENTICATE,
@@ -131,7 +130,6 @@ export default function ViewOnlyMenu() {
 						<SharedServices viewableModules={ viewableModules } />
 					</MenuWithHeading>
 				) }
-				<ManageEmailReports />
 				<Divider />
 				<MenuSection className="googlesitekit-view-only-menu__list-item">
 					<Tracking />

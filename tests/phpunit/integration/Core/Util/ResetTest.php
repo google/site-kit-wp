@@ -307,7 +307,7 @@ class ResetTest extends TestCase {
 
 		$reset->all();
 
-		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache)
+		// Ensure options cache is flushed (must check before accessing other options as this will re-prime the cache).
 		$this->assertFalse( wp_cache_get( 'alloptions', 'options' ), 'Options cache should be flushed after reset.' );
 		$this->assertOptionsDeleted( $is_network_mode );
 		$this->assertUserOptionsDeleted( $user_id, $is_network_mode );

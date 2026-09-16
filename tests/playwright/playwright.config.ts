@@ -54,7 +54,11 @@ export default defineConfig( {
 	projects: [
 		{
 			...withMobileViewport( 'chrome::mobile', DESKTOP_CHROME ),
-			testIgnore: [ 'specs/golinks.spec.ts' ],
+			testIgnore: [
+				'specs/golinks.spec.ts',
+				'specs/enhanced-conversions/enhanced-conversions.spec.ts',
+				'specs/enhanced-conversions/wpforms.spec.ts',
+			],
 		},
 		withDesktopViewport( 'chrome::desktop', DESKTOP_CHROME ),
 	],

@@ -34,7 +34,6 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
-import { isFeatureEnabled } from '@/js/features';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	CORE_USER,
@@ -168,8 +167,10 @@ const baseActions = {
 	 * @since 1.113.0
 	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
 	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
+	 * @since 1.187.0 Removed the `siteGoals` feature flag check.
 	 *
 	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
+	 * @return {Object} Object whose `error` property holds the available-dimensions sync error when the required dimensions already existed and that sync failed; otherwise an empty object.
 	 */
 	*createCustomDimensions( customDimensions = [] ) {
 		const registry = yield commonActions.getRegistry();
@@ -178,6 +179,9 @@ const baseActions = {
 		yield commonActions.await(
 			Promise.all( [
 				registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				registry
+					.resolveSelect( MODULES_ANALYTICS_4 )
+					.getAdvancedDataBreakdownsSettings(),
 				registry.resolveSelect( CORE_USER ).getKeyMetricsSettings(),
 				registry.resolveSelect( CORE_USER ).getUserInputSettings(),
 			] )
@@ -190,7 +194,7 @@ const baseActions = {
 		// Custom dimensions are created on the selected property, so there's
 		// nothing to create until a valid property is selected.
 		if ( ! isValidPropertyID( propertyID ) ) {
-			return;
+			return {};
 		}
 
 		const selectedMetricTiles = registry
@@ -214,29 +218,23 @@ const baseActions = {
 			...new Set( requiredCustomDimensions ),
 		];
 
-		// Add the Site Goals custom dimensions when the Site Goals feature is on
-		// and advanced data breakdowns is enabled for the selected property. The
-		// breakdowns setting is read only inside this check, so flows with the
-		// feature off, like key metrics setup, never request it.
-		if ( isFeatureEnabled( 'siteGoals' ) ) {
-			const isAdvancedDataBreakdownsEnabled = registry
-				.select( MODULES_ANALYTICS_4 )
-				.isAdvancedDataBreakdownsEnabled( propertyID );
+		// Add the Site Goals custom dimensions when advanced data breakdowns is
+		// enabled for the selected property.
+		const isAdvancedDataBreakdownsEnabled = registry
+			.select( MODULES_ANALYTICS_4 )
+			.isAdvancedDataBreakdownsEnabled( propertyID );
 
-			if ( isAdvancedDataBreakdownsEnabled ) {
-				SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
-					if (
-						! uniqueRequiredCustomDimensions.includes( dimension )
-					) {
-						uniqueRequiredCustomDimensions.push( dimension );
-					}
-				} );
-			}
+		if ( isAdvancedDataBreakdownsEnabled ) {
+			SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
+				if ( ! uniqueRequiredCustomDimensions.includes( dimension ) ) {
+					uniqueRequiredCustomDimensions.push( dimension );
+				}
+			} );
 		}
 
 		// If no custom dimensions are required, there's nothing to create.
 		if ( ! uniqueRequiredCustomDimensions.length ) {
-			return;
+			return {};
 		}
 
 		/**
@@ -267,7 +265,7 @@ const baseActions = {
 		// can't tell which are missing, so creating them could add ones that
 		// already exist.
 		if ( ! Array.isArray( propertyCustomDimensions ) ) {
-			return;
+			return {};
 		}
 
 		// Find out the missing custom dimensions.
@@ -275,9 +273,14 @@ const baseActions = {
 			( dimension ) => ! propertyCustomDimensions.includes( dimension )
 		);
 
-		// If there are no missing custom dimensions, bail.
+		// No missing dimensions: the required ones already exist. Sync the saved
+		// `availableCustomDimensions` (which drives the success notice, not the
+		// property read) and return any sync error — a failed sync leaves the
+		// setting stale, so the notice can't render.
 		if ( ! missingCustomDimensions.length ) {
-			return;
+			const { error } =
+				yield fetchSyncAvailableCustomDimensionsStore.actions.fetchSyncAvailableCustomDimensions();
+			return { error };
 		}
 
 		yield {
@@ -317,6 +320,8 @@ const baseActions = {
 			type: SET_CUSTOM_DIMENSIONS_BEING_CREATED,
 			payload: { customDimensions: [] },
 		};
+
+		return {};
 	},
 
 	/**
@@ -588,7 +593,7 @@ const baseSelectors = {
 	 * lacks permission on the GA4 property), before any create error is recorded,
 	 * so this exposes that earlier failure.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.183.0
 	 *
 	 * @param {Object} state      Data store's state.
 	 * @param {string} propertyID GA4 property ID to obtain the load error for.

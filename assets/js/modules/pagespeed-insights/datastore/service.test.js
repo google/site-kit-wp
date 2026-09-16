@@ -20,9 +20,14 @@
  *
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { MODULES_PAGESPEED_INSIGHTS } from './constants';
+import {
+	MODULES_PAGESPEED_INSIGHTS,
+	STRATEGY_DESKTOP,
+	STRATEGY_MOBILE,
+} from './constants';
 
 describe( 'module/pagespeed-insights service store', () => {
 	const userData = {
@@ -35,12 +40,77 @@ describe( 'module/pagespeed-insights service store', () => {
 
 	let registry;
 
-	beforeAll( () => {
+	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).receiveUserInfo( userData );
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			referenceSiteURL: 'https://example.com/',
+			currentEntityURL: null,
+		} );
 	} );
 
 	describe( 'selectors', () => {
+		describe( 'getDetailsLinkURL', () => {
+			it( 'returns the mobile report URL for the current reference URL by default', () => {
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( new URL( detailsLinkURL ).pathname ).toBe( '/report' );
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: 'https://example.com/',
+					form_factor: STRATEGY_MOBILE,
+					utm_source: 'sitekit',
+				} );
+			} );
+
+			it( 'returns the desktop report URL once the desktop tab is selected', () => {
+				registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.setActiveTab( STRATEGY_DESKTOP );
+
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: 'https://example.com/',
+					form_factor: STRATEGY_DESKTOP,
+					utm_source: 'sitekit',
+				} );
+			} );
+
+			it( 'returns the report URL for the page a user is viewing', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					referenceSiteURL: 'https://example.com/',
+					currentEntityURL: 'https://example.com/example-page/',
+				} );
+
+				const detailsLinkURL = registry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( detailsLinkURL ).toMatchQueryParameters( {
+					url: 'https://example.com/example-page/',
+					form_factor: STRATEGY_MOBILE,
+					utm_source: 'sitekit',
+				} );
+			} );
+
+			it( 'returns undefined if the current reference URL is not loaded yet', () => {
+				const loadingRegistry = createTestRegistry();
+				loadingRegistry
+					.dispatch( CORE_USER )
+					.receiveUserInfo( userData );
+
+				const detailsLinkURL = loadingRegistry
+					.select( MODULES_PAGESPEED_INSIGHTS )
+					.getDetailsLinkURL();
+
+				expect( detailsLinkURL ).toBeUndefined();
+			} );
+		} );
+
 		describe( 'getServiceURL', () => {
 			it( 'retrieves the correct URL with no arguments', () => {
 				const serviceURL = registry

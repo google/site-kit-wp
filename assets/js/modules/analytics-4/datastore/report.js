@@ -45,6 +45,7 @@ import {
 	isZeroReport,
 	normalizeReportOptions,
 } from '@/js/modules/analytics-4/utils';
+import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { validateReport } from '@/js/modules/analytics-4/utils/validation';
 import { DAY_IN_SECONDS, dateSub } from '@/js/util';
 import {
@@ -152,7 +153,7 @@ const baseSelectors = {
 	 * @since 1.94.0
 	 * @since 1.111.0 Add metricFilters to the options list, to reflect added support for the metric filters.
 	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
-	 * @since n.e.x.t Treat report options that differ only in `reportID` as one report.
+	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
 	 *
 	 * @param {Object}         state                      Data store's state.
 	 * @param {Object}         options                    Options for generating the report.
@@ -197,7 +198,6 @@ const baseSelectors = {
 				}
 
 				const pagePaths = [];
-				const REQUEST_MULTIPLIER = 5;
 
 				/*
 				 * Iterate over the report rows, finding the dimension containing the
@@ -229,22 +229,10 @@ const baseSelectors = {
 					return urlTitleMap;
 				}
 
-				const options = {
-					startDate,
-					endDate,
-					dimensions: [ 'pagePath', 'pageTitle' ],
-					dimensionFilters: { pagePath: pagePaths.sort() },
-					metrics: [ { name: 'screenPageViews' } ],
-					orderby: [
-						{
-							metric: { metricName: 'screenPageViews' },
-							desc: true,
-						},
-					],
-					limit: REQUEST_MULTIPLIER * pagePaths.length,
-					reportID:
-						'analytics-4_get-page-titles_store:selector_options',
-				};
+				const options = getPageTitlesReportOptions(
+					{ startDate, endDate },
+					pagePaths
+				);
 
 				const pageTitlesReport =
 					select( MODULES_ANALYTICS_4 ).getReport( options );

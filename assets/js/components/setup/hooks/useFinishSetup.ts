@@ -47,7 +47,7 @@ import {
  * Clears the module setup cache, tracks a completion event, and redirects
  * the user to the Site Kit dashboard or an optional custom URL.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param moduleSlug                  Module slug.
  * @param options                     Hook options.

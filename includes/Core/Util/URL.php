@@ -132,7 +132,7 @@ class URL {
 	 * Returns a list of hostnames that includes:
 	 * - (if IDN) in Punycode encoding
 	 * - (if IDN) in Unicode encoding
-	 * - with and without www. subdomain (including IDNs)
+	 * - with and without www. subdomain (including IDNs).
 	 *
 	 * @since 1.99.0
 	 *

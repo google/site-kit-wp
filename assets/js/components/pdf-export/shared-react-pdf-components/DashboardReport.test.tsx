@@ -25,14 +25,16 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { SECTION_ICONS } from '@/js/components/pdf-export/pdf-icons';
 import {
 	PDF_PAGE_PADDING,
 	PDF_PAGE_WIDTH,
 	scalePDFValue,
 } from '@/js/components/pdf-export/pdf-scale';
-import { SECTION_ICONS } from '@/js/components/pdf-export/section-icons';
+import { PDF_MEASURE_PAGE_HEIGHT } from '@/js/components/pdf-export/pdf-theme';
 import { PDFWidgetComponentProps } from '@/js/components/pdf-export/types';
 import { CONTEXT_MAIN_DASHBOARD_TRAFFIC } from '@/js/googlesitekit/widgets/default-contexts';
+import { getLocale } from '@/js/util/i18n';
 import { render } from '@tests/js/test-utils';
 import DashboardReport, { DashboardReportProps } from './DashboardReport';
 
@@ -54,7 +56,7 @@ const defaultReportProps: DashboardReportProps = {
 /**
  * Renders the report into the test DOM for content assertions.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props that override the defaults.
  * @return Render result with queries like `getByText`.
@@ -66,7 +68,7 @@ function renderDashboardReport( props: Partial< DashboardReportProps > = {} ) {
 /**
  * Renders the report to a JSON string for content and style assertions.
  *
- * @since n.e.x.t
+ * @since 1.183.0
  *
  * @param props Props that override the defaults.
  * @return JSON string of the rendered tree.
@@ -292,6 +294,158 @@ describe( 'DashboardReport', () => {
 
 		expect( reportJSON ).toContain( `"padding":${ PDF_PAGE_PADDING }` );
 		expect( reportJSON ).toContain( `"size":[${ PDF_PAGE_WIDTH },` );
+	} );
+
+	it( 'leaves the padding the design under the footer links', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain(
+			`"paddingBottom":${ scalePDFValue( 44 ) }`
+		);
+	} );
+
+	it( 'sizes the page to the measurement height by default and to the given pageHeight otherwise', () => {
+		expect( renderDashboardReportJSON() ).toContain(
+			`"size":[${ PDF_PAGE_WIDTH },${ PDF_MEASURE_PAGE_HEIGHT }]`
+		);
+		expect( renderDashboardReportJSON( { pageHeight: 1234 } ) ).toContain(
+			`"size":[${ PDF_PAGE_WIDTH },1234]`
+		);
+	} );
+
+	it( "declares the document's language from the locale", () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( `"language":"${ getLocale() }"` );
+	} );
+
+	it( 'opens with the outline pane visible', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"pageMode":"useOutlines"' );
+	} );
+
+	it( 'sets the document title from the site name and formatted date range', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain(
+			'"title":"Example Site: Site Kit report (Jan 1, 2021 - Jan 28, 2021)"'
+		);
+	} );
+
+	it( 'falls back to the site name alone when the date range cannot be formatted', () => {
+		const reportJSON = renderDashboardReportJSON( {
+			dateRange: { startDate: '', endDate: '' },
+		} );
+
+		expect( reportJSON ).toContain( '"title":"Example Site"' );
+	} );
+
+	it( 'sets the document author to the site name', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"author":"Example Site"' );
+	} );
+
+	it( 'sets the fixed document subject and keywords', () => {
+		const reportJSON = renderDashboardReportJSON();
+
+		expect( reportJSON ).toContain( '"subject":"Site Kit report"' );
+		expect( reportJSON ).toContain(
+			'"keywords":"Site Kit, Google, report"'
+		);
+	} );
+
+	it( 'adds a bookmark per area matching its title', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const reportJSON = renderDashboardReportJSON( { areas } );
+
+		expect( reportJSON ).toContain( '"bookmark":"Traffic"' );
+	} );
+
+	it( 'anchors each section with its prefixed area slug', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+
+		const { container } = renderDashboardReport( { areas } );
+
+		expect(
+			container.querySelector(
+				'[id="section-mainDashboardTrafficPrimary"]'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders page-level anchors and unanchored sections when section anchors are given', () => {
+		const areas = [
+			{
+				areaSlug: 'mainDashboardTrafficPrimary',
+				areaTitle: 'Traffic',
+				widgets: [
+					{
+						slug: 'analyticsAllTrafficGA4',
+						Component: FakeWidget,
+						data: 'visitors',
+					},
+				],
+			},
+		];
+		const sectionAnchors = [
+			{ id: 'section-mainDashboardTrafficPrimary', top: 224 },
+		];
+
+		const { container } = renderDashboardReport( {
+			areas,
+			sectionAnchors,
+		} );
+
+		// Only the page-level anchor carries the id, pinned at the section's
+		// absolute top; the section view itself renders without an id.
+		const anchored = container.querySelectorAll(
+			'[id="section-mainDashboardTrafficPrimary"]'
+		);
+		expect( anchored ).toHaveLength( 1 );
+		expect( anchored[ 0 ] ).toHaveStyle( {
+			position: 'absolute',
+			top: '224px',
+		} );
+	} );
+
+	it( 'forwards the onRender callback to the document', () => {
+		const onRender = jest.fn();
+
+		const testRenderer = TestRenderer.create(
+			<DashboardReport { ...defaultReportProps } onRender={ onRender } />
+		);
+		const documentNode = testRenderer.root.findByProps( {
+			author: 'Example Site',
+		} );
+
+		expect( documentNode.props.onRender ).toBe( onRender );
 	} );
 
 	it( 'scales the gap between an area title and its first widget', () => {

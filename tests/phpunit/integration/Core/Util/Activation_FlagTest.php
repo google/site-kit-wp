@@ -47,7 +47,7 @@ class Activation_FlagTest extends TestCase {
 		// Force enable network mode.
 		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
 
-		// Fake network admin context for assets enqueue
+		// Fake network admin context for assets enqueue.
 		set_current_screen( 'test-network' );
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$activation_flag = new Activation_Flag( $context );
@@ -80,7 +80,7 @@ class Activation_FlagTest extends TestCase {
 			),
 			'Should have no published posts initially.'
 		);
-		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post
+		$this->factory()->post->create( array( 'post_status' => 'publish' ) ); // first post.
 
 		do_action( 'googlesitekit_activation', $network_wide );
 

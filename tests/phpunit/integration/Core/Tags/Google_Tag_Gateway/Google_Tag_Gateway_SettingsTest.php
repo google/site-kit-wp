@@ -52,7 +52,8 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 				'isGTGHealthy'          => null,
 				'isScriptAccessEnabled' => null,
 			),
-			$default_settings
+			$default_settings,
+			'Google tag gateway settings should default to disabled with unknown health states.'
 		);
 	}
 
@@ -131,7 +132,7 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->settings->set( $input );
-		$this->assertEqualSetsWithIndex( $expected, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $expected, $this->settings->get(), 'Google tag gateway settings should sanitize unsupported values and fill missing defaults.' );
 	}
 
 	public function test_merge() {
@@ -149,11 +150,11 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 
 		// Make sure settings can be updated even without having them set initially.
 		$this->settings->merge( $original_settings );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Merge should initialize Google tag gateway settings when none are stored.' );
 
 		// Make sure invalid keys aren't set.
 		$this->settings->merge( array( 'test_key' => 'test_value' ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Merge should ignore unsupported Google tag gateway setting keys.' );
 
 		// Make sure that we can update settings partially.
 		$this->settings->set( $original_settings );
@@ -164,28 +165,29 @@ class Google_Tag_Gateway_SettingsTest extends SettingsTestCase {
 				'isGTGHealthy'          => true,
 				'isScriptAccessEnabled' => false,
 			),
-			$this->settings->get()
+			$this->settings->get(),
+			'Partial merge should preserve unchanged Google tag gateway settings.'
 		);
 
 		// Make sure that we can update all settings at once.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( $changed_settings );
-		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $changed_settings, $this->settings->get(), 'Merge should update all Google tag gateway settings.' );
 
 		// Make sure that we can't set null for the isGTGHealthy property.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( array( 'isGTGHealthy' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Merge should ignore a null Google tag gateway health value.' );
 
 		// Make sure that we can't set null for the isScriptAccessEnabled property.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( array( 'isScriptAccessEnabled' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Merge should ignore a null script access value.' );
 
 		// Make sure that we can't set null for the isEnabled property.
 		$this->settings->set( $original_settings );
 		$this->settings->merge( array( 'isEnabled' => null ) );
-		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get() );
+		$this->assertEqualSetsWithIndex( $original_settings, $this->settings->get(), 'Merge should ignore a null Google tag gateway enabled value.' );
 	}
 
 	public function test_is_google_tag_gateway_active() {

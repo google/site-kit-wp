@@ -8,15 +8,13 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests;
 
 trait RestTestTrait {
 
 	protected function register_rest_routes() {
 		$routes = apply_filters( 'googlesitekit_rest_routes', array() );
-		$this->assertNotEmpty( $routes );
+		$this->assertNotEmpty( $routes, 'At least one Site Kit REST route should be registered for the test.' );
 
 		// Avoid test failing due to "_doing_it_wrong" notice.
 		// Routes must be registered on `rest_api_init` action.

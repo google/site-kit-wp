@@ -8,8 +8,6 @@
  * @link      https://sitekit.withgoogle.com
  */
 
-// phpcs:disable PHPCS.PHPUnit.RequireAssertionMessage.MissingAssertionMessage -- Ignoring assertion message rule, messages to be added in #10760
-
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Advanced_Tracking;
 
 use Google\Site_Kit\Context;
@@ -66,8 +64,8 @@ class Script_InjectorTest extends TestCase {
 		$output = ob_get_clean();
 
 		$expected_json = '[{"action":"test_event_without_metadata","selector":".some-button","on":"click","metadata":null},{"action":"test_event_with_metadata","selector":".a-very-specific-button","on":"click","metadata":{"event_category":"test_event_category"}},{"action":"test_event_onload","on":"DOMContentLoaded","metadata":null,"selector":""}]';
-		$this->assertMatchesRegularExpression( '/<script( [^>]*)?>.+<\/script>/ms', trim( $output ) );
-		$this->assertStringContainsString( $expected_json, $output );
+		$this->assertMatchesRegularExpression( '/<script( [^>]*)?>.+<\/script>/ms', trim( $output ), 'Advanced tracking events should render inside a script element.' );
+		$this->assertStringContainsString( $expected_json, $output, 'Advanced tracking script should include serialized event definitions.' );
 	}
 
 	public function test_inject_event_script_no_events() {
@@ -75,6 +73,6 @@ class Script_InjectorTest extends TestCase {
 		ob_start();
 		$script_injector->inject_event_script( array() );
 		$output = ob_get_clean();
-		$this->assertEmpty( $output );
+		$this->assertEmpty( $output, 'Advanced tracking script should not render when there are no events.' );
 	}
 }

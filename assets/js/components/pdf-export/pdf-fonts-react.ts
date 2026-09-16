@@ -46,7 +46,7 @@ let fontsRegistered = false;
  * typeface.
  *
  * @since 1.182.0
- * @since n.e.x.t Added the Google Sans Display medium (500) weight.
+ * @since 1.183.0 Added the Google Sans Display medium (500) weight.
  *
  * @return The display font family name.
  */

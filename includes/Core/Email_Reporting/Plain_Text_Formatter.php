@@ -77,6 +77,7 @@ class Plain_Text_Formatter {
 	 * Simple emails share a common structure with customizable content.
 	 *
 	 * @since 1.173.0
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $data The simple email data containing site, title, learn_more_url,
 	 *                    primary_call_to_action, body, and footer.
@@ -133,7 +134,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer_copy ) ) {
-			$lines[] = $footer_copy;
+			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer_copy ) );
 		}
 
 		// Mirror the HTML `footer_type` branch: `inline` skips utility links.
@@ -148,6 +149,7 @@ class Plain_Text_Formatter {
 	 * Formats a section based on its template type.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the Site Goals sections.
 	 *
 	 * @param array $section Section configuration including title, section_template, section_parts.
 	 * @return string Formatted section text.
@@ -164,6 +166,8 @@ class Plain_Text_Formatter {
 				return self::format_metrics_section( $section );
 			case 'section-page-metrics':
 				return self::format_page_metrics_section( $section );
+			case 'section-site-goals':
+				return self::format_site_goals_section( $section );
 			default:
 				return '';
 		}
@@ -270,6 +274,7 @@ class Plain_Text_Formatter {
 	 * Formats the email footer with CTA and links.
 	 *
 	 * @since 1.170.0
+	 * @since 1.186.0 Footer copy is now routed through `convert_links_to_text()` since it may contain an inline unsubscribe link.
 	 *
 	 * @param array $cta    Primary CTA configuration with 'url' and 'label'.
 	 * @param array $footer Footer configuration with 'copy' and 'unsubscribe_url'.
@@ -290,7 +295,7 @@ class Plain_Text_Formatter {
 
 		// Footer copy.
 		if ( ! empty( $footer['copy'] ) ) {
-			$lines[] = $footer['copy'];
+			$lines[] = wp_strip_all_tags( self::convert_links_to_text( $footer['copy'] ) );
 		}
 
 		$lines = self::append_footer_links( $lines, $footer['unsubscribe_url'] ?? '' );
@@ -359,7 +364,16 @@ class Plain_Text_Formatter {
 
 		// Get change context from first part.
 		$first_part = reset( $section_parts );
-		if ( ! empty( $first_part['data']['change_context'] ) ) {
+
+		// The change context is only meaningful when at least one metric has a comparison value.
+		$has_any_change = ! empty(
+			array_filter(
+				$section_parts,
+				static fn( $part_config ) => isset( $part_config['data']['change'] )
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
 			$output .= $first_part['data']['change_context'] . "\n\n";
 		}
 
@@ -404,8 +418,10 @@ class Plain_Text_Formatter {
 			$output .= $part_label . "\n";
 			$output .= str_repeat( '-', mb_strlen( $part_label ) ) . "\n";
 
-			// Change context.
-			if ( ! empty( $data['change_context'] ) ) {
+			// Change context is only meaningful when at least one row has a comparison value.
+			$has_any_change = ! empty( array_filter( $data['changes'] ?? array(), static fn( $change ) => null !== $change ) );
+
+			if ( $has_any_change && ! empty( $data['change_context'] ) ) {
 				$output .= $data['change_context'] . "\n";
 			}
 
@@ -422,6 +438,67 @@ class Plain_Text_Formatter {
 			}
 
 			$output .= "\n";
+		}
+
+		return $output;
+	}
+
+	/**
+	 * Formats the Site Goals section, which groups its metrics by plugin or by form.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $section Section configuration.
+	 * @return string Formatted section text.
+	 */
+	protected static function format_site_goals_section( $section ) {
+		$output        = self::format_section_heading( $section['title'] );
+		$section_parts = $section['section_parts'];
+
+		// The section gives every section part the same values, so we read the first one.
+		$first_part = reset( $section_parts );
+
+		$all_metrics = array();
+
+		foreach ( $section_parts as $part_config ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
+				$all_metrics = array_merge( $all_metrics, $group['metrics'] );
+			}
+		}
+
+		// The "Compared to" line shows only when a metric has a change.
+		$has_any_change = ! empty(
+			array_filter(
+				$all_metrics,
+				static fn( $metric ) => null !== $metric['trend']
+			)
+		);
+
+		if ( $has_any_change && ! empty( $first_part['data']['change_context'] ) ) {
+			$output .= $first_part['data']['change_context'] . "\n\n";
+		}
+
+		foreach ( $section_parts as $part_config ) {
+			foreach ( $part_config['data']['groups'] as $group ) {
+				if ( '' !== $group['label'] ) {
+					$output .= $group['label'] . "\n";
+					$output .= str_repeat( '-', mb_strlen( $group['label'] ) ) . "\n";
+				}
+
+				foreach ( $group['metrics'] as $metric ) {
+					$output .= self::format_metric( $metric['label'], $metric['value'], $metric['trend'] ) . "\n";
+				}
+
+				$output .= "\n";
+			}
+		}
+
+		$prompt = $first_part['data']['prompt'] ?? array();
+
+		if ( ! empty( $prompt ) ) {
+			$prompt_link = sprintf( '%s (%s)', $prompt['link_text'], $section['dashboard_url'] );
+
+			$output .= sprintf( $prompt['text'], $prompt_link ) . "\n\n";
 		}
 
 		return $output;
