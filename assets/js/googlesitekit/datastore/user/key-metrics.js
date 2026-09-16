@@ -715,7 +715,7 @@ const baseSelectors = {
 	 * `isKeyMetricAvailable()` only checks that a widget's module is connected
 	 * or shared.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object}  state                       Data store's state.
 	 * @param {Object}  options                     Selector arguments.

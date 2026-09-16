@@ -43,7 +43,7 @@ export function buildTopTrafficChannelsRateReportOptions(
 /**
  * Maps rows to that channel's own conversion rate, not a share of the total.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object[]} rows Report rows, each carrying `eventCount` and `sessions` in `metricValues`.
  * @return {Object[]} The rows mapped to `{ label, value }`.

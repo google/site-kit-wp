@@ -200,7 +200,7 @@ class Email_Notices {
 	 * Gets eligible notices for a placement.
 	 *
 	 * @since 1.175.0
-	 * @since n.e.x.t Removed the `$section_key` parameter.
+	 * @since 1.188.0 Removed the `$section_key` parameter.
 	 *
 	 * @param WP_User $user      Recipient user.
 	 * @param string  $placement Placement slug.

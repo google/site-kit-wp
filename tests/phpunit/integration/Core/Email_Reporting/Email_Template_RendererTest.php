@@ -397,7 +397,7 @@ class Email_Template_RendererTest extends TestCase {
 						),
 					),
 					'prompt'         => array(
-						'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
+						'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
 						'link_text' => 'enable data breakdown',
 					),
 				)
@@ -407,7 +407,7 @@ class Email_Template_RendererTest extends TestCase {
 		$html_output = $this->render_site_goals_report( $sections );
 
 		$this->assertStringContainsString(
-			'Your events data might be grouped together across plugins. To see separate results by plugin, <a class="link" href="https://example.com/dashboard"',
+			'Your events data may be grouped together across plugins. To see separate results by plugin, <a class="link" href="https://example.com/dashboard"',
 			$html_output,
 			'The card should show the prompt sentence with the dashboard link inside it.'
 		);

@@ -112,7 +112,7 @@ const EVENT_TOTAL_LABELS = {
  * An event added to `EVENT_TOTAL_LABELS` needs a branch here too, or its chart
  * tile falls back to the sales title.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} primaryEvent  The Key action's event, a key of `EVENT_TOTAL_LABELS`.
  * @param {number} dateRangeDays The number of days the selected date range covers.
