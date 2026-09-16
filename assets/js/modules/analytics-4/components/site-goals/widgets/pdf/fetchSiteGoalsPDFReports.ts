@@ -34,10 +34,11 @@ interface FetchAnalyticsReportResult {
 }
 
 /**
- * The four Analytics reports one Site Goals PDF section needs. The Key action
- * events and the engagement metrics are each requested twice: once grouped by
- * the breakdown dimension, so the section can render a card per group, and
- * once with no dimension, for the section's whole-site fallback card.
+ * The Analytics reports one Site Goals PDF section needs. The Key action
+ * events and the engagement metrics are each requested with no dimension, for
+ * the section's whole-site fallback card. When the property has the breakdown
+ * dimension, each is requested again grouped by that dimension, so the section
+ * can render a card per group.
  */
 export type SiteGoalsPDFReports = Pick<
 	ShapeSiteGoalsPDFDataArgs,
@@ -48,10 +49,10 @@ export type SiteGoalsPDFReports = Pick<
 >;
 
 /**
- * Makes the four Analytics report requests one Site Goals PDF section needs, in
+ * Makes the Analytics report requests one Site Goals PDF section needs, in
  * parallel, and returns the reports.
  *
- * Throws when any one of the four requests fails. The export function catches
+ * Throws when any one of the requests fails. The export function catches
  * errors and omits the widget's section from the PDF report. A cancel is not
  * a failure, so a cancelled export receives no report and no error (eg. an
  * empty object).
@@ -61,9 +62,9 @@ export type SiteGoalsPDFReports = Pick<
  * @param {Object}      params                         Analytics report request parameters.
  * @param {Object}      params.registry                WordPress data registry.
  * @param {AbortSignal} params.signal                  Signal that cancels the PDF export.
- * @param {Object}      params.groupedReportOptions    Site Goals PDF report options that include the breakdown dimension.
+ * @param {?Object}     params.groupedReportOptions    Site Goals PDF report options that include the breakdown dimension, or `null` to skip the grouped reports.
  * @param {Object}      params.aggregatedReportOptions Site Goals PDF report options with no breakdown dimension.
- * @return {Promise<Object>} The four Analytics reports, under the property names `shapeSiteGoalsPDFData` expects, or no report when the export is cancelled.
+ * @return {Promise<Object>} The Analytics reports, under the property names `shapeSiteGoalsPDFData` expects, or no report when the export is cancelled.
  */
 export default async function fetchSiteGoalsPDFReports( {
 	registry,
@@ -73,15 +74,21 @@ export default async function fetchSiteGoalsPDFReports( {
 }: {
 	registry: GetPDFDataParams[ 'registry' ];
 	signal: AbortSignal;
-	groupedReportOptions: SiteGoalsPDFReportOptions;
+	groupedReportOptions: SiteGoalsPDFReportOptions | null;
 	aggregatedReportOptions: SiteGoalsPDFReportOptions;
 } ): Promise< SiteGoalsPDFReports > {
 	const { fetchGetReport } = registry.dispatch( MODULES_ANALYTICS_4 );
 
+	const groupedOptions = groupedReportOptions
+		? [
+				groupedReportOptions.eventsReportOptions,
+				groupedReportOptions.engagementReportOptions,
+		  ]
+		: [];
+
 	const reportResults: FetchAnalyticsReportResult[] = await Promise.all(
 		[
-			groupedReportOptions.eventsReportOptions,
-			groupedReportOptions.engagementReportOptions,
+			...groupedOptions,
 			aggregatedReportOptions.eventsReportOptions,
 			aggregatedReportOptions.engagementReportOptions,
 		].map( ( reportOptions ) =>
@@ -106,12 +113,13 @@ export default async function fetchSiteGoalsPDFReports( {
 		);
 	}
 
-	const [
-		eventsReport,
-		engagementReport,
-		aggregatedEventsReport,
-		aggregatedEngagementReport,
-	] = reportResults.map( ( { response } ) => response );
+	const reports = reportResults.map( ( { response } ) => response );
+
+	const [ eventsReport, engagementReport ] = groupedOptions.length
+		? reports
+		: [];
+	const [ aggregatedEventsReport, aggregatedEngagementReport ] =
+		reports.slice( groupedOptions.length );
 
 	return {
 		eventsReport,
