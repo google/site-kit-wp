@@ -216,6 +216,11 @@
 			overflow-wrap: anywhere;
 		}
 
+		.googlesitekit-traffic-overview__breakdown-column--devices
+			.googlesitekit-traffic-overview__breakdown-row-label {
+			text-transform: capitalize;
+		}
+
 		.googlesitekit-traffic-overview__breakdown-row-percentage {
 			color: $c-surfaces-on-surface;
 
