@@ -130,6 +130,14 @@ class Easy_Digital_DownloadsTest extends TestCase {
 		);
 	}
 
+	public function test_add_inline_data__no_purchase_on_the_success_page_without_a_session() {
+		$this->assertStringNotContainsString(
+			'edddata.purchase',
+			$this->get_inline_script( $this->create_provider( 'EUR', true, null ) ),
+			'The provider should add no purchase data on the success page when there is no purchase session.'
+		);
+	}
+
 	public function test_add_inline_data__purchase_on_the_success_page() {
 		$edd = $this->create_provider(
 			'EUR',

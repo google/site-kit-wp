@@ -176,7 +176,16 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 			return null;
 		}
 
-		return $this->get_enhanced_conversions_data_from_session( $this->read_purchase_session() );
+		$purchase_session = $this->read_purchase_session();
+
+		// A session is missing or expired on a success page reached without a
+		// purchase. Reporting it as a purchase of nothing would have the provider
+		// script send an empty purchase event.
+		if ( ! is_array( $purchase_session ) ) {
+			return null;
+		}
+
+		return $this->get_enhanced_conversions_data_from_session( $purchase_session );
 	}
 
 	/**
