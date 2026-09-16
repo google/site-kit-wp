@@ -141,7 +141,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'ad-blocker-detection', {
+	registerFeature( 'ad-blocking-recovery', {
 		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
 		shortDescription: __(
 			'Display a message to visitors using an ad blocker, giving them the option to allow ads on your site. Site Kit will place an ad blocking recovery tag on your site.',
