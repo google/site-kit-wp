@@ -31,10 +31,12 @@
 	}
 
 	.googlesitekit-feature-goal-group + .googlesitekit-feature-goal-group {
-		margin-block-start: 54px;
+		margin-block-start: var(--googlesitekit-feature-discovery-padding-l);
 	}
 
+	// 5px of leading above and below the heading text, per the design.
 	.googlesitekit-feature-goal-group__heading {
-		margin: 0 0 8px;
+		margin: 0;
+		padding-block: 5px;
 	}
 }
