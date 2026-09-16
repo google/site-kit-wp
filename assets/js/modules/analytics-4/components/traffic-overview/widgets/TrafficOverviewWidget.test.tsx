@@ -72,7 +72,8 @@ describe( 'TrafficOverviewWidget', () => {
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 		// Storing the creation time stops a request for the Analytics property.
-		// This day sits before the selected range, so the chart draws no marker.
+		// `2024-01-01` sits before the selected range, so the chart draws no
+		// marker.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );

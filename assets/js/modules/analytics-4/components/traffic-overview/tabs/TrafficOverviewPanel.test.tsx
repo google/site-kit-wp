@@ -29,9 +29,9 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
-import { createDailyVisitorsReport } from '@/js/modules/analytics-4/components/traffic-overview/charts/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { createTestRegistry, render, waitFor } from '@tests/js/test-utils';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import TrafficOverviewPanel from './TrafficOverviewPanel';
@@ -78,30 +78,6 @@ describe( 'TrafficOverviewPanel', () => {
 				} ),
 			}
 		);
-	}
-
-	/**
-	 * Puts a daily-visitors report in the store under the arguments the panel requests.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Array<Array>} days  The days and their visitors, as `createDailyVisitorsReport` takes them.
-	 * @param {string}       [url] Optional. The entity URL the report covers.
-	 * @return {void}
-	 */
-	function provideGraphReport(
-		days: Array< [ string, number ] >,
-		url?: string
-	) {
-		const { startDate, endDate } = registry
-			.select( CORE_USER )
-			.getDateRangeDates();
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( createDailyVisitorsReport( days ), {
-				options: getGraphReportArgs( { startDate, endDate, url } ),
-			} );
 	}
 
 	beforeEach( () => {
@@ -179,7 +155,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
 		// Only the entity-scoped report is in the store, so these values can
-		// only come from the request that carries the URL.
+		// only come from the request that has the URL.
 		provideTotalsReport( 500, 400, entityURL );
 
 		const { getByText, waitForRegistry } = render(
@@ -193,11 +169,17 @@ describe( 'TrafficOverviewPanel', () => {
 		expect( getByText( '+25%' ) ).toBeInTheDocument();
 	} );
 
-	it( 'shows the daily visitors from the graph report', async () => {
-		provideGraphReport( [
-			[ '2025-01-14', 40 ],
-			[ '2025-01-15', 12 ],
-		] );
+	it( "shows each day's visitors in the chart", async () => {
+		// `provideAnalytics4MockReport` builds the same numbers for the same
+		// options, so the report for `2025-01-09` to `2025-02-05` always opens
+		// with 55 and 14 visitors.
+		provideAnalytics4MockReport(
+			registry,
+			getGraphReportArgs( {
+				startDate: '2025-01-09',
+				endDate: '2025-02-05',
+			} )
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -211,20 +193,27 @@ describe( 'TrafficOverviewPanel', () => {
 		// Google Charts draws nothing under Jest, so this test reads the
 		// chart's screen-reader lines instead.
 		expect(
-			getByText( 'January 14, 2025: 40 visitors' )
+			getByText( 'January 9, 2025: 55 visitors' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'January 15, 2025: 12 visitors' )
+			getByText( 'January 10, 2025: 14 visitors' )
 		).toBeInTheDocument();
 	} );
 
-	it( 'shows the daily visitors from the entity-scoped graph report', async () => {
+	it( "shows each day's visitors to the current URL in the chart on the entity dashboard", async () => {
 		const entityURL = 'https://example.com/about/';
 
 		provideSiteInfo( registry, { currentEntityURL: entityURL } );
-		// The store has only the report for this URL, so the count of 6 can
-		// come from no other report.
-		provideGraphReport( [ [ '2025-01-14', 6 ] ], entityURL );
+		// The store has only the report for `entityURL`, so the 69 visitors on
+		// `2025-01-09` can come from no other report.
+		provideAnalytics4MockReport(
+			registry,
+			getGraphReportArgs( {
+				startDate: '2025-01-09',
+				endDate: '2025-02-05',
+				url: entityURL,
+			} )
+		);
 
 		const { getByText, waitForRegistry } = render(
 			<TrafficOverviewPanel />,
@@ -236,7 +225,7 @@ describe( 'TrafficOverviewPanel', () => {
 		await waitForRegistry();
 
 		expect(
-			getByText( 'January 14, 2025: 6 visitors' )
+			getByText( 'January 9, 2025: 69 visitors' )
 		).toBeInTheDocument();
 	} );
 

@@ -37,8 +37,12 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
+import ChartLegend from './ChartLegend';
 import { getTrafficChartData } from './getTrafficChartData';
-import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
+import {
+	TRAFFIC_CHART_LINE_COLOR,
+	TRAFFIC_CHART_OPTIONS,
+} from './trafficChartOptions';
 
 export interface TrafficChartProps {
 	/** The daily-visitors report for the selected range. */
@@ -50,6 +54,11 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 
 	const { startDate, endDate } = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+		[]
+	);
+
+	const daysInRange = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
 		[]
 	);
 
@@ -79,11 +88,14 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 		hAxis: {
 			...TRAFFIC_CHART_OPTIONS.hAxis,
 			ticks,
+			// A baseline on the last day draws the gray line along the right edge
+			// of the chart area.
+			baseline: points[ points.length - 1 ]?.[ 0 ],
 		},
 		vAxis: {
 			...TRAFFIC_CHART_OPTIONS.vAxis,
-			// With no maximum, Google Charts sizes the axis to the data, so a
-			// line of all zeros sits across the middle of the chart area.
+			// With no maximum, Google Charts draws a line of zeros across the
+			// middle of the chart area.
 			viewWindow: {
 				...TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
 				...( hasVisitors ? {} : { max: 100 } ),
@@ -92,7 +104,7 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 	};
 
 	const propertyCreateDate = propertyCreateTime
-		? // eslint-disable-next-line sitekit/no-direct-date
+		? // eslint-disable-next-line sitekit/no-direct-date -- The date comes from the property's creation time, not from the reference date.
 		  getDateString( new Date( propertyCreateTime ) )
 		: undefined;
 
@@ -117,6 +129,22 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 		  ]
 		: undefined;
 
+	const legendItems = [
+		{
+			label: sprintf(
+				/* translators: %d: the number of days in the selected date range, such as "28" */
+				_n(
+					'Last %d day traffic',
+					'Last %d days traffic',
+					daysInRange,
+					'google-site-kit'
+				),
+				daysInRange
+			),
+			color: TRAFFIC_CHART_LINE_COLOR,
+		},
+	];
+
 	const dayFormatter = useMemo(
 		() =>
 			new Intl.DateTimeFormat( getLocale(), {
@@ -138,6 +166,7 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 				options={ options }
 				width="100%"
 			/>
+			<ChartLegend items={ legendItems } />
 			{ points.map( ( [ day, visitors ] ) => (
 				<VisuallyHidden key={ getDateString( day ) }>
 					{ sprintf(

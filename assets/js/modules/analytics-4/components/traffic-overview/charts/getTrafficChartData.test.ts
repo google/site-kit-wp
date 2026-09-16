@@ -19,13 +19,22 @@
 /**
  * Internal dependencies
  */
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { getTrafficChartData } from './getTrafficChartData';
-import { createDailyVisitorsReport } from './test-utils';
 
 describe( 'getTrafficChartData', () => {
+	// `getAnalytics4MockResponse` returns the same numbers for the same options,
+	// so the report for `2025-01-13` to `2025-01-16` always has 55, 14, 3, and
+	// 13 visitors.
+	const reportOptions = getGraphReportArgs( {
+		startDate: '2025-01-13',
+		endDate: '2025-01-16',
+	} );
+
 	it( 'names the columns "Day" and "Users"', () => {
 		const { chartData } = getTrafficChartData( {
-			report: createDailyVisitorsReport( [ [ '2025-01-13', 5 ] ] ),
+			report: getAnalytics4MockResponse( reportOptions ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -38,31 +47,22 @@ describe( 'getTrafficChartData', () => {
 
 	it( 'draws one point for each day the report returns', () => {
 		const { chartData } = getTrafficChartData( {
-			report: createDailyVisitorsReport( [
-				[ '2025-01-13', 40 ],
-				[ '2025-01-14', 12 ],
-				[ '2025-01-15', 0 ],
-				[ '2025-01-16', 7 ],
-			] ),
+			report: getAnalytics4MockResponse( reportOptions ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
 
 		expect( chartData.slice( 1 ) ).toEqual( [
-			[ new Date( 2025, 0, 13 ), 40 ],
-			[ new Date( 2025, 0, 14 ), 12 ],
-			[ new Date( 2025, 0, 15 ), 0 ],
-			[ new Date( 2025, 0, 16 ), 7 ],
+			[ new Date( 2025, 0, 13 ), 55 ],
+			[ new Date( 2025, 0, 14 ), 14 ],
+			[ new Date( 2025, 0, 15 ), 3 ],
+			[ new Date( 2025, 0, 16 ), 13 ],
 		] );
 	} );
 
 	it( 'shows a date label under every day except the first', () => {
 		const { ticks } = getTrafficChartData( {
-			report: createDailyVisitorsReport( [
-				[ '2025-01-13', 40 ],
-				[ '2025-01-14', 12 ],
-				[ '2025-01-15', 7 ],
-			] ),
+			report: getAnalytics4MockResponse( reportOptions ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
@@ -70,6 +70,7 @@ describe( 'getTrafficChartData', () => {
 		expect( ticks ).toEqual( [
 			new Date( 2025, 0, 14 ),
 			new Date( 2025, 0, 15 ),
+			new Date( 2025, 0, 16 ),
 		] );
 	} );
 
@@ -99,30 +100,24 @@ describe( 'getTrafficChartData', () => {
 		] );
 	} );
 
-	it( "finds no visitors when the report's total is zero", () => {
-		const { hasVisitors } = getTrafficChartData( {
-			report: createDailyVisitorsReport( [
-				[ '2025-01-13', 0 ],
-				[ '2025-01-14', 0 ],
-			] ),
-			startDate: '2025-01-13',
-			endDate: '2025-01-16',
-		} );
-
-		expect( hasVisitors ).toBe( false );
-	} );
-
 	it( "finds visitors when the report's total is above zero", () => {
 		const { hasVisitors } = getTrafficChartData( {
-			report: createDailyVisitorsReport( [
-				[ '2025-01-13', 0 ],
-				[ '2025-01-14', 3 ],
-			] ),
+			report: getAnalytics4MockResponse( reportOptions ),
 			startDate: '2025-01-13',
 			endDate: '2025-01-16',
 		} );
 
 		expect( hasVisitors ).toBe( true );
+	} );
+
+	it( "finds no visitors when the report's total is '0'", () => {
+		const { hasVisitors } = getTrafficChartData( {
+			report: { totals: [ { metricValues: [ { value: '0' } ] } ] },
+			startDate: '2025-01-13',
+			endDate: '2025-01-16',
+		} );
+
+		expect( hasVisitors ).toBe( false );
 	} );
 
 	it( 'finds no visitors when the report has no total', () => {

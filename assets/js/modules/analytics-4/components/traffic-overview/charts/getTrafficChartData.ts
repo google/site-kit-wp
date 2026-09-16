@@ -86,12 +86,11 @@ function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
 }
 
 /**
- * Builds three points at zero, which draw a flat line along the bottom of the
- * chart.
- *
- * The first and last days put a point at each end of the axis. The second day
- * is there to give the axis a date label, because the labels skip the first
+ * Builds zero-visitor points for the range's first day, second day, and last
  * day.
+ *
+ * The date labels skip the first day, so the second day gives the axis a label
+ * near its start.
  *
  * @since n.e.x.t
  *
@@ -120,8 +119,8 @@ function getZeroVisitorPoints(
  *
  * @param {Object} options           Options.
  * @param {Object} [options.report]  Optional. The daily-visitors report.
- * @param {string} options.startDate The range's first day.
- * @param {string} options.endDate   The range's last day.
+ * @param {string} options.startDate The range's first day, as `YYYY-MM-DD`.
+ * @param {string} options.endDate   The range's last day, as `YYYY-MM-DD`.
  * @return {Object} The chart table, the days the axis shows a date label under, and whether the range has visitors.
  */
 export function getTrafficChartData( {

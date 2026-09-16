@@ -20,7 +20,7 @@
 const AXIS_LABEL_COLOR = '#6c726e';
 
 /** The hex value of `$c-violet-v-600`, the Sass token for the chart's line. */
-const LINE_COLOR = '#462083';
+export const TRAFFIC_CHART_LINE_COLOR = '#462083';
 
 /** The Google Charts options for the traffic chart. */
 export const TRAFFIC_CHART_OPTIONS = {
@@ -30,9 +30,9 @@ export const TRAFFIC_CHART_OPTIONS = {
 	curveType: 'function',
 	height: 256,
 	width: '100%',
-	colors: [ LINE_COLOR ],
+	colors: [ TRAFFIC_CHART_LINE_COLOR ],
 	chartArea: {
-		left: 0,
+		left: 16,
 		right: 40,
 		height: 224,
 		top: 8,
@@ -41,6 +41,9 @@ export const TRAFFIC_CHART_OPTIONS = {
 		position: 'none',
 	},
 	hAxis: {
+		// The hex value of `$c-neutral-n-200`, the Sass token for the gray line
+		// along the right edge of the chart area.
+		baselineColor: '#b8bdb9',
 		format: 'MMM d',
 		// The chart shows no vertical gridlines. Setting the gridline count to
 		// `0` also moves the date labels, so the lines are transparent instead.
@@ -90,7 +93,7 @@ export const TRAFFIC_CHART_OPTIONS = {
 	},
 	series: {
 		0: {
-			color: LINE_COLOR,
+			color: TRAFFIC_CHART_LINE_COLOR,
 			lineWidth: 3,
 			// The visitor counts are on the right, because Google Charts renders
 			// the second value axis there.
@@ -99,7 +102,7 @@ export const TRAFFIC_CHART_OPTIONS = {
 	},
 	focusTarget: 'category',
 	crosshair: {
-		color: LINE_COLOR,
+		color: TRAFFIC_CHART_LINE_COLOR,
 		opacity: 0.1,
 		orientation: 'vertical',
 		trigger: 'both',

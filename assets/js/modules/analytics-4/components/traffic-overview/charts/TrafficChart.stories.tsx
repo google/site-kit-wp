@@ -25,40 +25,21 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { Story } from '@/js/types/Story';
-import { getPreviousDate } from '@/js/util';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import { createDailyVisitorsReport } from './test-utils';
 import TrafficChart from './TrafficChart';
 
-/** The visitors on each day of the range, from its first day. */
-const DAILY_VISITORS = [
-	120, 138, 96, 74, 151, 164, 149, 181, 158, 203, 226, 198, 174, 212, 245,
-	231, 268, 254, 289, 262, 240, 277, 305, 291, 268, 314, 336, 322,
-];
-
-/**
- * Builds a daily-visitors report for `last-28-days`.
- *
- * @since n.e.x.t
- *
- * @param {Array<number>} dailyVisitors The visitors on each day, from the range's first day.
- * @return {Object} The daily-visitors report.
- */
-function createRangeReport( dailyVisitors: number[] ): Report {
-	return createDailyVisitorsReport(
-		dailyVisitors.map( ( visitors, dayIndex ) => [
-			// `2025-01-09` is the first day of `last-28-days` against the
-			// reference date `commonSetup` sets.
-			getPreviousDate( '2025-01-09', -dayIndex ),
-			visitors,
-		] )
-	);
-}
+// `last-28-days` against the `2025-02-05` reference date that `commonSetup` sets
+// runs from `2025-01-09` to `2025-02-05`.
+const dailyVisitorsReport = getAnalytics4MockResponse(
+	getGraphReportArgs( { startDate: '2025-01-09', endDate: '2025-02-05' } )
+);
 
 /**
  * Connects Analytics and sets one date range, so every story shows the same
@@ -106,14 +87,13 @@ function Template( { report, setupRegistry }: TrafficChartStoryProps ) {
 }
 
 /**
- * This story sets no `scenario`, so it runs no visual check. The
- * `TrafficOverviewWidget` Main Dashboard scenario already captures the chart
- * with a full range of visitors.
+ * This story runs no visual check, because the `TrafficOverviewWidget` Main
+ * Dashboard scenario already captures the chart with visitors.
  */
 export const Ready = Template.bind( {} ) as Story< TrafficChartStoryProps >;
 Ready.storyName = 'Ready';
 Ready.args = {
-	report: createRangeReport( DAILY_VISITORS ),
+	report: dailyVisitorsReport,
 	setupRegistry: commonSetup,
 };
 
@@ -135,19 +115,25 @@ NoVisitors.scenario = {
 };
 
 /**
- * The Analytics property was created inside the range. The chart marks that
- * day, which explains the days at zero before it.
+ * The Analytics property was created on a day inside the range. The chart marks
+ * that day, which explains the days at zero before it.
  */
 export const PropertyCreatedInRange = Template.bind(
 	{}
 ) as Story< TrafficChartStoryProps >;
 PropertyCreatedInRange.storyName = 'Property Created In Range';
 PropertyCreatedInRange.args = {
-	report: createRangeReport(
-		DAILY_VISITORS.map( ( visitors, dayIndex ) =>
-			dayIndex < 7 ? 0 : visitors
-		)
-	),
+	report: {
+		...dailyVisitorsReport,
+		// The property was created on `2025-01-16`, so the seven days before it
+		// have no visitors.
+		rows: dailyVisitorsReport.rows.map(
+			( row: ReportRow, dayIndex: number ) =>
+				dayIndex < 7
+					? { ...row, metricValues: [ { value: '0' } ] }
+					: row
+		),
+	},
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		registry

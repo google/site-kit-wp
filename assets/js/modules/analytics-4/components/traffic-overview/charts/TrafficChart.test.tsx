@@ -26,23 +26,24 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
 import { render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
 } from '@tests/js/utils';
-import { createDailyVisitorsReport } from './test-utils';
 import TrafficChart from './TrafficChart';
 
 const mockGoogleChart = jest.fn();
 
-// Google Charts draws nothing under Jest, so this stub records the props a
-// test reads.
+// Google Charts draws nothing under Jest, so `GoogleChartMock` records the
+// props each test reads.
 jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartStub( props: Record< string, unknown > ) {
+	return function GoogleChartMock( props: Record< string, unknown > ) {
 		mockGoogleChart( props );
 		return <div className="googlesitekit-chart" />;
 	};
@@ -50,6 +51,14 @@ jest.mock( '@/js/components/GoogleChart', () => {
 
 describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
+
+	// `getAnalytics4MockResponse` returns the same numbers for the same options,
+	// so the report for `2025-01-14` to `2025-01-16` always has 55, 14, and 3
+	// visitors.
+	const reportOptions = getGraphReportArgs( {
+		startDate: '2025-01-14',
+		endDate: '2025-01-16',
+	} );
 
 	/**
 	 * Stores the day the Analytics property was created.
@@ -70,8 +79,8 @@ describe( 'TrafficChart', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// `last-3-days` against this reference date covers 2025-01-14,
-		// 2025-01-15, and 2025-01-16.
+		// `last-3-days` against the `2025-01-16` reference date covers
+		// `2025-01-14`, `2025-01-15`, and `2025-01-16`.
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-01-16' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-3-days' );
 		provideSiteInfo( registry );
@@ -104,14 +113,10 @@ describe( 'TrafficChart', () => {
 		return calls[ calls.length - 1 ][ 0 ];
 	}
 
-	it( 'gives the chart one point for each day the report returns', async () => {
+	it( 'draws one point for each day the report returns', async () => {
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [
-					[ '2025-01-14', 40 ],
-					[ '2025-01-15', 12 ],
-					[ '2025-01-16', 7 ],
-				] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -119,20 +124,16 @@ describe( 'TrafficChart', () => {
 		const { data } = await getLastChartProps();
 
 		expect( data.slice( 1 ) ).toEqual( [
-			[ new Date( 2025, 0, 14 ), 40 ],
-			[ new Date( 2025, 0, 15 ), 12 ],
-			[ new Date( 2025, 0, 16 ), 7 ],
+			[ new Date( 2025, 0, 14 ), 55 ],
+			[ new Date( 2025, 0, 15 ), 14 ],
+			[ new Date( 2025, 0, 16 ), 3 ],
 		] );
 	} );
 
 	it( 'labels the horizontal axis from the second day of the range', async () => {
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [
-					[ '2025-01-14', 40 ],
-					[ '2025-01-15', 12 ],
-					[ '2025-01-16', 7 ],
-				] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -179,7 +180,7 @@ describe( 'TrafficChart', () => {
 		] );
 	} );
 
-	it( 'draws the range flat at zero when the chart gets no report', async () => {
+	it( 'draws a flat line at zero when the chart gets no report', async () => {
 		render( <TrafficChart />, { registry } );
 
 		const { data, options } = await getLastChartProps();
@@ -195,7 +196,7 @@ describe( 'TrafficChart', () => {
 	it( 'sets no maximum on the value axis for a range that has visitors', async () => {
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -208,7 +209,7 @@ describe( 'TrafficChart', () => {
 	it( 'draws a line chart in #462083', async () => {
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -221,12 +222,46 @@ describe( 'TrafficChart', () => {
 		expect( options.crosshair.color ).toBe( '#462083' );
 	} );
 
+	it( 'draws a #b8bdb9 line along the right edge of the chart area', async () => {
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		const { options } = await getLastChartProps();
+
+		expect( options.hAxis.baseline ).toEqual( new Date( 2025, 0, 16 ) );
+		expect( options.hAxis.baselineColor ).toBe( '#b8bdb9' );
+	} );
+
+	it( 'shows the "Last 3 days traffic" legend label beside a line in the chart color', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const legendItem = getByRole( 'listitem' );
+
+		expect( legendItem ).toHaveTextContent( 'Last 3 days traffic' );
+		expect(
+			legendItem.querySelector(
+				'.googlesitekit-traffic-overview__chart-legend-line'
+			)
+		).toHaveStyle( { backgroundColor: '#462083' } );
+	} );
+
 	it( 'marks the day the Analytics property was created when that day is inside the range', async () => {
 		providePropertyCreateTime( '2025-01-14' );
 
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -246,7 +281,7 @@ describe( 'TrafficChart', () => {
 
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -261,7 +296,7 @@ describe( 'TrafficChart', () => {
 
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
 		);
@@ -274,11 +309,7 @@ describe( 'TrafficChart', () => {
 	it( 'reads every day and its visitors to a screen reader', async () => {
 		const { container, waitForRegistry } = render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [
-					[ '2025-01-14', 40 ],
-					[ '2025-01-15', 12 ],
-					[ '2025-01-16', 7 ],
-				] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -290,16 +321,23 @@ describe( 'TrafficChart', () => {
 		).map( ( line ) => line.textContent );
 
 		expect( lines ).toEqual( [
-			'January 14, 2025: 40 visitors',
-			'January 15, 2025: 12 visitors',
-			'January 16, 2025: 7 visitors',
+			'January 14, 2025: 55 visitors',
+			'January 15, 2025: 14 visitors',
+			'January 16, 2025: 3 visitors',
 		] );
 	} );
 
 	it( 'reads a day with one visitor in the singular', async () => {
 		const { getByText, waitForRegistry } = render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 1 ] ] ) }
+				report={ {
+					rows: [
+						{
+							dimensionValues: [ { value: '20250114' } ],
+							metricValues: [ { value: '1' } ],
+						},
+					],
+				} }
 			/>,
 			{ registry }
 		);
@@ -316,7 +354,7 @@ describe( 'TrafficChart', () => {
 
 		const { getByText, waitForRegistry } = render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -335,7 +373,7 @@ describe( 'TrafficChart', () => {
 
 		const { queryByText, waitForRegistry } = render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
@@ -349,17 +387,18 @@ describe( 'TrafficChart', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'leaves the chart with no click handler', async () => {
+	it( 'gives the chart no click handler', async () => {
 		render(
 			<TrafficChart
-				report={ createDailyVisitorsReport( [ [ '2025-01-14', 40 ] ] ) }
+				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
 			{ registry }
 		);
 
 		const { onSelect, chartEvents } = await getLastChartProps();
 
-		// Without either prop, `GoogleChart` adds no click handler of its own.
+		// With no `onSelect` and no `chartEvents`, `GoogleChart` adds no click
+		// handler of its own.
 		expect( onSelect ).toBeUndefined();
 		expect( chartEvents ).toBeUndefined();
 	} );
