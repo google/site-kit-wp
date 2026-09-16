@@ -128,7 +128,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
-		effort: FEATURE_EFFORTS.MEDIUM,
+		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.PERFORMANCE ],
 		addedInVersion: '1.0.0',
 		setup: {
