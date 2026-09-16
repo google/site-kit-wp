@@ -55,13 +55,14 @@ of truth shared with the other AI tools.
    user actually stated. The title names the deliverable, or for a bug the symptom and where it
    happens; nothing sits between it and the first description heading. A dependency on another
    issue is a clause inside the description, by real GitHub issue number.
-7. **Write the description** — prose, and the only place rationale belongs. A **Feature
-   Description** gives the gap today, what this adds, the halves of the work, and the load-bearing
-   decisions with their reasons. A **Bug Description** gives the wrong behavior on the real
-   surface with its values, what should happen instead, and the conditions it needs — plus the
-   cause in one clause only when you verified it in the code, never the fix. **Steps to reproduce**
-   are a numbered list starting from a state the tester can reach, one action per step with real
-   values, ending in what the tester sees and what they should have seen.
+7. **Write the description** — prose, where rationale for the issue should be primarily written. A **Feature
+   Description** should outline what's missing, what the issue adds for the user, the work involved for
+   engineers, and any technical decisions with their reasons.
+   A **Bug Description** gives the wrong behavior on the real surface with its values, what
+   should happen instead, and the conditions it needs — plus the cause in one clause only when you
+   verified it in the code, never the fix. **Steps to reproduce** are a numbered list starting from a
+   state the tester can reach, one action per step with real values, ending in what the tester sees
+   and what they should have seen.
 8. **Write the Acceptance criteria** — a flat `*` list, one checkable outcome per bullet, nested
    only for enumerable cases, tables inlined for lookups. Name real symbols and give real values.
    On a bug, write the corrected behavior as the outcome it produces, plus the cases that must

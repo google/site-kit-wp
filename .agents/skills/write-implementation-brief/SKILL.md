@@ -2,10 +2,9 @@
 name: write-implementation-brief
 description: >
   Write the Implementation Brief and Test Coverage sections of a Site Kit issue from its
-  acceptance criteria. Use when the user asks to write, draft, fill in, or groom an
+  acceptance criteria. Use when the user asks to write, draft, adjust, update, or fill in an
   implementation brief and/or test coverage for an issue (e.g. "write the implementation brief
-  for #12345", "fill in the brief and test coverage for this issue", "groom issue 12345") in the
-  google/site-kit-wp repo.
+  for #12345", "fill in the brief and test coverage for this issue") in the google/site-kit-wp repo.
 argument-hint: "[issue-number-or-path]"
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---
