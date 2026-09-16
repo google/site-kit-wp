@@ -85,6 +85,7 @@ import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import AddFeaturesButton from './feature-discovery/AddFeaturesButton';
 import FeaturesMenu from './FeaturesMenu';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
@@ -299,6 +300,7 @@ export default function DashboardMainApp() {
 	} );
 
 	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
+	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
@@ -360,6 +362,9 @@ export default function DashboardMainApp() {
 					</Fragment>
 				) : (
 					<Fragment>
+						{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
+							<AddFeaturesButton />
+						) }
 						<ManageEmailReportsButton />
 						{ pdfGenerationEnabled && <PDFDownloadButton /> }
 						{ ! viewOnlyDashboard && (
