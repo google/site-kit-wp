@@ -123,6 +123,26 @@ describe( 'TrafficBreakdown', () => {
 		).toHaveLength( 1 );
 	} );
 
+	it( 'marks each column with its own dimension, so only the devices column capitalizes its labels', () => {
+		const { container } = renderBreakdown( {
+			channels: CHANNELS,
+			locations: LOCATIONS,
+			devices: DEVICES,
+		} );
+
+		expect(
+			Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-traffic-overview__breakdown-column'
+				)
+			).map( ( column ) => column.className.split( ' ' ).pop() )
+		).toEqual( [
+			'googlesitekit-traffic-overview__breakdown-column--channels',
+			'googlesitekit-traffic-overview__breakdown-column--locations',
+			'googlesitekit-traffic-overview__breakdown-column--devices',
+		] );
+	} );
+
 	it( 'reads each row as its label then its share', () => {
 		const { getByRole } = renderBreakdown( {
 			channels: CHANNELS,
