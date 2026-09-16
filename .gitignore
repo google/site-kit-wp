@@ -5,10 +5,6 @@
 !.gemini/config.yml
 !.gemini/styleguide.md
 !.gemini/settings.json
-!.gemini/agents/
-!.gemini/agents/**
-!.gemini/commands/
-!.gemini/commands/**
 !.claude/
 .claude/*
 !.claude/settings.json
