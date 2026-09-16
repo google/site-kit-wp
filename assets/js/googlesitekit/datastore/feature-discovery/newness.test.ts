@@ -37,7 +37,7 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from './constants';
-import type { FeatureSettings } from './types';
+import type { Feature, FeatureSettings } from './types';
 import { getFeatureDismissalKey, getFeatureNewnessKey } from './utils';
 
 function createSettings(
@@ -121,6 +121,26 @@ describe( 'core/feature-discovery newness', () => {
 					.select( CORE_FEATURE_DISCOVERY )
 					.isFeatureNew( 'baseline-feature' )
 			).toBe( false );
+		} );
+
+		it( 'should exclude a feature whose version cannot be parsed', () => {
+			provideNewnessState();
+			registerFeature( 'unreleased-feature', {
+				addedInVersion: 'n.e.x.t',
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureNew( 'unreleased-feature' )
+			).toBe( false );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getWhatsNewFeatures()
+					.map( ( { slug }: Feature ) => slug )
+			).not.toContain( 'unreleased-feature' );
 		} );
 
 		it( 'should include a feature added at or after the user floor', () => {
