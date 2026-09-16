@@ -31,6 +31,7 @@ import {
 import {
 	SITE_GOALS_PDF_TEST_DATES,
 	analyticsReportEndpoint,
+	buildAggregatedTotalsRows,
 	provideSiteGoalsPDFReports,
 } from './test-utils';
 
@@ -80,6 +81,42 @@ describe( 'fetchSiteGoalsPDFReports', () => {
 		await fetchOnlineStorePDFReports( registry );
 
 		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 4 );
+	} );
+
+	it( 'requests the aggregated pair alone when the grouped report options are null', async () => {
+		provideSiteGoalsPDFReports( {
+			aggregatedEventsReport: {
+				totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
+			},
+			aggregatedEngagementReport: {
+				totals: buildAggregatedTotalsRows(
+					[ '0.42', '5600' ],
+					[ '0.4', '5250' ]
+				),
+			},
+		} );
+
+		const reports = await fetchSiteGoalsPDFReports( {
+			registry,
+			signal: new AbortController().signal,
+			groupedReportOptions: null,
+			aggregatedReportOptions: AGGREGATED_REPORT_OPTIONS,
+		} );
+
+		expect( fetchMock.calls( analyticsReportEndpoint ) ).toHaveLength( 2 );
+		expect( reports ).toEqual( {
+			eventsReport: undefined,
+			engagementReport: undefined,
+			aggregatedEventsReport: {
+				totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
+			},
+			aggregatedEngagementReport: {
+				totals: buildAggregatedTotalsRows(
+					[ '0.42', '5600' ],
+					[ '0.4', '5250' ]
+				),
+			},
+		} );
 	} );
 
 	it( 'returns each report under the property name shapeSiteGoalsPDFData expects', async () => {

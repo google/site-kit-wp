@@ -21,6 +21,7 @@
  */
 import { Registry } from '@/js/googlesitekit/data/types';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
@@ -149,24 +150,27 @@ export function provideSiteGoalsPDFReports(
 }
 
 /**
- * Puts the detected conversion events into the Analytics 4 settings store.
+ * Puts the detected conversion events and the property's custom dimensions into
+ * the Analytics 4 settings store.
  *
  * The `MODULES_ANALYTICS_4` store keeps the first settings it receives, so each
  * test sets its own events instead of replacing a shared set.
  *
  * @since n.e.x.t
  *
- * @param {Object}        registry       The WordPress data registry the test runs against.
- * @param {Array<string>} detectedEvents The detected conversion event names.
+ * @param {Object}        registry                    The WordPress data registry the test runs against.
+ * @param {Array<string>} detectedEvents              The detected conversion event names.
+ * @param {Array<string>} [availableCustomDimensions] Optional. The custom dimensions the Analytics property has.
  * @return {void}
  */
 export function provideDetectedEvents(
 	registry: Registry,
-	detectedEvents: string[]
+	detectedEvents: string[],
+	availableCustomDimensions: string[] = SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
 ): void {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetSettings( { detectedEvents } );
+		.receiveGetSettings( { detectedEvents, availableCustomDimensions } );
 }
 
 /**
