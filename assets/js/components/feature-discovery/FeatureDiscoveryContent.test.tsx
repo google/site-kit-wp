@@ -24,7 +24,7 @@ import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 describe( 'FeatureDiscoveryContent', () => {
 	it( 'should render only the tab panel content for /all-services', () => {
-		const { getByText, queryByText } = render(
+		const { container, queryByText } = render(
 			<FeatureDiscoveryContent />,
 			{
 				route: '/all-services',
@@ -32,9 +32,7 @@ describe( 'FeatureDiscoveryContent', () => {
 		);
 
 		expect(
-			getByText(
-				'Feature Discovery Hub tab panel placeholder: All services and features'
-			)
+			container.querySelector( '.googlesitekit-all-services-tab' )
 		).toBeInTheDocument();
 
 		expect(
@@ -45,12 +43,9 @@ describe( 'FeatureDiscoveryContent', () => {
 	} );
 
 	it( 'should render only the tab panel content for /whats-new', () => {
-		const { getByText, queryByText } = render(
-			<FeatureDiscoveryContent />,
-			{
-				route: '/whats-new',
-			}
-		);
+		const { container, getByText } = render( <FeatureDiscoveryContent />, {
+			route: '/whats-new',
+		} );
 
 		expect(
 			getByText(
@@ -59,9 +54,7 @@ describe( 'FeatureDiscoveryContent', () => {
 		).toBeInTheDocument();
 
 		expect(
-			queryByText(
-				'Feature Discovery Hub tab panel placeholder: All services and features'
-			)
+			container.querySelector( '.googlesitekit-all-services-tab' )
 		).not.toBeInTheDocument();
 	} );
 
