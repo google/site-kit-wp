@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { FC } from 'react';
 
 /**
@@ -60,10 +59,7 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 
 	return (
 		<section
-			className={ classnames(
-				'googlesitekit-traffic-overview__breakdown-column',
-				`googlesitekit-traffic-overview__breakdown-column--${ id }`
-			) }
+			className={ `googlesitekit-traffic-overview__breakdown-column googlesitekit-traffic-overview__breakdown-column--${ id }` }
 			aria-labelledby={ headingID }
 		>
 			<Typography

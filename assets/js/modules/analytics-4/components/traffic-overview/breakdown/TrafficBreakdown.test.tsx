@@ -130,17 +130,19 @@ describe( 'TrafficBreakdown', () => {
 			devices: DEVICES,
 		} );
 
-		expect(
-			Array.from(
-				container.querySelectorAll(
-					'.googlesitekit-traffic-overview__breakdown-column'
-				)
-			).map( ( column ) => column.className.split( ' ' ).pop() )
-		).toEqual( [
-			'googlesitekit-traffic-overview__breakdown-column--channels',
-			'googlesitekit-traffic-overview__breakdown-column--locations',
-			'googlesitekit-traffic-overview__breakdown-column--devices',
-		] );
+		const columns = container.querySelectorAll(
+			'.googlesitekit-traffic-overview__breakdown-column'
+		);
+
+		expect( columns[ 0 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--channels'
+		);
+		expect( columns[ 1 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--locations'
+		);
+		expect( columns[ 2 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--devices'
+		);
 	} );
 
 	it( 'reads each row as its label then its share', () => {
