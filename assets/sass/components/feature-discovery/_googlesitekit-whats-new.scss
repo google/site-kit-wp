@@ -16,11 +16,11 @@
  * limitations under the License.
  */
 
-// The feature cards style themselves, so the list needs nothing of its own yet.
-// TODO: #13327 -- Replace this with the empty tab's styles.
+// TODO: #13327 -- Add the empty tab's styles here.
 .googlesitekit-plugin {
 
 	.googlesitekit-whats-new {
 		display: block;
+		padding-block: 10px;
 	}
 }
