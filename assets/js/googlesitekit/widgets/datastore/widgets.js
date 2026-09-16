@@ -154,18 +154,19 @@ export const actions = {
 	 * @since 1.25.0
 	 * @private
 	 *
-	 * @param {string}      slug       Widget slug.
-	 * @param {WPComponent} Component  Component returned by the widget.
-	 * @param {Object}      [metadata] Relevant metadata / props passed to
-	 *                                 the Component instance.
+	 * @param {string}      slug           Widget slug.
+	 * @param {WPComponent} Component      Component returned by the widget.
+	 * @param {Object}      [metadata]     Relevant metadata / props passed to the Component instance.
+	 * @param {Object}      [registration] Optional registration token used to identify the component instance.
 	 * @return {Object} Redux-style action.
 	 */
-	setWidgetState( slug, Component, metadata = {} ) {
+	setWidgetState( slug, Component, metadata = {}, registration ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
+				registration,
 			},
 			type: SET_WIDGET_STATE,
 		};
@@ -183,18 +184,19 @@ export const actions = {
 	 * @since 1.25.0
 	 * @private
 	 *
-	 * @param {string}      slug       Widget slug.
-	 * @param {WPComponent} Component  Component returned by the widget.
-	 * @param {Object}      [metadata] Relevant metadata / props passed to
-	 *                                 the Component instance.
+	 * @param {string}      slug           Widget slug.
+	 * @param {WPComponent} Component      Component returned by the widget.
+	 * @param {Object}      [metadata]     Relevant metadata / props passed to the Component instance.
+	 * @param {Object}      [registration] Optional registration token used to identify the component instance.
 	 * @return {Object} Redux-style action.
 	 */
-	unsetWidgetState( slug, Component, metadata = {} ) {
+	unsetWidgetState( slug, Component, metadata = {}, registration ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
+				registration,
 			},
 			type: UNSET_WIDGET_STATE,
 		};
@@ -237,18 +239,26 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case SET_WIDGET_STATE: {
-			const { slug, Component, metadata } = payload;
+			const { slug, Component, metadata, registration } = payload;
 
-			state.widgetStates[ slug ] = { Component, metadata };
+			state.widgetStates[ slug ] = {
+				Component,
+				metadata,
+				registration,
+			};
 			return state;
 		}
 
 		case UNSET_WIDGET_STATE: {
-			const { slug, Component, metadata } = payload;
+			const { slug, Component, metadata, registration } = payload;
 
 			if (
 				state.widgetStates?.[ slug ]?.Component === Component &&
-				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
+				original( state.widgetStates?.[ slug ]?.metadata ) ===
+					metadata &&
+				( registration === undefined ||
+					original( state.widgetStates?.[ slug ]?.registration ) ===
+						registration )
 			) {
 				delete state.widgetStates[ slug ];
 			}
