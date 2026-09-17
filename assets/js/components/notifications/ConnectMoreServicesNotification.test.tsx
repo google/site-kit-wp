@@ -42,6 +42,7 @@ import {
 	freezeFetch,
 	muteFetch,
 	provideGatheringDataState,
+	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
@@ -194,6 +195,21 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		beforeEach( () => {
+			// A module can only be gathering data if it is connected, so the
+			// requirement check short-circuits for a disconnected module.
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+				{
+					slug: MODULE_SLUG_SEARCH_CONSOLE,
+					active: true,
+					connected: true,
+				},
+			] );
+
 			muteFetch(
 				new RegExp(
 					'^/google-site-kit/v1/modules/analytics-4/data/data-available'
