@@ -202,6 +202,7 @@ class Google_ProxyTest extends TestCase {
 				'return_uri'             => $this->context->admin_url( 'splash' ),
 				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
 				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
+				'intent_uri'             => $this->context->admin_url( 'dashboard' ),
 			),
 			$this->google_proxy->get_site_fields(),
 			'Site fields should contain all required site information.'
@@ -223,10 +224,137 @@ class Google_ProxyTest extends TestCase {
 					'v3',
 					add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) )
 				),
+				'intent_uri'             => $this->context->admin_url( 'dashboard' ),
 			),
 			$this->google_proxy->get_site_fields(),
 			'Site fields should contain all required site information.'
 		);
+	}
+
+	/**
+	 * @group ms-required
+	 */
+	public function test_get_site_fields__intent_uri_in_network_mode() {
+		if ( ! is_multisite() ) {
+			$this->markTestSkipped( 'This test only runs on multisite.' );
+		}
+
+		$this->network_activate_site_kit();
+		add_filter( 'googlesitekit_is_network_mode', '__return_true' );
+
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$google_proxy = new Google_Proxy( $context );
+		$site_fields  = $google_proxy->get_site_fields();
+
+		$this->assertEquals(
+			add_query_arg( 'page', 'googlesitekit-dashboard', network_admin_url( 'admin.php' ) ),
+			$site_fields['intent_uri'],
+			'The intent URI should point at the dashboard screen under the network admin.'
+		);
+	}
+
+	public function data_intent_requests() {
+		return array(
+			'get_intent'      => array(
+				'get_intent',
+				sprintf( Google_Proxy::INTENT_URI, 'ads-conversion-tracking' ),
+				true,
+			),
+			'complete_intent' => array(
+				'complete_intent',
+				sprintf( Google_Proxy::INTENT_COMPLETE_URI, 'ads-conversion-tracking' ),
+				true,
+			),
+			'pending_intent'  => array(
+				'get_pending_intent',
+				Google_Proxy::INTENT_PENDING_URI,
+				false,
+			),
+		);
+	}
+
+	/**
+	 * Calls one of the three intent methods, which differ only in whether they carry a code.
+	 *
+	 * @param string $method    Google_Proxy method name.
+	 * @param bool   $with_code Whether the method takes an intent ID and code.
+	 * @return array|WP_Error Method response.
+	 */
+	private function call_intent_method( $method, $with_code ) {
+		$credentials = new Credentials( new Options( $this->context ) );
+
+		if ( $with_code ) {
+			return $this->google_proxy->$method( $credentials, 'ads-conversion-tracking', 'abc123', 'test-access-token' );
+		}
+
+		return $this->google_proxy->$method( $credentials, 'test-access-token' );
+	}
+
+	/**
+	 * @dataProvider data_intent_requests
+	 */
+	public function test_intent_request( $method, $uri, $with_code ) {
+		list ( , $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url      = $this->google_proxy->url( $uri );
+		$expected_response = array( 'intent' => 'ads-conversion-tracking' );
+		$expected_body     = array(
+			'site_id'     => $site_id,
+			'site_secret' => $site_secret,
+		);
+
+		if ( $with_code ) {
+			$expected_body['code'] = 'abc123';
+		}
+
+		$this->mock_http_request( $expected_url, $expected_response );
+
+		$response = $this->call_intent_method( $method, $with_code );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'The request should go to the intent endpoint.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'The intent request should be a POST.' );
+		$this->assertEquals( 'Bearer test-access-token', $this->request_args['headers']['Authorization'], 'The intent request should carry the access token.' );
+		$this->assertEqualSetsWithIndex( $expected_body, $this->request_args['body'], 'The intent request body should carry the site credentials, and the code where there is one.' );
+		$this->assertEqualSetsWithIndex( $expected_response, $response, 'The intent method should return the decoded response body.' );
+	}
+
+	/**
+	 * @dataProvider data_intent_requests
+	 */
+	public function test_intent_request__without_credentials( $method, $uri, $with_code ) {
+		$requested = false;
+
+		add_filter(
+			'pre_http_request',
+			function ( $preempt ) use ( &$requested ) {
+				$requested = true;
+
+				return $preempt;
+			}
+		);
+
+		$response = $this->call_intent_method( $method, $with_code );
+
+		$this->assertWPError( $response, 'A site without credentials should get an error.' );
+		$this->assertEquals( 'oauth_credentials_not_exist', $response->get_error_code(), 'The error should name the missing credentials.' );
+		$this->assertFalse( $requested, 'A site without credentials should not reach the Service.' );
+	}
+
+	/**
+	 * @dataProvider data_intent_requests
+	 */
+	public function test_intent_request__with_a_failing_request( $method, $uri, $with_code ) {
+		$this->get_credentials();
+
+		$this->mock_http_failure(
+			$this->google_proxy->url( $uri ),
+			new WP_Error( 'http_request_failed', 'Service unreachable.' )
+		);
+
+		$response = $this->call_intent_method( $method, $with_code );
+
+		$this->assertWPError( $response, 'A failed request should come back as an error.' );
+		$this->assertEquals( 'http_request_failed', $response->get_error_code(), 'The error from the request should be passed through.' );
 	}
 
 	/**
@@ -387,6 +515,7 @@ class Google_ProxyTest extends TestCase {
 				'analytics_redirect_uri',
 				'application_name',
 				'hl',
+				'intent_uri',
 				'mode',
 				'name',
 				'nonce',
@@ -421,6 +550,7 @@ class Google_ProxyTest extends TestCase {
 				'analytics_redirect_uri',
 				'application_name',
 				'hl',
+				'intent_uri',
 				'mode',
 				'name',
 				'nonce',
