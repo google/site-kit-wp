@@ -32,7 +32,7 @@ import { GoalDriverRowMapper } from './types';
 /**
  * Reads a report row's metric value as a number.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} row   The report row.
  * @param {number} index The metric's index in `row.metricValues`. Defaults to the first metric.
@@ -54,7 +54,7 @@ export function parseMetricValue( row: ReportRow, index = 0 ): number {
  * percentage is a share of every event site-wide, so the caller fetches that
  * true total separately and passes it in as `explicitTotal`.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object[]} rows            Report rows, each expected to carry an `eventCount` in `metricValues[0]`.
  * @param {Function} getLabel        Maps a row to its display label.
@@ -94,7 +94,7 @@ interface ShareOfTotalLabelOptions {
  * Shared by `makeShareOfTotalMapper` and `makeShareOfExplicitTotalMapper`,
  * which differ only in what they divide by, not in how a row's label is read.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}   row                The report row.
  * @param {Object}   options            Options.
@@ -114,7 +114,7 @@ function resolveRowLabel(
 /**
  * Builds a share-of-total row mapper for a single-dimension driver.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}   [options]            Options.
  * @param {Function} [options.getLabel]   Maps the row's raw (non-empty) dimension value to its display label. Defaults to the raw value.
@@ -140,7 +140,7 @@ export function makeShareOfTotalMapper( {
  * caller fetches that total separately (see `buildGoalDriverTotalReportOptions`
  * in `reportOptionsHelpers.ts`) and passes the resolved count in here.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {number}   totalCount           The total to divide each row's `eventCount` by.
  * @param {Object}   [options]            Options.
@@ -166,7 +166,7 @@ export function makeShareOfExplicitTotalMapper(
 /**
  * Reads a site-wide total report's single row into a plain count.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      [totalReport]      The report `buildGoalDriverTotalReportOptions` requested.
  * @param {ReportRow[]} [totalReport.rows] The report's rows.

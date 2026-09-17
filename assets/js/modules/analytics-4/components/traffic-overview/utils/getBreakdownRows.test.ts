@@ -27,7 +27,7 @@ import { getBreakdownRows } from './getBreakdownRows';
  *
  * The visitors are strings, the way the API returns them.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.

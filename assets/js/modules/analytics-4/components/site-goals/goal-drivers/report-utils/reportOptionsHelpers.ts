@@ -39,7 +39,7 @@ import {
  * shared module, so without a context suffix their requests would all log
  * under one indistinguishable label.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} baseReportID The reportID identifying the kind of report.
  * @param {string} [context]    Identifies the caller. Omitted when not given.
@@ -63,7 +63,7 @@ export function withContextSuffix(
  * `topTrafficChannelsRate`) call this directly; `buildSingleDimensionReportOptionsBuilder`
  * is a thin wrapper over it for the common single-dimension case.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}          args                         Builder args.
  * @param {Object}          [args.dates]                 The date range.
@@ -142,7 +142,7 @@ export function buildRankedReportOptions( {
  * `eventCount` and differ only in the dimension name and whether "(not set)"
  * rows for that dimension are excluded.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string}  dimension               The Analytics 4 dimension name.
  * @param {string}  reportIDSuffix          Unique suffix for the report ID.
@@ -180,7 +180,7 @@ export function buildSingleDimensionReportOptionsBuilder(
  * with no dimension breakdown and no row limit - pair it with
  * `makeShareOfExplicitTotalMapper` (in `rowMapperHelpers.ts`).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}          args                   Builder args.
  * @param {Object}          [args.dates]           The date range.

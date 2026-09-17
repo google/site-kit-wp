@@ -3,92 +3,96 @@
 exports[`AdminBarWidgets should not render the Activate Analytics CTA when the Analytics module is not available 1`] = `
 <div>
   <div
-    class="mdc-layout-grid__inner googlesitekit-adminbar__widgets-row"
+    class="mdc-layout-grid__inner"
   >
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
+      class="googlesitekit-adminbar__widgets-pair"
     >
       <div
-        class="googlesitekit-data-block overview-total-impressions googlesitekit-data-block--default"
-        tabindex="-1"
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
       >
         <div
-          class="googlesitekit-data-block__title-datapoint-wrapper"
+          class="googlesitekit-data-block overview-total-impressions googlesitekit-data-block--default"
+          tabindex="-1"
         >
-          <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
-          >
-            <span
-              class="googlesitekit-data-block__title-inner"
-            >
-              Total Impressions
-            </span>
-          </h3>
           <div
-            class="googlesitekit-data-block__datapoint"
+            class="googlesitekit-data-block__title-datapoint-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__datapoint--resize"
+            <h3
+              class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
             >
-              4.6K
-            </span>
+              <span
+                class="googlesitekit-data-block__title-inner"
+              >
+                Total Impressions
+              </span>
+            </h3>
+            <div
+              class="googlesitekit-data-block__datapoint"
+            >
+              <span
+                class="googlesitekit-data-block__datapoint--resize"
+              >
+                4.6K
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="googlesitekit-data-block__change-source-wrapper"
-        >
           <div
-            class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+            class="googlesitekit-data-block__change-source-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__value"
+            <div
+              class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
             >
-              0%
-            </span>
+              <span
+                class="googlesitekit-data-block__value"
+              >
+                0%
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
-    >
       <div
-        class="googlesitekit-data-block overview-total-clicks googlesitekit-data-block--default"
-        tabindex="-1"
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-6-desktop mdc-layout-grid__cell--span-4-tablet mdc-layout-grid__cell--span-2-phone"
       >
         <div
-          class="googlesitekit-data-block__title-datapoint-wrapper"
+          class="googlesitekit-data-block overview-total-clicks googlesitekit-data-block--default"
+          tabindex="-1"
         >
-          <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
-          >
-            <span
-              class="googlesitekit-data-block__title-inner"
-            >
-              Total Clicks
-            </span>
-          </h3>
           <div
-            class="googlesitekit-data-block__datapoint"
+            class="googlesitekit-data-block__title-datapoint-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__datapoint--resize"
+            <h3
+              class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
             >
-              123
-            </span>
+              <span
+                class="googlesitekit-data-block__title-inner"
+              >
+                Total Clicks
+              </span>
+            </h3>
+            <div
+              class="googlesitekit-data-block__datapoint"
+            >
+              <span
+                class="googlesitekit-data-block__datapoint--resize"
+              >
+                123
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="googlesitekit-data-block__change-source-wrapper"
-        >
           <div
-            class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+            class="googlesitekit-data-block__change-source-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__value"
+            <div
+              class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
             >
-              0%
-            </span>
+              <span
+                class="googlesitekit-data-block__value"
+              >
+                0%
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -100,92 +104,96 @@ exports[`AdminBarWidgets should not render the Activate Analytics CTA when the A
 exports[`AdminBarWidgets should render the Admin Bar Widgets, including the Activate Analytics CTA 1`] = `
 <div>
   <div
-    class="mdc-layout-grid__inner googlesitekit-adminbar__widgets-row"
+    class="mdc-layout-grid__inner"
   >
     <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone"
+      class="googlesitekit-adminbar__widgets-pair"
     >
       <div
-        class="googlesitekit-data-block overview-total-impressions googlesitekit-data-block--default"
-        tabindex="-1"
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone"
       >
         <div
-          class="googlesitekit-data-block__title-datapoint-wrapper"
+          class="googlesitekit-data-block overview-total-impressions googlesitekit-data-block--default"
+          tabindex="-1"
         >
-          <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
-          >
-            <span
-              class="googlesitekit-data-block__title-inner"
-            >
-              Total Impressions
-            </span>
-          </h3>
           <div
-            class="googlesitekit-data-block__datapoint"
+            class="googlesitekit-data-block__title-datapoint-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__datapoint--resize"
+            <h3
+              class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
             >
-              4.6K
-            </span>
+              <span
+                class="googlesitekit-data-block__title-inner"
+              >
+                Total Impressions
+              </span>
+            </h3>
+            <div
+              class="googlesitekit-data-block__datapoint"
+            >
+              <span
+                class="googlesitekit-data-block__datapoint--resize"
+              >
+                4.6K
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="googlesitekit-data-block__change-source-wrapper"
-        >
           <div
-            class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+            class="googlesitekit-data-block__change-source-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__value"
+            <div
+              class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
             >
-              0%
-            </span>
+              <span
+                class="googlesitekit-data-block__value"
+              >
+                0%
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div
-      class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone"
-    >
       <div
-        class="googlesitekit-data-block overview-total-clicks googlesitekit-data-block--default"
-        tabindex="-1"
+        class="mdc-layout-grid__cell mdc-layout-grid__cell--span-3-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-2-phone"
       >
         <div
-          class="googlesitekit-data-block__title-datapoint-wrapper"
+          class="googlesitekit-data-block overview-total-clicks googlesitekit-data-block--default"
+          tabindex="-1"
         >
-          <h3
-            class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
-          >
-            <span
-              class="googlesitekit-data-block__title-inner"
-            >
-              Total Clicks
-            </span>
-          </h3>
           <div
-            class="googlesitekit-data-block__datapoint"
+            class="googlesitekit-data-block__title-datapoint-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__datapoint--resize"
+            <h3
+              class="googlesitekit-typography  googlesitekit-subheading-1 googlesitekit-data-block__title  googlesitekit-typography--title googlesitekit-typography--small"
             >
-              123
-            </span>
+              <span
+                class="googlesitekit-data-block__title-inner"
+              >
+                Total Clicks
+              </span>
+            </h3>
+            <div
+              class="googlesitekit-data-block__datapoint"
+            >
+              <span
+                class="googlesitekit-data-block__datapoint--resize"
+              >
+                123
+              </span>
+            </div>
           </div>
-        </div>
-        <div
-          class="googlesitekit-data-block__change-source-wrapper"
-        >
           <div
-            class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
+            class="googlesitekit-data-block__change-source-wrapper"
           >
-            <span
-              class="googlesitekit-data-block__value"
+            <div
+              class="googlesitekit-data-block__change googlesitekit-data-block__change--no-change"
             >
-              0%
-            </span>
+              <span
+                class="googlesitekit-data-block__value"
+              >
+                0%
+              </span>
+            </div>
           </div>
         </div>
       </div>

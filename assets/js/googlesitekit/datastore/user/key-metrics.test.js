@@ -20,6 +20,7 @@
 import { setUsingCache } from 'googlesitekit-api';
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
@@ -30,6 +31,7 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	muteFetch,
+	provideKeyMetrics,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -1146,6 +1148,127 @@ describe( 'core/user key metrics', () => {
 						.isKeyMetricAvailable( 'metricA' )
 				).toBe( true );
 				await waitForDefaultTimeouts();
+			} );
+		} );
+
+		describe( 'getSavedViewableMetrics', () => {
+			const SAVED_WIDGET_SLUGS = [
+				KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
+				KM_ANALYTICS_RETURNING_VISITORS,
+			];
+
+			beforeEach( () => {
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+					{
+						slug: MODULE_SLUG_ADSENSE,
+						active: true,
+						connected: true,
+						shareable: true,
+					},
+				] );
+				provideKeyMetricsWidgetRegistrations( registry, {
+					[ KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT ]: {
+						modules: [ MODULE_SLUG_ADSENSE ],
+					},
+					[ KM_ANALYTICS_RETURNING_VISITORS ]: {
+						modules: [ MODULE_SLUG_ANALYTICS_4 ],
+					},
+				} );
+			} );
+
+			it( 'should return an empty array while getKeyMetrics() has not resolved', () => {
+				muteFetch( coreKeyMetricsEndpointRegExp );
+
+				expect(
+					registry.select( CORE_USER ).getKeyMetrics()
+				).toBeUndefined();
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
+				).toEqual( [] );
+			} );
+
+			it( 'should drop a saved slug whose module is not shared with a view-only visitor', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': false,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+			} );
+
+			it( 'should keep saved slugs on a non-view-only dashboard, whether or not their widget has a displayInSelectionPanel gate', () => {
+				provideUserAuthentication( registry );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: false,
+					} )
+				).toEqual( SAVED_WIDGET_SLUGS );
+			} );
+
+			it( 'should drop a saved slug hidden by its displayInSelectionPanel gate on a view-only dashboard, even though its module is shared', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': true,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { adSenseLinked: false } );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( [ KM_ANALYTICS_RETURNING_VISITORS ] );
+			} );
+
+			it( 'should keep a saved slug whose displayInSelectionPanel gate passes on a view-only dashboard', () => {
+				provideUserAuthentication( registry, {
+					authenticated: false,
+				} );
+				registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+					'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+					'googlesitekit_read_shared_module_data::["adsense"]': true,
+				} );
+				provideKeyMetrics( registry, {
+					widgetSlugs: SAVED_WIDGET_SLUGS,
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( { adSenseLinked: true } );
+
+				expect(
+					registry.select( CORE_USER ).getSavedViewableMetrics( {
+						isViewOnlyDashboard: true,
+					} )
+				).toEqual( SAVED_WIDGET_SLUGS );
 			} );
 		} );
 	} );

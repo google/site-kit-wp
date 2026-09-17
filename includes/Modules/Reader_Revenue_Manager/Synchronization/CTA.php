@@ -16,7 +16,7 @@ use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta as WCP_C
 /**
  * Class for synchronizing CTA data with Reader Revenue Manager settings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ class CTA {
 	 *
 	 * Values must match `EXPRESS_SETUP_CTAS` in the JS datastore.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var array<string, string>
 	 */
 	const CTA_TYPE_SLUGS = array(
@@ -42,7 +42,7 @@ class CTA {
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -50,7 +50,7 @@ class CTA {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Settings $settings Reader Revenue Manager settings.
 	 */
@@ -61,7 +61,7 @@ class CTA {
 	/**
 	 * Synchronizes CTAs with the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param WCP_CTA[] $ctas WCP CTA objects.
 	 * @return void No return value.
@@ -90,7 +90,7 @@ class CTA {
 	/**
 	 * Gets the CTA ID from a WCP CTA resource name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param WCP_CTA $cta WCP CTA object.
 	 * @return string CTA ID, or an empty string if none can be determined.
@@ -111,7 +111,7 @@ class CTA {
 	/**
 	 * Reschedules CTA synchronization to run in one hour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return void No return value.
 	 */

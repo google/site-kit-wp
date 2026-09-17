@@ -271,9 +271,15 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                 role="tabpanel"
                 tabindex="0"
               >
-                <p>
-                  Feature Discovery Hub tab panel placeholder: What’s new?
-                </p>
+                <div
+                  class="googlesitekit-whats-new"
+                >
+                  <p
+                    class="googlesitekit-whats-new__empty-state"
+                  >
+                    Feature Discovery Hub tab panel placeholder: nothing new to show.
+                  </p>
+                </div>
               </div>
             </div>
           </div>

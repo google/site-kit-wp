@@ -200,7 +200,7 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
  * returns `undefined` until the Site Goals settings and the detected events
  * have loaded.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} goalType The widget's goal type, one of `GOAL_TYPES`.
  * @return {Function} Condition that takes the registry `select` and returns whether the widget renders.

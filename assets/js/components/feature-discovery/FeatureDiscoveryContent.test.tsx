@@ -19,54 +19,65 @@
 /**
  * Internal dependencies
  */
-import { render } from '@tests/js/test-utils';
+import { Registry } from '@/js/googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
+const ALL_SERVICES_PLACEHOLDER =
+	'Feature Discovery Hub tab panel placeholder: All services and features';
+
+const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
+
 describe( 'FeatureDiscoveryContent', () => {
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+
+		// The What’s new? tab reads the user's newness state, which is left
+		// empty here so that no feature is listed.
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( '1.186.0' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+	} );
+
 	it( 'should render only the tab panel content for /all-services', () => {
-		const { getByText, queryByText } = render(
-			<FeatureDiscoveryContent />,
-			{
-				route: '/all-services',
-			}
-		);
+		const { container, getByText } = render( <FeatureDiscoveryContent />, {
+			registry,
+			route: '/all-services',
+		} );
+
+		expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
 
 		expect(
-			getByText(
-				'Feature Discovery Hub tab panel placeholder: All services and features'
-			)
-		).toBeInTheDocument();
-
-		expect(
-			queryByText(
-				'Feature Discovery Hub tab panel placeholder: What’s new?'
-			)
+			container.querySelector( WHATS_NEW_SELECTOR )
 		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render only the tab panel content for /whats-new', () => {
-		const { getByText, queryByText } = render(
+		const { container, queryByText } = render(
 			<FeatureDiscoveryContent />,
 			{
+				registry,
 				route: '/whats-new',
 			}
 		);
 
 		expect(
-			getByText(
-				'Feature Discovery Hub tab panel placeholder: What’s new?'
-			)
+			container.querySelector( WHATS_NEW_SELECTOR )
 		).toBeInTheDocument();
 
 		expect(
-			queryByText(
-				'Feature Discovery Hub tab panel placeholder: All services and features'
-			)
+			queryByText( ALL_SERVICES_PLACEHOLDER )
 		).not.toBeInTheDocument();
 	} );
 
 	it( 'should redirect base path to /whats-new', () => {
-		const { getByText, history } = render( <FeatureDiscoveryContent />, {
+		const { container, history } = render( <FeatureDiscoveryContent />, {
+			registry,
 			route: '/',
 		} );
 
@@ -74,14 +85,13 @@ describe( 'FeatureDiscoveryContent', () => {
 		expect( history.action ).toBe( 'REPLACE' );
 
 		expect(
-			getByText(
-				'Feature Discovery Hub tab panel placeholder: What’s new?'
-			)
+			container.querySelector( WHATS_NEW_SELECTOR )
 		).toBeInTheDocument();
 	} );
 
 	it( 'should redirect unknown paths to /whats-new', () => {
-		const { getByText, history } = render( <FeatureDiscoveryContent />, {
+		const { container, history } = render( <FeatureDiscoveryContent />, {
+			registry,
 			route: '/unknown',
 		} );
 
@@ -89,9 +99,7 @@ describe( 'FeatureDiscoveryContent', () => {
 		expect( history.action ).toBe( 'REPLACE' );
 
 		expect(
-			getByText(
-				'Feature Discovery Hub tab panel placeholder: What’s new?'
-			)
+			container.querySelector( WHATS_NEW_SELECTOR )
 		).toBeInTheDocument();
 	} );
 } );
