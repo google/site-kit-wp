@@ -14,6 +14,8 @@ The datapoint takes no URL parameter. The analysis is a whole-site one, so there
 
 This issue wires the request: where the datapoint is registered, what it accepts, who may call it, what it returns and how it fails. Running the reports and deriving the response is separate work — see #13595. The format the response is encoded in comes from #13593, and making the datapoint answer a shared request is #13597.
 
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -31,11 +33,40 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `includes/Modules/Analytics_4/Datapoints/Get_Benchmarking_Data.php` (new file):
+  * Add `Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint`, taking `module`, `settings` and `context` through its `$definition` array, following `Get_Batch_Report`.
+  * `create_request( Data_Request $data )` reads `startDate` and `endDate` and nothing else from the request. It throws `Missing_Required_Param_Exception` for either one that is empty, the way `Batch_Search_Analytics::create_request()` does, which gives HTTP `400`.
+  * It returns a `WP_Error` with the code `invalid_param` and the status `400` when either date does not match `YYYY-MM-DD`, or when `startDate` is later than `endDate`. Check the format with a regular expression and `checkdate()`, so `2026-13-45` is rejected rather than parsed.
+  * On valid dates it returns a closure. The closure calls `Response_Builder::build( $start_date, $end_date )`, returns that value unchanged when it is a `WP_Error`, and otherwise returns `Response_Encoder::encode()` over it.
+  * `parse_response()` returns the response unchanged.
+  * `permission_callback()` returns `current_user_can( Permissions::VIEW_DASHBOARD )`, following `Get_Form_Metadata`. Do not use `VIEW_AUTHENTICATED_DASHBOARD`: a view-only reader has to reach this datapoint.
+  * The datapoint declares no scopes of its own and takes no `url` parameter.
+
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Builder.php` (new file):
+  * Add `Response_Builder` with a constructor taking the module instance and `Context`, and one public method, `build( $start_date, $end_date )`, returning the four response fields — `visitors`, `dailyTraffic`, `dimensions` and `contextualData` — or a `WP_Error` from a failed report.
+  * The reports and the arithmetic behind the four fields are #13595. This issue adds the class and wires the datapoint to it, so that the parameter, permission and failure behavior above is reachable end to end.
+
+* [ ] In `includes/Modules/Analytics_4.php`:
+  * Add `GET:benchmarking-data` to `get_datapoint_definitions()`, inside an `if ( Feature_Flags::enabled( 'typicalTraffic' ) )` block, following how `Reader_Revenue_Manager::get_datapoint_definitions()` adds its datapoints under `rrmExpressSetup`.
+  * Pass the datapoint `'service' => function () { return $this->get_service( 'analyticsdata' ); }`, `'settings' => $this->get_settings()` and `'context' => $this->context`.
+  * Nothing is written to the site while the response is assembled: the builder reads reports and returns an array, and no option, transient or post meta is touched.
+
+The format the response is encoded in comes from #13593. Making the datapoint answer a shared request is #13597.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Add `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php` covering:
+  * With `typicalTraffic` enabled, a `GET` to `/google-site-kit/v1/modules/analytics-4/data/benchmarking-data` with `startDate=2026-08-19` and `endDate=2026-09-15` returns `200` and the encoded response.
+  * With the flag off, the same request returns `400` with the code `invalid_datapoint`, and the builder is never called.
+  * A request missing `startDate`, a request missing `endDate`, a request whose dates are not `YYYY-MM-DD`, and a request whose `startDate` is later than its `endDate` each return `400` with no report run.
+  * Two requests with the same two dates and a different third query parameter return the same response.
+  * A user who can view the dashboard reaches the datapoint; a user who cannot gets `403` with no report run.
+  * A `WP_Error` from the builder is returned with its own code and status, and no partial response beside it.
+  * Two identical requests each run their reports, and neither adds or changes an option or a transient.
+* Extend `tests/phpunit/integration/Modules/Analytics_4Test.php` covering:
+  * `get_datapoints()` names `benchmarking-data` with `typicalTraffic` enabled and does not name it with the flag off.
+* No Storybook story is required, because the change adds no UI.
+* No VRT changes expected.
 
 ## QA Brief
 

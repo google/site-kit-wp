@@ -18,6 +18,8 @@ Both allow-list changes sit outside the `typicalTraffic` flag. They are single e
 
 The datapoint itself comes from #13594, and the search-query rows that a Search Console share decides the fate of come from #13596.
 
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -36,11 +38,36 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `includes/Modules/Analytics_4/Report/RequestHelpers.php`:
+  * Add `sessionSource` to the default array `validate_shared_dimensions()` passes through the `googlesitekit_shareable_analytics_4_dimensions` filter, beside `sessionDefaultChannelGrouping`.
+  * Leave the addition outside any feature-flag check.
+
+* [ ] In `includes/Modules/Analytics_4/Settings.php`:
+  * Add `propertyCreateTime` to the array `get_view_only_keys()` returns.
+  * Leave this addition outside any feature-flag check too.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart.tsx`:
+  * Remove the `useViewOnly()` call and the branch in the `propertyCreateTime` selector that returns `undefined` on a view-only dashboard, so the selector is read the same way for every reader. The value now reaches a view-only reader through the shared settings, and the property-creation marker draws for them.
+  * Remove the `useViewOnly` import if nothing else in the file uses it.
+
+* [ ] `GET:benchmarking-data` needs no further change to answer a shared request: #13594 adds it as a `Shareable_Datapoint`, and `Module::get_oauth_client_for_datapoint()` resolves the owner's client for the nested `GET:batch-report` dispatch, because that datapoint is shareable too.
+
+The datapoint itself is #13594, and the search-query rows that a Search Console share decides the fate of are #13596.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Extend `tests/phpunit/integration/Modules/Analytics_4/Report/RequestHelpersTest.php` covering:
+  * A shared report requesting `sessionSource` is accepted, with and without `typicalTraffic` enabled.
+* Extend `tests/phpunit/integration/Modules/Analytics_4/SettingsTest.php` covering:
+  * `get_view_only_keys()` names `propertyCreateTime`, with and without `typicalTraffic` enabled.
+* Add cases to `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php` covering:
+  * Dispatched as a view-only user whose role has Analytics shared, the datapoint runs its reports under the module owner's client and returns the same response an authenticated request returns.
+  * With Analytics shared and Search Console not shared, the response carries no `searchQueries` key, `SEARCH_QUERIES` is absent from `dimensions`, and every other dimension is present.
+  * A reader who cannot view the dashboard gets `403` with no report run.
+* Update `assets/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart.test.tsx`:
+  * Replace the `draws no marker on a view-only dashboard` case with one asserting that a view-only reader whose settings carry `propertyCreateTime` sees the marker and its screen-reader sentence, and keep a case showing that a reader whose settings carry no creation time still sees no marker.
+* No Storybook story is required. `TrafficOverviewWidget.stories.tsx` already stores a creation time before the selected range, so its rendering does not change.
+* No VRT changes expected.
 
 ## QA Brief
 

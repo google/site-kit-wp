@@ -16,6 +16,8 @@ The widget opens on Traffic Overview every time. Nothing remembers which tab a r
 
 The panel's contents come from #13600 and #13601, and its loading and error states from #13602. The tab's data is read through the slice in #13598.
 
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -37,11 +39,61 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/constants.ts`:
+  * Add `TYPICAL_TRAFFIC_TAB_ID`, set to `googlesitekit-typical-traffic-tab`, following `TRAFFIC_OVERVIEW_TAB_ID`.
+  * Add `TYPICAL_TRAFFIC_MINIMUM_PROPERTY_AGE_MONTHS`, set to `13`.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficEligibilityDate.ts` (new file):
+  * Export `getTypicalTrafficEligibilityDate( referenceDate: string ): string`, returning the day `TYPICAL_TRAFFIC_MINIMUM_PROPERTY_AGE_MONTHS` calendar months before `referenceDate`, as `YYYY-MM-DD`.
+  * Subtract the months from the year and month, then clamp the day to the last day of the month it lands in, rather than calling `setMonth()` on a `Date` — `setMonth()` rolls `2026-03-31` back to early March instead of the end of February.
+  * Build and read the date with `stringToDate` and `getDateString` from `@/js/util`, so no local time zone moves the day.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab.ts` (new file):
+  * Export `useHasTypicalTrafficTab(): boolean`, returning `true` only when all three hold: `useFeature( 'typicalTraffic' )` is `true`; `useViewContext()` is `VIEW_CONTEXT_MAIN_DASHBOARD` or `VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY`; and the property's creation day is on or before `getTypicalTrafficEligibilityDate( getReferenceDate() )`.
+  * Read the creation time with `select( MODULES_ANALYTICS_4 ).getPropertyCreateTime()` and the reference day with `select( CORE_USER ).getReferenceDate()`. Turn the creation time into a `YYYY-MM-DD` day the way `TrafficChart` does, then compare the two day strings directly.
+  * Return `false` while `getPropertyCreateTime()` is `undefined`, so the tab appears once rather than appearing and disappearing while the settings resolve.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel.tsx` (new file):
+  * Render a `div` with the class `googlesitekit-traffic-overview__panel`, `role="tabpanel"` and `aria-labelledby={ TYPICAL_TRAFFIC_TAB_ID }`, following `TrafficOverviewPanel`.
+  * Call `useBenchmarkingData()` and pass its values down. The panel is the only part of the tab that touches the data store.
+  * The chart is #13600, the factor blocks are #13601, and the loading and error states are #13602. This issue renders the panel and its request and nothing inside it.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingData.ts` (new file):
+  * Export `useBenchmarkingData()`, reading `startDate` and `endDate` from `select( CORE_USER ).getDateRangeDates()` and returning `{ response, loading, error }` from `getBenchmarkingData( startDate, endDate )`, `isLoadingBenchmarkingData( startDate, endDate )` and `getErrorForSelector( 'getBenchmarkingData', [ startDate, endDate ] )` on `MODULES_ANALYTICS_4`, following `useTrafficOverviewReports`.
+  * Return `startDate` and `endDate` as well, so the panel can pass them to `clearBenchmarkingData` in #13602.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget.tsx`:
+  * Replace the module-level `TABS` constant with a list built inside the component with `useMemo`: the Traffic Overview descriptor always, and the Typical Traffic descriptor after it when `useHasTypicalTrafficTab()` is `true`. Its `label` is `Typical traffic`, its `id` is `TYPICAL_TRAFFIC_TAB_ID`, and its `PanelComponent` is `TypicalTrafficPanel`.
+  * Leave the active-tab state as it is: it starts at `TRAFFIC_OVERVIEW_TAB_ID` on every mount, nothing persists a reader's choice, and the existing `?? TABS[ 0 ]` fallback covers a selected tab that leaves the list.
+  * Leave the footer as it is. The widget keeps `TrafficOverviewSourceLink` on both tabs.
+  * Only the selected tab's panel is rendered, which is what keeps `GET:benchmarking-data` unsent until a reader selects the tab. Do not render both panels and hide one.
+  * Add no notification, tour step, badge or dismissible message anywhere for the new tab.
+
+* [ ] In `assets/sass/widgets/_googlesitekit-widget-analyticsTrafficOverview.scss`:
+  * Add the styles the Typical Traffic panel needs, per the design, beside the existing `.googlesitekit-traffic-overview__panel` rules. The file is already imported from `assets/sass/admin.scss`.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Add `assets/js/modules/analytics-4/components/traffic-overview/utils/getTypicalTrafficEligibilityDate.test.ts` covering:
+  * A reference day in the middle of a month returns the same day thirteen months earlier.
+  * A reference day of `2026-03-31` returns `2025-02-28`, and `2028-03-31` returns `2027-02-28`, rather than rolling into March.
+  * A reference day in January returns a day in the previous year's December.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/hooks/useHasTypicalTrafficTab.test.ts` covering:
+  * `true` with the feature on, the main dashboard view context and a property older than thirteen months.
+  * `false` with the feature off, `false` on the entity dashboard, and `false` on a property younger than thirteen months.
+  * `true` on the view-only main dashboard when the shared settings carry the creation time.
+  * `true` for a property created exactly thirteen months before the reference date, and `false` for one created thirteen months ago less one day.
+  * `false` while the creation time is `undefined`.
+* Extend `assets/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget.test.tsx` covering:
+  * Both tabs render in order, `Traffic overview` first, when the gate passes, and `Traffic overview` is selected on mount.
+  * Selecting `Typical traffic` swaps in the Typical Traffic panel, and selecting `Traffic overview` swaps it back.
+  * With `Traffic overview` selected, no request to `GET:benchmarking-data` is made.
+  * The panel is a `tabpanel` whose `aria-labelledby` points at the Typical Traffic tab, so a screen reader announces `Typical traffic`.
+  * Where the gate does not pass, the widget renders one tab, the Traffic Overview panel and the same footer link.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingData.test.ts` covering:
+  * The hook requests the selected range's two dates and returns the decoded response, the loading flag and the error.
+* Extend `assets/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget.stories.tsx` with a `Typical Traffic` story: the gate passing, `provideBenchmarkingData` seeding the response, and the second tab selected. Give it a `scenario` with a `readySelector`, as `MainDashboard` has.
+* The new story adds a Backstop scenario and needs a new reference image. The existing `Main Dashboard` and `Entity Dashboard` references do not move, because neither shows the second tab.
 
 ## QA Brief
 

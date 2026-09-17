@@ -16,6 +16,8 @@ The callback is added only when the `typicalTraffic` flag is enabled. Search Con
 
 The scoring, ranking and capping the search-query rows are put through are the ones specified in #13595. Making the search-query rows reach a view-only reader is #13597.
 
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -36,11 +38,74 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Builder.php`:
+  * Apply the filter after the Analytics dimensions have been built and before anything is scored, so that contributed rows go through the same scoring, ranking and cap of `MAX_ROWS_PER_DIMENSION` as derived rows:
+
+    ```php
+    $contextual_data = apply_filters(
+        'googlesitekit_benchmarking_contextual_data',
+        $contextual_data,
+        array(
+            'start_date'         => $start_date,
+            'end_date'           => $end_date,
+            'compare_start_date' => $compare_start_date,
+            'compare_end_date'   => $compare_end_date,
+            'row_limit'          => Report_Options::REPORT_ROW_LIMIT,
+        )
+    );
+    ```
+  * Pass what comes back through `Contextual_Data_Validator::validate()` before anything else reads it. Never forward a callback's value straight into the response.
+  * Wrap the `apply_filters()` call in a `try`/`catch` over `\Throwable`, and on a throw keep the contextual data the builder held before the call. A callback that throws costs the keys it would have added and leaves every other key in place.
+  * Treat a filtered value that is not an array the same way: keep the contextual data the builder held before the call.
+  * Add a PHPDoc block above the `apply_filters()` call documenting the filter, its two arguments and the row shape each key declares, so the extension point is readable from the file that owns it.
+
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Contextual_Data_Validator.php` (new file):
+  * Add `Contextual_Data_Validator` with one public method, `validate( $contextual_data )`, returning a contextual-data array that carries only keys and rows the response defines.
+  * Drop any key that is not one of the values in `Wire_Format::CONTEXTUAL_DATA_KEYS`, and drop a key whose value is not a list of arrays.
+  * Check each row against the fields its key declares — `label`, `current` and `previous` for `channels`, `devices`, `visitorMix`, `referrers` and `categories`; those five plus `positionCurrent` and `positionPrevious` for `searchQueries`; `url`, `title`, `visitors` and `publishedDaysAgo` for `content`. Drop a row that is missing a declared field, and drop a row whose numeric field is neither a number nor a numeric string. Keep the remaining rows of that key.
+  * Cast every numeric field that survives with `(int)`, except `positionCurrent` and `positionPrevious`, which are cast with `(float)`. No string from a callback reaches the response in a field the response declares as a count or a position.
+  * Cast every string field with `(string)` and drop any field the row carries that its key does not declare.
+
+* [ ] In `includes/Modules/Search_Console/Benchmarking/Report_Options.php` (new file):
+  * Add `Report_Options`, following `Search_Console\Email_Reporting\Report_Options`, with a constructor taking the four dates and the row limit, and one method returning the two `searchanalytics` request payloads — one per window — each with `dimensions` set to `query` and `rowLimit` set to the row limit the filter passed.
+
+* [ ] In `includes/Modules/Search_Console/Benchmarking/Report_Data_Builder.php` (new file):
+  * Add `Report_Data_Builder` alongside the `Email_Reporting` one, with one public method, `build_search_query_rows( array $args )`, taking the filter's second argument and returning the `searchQueries` rows, or an empty array.
+  * Run the two requests through `$module->set_data( 'searchanalytics-batch', array( 'requests' => $requests ) )`, following `Email_Reporting_Data_Requests::collect_search_console_payloads()`.
+  * Pair the two windows by the query string: a row holds `label` (the query), `current` and `previous` (its clicks in each window), and `positionCurrent` and `positionPrevious` (its average position in each). A query present in one window only takes `0` clicks and a `null` position for the window it is missing from.
+  * Return an empty array on a `WP_Error` from the batch call, and on a batch response that carries no rows.
+
+* [ ] In `includes/Modules/Search_Console.php`:
+  * In `register()`, add the `googlesitekit_benchmarking_contextual_data` callback inside an `if ( Feature_Flags::enabled( 'typicalTraffic' ) )` block, with `10` as the priority and `2` as the accepted argument count.
+  * The callback returns the contextual data untouched when `$this->get_property_id()` is empty. `Search_Console::is_connected()` is not the gate here: it returns `true` unconditionally, and the property setting is what decides whether the module has anything to report — the same check `googlesitekit_setup_complete` already makes.
+  * Otherwise it builds the rows with `Report_Data_Builder` and adds them under the `searchQueries` key. It adds no key when the builder returns an empty array.
+  * Wrap the body in a `try`/`catch` over `\Throwable` and return the contextual data it received on a throw, so a failure here never ends the Analytics request.
+
+The scoring, ranking and capping these rows go through are set in #13595. Making them reach a view-only reader is #13597.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Contextual_Data_ValidatorTest.php` covering:
+  * A key the response does not define is dropped, and the rest of what the callback returned is kept.
+  * A row missing a declared field is dropped and the remaining rows of that key are kept.
+  * A row whose count is a non-numeric string is dropped; a row whose count is the numeric string `"12"` is kept and stored as the number `12`.
+  * A `searchQueries` row's positions survive as floats, and every other numeric field survives as an integer.
+  * A value that is not an array, and a key whose value is not a list of rows, each produce no key.
+* Extend `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php` covering:
+  * The filter runs with the contextual data gathered so far and a second argument holding `start_date`, `end_date`, `compare_start_date`, `compare_end_date` and `row_limit`.
+  * A callback returning 40 valid rows has them ranked and cut to five, and `SEARCH_QUERIES` takes its place in `dimensions` by the sum of those rows' scores.
+  * A callback that throws, returns a non-array, or returns nothing leaves every key another callback or an Analytics report contributed present and unchanged, and the request still succeeds.
+* Add `tests/phpunit/integration/Modules/Search_Console/Benchmarking/Report_Data_BuilderTest.php` covering:
+  * Two windows of `searchanalytics` rows pair by query into rows carrying clicks and average position for each window.
+  * A query returned in one window only takes `0` clicks and a `null` position for the other.
+  * A `WP_Error` from the batch call gives an empty array.
+* Extend `tests/phpunit/integration/Modules/Search_ConsoleTest.php` covering:
+  * With `typicalTraffic` enabled and a property set, the filter adds a `searchQueries` key.
+  * With the flag off, no callback is added and the filter carries no search-query rows.
+  * With no property set, the filter returns what it received and the response carries no `searchQueries` key, with every other dimension unchanged.
+  * A failing Search Console report costs only the `searchQueries` key: the benchmarking request still returns `200` and `SEARCH_QUERIES` is absent from `dimensions`.
+* No Storybook story is required, because the change adds no UI.
+* No VRT changes expected.
 
 ## QA Brief
 

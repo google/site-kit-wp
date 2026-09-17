@@ -16,6 +16,8 @@ Seven dimensions can appear. Each one is looked up in a catalog that says what i
 
 The response these blocks read comes from #13598; the ranking and the row caps are set in #13595; the panel the blocks sit in is #13599.
 
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -49,11 +51,78 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/registry.ts` (new file), following `breakdown/columns.ts`:
+  * Export `KeyFactorEntry`, an interface with `heading` (the block's title, a translated string), `contextualDataKey` (the key in `contextualData` its rows come from) and `RowsComponent` (the component that draws them).
+  * Export `KEY_FACTOR_REGISTRY`, a `Record< BenchmarkingDimensionCode, KeyFactorEntry >` with one entry per code:
+
+    | Code | `contextualDataKey` | `RowsComponent` |
+    | :---- | :---- | :---- |
+    | `CHANNELS` | `channels` | `ValueFactorRows` |
+    | `DEVICES` | `devices` | `ValueFactorRows` |
+    | `VISITOR_MIX` | `visitorMix` | `ValueFactorRows` |
+    | `REFERRERS` | `referrers` | `ValueFactorRows` |
+    | `SEARCH_QUERIES` | `searchQueries` | `SearchQueryFactorRows` |
+    | `CONTENT` | `content` | `ContentFactorRows` |
+    | `CATEGORIES` | `categories` | `ValueFactorRows` |
+  * Take each heading from the acceptance criteria's wording for the dimension, wrapped in `__()`.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors.tsx` (new file):
+  * Props: `dimensions`, the codes in the order the response gave them, and `contextualData`, the rows keyed by dimension. The component derives nothing and reads no store.
+  * Walk `dimensions` in order. Skip a code with no entry in `KEY_FACTOR_REGISTRY`, and skip a code whose `contextualDataKey` is absent from `contextualData` or holds no rows. Both rules live here, so a component never has to handle a missing key.
+  * Render one `FactorSection` per surviving code, in the order walked.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/FactorSection.tsx` (new file):
+  * Render a `section` with `aria-labelledby` pointing at its own heading, built with `useInstanceId`, following `TrafficBreakdownColumn`. Render the heading, then the entry's `RowsComponent` with the rows.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/ValueFactorRows.tsx` (new file):
+  * Render one row per `{ label, current, previous }`: the label exactly as the response gave it, `numFmt( current )` for its visitors, and a `ChangeBadge` with `previousValue={ previous }` and `currentValue={ current }`.
+  * Render the label as its own element. Never build a translated sentence around it with `sprintf`: Analytics returns channel, device and category names in the property's own language, not the reader's.
+  * Beside the badge, render a `VisuallyHidden` sentence saying whether the value rose or fell and by how much, so the direction does not depend on the badge's colour.
+  * Key each row by its position in the array, following `TrafficBreakdownColumn`, because nothing reorders and two rows can carry the same label.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/SearchQueryFactorRows.tsx` (new file):
+  * Render one row per `{ label, current, previous, positionCurrent, positionPrevious }`: the query, `numFmt( current )` for its clicks, a `ChangeBadge` over `previous` and `current` for the change in clicks, and `PositionChange` for the average position.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/PositionChange.tsx` (new file):
+  * Props: `positionCurrent` and `positionPrevious`, both numbers or `null`.
+  * Render the current average position with `numFmt( positionCurrent, { maximumFractionDigits: 1 } )`, and the difference `positionCurrent - positionPrevious` with `numFmt( difference, { signDisplay: 'exceptZero', maximumFractionDigits: 1 } )`.
+  * A lower position is better, so style a difference below `0` as an improvement and one above `0` as a decline — the opposite of every other change in the tab. Do not use `ChangeBadge` here: it formats its value as a percentage, which a position difference is not.
+  * Render a `VisuallyHidden` sentence saying the position improved or declined, and by how much, so which way is better does not depend on the colour.
+  * Render nothing when either position is `null`.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/factors/ContentFactorRows.tsx` (new file):
+  * Render one row per `{ url, title, visitors, publishedDaysAgo }`: the page title, `numFmt( visitors )` for its visitors, and how long ago the page was published, built with `_n()` over `publishedDaysAgo` so the plural form is the reader's.
+  * Fall back to the `url` when `title` is `null`.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel.tsx`:
+  * Render `KeyFactors` below the chart, with the decoded `dimensions` and `contextualData`.
+
+* [ ] In `assets/sass/widgets/_googlesitekit-widget-analyticsTrafficOverview.scss`:
+  * Style the Key factors blocks and their rows per the design.
+  * Truncate a row's label with `overflow: hidden`, `text-overflow: ellipsis` and `white-space: nowrap`, and set no `direction` on the label. The browser then truncates at the label's own logical end, so a right-to-left title loses its left side rather than its right.
+
+The response these blocks read comes from #13598, the ranking and the row caps are set in #13595, and the panel the blocks sit in is #13599.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Add `assets/js/modules/analytics-4/components/traffic-overview/factors/KeyFactors.test.tsx` covering:
+  * One block per dimension the response names, in the response's order, and no block for a dimension it does not name.
+  * A dimension code the registry does not know renders no block, and every other block renders.
+  * A dimension named in `dimensions` whose `contextualData` key is missing renders no block, and every other block renders.
+  * Each block is a labelled region whose accessible name is its heading.
+  * A block renders every row the response carried, up to five.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/factors/ValueFactorRows.test.tsx` covering:
+  * A row shows its label unchanged, its visitors and its change.
+  * The direction of the change is in the text a screen reader reads, not only in the badge's colour.
+  * A row with `0` visitors in both periods shows `0` and its change rather than being hidden.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/factors/PositionChange.test.tsx` covering:
+  * A move from `8.4` to `5.1` is shown as an improvement, and a move from `5.1` to `8.4` as a decline.
+  * The screen-reader sentence says which way is better in both cases.
+  * Nothing renders when either position is `null`.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/factors/ContentFactorRows.test.tsx` covering:
+  * A row shows its title, its visitors and how long ago the page was published, and falls back to the URL when the title is `null`.
+* Add `KeyFactors.stories.tsx` with stories for the full set of seven blocks, a response whose first dimension is `CONTENT`, and a response carrying only `CHANNELS`. Give each a `scenario`.
+* Each new story adds a Backstop scenario and needs a new reference image. Existing references do not move, because nothing outside the new tab changes.
 
 ## QA Brief
 
