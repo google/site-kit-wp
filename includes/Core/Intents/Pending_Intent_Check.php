@@ -157,8 +157,8 @@ class Pending_Intent_Check {
 			$this->context->admin_url(
 				'dashboard',
 				array(
-					'intent'      => rawurlencode( $intent ),
-					'intent_code' => rawurlencode( $code ),
+					'intent'      => $intent,
+					'intent_code' => $code,
 				)
 			)
 		);

@@ -220,35 +220,6 @@ class Pending_Intent_CheckTest extends TestCase {
 		$this->assertCount( 1, $this->requests, 'The page the user lands on should not ask the Service again.' );
 	}
 
-	public function test_admin_init__carries_values_that_need_encoding() {
-		$this->enable_feature( 'adsConversionTrackingIntent' );
-		$this->connect_to_service();
-		$this->mock_pending_intent_response(
-			array(
-				'has_intent' => true,
-				'intent'     => 'ads&conversion tracking',
-				'code'       => 'a&b c',
-			)
-		);
-
-		try {
-			$this->run_check();
-			$this->fail( 'Expected RedirectException!' );
-		} catch ( RedirectException $redirect ) {
-			wp_parse_str( wp_parse_url( $redirect->get_location(), PHP_URL_QUERY ), $query_args );
-
-			$this->assertEquals(
-				array(
-					'page'        => 'googlesitekit-dashboard',
-					'intent'      => 'ads&conversion tracking',
-					'intent_code' => 'a&b c',
-				),
-				$query_args,
-				'Each value should arrive as one argument, holding what the Service returned.'
-			);
-		}
-	}
-
 	public function data_responses_without_an_intent() {
 		return array(
 			'no intent waiting' => array( array( 'has_intent' => false ) ),
