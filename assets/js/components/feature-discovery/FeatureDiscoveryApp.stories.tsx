@@ -67,7 +67,7 @@ AllServices.parameters = { route: '/all-services' };
 AllServices.scenario = {};
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
-WhatsNewUnread.storyName = 'What’s new?, unread features';
+WhatsNewUnread.storyName = '"What’s new" unread features';
 WhatsNewUnread.parameters = { route: '/whats-new' };
 WhatsNewUnread.args = {
 	setupRegistry: ( registry: Registry ) => {
@@ -78,7 +78,7 @@ WhatsNewUnread.args = {
 WhatsNewUnread.scenario = {};
 
 export const WhatsNewSeen = Template.bind( {} ) as Story< StoryArgs >;
-WhatsNewSeen.storyName = 'What’s new?, seen features';
+WhatsNewSeen.storyName = '"What’s new" seen features';
 WhatsNewSeen.parameters = { route: '/whats-new' };
 WhatsNewSeen.args = {
 	setupRegistry: ( registry: Registry ) => {
@@ -89,7 +89,7 @@ WhatsNewSeen.args = {
 WhatsNewSeen.scenario = {};
 
 export const WhatsNewEmpty = Template.bind( {} ) as Story< StoryArgs >;
-WhatsNewEmpty.storyName = 'What’s new?, no features';
+WhatsNewEmpty.storyName = '"What’s new" no features';
 WhatsNewEmpty.parameters = { route: '/whats-new' };
 WhatsNewEmpty.args = {
 	setupRegistry: ( registry: Registry ) => {
@@ -99,7 +99,7 @@ WhatsNewEmpty.args = {
 // TODO: #13327 -- Enable the VRT scenario once the empty tab's CTA lands.
 
 export default {
-	title: 'Components/FeatureDiscovery/FeatureDiscoveryApp',
+	title: 'Components/Feature Discovery/FeatureDiscoveryApp',
 	component: FeatureDiscoveryApp,
 	parameters: { padding: 0, features: [ 'featureDiscoveryHub' ] },
 };
