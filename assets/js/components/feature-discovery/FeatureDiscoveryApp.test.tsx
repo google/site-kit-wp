@@ -44,6 +44,11 @@ function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+	// The What’s new? tab reads the user's newness state, which is left empty
+	// here so that no feature is listed.
+	registry.dispatch( CORE_USER ).receiveInitialSiteKitVersion( '1.186.0' );
+	registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 }
 
 describe( 'FeatureDiscoveryApp', () => {
