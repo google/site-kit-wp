@@ -25,7 +25,7 @@ import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/da
 /**
  * Returns a function that checks if the module reported any compatibility check errors.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @return {function(Registry): Promise<boolean>} Whether at least one compatibility check error was reported or not.
  */

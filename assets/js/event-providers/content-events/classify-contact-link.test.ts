@@ -27,7 +27,7 @@ import classifyContactLink, {
 /**
  * Classifies an href through a parsed URL, the way the listener does.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} href Link address to classify.
  * @return {string|null} The resolved `link_type`, or `null`.

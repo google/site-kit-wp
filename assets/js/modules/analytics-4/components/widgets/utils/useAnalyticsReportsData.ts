@@ -61,7 +61,7 @@ export interface UseAnalyticsReportsDataResult {
  * (`SalesEngagementRateWidget` gates on a separately-selected primary event,
  * even though its one report's options are never themselves `undefined`).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}  args                    Hook args.
  * @param {Object}  [args.primaryOptions]   The primary report's options.

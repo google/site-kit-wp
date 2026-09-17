@@ -55,7 +55,7 @@ const WidgetWithComponentProps = withWidgetComponentProps(
  * Connects Analytics and sets a fixed date range, so `MainDashboard` and
  * `EntityDashboard` start from the same state.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -75,13 +75,18 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+	// Storing the creation time stops a request for the Analytics property.
+	// `2024-01-01` sits before the selected range, so the chart draws no marker.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
 }
 
 /**
  * Puts the Traffic Overview widget's five reports in the store, so a story
  * renders without sending a report request.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}
@@ -139,7 +144,9 @@ MainDashboard.args = {
 		provideTrafficOverviewReports( registry );
 	},
 };
-MainDashboard.scenario = {};
+MainDashboard.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
 
 /**
  * This story sets no `scenario`, so it runs no visual check. A current entity

@@ -150,7 +150,7 @@ function processSelectors( scenarioObj ) {
 /**
  * Limits a scenario a single viewport size.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} scenario The scenario.
  * @return {Object} The scenario, modified with limits on which viewport

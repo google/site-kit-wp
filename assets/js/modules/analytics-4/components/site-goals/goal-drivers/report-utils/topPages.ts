@@ -42,7 +42,7 @@ export function buildTopPagesReportOptions(
 /**
  * Maps rows to a raw event count rather than a share of the total.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object[]} rows Report rows, each carrying `eventCount` in `metricValues[0]`.
  * @return {Object[]} The rows mapped to `{ label, value, pagePath }`.

@@ -65,10 +65,10 @@ export interface OnlineStorePerformancePDFData {
  *
  * The section renders one group per supported ecommerce plugin, plus one more
  * group for the sales that came from none of them. When no supported plugin has
- * sales in the date range, the section falls back to a single group for the
- * whole site.
+ * sales in the date range, or on a property without the breakdown dimension,
+ * the section falls back to a single group for the whole site.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      params          Online store performance PDF loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -95,10 +95,19 @@ export default async function getOnlineStorePerformancePDFData( {
 		.select( MODULES_ANALYTICS_4 )
 		.getPrimaryEcommerceEvent();
 
-	const groupedReportOptions = getStoreGroupedReportOptions(
-		dates,
-		primaryEvent
-	);
+	const breakdownDimension =
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
+			GOAL_TYPES.ECOMMERCE
+		];
+
+	const hasBreakdownDimension =
+		registry
+			.select( MODULES_ANALYTICS_4 )
+			.hasCustomDimensions( breakdownDimension ) === true;
+
+	const groupedReportOptions = hasBreakdownDimension
+		? getStoreGroupedReportOptions( dates, primaryEvent )
+		: null;
 	const aggregatedReportOptions = getStoreAggregatedReportOptions(
 		dates,
 		primaryEvent
@@ -106,23 +115,18 @@ export default async function getOnlineStorePerformancePDFData( {
 
 	// `! primaryEvent` changes nothing at runtime, but TypeScript needs it to
 	// know the event is set in the data returned below.
-	if (
-		! primaryEvent ||
-		! groupedReportOptions ||
-		! aggregatedReportOptions
-	) {
+	if ( ! primaryEvent || ! aggregatedReportOptions ) {
 		return { data: null };
 	}
 
-	const breakdownValues: string[] =
-		( await registry
-			.resolveSelect( MODULES_ANALYTICS_4 )
-			.getBreakdownValues(
-				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
-					GOAL_TYPES.ECOMMERCE
-				],
-				CONVERSION_REPORTING_ECOMMERCE_EVENTS
-			) ) || [];
+	const breakdownValues: string[] = hasBreakdownDimension
+		? ( await registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getBreakdownValues(
+					breakdownDimension,
+					CONVERSION_REPORTING_ECOMMERCE_EVENTS
+				) ) || []
+		: [];
 
 	if ( signal.aborted ) {
 		return { data: null };

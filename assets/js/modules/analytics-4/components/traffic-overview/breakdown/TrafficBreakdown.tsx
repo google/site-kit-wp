@@ -69,6 +69,7 @@ const TrafficBreakdown: FC< TrafficBreakdownProps > = ( { reports } ) => {
 				{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => (
 					<TrafficBreakdownColumn
 						key={ id }
+						id={ id }
 						heading={ heading }
 						rows={ getBreakdownRows( reports[ id ] ) }
 					/>
