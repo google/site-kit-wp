@@ -101,7 +101,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * Registers hooks for the Easy Digital Downloads provider.
 	 *
 	 * @since 1.164.0
-	 * @since n.e.x.t The footer callback adds the store currency as well as the purchase data.
+	 * @since 1.188.0 The footer callback adds the store currency as well as the purchase data.
 	 */
 	public function register_hooks() {
 		add_action(
@@ -113,7 +113,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Adds the data the provider script needs to the page.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	protected function add_inline_data() {
 		$inline_script = array();
@@ -150,7 +150,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * other shape is discarded rather than reported. A lowercase code is
 	 * uppercased, as ISO 4217 codes are uppercase.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return string The store's three-letter currency code, or an empty string if there isn't a usable one.
 	 */
@@ -167,7 +167,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	/**
 	 * Gets the purchase data for the current request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return array|null The purchase data, or null when the current request isn't a completed purchase.
 	 */
@@ -195,7 +195,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * It holds no logic of its own, so the code around it stays testable without
 	 * the plugin installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return mixed Whatever Easy Digital Downloads reports, or null when it isn't there to ask.
 	 */
@@ -210,7 +210,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * It holds no logic of its own, so the code around it stays testable without
 	 * the plugin installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return mixed Whatever Easy Digital Downloads reports, or null when it isn't there to ask.
 	 */
@@ -225,7 +225,7 @@ class Easy_Digital_Downloads extends Conversion_Events_Provider {
 	 * It holds no logic of its own, so the code around it stays testable without
 	 * the plugin installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return bool Whether the current request is the purchase success page, false when Easy Digital Downloads isn't there to ask.
 	 */
