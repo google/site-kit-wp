@@ -65,7 +65,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement_by_provider'],
 			'build_requests() should register the sessions split by provider under site_goals_engagement_by_provider.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $requests, 'build_requests() should leave out the site-wide store count when it registers site_goals_online_store_primary_by_provider.' );
+		$this->assertSame(
+			$this->report_options->get_online_store_primary_options(),
+			$requests['site_goals_online_store_primary'],
+			'build_requests() should register the site-wide store count under site_goals_online_store_primary when the store count splits by provider.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the store count splits by provider and the site sends no lead event.' );
 	}
 
@@ -106,7 +110,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement_by_form'],
 			'build_requests() should register the sessions split by form under site_goals_engagement_by_form.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $requests, 'build_requests() should leave out the site-wide lead count when it registers site_goals_lead_primary_by_form.' );
+		$this->assertSame(
+			$this->report_options->get_lead_primary_options(),
+			$requests['site_goals_lead_primary'],
+			'build_requests() should register the site-wide lead count under site_goals_lead_primary when the lead count splits by form.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the lead count splits by form and the site sends no store event.' );
 	}
 
@@ -152,6 +160,36 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			array(),
 			$this->request_keys_starting_with( $requests, 'site_goals_lead' ),
 			'build_requests() should register no lead generation request when the site sends no lead event.'
+		);
+	}
+
+	public function test_build_requests__registers_no_online_store_request_when_the_online_store_widget_is_not_active() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ), array(), array( 'lead' ) );
+
+		$this->assertSame(
+			array(),
+			$this->request_keys_starting_with( $requests, 'site_goals_online_store' ),
+			"`build_requests()` should register no online store request when `activeWidgets` doesn't have `ecommerce`, even though the site sends an ecommerce event."
+		);
+		$this->assertArrayHasKey(
+			'site_goals_lead_primary',
+			$requests,
+			'`build_requests()` should still register the lead generation count when `activeWidgets` has `lead`.'
+		);
+	}
+
+	public function test_build_requests__registers_no_lead_generation_request_when_the_lead_generation_widget_is_not_active() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ), array(), array( 'ecommerce' ) );
+
+		$this->assertSame(
+			array(),
+			$this->request_keys_starting_with( $requests, 'site_goals_lead' ),
+			"`build_requests()` should register no lead generation request when `activeWidgets` doesn't have `lead`, even though the site sends a lead event."
+		);
+		$this->assertArrayHasKey(
+			'site_goals_online_store_primary',
+			$requests,
+			'`build_requests()` should still register the online store count when `activeWidgets` has `ecommerce`.'
 		);
 	}
 
@@ -221,6 +259,71 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$this->assertArrayHasKey( 'popular_content', $requests, 'build_requests() should still register the popular content report alongside the Site Goals reports.' );
 	}
 
+	public function test_build_requests__registers_the_store_discovery_report_when_the_event_provider_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'purchase' ), $this->breakdown_dimension_availability() );
+
+		$this->assertArrayHasKey(
+			'site_goals_online_store_discovery',
+			$requests,
+			'build_requests() should register the store discovery report when the event provider dimension has data.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER ),
+			$requests['site_goals_online_store_discovery'],
+			'build_requests() should register the store discovery report under site_goals_online_store_discovery.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_online_store_discovery_options(),
+			$requests['site_goals_online_store_discovery_site_wide'],
+			'build_requests() should register the site-wide store count over the discovery days under site_goals_online_store_discovery_site_wide.'
+		);
+	}
+
+	public function test_build_requests__registers_the_lead_discovery_report_when_the_form_id_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'contact' ), $this->breakdown_dimension_availability() );
+
+		$this->assertArrayHasKey(
+			'site_goals_lead_discovery',
+			$requests,
+			'build_requests() should register the lead discovery report when the form ID dimension has data.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_lead_discovery_options( Analytics_4::CUSTOM_DIMENSION_FORM_ID ),
+			$requests['site_goals_lead_discovery'],
+			'build_requests() should register the lead discovery report under site_goals_lead_discovery.'
+		);
+		$this->assertEquals(
+			$this->report_options->get_lead_discovery_options(),
+			$requests['site_goals_lead_discovery_site_wide'],
+			'build_requests() should register the site-wide lead count over the discovery days under site_goals_lead_discovery_site_wide.'
+		);
+	}
+
+	public function test_build_requests__registers_no_discovery_report_when_neither_breakdown_dimension_has_data() {
+		$requests = $this->build_requests_for_events( array( 'purchase', 'contact' ) );
+
+		$this->assertArrayNotHasKey(
+			'site_goals_online_store_discovery',
+			$requests,
+			'build_requests() should ask Analytics for no store discovery report when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_lead_discovery',
+			$requests,
+			'build_requests() should ask Analytics for no lead discovery report when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_online_store_discovery_site_wide',
+			$requests,
+			'build_requests() should ask Analytics for no site-wide store count over the discovery days when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_lead_discovery_site_wide',
+			$requests,
+			'build_requests() should ask Analytics for no site-wide lead count over the discovery days when the card shows one group.'
+		);
+	}
+
 	public function test_build_requests__registers_every_site_goals_request_key_and_no_other() {
 		$site_wide_keys = $this->request_keys_starting_with(
 			$this->build_requests_for_events( array( 'purchase', 'contact' ) ),
@@ -234,8 +337,12 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 		$site_goals_keys = array(
 			'site_goals_online_store_primary',
 			'site_goals_online_store_primary_by_provider',
+			'site_goals_online_store_discovery',
+			'site_goals_online_store_discovery_site_wide',
 			'site_goals_lead_primary',
 			'site_goals_lead_primary_by_form',
+			'site_goals_lead_discovery',
+			'site_goals_lead_discovery_site_wide',
 			'site_goals_engagement',
 			'site_goals_engagement_by_provider',
 			'site_goals_engagement_by_form',
@@ -246,23 +353,27 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			Analytics_4_Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS,
 			'SITE_GOALS_REQUEST_KEYS should hold every Site Goals payload key.'
 		);
+		// `$site_wide_keys` and `$breakdown_keys` both name `site_goals_online_store_primary`
+		// and `site_goals_lead_primary`, so merging them repeats those two keys.
 		$this->assertEqualSets(
 			$site_goals_keys,
-			array_merge( $site_wide_keys, $breakdown_keys ),
+			array_unique( array_merge( $site_wide_keys, $breakdown_keys ) ),
 			'build_requests() should register every Site Goals payload key, and no other keys.'
 		);
 	}
 
 	/**
-	 * Builds the report requests for the given detected events and dimension availability.
+	 * Builds the report requests for the given events, dimension availability, and
+	 * Site Goals widget types.
 	 *
 	 * The `Report_Options` that built the requests stays in `$this->report_options`.
 	 *
 	 * @param array $detected_events Detected event names.
 	 * @param array $availability    Optional. Custom dimension availability keyed by dimension slug. Default empty.
+	 * @param array $active_widgets  Optional. Site Goals widget types in `activeWidgets`. Default `ecommerce` and `lead`.
 	 * @return array Report requests keyed by payload key.
 	 */
-	private function build_requests_for_events( array $detected_events, array $availability = array() ) {
+	private function build_requests_for_events( array $detected_events, array $availability = array(), array $active_widgets = array( 'ecommerce', 'lead' ) ) {
 		$this->report_options = new Analytics_4_Report_Options(
 			array(
 				'startDate'        => '2024-01-01',
@@ -274,11 +385,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$this->context
 		);
 
-		// The test sets the same three options `Email_Reporting_Data_Requests` sets
-		// before it builds the requests.
+		// `Email_Reporting_Data_Requests` sets these values too, before it builds the requests.
 		$this->report_options->set_audience_segmentation_enabled( false );
 		$this->report_options->set_detected_events( $detected_events );
 		$this->report_options->set_custom_dimension_availability( $availability );
+		$this->report_options->set_active_site_goals_widgets( $active_widgets );
 
 		$assembler = new Analytics_4_Report_Request_Assembler( $this->report_options );
 

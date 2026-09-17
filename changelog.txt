@@ -1,5 +1,35 @@
 == Changelog ==
 
+= 1.188.0 =
+
+**Enhanced**
+
+* Move Easy Digital Downloads currency lookup into the event provider. See [#13603](https://github.com/google/site-kit-wp/issues/13603).
+* Add the `adsConversionTrackingIntent` feature flag. See [#13463](https://github.com/google/site-kit-wp/issues/13463).
+* Show Site Goals groups consistently between email reports and dashboard. See [#13461](https://github.com/google/site-kit-wp/issues/13461).
+* Add key action event chart to Site Goals widgets. See [#13419](https://github.com/google/site-kit-wp/issues/13419).
+* Add the traffic breakdown columns to the new Traffic Overview widget. See [#13410](https://github.com/google/site-kit-wp/issues/13410).
+* Add total visitors information to the new traffic overview widget. See [#13408](https://github.com/google/site-kit-wp/issues/13408).
+* Add the new Traffic Overview widget when the feature is enabled. See [#13407](https://github.com/google/site-kit-wp/issues/13407).
+* Add Site Goals key metric tiles for "Selling products". See [#13404](https://github.com/google/site-kit-wp/issues/13404).
+* Build the `FeatureCard` and `EffortIndicator` components for the upcoming Feature Discovery Hub, and present them in Storybook. See [#13320](https://github.com/google/site-kit-wp/issues/13320).
+* Add the `outbound_link_click` event tracking. See [#13291](https://github.com/google/site-kit-wp/issues/13291).
+* Add link tracking to contact links. See [#13290](https://github.com/google/site-kit-wp/issues/13290).
+* Add the feature discovery hub page shell with hero, tab navigation, and deep-linkable routes. See [#13248](https://github.com/google/site-kit-wp/issues/13248).
+* Register the feature catalog for the Feature Discovery Hub. See [#13247](https://github.com/google/site-kit-wp/issues/13247).
+* Add the feature discovery newness model and selectors for determining which features are new to a user. See [#13246](https://github.com/google/site-kit-wp/issues/13246).
+* Add online store and lead generation Site Goals sections to the PDF report. See [#13206](https://github.com/google/site-kit-wp/issues/13206).
+* Populate Reader Revenue Manager `organizationID` and `configuredCTAs` settings during publication sync. See [#13057](https://github.com/google/site-kit-wp/issues/13057).
+* Update the Reader Revenue Manager settings screens to display the configured CTAs for the connected publication. See [#13031](https://github.com/google/site-kit-wp/issues/13031).
+* Add the newsletter sign-up form setup step to the Reader Revenue Manager express setup flow. See [#13027](https://github.com/google/site-kit-wp/issues/13027).
+* Add the publication policies step to the Reader Revenue Manager Express setup flow. See [#13024](https://github.com/google/site-kit-wp/issues/13024).
+* Add the Terms of Service step to the Reader Revenue Manager express setup flow. See [#13023](https://github.com/google/site-kit-wp/issues/13023).
+* Implement the Reader Revenue Manager express setup step to create a new publication. See [#13022](https://github.com/google/site-kit-wp/issues/13022).
+* Add  Site Goals sections at the top of the email report. See [#13014](https://github.com/google/site-kit-wp/issues/13014).
+* Allow core dashboard effects to be registered for the main or entity dashboard. See [#11712](https://github.com/google/site-kit-wp/issues/11712).
+* Refactor the WooCommerce redirect modal to simplify its implementation. Props vivekjm. See [#10832](https://github.com/google/site-kit-wp/issues/10832).
+* Improve layout of data on SK admin bar on smaller viewports. See [#8089](https://github.com/google/site-kit-wp/issues/8089).
+
 = 1.187.0 =
 
 **Enhanced**

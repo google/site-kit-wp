@@ -43,7 +43,7 @@ export interface ContactLinkMatcher {
 /**
  * Splits a URL's path into its non-empty segments.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {URL} url Parsed link address.
  * @return {Array<string>} The path's non-empty segments.
@@ -61,7 +61,7 @@ function getPathSegments( url: URL ): string[] {
  * would let `t.me/Share/…` through as a contact, which is the share link this
  * event exists to keep out.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} segment Path segment; may be undefined.
  * @return {string} The segment in lower case, or an empty string.
@@ -84,7 +84,7 @@ function lowerCaseSegment( segment?: string ): string {
  * `chat.whatsapp.com`, `signal.group` and `social-plugins.line.me` exist only
  * for the other two purposes and so appear in no `hosts` list at all.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const CONTACT_LINK_MATCHERS: ContactLinkMatcher[] = [
 	{
@@ -249,21 +249,17 @@ CONTACT_LINK_MATCHERS.forEach( ( matcher ) => {
 /**
  * Classifies a link as one of the contact kinds, or as none of them.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
- * @param {HTMLAnchorElement} anchor Anchor that was clicked.
+ * @param {URL} linkURL Parsed link address.
  * @return {string|null} The `link_type` to report, or `null` when the link is not a contact link.
  */
 export default function classifyContactLink(
-	anchor: HTMLAnchorElement
+	linkURL: URL
 ): ContactLinkType | null {
-	let url: URL;
-
-	try {
-		url = new URL( anchor.href );
-	} catch {
-		return null;
-	}
+	// The normalization below writes to the hostname, and the caller reports the
+	// same URL's address, so that write happens on a copy of it.
+	const url = new URL( linkURL );
 
 	const isWebLink = 'http:' === url.protocol || 'https:' === url.protocol;
 

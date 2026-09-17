@@ -187,11 +187,27 @@ export function mockIntersectionObserver() {
 		global.IntersectionObserver = function MockIntersectionObserver(
 			callback
 		) {
+			// Identifies this observer instance's own entries below, since a
+			// single suite can have multiple observer instances (e.g. across
+			// remounts) whose stale entries must not linger and fire once
+			// disconnected/unobserved, as real `IntersectionObserver`s would.
+			const instance = this;
+
 			this.observe = function observe( target ) {
-				observers.push( { callback, target } );
+				observers.push( { callback, target, instance } );
 			};
-			this.disconnect = jest.fn();
-			this.unobserve = jest.fn();
+			this.unobserve = function unobserve( target ) {
+				observers = observers.filter(
+					( observer ) =>
+						observer.instance !== instance ||
+						observer.target !== target
+				);
+			};
+			this.disconnect = function disconnect() {
+				observers = observers.filter(
+					( observer ) => observer.instance !== instance
+				);
+			};
 			this.takeRecords = jest.fn().mockReturnValue( [] );
 		};
 	} );

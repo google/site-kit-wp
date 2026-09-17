@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
-
-/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -54,6 +49,7 @@ import {
 import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -872,22 +868,19 @@ describe( 'BreakdownNoticeArea', () => {
 			typeof tracking.trackEventOnce
 		>;
 
+		const { simulateAllIntersections } = mockIntersectionObserver();
+
 		beforeEach( () => {
 			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
-			intersectionObserver.mock();
 		} );
 
 		afterEach( () => {
 			mockTrackEventOnce.mockRestore();
-			intersectionObserver.restore();
 		} );
 
 		function simulateInView() {
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 		}
 

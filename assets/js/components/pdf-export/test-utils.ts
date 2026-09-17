@@ -115,7 +115,7 @@ export function expectSurveyTriggerFetch( triggerID: string, ttl: number ) {
  * Collects every text string in a `react-test-renderer` tree, so a test can
  * assert on rendered copy without walking the tree itself.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param node A tree's root, a child node, or a leaf, as returned by
  *             `TestRenderer.create( element ).toJSON()`.
@@ -142,4 +142,68 @@ export function findTextStrings(
 		return [];
 	}
 	return node.children.flatMap( ( child ) => findTextStrings( child ) );
+}
+
+/**
+ * Renders a PDF element and collects every text string it outputs.
+ *
+ * @since 1.188.0
+ *
+ * @param element The PDF element to render.
+ * @return The rendered text strings, in render order. Empty when the element renders nothing.
+ */
+export function renderPDFText( element: ReactElement ): string[] {
+	const tree = TestRenderer.create( element ).toJSON();
+
+	if ( ! tree || Array.isArray( tree ) ) {
+		return [];
+	}
+
+	return findTextStrings( tree );
+}
+
+/**
+ * Renders a PDF element and flattens the style of its root node.
+ *
+ * A `@react-pdf` primitive takes its style as one object or as an array of
+ * them, so the style is flattened into a single object before a test reads it.
+ *
+ * @since 1.188.0
+ *
+ * @param element The PDF element to render.
+ * @return The flattened style of the rendered root node.
+ */
+export function renderPDFStyle(
+	element: ReactElement
+): Record< string, unknown > {
+	const tree = TestRenderer.create(
+		element
+	).toJSON() as TestRenderer.ReactTestRendererJSON;
+
+	return Object.assign( {}, ...[ tree.props.style ].flat() );
+}
+
+/**
+ * Renders a PDF element and flattens the style of each of its children.
+ *
+ * @since 1.188.0
+ *
+ * @param element The PDF element to render.
+ * @return The flattened style of every child node, in render order.
+ */
+export function renderPDFChildStyles(
+	element: ReactElement
+): Record< string, unknown >[] {
+	const tree = TestRenderer.create(
+		element
+	).toJSON() as TestRenderer.ReactTestRendererJSON;
+
+	return ( tree.children ?? [] ).map( ( child ) =>
+		Object.assign(
+			{},
+			...[
+				( child as TestRenderer.ReactTestRendererJSON ).props.style,
+			].flat()
+		)
+	);
 }

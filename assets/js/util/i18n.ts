@@ -561,7 +561,7 @@ type DisplayNamesOptions = {
 /**
  * Formats a language code for display.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} languageCode     Language code to format.
  * @param {Object} [options]        Formatting options.
@@ -588,7 +588,7 @@ export function languageCodeFormat(
 /**
  * Formats a region code for display.
  *
- * @since n.e.x.t
+ * @since 1.187.0
  *
  * @param {string} regionCode       Region code to format.
  * @param {Object} [options]        Formatting options.
@@ -618,7 +618,7 @@ export function regionCodeFormat(
  * Can be used with `languageCodeFormat()` to build a list of language options
  * with formatted display names.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @type {string[]}
  */
