@@ -23,6 +23,18 @@ not post comments, approve, or change the PR state unless explicitly asked. (Cla
 exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
 workflow.)
 
+## Authoring a design doc
+When asked to write, draft, refine, or edit a design doc — or to run one of the numbered
+`design-doc/` stage prompts — follow the shared, tool-agnostic playbook
+**`docs/context/workflow/authoring-design-docs.md`** (the single source of truth) for the
+conventions, and **`design-doc/README.md`** for the staged process that takes a feature from
+its requirements to a design doc and on to the GitHub issues that implement it.
+Feature-specific detail lives in `design-doc/input/feature-brief.md`, not in the playbook —
+and since `design-doc/input/` is gitignored and user-supplied, **stop and ask the user** for a
+missing brief, PRD, template, or examples rather than inventing requirements. (Claude Code
+exposes this as the `authoring-design-docs` skill; Gemini as `/authoring-design-docs`;
+Antigravity as the `/authoring-design-docs` workflow.)
+
 ## Architecture Essentials
 
 ### PHP Structure
