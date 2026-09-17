@@ -44,6 +44,9 @@ declare global {
 	var _googlesitekit:
 		| {
 				contentEvents?: ContentEventsConfig;
+				/**
+				 * Easy Digital Downloads plugin data, if the plugin is installed.
+				 */
 				edddata?: {
 					currency?: string;
 					purchase?: Record< string, unknown >;
