@@ -11,6 +11,7 @@
 !.gemini/commands/**
 !.claude/
 .claude/*
+!.claude/settings.json
 !.claude/skills/
 !.claude/skills/**
 !.claude/commands/
