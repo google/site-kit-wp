@@ -35,6 +35,7 @@ import {
 import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { SpeedPDFData, StrategyData } from './getPDFData';
 import DashboardPageSpeedWidgetPDF from './indexPDF';
+import MetricRow from './MetricRow';
 
 /**
  * Extracts the lab and field metrics from a fixture report, shaped as one
@@ -148,6 +149,80 @@ describe( 'DashboardPageSpeedWidgetPDF', () => {
 		};
 
 		const text = renderText( noFieldData );
+
+		expect( text ).not.toContain( 'Real user data' );
+		expect( text ).not.toContain( 'Interaction to Next Paint' );
+	} );
+
+	it( 'renders only Real user data rows available for either strategy', () => {
+		const data = buildData( {
+			mobileReport: fixtures.pagespeedMobilePartialFieldData,
+			desktopReport: fixtures.pagespeedDesktopPartialFieldData,
+		} );
+		const renderer = TestRenderer.create(
+			<DashboardPageSpeedWidgetPDF data={ data } />
+		);
+		const rows = renderer.root.findAllByType( MetricRow );
+
+		// LCP and CLS remain in Lab data, but their empty Real user data rows
+		// are omitted. INP is the only surviving Real user data row.
+		expect(
+			rows.filter(
+				( row ) => row.props.title === 'Largest Contentful Paint'
+			)
+		).toHaveLength( 1 );
+		expect(
+			rows.filter(
+				( row ) => row.props.title === 'Cumulative Layout Shift'
+			)
+		).toHaveLength( 1 );
+		const inpRows = rows.filter(
+			( row ) => row.props.title === 'Interaction to Next Paint'
+		);
+		expect( inpRows ).toHaveLength( 1 );
+		expect( inpRows[ 0 ].props.isLast ).toBe( true );
+
+		const text = renderText( data );
+		expect( text.match( /Mobile/g ) ).toHaveLength( 2 );
+		expect( text.match( /Desktop/g ) ).toHaveLength( 2 );
+	} );
+
+	it( 'keeps a Real user data row when only one strategy has its metric', () => {
+		const data = buildData( {
+			mobileReport: fixtures.pagespeedMobilePartialFieldData,
+		} );
+		const renderer = TestRenderer.create(
+			<DashboardPageSpeedWidgetPDF data={ data } />
+		);
+		const lcpRows = renderer.root
+			.findAllByType( MetricRow )
+			.filter(
+				( row ) => row.props.title === 'Largest Contentful Paint'
+			);
+
+		expect( lcpRows ).toHaveLength( 2 );
+		expect( lcpRows[ 1 ].props.mobileMetric ).toBeNull();
+		expect( lcpRows[ 1 ].props.desktopMetric ).not.toBeNull();
+	} );
+
+	it( 'omits Real user data when every field metric is null', () => {
+		const emptyField = {
+			largestContentfulPaint: null,
+			cumulativeLayoutShift: null,
+			interactionToNextPaint: null,
+		};
+		const data: SpeedPDFData[ 'data' ] = {
+			mobile: {
+				lab: extractLabMetrics( fixtures.pagespeedMobile ),
+				field: emptyField,
+			},
+			desktop: {
+				lab: extractLabMetrics( fixtures.pagespeedDesktop ),
+				field: emptyField,
+			},
+		};
+
+		const text = renderText( data );
 
 		expect( text ).not.toContain( 'Real user data' );
 		expect( text ).not.toContain( 'Interaction to Next Paint' );
