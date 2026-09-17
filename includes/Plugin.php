@@ -178,6 +178,12 @@ final class Plugin {
 				$authentication = new Core\Authentication\Authentication( $this->context, $options, $user_options, $transients, $user_input );
 				$authentication->register();
 
+				$plugin_version = new Core\Util\Plugin_Version( $options );
+				$plugin_version->register();
+
+				$pending_intent_check = new Core\Intents\Pending_Intent_Check( $this->context, $options, $user_options, $authentication );
+				$pending_intent_check->register();
+
 				$user_input->register();
 
 				$user = new Core\User\User( $user_options );
