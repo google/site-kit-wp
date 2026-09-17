@@ -94,7 +94,7 @@ describe( 'useStep', () => {
 	 * Seeds the registry with resolved settings, and the connected publication
 	 * when one is given, so that the hook never triggers a network request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @private
 	 *
 	 * @param {Object} [publication] Optional. Connected publication.

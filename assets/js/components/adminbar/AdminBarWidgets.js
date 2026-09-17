@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { Fragment } from '@wordpress/element';
-
-/**
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
@@ -85,9 +80,9 @@ export default function AdminBarWidgets() {
 		: { lg: 6, md: 4 };
 
 	return (
-		<Row className="googlesitekit-adminbar__widgets-row">
+		<Row>
 			{ canViewSharedSearchConsole && (
-				<Fragment>
+				<div className="googlesitekit-adminbar__widgets-pair">
 					<Cell
 						smSize={ 2 }
 						lgSize={ searchConsoleSize.lg }
@@ -102,13 +97,13 @@ export default function AdminBarWidgets() {
 					>
 						<AdminBarClicksWidget />
 					</Cell>
-				</Fragment>
+				</div>
 			) }
 
 			{ analyticsModuleConnected &&
 				analyticsModuleActive &&
 				canViewSharedAnalytics && (
-					<Fragment>
+					<div className="googlesitekit-adminbar__widgets-pair">
 						<Cell
 							smSize={ 2 }
 							lgSize={ analyticsSize.lg }
@@ -123,7 +118,7 @@ export default function AdminBarWidgets() {
 						>
 							<AdminBarSessionsGA4Widget />
 						</Cell>
-					</Fragment>
+					</div>
 				) }
 
 			{ analyticsModuleAvailable &&

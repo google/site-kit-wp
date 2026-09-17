@@ -150,7 +150,7 @@ function shouldDisplayWidgetWithCustomDimensions( {
  * This function is attached to the widget object that requires both and has
  * the `requiredConversionEventName` and `requiredCustomDimensions` properties.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}   options                     Options object.
  * @param {Function} options.select              Data store select function.
@@ -596,11 +596,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOTAL_SALES ]: {
 		title: __( 'Total sales', 'google-site-kit' ),
 		description: __(
-			'The number of purchases made on your site during the selected date range',
+			'Total visitors who successfully completed a purchase',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The number of purchases made on your site during the selected date range',
+			'Total visitors who successfully completed a purchase',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
@@ -611,11 +611,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_SALES_RATE ]: {
 		title: __( 'Sales rate', 'google-site-kit' ),
 		description: __(
-			'The percentage of total visitors who successfully completed a key action, like making a purchase',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The percentage of total visitors who successfully completed a key action, like making a purchase',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase)',
 			'google-site-kit'
 		),
 		documentationLinkSlug: 'site-goals-online-store-key-action',

@@ -104,7 +104,7 @@ export const selectors = {
 	 * user can still find and re-select a metric they've deselected, rather
 	 * than losing access to it outright.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} event Conversion event to check.

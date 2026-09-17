@@ -618,7 +618,7 @@ export function regionCodeFormat(
  * Can be used with `languageCodeFormat()` to build a list of language options
  * with formatted display names.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @type {string[]}
  */

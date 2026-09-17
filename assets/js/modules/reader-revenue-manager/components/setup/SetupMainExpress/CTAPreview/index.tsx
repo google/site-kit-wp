@@ -103,12 +103,20 @@ export default function CTAPreview( {
 					activeIndex={ activeTab }
 					handleActiveIndexUpdate={ handleTabChange }
 				>
-					<Tab id={ POPUP_TAB_ID } focusOnActivate={ false }>
+					<Tab
+						id={ POPUP_TAB_ID }
+						focusOnActivate={ false }
+						type="button"
+					>
 						<span className="mdc-tab__text-label">
 							{ __( 'Pop-up', 'google-site-kit' ) }
 						</span>
 					</Tab>
-					<Tab id={ INLINE_TAB_ID } focusOnActivate={ false }>
+					<Tab
+						id={ INLINE_TAB_ID }
+						focusOnActivate={ false }
+						type="button"
+					>
 						<span className="mdc-tab__text-label">
 							{ __( 'Inline', 'google-site-kit' ) }
 						</span>
