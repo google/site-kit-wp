@@ -33,6 +33,8 @@ import { ENTER, SPACE } from '@wordpress/keycodes';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -90,9 +92,12 @@ export default function AddMetricCTATile( { Widget } ) {
 				<div className="googlesitekit-km-add-metric-cta-tile__icon">
 					<PlusIcon width={ 16 } height={ 16 } />
 				</div>
-				<p className="googlesitekit-km-add-metric-cta-tile__text">
+				<P
+					className="googlesitekit-km-add-metric-cta-tile__text"
+					size={ SIZE_SMALL }
+				>
 					{ __( 'Add a metric', 'google-site-kit' ) }
-				</p>
+				</P>
 			</div>
 		</Widget>
 	);

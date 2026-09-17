@@ -219,7 +219,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                   class="googlesitekit-analytics-setup__form"
                 >
                   <p
-                    class="googlesitekit-setup-module__select_account"
+                    class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
                   >
                     Please select the account information below. You can change this later in your settings.
                   </p>
@@ -316,7 +316,9 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       <div
                         class="googlesitekit-setup__step-hint"
                       >
-                        <p>
+                        <p
+                          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                        >
                           What is an Analytics property?
                         </p>
                         <span
@@ -374,7 +376,9 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       <div
                         class="googlesitekit-setup__step-hint"
                       >
-                        <p>
+                        <p
+                          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                        >
                           What is a web data stream?
                         </p>
                         <span
@@ -660,7 +664,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                   class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
                 >
                   <p
-                    class="googlesitekit-setup__intro-title"
+                    class="googlesitekit-typography googlesitekit-setup__intro-title googlesitekit-typography--title googlesitekit-typography--small"
                   >
                     Connect Service
                   </p>
@@ -688,7 +692,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                         class="googlesitekit-analytics-setup__form"
                       >
                         <p
-                          class="googlesitekit-setup-module__select_account"
+                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--medium"
                         >
                           Please select the account information below. You can change this later in your settings.
                         </p>

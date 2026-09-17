@@ -29,7 +29,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
                 Data Unavailable
               </h3>
               <p
-                class="googlesitekit-cta__description"
+                class="googlesitekit-typography googlesitekit-cta__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
               </p>
@@ -55,7 +55,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
               Data Unavailable
             </h3>
             <p
-              class="googlesitekit-cta__description"
+              class="googlesitekit-typography googlesitekit-cta__description googlesitekit-typography--body googlesitekit-typography--medium"
             >
               Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
             </p>
@@ -87,7 +87,7 @@ exports[`WidgetAreaRenderer should combine multiple widgets in RecoverableModule
                 Data Unavailable
               </h3>
               <p
-                class="googlesitekit-cta__description"
+                class="googlesitekit-typography googlesitekit-cta__description googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 Search Console data was previously shared by an admin who no longer has access. Please contact another admin to restore it.
               </p>

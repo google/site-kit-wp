@@ -28,6 +28,8 @@ import PropTypes from 'prop-types';
 import { Button } from 'googlesitekit-components';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 function CTA( {
 	title,
@@ -76,9 +78,12 @@ function CTA( {
 					</Typography>
 				) }
 				{ description && typeof description === 'string' && (
-					<p className="googlesitekit-cta__description">
+					<P
+						className="googlesitekit-cta__description"
+						size={ SIZE_MEDIUM }
+					>
 						{ description }
-					</p>
+					</P>
 				) }
 				{ description && typeof description !== 'string' && (
 					<div className="googlesitekit-cta__description">
