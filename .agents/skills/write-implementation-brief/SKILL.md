@@ -41,8 +41,9 @@ truth shared with the other AI tools.
 
 ## Important
 
-- **Instructions only.** No rationale, no trade-off discussion, no restated acceptance criteria,
-  no background on how the existing system works.
+- **Instructions, not explanation.** No restated acceptance criteria, no background on how the existing
+  system works, no trade-off essays. Give a reason only where the brief settles a real technical
+  choice an engineer would otherwise stop and question — and keep it to a clause.
 - **Say when nothing is needed.** Never leave Test Coverage empty and never drop the Storybook
   or VRT line in silence — when the change needs no tests or no story, write one bullet that says
   so with the reason. Never `N/A` for tests; a bare "No VRT changes expected" is fine for VRT.

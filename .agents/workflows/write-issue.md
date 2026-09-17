@@ -1,5 +1,5 @@
 ---
-title: Write an issue
+title: Write the requirements for an issue
 description: Write the description and Acceptance criteria of a Site Kit issue — a feature request or a bug report — from a design doc, a bug report or requirements, verified against the codebase.
 ---
 
