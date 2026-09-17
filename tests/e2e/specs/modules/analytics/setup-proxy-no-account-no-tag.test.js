@@ -138,7 +138,7 @@ describe( 'setting up the Analytics module with no existing account and no exist
 		await page.waitForTimeout( 10 );
 
 		await expect( page ).toMatchElement( 'p', {
-			text: /need to give Site Kit permission to create an Analytics account/i,
+			text: /You will be redirected to Google Analytics to accept the terms of service/i,
 		} );
 
 		await Promise.all( [

@@ -59,6 +59,7 @@ const interceptions = {
 		isAudienceSegmentationWidgetHidden: false,
 	},
 	'analytics-4/data/sync-custom-dimensions': [],
+	'analytics-4/data/sync-audiences': [],
 };
 
 describe( 'Analytics write scope requests', () => {
@@ -305,10 +306,10 @@ describe( 'Analytics write scope requests', () => {
 
 		// Click on confirm changes button and wait for permissions modal dialog.
 		await step(
-			'click complete setup and wait for the permissions modal',
+			'click set up and wait for the permissions modal',
 			async () => {
 				await expect( page ).toClick( '.mdc-button--raised', {
-					text: /complete setup/i,
+					text: /^set up$/i,
 				} );
 
 				await page.waitForSelector( '.mdc-dialog--open .mdc-button', {
@@ -345,7 +346,7 @@ describe( 'Analytics write scope requests', () => {
 				await expect( page ).toMatchElement(
 					'.googlesitekit-notice__title',
 					{
-						text: /Congrats on completing the setup for Analytics!/i,
+						text: /Google Analytics was successfully set up/i,
 					}
 				);
 			}
@@ -411,10 +412,10 @@ describe( 'Analytics write scope requests', () => {
 		);
 
 		await step(
-			'click complete setup and wait for the web data stream creation request',
+			'click set up and wait for the web data stream creation request',
 			Promise.all( [
 				expect( page ).toClick( '.mdc-button--raised', {
-					text: /complete setup/i,
+					text: /^set up$/i,
 				} ),
 
 				page.waitForRequest( ( req ) =>
@@ -469,7 +470,7 @@ describe( 'Analytics write scope requests', () => {
 				await expect( page ).toMatchElement(
 					'.googlesitekit-notice__title',
 					{
-						text: /Congrats on completing the setup for Analytics!/i,
+						text: /Google Analytics was successfully set up/i,
 					}
 				);
 			}
