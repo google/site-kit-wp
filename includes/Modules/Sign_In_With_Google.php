@@ -353,7 +353,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * A request without an `Origin` header is allowed through, as browsers send
 	 * one on cross-origin POSTs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0.t
 	 *
 	 * @param Input $input Input instance.
 	 * @return bool TRUE when the origin is absent or belongs to this site.
@@ -380,7 +380,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	/**
 	 * Reduces a URL to its origin, so two can be compared.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0.t
 	 *
 	 * @param string $url URL to reduce.
 	 * @return string Origin, or an empty string when the URL has no scheme and host.

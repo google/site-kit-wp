@@ -49,7 +49,7 @@ export type SignInWithGoogleConfig = {
  * server compares with the cookie set below, establishing that the token was
  * issued for a sign-in started here.
  *
- * @since n.e.x.t
+ * @since 1.188.0.t
  *
  * @return {string} Random hex string.
  */
@@ -66,7 +66,7 @@ function createNonce() {
 /**
  * Reads the value of a cookie.
  *
- * @since n.e.x.t
+ * @since 1.188.0.t
  *
  * @param {string} name Cookie name.
  * @return {string} The value, or an empty string when the cookie is not set.

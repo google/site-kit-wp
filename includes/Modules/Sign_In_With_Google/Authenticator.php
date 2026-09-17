@@ -495,7 +495,7 @@ class Authenticator implements Authenticator_Interface {
 	 * readable claim. What the pair establishes is that the request came from
 	 * a context able to set a cookie on this site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0.t
 	 *
 	 * @param Input $input Input instance.
 	 * @return string Nonce from the cookie, or an empty string when not set.
@@ -518,7 +518,7 @@ class Authenticator implements Authenticator_Interface {
 	 * for a sign-in started here, so an absent claim is a mismatch rather than
 	 * a check which does not apply.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0.t
 	 *
 	 * @param string $expected_nonce Nonce read from the cookie.
 	 * @param array  $payload        Google auth payload.
