@@ -25,9 +25,9 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
-	STORY_INITIAL_VERSION,
-	storyFeatures,
-	storyModules,
+	INITIAL_VERSION,
+	sampleFeatures,
+	sampleModules,
 } from '@/js/components/feature-discovery/__fixtures__';
 import Layout from '@/js/components/layout/Layout';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
@@ -53,7 +53,6 @@ function Template() {
 
 export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
-Default.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/AllServicesTab',
@@ -68,12 +67,12 @@ export default {
 				registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 				registry
 					.dispatch( CORE_USER )
-					.receiveInitialSiteKitVersion( STORY_INITIAL_VERSION );
+					.receiveInitialSiteKitVersion( INITIAL_VERSION );
 
-				provideModules( registry, storyModules );
+				provideModules( registry, sampleModules );
 				provideModuleRegistrations( registry );
 
-				provideFeatures( registry, storyFeatures );
+				provideFeatures( registry, sampleFeatures );
 			}
 
 			return (

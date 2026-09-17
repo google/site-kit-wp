@@ -19,12 +19,19 @@
 /**
  * Internal dependencies
  */
-import { Registry } from '@/js/googlesitekit-data';
 import {
-	CORE_FEATURE_DISCOVERY,
-	FEATURE_CATEGORIES,
-	FEATURE_SETUP_TYPES,
-} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+	audienceFeature,
+	monetizationFeature,
+	multiGoalFeature,
+	oldFeature,
+	oneFeaturePerCategory,
+	prerequisiteFeature,
+	productivityFeature,
+	secondAudienceFeature,
+	setupModuleFeature,
+} from '@/js/components/feature-discovery/__fixtures__';
+import { Registry } from '@/js/googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -52,83 +59,6 @@ const ALL_HEADINGS = [
 	'Improve your site speed and experience',
 	PRODUCTIVITY_HEADING,
 ];
-
-// Registered in a scrambled order, so the headings can only come out in the
-// curated order if the tab takes that order from the categories.
-const ONE_FEATURE_PER_CATEGORY: Partial< Feature >[] = [
-	FEATURE_CATEGORIES.PRIVACY,
-	FEATURE_CATEGORIES.AUDIENCE,
-	FEATURE_CATEGORIES.PRODUCTIVITY,
-	FEATURE_CATEGORIES.TRAFFIC,
-	FEATURE_CATEGORIES.MONETIZATION,
-	FEATURE_CATEGORIES.PERFORMANCE,
-	FEATURE_CATEGORIES.ENGAGEMENT,
-].map( ( category ) => ( {
-	slug: `${ category }-feature`,
-	title: `${ category } feature`,
-	goalCategories: [ category ],
-} ) );
-
-const AUDIENCE_FEATURE: Partial< Feature > = {
-	slug: 'audience-feature',
-	title: 'Audience feature',
-	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-};
-
-const SECOND_AUDIENCE_FEATURE: Partial< Feature > = {
-	slug: 'second-audience-feature',
-	title: 'Second audience feature',
-	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-};
-
-const MONETIZATION_FEATURE: Partial< Feature > = {
-	slug: 'monetization-feature',
-	title: 'Monetization feature',
-	goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
-};
-
-const PRODUCTIVITY_FEATURE: Partial< Feature > = {
-	slug: 'productivity-feature',
-	title: 'Productivity feature',
-	goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-};
-
-// Released long before the user's initial version, so it is no longer new.
-const OLD_FEATURE: Partial< Feature > = {
-	slug: 'old-feature',
-	title: 'Old feature',
-	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-	addedInVersion: '1.100.0',
-};
-
-// Serves two goals, with engagement as its primary one.
-const MULTI_GOAL_FEATURE: Partial< Feature > = {
-	slug: 'multi-goal-feature',
-	title: 'Multi goal feature',
-	goalCategories: [
-		FEATURE_CATEGORIES.ENGAGEMENT,
-		FEATURE_CATEGORIES.AUDIENCE,
-	],
-};
-
-// Sets up Analytics, so it is listed only while Analytics is disconnected.
-const SETUP_MODULE_FEATURE: Partial< Feature > = {
-	slug: 'setup-module-feature',
-	title: 'Setup module feature',
-	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-	setup: {
-		type: FEATURE_SETUP_TYPES.SETUP_FLOW,
-		moduleSlug: MODULE_SLUG_ANALYTICS_4,
-	},
-};
-
-// Depends on Analytics, so it is listed only once Analytics is connected.
-const PREREQUISITE_FEATURE: Partial< Feature > = {
-	slug: 'prerequisite-feature',
-	title: 'Prerequisite feature',
-	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-	prerequisiteModules: [ MODULE_SLUG_ANALYTICS_4 ],
-};
 
 describe( 'AllServicesTab', () => {
 	let registry: Registry;
@@ -163,9 +93,9 @@ describe( 'AllServicesTab', () => {
 
 	it( 'should render goal headings in the curated order', async () => {
 		provideFeatures( registry, [
-			PRODUCTIVITY_FEATURE,
-			MONETIZATION_FEATURE,
-			AUDIENCE_FEATURE,
+			productivityFeature,
+			monetizationFeature,
+			audienceFeature,
 		] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
@@ -182,7 +112,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should render every goal heading in the curated order', async () => {
-		provideFeatures( registry, ONE_FEATURE_PER_CATEGORY );
+		provideFeatures( registry, oneFeaturePerCategory );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -194,7 +124,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should list features however long ago they were released, including one that is still new', async () => {
-		provideFeatures( registry, [ OLD_FEATURE, AUDIENCE_FEATURE ] );
+		provideFeatures( registry, [ oldFeature, audienceFeature ] );
 
 		// The second feature is new enough to be listed in What's new?, the
 		// first is not.
@@ -219,7 +149,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should not render a heading for a goal with nothing to list', async () => {
-		provideFeatures( registry, [ AUDIENCE_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature ] );
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
@@ -236,7 +166,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should list a feature serving several goals once, under its primary goal', async () => {
-		provideFeatures( registry, [ AUDIENCE_FEATURE, MULTI_GOAL_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature, multiGoalFeature ] );
 
 		const { container, getAllByRole, waitForRegistry } = render(
 			<AllServicesTab />,
@@ -258,10 +188,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should keep catalog registration order within a group', async () => {
-		provideFeatures( registry, [
-			SECOND_AUDIENCE_FEATURE,
-			AUDIENCE_FEATURE,
-		] );
+		provideFeatures( registry, [ secondAudienceFeature, audienceFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -282,7 +209,7 @@ describe( 'AllServicesTab', () => {
 				getFeatureDismissalKey( 'audience-feature' ),
 			] );
 
-		provideFeatures( registry, [ AUDIENCE_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -295,7 +222,7 @@ describe( 'AllServicesTab', () => {
 
 	it( 'should not list a feature that is already set up', async () => {
 		provideAnalytics( true );
-		provideFeatures( registry, [ AUDIENCE_FEATURE, SETUP_MODULE_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature, setupModuleFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -308,7 +235,7 @@ describe( 'AllServicesTab', () => {
 
 	it( 'should not list a feature whose prerequisite module is not connected', async () => {
 		provideAnalytics( false );
-		provideFeatures( registry, [ AUDIENCE_FEATURE, PREREQUISITE_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature, prerequisiteFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -321,7 +248,7 @@ describe( 'AllServicesTab', () => {
 
 	it( 'should list a feature once its prerequisite module is connected', async () => {
 		provideAnalytics( true );
-		provideFeatures( registry, [ AUDIENCE_FEATURE, PREREQUISITE_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature, prerequisiteFeature ] );
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
@@ -336,7 +263,7 @@ describe( 'AllServicesTab', () => {
 	} );
 
 	it( 'should not render a dismiss control on any card', async () => {
-		provideFeatures( registry, [ AUDIENCE_FEATURE, MONETIZATION_FEATURE ] );
+		provideFeatures( registry, [ audienceFeature, monetizationFeature ] );
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,

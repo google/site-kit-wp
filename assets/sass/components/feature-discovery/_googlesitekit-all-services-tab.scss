@@ -19,19 +19,9 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-all-services-tab {
-		// Separates the first goal group from the tab bar above it. The filter
-		// chips (#13329) will take this space at the top of the tab.
-		padding-block-start: var(--googlesitekit-feature-discovery-padding-l);
-
-		// Unlike "What's new?", every card on this tab keeps its dividing
-		// rule, including the last one in a group.
-		.googlesitekit-feature-card:last-child {
-			border-bottom: 1px solid $c-neutral-n-100;
-		}
-	}
-
-	.googlesitekit-feature-goal-group + .googlesitekit-feature-goal-group {
-		margin-block-start: var(--googlesitekit-feature-discovery-padding-l);
+		display: grid;
+		gap: var(--googlesitekit-feature-discovery-padding-l);
+		padding-block: 10px;
 	}
 
 	// 5px of leading above and below the heading text, per the design.

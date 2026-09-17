@@ -23,6 +23,7 @@ import {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
+	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -31,12 +32,12 @@ import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-googl
 
 // Older than the newness floor for the initial version below, so a feature on
 // it is not shown as new.
-export const STORY_OLD_VERSION = '1.180.0';
-export const STORY_INITIAL_VERSION = '1.186.0';
+export const OLD_VERSION = '1.180.0';
+export const INITIAL_VERSION = '1.186.0';
 
-// A spread across four goal categories, one of them still new, so a story
-// covers the grouping, the ordering and the badges together.
-export const storyFeatures: Partial< Feature >[] = [
+// A realistic spread across four goal categories, one of them still new, so a
+// story covers the grouping, the ordering and the badges together.
+export const sampleFeatures: Partial< Feature >[] = [
 	{
 		slug: 'analytics-setup',
 		title: 'Understand how visitors interact with your content',
@@ -45,7 +46,7 @@ export const storyFeatures: Partial< Feature >[] = [
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
-		addedInVersion: STORY_OLD_VERSION,
+		addedInVersion: OLD_VERSION,
 	},
 	{
 		slug: 'key-metrics',
@@ -54,7 +55,7 @@ export const storyFeatures: Partial< Feature >[] = [
 			'Tell us your site’s main goal, and we’ll suggest a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals.',
 		effort: FEATURE_EFFORTS.LOW,
 		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
-		addedInVersion: STORY_OLD_VERSION,
+		addedInVersion: OLD_VERSION,
 	},
 	{
 		slug: 'sign-in-with-google',
@@ -64,7 +65,7 @@ export const storyFeatures: Partial< Feature >[] = [
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
 		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
-		addedInVersion: STORY_OLD_VERSION,
+		addedInVersion: OLD_VERSION,
 	},
 	{
 		slug: 'newsletter-signup',
@@ -78,7 +79,7 @@ export const storyFeatures: Partial< Feature >[] = [
 		],
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		badges: [ FEATURE_BADGES.RECOMMENDED ],
-		addedInVersion: STORY_INITIAL_VERSION,
+		addedInVersion: INITIAL_VERSION,
 	},
 	{
 		slug: 'dashboard-sharing',
@@ -87,11 +88,11 @@ export const storyFeatures: Partial< Feature >[] = [
 			'Give other users access to Site Kit dashboard and insights without sharing your Google account credentials. Choose which dashboards they can view so teammates and clients can stay informed about your site’s performance.',
 		effort: FEATURE_EFFORTS.MEDIUM,
 		goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
-		addedInVersion: STORY_OLD_VERSION,
+		addedInVersion: OLD_VERSION,
 	},
 ];
 
-export const storyModules = [
+export const sampleModules = [
 	{ slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' },
 	{
 		slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -99,3 +100,82 @@ export const storyModules = [
 	},
 	{ slug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE, name: 'Sign in with Google' },
 ];
+
+// Minimal entries below, each shaped to exercise one listing rule.
+
+export const audienceFeature: Partial< Feature > = {
+	slug: 'audience-feature',
+	title: 'Audience feature',
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+};
+
+export const secondAudienceFeature: Partial< Feature > = {
+	slug: 'second-audience-feature',
+	title: 'Second audience feature',
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+};
+
+export const monetizationFeature: Partial< Feature > = {
+	slug: 'monetization-feature',
+	title: 'Monetization feature',
+	goalCategories: [ FEATURE_CATEGORIES.MONETIZATION ],
+};
+
+export const productivityFeature: Partial< Feature > = {
+	slug: 'productivity-feature',
+	title: 'Productivity feature',
+	goalCategories: [ FEATURE_CATEGORIES.PRODUCTIVITY ],
+};
+
+// Released long before the user's initial version, so it is no longer new.
+export const oldFeature: Partial< Feature > = {
+	slug: 'old-feature',
+	title: 'Old feature',
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	addedInVersion: '1.100.0',
+};
+
+// Serves two goals, with engagement as its primary one.
+export const multiGoalFeature: Partial< Feature > = {
+	slug: 'multi-goal-feature',
+	title: 'Multi goal feature',
+	goalCategories: [
+		FEATURE_CATEGORIES.ENGAGEMENT,
+		FEATURE_CATEGORIES.AUDIENCE,
+	],
+};
+
+// Sets up Analytics, so it is listed only while Analytics is disconnected.
+export const setupModuleFeature: Partial< Feature > = {
+	slug: 'setup-module-feature',
+	title: 'Setup module feature',
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	setup: {
+		type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+		moduleSlug: MODULE_SLUG_ANALYTICS_4,
+	},
+};
+
+// Depends on Analytics, so it is listed only once Analytics is connected.
+export const prerequisiteFeature: Partial< Feature > = {
+	slug: 'prerequisite-feature',
+	title: 'Prerequisite feature',
+	goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+	prerequisiteModules: [ MODULE_SLUG_ANALYTICS_4 ],
+};
+
+// One per category, registered in a scrambled order so that headings can only
+// come out curated if they take their order from the categories.
+export const oneFeaturePerCategory: Partial< Feature >[] = [
+	FEATURE_CATEGORIES.PRIVACY,
+	FEATURE_CATEGORIES.AUDIENCE,
+	FEATURE_CATEGORIES.PRODUCTIVITY,
+	FEATURE_CATEGORIES.TRAFFIC,
+	FEATURE_CATEGORIES.MONETIZATION,
+	FEATURE_CATEGORIES.PERFORMANCE,
+	FEATURE_CATEGORIES.ENGAGEMENT,
+].map( ( category ) => ( {
+	slug: `${ category }-feature`,
+	title: `${ category } feature`,
+	goalCategories: [ category ],
+} ) );

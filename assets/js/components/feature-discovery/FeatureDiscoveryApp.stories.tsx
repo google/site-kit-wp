@@ -20,9 +20,9 @@
  * Internal dependencies
  */
 import {
-	STORY_INITIAL_VERSION,
-	storyFeatures,
-	storyModules,
+	INITIAL_VERSION,
+	sampleFeatures,
+	sampleModules,
 } from '@/js/components/feature-discovery/__fixtures__';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { Registry } from '@/js/googlesitekit-data';
@@ -39,7 +39,7 @@ import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 
 function setupRegistry( registry: Registry ) {
-	provideModules( registry, storyModules );
+	provideModules( registry, sampleModules );
 	provideModuleRegistrations( registry );
 	provideSiteInfo( registry );
 
@@ -48,9 +48,9 @@ function setupRegistry( registry: Registry ) {
 	registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	registry
 		.dispatch( CORE_USER )
-		.receiveInitialSiteKitVersion( STORY_INITIAL_VERSION );
+		.receiveInitialSiteKitVersion( INITIAL_VERSION );
 
-	provideFeatures( registry, storyFeatures );
+	provideFeatures( registry, sampleFeatures );
 }
 
 function Template() {
