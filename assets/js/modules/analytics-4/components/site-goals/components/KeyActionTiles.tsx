@@ -106,7 +106,7 @@ const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 				) }
 				infoTooltip={ createInterpolateElement(
 					__(
-						'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form). <a>Learn more</a>',
+						'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
 						'google-site-kit'
 					),
 					{

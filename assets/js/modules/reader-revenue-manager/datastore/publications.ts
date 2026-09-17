@@ -140,7 +140,7 @@ type ReaderRevenueManagerRegistry = WPDataRegistry & {
 /**
  * Syncs connected publication fields into settings and savedSettings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} state       Module state.
  * @param {Object} publication Publication to sync from.
@@ -736,7 +736,7 @@ const baseResolvers = {
 	},
 
 	*getPublication(
-		params: Partial< PublicationParams > = {}
+		params?: Partial< PublicationParams >
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as ReaderRevenueManagerRegistry;
@@ -758,7 +758,7 @@ const baseResolvers = {
 		}
 
 		const publicationID =
-			params.publicationID ||
+			params?.publicationID ||
 			registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationID();

@@ -50,7 +50,7 @@ describe( 'TrafficOverviewSourceLink', () => {
 	/**
 	 * Reads the rendered link's address and decodes it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {string} The decoded address.
 	 */

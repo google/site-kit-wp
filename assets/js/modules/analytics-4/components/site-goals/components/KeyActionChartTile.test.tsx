@@ -78,7 +78,7 @@ const REPORT_ENDPOINT = new RegExp(
 /**
  * Builds the report options the tile asks for.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} [inputs] Inputs that override `DEFAULT_INPUTS`.
  * @return {Object} The options to pass `getReport`.
@@ -94,7 +94,7 @@ function buildChartReportOptions( inputs: ChartInputs = {} ) {
 /**
  * Builds one report row per count, starting on `dates.startDate`.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array} counts The event count for each day, as strings.
  * @return {Array} One row per count, each holding its date and its count.
@@ -137,7 +137,7 @@ describe( 'KeyActionChartTile', () => {
 	/**
 	 * Adds one report to the registry and marks its resolution finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object} options The options to store the report under.
 	 * @param {Object} report  The report the tile reads.
@@ -155,7 +155,7 @@ describe( 'KeyActionChartTile', () => {
 	/**
 	 * Renders the `KeyActionChartTile` component with the default title and inputs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object} [props] Props that override the title and `DEFAULT_INPUTS`.
 	 * @return {Object} The render result, with its queries and `waitForRegistry`.
@@ -175,7 +175,7 @@ describe( 'KeyActionChartTile', () => {
 	/**
 	 * Waits for the tile to render `GoogleChartStub`, then reads what it passed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {Object} The props the chart last received.
 	 */

@@ -95,7 +95,7 @@
 		}
 
 		.googlesitekit-traffic-overview__total-visitors-metric {
-			align-items: center;
+			align-items: flex-start;
 			display: flex;
 			gap: 14px;
 		}
@@ -105,11 +105,15 @@
 		}
 
 		.googlesitekit-traffic-overview__total-visitors-change {
-			// The badge normally stacks under a figure, so it arrives with a
-			// top margin and takes the full width. Here it sits beside one,
-			// above a label wider than itself.
+			align-items: flex-start;
+			display: flex;
+			flex-direction: column;
+			gap: 4px;
+			margin-top: 5px;
+
+			// The badge carries a top margin meant for sitting under a figure,
+			// which would push it out of place here.
 			.googlesitekit-change-badge {
-				display: inline-block;
 				margin-top: 0;
 			}
 		}
@@ -120,7 +124,54 @@
 		}
 
 		.googlesitekit-traffic-overview__chart {
-			margin-top: 48px;
+			margin-top: 70px;
+		}
+
+		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
+			margin-left: -$grid-gap-phone;
+		}
+
+		.googlesitekit-traffic-overview__chart .googlesitekit-chart-loading {
+			margin-left: $grid-gap-phone;
+		}
+
+		.googlesitekit-traffic-overview__chart svg text {
+			letter-spacing: 0.4px;
+		}
+
+		.googlesitekit-traffic-overview__chart div[dir]::after {
+			background-color: $c-neutral-n-200;
+			content: "";
+			height: 12px;
+			position: absolute;
+			right: 40px;
+			top: -4px;
+			width: 1px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend {
+			list-style: none;
+			margin: 4px 0 0;
+			padding: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-item {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-line {
+			height: 3px;
+			width: 29px;
+		}
+
+		.googlesitekit-traffic-overview__chart-legend-label.googlesitekit-typography {
+			color: $c-surfaces-on-surface;
+			font-size: 10px;
+			letter-spacing: 0.4px;
+			line-height: 16px;
 		}
 
 		.googlesitekit-traffic-overview__breakdown {
@@ -210,6 +261,11 @@
 
 			// A long value wraps rather than pushing the share out of the row.
 			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-column--devices
+			.googlesitekit-traffic-overview__breakdown-row-label {
+			text-transform: capitalize;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row-percentage {

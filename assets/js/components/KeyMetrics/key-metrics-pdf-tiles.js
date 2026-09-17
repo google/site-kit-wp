@@ -251,7 +251,7 @@ function pdfTableDates( dates ) {
  * resolver of its own, so this resolves the detected events first and reads
  * the derived value once they're in.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry WordPress data registry.
  * @return {Promise<string|undefined>} The primary ecommerce event name, or `undefined` if none is detected.
@@ -276,7 +276,7 @@ async function resolvePrimaryEcommerceEvent( registry ) {
  * total report) and `Top pages driving sales` (a second, page-titles report)
  * have extra requirements and keep their own tile config.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function} buildReportOptions Builds this tile's Analytics 4 report options.
  * @param {Function} mapRows            Maps this tile's report rows to `GoalDriverRow[]`.

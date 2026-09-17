@@ -37,7 +37,7 @@ import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.s
 /**
  * Registers Reader Revenue Manager module features in the Feature Discovery catalog.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}
@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'reader-revenue-manager', {
+		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
 			'Open up new revenue opportunities while growing, retaining and engaging your audience',
 			'google-site-kit'
@@ -143,6 +144,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		registerFeature( 'newsletter-signup', {
+			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',
 				'google-site-kit'
@@ -256,7 +258,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			effort: FEATURE_EFFORTS.MEDIUM,
 			goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
 
-			addedInVersion: 'n.e.x.t', // ToDo: Update with the version number when the feature is released.
+			addedInVersion: '1.188.0', // ToDo: Update with the version number when the feature is released.
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 				ctaLabel: __( 'Set up a sign-up form', 'google-site-kit' ),

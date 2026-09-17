@@ -115,7 +115,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 	/**
 	 * Adds the chart tile's report for one set of lead events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Array}  leadEvents        The lead events the test detects.
 	 * @param {Object} [breakdownFilter] The form tab's filter, empty for no tab.

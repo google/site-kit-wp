@@ -23,6 +23,10 @@
 		.googlesitekit-rrm-newsletter-signup-setup__checkboxes {
 			display: grid;
 			gap: 4px;
+
+			.mdc-form-field {
+				font-size: $fs-body-sm;
+			}
 		}
 
 

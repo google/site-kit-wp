@@ -31,7 +31,7 @@ export interface GoalDriverTileColumnProps {
  * `TopPagesDrivingSalesWidget` (whose `label` column links to the page's
  * Analytics report instead of rendering plain text, so it isn't shared here).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const goalDriverValueColumn = {
 	field: 'value',
@@ -44,7 +44,7 @@ export const goalDriverValueColumn = {
  * The `label`/`value` column pair shared by every "Selling products" list
  * tile except `TopPagesDrivingSalesWidget`.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const goalDriverTileColumns = [
 	{

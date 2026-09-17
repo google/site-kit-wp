@@ -61,7 +61,7 @@ export const actions = {
 	/**
 	 * Marks features as seen by starting each feature's newness timer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Array.<string>} slugs Feature slugs to mark as seen.
 	 * @return {Object} Generator instance.
@@ -84,7 +84,7 @@ export const selectors = {
 	/**
 	 * Determines whether a feature is new to the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature slug.
@@ -128,7 +128,7 @@ export const selectors = {
 	/**
 	 * Determines whether a feature is new and has not been shown yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature slug.
@@ -156,7 +156,7 @@ export const selectors = {
 	/**
 	 * Gets new features that should appear in the What's new list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {(Array.<Object>|undefined)} New available features, or `undefined` while user state is loading.
 	 */
@@ -198,7 +198,7 @@ export const selectors = {
 	/**
 	 * Gets the number of unread features in the What's new list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {(number|undefined)} Number of unread features, or `undefined` while user state is loading.
 	 */

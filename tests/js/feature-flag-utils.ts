@@ -33,7 +33,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Keep this module separate from `tests/js/utils.ts` so it can reload that
  * module without statically importing module stores.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @private
  *
  * @param features Feature flags to enable before reloading modules.
@@ -57,7 +57,7 @@ export function reloadTestUtilsWithFeatures( features: Iterable< string > ) {
 /**
  * Creates a test registry with feature flags enabled before module stores load.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @private
  *
  * @param features Feature flags to enable before creating the registry.
