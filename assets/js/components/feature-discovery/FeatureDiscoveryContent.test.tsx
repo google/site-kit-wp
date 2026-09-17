@@ -99,11 +99,11 @@ describe( 'FeatureDiscoveryContent', () => {
 			const { getByText, waitForRegistry } =
 				renderContent( '/all-services' );
 
-			await waitForRegistry();
-
 			// Asserted before awaiting anything, to prove the tab rendered
 			// without waiting for the default-tab routing state to resolve.
 			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+
+			await waitForRegistry();
 		} );
 
 		it( 'should respect direct tab URLs and remain switchable via hash-router navigation', async () => {
