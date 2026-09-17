@@ -134,6 +134,50 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 	let registry: Registry;
 	let dataTable: { addColumn: jest.Mock; addRows: jest.Mock };
 
+	/**
+	 * Dispatches the reports the line chart reads, with empty breakdowns so the
+	 * line chart is the only chart that renders.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param  dailyUsers One user count per day, starting on 2025-01-08.
+	 * @return {void}
+	 */
+	function provideLineChartReports( dailyUsers: number[] ) {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
+				{ options: getTotalsReportArgs( DATES ) }
+			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: dailyUsers.map( ( users, index ) => ( {
+					dimensionValues: [
+						{
+							value: `202501${ String( 8 + index ).padStart(
+								2,
+								'0'
+							) }`,
+						},
+					],
+					metricValues: [ { value: String( users ) } ],
+				} ) ),
+			},
+			{
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			}
+		);
+		[ channelsArgs, locationsArgs, devicesArgs ].forEach( ( options ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( buildBreakdownReport( [] ), { options } );
+		} );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
@@ -246,52 +290,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 	} );
 
 	it( 'should load Google Charts and render the line chart with the expected DataTable and options', async () => {
-		const totalsReport = {
-			totals: [ { metricValues: [ { value: '100' } ] } ],
-		};
-		const graphReport = {
-			rows: [
-				{
-					dimensionValues: [ { value: '20250108' } ],
-					metricValues: [ { value: '10' } ],
-				},
-				{
-					dimensionValues: [ { value: '20250109' } ],
-					metricValues: [ { value: '20' } ],
-				},
-			],
-		};
-
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( totalsReport, {
-				options: getTotalsReportArgs( DATES ),
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( graphReport, {
-				options: getGraphReportArgs( {
-					startDate: DATES.startDate,
-					endDate: DATES.endDate,
-				} ),
-			} );
-		// Empty breakdown reports leave the donuts unrendered, so the only
-		// rendered chart in this test is the line chart.
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
-				options: channelsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
-				options: locationsArgs,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
-				options: devicesArgs,
-			} );
+		provideLineChartReports( [ 10, 20 ] );
 
 		const signal = new AbortController().signal;
 		const result = await getPDFData( { registry, dates: DATES, signal } );
@@ -330,12 +329,42 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 				format: 'MMM d',
 				textStyle: { fontName: 'Google Sans Text' },
 			},
-			vAxis: { textStyle: { fontName: 'Google Sans Text' } },
+			// The series renders against axis 1, so that axis carries the
+			// styling and the shortened number format. Axis 0 draws nothing.
+			vAxes: {
+				0: { textPosition: 'none' },
+				1: {
+					format: 'short',
+					textStyle: { fontName: 'Google Sans Text' },
+				},
+			},
 			series: { 0: { color: '#3c7251', lineWidth: 4 } },
 		} );
 
 		expect( result.chartImages?.lineChart ).toBe( LINE_CHART_DATA_URI );
 	} );
+
+	it.each( [
+		[ 20, 21 ],
+		[ 5500, 38 ],
+	] )(
+		'should reserve the label width a peak of %p users needs',
+		async ( peakUsers, expectedGutter ) => {
+			provideLineChartReports( [ peakUsers / 2, peakUsers ] );
+
+			await getPDFData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			// `5.5K` takes two characters more than `20`, so its labels need a
+			// wider column beside the plot.
+			expect(
+				mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+			).toMatchObject( { chartArea: { right: expectedGutter } } );
+		}
+	);
 
 	it( 'should collapse a long breakdown to the top slices plus a single Others row', async () => {
 		const totalsReport = {
