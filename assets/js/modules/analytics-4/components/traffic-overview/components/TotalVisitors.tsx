@@ -48,7 +48,7 @@ import { calculateChange, numFmt } from '@/js/util';
  *
  * The API returns metric values as strings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} row A totals row.
  * @return {number} The row's visitor count, or `0` when it is missing or not a number.

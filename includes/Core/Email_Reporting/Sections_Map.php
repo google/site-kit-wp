@@ -113,7 +113,7 @@ class Sections_Map {
 	 * - section_parts: Array of template parts with their data.
 	 *
 	 * @since 1.168.0
-	 * @since n.e.x.t Added the online store and lead generation sections at the top.
+	 * @since 1.188.0 Added the online store and lead generation sections at the top.
 	 *
 	 * @return array Array of sections with their configuration.
 	 */
@@ -131,7 +131,7 @@ class Sections_Map {
 	 * Gets the online store and lead generation sections, in the order the
 	 * dashboard shows their widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return array Section configuration array.
 	 */

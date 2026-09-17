@@ -38,7 +38,7 @@ export interface KeyActionChartReportArgs {
  * Builds the options for one event count per day, filtered to the Key action's
  * events and to the selected breakdown tab.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} args                   The report inputs.
  * @param {Object} args.dates             The selected date range.

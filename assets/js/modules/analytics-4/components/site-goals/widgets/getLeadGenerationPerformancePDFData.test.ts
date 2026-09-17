@@ -21,7 +21,8 @@
  */
 import { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createTestRegistry } from '@tests/js/utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import getLeadGenerationPerformancePDFData from './getLeadGenerationPerformancePDFData';
 import { LEAD_GENERATION_PDF_REPORT_FIXTURES } from './pdf/__fixtures__';
 import {
@@ -41,6 +42,9 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 
@@ -123,6 +127,51 @@ describe( 'getLeadGenerationPerformancePDFData', () => {
 				engagementRate: { current: 0.45, previous: 0.42 },
 			},
 		] );
+	} );
+
+	it( 'falls back to a single group for the whole site when the property has no breakdown dimension', async () => {
+		provideDetectedEvents( registry, [ 'contact', 'generate_lead' ], [] );
+		provideSiteGoalsPDFReports( LEAD_GENERATION_PDF_REPORT_FIXTURES );
+
+		const { data } = await runSiteGoalsPDFLoader(
+			getLeadGenerationPerformancePDFData,
+			registry
+		);
+
+		expect( data?.groups ).toEqual( [
+			{
+				id: 'aggregated',
+				label: 'Lead generation performance',
+				total: { current: 57, previous: 41 },
+				sessions: { current: 900, previous: 850 },
+				rate: { current: 57 / 900, previous: 41 / 850 },
+				engagementRate: { current: 0.45, previous: 0.42 },
+			},
+		] );
+	} );
+
+	it( 'requests no grouped report when the property has no breakdown dimension', async () => {
+		provideDetectedEvents( registry, [ 'contact' ], [] );
+		provideSiteGoalsPDFReports( LEAD_GENERATION_PDF_REPORT_FIXTURES );
+
+		await runSiteGoalsPDFLoader(
+			getLeadGenerationPerformancePDFData,
+			registry
+		);
+
+		const requestedURLs = fetchMock
+			.calls( analyticsReportEndpoint )
+			.map( ( [ requestURL ] ) =>
+				decodeURIComponent( String( requestURL ) )
+			);
+
+		expect( requestedURLs ).toHaveLength( 2 );
+
+		requestedURLs.forEach( ( requestURL ) => {
+			expect( requestURL ).not.toContain(
+				'customEvent:googlesitekit_form_id'
+			);
+		} );
 	} );
 
 	it( 'returns no data when every Analytics report is empty', async () => {

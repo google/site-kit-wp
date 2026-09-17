@@ -147,7 +147,7 @@ export function findTextStrings(
 /**
  * Renders a PDF element and collects every text string it outputs.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param element The PDF element to render.
  * @return The rendered text strings, in render order. Empty when the element renders nothing.
@@ -168,7 +168,7 @@ export function renderPDFText( element: ReactElement ): string[] {
  * A `@react-pdf` primitive takes its style as one object or as an array of
  * them, so the style is flattened into a single object before a test reads it.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param element The PDF element to render.
  * @return The flattened style of the rendered root node.
@@ -186,7 +186,7 @@ export function renderPDFStyle(
 /**
  * Renders a PDF element and flattens the style of each of its children.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param element The PDF element to render.
  * @return The flattened style of every child node, in render order.

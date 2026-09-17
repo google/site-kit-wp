@@ -65,7 +65,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement_by_provider'],
 			'build_requests() should register the sessions split by provider under site_goals_engagement_by_provider.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_online_store_primary', $requests, 'build_requests() should leave out the site-wide store count when it registers site_goals_online_store_primary_by_provider.' );
+		$this->assertSame(
+			$this->report_options->get_online_store_primary_options(),
+			$requests['site_goals_online_store_primary'],
+			'build_requests() should register the site-wide store count under site_goals_online_store_primary when the store count splits by provider.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the store count splits by provider and the site sends no lead event.' );
 	}
 
@@ -106,7 +110,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_engagement_by_form'],
 			'build_requests() should register the sessions split by form under site_goals_engagement_by_form.'
 		);
-		$this->assertArrayNotHasKey( 'site_goals_lead_primary', $requests, 'build_requests() should leave out the site-wide lead count when it registers site_goals_lead_primary_by_form.' );
+		$this->assertSame(
+			$this->report_options->get_lead_primary_options(),
+			$requests['site_goals_lead_primary'],
+			'build_requests() should register the site-wide lead count under site_goals_lead_primary when the lead count splits by form.'
+		);
 		$this->assertArrayNotHasKey( 'site_goals_engagement', $requests, 'build_requests() should register no site-wide sessions when the lead count splits by form and the site sends no store event.' );
 	}
 
@@ -264,6 +272,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_online_store_discovery'],
 			'build_requests() should register the store discovery report under site_goals_online_store_discovery.'
 		);
+		$this->assertEquals(
+			$this->report_options->get_online_store_discovery_options(),
+			$requests['site_goals_online_store_discovery_site_wide'],
+			'build_requests() should register the site-wide store count over the discovery days under site_goals_online_store_discovery_site_wide.'
+		);
 	}
 
 	public function test_build_requests__registers_the_lead_discovery_report_when_the_form_id_dimension_has_data() {
@@ -279,6 +292,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			$requests['site_goals_lead_discovery'],
 			'build_requests() should register the lead discovery report under site_goals_lead_discovery.'
 		);
+		$this->assertEquals(
+			$this->report_options->get_lead_discovery_options(),
+			$requests['site_goals_lead_discovery_site_wide'],
+			'build_requests() should register the site-wide lead count over the discovery days under site_goals_lead_discovery_site_wide.'
+		);
 	}
 
 	public function test_build_requests__registers_no_discovery_report_when_neither_breakdown_dimension_has_data() {
@@ -293,6 +311,16 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			'site_goals_lead_discovery',
 			$requests,
 			'build_requests() should ask Analytics for no lead discovery report when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_online_store_discovery_site_wide',
+			$requests,
+			'build_requests() should ask Analytics for no site-wide store count over the discovery days when the card shows one group.'
+		);
+		$this->assertArrayNotHasKey(
+			'site_goals_lead_discovery_site_wide',
+			$requests,
+			'build_requests() should ask Analytics for no site-wide lead count over the discovery days when the card shows one group.'
 		);
 	}
 
@@ -310,9 +338,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			'site_goals_online_store_primary',
 			'site_goals_online_store_primary_by_provider',
 			'site_goals_online_store_discovery',
+			'site_goals_online_store_discovery_site_wide',
 			'site_goals_lead_primary',
 			'site_goals_lead_primary_by_form',
 			'site_goals_lead_discovery',
+			'site_goals_lead_discovery_site_wide',
 			'site_goals_engagement',
 			'site_goals_engagement_by_provider',
 			'site_goals_engagement_by_form',
@@ -323,9 +353,11 @@ class Analytics_4_Report_Request_AssemblerTest extends TestCase {
 			Analytics_4_Report_Request_Assembler::SITE_GOALS_REQUEST_KEYS,
 			'SITE_GOALS_REQUEST_KEYS should hold every Site Goals payload key.'
 		);
+		// `$site_wide_keys` and `$breakdown_keys` both name `site_goals_online_store_primary`
+		// and `site_goals_lead_primary`, so merging them repeats those two keys.
 		$this->assertEqualSets(
 			$site_goals_keys,
-			array_merge( $site_wide_keys, $breakdown_keys ),
+			array_unique( array_merge( $site_wide_keys, $breakdown_keys ) ),
 			'build_requests() should register every Site Goals payload key, and no other keys.'
 		);
 	}
