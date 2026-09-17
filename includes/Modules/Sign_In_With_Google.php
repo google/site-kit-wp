@@ -305,6 +305,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
 	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
 		$input = $this->context->input();
 
 		// Ignore the request if the request method is not POST.
