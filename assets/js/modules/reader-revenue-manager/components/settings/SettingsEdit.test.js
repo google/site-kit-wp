@@ -68,6 +68,12 @@ describe( 'SettingsEdit', () => {
 		productIDs: [ 'product-1', 'product-2' ],
 	};
 
+	/**
+	 * Gives the registry the site info, modules, user, and settings every test
+	 * starts from.
+	 *
+	 * @since n.e.x.t
+	 */
 	function setupRegistry() {
 		provideSiteInfo( registry, {
 			postTypes: [

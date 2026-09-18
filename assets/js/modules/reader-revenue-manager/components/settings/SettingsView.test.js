@@ -48,6 +48,12 @@ describe( 'SettingsView', () => {
 		publicationId: publicationID,
 	} = publication;
 
+	/**
+	 * Gives the registry the connected module, its publications, and the user
+	 * every test starts from.
+	 *
+	 * @since n.e.x.t
+	 */
 	function setupRegistry() {
 		const moduleData = [
 			{
