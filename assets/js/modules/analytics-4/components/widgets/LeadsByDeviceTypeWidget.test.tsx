@@ -28,35 +28,26 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
 import { render } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '@tests/js/utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import LeadsByDeviceTypeWidget from './LeadsByDeviceTypeWidget';
+import {
+	LEADS_WIDGET_REPORT_ENDPOINT,
+	provideLeadsWidgetTestRegistry,
+	testGenericReportError,
+	testInsufficientPermissionsError,
+} from './utils/leadsWidgetTestRegistry';
 
 describe( 'LeadsByDeviceTypeWidget', () => {
 	let registry: WPDataRegistry;
 
 	const widgetProps = getWidgetComponentProps(
 		KM_ANALYTICS_LEADS_BY_DEVICE_TYPE
-	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
 	function getReportOptions() {
@@ -88,26 +79,12 @@ describe( 'LeadsByDeviceTypeWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		provideKeyMetrics( registry );
-		provideModules(
-			registry,
-			withConnected( MODULE_SLUG_ANALYTICS_4 ) as Parameters<
-				typeof provideModules
-			>[ 1 ]
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [
-				ENUM_CONVERSION_EVENTS.CONTACT,
-				ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
-				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-			] );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
 		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( reportEndpoint );
+		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<LeadsByDeviceTypeWidget { ...widgetProps } />,
@@ -115,70 +92,22 @@ describe( 'LeadsByDeviceTypeWidget', () => {
 		);
 		await waitForRegistry();
 
-		[
-			'.googlesitekit-km-widget-tile__loading',
-			'.googlesitekit-km-widget-tile__loading-header',
-			'.googlesitekit-km-widget-tile__loading-body',
-		].forEach( ( selector ) => {
-			expect( container.querySelector( selector ) ).toBeInTheDocument();
-		} );
-	} );
-
-	it( 'should render the generic error variant when the report fetch fails', async () => {
-		provideModuleRegistrations( registry );
-
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<LeadsByDeviceTypeWidget { ...widgetProps } />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
 		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
 		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
-		const errorResponse = {
-			code: 'test_error',
-			message: 'Error message.',
-			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-		};
+	testGenericReportError(
+		() => registry,
+		LeadsByDeviceTypeWidget,
+		widgetProps
+	);
 
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<LeadsByDeviceTypeWidget { ...widgetProps } />,
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
-	} );
+	testInsufficientPermissionsError(
+		() => registry,
+		LeadsByDeviceTypeWidget,
+		widgetProps
+	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {
 		const reportOptions = getReportOptions();

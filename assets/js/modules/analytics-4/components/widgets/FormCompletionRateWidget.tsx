@@ -29,7 +29,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
@@ -38,13 +38,14 @@ import {
 import {
 	buildEngagementReportOptions,
 	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface FormCompletionRateWidgetProps {
 	Widget: ElementType;
@@ -71,55 +72,15 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 	);
 	const engagementReportOptions = buildEngagementReportOptions( dates );
 
-	const primaryEventReport =
-		useInViewSelect(
-			( select: Select ) =>
-				primaryEventReportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							primaryEventReportOptions
-					  )
-					: undefined,
-			[ primaryEventReportOptions ]
-		) || {};
-
-	const engagementReport =
-		useInViewSelect(
-			( select: Select ) =>
-				primaryEventReportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							engagementReportOptions
-					  )
-					: undefined,
-			[ primaryEventReportOptions, engagementReportOptions ]
-		) || {};
-
-	const error = useSelect(
-		( select: Select ) => {
-			if ( ! primaryEventReportOptions ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				primaryEventReportOptions,
-				engagementReportOptions
-			);
-		},
-		[ primaryEventReportOptions, engagementReportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! primaryEventReportOptions ) {
-				return true;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
-				primaryEventReportOptions,
-				engagementReportOptions
-			);
-		},
-		[ primaryEventReportOptions, engagementReportOptions ]
-	);
+	const {
+		report: primaryEventReport,
+		secondaryReport: engagementReport,
+		loading,
+		error,
+	} = useAnalyticsReportsData( {
+		primaryOptions: primaryEventReportOptions,
+		secondaryOptions: engagementReportOptions,
+	} );
 
 	const { currentRate, previousRate, currentSessions } = processReports(
 		primaryEventReport,

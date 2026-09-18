@@ -24,18 +24,19 @@ import { ElementType, FC } from 'react';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { buildPrimaryEventReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { buildPrimaryEventReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface TotalFormCompletionsWidgetProps {
 	Widget: ElementType;
@@ -61,39 +62,9 @@ const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 		detectedLeadEvents
 	);
 
-	const report =
-		useInViewSelect(
-			( select: Select ) =>
-				reportOptions
-					? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-					: undefined,
-			[ reportOptions ]
-		) || {};
-
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
+	const { report, loading, error } = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
 	const { currentPrimaryCount, previousPrimaryCount } = processReports(
 		report,

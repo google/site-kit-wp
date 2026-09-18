@@ -28,27 +28,23 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_FORM_COMPLETION_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
 	buildEngagementReportOptions,
 	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ERROR_INTERNAL_SERVER_ERROR } from '@/js/util/errors';
 import { render, within } from '@tests/js/test-utils';
-import {
-	createTestRegistry,
-	freezeFetch,
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '@tests/js/utils';
+import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import FormCompletionRateWidget from './FormCompletionRateWidget';
+import {
+	LEADS_WIDGET_REPORT_ENDPOINT,
+	provideLeadsWidgetTestRegistry,
+	testGenericReportError,
+} from './utils/leadsWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -57,27 +53,10 @@ describe( 'FormCompletionRateWidget', () => {
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
 		KM_ANALYTICS_FORM_COMPLETION_RATE
 	);
-	const reportEndpoint = new RegExp(
-		'^/google-site-kit/v1/modules/analytics-4/data/report'
-	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		provideKeyMetrics( registry );
-		provideModules(
-			registry,
-			withConnected( MODULE_SLUG_ANALYTICS_4 ) as Parameters<
-				typeof provideModules
-			>[ 1 ]
-		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [
-				ENUM_CONVERSION_EVENTS.CONTACT,
-				ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
-				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-			] );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
 
 	function getDates() {
@@ -101,7 +80,7 @@ describe( 'FormCompletionRateWidget', () => {
 	it( 'should render the loading state while resolving the reports', async () => {
 		// This widget requests two reports (primary event + engagement), so
 		// the frozen fetch mock must cover both GET requests.
-		freezeFetch( reportEndpoint, { repeat: 2 } );
+		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<FormCompletionRateWidget { ...widgetProps } />,
@@ -109,42 +88,16 @@ describe( 'FormCompletionRateWidget', () => {
 		);
 		await waitForRegistry();
 
-		[
-			'.googlesitekit-km-widget-tile__loading',
-			'.googlesitekit-km-widget-tile__loading-header',
-			'.googlesitekit-km-widget-tile__loading-body',
-		].forEach( ( selector ) => {
-			expect( container.querySelector( selector ) ).toBeInTheDocument();
-		} );
-	} );
-
-	it( 'should render the error variant when a report fetch fails', async () => {
-		provideModuleRegistrations( registry );
-
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( reportEndpoint, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<FormCompletionRateWidget { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
 		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
 		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
 	} );
+
+	testGenericReportError(
+		() => registry,
+		FormCompletionRateWidget,
+		widgetProps
+	);
 
 	it( 'should render zero values when there are no form completions or sessions in either period', async () => {
 		const primaryEventReportOptions = getPrimaryEventReportOptions();
@@ -171,24 +124,20 @@ describe( 'FormCompletionRateWidget', () => {
 
 		const metricElement = container.querySelector(
 			'.googlesitekit-km-widget-tile__metric'
-		);
-		expect( metricElement ).toBeInTheDocument();
-		expect(
 			// eslint-disable-next-line sitekit/acronym-case
-			within( metricElement as HTMLElement ).getByText( '0%' )
-		).toBeInTheDocument();
+		) as HTMLElement;
+		expect( metricElement ).toBeInTheDocument();
+		expect( within( metricElement ).getByText( '0%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
 		).toHaveTextContent( 'of 0 total sessions' );
 
 		const changeBadge = container.querySelector(
 			'.googlesitekit-change-badge'
-		);
-		expect( changeBadge ).toBeInTheDocument();
-		expect(
 			// eslint-disable-next-line sitekit/acronym-case
-			within( changeBadge as HTMLElement ).getByText( '0%' )
-		).toBeInTheDocument();
+		) as HTMLElement;
+		expect( changeBadge ).toBeInTheDocument();
+		expect( within( changeBadge ).getByText( '0%' ) ).toBeInTheDocument();
 	} );
 
 	it( 'should render the current period form completion rate, sessions subtext, and the change vs. the previous period', async () => {
