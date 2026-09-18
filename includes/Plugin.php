@@ -186,6 +186,10 @@ final class Plugin {
 				$modules = new Core\Modules\Modules( $this->context, $options, $user_options, $authentication, $assets );
 				$modules->register();
 
+				// Modules add their intent listeners during $modules->register() above, so collecting intents earlier would come up empty.
+				$intents = new Core\Intents\Intents();
+				$intents->register();
+
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
 
@@ -208,7 +212,7 @@ final class Plugin {
 				// Assets must be registered after Modules instance is registered.
 				$assets->register();
 
-				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
+				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication, $intents );
 				$screens->register();
 
 				$user_surveys = new Core\User_Surveys\User_Surveys( $authentication, $user_options, $survey_queue );

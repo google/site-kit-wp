@@ -573,6 +573,7 @@ final class AdSense extends Module implements Module_With_Scopes, Module_With_Se
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',

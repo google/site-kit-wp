@@ -42,14 +42,13 @@ import {
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildTopPagesReportOptions,
+	mapTopPagesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topPages';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -58,6 +57,11 @@ import {
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import {
+	GoalDriverTileColumnProps,
+	goalDriverValueColumn,
+} from './utils/goalDriverTileColumns';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface TopPagesDrivingSalesWidgetProps {
 	Widget: ElementType;
@@ -68,11 +72,6 @@ type GoalDriverPageRow = {
 	value: string | number;
 	pagePath?: string;
 };
-
-interface GoalDriverTileColumnProps {
-	row: Record< string, unknown >;
-	fieldValue?: unknown;
-}
 
 const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 	Widget,
@@ -89,21 +88,19 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 	// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
 	// otherwise the tile would silently start showing add-to-cart data under
 	// a "sales" label.
-	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-		GOAL_DRIVER_IDS.TOP_PAGES
-	]( {
+	const reportOptions = buildTopPagesReportOptions( {
 		dates,
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
-	const report = useInViewSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
+	const {
+		report,
+		loading: baseLoading,
+		error,
+	} = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
 	const titles = useInViewSelect(
 		( select: Select ) =>
@@ -116,56 +113,32 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 		[ report, reportOptions ]
 	);
 
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
+	// The base loading state doesn't know about the page titles this tile
+	// additionally waits on, so it's extended here rather than folded into
+	// the shared hook, which every other "Selling products" tile uses as-is.
+	const loading =
+		baseLoading ||
+		( ( report?.rows || [] ).length > 0 && titles === undefined );
+
+	const rows: GoalDriverPageRow[] = mapTopPagesRows( report?.rows || [] ).map(
+		( row ) => {
+			const rawPageTitle = row.pagePath
+				? titles?.[ row.pagePath ]
+				: undefined;
+			const pageTitle = rawPageTitle
+				? decodeAmpersand( rawPageTitle ).trim()
+				: undefined;
+
+			return {
+				...row,
+				label:
+					! pageTitle ||
+					pageTitle === __( '(unknown)', 'google-site-kit' )
+						? row.label
+						: pageTitle,
+			};
+		}
 	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			if (
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'getReport',
-					[ reportOptions ]
-				)
-			) {
-				return true;
-			}
-
-			return ( report?.rows || [] ).length > 0 && titles === undefined;
-		},
-		[ report, reportOptions, titles ]
-	);
-
-	const rows: GoalDriverPageRow[] = GOAL_DRIVER_ROW_MAPPERS[
-		GOAL_DRIVER_IDS.TOP_PAGES
-	]( report?.rows || [] ).map( ( row ) => {
-		const rawPageTitle = row.pagePath
-			? titles?.[ row.pagePath ]
-			: undefined;
-		const pageTitle = rawPageTitle
-			? decodeAmpersand( rawPageTitle ).trim()
-			: undefined;
-
-		return {
-			...row,
-			label:
-				! pageTitle ||
-				pageTitle === __( '(unknown)', 'google-site-kit' )
-					? row.label
-					: pageTitle,
-		};
-	} );
 
 	const columns = [
 		{
@@ -208,12 +181,7 @@ const TopPagesDrivingSalesWidget: FC< TopPagesDrivingSalesWidgetProps > = ( {
 				);
 			},
 		},
-		{
-			field: 'value',
-			Component( { fieldValue }: GoalDriverTileColumnProps ) {
-				return <strong>{ fieldValue as string }</strong>;
-			},
-		},
+		goalDriverValueColumn,
 	];
 
 	return (

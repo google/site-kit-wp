@@ -17,18 +17,17 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	requireModuleConnected,
+	requireModuleNotConnected,
+	requireQueryArg,
+} from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -45,8 +44,14 @@ import EnhancedConversionsNotification, {
 	ENHANCED_CONVERSIONS_NOTIFICATION_ADS,
 } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
-import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
+import {
+	requireGoogleForWooCommerceActivated,
+	requireGoogleForWooCommerceAdsAccount,
+	requireNoGoogleForWooCommerceAdsAccount,
+	requireWooCommerceActivated,
+} from '@/js/modules/ads/data-requirements';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
+import { asyncRequireAll } from '@/js/util/async';
 
 export const ADS_NOTIFICATIONS = {
 	'setup-success-notification-ads': {
@@ -56,19 +61,10 @@ export const ADS_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-			const slug = getQueryArg( location.href, 'slug' );
-
-			if (
-				'authentication_success' === notification &&
-				slug === MODULE_SLUG_ADS
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireQueryArg( 'notification', 'authentication_success' ),
+			requireQueryArg( 'slug', MODULE_SLUG_ADS )
+		),
 	},
 	'setup-success-notification-pax': {
 		Component: PAXSetupSuccessSubtleNotification,
@@ -77,43 +73,21 @@ export const ADS_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		checkRequirements: () => {
-			const notification = getQueryArg( location.href, 'notification' );
-
-			if ( PAX_SETUP_SUCCESS_NOTIFICATION === notification ) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: requireQueryArg(
+			'notification',
+			PAX_SETUP_SUCCESS_NOTIFICATION
+		),
 	},
 	'account-linked-via-google-for-woocommerce': {
 		Component: AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			// isWooCommerceActivated, isGoogleForWooCommerceActivated and isGoogleForWooCommerceLinked are all relying
-			// on the data being resolved in getModuleData() selector.
-			const [ , isModuleConnected ] = await Promise.all( [
-				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected(
-					MODULE_SLUG_ADS
-				),
-			] );
-
-			const {
-				isWooCommerceActivated,
-				isGoogleForWooCommerceActivated,
-				hasGoogleForWooCommerceAdsAccount,
-			} = select( MODULES_ADS );
-
-			return (
-				! isModuleConnected &&
-				isWooCommerceActivated() &&
-				isGoogleForWooCommerceActivated() &&
-				hasGoogleForWooCommerceAdsAccount()
-			);
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleNotConnected( MODULE_SLUG_ADS ),
+			requireWooCommerceActivated(),
+			requireGoogleForWooCommerceActivated(),
+			requireGoogleForWooCommerceAdsAccount()
+		),
 		isDismissible: true,
 	},
 	'ads-setup-cta': {
@@ -124,29 +98,10 @@ export const ADS_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// isGoogleForWooCommerceLinked is relying
-				// on the data being resolved in getModuleData() selector.
-				resolveSelect( MODULES_ADS ).getModuleData(),
-				resolveSelect( CORE_MODULES ).isModuleConnected(
-					MODULE_SLUG_ADS
-				),
-				resolveSelect( CORE_MODULES ).canActivateModule(
-					MODULE_SLUG_ADS
-				),
-			] );
-
-			const { isModuleConnected } = select( CORE_MODULES );
-			const { hasGoogleForWooCommerceAdsAccount } = select( MODULES_ADS );
-
-			const isAdsConnected = isModuleConnected( MODULE_SLUG_ADS );
-
-			return (
-				isAdsConnected === false &&
-				hasGoogleForWooCommerceAdsAccount() === false
-			);
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleNotConnected( MODULE_SLUG_ADS ),
+			requireNoGoogleForWooCommerceAdsAccount()
+		),
 		isDismissible: true,
 		dismissRetries: 1,
 	},
@@ -156,17 +111,7 @@ export const ADS_NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { resolveSelect } ) => {
-			const adsConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ADS );
-
-			if ( ! adsConnected ) {
-				return false;
-			}
-
-			return true;
-		},
+		checkRequirements: requireModuleConnected( MODULE_SLUG_ADS ),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',
 	},

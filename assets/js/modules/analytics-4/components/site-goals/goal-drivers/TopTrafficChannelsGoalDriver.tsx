@@ -38,13 +38,13 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	buildGoalDriverTotalReportOptions,
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
 	parseMetricValue,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
+import { buildTopTrafficChannelsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannels';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
@@ -66,9 +66,7 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const reportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-				GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS
-			]( {
+			buildTopTrafficChannelsReportOptions( {
 				dates,
 				primaryEvent,
 				breakdownFilter,
@@ -78,8 +76,7 @@ const TopTrafficChannelsGoalDriver: FC< GoalDriverComponentProps > = ( {
 		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 	// The percentage shown is each channel's share of every matching event
-	// site-wide, not just the ranked channels above - see
-	// `buildGoalDriverTotalReportOptions`.
+	// site-wide, not just the ranked channels above.
 	const totalReportOptions = useMemo(
 		() =>
 			buildGoalDriverTotalReportOptions( {

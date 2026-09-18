@@ -58,7 +58,7 @@ describe( 'useTrafficOverviewReports', () => {
 	 * Builds the five argument sets the hook passes to `getReport`, in the order
 	 * totals, graph, channels, locations, and devices.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} [url] Optional. The entity URL to add to every argument set.
 	 * @return {Object[]} The five expected argument sets.
@@ -116,7 +116,7 @@ describe( 'useTrafficOverviewReports', () => {
 	/**
 	 * Adds a mock report to the store for each argument set it receives.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object[]} expectedArgs The argument sets to add a report under.
 	 * @return {void}
@@ -130,7 +130,7 @@ describe( 'useTrafficOverviewReports', () => {
 	/**
 	 * Gets the argument sets whose `getReport` resolution has finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object[]} expectedArgs The argument sets to check.
 	 * @return {Object[]} The argument sets the hook has finished resolving.

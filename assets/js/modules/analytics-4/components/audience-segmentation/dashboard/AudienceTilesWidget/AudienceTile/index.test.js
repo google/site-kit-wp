@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { intersectionObserver } from '@shopify/jest-dom-mocks';
 import { getByText as domGetByText } from '@testing-library/dom';
 
 /**
@@ -42,6 +41,7 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import { getPreviousDate } from '@/js/util';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { act, fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -57,6 +57,8 @@ import AudienceTile from '.';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+const { simulateAllIntersections } = mockIntersectionObserver();
 
 describe( 'AudienceTile', () => {
 	let registry, originalViewportWidth;
@@ -155,8 +157,6 @@ describe( 'AudienceTile', () => {
 		// Ensure the viewport is wide enough to render the tooltips.
 		setViewportWidth( 1024 );
 
-		intersectionObserver.mock();
-
 		registry = createTestRegistry();
 		provideModules( registry, [
 			{
@@ -218,7 +218,6 @@ describe( 'AudienceTile', () => {
 	} );
 
 	afterEach( () => {
-		intersectionObserver.restore();
 		mockTrackEvent.mockClear();
 		setViewportWidth( originalViewportWidth );
 	} );
@@ -278,10 +277,7 @@ describe( 'AudienceTile', () => {
 
 			// Simulate the CTA becoming visible.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
@@ -500,10 +496,7 @@ describe( 'AudienceTile', () => {
 
 			// Simulate the tile coming into view.
 			act( () => {
-				intersectionObserver.simulate( {
-					isIntersecting: true,
-					intersectionRatio: 1,
-				} );
+				simulateAllIntersections( true );
 			} );
 
 			expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );

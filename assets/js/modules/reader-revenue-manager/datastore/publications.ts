@@ -140,7 +140,7 @@ type ReaderRevenueManagerRegistry = WPDataRegistry & {
 /**
  * Syncs connected publication fields into settings and savedSettings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} state       Module state.
  * @param {Object} publication Publication to sync from.
@@ -255,8 +255,30 @@ const fetchGetPublicationsStore = createFetchStore( {
 	),
 } );
 
+const fetchPublicationStoreReducerCallback = createReducer(
+	( state: ReaderRevenueManagerState, publication: Publication ) => {
+		state.publications = state.publications || [];
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		const publicationID = publication.publicationId;
+
+		const publicationIndex = state.publications.findIndex(
+			// eslint-disable-next-line sitekit/acronym-case
+			( { publicationId: id } ) => id === publicationID
+		);
+
+		if ( publicationIndex === -1 ) {
+			state.publications.push( publication );
+		} else {
+			state.publications[ publicationIndex ] = publication;
+		}
+
+		syncConnectedPublicationSettings( state, publication );
+	}
+);
+
 const fetchCreatePublicationStore = createFetchStore( {
 	baseName: 'createPublication',
+	reducerCallback: fetchPublicationStoreReducerCallback,
 	controlCallback: ( {
 		displayName,
 		languageCode,
@@ -301,27 +323,6 @@ const fetchCreatePublicationStore = createFetchStore( {
 	},
 	isAction: true,
 } );
-
-const fetchPublicationStoreReducerCallback = createReducer(
-	( state: ReaderRevenueManagerState, publication: Publication ) => {
-		state.publications = state.publications || [];
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		const publicationID = publication.publicationId;
-
-		const publicationIndex = state.publications.findIndex(
-			// eslint-disable-next-line sitekit/acronym-case
-			( { publicationId: id } ) => id === publicationID
-		);
-
-		if ( publicationIndex === -1 ) {
-			state.publications.push( publication );
-		} else {
-			state.publications[ publicationIndex ] = publication;
-		}
-
-		syncConnectedPublicationSettings( state, publication );
-	}
-);
 
 const fetchGetPublicationStore = createFetchStore( {
 	baseName: 'getPublication',
@@ -735,7 +736,7 @@ const baseResolvers = {
 	},
 
 	*getPublication(
-		params: Partial< PublicationParams > = {}
+		params?: Partial< PublicationParams >
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as ReaderRevenueManagerRegistry;
@@ -757,7 +758,7 @@ const baseResolvers = {
 		}
 
 		const publicationID =
-			params.publicationID ||
+			params?.publicationID ||
 			registry
 				.select( MODULES_READER_REVENUE_MANAGER )
 				.getPublicationID();

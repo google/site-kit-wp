@@ -24,58 +24,31 @@ import { ElementType, FC } from 'react';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
-import {
-	MetricTileTable,
-	MetricTileTablePlainText,
-} from '@/js/components/KeyMetrics';
+import { Select, useSelect } from 'googlesitekit-data';
+import { MetricTileTable } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import {
-	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	GOAL_DRIVER_ROW_MAPPERS,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+	buildTopTrafficChannelsRateReportOptions,
+	mapTopTrafficChannelsRateRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { goalDriverTileColumns } from './utils/goalDriverTileColumns';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface TopTrafficChannelsDrivingSalesRateWidgetProps {
 	Widget: ElementType;
 }
-
-interface GoalDriverTileColumnProps {
-	row: Record< string, unknown >;
-	fieldValue?: unknown;
-}
-
-const columns = [
-	{
-		field: 'label',
-		Component( { fieldValue }: GoalDriverTileColumnProps ) {
-			return (
-				<MetricTileTablePlainText content={ fieldValue as string } />
-			);
-		},
-	},
-	{
-		field: 'value',
-		Component( { fieldValue }: GoalDriverTileColumnProps ) {
-			return <strong>{ fieldValue as string }</strong>;
-		},
-	},
-];
 
 const TopTrafficChannelsDrivingSalesRateWidget: FC<
 	TopTrafficChannelsDrivingSalesRateWidgetProps
@@ -90,50 +63,17 @@ const TopTrafficChannelsDrivingSalesRateWidget: FC<
 	// `getPrimaryEcommerceEvent()`'s detected fallback to `add_to_cart` -
 	// otherwise the tile would silently start showing add-to-cart data under
 	// a "sales" label.
-	const reportOptions = GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[
-		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-	]( {
+	const reportOptions = buildTopTrafficChannelsRateReportOptions( {
 		dates,
 		primaryEvent: ENUM_CONVERSION_EVENTS.PURCHASE,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	} );
 
-	const report = useInViewSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
-				: undefined,
-		[ reportOptions ]
-	);
+	const { report, loading, error } = useAnalyticsReportsData( {
+		primaryOptions: reportOptions,
+	} );
 
-	const error = useSelect(
-		( select: Select ) =>
-			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
-				  )
-				: undefined,
-		[ reportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! reportOptions ) {
-				return true;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
-			);
-		},
-		[ reportOptions ]
-	);
-
-	const rows = GOAL_DRIVER_ROW_MAPPERS[
-		GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE
-	]( report?.rows || [] );
+	const rows = mapTopTrafficChannelsRateRows( report?.rows || [] );
 
 	return (
 		<MetricTileTable
@@ -141,7 +81,7 @@ const TopTrafficChannelsDrivingSalesRateWidget: FC<
 			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE }
 			loading={ loading }
 			rows={ rows }
-			columns={ columns }
+			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
 			ZeroState={ ZeroDataMessage }
 			error={ error }

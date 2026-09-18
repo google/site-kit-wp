@@ -41,12 +41,12 @@ import {
 	GOAL_TYPES,
 	TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
 import {
-	GOAL_DRIVER_REPORT_OPTIONS_BUILDERS,
-	buildGoalDriverTotalReportOptions,
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
+import { buildTopAuthorsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topAuthors';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
 	EDIT_SCOPE,
@@ -71,20 +71,17 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 	);
 	const candidateReportOptions = useMemo(
 		() =>
-			GOAL_DRIVER_REPORT_OPTIONS_BUILDERS[ GOAL_DRIVER_IDS.TOP_AUTHORS ](
-				{
-					dates,
-					primaryEvent,
-					breakdownFilter,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-					context: goalType,
-				}
-			),
+			buildTopAuthorsReportOptions( {
+				dates,
+				primaryEvent,
+				breakdownFilter,
+				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				context: goalType,
+			} ),
 		[ dates, primaryEvent, breakdownFilter, goalType ]
 	);
 	// The percentage shown is each author's share of every matching event
-	// site-wide, not just the ranked authors above - see
-	// `buildGoalDriverTotalReportOptions`.
+	// site-wide, not just the ranked authors above.
 	const totalReportOptions = useMemo(
 		() =>
 			buildGoalDriverTotalReportOptions( {

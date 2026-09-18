@@ -186,8 +186,8 @@ describe( 'TopAuthorsGoalDriver', () => {
 		);
 		// Once the custom dimension is created, the driver becomes able to
 		// load its reports (the ranked list and the site-wide total) - their
-		// content isn't under test here, so an empty response is enough to
-		// avoid an unmatched-request console error.
+		// content isn't checked here, so an empty response is enough to
+		// avoid a console error.
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -265,45 +265,6 @@ describe( 'TopAuthorsGoalDriver', () => {
 		);
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates();
-		const authorsReportOptions = {
-			...dates,
-			dimensions: [
-				'customEvent:googlesitekit_post_author',
-				'eventName',
-			],
-			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: [ 'purchase' ],
-				},
-				'customEvent:googlesitekit_post_author': {
-					filterType: 'emptyFilter',
-					notExpression: true,
-				},
-			},
-			metrics: [ { name: 'eventCount' } ],
-			orderby: [
-				{
-					metric: { metricName: 'eventCount' },
-					desc: true,
-				},
-			],
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-authors_ecommerce',
-		};
-		const totalReportOptions = {
-			...dates,
-			dimensionFilters: {
-				eventName: {
-					filterType: 'inListFilter',
-					value: [ 'purchase' ],
-				},
-			},
-			metrics: [ { name: 'eventCount' } ],
-			reportID:
-				'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
-		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
@@ -331,7 +292,36 @@ describe( 'TopAuthorsGoalDriver', () => {
 					},
 				],
 			},
-			{ options: authorsReportOptions }
+			{
+				options: {
+					...dates,
+					dimensions: [
+						'customEvent:googlesitekit_post_author',
+						'eventName',
+					],
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: [ 'purchase' ],
+						},
+						'customEvent:googlesitekit_post_author': {
+							filterType: 'emptyFilter',
+							notExpression: true,
+						},
+					},
+					metrics: [ { name: 'eventCount' } ],
+					orderby: [
+						{
+							metric: { metricName: 'eventCount' },
+							desc: true,
+						},
+					],
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+					keepEmptyRows: false,
+					reportID:
+						'analytics-4_goal-driver-reports_top-authors_ecommerce',
+				},
+			}
 		);
 		// The site-wide total (1,000) is larger than the sum of the ranked
 		// rows above (714), so the percentages below only match if the
@@ -340,7 +330,20 @@ describe( 'TopAuthorsGoalDriver', () => {
 			{
 				rows: [ { metricValues: [ { value: '1000' } ] } ],
 			},
-			{ options: totalReportOptions }
+			{
+				options: {
+					...dates,
+					dimensionFilters: {
+						eventName: {
+							filterType: 'inListFilter',
+							value: [ 'purchase' ],
+						},
+					},
+					metrics: [ { name: 'eventCount' } ],
+					reportID:
+						'analytics-4_goal-driver-reports_top-authors-total_ecommerce',
+				},
+			}
 		);
 
 		const { getByText, waitForRegistry } = render(

@@ -35,7 +35,7 @@ const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.
@@ -76,7 +76,7 @@ describe( 'TrafficBreakdown', () => {
 		return render( <TrafficBreakdown reports={ reports } />, { registry } );
 	}
 
-	it( 'renders the three headings in the catalog order', () => {
+	it( 'renders the section heading above the three column headings, in the catalog order', () => {
 		const { getAllByRole } = renderBreakdown( {
 			channels: CHANNELS,
 			locations: LOCATIONS,
@@ -86,10 +86,23 @@ describe( 'TrafficBreakdown', () => {
 		expect(
 			getAllByRole( 'heading' ).map( ( heading ) => heading.textContent )
 		).toEqual( [
+			'Traffic breakdown',
 			'Visitors by channels',
 			'Visitors by locations',
 			'Visitors by devices',
 		] );
+	} );
+
+	it( 'names the section region after its own heading', () => {
+		const { getAllByRole } = renderBreakdown( {
+			channels: CHANNELS,
+			locations: LOCATIONS,
+			devices: DEVICES,
+		} );
+
+		expect(
+			getAllByRole( 'region', { name: 'Traffic breakdown' } )
+		).toHaveLength( 1 );
 	} );
 
 	it( 'names each column region after its own heading', () => {
@@ -108,6 +121,28 @@ describe( 'TrafficBreakdown', () => {
 		expect(
 			getAllByRole( 'region', { name: 'Visitors by devices' } )
 		).toHaveLength( 1 );
+	} );
+
+	it( 'marks each column with its own dimension, so only the devices column capitalizes its labels', () => {
+		const { container } = renderBreakdown( {
+			channels: CHANNELS,
+			locations: LOCATIONS,
+			devices: DEVICES,
+		} );
+
+		const columns = container.querySelectorAll(
+			'.googlesitekit-traffic-overview__breakdown-column'
+		);
+
+		expect( columns[ 0 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--channels'
+		);
+		expect( columns[ 1 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--locations'
+		);
+		expect( columns[ 2 ] ).toHaveClass(
+			'googlesitekit-traffic-overview__breakdown-column--devices'
+		);
 	} );
 
 	it( 'reads each row as its label then its share', () => {

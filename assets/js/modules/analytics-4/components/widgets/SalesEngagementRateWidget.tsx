@@ -29,19 +29,20 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MetricTileNumeric } from '@/js/components/KeyMetrics';
 import {
 	CORE_USER,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
-import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/reports';
+import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import useAnalyticsReportsData from './utils/useAnalyticsReportsData';
 
 interface SalesEngagementRateWidgetProps {
 	Widget: ElementType;
@@ -64,41 +65,17 @@ const SalesEngagementRateWidget: FC< SalesEngagementRateWidgetProps > = ( {
 
 	const engagementReportOptions = buildEngagementReportOptions( dates );
 
-	const engagementReport =
-		useInViewSelect(
-			( select: Select ) =>
-				primaryEvent
-					? select( MODULES_ANALYTICS_4 ).getReport(
-							engagementReportOptions
-					  )
-					: undefined,
-			[ primaryEvent, engagementReportOptions ]
-		) || {};
-
-	const error = useSelect(
-		( select: Select ) =>
-			primaryEvent
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ engagementReportOptions ]
-				  )
-				: undefined,
-		[ primaryEvent, engagementReportOptions ]
-	);
-
-	const loading = useSelect(
-		( select: Select ) => {
-			if ( ! primaryEvent ) {
-				return true;
-			}
-
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ engagementReportOptions ]
-			);
-		},
-		[ primaryEvent, engagementReportOptions ]
-	);
+	// `engagementReportOptions` is never `undefined` (it only depends on
+	// `dates`), so readiness is gated on the separately-selected
+	// `primaryEvent` instead of the default "is `primaryOptions` truthy" check.
+	const {
+		report: engagementReport,
+		loading,
+		error,
+	} = useAnalyticsReportsData( {
+		primaryOptions: engagementReportOptions,
+		ready: Boolean( primaryEvent ),
+	} );
 
 	const { currentEngagementRate, previousEngagementRate, currentSessions } =
 		processReports( {}, engagementReport );
