@@ -1,6 +1,5 @@
 /**
- * Utility to reload the Storybook preview iframe when a story needs a
- * different set of feature flags than the ones already active on the page.
+ * Feature flag reload utility for Storybook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,75 +16,59 @@
  * limitations under the License.
  */
 
-// Keep in sync with the inline script in `storybook/preview-head.html`,
-// which reads this same key to seed `_googlesitekitBaseData.enabledFeatures`
-// before the bundle (re-)evaluates.
+/**
+ * External dependencies
+ */
+import { xor } from 'lodash';
+
+/**
+ * Session storage key for the feature flags the page loaded with. The inline
+ * script in `storybook/preview-head.html` reads the same key, so change both
+ * together.
+ */
 const STORAGE_KEY = 'googlesitekit-storybook-features';
 
 /**
- * Gets the feature flags currently baked into this page load.
+ * Reloads the Storybook preview when a story needs different feature flags
+ * than the page loaded with.
+ *
+ * A datastore's `base.js` calls `isFeatureEnabled()` while the bundle loads,
+ * so changing `enabledFeatures` later has no effect. A reload runs the bundle
+ * again, and `storybook/preview-head.html` sets the flags from the same
+ * session storage key first.
  *
  * @since n.e.x.t
  *
- * @return {string[]} Feature flags read from session storage.
- */
-function getActiveFeatures(): string[] {
-	try {
-		const raw = window.sessionStorage.getItem( STORAGE_KEY );
-		return raw ? JSON.parse( raw ) : [];
-	} catch {
-		return [];
-	}
-}
-
-/**
- * Checks whether two feature flag lists contain the same set of flags,
- * ignoring order.
- *
- * @since n.e.x.t
- *
- * @param {string[]} a First list of feature flags.
- * @param {string[]} b Second list of feature flags.
- * @return {boolean} True if both lists contain the same flags.
- */
-function featureSetsMatch( a: string[], b: string[] ): boolean {
-	if ( a.length !== b.length ) {
-		return false;
-	}
-
-	const sortedA = [ ...a ].sort();
-	const sortedB = [ ...b ].sort();
-
-	return sortedA.every( ( feature, index ) => feature === sortedB[ index ] );
-}
-
-/**
- * Reloads the Storybook preview iframe if the given story requires a
- * different set of feature flags than the ones already baked into this page
- * load, so that flags checked at module-evaluation time (eg. via
- * `isFeatureEnabled()` at the top of a datastore's `base.js`, which only
- * ever runs once per page load) are correct for the story about to render.
- *
- * This can't be done by mutating `enabledFeatures` at runtime, because code
- * that reads it at module scope has already run by the time any decorator
- * executes. Reloading re-evaluates the whole bundle from scratch, and the
- * inline script in `storybook/preview-head.html` seeds
- * `_googlesitekitBaseData.enabledFeatures` from the same session storage
- * key before that happens.
- *
- * @since n.e.x.t
- *
- * @param {string[]} features Feature flags the current story needs enabled.
- * @return {boolean} True if a reload was triggered. Callers should avoid
- *                    rendering the story (and its other decorators) in this
- *                    case, since the page is about to navigate away.
+ * @param {string[]} [features] Optional. Feature flags the story needs.
+ * @return {boolean} `true` when the page is reloading, so `storybook/preview.js`
+ *                   renders nothing.
  */
 export function reloadForFeatures( features: string[] = [] ): boolean {
-	if ( featureSetsMatch( getActiveFeatures(), features ) ) {
+	let activeFeatures: string[] = [];
+
+	try {
+		const storedFeatures = window.sessionStorage.getItem( STORAGE_KEY );
+		activeFeatures = storedFeatures ? JSON.parse( storedFeatures ) : [];
+	} catch {
+		// A missing or broken value means the page loaded with no flags.
+	}
+
+	// `xor()` returns the flags only one list has, so an empty result means the
+	// page already has the flags the story needs.
+	if ( xor( activeFeatures, features ).length === 0 ) {
 		return false;
 	}
 
-	window.sessionStorage.setItem( STORAGE_KEY, JSON.stringify( features ) );
+	try {
+		window.sessionStorage.setItem(
+			STORAGE_KEY,
+			JSON.stringify( features )
+		);
+	} catch {
+		// Without the stored flags, the page reloads forever.
+		return false;
+	}
+
 	window.location.reload();
 
 	return true;
