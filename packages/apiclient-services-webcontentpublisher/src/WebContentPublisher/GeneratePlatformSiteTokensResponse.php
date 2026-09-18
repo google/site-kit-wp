@@ -17,32 +17,29 @@
 
 namespace Google\Service\WebContentPublisher;
 
-class CheckFreeAccessResponse extends \Google\Model
+class GeneratePlatformSiteTokensResponse extends \Google\Collection
 {
-  /**
-   * Output only. True if free access should be allowed, false otherwise.
-   *
-   * @var bool
-   */
-  public $isAllowed;
+  protected $collection_key = 'siteTokens';
+  protected $siteTokensType = SiteToken::class;
+  protected $siteTokensDataType = 'array';
 
   /**
-   * Output only. True if free access should be allowed, false otherwise.
+   * List of domain-scoped secure token mappings.
    *
-   * @param bool $isAllowed
+   * @param SiteToken[] $siteTokens
    */
-  public function setIsAllowed($isAllowed)
+  public function setSiteTokens($siteTokens)
   {
-    $this->isAllowed = $isAllowed;
+    $this->siteTokens = $siteTokens;
   }
   /**
-   * @return bool
+   * @return SiteToken[]
    */
-  public function getIsAllowed()
+  public function getSiteTokens()
   {
-    return $this->isAllowed;
+    return $this->siteTokens;
   }
 }
 
 // Adding a class alias for backwards compatibility with the previous class name.
-class_alias(CheckFreeAccessResponse::class, 'Google_Service_WebContentPublisher_CheckFreeAccessResponse');
+class_alias(GeneratePlatformSiteTokensResponse::class, 'Google_Service_WebContentPublisher_GeneratePlatformSiteTokensResponse');
