@@ -29,6 +29,10 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components/layout';
+import {
+	getGraphReportOptions,
+	getTotalsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	MODULES_ANALYTICS_4,
@@ -41,7 +45,6 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import whenActive from '@/js/util/when-active';
 import DataSourceLink from './DataSourceLink';
 import DimensionTabs from './DimensionTabs';
-import { getGraphReportOptions, getTotalsReportOptions } from './reportOptions';
 import TotalUserCount from './TotalUserCount';
 import UserCountGraph from './UserCountGraph';
 import UserDimensionsPieChart from './UserDimensionsPieChart';
