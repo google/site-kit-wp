@@ -1,5 +1,5 @@
 /**
- * Storybook test-runner config.
+ * Storybook test runner configuration.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,32 +21,30 @@
  */
 const { setupPage } = require( '@storybook/test-runner' );
 
-// Substring of the error Playwright throws from `page.exposeBinding()` when
-// a binding name is already registered on the page. Keep this in sync with
-// https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/page.ts.
+/**
+ * Part of the error `page.exposeBinding()` throws for a binding name the page
+ * already has.
+ *
+ * See: https://github.com/microsoft/playwright/blob/main/packages/playwright-core/src/server/page.ts.
+ */
 const ALREADY_REGISTERED_MESSAGE = 'has been already registered';
 
 /**
- * Makes `page.exposeBinding()` a no-op for bindings that are already
- * registered, instead of throwing.
+ * Makes `page.exposeBinding()` ignore a binding the page already has.
  *
- * Playwright bindings (unlike `<script>` tags added via
- * `page.addScriptTag()`) survive page navigations, so they're still
- * registered on `page` by the time `restoreTestHelperIfNeeded()` below calls
- * the test-runner's `setupPage()` a second time for the same page. Without
- * this, that second call throws before it reaches the part that re-injects
- * the missing `__test` helper.
+ * A binding survives a page reload, so the second `setupPage()` call throws
+ * before it adds the `__test` helper again.
  *
  * @since n.e.x.t
  *
  * @param {Object} page Playwright page to patch.
  */
-function tolerateReExposedBindings( page ) {
-	if ( page.__exposeBindingTolerant ) {
+function ignoreRegisteredBindings( page ) {
+	if ( page.__ignoresRegisteredBindings ) {
 		return;
 	}
 
-	page.__exposeBindingTolerant = true;
+	page.__ignoresRegisteredBindings = true;
 
 	const originalExposeBinding = page.exposeBinding.bind( page );
 	page.exposeBinding = async ( name, ...args ) => {
@@ -64,34 +62,24 @@ function tolerateReExposedBindings( page ) {
 
 module.exports = {
 	/**
-	 * Restores the test-runner's page setup if a story-driven reload wiped it.
+	 * Adds the `__test` helper again after a page reload removes it.
 	 *
-	 * `storybook/preview.js`'s `reloadForFeatures` decorator calls
-	 * `window.location.reload()` whenever a story needs a different set of
-	 * feature flags than the ones already baked into the current page load
-	 * (see `storybook/utils/reloadForFeatures.js`). The test-runner only runs
-	 * its own page setup (which navigates to the Storybook iframe and injects
-	 * the `__test` helper via `page.addScriptTag()`) once per test file, so
-	 * that reload wipes the injected helper for the rest of the file. Any
-	 * subsequent story visited on this page then fails with
-	 * `ReferenceError: __test is not defined` instead of rendering.
-	 *
-	 * Re-run the test-runner's own `setupPage()` (which re-navigates and
-	 * re-injects the helper) whenever it's missing, immediately before each
-	 * story is visited, so later stories in the same file keep working
-	 * however many times an earlier story reloaded the page.
+	 * The test runner adds the helper once per test file. A reload for a story
+	 * with different feature flags removes it, and every later story then
+	 * fails with `ReferenceError: __test is not defined`.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} page Playwright page for the current test file.
 	 */
 	async preVisit( page ) {
+		// `evaluate()` rejects while the page is still reloading.
 		const hasTestHelper = await page
 			.evaluate( () => typeof window.__test === 'function' )
 			.catch( () => false );
 
 		if ( ! hasTestHelper ) {
-			tolerateReExposedBindings( page );
+			ignoreRegisteredBindings( page );
 			await setupPage( page, page.context() );
 		}
 	},
