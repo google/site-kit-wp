@@ -900,8 +900,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-			$configured_ctas                            = isset( $settings['configuredCTAs'] ) ? (array) $settings['configuredCTAs'] : array();
-			$metrics['rrm_publication_configured_ctas'] = array_values( array_unique( $configured_ctas ) );
+			$configured_ctas = isset( $settings['configuredCTAs'] )
+				? (array) $settings['configuredCTAs']
+				: array();
+
+			$metrics['rrm_publication_configured_ctas'] = empty( $configured_ctas )
+				? ''
+				: array_values( array_unique( $configured_ctas ) );
 		}
 
 		return $metrics;

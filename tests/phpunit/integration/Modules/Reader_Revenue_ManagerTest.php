@@ -1031,16 +1031,16 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				),
 				'When rrmExpressSetup feature flag is off, the `rrm_publication_configured_ctas` metric should not be reported.',
 			),
-			'when configuredCTAs is empty, the metric is an empty array'                                => array(
+			'when configuredCTAs is empty, the metric is an empty string'                                => array(
 				array(
 					'configuredCTAs' => array(),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => array(),
+					'rrm_publication_configured_ctas'  => '',
 				),
-				'When configuredCTAs is empty, the metric should be an empty array.',
-				true, // Enable feature flag.
+				'When configuredCTAs is empty, the metric should be an empty string.',
+				true,
 			),
 			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
 				array(
