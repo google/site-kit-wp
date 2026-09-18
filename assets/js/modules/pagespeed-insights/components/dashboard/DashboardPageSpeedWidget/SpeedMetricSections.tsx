@@ -27,6 +27,7 @@ import { __, _x } from '@wordpress/i18n';
  */
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
+import { FieldMetrics } from '@/js/modules/pagespeed-insights/components/common/reportMetrics';
 import { StrategyData } from './getPDFData';
 import MetricRow from './MetricRow';
 import MetricSection from './MetricSection';
@@ -43,6 +44,15 @@ const styles = createPDFStyles( {
 	},
 } );
 
+interface RealUserDataRow {
+	/** The field metric the row shows. */
+	key: keyof FieldMetrics;
+	/** The metric's name, like "Largest Contentful Paint". */
+	title: string;
+	/** The line under the title that says what the metric measures. */
+	description: string;
+}
+
 interface SpeedMetricSectionsProps {
 	/** The mobile strategy's metrics, or null when the mobile report failed. */
 	mobile: StrategyData | null;
@@ -54,10 +64,50 @@ export default function SpeedMetricSections( {
 	mobile,
 	desktop,
 }: SpeedMetricSectionsProps ) {
-	const hasField =
-		mobile?.field !== null && mobile?.field !== undefined
-			? true
-			: desktop?.field !== null && desktop?.field !== undefined;
+	const realUserDataRows: RealUserDataRow[] = [
+		{
+			key: 'largestContentfulPaint',
+			title: _x(
+				'Largest Contentful Paint',
+				'core web vitals name',
+				'google-site-kit'
+			),
+			description: __(
+				'Time it takes for the page to load',
+				'google-site-kit'
+			),
+		},
+		{
+			key: 'cumulativeLayoutShift',
+			title: _x(
+				'Cumulative Layout Shift',
+				'core web vitals name',
+				'google-site-kit'
+			),
+			description: __(
+				'How stable the elements on the page are',
+				'google-site-kit'
+			),
+		},
+		{
+			key: 'interactionToNextPaint',
+			title: _x(
+				'Interaction to Next Paint',
+				'core web vitals name',
+				'google-site-kit'
+			),
+			description: __(
+				'How quickly your page responds when people interact with it',
+				'google-site-kit'
+			),
+		},
+	];
+
+	// CrUX can return any subset of these metrics, so a row is only shown when
+	// Mobile or Desktop has a value for it.
+	const rowsWithValue = realUserDataRows.filter(
+		( { key } ) => mobile?.field?.[ key ] || desktop?.field?.[ key ]
+	);
 
 	return (
 		<Fragment>
@@ -101,63 +151,25 @@ export default function SpeedMetricSections( {
 					/>
 				</MetricSection>
 			</PDFCard>
-			{ hasField && (
+			{ rowsWithValue.length > 0 && (
 				<PDFCard style={ styles.secondCard }>
 					<MetricSection
 						title={ __( 'Real user data', 'google-site-kit' ) }
 					>
-						<MetricRow
-							title={ _x(
-								'Largest Contentful Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'Time it takes for the page to load',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.largestContentfulPaint
-							}
-							desktopMetric={
-								desktop?.field?.largestContentfulPaint
-							}
-						/>
-						<MetricRow
-							title={ _x(
-								'Cumulative Layout Shift',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How stable the elements on the page are',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.cumulativeLayoutShift
-							}
-							desktopMetric={
-								desktop?.field?.cumulativeLayoutShift
-							}
-						/>
-						<MetricRow
-							title={ _x(
-								'Interaction to Next Paint',
-								'core web vitals name',
-								'google-site-kit'
-							) }
-							description={ __(
-								'How quickly your page responds when people interact with it',
-								'google-site-kit'
-							) }
-							mobileMetric={
-								mobile?.field?.interactionToNextPaint
-							}
-							desktopMetric={
-								desktop?.field?.interactionToNextPaint
-							}
-							isLast
-						/>
+						{ rowsWithValue.map(
+							( { key, title, description }, index ) => (
+								<MetricRow
+									key={ key }
+									title={ title }
+									description={ description }
+									mobileMetric={ mobile?.field?.[ key ] }
+									desktopMetric={ desktop?.field?.[ key ] }
+									isLast={
+										index === rowsWithValue.length - 1
+									}
+								/>
+							)
+						) }
 					</MetricSection>
 				</PDFCard>
 			) }
