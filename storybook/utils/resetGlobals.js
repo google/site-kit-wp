@@ -28,16 +28,11 @@ import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
 
 export function resetGlobals() {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	// Preserve `enabledFeatures`, which may have been seeded by the inline
-	// script in `storybook/preview-head.html` (see `reloadForFeatures`)
-	// before some datastore modules are lazily loaded and read it at
-	// module-evaluation time. Story chunks can load lazily, after this
-	// function has already run for the current render, so clobbering
-	// `enabledFeatures` here would wipe out flags those modules haven't
-	// read yet.
+	// Keep the flags `storybook/preview-head.html` set, because a module loaded
+	// later still reads them.
 	const { enabledFeatures } = global._googlesitekitBaseData || {};
 	global._googlesitekitBaseData = {
-		...( enabledFeatures ? { enabledFeatures } : {} ),
+		enabledFeatures,
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',
 		adminURL: 'http://example.com/wp-admin/',
