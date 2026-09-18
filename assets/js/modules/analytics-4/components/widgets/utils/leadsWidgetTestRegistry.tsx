@@ -1,5 +1,5 @@
 /**
- * Shared test registry setup for the "Selling products" Key Metrics widgets.
+ * Shared test registry setup for the "Generating leads" Key Metrics widgets.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -48,17 +48,17 @@ type WidgetProps = ReturnType< typeof getWidgetComponentProps >;
 
 /**
  * Configures a test registry with a connected Analytics-4 module, Key
- * Metrics settings, and a detected "purchase" conversion event.
+ * Metrics settings, and the detected lead-generation conversion events.
  *
- * Shared setup for the "Selling products" Key Metrics widget tests
- * (SalesRateWidget, TotalSalesWidget, TopPagesDrivingSalesWidget, etc).
+ * Shared setup for the "Generating leads" Key Metrics widget tests
+ * (FormCompletionRateWidget, TotalFormCompletionsWidget, LeadsByCountriesWidget, etc).
  *
- * @since 1.188.0
+ * @since n.e.x.t
  *
  * @param {Object} registry Data registry to configure.
  * @return {void}
  */
-export function provideSalesWidgetTestRegistry(
+export function provideLeadsWidgetTestRegistry(
 	registry: WPDataRegistry
 ): void {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -71,24 +71,28 @@ export function provideSalesWidgetTestRegistry(
 	);
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		.setDetectedEvents( [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 }
 
 /**
  * The Analytics 4 report endpoint, matched regardless of query args.
  *
- * Shared by every "Selling products" widget test, since intercepting it with
+ * Shared by every "Generating leads" widget test, since intercepting it with
  * an error response exercises each tile's error UI the same way, no matter
  * which specific report(s) the tile itself requests.
  *
- * @since 1.188.0
+ * @since n.e.x.t
  */
-export const SALES_WIDGET_REPORT_ENDPOINT = KEY_METRICS_WIDGET_REPORT_ENDPOINT;
+export const LEADS_WIDGET_REPORT_ENDPOINT = KEY_METRICS_WIDGET_REPORT_ENDPOINT;
 
 /**
- * Registers the shared "generic report error" test for a Selling products widget.
+ * Registers the shared "generic report error" test for a Generating leads widget.
  *
- * @since 1.188.0
+ * @since n.e.x.t
  *
  * @param {Function}      getRegistry Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component   The widget component under test.
@@ -104,17 +108,17 @@ export function testGenericReportError(
 		getRegistry,
 		Component,
 		widgetProps,
-		SALES_WIDGET_REPORT_ENDPOINT
+		LEADS_WIDGET_REPORT_ENDPOINT
 	);
 }
 
 /**
- * Registers the shared "insufficient permissions" error test for a Selling products widget.
+ * Registers the shared "insufficient permissions" error test for a Generating leads widget.
  *
  * Only the `MetricTileTable`-based tiles use this - the `MetricTileNumeric`
  * ones don't have a dedicated insufficient-permissions variant.
  *
- * @since 1.188.0
+ * @since n.e.x.t
  *
  * @param {Function}      getRegistry Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component   The widget component under test.
@@ -130,6 +134,6 @@ export function testInsufficientPermissionsError(
 		getRegistry,
 		Component,
 		widgetProps,
-		SALES_WIDGET_REPORT_ENDPOINT
+		LEADS_WIDGET_REPORT_ENDPOINT
 	);
 }

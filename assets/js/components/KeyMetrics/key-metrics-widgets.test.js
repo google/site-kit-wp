@@ -20,18 +20,26 @@
  * Internal dependencies
  */
 import {
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -685,6 +693,162 @@ describe( 'Selling products Key Metric tiles', () => {
 		} );
 
 		it( 'should be offered on a view-only dashboard when both purchase is detected and the post author custom dimension is available', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+	} );
+} );
+
+describe( 'Generating leads Key Metric tiles', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry );
+		// None of the Generating leads slugs are in the default active Key
+		// Metrics, so `isKeyMetricActive( slug )` resolves to `false` below.
+		provideKeyMetrics( registry );
+		// None of the Generating leads conversion events are in the default
+		// user input settings, so they don't count as active goals below.
+		provideKeyMetricsUserInputSettings( registry );
+	} );
+
+	const GENERATING_LEADS_SLUGS = [
+		KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+		KM_ANALYTICS_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+		KM_ANALYTICS_LEADS_BY_COUNTRIES,
+		KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+	];
+
+	it.each( GENERATING_LEADS_SLUGS )(
+		'should offer %s when any lead event is detected',
+		( slug ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( true );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( true );
+		}
+	);
+
+	it.each( GENERATING_LEADS_SLUGS )(
+		'should not offer %s when no lead event has been detected',
+		( slug ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( false );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( false );
+		}
+	);
+
+	describe( 'Top authors driving leads', () => {
+		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS;
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+		} );
+
+		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should be offered on a view-only dashboard when both a lead event is detected and the post author custom dimension is available', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 				availableCustomDimensions: [ 'googlesitekit_post_author' ],
 			} );
