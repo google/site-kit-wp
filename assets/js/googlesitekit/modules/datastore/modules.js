@@ -239,13 +239,13 @@ const baseActions = {
 	 * @since 1.8.0
 	 *
 	 * @param {string} slug      Slug of the module to activate.
-	 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs`.
-	 * @return {Object} Object with `{response, error}`. On success, `response.moduleReauthURL`
-	 *                  is set to redirect the user to the corresponding module setup or OAuth
-	 *                  consent screen.
+	 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.
+	 * @return {Object}                 Object with `{response, error}`. On success, `response.moduleReauthURL`
+	 *                                  is set to redirect the user to the corresponding module setup or OAuth
+	 *                                  consent screen.
 	 */
 	*activateModule( slug, options = {} ) {
-		const { redirectQueryArgs = {} } = options;
+		const { redirectQueryArgs = {}, additionalScopes = [] } = options;
 
 		const { response, error } = yield baseActions.setModuleActivation( {
 			slug,
@@ -254,7 +254,7 @@ const baseActions = {
 
 		if ( response?.success === true ) {
 			const moduleReauthURL = yield {
-				payload: { slug, redirectQueryArgs },
+				payload: { slug, redirectQueryArgs, additionalScopes },
 				type: SELECT_MODULE_REAUTH_URL,
 			};
 			return {
@@ -620,7 +620,11 @@ export const baseControls = {
 	[ SELECT_MODULE_REAUTH_URL ]: createRegistryControl(
 		( { select, resolveSelect } ) =>
 			async ( { payload } ) => {
-				const { slug, redirectQueryArgs = {} } = payload;
+				const {
+					slug,
+					redirectQueryArgs = {},
+					additionalScopes = [],
+				} = payload;
 				// Ensure the module is loaded before selecting the store name.
 				await resolveSelect( CORE_MODULES ).getModule( slug );
 
@@ -635,6 +639,7 @@ export const baseControls = {
 				if ( select( storeName )?.getAdminReauthURL ) {
 					return await resolveSelect( storeName ).getAdminReauthURL( {
 						redirectQueryArgs,
+						additionalScopes,
 					} );
 				}
 				return select( CORE_SITE ).getAdminURL(
