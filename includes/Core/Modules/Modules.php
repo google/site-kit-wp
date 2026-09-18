@@ -303,6 +303,13 @@ final class Modules implements Provides_Feature_Metrics {
 			2
 		);
 
+		add_filter(
+			'googlesitekit_connected_modules',
+			function () {
+				return $this->get_connected_modules();
+			}
+		);
+
 		add_filter( 'option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ) );
 		add_filter( 'default_option_' . Module_Sharing_Settings::OPTION, $this->get_method_proxy( 'populate_default_shared_ownership_module_settings' ), 20 );
 

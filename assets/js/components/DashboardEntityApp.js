@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -68,6 +69,8 @@ import P from './Typography/P';
 import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
+	useFeatureCountCache();
+
 	const viewOnlyDashboard = useViewOnly();
 
 	const viewableModules = useSelect( ( select ) => {
