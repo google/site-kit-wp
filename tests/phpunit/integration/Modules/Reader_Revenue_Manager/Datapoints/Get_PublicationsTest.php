@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager\Datapoints;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
@@ -47,62 +46,54 @@ class Get_PublicationsTest extends TestCase {
 			'The Web Content Publisher list publications endpoint should be used.'
 		);
 		$this->assertSame(
-			'filter=site_url = "https://example.com" OR site_url = "http://example.com" OR site_url = "https://www.example.com" OR site_url = "http://www.example.com"',
+			'filter=canonical_domain = "example.com" OR canonical_domain = "www.example.com" OR canonical_domain = "https://example.com" OR canonical_domain = "http://example.com" OR canonical_domain = "https://www.example.com" OR canonical_domain = "http://www.example.com" OR canonical_domain = "https://example.com/" OR canonical_domain = "http://example.com/" OR canonical_domain = "https://www.example.com/" OR canonical_domain = "http://www.example.com/"',
 			urldecode( $request->getUri()->getQuery() ),
-			'The Web Content Publisher request should filter publications for the current site.'
+			'The Web Content Publisher request should filter publications for the current site by canonical domain.'
 		);
-	}
-
-	public function test_get_publications__url() {
-		$module    = $this->get_module();
-		$datapoint = $this->get_datapoint( $module, 'http://test.com' );
-		$request   = $datapoint->create_request( $this->get_data_request() );
-		$result    = $datapoint->parse_response( $this->get_publications_list_response(), $this->get_data_request() );
-
-		$this->assertIsArray( $result[0], 'Publications result should contain only publication arrays for URL-based property.' );
-
-		$publication = $result[0];
-
-		$this->assertEquals( 'Test Property', $publication['displayName'], 'Publication display name should be correct.' );
-		$this->assertEquals( 'ABCDEFGH', $publication['publicationId'], 'Publication ID should be correct.' );
-
-		$expected_filter = 'filter=' . join(
-			' OR ',
-			array_map(
-				function ( $url ) {
-					return sprintf( 'site_url = "%s"', $url );
-				},
-				URL::permute_site_url( 'http://test.com' )
-			)
-		);
-
-		$this->assertEquals( $expected_filter, urldecode( $request->getUri()->getQuery() ), 'URL filter should match expected format.' );
 	}
 
 	public function test_get_publications__domain() {
-		$module    = $this->get_module();
-		$datapoint = $this->get_datapoint( $module, 'sc-domain:example.com' );
+		$datapoint = $this->get_datapoint( $this->get_module(), 'sc-domain:example.com' );
 		$request   = $datapoint->create_request( $this->get_data_request() );
-		$result    = $datapoint->parse_response( $this->get_publications_list_response(), $this->get_data_request() );
 
-		$this->assertIsArray( $result[0], 'Publications result should contain only publication arrays for domain-based property.' );
-
-		$publication = $result[0];
-
-		$this->assertEquals( 'Test Property', $publication['displayName'], 'Publication display name should be correct for domain test.' );
-		$this->assertEquals( 'ABCDEFGH', $publication['publicationId'], 'Publication ID should be correct for domain test.' );
-
-		$expected_filter = 'filter=' . join(
-			' OR ',
-			array_map(
-				function ( $domain ) {
-					return sprintf( 'domain = "%s"', $domain );
-				},
-				URL::permute_site_hosts( 'example.com' )
-			)
+		$this->assertSame(
+			array(
+				'example.com',
+				'www.example.com',
+				'https://example.com',
+				'http://example.com',
+				'https://www.example.com',
+				'http://www.example.com',
+				'https://example.com/',
+				'http://example.com/',
+				'https://www.example.com/',
+				'http://www.example.com/',
+			),
+			$this->get_filter_domains( $request ),
+			'A domain property should be matched by its hostnames and by the URLs derived from them.'
 		);
+	}
 
-		$this->assertEquals( $expected_filter, urldecode( $request->getUri()->getQuery() ), 'Domain filter should match expected format.' );
+	public function test_create_request__url_property_with_trailing_slash() {
+		$datapoint = $this->get_datapoint( $this->get_module(), 'https://example.com/' );
+		$request   = $datapoint->create_request( $this->get_data_request() );
+
+		$this->assertSame(
+			array(
+				'example.com',
+				'www.example.com',
+				'https://example.com/',
+				'http://example.com/',
+				'https://www.example.com/',
+				'http://www.example.com/',
+				'https://example.com',
+				'http://example.com',
+				'https://www.example.com',
+				'http://www.example.com',
+			),
+			$this->get_filter_domains( $request ),
+			'A URL property with a trailing slash should be matched both with and without the trailing slash.'
+		);
 	}
 
 	public function test_parse_response__synchronizes_matching_publication() {
@@ -191,20 +182,6 @@ class Get_PublicationsTest extends TestCase {
 		$this->assertSame( array(), $publications, 'An empty API response should return an empty publications array.' );
 	}
 
-	private function get_publications_list_response( $publication_id = 'ABCDEFGH', $onboarding_state = 'PENDING_VERIFICATION' ) {
-		$publication = new Publication();
-
-		$publication->setPublicationId( $publication_id );
-		$publication->setOrganizationId( 'organization-1' );
-		$publication->setDisplayName( 'Test Property' );
-		$publication->setOnboardingState( $onboarding_state );
-
-		$response = new ListPublicationsResponse();
-		$response->setPublications( array( $publication ) );
-
-		return $response;
-	}
-
 	private function get_publications_list_response_with_details( $publication_id = 'ABCDEFGH' ) {
 		$publication = new Publication();
 		$publication->setPublicationId( $publication_id );
@@ -248,5 +225,21 @@ class Get_PublicationsTest extends TestCase {
 
 	private function get_data_request() {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'publications', array() );
+	}
+
+	/**
+	 * Extracts the canonical domains compared in a request's publication filter.
+	 *
+	 * @param mixed $request Request object.
+	 * @return string[] Canonical domains, in the order they appear in the filter.
+	 */
+	private function get_filter_domains( $request ) {
+		preg_match_all(
+			'/canonical_domain = "([^"]*)"/',
+			urldecode( $request->getUri()->getQuery() ),
+			$matches
+		);
+
+		return $matches[1];
 	}
 }
