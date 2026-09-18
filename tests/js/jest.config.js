@@ -52,11 +52,13 @@ module.exports = {
 				'<rootDir>/packages/**/test/*.{js,jsx,ts,tsx}',
 				'<rootDir>/packages/**/?(*.)test.{js,jsx,ts,tsx}',
 				'<rootDir>/tests/js/**/?(*.)test.{js,jsx,ts,tsx}',
+				'<rootDir>/storybook/**/?(*.)test.{js,jsx,ts,tsx}',
 			],
 			testPathIgnorePatterns: [
 				'<rootDir>/.git',
 				'<rootDir>/node_modules',
 				'<rootDir>/assets/node_modules',
+				'<rootDir>/storybook/node_modules',
 				'<rootDir>/build',
 				'<rootDir>/packages/eslint-plugin',
 			],
