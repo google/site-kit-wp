@@ -78,7 +78,7 @@ describe( 'Analytics 4 widget registrations', () => {
 	/**
 	 * Lists the slugs of the widgets registered in one widget area.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} areaSlug Widget area slug.
 	 * @return {Array.<string>} Widget slugs, in the order the area renders them.

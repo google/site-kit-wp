@@ -150,7 +150,7 @@ function shouldDisplayWidgetWithCustomDimensions( {
  * This function is attached to the widget object that requires both and has
  * the `requiredConversionEventName` and `requiredCustomDimensions` properties.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}   options                     Options object.
  * @param {Function} options.select              Data store select function.

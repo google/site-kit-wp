@@ -118,7 +118,7 @@ export function getGraphReportOptions( {
  * `getBreakdownReportArgs` and `useTrafficReport` add the dates, the metrics,
  * and the entity URL.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} options               Options.
  * @param {string} options.dimensionName GA4 dimension to group the report by.

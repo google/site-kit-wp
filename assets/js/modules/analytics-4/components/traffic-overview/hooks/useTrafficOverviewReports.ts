@@ -69,7 +69,7 @@ export interface TrafficOverviewReports {
 /**
  * Resolves the five GA4 reports the Traffic Overview panel needs.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @return {Object} The five reports, whether they have all finished, and the first error among them.
  */

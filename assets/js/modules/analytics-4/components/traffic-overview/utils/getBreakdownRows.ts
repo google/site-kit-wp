@@ -37,7 +37,7 @@ export interface TrafficBreakdownRow {
 /**
  * Reads a row's visitor count.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} row A breakdown report row.
  * @return {number} The row's visitors, or `0` when the value is missing or not a number.
@@ -53,7 +53,7 @@ function getVisitors( row: ReportRow ): number {
  * so the rows are taken as they come. This applies the same cap, the same
  * "Others" rule and the same `visitors / total` share the donut chart uses.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} [report] A breakdown report.
  * @return {Array<Object>} The rows to render, empty when the report has none.

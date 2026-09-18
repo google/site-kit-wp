@@ -445,7 +445,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * intentionally not cached so that they take effect as soon as they change.
 	 *
 	 * @since 1.4.0
-	 * @since n.e.x.t Only returns tags for users with the `Permissions::SETUP` capability.
+	 * @since 1.188.0 Only returns tags for users with the `Permissions::SETUP` capability.
 	 *
 	 * @return array List of verification meta tags.
 	 */
@@ -479,7 +479,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	 * request. Only the stored tags are cached here; whether a tag is actually
 	 * rendered depends on a permission check made at render time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return array Verification meta tags, keyed by user ID.
 	 */

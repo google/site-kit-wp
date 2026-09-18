@@ -1221,6 +1221,42 @@ describe( 'modules/reader-revenue-manager publications', () => {
 				} );
 			} );
 
+			it( 'should associate a publication fetch error with no resolver arguments when called without IDs', async () => {
+				const response = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				fetchMock.getOnce( publicationEndpoint, {
+					body: response,
+					status: 500,
+				} );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( params );
+
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication();
+
+				await untilResolved(
+					registry,
+					MODULES_READER_REVENUE_MANAGER
+				).getPublication();
+
+				const select = registry.select(
+					MODULES_READER_REVENUE_MANAGER
+				);
+
+				expect(
+					select.getErrorForSelector( 'getPublication', [] )
+				).toMatchObject( response );
+
+				expect( console ).toHaveErrored();
+			} );
+
 			it( 'should resolve settings before fetching a publication without IDs', async () => {
 				const publication = {
 					displayName: 'Example Publication',

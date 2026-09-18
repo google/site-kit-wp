@@ -31,7 +31,7 @@ import { LEAD_GENERATION_PDF_GROUPS } from './pdf/__fixtures__';
 /**
  * Renders the Lead generation performance PDF section and reads the text it outputs.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<string>} leadEvents The lead events the Key action tiles count.
  * @return {string} The text the Lead generation performance section renders, joined in render order.

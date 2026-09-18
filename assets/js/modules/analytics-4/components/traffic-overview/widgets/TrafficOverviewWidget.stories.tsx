@@ -55,7 +55,7 @@ const WidgetWithComponentProps = withWidgetComponentProps(
  * Connects Analytics and sets a fixed date range, so `MainDashboard` and
  * `EntityDashboard` start from the same state.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -86,7 +86,7 @@ function commonSetup( registry: WPDataRegistry ) {
  * Puts the Traffic Overview widget's five reports in the store, so a story
  * renders without sending a report request.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}

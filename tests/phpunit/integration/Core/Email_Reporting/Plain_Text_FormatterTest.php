@@ -424,7 +424,7 @@ class Plain_Text_FormatterTest extends TestCase {
 							),
 						),
 						'prompt'         => array(
-							'text'      => 'Your events data might be grouped together across forms. To see separate results by form, %s.',
+							'text'      => 'Your events data may be grouped together across forms. To see separate results by form, %s.',
 							'link_text' => 'enable data breakdown',
 						),
 					),
@@ -436,7 +436,7 @@ class Plain_Text_FormatterTest extends TestCase {
 
 		$this->assertStringContainsString( 'Total form completions: 85 (+0.6%)', $result, 'The Site Goals section should show the values of the group that has no heading.' );
 		$this->assertStringContainsString(
-			'Your events data might be grouped together across forms. To see separate results by form, enable data breakdown (https://example.com/dashboard).',
+			'Your events data may be grouped together across forms. To see separate results by form, enable data breakdown (https://example.com/dashboard).',
 			$result,
 			'The Site Goals section should end with the prompt, and put the dashboard URL after its link text.'
 		);

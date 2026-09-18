@@ -23,7 +23,7 @@ export type RegisteredListener = [ string, EventListener ];
 /**
  * Renders markup into the document body and returns the first element.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} markup Markup to render.
  * @return {Element} The rendered markup's first element.
@@ -37,7 +37,7 @@ export function render< T extends Element = Element >( markup: string ): T {
 /**
  * Stops jsdom from trying to follow the anchors these tests click.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} event The click to swallow.
  * @return {void}
@@ -55,7 +55,7 @@ export function preventNavigation( event: Event ): void {
  * behind and a later click would be counted once per test that had already
  * run.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @return {Object} A tracker with `record`, `reset` and `removeAll`.
  */
@@ -66,7 +66,7 @@ export function createListenerTracker() {
 		/**
 		 * Runs a content event initializer, recording the listeners it registers.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.188.0
 		 *
 		 * @param {Function} initializer Content event initializer to run.
 		 * @return {Array} The `[ type, listener ]` pairs this call registered.
@@ -95,7 +95,7 @@ export function createListenerTracker() {
 		/**
 		 * Forgets every recorded listener, leaving them attached to `document`.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.188.0
 		 *
 		 * @return {void}
 		 */
@@ -106,7 +106,7 @@ export function createListenerTracker() {
 		/**
 		 * Removes every recorded listener from `document`.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.188.0
 		 *
 		 * @return {void}
 		 */

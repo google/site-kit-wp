@@ -49,7 +49,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Synchronization instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Publication_Synchronization
 	 */
 	private $synchronization;

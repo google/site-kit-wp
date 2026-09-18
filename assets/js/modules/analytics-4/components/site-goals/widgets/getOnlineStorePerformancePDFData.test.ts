@@ -21,7 +21,8 @@
  */
 import { Registry } from '@/js/googlesitekit/data/types';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createTestRegistry } from '@tests/js/utils';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { createTestRegistry, provideModules } from '@tests/js/utils';
 import getOnlineStorePerformancePDFData from './getOnlineStorePerformancePDFData';
 import { ONLINE_STORE_PDF_REPORT_FIXTURES } from './pdf/__fixtures__';
 import {
@@ -36,6 +37,9 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	} );
@@ -105,12 +109,57 @@ describe( 'getOnlineStorePerformancePDFData', () => {
 			{
 				id: 'aggregated',
 				label: 'Online store performance',
-				total: { current: 112, previous: 105 },
+				total: { current: 121, previous: 111 },
 				sessions: { current: 5600, previous: 5250 },
-				rate: { current: 0.02, previous: 0.02 },
+				rate: { current: 121 / 5600, previous: 111 / 5250 },
 				engagementRate: { current: 0.42, previous: 0.4 },
 			},
 		] );
+	} );
+
+	it( 'falls back to a single group for the whole site when the property has no breakdown dimension', async () => {
+		provideDetectedEvents( registry, [ 'purchase' ], [] );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
+
+		const { data } = await runSiteGoalsPDFLoader(
+			getOnlineStorePerformancePDFData,
+			registry
+		);
+
+		expect( data?.groups ).toEqual( [
+			{
+				id: 'aggregated',
+				label: 'Online store performance',
+				total: { current: 121, previous: 111 },
+				sessions: { current: 5600, previous: 5250 },
+				rate: { current: 121 / 5600, previous: 111 / 5250 },
+				engagementRate: { current: 0.42, previous: 0.4 },
+			},
+		] );
+	} );
+
+	it( 'requests no grouped report when the property has no breakdown dimension', async () => {
+		provideDetectedEvents( registry, [ 'purchase' ], [] );
+		provideSiteGoalsPDFReports( ONLINE_STORE_PDF_REPORT_FIXTURES );
+
+		await runSiteGoalsPDFLoader(
+			getOnlineStorePerformancePDFData,
+			registry
+		);
+
+		const requestedURLs = fetchMock
+			.calls( analyticsReportEndpoint )
+			.map( ( [ requestURL ] ) =>
+				decodeURIComponent( String( requestURL ) )
+			);
+
+		expect( requestedURLs ).toHaveLength( 2 );
+
+		requestedURLs.forEach( ( requestURL ) => {
+			expect( requestURL ).not.toContain(
+				'customEvent:googlesitekit_event_provider'
+			);
+		} );
 	} );
 
 	it( 'returns no data when every Analytics report is empty', async () => {
