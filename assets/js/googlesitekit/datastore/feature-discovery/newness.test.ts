@@ -292,6 +292,8 @@ describe( 'core/feature-discovery newness', () => {
 				'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 			);
 
+			provideNewnessState();
+
 			fetchMock.postOnce( endpoint, {
 				body: {},
 				status: 200,
@@ -316,6 +318,60 @@ describe( 'core/feature-discovery newness', () => {
 					],
 				},
 			} );
+		} );
+
+		it( 'should not re-seed a timer for a feature that has already been seen', async () => {
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+			);
+
+			provideNewnessState( {
+				expirableItems: {
+					[ getFeatureNewnessKey( 'seen' ) ]:
+						Math.floor( Date.now() / 1000 ) + WEEK_IN_SECONDS * 4, // eslint-disable-line sitekit/no-direct-date -- Timers are evaluated against the current time.
+				},
+			} );
+
+			fetchMock.postOnce( endpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.markFeaturesSeen( [ 'seen', 'unseen' ] );
+
+			// Re-seeding a seen feature would restart its 28 days, so it would
+			// never age out of the list.
+			expect( fetchMock ).toHaveFetched( endpoint, {
+				body: {
+					data: [
+						{
+							expiration: WEEK_IN_SECONDS * 4,
+							slug: getFeatureNewnessKey( 'unseen' ),
+						},
+					],
+				},
+			} );
+		} );
+
+		it( 'should not request anything when every feature has been seen', async () => {
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
+			);
+
+			provideNewnessState( {
+				expirableItems: {
+					[ getFeatureNewnessKey( 'seen' ) ]:
+						Math.floor( Date.now() / 1000 ) + WEEK_IN_SECONDS * 4, // eslint-disable-line sitekit/no-direct-date -- Timers are evaluated against the current time.
+				},
+			} );
+
+			await registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.markFeaturesSeen( [ 'seen' ] );
+
+			expect( fetchMock ).not.toHaveFetched( endpoint );
 		} );
 
 		it( 'should leave a seen feature listed but read while its timer is active', () => {

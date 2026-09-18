@@ -21,6 +21,98 @@
  */
 import { parseCartItemHTML } from './easy-digital-downloads';
 
+type SiteKitGlobal = typeof global._googlesitekit;
+
+// eslint-disable-next-line camelcase
+type CartItemAddedDetails = { total: string; cart_item: string };
+type CartItemAddedHandler = (
+	event: unknown,
+	details: CartItemAddedDetails
+) => void;
+
+const CART_ITEM_HTML = `
+	<li class="edd-cart-item">
+		<span class="edd-remove-from-cart" data-download-id="1234"></span>
+		<span class="edd-cart-item-title">Test Product</span>
+		<span class="edd-cart-item-price">$12.34</span>
+	</li>
+`;
+
+describe( 'easy-digital-downloads events', () => {
+	let gtagEvent: jest.Mock;
+	let cartItemAdded: CartItemAddedHandler;
+
+	beforeEach( () => {
+		jest.resetModules();
+
+		gtagEvent = jest.fn();
+
+		global.jQuery = () => ( {
+			on: ( event: string, handler: CartItemAddedHandler ) => {
+				if ( 'edd_cart_item_added' === event ) {
+					cartItemAdded = handler;
+				}
+			},
+		} );
+	} );
+
+	afterEach( () => {
+		delete ( global as { jQuery?: unknown } ).jQuery;
+		delete ( global as { _googlesitekit?: SiteKitGlobal } )._googlesitekit;
+	} );
+
+	it( 'should report the published currency with an add to cart event', async () => {
+		global._googlesitekit = {
+			edddata: { currency: 'EUR' },
+			gtagEvent,
+		};
+
+		await import( './easy-digital-downloads' );
+
+		cartItemAdded( null, {
+			total: '$12.34',
+			// eslint-disable-next-line camelcase
+			cart_item: CART_ITEM_HTML,
+		} );
+
+		expect( gtagEvent ).toHaveBeenCalledWith(
+			'add_to_cart',
+			expect.objectContaining( { currency: 'EUR', value: 12.34 } )
+		);
+	} );
+
+	it( 'should report the published currency with a purchase event', async () => {
+		global._googlesitekit = {
+			edddata: { currency: 'EUR', purchase: { value: 12.34 } },
+			gtagEvent,
+		};
+
+		await import( './easy-digital-downloads' );
+
+		expect( gtagEvent ).toHaveBeenCalledWith(
+			'purchase',
+			expect.objectContaining( { currency: 'EUR', value: 12.34 } )
+		);
+	} );
+
+	it( 'should report no currency at all when none was published', async () => {
+		global._googlesitekit = { gtagEvent };
+
+		await import( './easy-digital-downloads' );
+
+		cartItemAdded( null, {
+			total: '$12.34',
+			// eslint-disable-next-line camelcase
+			cart_item: CART_ITEM_HTML,
+		} );
+
+		expect( gtagEvent ).toHaveBeenCalledWith(
+			'add_to_cart',
+			expect.objectContaining( { currency: undefined } )
+		);
+	} );
+} );
+
 describe( 'parseCartItemHTML', () => {
 	it( 'should parse name and value from valid HTML', () => {
 		const html = `

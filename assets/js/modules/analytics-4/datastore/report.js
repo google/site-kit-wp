@@ -286,6 +286,28 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Returns every error found among the provided report options.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}   state         Data store's state.
+	 * @param {Object[]} reportOptions Report options to check for errors. Each entry should be an object of options that would be passed to `getReport` selector.
+	 * @return {Object[]} Returns the errors found, in the order the report options were given. Returns an empty array when no report has an error.
+	 */
+	getReportErrors: createRegistrySelector(
+		( select ) =>
+			( state, ...reportOptions ) =>
+				reportOptions
+					.map( ( options ) =>
+						select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+							'getReport',
+							[ options ]
+						)
+					)
+					.filter( Boolean )
+	),
+
+	/**
 	 * Returns the first error found among the provided report options.
 	 *
 	 * @since 1.179.0
@@ -296,17 +318,10 @@ const baseSelectors = {
 	 */
 	getFirstReportError: createRegistrySelector(
 		( select ) =>
-			( state, ...reportOptions ) => {
-				for ( const options of reportOptions ) {
-					const error = select(
-						MODULES_ANALYTICS_4
-					).getErrorForSelector( 'getReport', [ options ] );
-					if ( error ) {
-						return error;
-					}
-				}
-				return undefined;
-			}
+			( state, ...reportOptions ) =>
+				select( MODULES_ANALYTICS_4 ).getReportErrors(
+					...reportOptions
+				)[ 0 ]
 	),
 
 	/**

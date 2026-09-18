@@ -71,8 +71,22 @@ export const actions = {
 	): Generator< unknown, unknown, WPDataRegistry > {
 		const registry = yield commonActions.getRegistry();
 
+		// A feature that already has a timer is ageing out of the list, so
+		// re-seeding it would restart its 28 days on every visit and it would
+		// never age out.
+		const unseenSlugs = slugs.filter(
+			( slug ) =>
+				registry
+					.select( CORE_USER )
+					.hasExpirableItem( getFeatureNewnessKey( slug ) ) === false
+		);
+
+		if ( unseenSlugs.length === 0 ) {
+			return undefined;
+		}
+
 		return registry.dispatch( CORE_USER ).setExpirableItemTimers(
-			slugs.map( ( slug ) => ( {
+			unseenSlugs.map( ( slug ) => ( {
 				slug: getFeatureNewnessKey( slug ),
 				expiresInSeconds: WEEK_IN_SECONDS * 4,
 			} ) )

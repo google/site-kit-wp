@@ -29,7 +29,7 @@ import {
 	productivityFeature,
 	secondAudienceFeature,
 	setupModuleFeature,
-} from '@/js/components/feature-discovery/__fixtures__';
+} from '@/js/components/feature-discovery/__fixtures__/all-services';
 import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';

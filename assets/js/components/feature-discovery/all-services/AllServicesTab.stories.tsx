@@ -28,7 +28,7 @@ import {
 	INITIAL_VERSION,
 	sampleFeatures,
 	sampleModules,
-} from '@/js/components/feature-discovery/__fixtures__';
+} from '@/js/components/feature-discovery/__fixtures__/all-services';
 import Layout from '@/js/components/layout/Layout';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
