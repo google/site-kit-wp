@@ -71,6 +71,7 @@ describe( 'Overview', () => {
 		provideUserCapabilities( registry );
 		provideSiteInfo( registry );
 		registry.dispatch( CORE_USER ).receiveConnectURL( 'test-url' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {
 			propertyID: 'http://example.com/',
 		} );
@@ -111,7 +112,7 @@ describe( 'Overview', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -132,8 +133,6 @@ describe( 'Overview', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			queryByText( /Set up Google Analytics/ )
-		).not.toBeInTheDocument();
+		expect( queryByText( /Set up Analytics/ ) ).not.toBeInTheDocument();
 	} );
 } );

@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { useEffect } from '@wordpress/element';
@@ -34,7 +29,6 @@ import { ProgressBar } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import {
 	AccountCreate,
 	AccountCreateLegacy,
@@ -48,8 +42,6 @@ import useExistingTagEffect from '@/js/modules/analytics-4/hooks/useExistingTagE
 import SettingsForm from './SettingsForm';
 
 export default function SettingsEdit() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const accounts =
 		useSelect( ( select ) =>
 			select( MODULES_ANALYTICS_4 ).getAccountSummaries()
@@ -116,20 +108,13 @@ export default function SettingsEdit() {
 
 	useEffect( () => {
 		if (
-			setupFlowRefreshEnabled &&
 			settingsLoaded &&
 			accountCreationErrorCode &&
 			accountID !== ACCOUNT_CREATE
 		) {
 			setAccountID( ACCOUNT_CREATE );
 		}
-	}, [
-		setupFlowRefreshEnabled,
-		accountCreationErrorCode,
-		setAccountID,
-		accountID,
-		settingsLoaded,
-	] );
+	}, [ accountCreationErrorCode, setAccountID, accountID, settingsLoaded ] );
 
 	const isCreateAccount = ACCOUNT_CREATE === accountID;
 
@@ -153,15 +138,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div
-			className={ classnames(
-				'googlesitekit-setup-module googlesitekit-setup-module--analytics',
-				{
-					'googlesitekit-feature--setupFlowRefresh':
-						setupFlowRefreshEnabled,
-				}
-			) }
-		>
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
 			{ viewComponent }
 		</div>
 	);

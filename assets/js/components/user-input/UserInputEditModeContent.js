@@ -31,7 +31,6 @@ import ErrorNotice from '@/js/components/ErrorNotice';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 import UserInputQuestionAuthor from './UserInputQuestionAuthor';
@@ -50,7 +49,6 @@ export default function UserInputEditModeContent( {
 	settingsView,
 	slug,
 } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const currentlyEditingSlug = useSelect( ( select ) =>
 		select( CORE_UI ).getValue( USER_INPUT_CURRENTLY_EDITING_KEY )
 	);
@@ -88,13 +86,7 @@ export default function UserInputEditModeContent( {
 	const {
 		USER_INPUT_ANSWERS_PURPOSE: USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS,
 	} = getUserInputAnswersDescription();
-	let submitButtonLabel = __( 'Save', 'google-site-kit' );
-
-	if ( setupFlowRefreshEnabled ) {
-		submitButtonLabel = __( 'Save answer', 'google-site-kit' );
-	} else if ( hasSettingChanged || isSavingSettings ) {
-		submitButtonLabel = __( 'Apply changes', 'google-site-kit' );
-	}
+	const submitButtonLabel = __( 'Save answer', 'google-site-kit' );
 
 	const toggleEditMode = useCallback( () => {
 		if ( isEditing ) {
@@ -146,7 +138,7 @@ export default function UserInputEditModeContent( {
 				descriptions={ USER_INPUT_ANSWERS_PURPOSE_DESCRIPTIONS }
 				alignLeftOptions
 			/>
-			{ errorMessage && ! ( setupFlowRefreshEnabled && settingsView ) && (
+			{ errorMessage && ! settingsView && (
 				<p className="googlesitekit-error-text">{ errorMessage }</p>
 			) }
 			{ settingsView && (

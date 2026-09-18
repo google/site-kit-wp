@@ -99,22 +99,9 @@ describe( 'ManageEmailReportsButton', () => {
 		const { queryByLabelText } = render( <ManageEmailReportsButton />, {
 			registry,
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( queryByLabelText( label ) ).not.toBeInTheDocument();
-	} );
-
-	it( 'renders during the initial setup flow when `setupFlowRefresh` is disabled', () => {
-		global.location.href =
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&showProgress=true';
-
-		const { getByLabelText } = render( <ManageEmailReportsButton />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expect( getByLabelText( label ) ).toBeInTheDocument();
 	} );
 
 	it.each( [ [ 'analytics-4' ], [ 'search-console' ] ] )(

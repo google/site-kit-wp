@@ -38,27 +38,16 @@ function Template( args ) {
 
 export const Default = Template.bind( {} );
 Default.storyName = 'Default';
-
-export const WithSetupFlowRefreshSetUpAnalytics = Template.bind( {} );
-WithSetupFlowRefreshSetUpAnalytics.storyName =
-	'Setup Flow Refresh - Set up Analytics';
-WithSetupFlowRefreshSetUpAnalytics.args = {
+Default.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 };
-WithSetupFlowRefreshSetUpAnalytics.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-WithSetupFlowRefreshSetUpAnalytics.scenario = {};
+Default.scenario = {};
 
-export const WithSetupFlowRefreshCompleteSetup = Template.bind( {} );
-WithSetupFlowRefreshCompleteSetup.storyName =
-	'Setup Flow Refresh - Complete Setup';
-WithSetupFlowRefreshCompleteSetup.args = {
+export const CompleteSetup = Template.bind( {} );
+CompleteSetup.storyName = 'Complete Setup';
+CompleteSetup.args = {
 	dismissedItemSlug: 'analytics-setup-cta-search-funnel',
 	isAnalyticsActive: true,
-};
-WithSetupFlowRefreshCompleteSetup.parameters = {
-	features: [ 'setupFlowRefresh' ],
 };
 
 export const WithSetupFlowRefreshPhase4ActivationError = Template.bind( {} );
@@ -74,7 +63,7 @@ WithSetupFlowRefreshPhase4ActivationError.args = {
 	},
 };
 WithSetupFlowRefreshPhase4ActivationError.parameters = {
-	features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+	features: [ 'setupFlowRefreshPhase4' ],
 };
 
 export default {

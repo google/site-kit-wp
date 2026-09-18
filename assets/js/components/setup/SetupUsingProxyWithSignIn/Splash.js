@@ -31,7 +31,6 @@ import { getQueryArg } from '@wordpress/url';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
-import LegacySplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/LegacySplashContent';
 import SplashContent from '@/js/components/setup/SetupUsingProxyWithSignIn/SplashContent';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -44,7 +43,6 @@ import { Grid } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 
 export default function Splash( { children } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -64,9 +62,6 @@ export default function Splash( { children } ) {
 	const siteURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getReferenceSiteURL()
 	);
-	const secondAdminLearnMoreLink = useSelect( ( select ) =>
-		select( CORE_SITE ).getDocumentationLinkURL( 'already-configured' )
-	);
 	const disconnectedReason = useSelect( ( select ) =>
 		select( CORE_USER ).getDisconnectedReason()
 	);
@@ -76,7 +71,6 @@ export default function Splash( { children } ) {
 
 	let title;
 	let description;
-	let showLearnMoreLink = false;
 	let getHelpURL = null;
 
 	if ( 'revoked' === getQueryArg( location.href, 'googlesitekit_context' ) ) {
@@ -100,66 +94,36 @@ export default function Splash( { children } ) {
 
 		getHelpURL = changedURLHelpLink;
 	} else if ( isSecondAdmin ) {
-		if ( setupFlowRefreshEnabled ) {
-			title = __( "Let's get started!", 'google-site-kit' );
+		title = __( "Let's get started!", 'google-site-kit' );
 
-			description =
-				setupFlowRefreshPhase4Enabled &&
-				analyticsModuleActive &&
-				hasViewableModules
-					? __(
-							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
-							'google-site-kit'
-					  )
-					: __(
-							'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services.',
-							'google-site-kit'
-					  );
-		} else {
-			title = __(
-				'Connect your Google account to Site Kit',
-				'google-site-kit'
-			);
-			description = __(
-				'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the 3 setup steps, you’ll see stats from all activated Google services.',
-				'google-site-kit'
-			);
-			showLearnMoreLink = true;
-		}
-	} else if ( setupFlowRefreshEnabled ) {
-		title = __( 'Let’s get started!', 'google-site-kit' );
+		description =
+			setupFlowRefreshPhase4Enabled &&
+			analyticsModuleActive &&
+			hasViewableModules
+				? __(
+						'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services that are shared with you:',
+						'google-site-kit'
+				  )
+				: __(
+						'Site Kit has already been configured by another admin of this site. To use Site Kit as well, sign in with your Google account which has access to Google services for this site (e.g. Google Analytics). Once you complete the setup, you’ll see stats from all connected Google services.',
+						'google-site-kit'
+				  );
 	} else {
-		title = __( 'Set up Site Kit', 'google-site-kit' );
-		description = __(
-			'Get insights on how people find your site, as well as how to improve and monetize your site’s content, directly in your WordPress dashboard',
-			'google-site-kit'
-		);
+		title = __( 'Let’s get started!', 'google-site-kit' );
 	}
-
-	const classname = setupFlowRefreshEnabled
-		? 'googlesitekit-splash'
-		: 'googlesitekit-setup__splash';
-
-	const SplashComponent = setupFlowRefreshEnabled
-		? SplashContent
-		: LegacySplashContent;
 
 	const splashProps = {
 		analyticsModuleActive,
-		secondAdminLearnMoreLink,
 		analyticsModuleAvailable,
 		title,
 		description,
 		getHelpURL,
-		showLearnMoreLink,
 	};
 
 	return (
-		<section className={ classname }>
+		<section className="googlesitekit-splash">
 			<Grid>
-				<SplashComponent { ...splashProps }>
-					{ children }
-				</SplashComponent>
+				<SplashContent { ...splashProps }>{ children }</SplashContent>
 			</Grid>
 		</section>
 	);

@@ -32,8 +32,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { useFeature } from '@/js/hooks/useFeature';
-import { createIncrementalArrayBySize } from '@/js/util/create-incremental-array-by-size';
 import CloseIcon from '@/svg/icons/close.svg';
 import Typography from './Typography';
 
@@ -46,26 +44,14 @@ export default function TourTooltip( {
 	step,
 	tooltipProps,
 } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-	const indicatorArray = size > 1 ? createIncrementalArrayBySize( size ) : [];
-	function getIndicatorClassName( indicatorIndex ) {
-		return classnames( 'googlesitekit-tooltip-indicator', {
-			active: indicatorIndex === index,
-		} );
-	}
-
-	// Determine close icon size based on feature flag.
-	const closeIconSize = setupFlowRefreshEnabled ? 10 : 14;
-
 	return (
 		<div
 			className={ classnames(
 				'googlesitekit-tour-tooltip',
+				'googlesitekit-tour-tooltip--setupFlowRefresh',
 				step.className,
 				{
 					'googlesitekit-tour-tooltip--no-title': ! step.title,
-					'googlesitekit-tour-tooltip--setupFlowRefresh':
-						setupFlowRefreshEnabled,
 				}
 			) }
 			{ ...tooltipProps }
@@ -87,29 +73,14 @@ export default function TourTooltip( {
 					</div>
 				</div>
 				<CardActions className="googlesitekit-tooltip-actions">
-					{ ! setupFlowRefreshEnabled && (
-						<ul className="googlesitekit-tooltip-indicators">
-							{ indicatorArray.map( ( indicatorIndex ) => (
-								<li
-									key={ `indicator-${ indicatorIndex }` }
-									className={ getIndicatorClassName(
-										indicatorIndex
-									) }
-								/>
-							) ) }
-						</ul>
-					) }
-					{ setupFlowRefreshEnabled && (
-						<p className="googlesitekit-tooltip-steps">
-							{ size > 1 && `${ index + 1 } / ${ size }` }
-						</p>
-					) }
+					<p className="googlesitekit-tooltip-steps">
+						{ size > 1 && `${ index + 1 } / ${ size }` }
+					</p>
 					<div className="googlesitekit-tooltip-buttons">
 						{ index !== 0 && (
 							<Button
 								className="googlesitekit-tooltip-button"
-								text={ ! setupFlowRefreshEnabled }
-								tertiary={ setupFlowRefreshEnabled }
+								tertiary
 								{ ...backProps }
 							>
 								{ backProps.title }
@@ -118,14 +89,7 @@ export default function TourTooltip( {
 						{ step.cta }
 						{ primaryProps.title && (
 							<Button
-								className={ classnames(
-									'googlesitekit-tooltip-button',
-									{
-										'googlesitekit-tooltip-button--primary':
-											setupFlowRefreshEnabled,
-									}
-								) }
-								text={ ! setupFlowRefreshEnabled }
+								className="googlesitekit-tooltip-button googlesitekit-tooltip-button--primary"
 								{ ...primaryProps }
 							>
 								{ primaryProps.title }
@@ -135,12 +99,7 @@ export default function TourTooltip( {
 				</CardActions>
 				<Button
 					className="googlesitekit-tooltip-close"
-					icon={
-						<CloseIcon
-							width={ closeIconSize }
-							height={ closeIconSize }
-						/>
-					}
+					icon={ <CloseIcon width={ 10 } height={ 10 } /> }
 					onClick={ closeProps.onClick }
 					aria-label={ __( 'Close', 'google-site-kit' ) }
 					text

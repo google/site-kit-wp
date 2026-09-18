@@ -57,7 +57,6 @@ import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwit
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const viewContext = useViewContext();
 
 	const accountID = useSelect( ( select ) =>
@@ -71,14 +70,12 @@ export default function SettingsForm( { hasModuleAccess } ) {
 	);
 
 	const onClickLearnMoreLink = useCallback( () => {
-		if ( setupFlowRefreshEnabled ) {
-			trackEvent(
-				viewContext,
-				'click_learn_more_link',
-				'plugin_conversion_tracking'
-			);
-		}
-	}, [ setupFlowRefreshEnabled, viewContext ] );
+		trackEvent(
+			viewContext,
+			'click_learn_more_link',
+			'plugin_conversion_tracking'
+		);
+	}, [ viewContext ] );
 
 	return (
 		<Fragment>
