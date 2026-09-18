@@ -128,10 +128,8 @@ export const decorators = [
 
 		return <Story />;
 	},
-	// Must be the outermost (last) decorator: it needs to run, and
-	// potentially bail out, before anything else (including `resetGlobals()`
-	// above) touches global state for a story that's about to be torn down
-	// by a reload. See `reloadForFeatures` for why this is necessary.
+	// Storybook runs the last decorator first, so a story that reloads the page
+	// never reaches `resetGlobals()`.
 	( Story, { parameters } ) => {
 		const { features = [] } = parameters;
 
