@@ -48,7 +48,7 @@ export interface TrafficReport {
 	/**
 	 * The arguments this hook passes to the `getReport` selector.
 	 * `useTrafficOverviewReports` reads the report's loading state and its
-	 * error under the same arguments.
+	 * errors under the same arguments.
 	 */
 	args: ReportOptions;
 }
