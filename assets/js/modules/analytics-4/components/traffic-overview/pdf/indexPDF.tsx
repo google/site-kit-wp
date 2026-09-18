@@ -83,8 +83,8 @@ const styles = createPDFStyles( {
  *
  * @since n.e.x.t
  *
- * @param rows Ranked `{ label, percentage }` rows.
- * @return Rows of `{ primary, metric }`, with no change badge.
+ * @param {Array<Object>} rows Ranked `{ label, percentage }` rows.
+ * @return {Array<Object>} Rows of `{ primary, metric }`, with no change badge.
  */
 function toTableRows( rows: TrafficBreakdownRow[] ) {
 	return rows.map( ( { label, percentage } ) => ( {

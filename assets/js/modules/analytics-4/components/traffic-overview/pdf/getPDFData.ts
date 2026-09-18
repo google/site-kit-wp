@@ -50,11 +50,14 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 export type { TrafficBreakdownRow };
 
 /**
- * The chart draws at 506 by 133, and the tile displays the image in a
- * box of the same size, so the image never stretches and no empty
- * space appears around it.
+ * The chart draws at 1085 by 133, and the tile displays the image in a
+ * box of the same size, so the image never stretches and no empty space
+ * appears around it. 1085 is the full-width card's content width in the
+ * Figma design (1133 minus `PDFCard`'s 24px padding on each side); unlike
+ * the old All Traffic widget's narrower, two-up card, this card spans the
+ * page on its own.
  */
-const LINE_CHART_WIDTH = 506;
+const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;
 
 export interface GetPDFDataParams {
@@ -115,8 +118,8 @@ interface LineChartPoint {
  *
  * @since n.e.x.t
  *
- * @param graphReport Date-dimension GA4 report.
- * @return Points of `{ date, value }`, ordered as returned.
+ * @param {Object} graphReport Date-dimension GA4 report.
+ * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
  */
 function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 	return ( graphReport?.rows || [] ).reduce< LineChartPoint[] >(
@@ -147,8 +150,8 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
  *
  * @since n.e.x.t
  *
- * @param points Parsed chart points.
- * @return A `google.visualization.DataTable` instance.
+ * @param {Array<Object>} points Parsed chart points.
+ * @return {Object} A `google.visualization.DataTable` instance.
  */
 function buildLineChartDataTable( points: LineChartPoint[] ): object {
 	const visualization = getVisualization();
@@ -171,8 +174,8 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  *
  * @since n.e.x.t
  *
- * @param points Parsed chart points.
- * @return Google Charts options object.
+ * @param {Array<Object>} points Parsed chart points.
+ * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
 	// A tick per day, dropping the first so a tick sits at the range start,
@@ -183,10 +186,10 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 
 	return {
 		curveType: 'function',
-		// `PDF_COLORS.SITE_KIT_SK_500` holds the same hex as
-		// `TRAFFIC_CHART_LINE_COLOR` in traffic-overview/constants.ts, which is
-		// the color the dashboard's line chart draws in.
-		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
+		// `PDF_COLORS.VIOLET_V_600` holds the same hex as `TRAFFIC_CHART_LINE_COLOR`
+		// in `traffic-overview/charts/trafficChartOptions.ts`, the color the
+		// dashboard's line chart draws in.
+		colors: [ PDF_COLORS.VIOLET_V_600 ],
 		chartArea: {
 			left: 8,
 			right: 40,
@@ -232,7 +235,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		},
 		series: {
 			0: {
-				color: PDF_COLORS.SITE_KIT_SK_500,
+				color: PDF_COLORS.VIOLET_V_600,
 				lineWidth: 4,
 				targetAxisIndex: 1,
 			},
@@ -254,11 +257,11 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
  *
  * @since n.e.x.t
  *
- * @param params          Loader parameters.
- * @param params.registry WordPress data registry.
- * @param params.dates    Report date range.
- * @param params.signal   Cancellation signal.
- * @return Resolved report data and chart images.
+ * @param {Object}      params          Loader parameters.
+ * @param {Object}      params.registry WordPress data registry.
+ * @param {Object}      params.dates    Report date range.
+ * @param {AbortSignal} params.signal   Cancellation signal.
+ * @return {Object} Resolved report data and chart images.
  */
 export default async function getPDFData( {
 	registry,

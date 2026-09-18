@@ -94,10 +94,10 @@ const DATES = {
  *
  * @since n.e.x.t
  *
- * @param dimensionName Breakdown dimension name.
- * @param reportID      Report ID for cache isolation.
- * @param url           Current entity URL, when the test provides one.
- * @return Args for `getBreakdownReportArgs()`.
+ * @param {string} dimensionName Breakdown dimension name.
+ * @param {string} reportID      Report ID for cache isolation.
+ * @param {string} [url]         Current entity URL, when the test provides one.
+ * @return {Object} Args for `getBreakdownReportArgs()`.
  */
 function breakdownArgsFor(
 	dimensionName: string,
@@ -131,8 +131,8 @@ const devicesArgs = breakdownArgsFor(
  *
  * @since n.e.x.t
  *
- * @param entries Ordered `[ label, users ]` pairs.
- * @return A GA4 report with rows, no `totals`.
+ * @param {Array} entries Ordered `[ label, users ]` pairs.
+ * @return {Object} A GA4 report with rows, no `totals`.
  */
 function buildBreakdownReport( entries: Array< [ string, number ] > ) {
 	return {
@@ -153,7 +153,7 @@ function setGoogle( value: unknown ) {
  *
  * @since n.e.x.t
  *
- * @param  testRegistry Registry to seed.
+ * @param {Object} testRegistry Registry to seed.
  * @return {void}
  */
 function seedTotalsAndGraphReports( testRegistry: Registry ) {
@@ -180,7 +180,7 @@ function seedTotalsAndGraphReports( testRegistry: Registry ) {
  *
  * @since n.e.x.t
  *
- * @param  testRegistry Registry to seed.
+ * @param {Object} testRegistry Registry to seed.
  * @return {void}
  */
 function seedDefaultBreakdownReports( testRegistry: Registry ) {
@@ -251,13 +251,20 @@ describe( 'Traffic Overview getPDFData', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( { rows: [] }, { options: devicesArgs } );
 
-		await getPDFData( {
+		const result = await getPDFData( {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
 		} );
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		expect( result.data ).toEqual( {
+			totalsReport: { totals: [] },
+			graphReport: { rows: [] },
+			channelBreakdown: [],
+			locationBreakdown: [],
+			deviceBreakdown: [],
+		} );
 	} );
 
 	it( 'builds the five reports with the current entity URL when one is set', async () => {
@@ -311,13 +318,20 @@ describe( 'Traffic Overview getPDFData', () => {
 			}
 		);
 
-		await getPDFData( {
+		const result = await getPDFData( {
 			registry,
 			dates: DATES,
 			signal: new AbortController().signal,
 		} );
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		expect( result.data ).toEqual( {
+			totalsReport: { totals: [] },
+			graphReport: { rows: [] },
+			channelBreakdown: [],
+			locationBreakdown: [],
+			deviceBreakdown: [],
+		} );
 	} );
 
 	it( 'returns chartImages holding only lineChart', async () => {
