@@ -895,8 +895,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function get_feature_metrics() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$metrics = array(
 			'rrm_publication_onboarding_state' => $settings['publicationOnboardingState'],
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$configured_ctas                            = isset( $settings['configuredCTAs'] ) ? (array) $settings['configuredCTAs'] : array();
+			$cta_types                                  = array_unique( array_values( $configured_ctas ) );
+			$metrics['rrm_publication_configured_ctas'] = array_values( $cta_types );
+		}
+
+		return $metrics;
 	}
 }
