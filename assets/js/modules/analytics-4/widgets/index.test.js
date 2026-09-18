@@ -125,18 +125,6 @@ describe( 'Analytics 4 widget registrations', () => {
 				);
 			} );
 		} );
-
-		it( 'should not register any widget offering the "Site traffic over time" PDF section when trafficOverview is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
-
-			registerWidgets( widgets );
-
-			const pdfLabels = Object.values(
-				registry.stores[ CORE_WIDGETS ].store.getState().widgets
-			).map( ( widget ) => widget.pdf?.label );
-
-			expect( pdfLabels ).not.toContain( 'Site traffic over time' );
-		} );
 	} );
 
 	describe( 'Traffic Overview widget', () => {
@@ -173,7 +161,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			] );
 		} );
 
-		it( 'should keep the Traffic Overview widget out of the PDF report when the "trafficOverview" feature flag is enabled', () => {
+		it( 'should carry a "Site traffic over time" PDF entry and be eligible for the PDF report when the "trafficOverview" feature flag is enabled', () => {
 			enabledFeatures.add( 'trafficOverview' );
 
 			registerWidgets( widgets );
@@ -182,9 +170,8 @@ describe( 'Analytics 4 widget registrations', () => {
 				.select( CORE_WIDGETS )
 				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
 
-			expect( isActivePDFWidget( widget, registry.select ) ).toBe(
-				false
-			);
+			expect( widget.pdf?.label ).toBe( 'Site traffic over time' );
+			expect( isActivePDFWidget( widget, registry.select ) ).toBe( true );
 		} );
 	} );
 
