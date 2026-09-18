@@ -19,7 +19,8 @@
 /**
  * External dependencies
  */
-const { setupPage } = require( '@storybook/test-runner' );
+const { getStoryContext, setupPage } = require( '@storybook/test-runner' );
+const { xor } = require( 'lodash' );
 
 /**
  * Part of the error `page.exposeBinding()` throws for a binding name the page
@@ -62,17 +63,41 @@ function ignoreRegisteredBindings( page ) {
 
 module.exports = {
 	/**
-	 * Adds the `__test` helper again after a page reload removes it.
+	 * Loads the page with the story's feature flags before the story renders.
 	 *
-	 * The test runner adds the helper once per test file. A reload for a story
-	 * with different feature flags removes it, and every later story then
-	 * fails with `ReferenceError: __test is not defined`.
+	 * Without this load, the decorator in `storybook/preview.js` reloads the
+	 * page during the test. The test then passes, but the story never
+	 * rendered.
+	 *
+	 * A page load removes the `__test` helper, so `preVisit()` adds it again.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} page Playwright page for the current test file.
+	 * @param {Object} page    Playwright page for the current test file.
+	 * @param {Object} context Test runner context for the story.
 	 */
-	async preVisit( page ) {
+	async preVisit( page, context ) {
+		// Wait for the preview to load its story store, which
+		// `getStoryContext()` reads.
+		await page.evaluate( () => window.__STORYBOOK_PREVIEW__.ready() );
+
+		const { parameters } = await getStoryContext( page, context );
+		const features = parameters.features || [];
+		const activeFeatures = await page.evaluate(
+			() => window._googlesitekitBaseData.enabledFeatures
+		);
+
+		if ( xor( features, activeFeatures ).length > 0 ) {
+			// `storybook/preview-head.html` reads the flags from the `features`
+			// query parameter.
+			await page.goto(
+				new URL(
+					`iframe.html?features=${ features.join( ',' ) }`,
+					page.url()
+				).href
+			);
+		}
+
 		// `evaluate()` rejects while the page is still reloading.
 		const hasTestHelper = await page
 			.evaluate( () => typeof window.__test === 'function' )

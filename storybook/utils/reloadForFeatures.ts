@@ -29,8 +29,8 @@ import { xor } from 'lodash';
 const STORAGE_KEY = 'googlesitekit-storybook-features';
 
 /**
- * Reloads the Storybook preview when a story needs different feature flags
- * than the page loaded with.
+ * Reloads Storybook when a story needs different feature flags than the page
+ * loaded with.
  *
  * A datastore's `base.js` calls `isFeatureEnabled()` while the bundle loads,
  * so changing `enabledFeatures` later has no effect. A reload runs the bundle
@@ -69,7 +69,9 @@ export function reloadForFeatures( features: string[] = [] ): boolean {
 		return false;
 	}
 
-	window.location.reload();
+	// `parent` is the Storybook app. The app reads the selected story from its
+	// own URL, so that story shows again after the reload.
+	window.parent.location.reload();
 
 	return true;
 }

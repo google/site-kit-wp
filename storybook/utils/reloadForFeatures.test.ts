@@ -112,7 +112,10 @@ describe( 'reloadForFeatures', () => {
 	} );
 
 	it( 'does not reload when session storage cannot store the flags', () => {
-		jest.spyOn( window.sessionStorage, 'setItem' ).mockImplementation(
+		// `jest-localstorage-mock` already makes `setItem` a mock, so
+		// `jest.restoreAllMocks()` does not remove the throw. Without `Once`,
+		// every later test in this file fails.
+		jest.spyOn( window.sessionStorage, 'setItem' ).mockImplementationOnce(
 			() => {
 				throw new Error( 'Session storage is unavailable.' );
 			}
@@ -120,5 +123,37 @@ describe( 'reloadForFeatures', () => {
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( false );
 		expect( reloadMock ).not.toHaveBeenCalled();
+	} );
+
+	describe( 'inside the Storybook app', () => {
+		const parentReloadMock = jest.fn();
+		let oldParent: Window;
+
+		beforeAll( () => {
+			oldParent = global.parent;
+
+			// jsdom gives `parent` no setter, so delete it before assigning a fake.
+			// @ts-expect-error -- `parent` is not optional on the window type.
+			delete global.parent;
+
+			global.parent = {
+				location: { reload: parentReloadMock },
+			} as unknown as Window;
+		} );
+
+		afterAll( () => {
+			global.parent = oldParent;
+		} );
+
+		it( 'reloads the Storybook app, not only the page', () => {
+			window.sessionStorage.setItem(
+				'googlesitekit-storybook-features',
+				'["setupFlowRefresh"]'
+			);
+
+			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
+			expect( parentReloadMock ).toHaveBeenCalledTimes( 1 );
+			expect( reloadMock ).not.toHaveBeenCalled();
+		} );
 	} );
 } );
