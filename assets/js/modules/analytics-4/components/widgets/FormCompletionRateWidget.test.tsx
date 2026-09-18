@@ -140,10 +140,13 @@ describe( 'FormCompletionRateWidget', () => {
 		expect( within( changeBadge ).getByText( '0%' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the current period form completion rate, sessions subtext, and the change vs. the previous period', async () => {
+	it( 'should sum form completions across every detected lead event into the rate, sessions subtext, and the change vs. the previous period', async () => {
 		const primaryEventReportOptions = getPrimaryEventReportOptions();
 		const engagementReportOptions = getEngagementReportOptions();
 
+		// `provideLeadsWidgetTestRegistry()` detects three lead events, so the
+		// report has one row per event per date range; the rendered rate must
+		// be based on the sum across all of them, not just the first row found.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				rows: [
@@ -152,14 +155,42 @@ describe( 'FormCompletionRateWidget', () => {
 							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
 							{ value: 'date_range_0' },
 						],
-						metricValues: [ { value: '150' } ],
+						metricValues: [ { value: '100' } ],
 					},
 					{
 						dimensionValues: [
 							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
 							{ value: 'date_range_1' },
 						],
-						metricValues: [ { value: '100' } ],
+						metricValues: [ { value: '50' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '50' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '30' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '30' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '20' } ],
 					},
 				],
 			},
@@ -187,18 +218,18 @@ describe( 'FormCompletionRateWidget', () => {
 		);
 		await waitForRegistry();
 
-		// currentRate = 150 form completions / 500 sessions = 30%.
+		// currentRate = (100 + 50 + 30) form completions / 500 sessions = 36%.
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
-		).toHaveTextContent( '30%' );
-		expect( getByText( '30%' ) ).toBeInTheDocument();
+		).toHaveTextContent( '36%' );
+		expect( getByText( '36%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
 		).toHaveTextContent( 'of 500 total sessions' );
 
-		// previousRate = 100 / 400 = 25%; change = 30% - 25% = +5 percentage points.
+		// previousRate = (50 + 30 + 20) / 400 = 25%; change = 36% - 25% = +11 percentage points.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '+5%' );
+		).toHaveTextContent( '+11%' );
 	} );
 } );

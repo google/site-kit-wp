@@ -37,16 +37,12 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideKeyMetrics, provideModules } from '@tests/js/utils';
 import {
-	ERROR_INTERNAL_SERVER_ERROR,
-	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
-} from '@/js/util/errors';
-import { render } from '@tests/js/test-utils';
-import {
-	provideKeyMetrics,
-	provideModuleRegistrations,
-	provideModules,
-} from '@tests/js/utils';
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
+	testGenericReportError as testGenericKeyMetricsReportError,
+	testInsufficientPermissionsError as testKeyMetricsInsufficientPermissionsError,
+} from './keyMetricsWidgetTestHelpers';
 
 type WidgetProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -87,9 +83,7 @@ export function provideSalesWidgetTestRegistry(
  *
  * @since 1.188.0
  */
-export const SALES_WIDGET_REPORT_ENDPOINT = new RegExp(
-	'^/google-site-kit/v1/modules/analytics-4/data/report'
-);
+export const SALES_WIDGET_REPORT_ENDPOINT = KEY_METRICS_WIDGET_REPORT_ENDPOINT;
 
 /**
  * Registers the shared "generic report error" test for a Selling products widget.
@@ -106,34 +100,12 @@ export function testGenericReportError(
 	Component: ComponentType< WidgetProps >,
 	widgetProps: WidgetProps
 ): void {
-	it( 'should render the generic error variant when the report fetch fails', async () => {
-		const registry = getRegistry();
-		provideModuleRegistrations( registry );
-
-		const errorResponse = {
-			code: ERROR_INTERNAL_SERVER_ERROR,
-			message: 'Internal server error',
-			data: { reason: ERROR_INTERNAL_SERVER_ERROR },
-		};
-
-		fetchMock.get( SALES_WIDGET_REPORT_ENDPOINT, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<Component { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Data loading failed/i ) ).toBeInTheDocument();
-	} );
+	testGenericKeyMetricsReportError(
+		getRegistry,
+		Component,
+		widgetProps,
+		SALES_WIDGET_REPORT_ENDPOINT
+	);
 }
 
 /**
@@ -154,31 +126,10 @@ export function testInsufficientPermissionsError(
 	Component: ComponentType< WidgetProps >,
 	widgetProps: WidgetProps
 ): void {
-	it( 'should render the insufficient permissions error variant when the report fetch fails', async () => {
-		const registry = getRegistry();
-
-		const errorResponse = {
-			code: 'test_error',
-			message: 'Error message.',
-			data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
-		};
-
-		fetchMock.get( SALES_WIDGET_REPORT_ENDPOINT, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { container, getByText, waitForRegistry } = render(
-			<Component { ...widgetProps } />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		expect(
-			container.querySelector( '.googlesitekit-km-widget-tile--error' )
-		).toBeInTheDocument();
-		expect( getByText( /Insufficient permissions/i ) ).toBeInTheDocument();
-	} );
+	testKeyMetricsInsufficientPermissionsError(
+		getRegistry,
+		Component,
+		widgetProps,
+		SALES_WIDGET_REPORT_ENDPOINT
+	);
 }

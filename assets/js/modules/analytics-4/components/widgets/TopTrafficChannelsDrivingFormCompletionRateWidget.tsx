@@ -50,25 +50,31 @@ interface TopTrafficChannelsDrivingFormCompletionRateWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the report options for the Top Traffic Channels Driving Form Completion Rate widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getTopTrafficChannelsDrivingFormCompletionRateReportOptions(
+	select: Select
+) {
+	return buildTopTrafficChannelsRateReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+}
+
 const TopTrafficChannelsDrivingFormCompletionRateWidget: FC<
 	TopTrafficChannelsDrivingFormCompletionRateWidgetProps
 > = ( { Widget } ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+	const reportOptions = useSelect(
+		getTopTrafficChannelsDrivingFormCompletionRateReportOptions,
 		[]
 	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-
-	const reportOptions = buildTopTrafficChannelsRateReportOptions( {
-		dates,
-		primaryEvent: detectedLeadEvents,
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

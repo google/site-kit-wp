@@ -2348,7 +2348,7 @@ export const KEY_METRICS_PDF_TILES = {
 			},
 			( [ report ] ) => {
 				const { currentPrimaryCount, previousPrimaryCount } =
-					processReports( report || {}, {} );
+					processReports( report || {}, {}, { aggregate: true } );
 
 				// No rows means the report has no data, so drop the tile.
 				if ( ! report?.rows?.length ) {
@@ -2400,7 +2400,8 @@ export const KEY_METRICS_PDF_TILES = {
 				const { currentRate, previousRate, currentSessions } =
 					processReports(
 						primaryEventReport || {},
-						engagementReport || {}
+						engagementReport || {},
+						{ aggregate: true }
 					);
 
 				// No rows means the report has no data, so drop the tile.

@@ -50,25 +50,26 @@ interface LeadsByVisitorTypeWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the report options for the Leads By Visitor Type widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getLeadsByVisitorTypeReportOptions( select: Select ) {
+	return buildVisitorTypeReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+}
+
 const LeadsByVisitorTypeWidget: FC< LeadsByVisitorTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-
-	const reportOptions = buildVisitorTypeReportOptions( {
-		dates,
-		primaryEvent: detectedLeadEvents,
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+	const reportOptions = useSelect( getLeadsByVisitorTypeReportOptions, [] );
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

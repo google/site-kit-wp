@@ -48,22 +48,33 @@ interface FormCompletionEngagementRateWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the engagement report options for the Form Completion Engagement Rate widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getFormCompletionEngagementRateReportOptions( select: Select ) {
+	return buildEngagementReportOptions(
+		select( CORE_USER ).getDateRangeDates( { compare: true } )
+	);
+}
+
 const FormCompletionEngagementRateWidget: FC<
 	FormCompletionEngagementRateWidgetProps
 > = ( { Widget } ) => {
-	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		[]
-	);
-
 	const detectedLeadEvents = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 		[]
 	);
 
-	const engagementReportOptions = buildEngagementReportOptions( dates );
+	const engagementReportOptions = useSelect(
+		getFormCompletionEngagementRateReportOptions,
+		[]
+	);
 
 	// `engagementReportOptions` is never `undefined` (it only depends on
 	// `dates`), so readiness is gated on the separately-selected

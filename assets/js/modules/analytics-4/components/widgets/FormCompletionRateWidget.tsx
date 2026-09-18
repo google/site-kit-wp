@@ -51,26 +51,46 @@ interface FormCompletionRateWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the primary event report options for the Form Completion Rate widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getFormCompletionRatePrimaryReportOptions( select: Select ) {
+	return buildPrimaryEventReportOptions(
+		select( CORE_USER ).getDateRangeDates( { compare: true } ),
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()
+	);
+}
+
+/**
+ * Gets the engagement report options for the Form Completion Rate widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object} The report options.
+ */
+function getFormCompletionRateEngagementReportOptions( select: Select ) {
+	return buildEngagementReportOptions(
+		select( CORE_USER ).getDateRangeDates( { compare: true } )
+	);
+}
+
 const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 	Widget,
 } ) => {
-	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
+	const primaryEventReportOptions = useSelect(
+		getFormCompletionRatePrimaryReportOptions,
 		[]
 	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+	const engagementReportOptions = useSelect(
+		getFormCompletionRateEngagementReportOptions,
 		[]
 	);
-
-	const primaryEventReportOptions = buildPrimaryEventReportOptions(
-		dates,
-		detectedLeadEvents
-	);
-	const engagementReportOptions = buildEngagementReportOptions( dates );
 
 	const {
 		report: primaryEventReport,
@@ -84,7 +104,8 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 
 	const { currentRate, previousRate, currentSessions } = processReports(
 		primaryEventReport,
-		engagementReport
+		engagementReport,
+		{ aggregate: true }
 	);
 
 	return (

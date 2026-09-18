@@ -50,25 +50,26 @@ interface LeadsByCountriesWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the report options for the Leads By Countries widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getLeadsByCountriesReportOptions( select: Select ) {
+	return buildCountriesReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+}
+
 const LeadsByCountriesWidget: FC< LeadsByCountriesWidgetProps > = ( {
 	Widget,
 } ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-
-	const reportOptions = buildCountriesReportOptions( {
-		dates,
-		primaryEvent: detectedLeadEvents,
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+	const reportOptions = useSelect( getLeadsByCountriesReportOptions, [] );
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

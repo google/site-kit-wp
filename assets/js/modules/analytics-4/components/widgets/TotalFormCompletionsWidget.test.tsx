@@ -110,9 +110,12 @@ describe( 'TotalFormCompletionsWidget', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should render the current period total form completions count and the change vs. the previous period', async () => {
+	it( 'should sum form completions across every detected lead event and render the change vs. the previous period', async () => {
 		const reportOptions = getReportOptions();
 
+		// `provideLeadsWidgetTestRegistry()` detects three lead events, so the
+		// report has one row per event per date range; the rendered count must
+		// be the sum across all of them, not just the first row found.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				rows: [
@@ -121,14 +124,42 @@ describe( 'TotalFormCompletionsWidget', () => {
 							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
 							{ value: 'date_range_0' },
 						],
-						metricValues: [ { value: '150' } ],
+						metricValues: [ { value: '100' } ],
 					},
 					{
 						dimensionValues: [
 							{ value: ENUM_CONVERSION_EVENTS.CONTACT },
 							{ value: 'date_range_1' },
 						],
-						metricValues: [ { value: '100' } ],
+						metricValues: [ { value: '50' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '50' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '30' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_0' },
+						],
+						metricValues: [ { value: '30' } ],
+					},
+					{
+						dimensionValues: [
+							{ value: ENUM_CONVERSION_EVENTS.GENERATE_LEAD },
+							{ value: 'date_range_1' },
+						],
+						metricValues: [ { value: '20' } ],
 					},
 				],
 			},
@@ -141,13 +172,14 @@ describe( 'TotalFormCompletionsWidget', () => {
 		);
 		await waitForRegistry();
 
+		// currentPrimaryCount = 100 + 50 + 30 = 180; previousPrimaryCount = 50 + 30 + 20 = 100.
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
-		).toHaveTextContent( '150' );
-		expect( getByText( '150' ) ).toBeInTheDocument();
+		).toHaveTextContent( '180' );
+		expect( getByText( '180' ) ).toBeInTheDocument();
 
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '+50%' );
+		).toHaveTextContent( '+80%' );
 	} );
 } );

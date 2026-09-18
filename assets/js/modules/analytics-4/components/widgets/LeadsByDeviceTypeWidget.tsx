@@ -50,25 +50,26 @@ interface LeadsByDeviceTypeWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the report options for the Leads By Device Type widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getLeadsByDeviceTypeReportOptions( select: Select ) {
+	return buildDeviceTypeReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+}
+
 const LeadsByDeviceTypeWidget: FC< LeadsByDeviceTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const dates = useSelect(
-		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
-		[]
-	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-
-	const reportOptions = buildDeviceTypeReportOptions( {
-		dates,
-		primaryEvent: detectedLeadEvents,
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+	const reportOptions = useSelect( getLeadsByDeviceTypeReportOptions, [] );
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

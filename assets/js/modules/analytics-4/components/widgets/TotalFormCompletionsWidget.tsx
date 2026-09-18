@@ -42,25 +42,25 @@ interface TotalFormCompletionsWidgetProps {
 	Widget: ElementType;
 }
 
+/**
+ * Gets the report options for the Total Form Completions widget.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Data store 'select' function.
+ * @return {Object|undefined} The report options.
+ */
+function getTotalFormCompletionsReportOptions( select: Select ) {
+	return buildPrimaryEventReportOptions(
+		select( CORE_USER ).getDateRangeDates( { compare: true } ),
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()
+	);
+}
+
 const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 	Widget,
 } ) => {
-	const dates = useSelect(
-		( select: Select ) =>
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		[]
-	);
-
-	const detectedLeadEvents = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		[]
-	);
-
-	const reportOptions = buildPrimaryEventReportOptions(
-		dates,
-		detectedLeadEvents
-	);
+	const reportOptions = useSelect( getTotalFormCompletionsReportOptions, [] );
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
@@ -68,7 +68,8 @@ const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 
 	const { currentPrimaryCount, previousPrimaryCount } = processReports(
 		report,
-		{}
+		{},
+		{ aggregate: true }
 	);
 
 	return (
