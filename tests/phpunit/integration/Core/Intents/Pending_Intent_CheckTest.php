@@ -170,9 +170,9 @@ class Pending_Intent_CheckTest extends TestCase {
 		$this->connect_to_service();
 		$this->mock_pending_intent_response(
 			array(
-				'has_intent' => true,
-				'intent'     => 'ads-conversion-tracking',
-				'code'       => 'abc123',
+				'has_intent'  => true,
+				'intent'      => 'ads-conversion-tracking',
+				'intent_code' => 'abc123',
 			)
 		);
 
@@ -189,7 +189,7 @@ class Pending_Intent_CheckTest extends TestCase {
 					)
 				),
 				$redirect->get_location(),
-				'The user should land on the dashboard carrying the intent the Service named.'
+				'The user should land on the dashboard with the intent the Service returned.'
 			);
 		}
 
@@ -202,16 +202,16 @@ class Pending_Intent_CheckTest extends TestCase {
 		$this->connect_to_service();
 		$this->mock_pending_intent_response(
 			array(
-				'has_intent' => true,
-				'intent'     => 'ads-conversion-tracking',
-				'code'       => 'abc123',
+				'has_intent'  => true,
+				'intent'      => 'ads-conversion-tracking',
+				'intent_code' => 'abc123',
 			)
 		);
 
 		try {
 			$this->run_check();
 		} catch ( RedirectException $redirect ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
-			// The redirect is the point of this run; the second one is what is under test.
+			// Ignore the first redirect, this test checks the next page load.
 		}
 
 		remove_all_actions( 'admin_init' );
@@ -222,32 +222,32 @@ class Pending_Intent_CheckTest extends TestCase {
 
 	public function data_responses_without_an_intent() {
 		return array(
-			'no intent waiting' => array( array( 'has_intent' => false ) ),
-			'a stale intent'    => array(
+			'no intent waiting'              => array( array( 'has_intent' => false ) ),
+			'a stale intent'                 => array(
 				array(
-					'has_intent' => false,
+					'has_intent'  => false,
+					'intent'      => 'ads-conversion-tracking',
+					'intent_code' => 'abc123',
+				),
+			),
+			'a failing request'              => array( new WP_Error( 'http_request_failed', 'Service unreachable.' ) ),
+			'no intent named'                => array(
+				array(
+					'has_intent'  => true,
+					'intent_code' => 'abc123',
+				),
+			),
+			'no code named'                  => array(
+				array(
+					'has_intent' => true,
 					'intent'     => 'ads-conversion-tracking',
-					'code'       => 'abc123',
 				),
 			),
-			'a failing request' => array( new WP_Error( 'http_request_failed', 'Service unreachable.' ) ),
-			'no intent named'   => array(
+			'an intent that is not a string' => array(
 				array(
-					'has_intent' => true,
-					'code'       => 'abc123',
-				),
-			),
-			'no code named'     => array(
-				array(
-					'has_intent' => true,
-					'intent'     => 'ads-conversion-tracking',
-				),
-			),
-			'an intent that is not a value a URL can carry' => array(
-				array(
-					'has_intent' => true,
-					'intent'     => array( 'ads-conversion-tracking' ),
-					'code'       => 'abc123',
+					'has_intent'  => true,
+					'intent'      => array( 'ads-conversion-tracking' ),
+					'intent_code' => 'abc123',
 				),
 			),
 		);
@@ -325,7 +325,7 @@ class Pending_Intent_CheckTest extends TestCase {
 			array(
 				'access_token'  => 'test-access-token',
 				'refresh_token' => 'test-refresh-token',
-				// Close enough to expiry that Site Kit refreshes it.
+				// Expires within five minutes, so Site Kit refreshes it.
 				'expires_in'    => 60,
 			)
 		);

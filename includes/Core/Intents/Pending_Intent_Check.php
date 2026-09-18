@@ -19,11 +19,11 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Plugin_Version;
 
 /**
- * Class asking the Site Kit Service for an intent waiting for this site and user.
+ * Class for checking whether the Site Kit Service has a pending intent for this site and user.
  *
- * Someone can arrive from the Google Ads console while the site runs a plugin too old to handle
- * their intent. The Service holds onto it, so the plugin collects it after the update rather than
- * sending them back to start again.
+ * A user can come from the Google Ads console while the site runs a plugin version that does not
+ * support their intent yet. The Service keeps the intent, so after the update the plugin can pick it
+ * up and the user does not have to start again.
  *
  * @since n.e.x.t
  * @access private
@@ -93,20 +93,19 @@ class Pending_Intent_Check {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// Priority 20 leaves Plugin_Version time to store the version this check compares against.
+		// Priority 20 runs after Plugin_Version has saved the current version.
 		add_action( 'admin_init', array( $this, 'check_pending_intent' ), 20 );
 	}
 
 	/**
-	 * Sends the user to the intent the Service is holding for them, if there is one.
+	 * Redirects the user to their pending intent, if the Service has one.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function check_pending_intent() {
-		// `admin_init` also runs for admin-ajax.php and for form submissions, where a redirect
-		// would answer a request nobody is looking at and spend the intent the user is waiting
-		// for. A method that cannot be read still goes ahead, so the check survives a host where
-		// `filter_input()` comes up empty.
+		// `admin_init` also runs for AJAX requests and form submissions. Redirecting those would use
+		// up the intent without the user ever seeing it. If the request method cannot be read, as
+		// on hosts where `filter_input()` returns nothing, the check still runs.
 		$request_method = $this->context->input()->filter( INPUT_SERVER, 'REQUEST_METHOD' );
 
 		if ( wp_doing_ajax() || ( $request_method && 'GET' !== $request_method ) ) {
@@ -128,13 +127,12 @@ class Pending_Intent_Check {
 			return;
 		}
 
-		// Recorded whether or not the user ends up somewhere else, so a check that finds nothing
-		// does not repeat on every admin page they open.
+		// Save the version before calling the Service, so the check runs only once per update,
+		// even when no intent is found.
 		$this->user_options->set( self::CHECKED_VERSION_USER_OPTION, $plugin_version );
 
-		// Site Kit only refreshes the access token when the user opens a dashboard, and this runs on
-		// any admin page, so an hour-old token would reach the Service expired and cost this user
-		// the one check they get for this version.
+		// Site Kit normally refreshes the access token only on the dashboard screens. This check runs
+		// on any admin page, so refresh the token here to avoid sending an expired one.
 		$this->authentication->do_refresh_user_token();
 
 		$response = $this->authentication->get_google_proxy()->get_pending_intent(
@@ -147,7 +145,7 @@ class Pending_Intent_Check {
 		}
 
 		$intent = $this->read_string( $response, 'intent' );
-		$code   = $this->read_string( $response, 'code' );
+		$code   = $this->read_string( $response, 'intent_code' );
 
 		if ( '' === $intent || '' === $code ) {
 			return;
@@ -172,8 +170,8 @@ class Pending_Intent_Check {
 	 *
 	 * @param array  $response Response from the Service.
 	 * @param string $field    Field to read.
-	 * @return string The field's value, or an empty string when it is missing or is not a value a
-	 *                URL can carry.
+	 * @return string The field's value, or an empty string when it is missing or not a string or
+	 *                a number.
 	 */
 	private function read_string( array $response, $field ) {
 		if ( empty( $response[ $field ] ) || ! is_scalar( $response[ $field ] ) ) {

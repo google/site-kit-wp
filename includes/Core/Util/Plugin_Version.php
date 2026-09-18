@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Util;
 use Google\Site_Kit\Core\Storage\Options;
 
 /**
- * Class keeping the installed plugin version in an option.
+ * Class for storing the installed plugin version in an option.
  *
  * @since n.e.x.t
  * @access private
@@ -57,8 +57,8 @@ class Plugin_Version {
 	 * Fires `googlesitekit_plugin_updated` when the write replaced a version the site had stored
 	 * before.
 	 *
-	 * The version is written on the first admin request of the new release, because only then does
-	 * the plugin run the code that carries it.
+	 * The version is saved on the first admin request after an update, as that is the first request
+	 * that runs the code of the new release.
 	 *
 	 * @since n.e.x.t
 	 */

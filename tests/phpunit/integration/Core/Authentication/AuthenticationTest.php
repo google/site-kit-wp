@@ -215,8 +215,8 @@ class AuthenticationTest extends TestCase {
 	public function test_register__syncs_site_fields_when_the_plugin_version_is_written( $stored_version ) {
 		$this->fake_proxy_site_connection();
 
-		// Seeded before the hooks are in place, so the write below is the only one they see: it
-		// adds the option on a site that has none, and updates it on a site that has an older one.
+		// Set up the stored version before registering the listeners, so they only see the write
+		// below. That write adds the option when none is stored, and updates it when an older one is.
 		delete_option( Plugin_Version::OPTION );
 
 		if ( null !== $stored_version ) {
@@ -257,7 +257,7 @@ class AuthenticationTest extends TestCase {
 		do_action( 'shutdown' );
 
 		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
-		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should carry the intent URI.' );
+		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
 	}
 
 	protected function assertAdminDataExtended() {

@@ -44,7 +44,7 @@ class Google_Proxy {
 	const SUPPORT_LINK_URI          = '/support';
 	const INTENT_URI                = '/intent/%s/';
 	const INTENT_COMPLETE_URI       = '/intent/%s/complete/';
-	const INTENT_PENDING_URI        = '/intent/pending/';
+	const INTENT_PENDING_URI        = '/intents/pending/';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
@@ -398,7 +398,7 @@ class Google_Proxy {
 			array(
 				'access_token' => $access_token,
 				'body'         => array(
-					'code' => $code,
+					'intent_code' => $code,
 				),
 			)
 		);
@@ -422,7 +422,7 @@ class Google_Proxy {
 			array(
 				'access_token' => $access_token,
 				'body'         => array(
-					'code' => $code,
+					'intent_code' => $code,
 				),
 			)
 		);

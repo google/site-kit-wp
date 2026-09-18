@@ -274,7 +274,7 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	/**
-	 * Calls one of the three intent methods, which differ only in whether they carry a code.
+	 * Calls one of the three intent methods, which differ only in whether they take a code.
 	 *
 	 * @param string $method    Google_Proxy method name.
 	 * @param bool   $with_code Whether the method takes an intent ID and code.
@@ -304,7 +304,7 @@ class Google_ProxyTest extends TestCase {
 		);
 
 		if ( $with_code ) {
-			$expected_body['code'] = 'abc123';
+			$expected_body['intent_code'] = 'abc123';
 		}
 
 		$this->mock_http_request( $expected_url, $expected_response );
@@ -313,8 +313,8 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEquals( $expected_url, $this->request_url, 'The request should go to the intent endpoint.' );
 		$this->assertEquals( 'POST', $this->request_args['method'], 'The intent request should be a POST.' );
-		$this->assertEquals( 'Bearer test-access-token', $this->request_args['headers']['Authorization'], 'The intent request should carry the access token.' );
-		$this->assertEqualSetsWithIndex( $expected_body, $this->request_args['body'], 'The intent request body should carry the site credentials, and the code where there is one.' );
+		$this->assertEquals( 'Bearer test-access-token', $this->request_args['headers']['Authorization'], 'The intent request should include the access token.' );
+		$this->assertEqualSetsWithIndex( $expected_body, $this->request_args['body'], 'The intent request body should include the site credentials, and the intent code for the methods that take one.' );
 		$this->assertEqualSetsWithIndex( $expected_response, $response, 'The intent method should return the decoded response body.' );
 	}
 

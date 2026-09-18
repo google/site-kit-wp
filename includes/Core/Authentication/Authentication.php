@@ -350,8 +350,8 @@ final class Authentication implements Provides_Feature_Metrics {
 
 		add_action( 'update_option_blogname', $option_updated );
 		add_action( 'update_option_googlesitekit_db_version', $option_updated );
-		// Creating an option fires `add_option_`, and only later writes fire `update_option_`. Both
-		// are hooked, or the release that starts storing the version would never sync.
+		// WordPress fires `add_option_` the first time an option is saved and `update_option_` after
+		// that. Both are needed, otherwise the first release that saves the version would not sync.
 		add_action( 'add_option_' . Plugin_Version::OPTION, $option_updated );
 		add_action( 'update_option_' . Plugin_Version::OPTION, $option_updated );
 
