@@ -24,9 +24,6 @@ import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-m
 import { getTrafficChartData } from './getTrafficChartData';
 
 describe( 'getTrafficChartData', () => {
-	// `getAnalytics4MockResponse` returns the same numbers for the same options,
-	// so the report for `2025-01-13` to `2025-01-16` always has 55, 14, 3, and
-	// 13 visitors.
 	const reportOptions = getGraphReportArgs( {
 		startDate: '2025-01-13',
 		endDate: '2025-01-16',
@@ -86,6 +83,20 @@ describe( 'getTrafficChartData', () => {
 			[ new Date( 2025, 0, 16 ), 0 ],
 		] );
 		expect( hasVisitors ).toBe( false );
+	} );
+
+	it( 'draws a flat line at zero across the whole date range when the report has no rows', () => {
+		const { chartData } = getTrafficChartData( {
+			report: { rows: [] },
+			startDate: '2025-01-13',
+			endDate: '2025-01-16',
+		} );
+
+		expect( chartData.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 13 ), 0 ],
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
 	} );
 
 	it( 'shows a date label on the second day and the last day when there is no report', () => {
