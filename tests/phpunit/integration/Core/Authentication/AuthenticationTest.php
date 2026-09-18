@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_185_0;
+use Google\Site_Kit\Core\Util\Plugin_Version;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -198,6 +199,65 @@ class AuthenticationTest extends TestCase {
 			array( 'blogname', 'example.com', 'new.example.com' ),
 			array( 'googlesitekit_db_version', '1.0', '2.0' ),
 		);
+	}
+
+	public function data_plugin_version_writes() {
+		return array(
+			'stored for the first time' => array( null ),
+			'replacing an older one'    => array( '1.0.0' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_plugin_version_writes
+	 * @param string|null $stored_version Version stored before the write, or null for none.
+	 */
+	public function test_register__syncs_site_fields_when_the_plugin_version_is_written( $stored_version ) {
+		$this->fake_proxy_site_connection();
+
+		// Set up the stored version before registering the listeners, so they only see the write
+		// below. That write adds the option when none is stored, and updates it when an older one is.
+		delete_option( Plugin_Version::OPTION );
+
+		if ( null !== $stored_version ) {
+			add_option( Plugin_Version::OPTION, $stored_version );
+		}
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'add_option_' . Plugin_Version::OPTION );
+		remove_all_actions( 'update_option_' . Plugin_Version::OPTION );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		$synced_bodies = array();
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$synced_bodies ) {
+				if ( false === strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					return $preempt;
+				}
+
+				$synced_bodies[] = $args['body'];
+
+				return array(
+					'headers'  => array(),
+					'body'     => '{}',
+					'response' => array(
+						'code'    => 200,
+						'message' => get_status_header_desc( 200 ),
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		update_option( Plugin_Version::OPTION, '9.9.9' );
+
+		do_action( 'shutdown' );
+
+		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
+		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
 	}
 
 	protected function assertAdminDataExtended() {
