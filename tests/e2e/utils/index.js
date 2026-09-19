@@ -19,7 +19,10 @@
 export { activateAMPWithMode, setAMPMode } from './activate-amp-and-set-mode';
 export { activatePlugins, deactivatePlugins } from './activate-plugins';
 export { clearSessionStorage } from './clear-session-storage';
-export { createWaitForFetchRequests } from './create-wait-for-fetch-requests';
+export {
+	createWaitForFetchRequests,
+	createWaitForFetchRequestsWithDebounce,
+} from './create-wait-for-fetch-requests';
 export { deactivateUtilityPlugins } from './deactivate-utility-plugins';
 export { evalWithWPData } from './eval-with-wp-data';
 export { fetchPageContent } from './fetch-page-content';
