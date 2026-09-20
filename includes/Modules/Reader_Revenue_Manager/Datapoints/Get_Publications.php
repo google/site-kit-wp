@@ -137,7 +137,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 			)
 		);
 
-		return join(
+		return implode(
 			' OR ',
 			array_map(
 				function ( $domain ) {
