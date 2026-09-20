@@ -103,7 +103,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 
 		$allowed_states = array( Cta::STATE_ACTIVE, Cta::STATE_DRAFT );
 
-		if ( ! array_key_exists( 'state', $cta_data ) || '' === $cta_data['state'] ) {
+		if ( empty( $cta_data['state'] ) ) {
 			throw new Missing_Required_Param_Exception( 'data.state' );
 		}
 
