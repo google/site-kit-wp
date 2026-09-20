@@ -19,7 +19,13 @@
 /**
  * Internal dependencies
  */
-import { CTA_TYPES, getCTATypeHandler, isCTAType } from './index';
+import {
+	CTA_STATES,
+	CTA_TYPES,
+	getCTATypeHandler,
+	isCTAState,
+	isCTAType,
+} from './index';
 
 describe( 'modules/reader-revenue-manager CTA types', () => {
 	describe( 'isCTAType', () => {
@@ -35,6 +41,23 @@ describe( 'modules/reader-revenue-manager CTA types', () => {
 			[ 'an object', {} ],
 		] )( 'should return false for %s', ( _, type ) => {
 			expect( isCTAType( type ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isCTAState', () => {
+		it.each( [ CTA_STATES.ACTIVE, CTA_STATES.DRAFT ] )(
+			'should return true for %s',
+			( state ) => {
+				expect( isCTAState( state ) ).toBe( true );
+			}
+		);
+
+		it.each( [
+			[ 'an unsupported state', 'ENABLED' ],
+			[ 'undefined', undefined ],
+			[ 'a number', 123 ],
+		] )( 'should return false for %s', ( _, state ) => {
+			expect( isCTAState( state ) ).toBe( false );
 		} );
 	} );
 

@@ -29,13 +29,17 @@ import newsletterSignupCTATypeHandler, {
 	type NewsletterSignupCTA,
 } from './newsletter-signup';
 import {
+	CTA_STATES,
 	CTA_TYPES,
+	type CallToActionState,
 	type CallToActionType,
 	type CallToActionTypeHandler,
 } from './types';
 
 export {
+	CTA_STATES,
 	CTA_TYPES,
+	type CallToActionState,
 	type CallToActionType,
 	type CallToActionTypeHandler,
 } from './types';
@@ -62,6 +66,7 @@ export type CreateCTAData = {
 		type: Type;
 		config: CallToActionConfig< Type >;
 		displayName?: string;
+		state?: CallToActionState;
 	};
 }[ CallToActionType ];
 
@@ -84,6 +89,21 @@ export function isCTAType( type: unknown ): type is CallToActionType {
 	return (
 		typeof type === 'string' &&
 		Object.values( CTA_TYPES ).includes( type as CallToActionType )
+	);
+}
+
+/**
+ * Checks whether a value is a supported CTA state.
+ *
+ * @since n.e.x.t
+ *
+ * @param  state Value to check.
+ * @return {boolean} Whether the value is a supported CTA state.
+ */
+export function isCTAState( state: unknown ): state is CallToActionState {
+	return (
+		typeof state === 'string' &&
+		Object.values( CTA_STATES ).includes( state as CallToActionState )
 	);
 }
 
