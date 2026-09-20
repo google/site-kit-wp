@@ -54,6 +54,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Added support for the CTA `state` property.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.
@@ -100,9 +101,21 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 			throw new Invalid_Param_Exception( 'data.displayName' );
 		}
 
+		$allowed_states = array( Cta::STATE_ACTIVE, Cta::STATE_DRAFT );
+
+		if ( ! array_key_exists( 'state', $cta_data ) || '' === $cta_data['state'] ) {
+			throw new Missing_Required_Param_Exception( 'data.state' );
+		}
+
+		if ( ! is_string( $cta_data['state'] ) || ! in_array( $cta_data['state'], $allowed_states, true ) ) {
+			throw new Invalid_Param_Exception( 'data.state' );
+		}
+
 		$cta = new Cta();
 
 		$handlers[ $type ]->configure_cta( $cta, $cta_data['config'] );
+
+		$cta->setState( $cta_data['state'] );
 
 		if ( ! empty( $cta_data['displayName'] ) ) {
 			$cta->setDisplayName( $cta_data['displayName'] );
