@@ -12,10 +12,10 @@ namespace Google\Site_Kit\Tests\Modules\Reader_Revenue_Manager;
 
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ContentPolicyStatus;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\DomainProperty;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\RrmProduct;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ContentPolicyStatus;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\DomainProperty;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\RrmProduct;
 
 /**
  * @group Modules
