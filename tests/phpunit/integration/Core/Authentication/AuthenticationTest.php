@@ -28,7 +28,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_185_0;
-use Google\Site_Kit\Core\Util\Plugin_Version;
+use Google\Site_Kit\Core\Util\Plugin_Update;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -217,15 +217,15 @@ class AuthenticationTest extends TestCase {
 
 		// Set up the stored version before registering the listeners, so they only see the write
 		// below. That write adds the option when none is stored, and updates it when an older one is.
-		delete_option( Plugin_Version::OPTION );
+		delete_option( Plugin_Update::VERSION_OPTION );
 
 		if ( null !== $stored_version ) {
-			add_option( Plugin_Version::OPTION, $stored_version );
+			add_option( Plugin_Update::VERSION_OPTION, $stored_version );
 		}
 
 		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		remove_all_actions( 'add_option_' . Plugin_Version::OPTION );
-		remove_all_actions( 'update_option_' . Plugin_Version::OPTION );
+		remove_all_actions( 'add_option_' . Plugin_Update::VERSION_OPTION );
+		remove_all_actions( 'update_option_' . Plugin_Update::VERSION_OPTION );
 		remove_all_actions( 'shutdown' );
 		$auth->register();
 
@@ -252,7 +252,7 @@ class AuthenticationTest extends TestCase {
 			3
 		);
 
-		update_option( Plugin_Version::OPTION, '9.9.9' );
+		update_option( Plugin_Update::VERSION_OPTION, '9.9.9' );
 
 		do_action( 'shutdown' );
 
