@@ -50,17 +50,11 @@ const LazyWhatsNewEmptySVG = lazy(
 	() => import( '../../../../svg/graphics/whats-new-empty.svg' )
 );
 
-function useNavigate() {
+const WhatsNewTab: FC = () => {
 	const history = useHistory();
 
-	return ( path: string ) => history.push( path );
-}
-
-const WhatsNewTab: FC = () => {
-	const navigate = useNavigate();
-
 	function onClickEmpty() {
-		navigate( '/all-services' );
+		history.push( '/all-services' );
 	}
 
 	// The list is held in state so that marking its features seen, which

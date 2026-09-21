@@ -70,6 +70,7 @@ NoFeatures.args = {
 		provideWhatsNewState( registry );
 	},
 };
+NoFeatures.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/WhatsNewTab',
