@@ -18,6 +18,22 @@ namespace Google\Site_Kit\Core\Email_Reporting;
 class Plain_Text_Formatter {
 
 	/**
+	 * Decodes HTML entities for plain text formatting.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param string $text The text to decode.
+	 * @return string Decoded text.
+	 */
+	private static function decode_for_plain_text( $text ) {
+		if ( ! is_string( $text ) || '' === $text ) {
+			return $text;
+		}
+		// ENT_QUOTES so &amp; / &#038; become &, and named + numeric entities are handled.
+		return html_entity_decode( $text, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	}
+
+	/**
 	 * Formats the email header.
 	 *
 	 * @since 1.170.0
@@ -85,7 +101,7 @@ class Plain_Text_Formatter {
 	 */
 	public static function format_simple_email( $data ) {
 		$site_domain     = $data['site']['domain'] ?? '';
-		$title           = wp_strip_all_tags( $data['title'] ?? '' );
+		$title           = wp_strip_all_tags( self::decode_for_plain_text( $data['title'] ?? '' ) );
 		$learn_more_url  = $data['learn_more_url'] ?? '';
 		$cta             = $data['primary_call_to_action'] ?? array();
 		$footer_copy     = $data['footer']['copy'] ?? '';
@@ -109,7 +125,7 @@ class Plain_Text_Formatter {
 		// Body paragraphs (convert links to text, then strip remaining HTML).
 		foreach ( (array) $body as $paragraph ) {
 			$paragraph = self::convert_links_to_text( $paragraph );
-			$lines[]   = wp_strip_all_tags( $paragraph );
+			$lines[]   = wp_strip_all_tags( self::decode_for_plain_text( $paragraph ) );
 			$lines[]   = '';
 		}
 
@@ -182,6 +198,7 @@ class Plain_Text_Formatter {
 	 * @return string Formatted heading text.
 	 */
 	public static function format_section_heading( $title ) {
+		$title     = self::decode_for_plain_text( $title );
 		$underline = str_repeat( '=', mb_strlen( $title ) );
 		return $title . "\n" . $underline . "\n\n";
 	}
@@ -197,6 +214,8 @@ class Plain_Text_Formatter {
 	 * @return string Formatted metric text.
 	 */
 	public static function format_metric( $label, $value, $change ) {
+		$label       = self::decode_for_plain_text( $label );
+		$value       = self::decode_for_plain_text( $value );
 		$change_text = self::format_change( $change );
 		if ( '' !== $change_text ) {
 			return sprintf( '%s: %s %s', $label, $value, $change_text );
@@ -216,6 +235,7 @@ class Plain_Text_Formatter {
 	 * @return string Formatted row text.
 	 */
 	public static function format_page_row( $label, $value, $change, $url = '' ) {
+		$label       = self::decode_for_plain_text( $label );
 		$change_text = self::format_change( $change );
 		$line        = sprintf( '  • %s: %s', $label, $value );
 

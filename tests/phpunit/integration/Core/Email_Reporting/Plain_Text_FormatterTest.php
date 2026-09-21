@@ -709,4 +709,54 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'get help (https://example.com/help)', $result, 'Multiple body links should be converted.' );
 		$this->assertStringNotContainsString( '<a ', $result, 'No HTML anchor tags should remain in plain text.' );
 	}
+
+	public function test_format_metric_decodes_html_entities() {
+		$label  = 'Dana&#8217;s Guide &amp; Tips';
+		$value  = '1&nbsp;234';
+		$change = null;
+
+		$result = Plain_Text_Formatter::format_metric( $label, $value, $change );
+
+		// &#8217; is ’ (Right Single Quotation Mark), but html_entity_decode with ENT_QUOTES | ENT_HTML5 decodes it to ’.
+		$this->assertEquals( 'Dana’s Guide & Tips: 1 234', $result, 'Metric should decode HTML entities in label and value.' );
+	}
+
+	public function test_format_page_row_decodes_html_entities() {
+		$label  = 'Tips &amp; Tricks';
+		$value  = '500';
+		$change = null;
+		$url    = 'https://example.com/tips';
+
+		$result = Plain_Text_Formatter::format_page_row( $label, $value, $change, $url );
+
+		$this->assertStringContainsString( '• Tips & Tricks: 500', $result, 'Page row should decode HTML entities in label.' );
+	}
+
+	public function test_format_simple_email_decodes_html_entities_before_stripping_tags() {
+		$data = array(
+			'site'                   => array( 'domain' => 'example.com' ),
+			'title'                  => 'You&nbsp;have been invited&#8217;s',
+			'body'                   => array(
+				'Here are some <strong>Tips &amp; Tricks</strong> for you.',
+			),
+			'primary_call_to_action' => array(),
+			'footer'                 => array( 'copy' => '' ),
+		);
+
+		$result = Plain_Text_Formatter::format_simple_email( $data );
+
+		$this->assertStringContainsString( 'You have been invited’s', $result, 'Title should decode HTML entities.' );
+		$this->assertStringContainsString( 'Here are some Tips & Tricks for you.', $result, 'Body paragraphs should decode HTML entities before tag stripping.' );
+	}
+
+	public function test_decode_for_plain_text_preserves_utf8_multibyte_characters() {
+		// e.g. Cyrillic "1 234" from number_format_i18n().
+		$label = 'Тестовая страница';
+		$value = '1 234';
+		$change = null;
+
+		$result = Plain_Text_Formatter::format_metric( $label, $value, $change );
+
+		$this->assertEquals( 'Тестовая страница: 1 234', $result, 'UTF-8 multibyte characters should survive decoding unchanged.' );
+	}
 }
