@@ -263,7 +263,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sets `loaded` to `true` and leaves `error` undefined after all five reports have finished', async () => {
+	it( 'sets `loaded` to `true` and returns no errors after all five reports have finished', async () => {
 		provideReports( getExpectedArgs() );
 
 		const { result, waitForRegistry } = renderHook(
@@ -274,7 +274,7 @@ describe( 'useTrafficOverviewReports', () => {
 		await waitForRegistry();
 
 		expect( result.current.loaded ).toBe( true );
-		expect( result.current.error ).toBeUndefined();
+		expect( result.current.errors ).toEqual( [] );
 	} );
 
 	it( 'returns the total visitors report as totalsReport and the daily visitors report as graphReport', async () => {
@@ -333,7 +333,7 @@ describe( 'useTrafficOverviewReports', () => {
 		);
 	} );
 
-	it( 'returns the channels error when the channels report and the devices report both fail', async () => {
+	it( 'returns the channels error then the devices error when both reports fail', async () => {
 		const expectedArgs = getExpectedArgs();
 		provideReports( expectedArgs );
 
@@ -366,6 +366,9 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( result.current.error ).toEqual( channelsError );
+		expect( result.current.errors ).toEqual( [
+			channelsError,
+			devicesError,
+		] );
 	} );
 } );
