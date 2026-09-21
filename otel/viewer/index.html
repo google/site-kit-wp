@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Site Kit Errors</title>
+<style>
+	:root {
+		--bg: #fff; --panel: #f8f9fa; --border: #dadce0; --text: #202124;
+		--muted: #5f6368; --accent: #1a73e8; --danger: #d93025;
+		--mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+	}
+	@media (prefers-color-scheme: dark) {
+		:root {
+			--bg: #17181a; --panel: #212226; --border: #3c4043; --text: #e8eaed;
+			--muted: #9aa0a6; --accent: #8ab4f8; --danger: #f28b82;
+		}
+	}
+	* { box-sizing: border-box; }
+	body {
+		margin: 0; background: var(--bg); color: var(--text);
+		font: 14px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	}
+	header {
+		padding: 20px 24px; border-bottom: 1px solid var(--border);
+		display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap;
+	}
+	h1 { font-size: 18px; margin: 0; font-weight: 600; }
+	.sub { color: var(--muted); font-size: 13px; }
+	.controls { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+	select, button {
+		font: inherit; padding: 6px 10px; border-radius: 6px;
+		border: 1px solid var(--border); background: var(--bg); color: var(--text);
+		cursor: pointer;
+	}
+	main { padding: 16px 24px 48px; }
+	table { width: 100%; border-collapse: collapse; }
+	th {
+		text-align: left; font-size: 12px; text-transform: uppercase;
+		letter-spacing: .04em; color: var(--muted); font-weight: 600;
+		padding: 8px 12px; border-bottom: 1px solid var(--border);
+	}
+	th.num, td.num { text-align: right; }
+	tbody tr.issue { border-bottom: 1px solid var(--border); cursor: pointer; }
+	tbody tr.issue:hover { background: var(--panel); }
+	td { padding: 12px; vertical-align: top; }
+	.etype { color: var(--danger); font-weight: 600; font-family: var(--mono); font-size: 13px; }
+	.emsg {
+		font-family: var(--mono); font-size: 12.5px; color: var(--text);
+		margin-top: 3px; word-break: break-word;
+	}
+	.count { font-variant-numeric: tabular-nums; font-weight: 600; }
+	.muted { color: var(--muted); font-size: 12.5px; font-variant-numeric: tabular-nums; }
+	.fp {
+		font-family: var(--mono); font-size: 11px; color: var(--muted);
+		background: var(--panel); padding: 1px 5px; border-radius: 3px;
+	}
+	.synthetic, .real {
+		font-size: 10px; text-transform: uppercase; letter-spacing: .05em;
+		padding: 1px 6px; border-radius: 3px; font-weight: 600;
+	}
+	.synthetic { background: #fef7e0; color: #b06000; }
+	.real { background: #e6f4ea; color: #137333; }
+	@media (prefers-color-scheme: dark) {
+		.synthetic { background: #3d3222; color: #fdd663; }
+		.real { background: #1e3a28; color: #81c995; }
+	}
+	.detail { background: var(--panel); }
+	.detail td { padding: 0 12px 18px; }
+	.detail h3 {
+		font-size: 11px; text-transform: uppercase; letter-spacing: .04em;
+		color: var(--muted); margin: 16px 0 6px;
+	}
+	pre {
+		font-family: var(--mono); font-size: 12px; margin: 0; padding: 12px;
+		background: var(--bg); border: 1px solid var(--border); border-radius: 6px;
+		overflow-x: auto; white-space: pre-wrap; word-break: break-word;
+	}
+	.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+	.chip {
+		font-size: 12px; padding: 2px 8px; border-radius: 10px;
+		background: var(--bg); border: 1px solid var(--border); color: var(--muted);
+	}
+	.empty { padding: 64px 0; text-align: center; color: var(--muted); }
+	.empty code { font-family: var(--mono); font-size: 12px; }
+</style>
+</head>
+<body>
+
+<header>
+	<h1>Site Kit Errors</h1>
+	<span class="sub" id="summary">Loading…</span>
+	<div class="controls">
+		<select id="range">
+			<option value="24">Last 24 hours</option>
+			<option value="168" selected>Last 7 days</option>
+			<option value="720">Last 30 days</option>
+		</select>
+		<select id="version"><option value="">All versions</option></select>
+		<button id="refresh">Refresh</button>
+	</div>
+</header>
+
+<main>
+	<div id="content"><div class="empty">Loading…</div></div>
+</main>
+
+<script>
+/**
+ * A deliberately small triage view over the PoC's error data.
+ *
+ * It exists to make one point that Grafana cannot make on its own: with a
+ * fingerprint on every record, the error log stops being a stream and becomes
+ * a list of distinct bugs — which is the actual difference between this and
+ * the GA reporting it replaces.
+ *
+ * OpenTelemetry deliberately does not define this layer. It moves the data and
+ * standardises its shape; deciding that two records are "the same bug" and
+ * presenting that to a human is a product concern. This page is roughly the
+ * cheapest possible version of that product concern, and it is here so the
+ * proposal can show the gap rather than describe it.
+ */
+
+const LOKI_QUERY = '{service_name="site-kit-wp"}';
+
+let allRecords = [];
+let expanded = null;
+
+async function loadRecords( hours ) {
+	const endNs = Date.now() * 1e6;
+	const startNs = ( Date.now() - hours * 3600 * 1000 ) * 1e6;
+	const url = `/loki/api/v1/query_range?query=${ encodeURIComponent( LOKI_QUERY ) }`
+		+ `&start=${ startNs }&end=${ endNs }&limit=5000&direction=backward`;
+
+	const res = await fetch( url );
+	if ( ! res.ok ) throw new Error( `Loki returned HTTP ${ res.status }` );
+
+	const json = await res.json();
+	const streams = json?.data?.result || [];
+
+	const records = [];
+	for ( const stream of streams ) {
+		for ( const [ ts, line ] of stream.values ) {
+			records.push( { ...stream.stream, _ts: Number( ts ) / 1e6, _line: line } );
+		}
+	}
+	return records;
+}
+
+function groupByFingerprint( records ) {
+	const groups = new Map();
+
+	for ( const r of records ) {
+		// Records predating fingerprinting fall back to the message, so the
+		// view degrades rather than breaking.
+		const key = r.sitekit_fingerprint || r.exception_message || r._line;
+
+		if ( ! groups.has( key ) ) {
+			groups.set( key, {
+				fingerprint: r.sitekit_fingerprint || '—',
+				type: r.exception_type || 'Error',
+				message: r.exception_message || r._line || '',
+				stack: r.exception_stacktrace || r.sitekit_component_stack || '',
+				count: 0,
+				sites: new Set(),
+				versions: new Set(),
+				contexts: new Set(),
+				phpVersions: new Set(),
+				realCount: 0,
+				syntheticCount: 0,
+				firstSeen: Infinity,
+				lastSeen: 0,
+			} );
+		}
+
+		const g = groups.get( key );
+		g.count++;
+
+		// Counted rather than flagged: a group can contain both, and a single
+		// real report in a synthetic group is the interesting case — it means
+		// a live error grouped with fabricated ones, which is the fingerprint
+		// doing its job across emitters.
+		if ( r.sitekit_synthetic === 'true' ) {
+			g.syntheticCount++;
+		} else {
+			g.realCount++;
+		}
+		if ( r.sitekit_site_url ) g.sites.add( r.sitekit_site_url );
+		if ( r.service_version ) g.versions.add( r.service_version );
+		if ( r.sitekit_view_context ) g.contexts.add( r.sitekit_view_context );
+		if ( r.sitekit_php_version ) g.phpVersions.add( r.sitekit_php_version );
+		g.firstSeen = Math.min( g.firstSeen, r._ts );
+		g.lastSeen = Math.max( g.lastSeen, r._ts );
+	}
+
+	return [ ...groups.values() ].sort( ( a, b ) => b.count - a.count );
+}
+
+function ago( ms ) {
+	const s = Math.floor( ( Date.now() - ms ) / 1000 );
+	if ( s < 60 ) return `${ s }s ago`;
+	if ( s < 3600 ) return `${ Math.floor( s / 60 ) }m ago`;
+	if ( s < 86400 ) return `${ Math.floor( s / 3600 ) }h ago`;
+	return `${ Math.floor( s / 86400 ) }d ago`;
+}
+
+function esc( s ) {
+	return String( s ).replace( /[&<>"]/g, ( c ) =>
+		( { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' } )[ c ] );
+}
+
+function sortedVersions( set ) {
+	return [ ...set ].sort();
+}
+
+function render() {
+	const versionFilter = document.getElementById( 'version' ).value;
+	const records = versionFilter
+		? allRecords.filter( ( r ) => r.service_version === versionFilter )
+		: allRecords;
+
+	const groups = groupByFingerprint( records );
+	const content = document.getElementById( 'content' );
+
+	const syntheticEvents = records.filter( ( r ) => r.sitekit_synthetic === 'true' ).length;
+	const realEvents = records.length - syntheticEvents;
+
+	document.getElementById( 'summary' ).textContent =
+		`${ groups.length } distinct ${ groups.length === 1 ? 'issue' : 'issues' } · `
+		+ `${ realEvents } real, ${ syntheticEvents } synthetic`;
+
+	if ( ! groups.length ) {
+		content.innerHTML = `<div class="empty">
+			<p>No errors recorded in this period.</p>
+			<p><code>node otel/seed-errors.js</code> to populate with sample data.</p>
+		</div>`;
+		return;
+	}
+
+	content.innerHTML = `<table>
+		<thead><tr>
+			<th>Issue</th>
+			<th class="num">Events</th>
+			<th class="num">Sites</th>
+			<th>Versions</th>
+			<th>Last seen</th>
+		</tr></thead>
+		<tbody>${ groups.map( ( g, i ) => `
+			<tr class="issue" data-i="${ i }">
+				<td>
+					<span class="etype">${ esc( g.type ) }</span>
+					<span class="fp">${ esc( g.fingerprint ) }</span>
+					${ g.realCount
+						? `<span class="real">${ g.syntheticCount ? 'real + synthetic' : 'real' }</span>`
+						: '<span class="synthetic">synthetic</span>' }
+					<div class="emsg">${ esc( g.message.slice( 0, 180 ) ) }${ g.message.length > 180 ? '…' : '' }</div>
+				</td>
+				<td class="num count">${ g.count }</td>
+				<td class="num count">${ g.sites.size }</td>
+				<td class="muted">${ sortedVersions( g.versions ).join( ', ' ) || '—' }</td>
+				<td class="muted">${ ago( g.lastSeen ) }</td>
+			</tr>
+			${ expanded === i ? `
+			<tr class="detail"><td colspan="5">
+				<h3>Message</h3>
+				<pre>${ esc( g.message ) }</pre>
+				<h3>Stack</h3>
+				<pre>${ esc( g.stack || 'No stack recorded.' ) }</pre>
+				<h3>View contexts</h3>
+				<div class="chips">${ [ ...g.contexts ].map( ( c ) =>
+					`<span class="chip">${ esc( c ) }</span>` ).join( '' ) || '—' }</div>
+				<h3>PHP versions</h3>
+				<div class="chips">${ [ ...g.phpVersions ].sort().map( ( v ) =>
+					`<span class="chip">${ esc( v ) }</span>` ).join( '' ) || '—' }</div>
+				<h3>Seen</h3>
+				<div class="muted">First ${ ago( g.firstSeen ) }, last ${ ago( g.lastSeen ) }, across ${ g.sites.size } site(s)</div>
+			</td></tr>` : '' }
+		` ).join( '' ) }</tbody>
+	</table>`;
+
+	content.querySelectorAll( 'tr.issue' ).forEach( ( row ) => {
+		row.addEventListener( 'click', () => {
+			const i = Number( row.dataset.i );
+			expanded = expanded === i ? null : i;
+			render();
+		} );
+	} );
+}
+
+function refreshVersionFilter() {
+	const select = document.getElementById( 'version' );
+	const current = select.value;
+	const versions = [ ...new Set( allRecords.map( ( r ) => r.service_version ).filter( Boolean ) ) ].sort();
+
+	select.innerHTML = '<option value="">All versions</option>'
+		+ versions.map( ( v ) => `<option value="${ esc( v ) }">${ esc( v ) }</option>` ).join( '' );
+	select.value = current;
+}
+
+async function refresh() {
+	const hours = Number( document.getElementById( 'range' ).value );
+	try {
+		allRecords = await loadRecords( hours );
+		refreshVersionFilter();
+		render();
+	} catch ( err ) {
+		document.getElementById( 'content' ).innerHTML =
+			`<div class="empty"><p>Could not reach Loki.</p><p><code>${ esc( err.message ) }</code></p></div>`;
+	}
+}
+
+document.getElementById( 'refresh' ).addEventListener( 'click', refresh );
+document.getElementById( 'range' ).addEventListener( 'change', () => { expanded = null; refresh(); } );
+document.getElementById( 'version' ).addEventListener( 'change', () => { expanded = null; render(); } );
+
+refresh();
+setInterval( refresh, 15000 );
+</script>
+</body>
+</html>
