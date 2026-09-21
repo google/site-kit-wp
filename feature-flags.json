@@ -1,8 +1,9 @@
 [
 	"adsConversionTrackingIntent",
+	"featureDiscoveryHub",
+	"freshData",
 	"googleTagGateway",
 	"gtagUserData",
-	"featureDiscoveryHub",
 	"pdfGeneration",
 	"rrmExpressSetup",
 	"setupFlowRefresh",
