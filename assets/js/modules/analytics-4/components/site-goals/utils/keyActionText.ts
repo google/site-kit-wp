@@ -24,7 +24,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 /**
  * The ecommerce event a Site Goals Key action tile counts.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export type EcommerceKeyActionEvent = 'purchase' | 'add_to_cart';
 
@@ -36,7 +36,7 @@ export type EcommerceKeyActionEvent = 'purchase' | 'add_to_cart';
  * With one detected event type: output the event name (eg. `“contact” events`).
  * With several event types: output the number of event types (eg. `2 event types`).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<string>} detectedLeadEvents The lead events the Key action total counts.
  * @return {string} The caption under the Key action total, such as "“contact” events", "2 event types", or "No event types".

@@ -111,9 +111,27 @@ const selectors = {
 	),
 
 	/**
-	 * Returns the edit link URL for a CTA.
+	 * Returns the publisher center overview URL.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @return {string} Publisher center overview URL.
+	 */
+	getPublisherCenterOverviewURL: createRegistrySelector( ( select ) => () => {
+		const publicationID = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublicationID();
+
+		return select( MODULES_READER_REVENUE_MANAGER ).getServiceURL( {
+			path: `${ CONTENT_ACCESS_PATH }/overview`,
+			query: { publication: publicationID },
+		} );
+	} ),
+
+	/**
+	 * Returns the edit link URL for a CTA.
+	 *
+	 * @since 1.188.0
 	 *
 	 * @param {string} ctaID The CTA ID.
 	 * @return {string} CTA edit link URL.

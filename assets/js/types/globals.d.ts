@@ -43,9 +43,16 @@ declare global {
 	// yet. We will keep improving it as we migrate more files that use it.
 	var _googlesitekit:
 		| {
-				// A cached page still holds the configuration an older release
+				// A cached page still has the configuration an older release
 				// wrote, so any field can be missing.
 				contentEvents?: Partial< ContentEventsConfig >;
+				/**
+				 * Easy Digital Downloads plugin data, if the plugin is installed.
+				 */
+				edddata?: {
+					currency?: string;
+					purchase?: Record< string, unknown >;
+				};
 				gtagUserData?: boolean;
 				gtagEvent?: (
 					name: string,

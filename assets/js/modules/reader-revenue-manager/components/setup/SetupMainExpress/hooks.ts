@@ -22,14 +22,9 @@
 import { useCallback, useEffect } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { useDispatch, useSelect } from '@wordpress/data';
-
-/**
  * Internal dependencies
  */
-import { Select } from '@/js/googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
@@ -173,4 +168,30 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 	}, [ cta, publication, publicationID, setStep, step ] );
 
 	return [ step, setStep ];
+}
+
+/**
+ * Determines whether the connected publication had CTAs before the one that
+ * was just created in this setup flow.
+ *
+ * The CTA created during setup is itself part of the configured CTAs, so the
+ * publication had pre-existing CTAs when more than one is configured.
+ *
+ * @since n.e.x.t
+ *
+ * @return {(boolean|undefined)} `true` when there are pre-existing CTAs, `false` when
+ *                               there are none, `undefined` while the CTAs are loading.
+ */
+export function useHasPreExistingCTAs(): boolean | undefined {
+	const ctas = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getCTAs(),
+		[]
+	);
+
+	if ( ctas === undefined ) {
+		return undefined;
+	}
+
+	return ctas.length > 1;
 }

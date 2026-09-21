@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 /**
  * Class for periodically synchronizing a Reader Revenue Manager datapoint.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Cron {
 	/**
 	 * Reader_Revenue_Manager instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Reader_Revenue_Manager
 	 */
 	private $reader_revenue_manager;
@@ -34,7 +34,7 @@ class Cron {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -42,7 +42,7 @@ class Cron {
 	/**
 	 * Cron hook.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var string
 	 */
 	private $hook;
@@ -50,7 +50,7 @@ class Cron {
 	/**
 	 * Datapoint slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var string
 	 */
 	private $datapoint;
@@ -58,7 +58,7 @@ class Cron {
 	/**
 	 * Callback that returns request data at fire time.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var callable|null
 	 */
 	private $data_callback;
@@ -66,7 +66,7 @@ class Cron {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User Options instance.
@@ -91,7 +91,7 @@ class Cron {
 	/**
 	 * Registers the cron callback.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return void No return value.
 	 */
@@ -107,7 +107,7 @@ class Cron {
 	/**
 	 * Maybe schedules the cron event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return void No return value.
 	 */
@@ -120,7 +120,7 @@ class Cron {
 	/**
 	 * Fetches the datapoint as the module owner.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return void No return value.
 	 */

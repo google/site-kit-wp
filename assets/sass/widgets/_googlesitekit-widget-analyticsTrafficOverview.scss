@@ -111,8 +111,6 @@
 			gap: 4px;
 			margin-top: 5px;
 
-			// The badge carries a top margin meant for sitting under a figure,
-			// which would push it out of place here.
 			.googlesitekit-change-badge {
 				margin-top: 0;
 			}
@@ -244,6 +242,11 @@
 			overflow-wrap: anywhere;
 		}
 
+		.googlesitekit-traffic-overview__breakdown-column-loading {
+			display: grid;
+			gap: 4px;
+		}
+
 		.googlesitekit-traffic-overview__breakdown-row {
 			align-items: baseline;
 			display: flex;
@@ -261,6 +264,11 @@
 
 			// A long value wraps rather than pushing the share out of the row.
 			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__breakdown-column--devices
+			.googlesitekit-traffic-overview__breakdown-row-label {
+			text-transform: capitalize;
 		}
 
 		.googlesitekit-traffic-overview__breakdown-row-percentage {
