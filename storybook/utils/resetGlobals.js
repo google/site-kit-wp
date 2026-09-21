@@ -28,8 +28,8 @@ import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
 
 export function resetGlobals() {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
-	// Keep the flags `storybook/preview-head.html` set, because a module loaded
-	// later still reads them.
+	// Keep the flags `storybook/preview-head.html` set, because
+	// `assets/js/features/index.ts` reads them when it loads.
 	const { enabledFeatures } = global._googlesitekitBaseData || {};
 	global._googlesitekitBaseData = {
 		enabledFeatures,

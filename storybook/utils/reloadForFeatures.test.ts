@@ -22,7 +22,7 @@
 import { reloadForFeatures } from './reloadForFeatures';
 
 describe( 'reloadForFeatures', () => {
-	const reloadMock = jest.fn();
+	const pageReloadMock = jest.fn();
 	let oldLocation: Location;
 
 	beforeAll( () => {
@@ -37,7 +37,7 @@ describe( 'reloadForFeatures', () => {
 			{
 				reload: {
 					configurable: true,
-					value: reloadMock,
+					value: pageReloadMock,
 				},
 			}
 		) as Location;
@@ -48,70 +48,64 @@ describe( 'reloadForFeatures', () => {
 	} );
 
 	afterEach( () => {
+		delete global._googlesitekitBaseData.enabledFeatures;
 		window.sessionStorage.clear();
-		reloadMock.mockClear();
+		pageReloadMock.mockClear();
 		jest.restoreAllMocks();
 	} );
 
 	it( 'does not reload when the page already has the flags the story needs', () => {
-		window.sessionStorage.setItem(
-			'googlesitekit-storybook-features',
-			'["rrmExpressSetup"]'
-		);
+		global._googlesitekitBaseData.enabledFeatures = [ 'rrmExpressSetup' ];
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( false );
-		expect( reloadMock ).not.toHaveBeenCalled();
+		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'does not reload when the story lists the same flags in a different order', () => {
-		window.sessionStorage.setItem(
-			'googlesitekit-storybook-features',
-			'["setupFlowRefresh","rrmExpressSetup"]'
-		);
+		global._googlesitekitBaseData.enabledFeatures = [
+			'setupFlowRefresh',
+			'rrmExpressSetup',
+		];
 
 		expect(
 			reloadForFeatures( [ 'rrmExpressSetup', 'setupFlowRefresh' ] )
 		).toBe( false );
-		expect( reloadMock ).not.toHaveBeenCalled();
+		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'stores the flags and reloads when the story needs different flags', () => {
-		window.sessionStorage.setItem(
-			'googlesitekit-storybook-features',
-			'["setupFlowRefresh"]'
-		);
+		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 		expect(
 			window.sessionStorage.getItem( 'googlesitekit-storybook-features' )
 		).toBe( '["rrmExpressSetup"]' );
-		expect( reloadMock ).toHaveBeenCalledTimes( 1 );
+		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'stores an empty list and reloads when the story needs no flags', () => {
-		window.sessionStorage.setItem(
-			'googlesitekit-storybook-features',
-			'["rrmExpressSetup"]'
-		);
+		global._googlesitekitBaseData.enabledFeatures = [ 'rrmExpressSetup' ];
 
 		expect( reloadForFeatures() ).toBe( true );
 		expect(
 			window.sessionStorage.getItem( 'googlesitekit-storybook-features' )
 		).toBe( '[]' );
-		expect( reloadMock ).toHaveBeenCalledTimes( 1 );
+		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'reloads when session storage has a value that is not JSON', () => {
-		window.sessionStorage.setItem(
-			'googlesitekit-storybook-features',
-			'rrmExpressSetup'
-		);
+	it( 'stores the flags and reloads when the page loaded with no flags', () => {
+		expect( global._googlesitekitBaseData.enabledFeatures ).toBeUndefined();
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
-		expect( reloadMock ).toHaveBeenCalledTimes( 1 );
+		expect(
+			window.sessionStorage.getItem( 'googlesitekit-storybook-features' )
+		).toBe( '["rrmExpressSetup"]' );
+		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'does not reload when session storage cannot store the flags', () => {
+		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
+
 		// `jest-localstorage-mock` already makes `setItem` a mock, so
 		// `jest.restoreAllMocks()` does not remove the throw. Without `Once`,
 		// every later test in this file fails.
@@ -122,7 +116,7 @@ describe( 'reloadForFeatures', () => {
 		);
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( false );
-		expect( reloadMock ).not.toHaveBeenCalled();
+		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
 	describe( 'inside the Storybook app', () => {
@@ -146,14 +140,13 @@ describe( 'reloadForFeatures', () => {
 		} );
 
 		it( 'reloads the Storybook app, not only the page', () => {
-			window.sessionStorage.setItem(
-				'googlesitekit-storybook-features',
-				'["setupFlowRefresh"]'
-			);
+			global._googlesitekitBaseData.enabledFeatures = [
+				'setupFlowRefresh',
+			];
 
 			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 			expect( parentReloadMock ).toHaveBeenCalledTimes( 1 );
-			expect( reloadMock ).not.toHaveBeenCalled();
+			expect( pageReloadMock ).not.toHaveBeenCalled();
 		} );
 	} );
 } );

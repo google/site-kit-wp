@@ -88,8 +88,10 @@ module.exports = {
 		);
 
 		if ( xor( features, activeFeatures ).length > 0 ) {
-			// `storybook/preview-head.html` reads the flags from the `features`
-			// query parameter.
+			// `storybook/preview-head.html` reads the `features` query
+			// parameter into session storage. `setupPage()` below loads
+			// `iframe.html` again with no query string, and reads the flags
+			// back from session storage.
 			await page.goto(
 				new URL(
 					`iframe.html?features=${ features.join( ',' ) }`,

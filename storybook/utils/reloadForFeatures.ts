@@ -22,36 +22,23 @@
 import { xor } from 'lodash';
 
 /**
- * Session storage key for the feature flags the page loaded with. The inline
- * script in `storybook/preview-head.html` reads the same key, so change both
- * together.
- */
-const STORAGE_KEY = 'googlesitekit-storybook-features';
-
-/**
  * Reloads Storybook when a story needs different feature flags than the page
  * loaded with.
  *
- * A datastore's `base.js` calls `isFeatureEnabled()` while the bundle loads,
- * so changing `enabledFeatures` later has no effect. A reload runs the bundle
- * again, and `storybook/preview-head.html` sets the flags from the same
- * session storage key first.
+ * A datastore's `base.js` calls `isFeatureEnabled()` at module-evaluation
+ * time, so changing `enabledFeatures` later has no effect. A reload runs the
+ * bundle again, and `storybook/preview-head.html` sets the flags from session
+ * storage first.
  *
  * @since n.e.x.t
  *
  * @param {string[]} [features] Optional. Feature flags the story needs.
- * @return {boolean} `true` when the page is reloading, so `storybook/preview.js`
- *                   renders nothing.
+ * @return {boolean} `true` when Storybook is reloading, so
+ *                   `storybook/preview.js` renders nothing.
  */
 export function reloadForFeatures( features: string[] = [] ): boolean {
-	let activeFeatures: string[] = [];
-
-	try {
-		const storedFeatures = window.sessionStorage.getItem( STORAGE_KEY );
-		activeFeatures = storedFeatures ? JSON.parse( storedFeatures ) : [];
-	} catch {
-		// A missing or broken value means the page loaded with no flags.
-	}
+	// `enabledFeatures` is the list the bundle read at module-evaluation time.
+	const activeFeatures = window._googlesitekitBaseData.enabledFeatures || [];
 
 	// `xor()` returns the flags only one list has, so an empty result means the
 	// page already has the flags the story needs.
@@ -60,8 +47,10 @@ export function reloadForFeatures( features: string[] = [] ): boolean {
 	}
 
 	try {
+		// The inline script in `storybook/preview-head.html` reads the same
+		// key, so change both together.
 		window.sessionStorage.setItem(
-			STORAGE_KEY,
+			'googlesitekit-storybook-features',
 			JSON.stringify( features )
 		);
 	} catch {
@@ -69,8 +58,8 @@ export function reloadForFeatures( features: string[] = [] ): boolean {
 		return false;
 	}
 
-	// `parent` is the Storybook app. The app reads the selected story from its
-	// own URL, so that story shows again after the reload.
+	// `parent` is the Storybook app, whose own URL holds the selected story, so
+	// that story shows again after the reload.
 	window.parent.location.reload();
 
 	return true;

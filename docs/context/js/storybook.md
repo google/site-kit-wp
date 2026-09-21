@@ -438,6 +438,21 @@ FeatureStory.parameters = {
 };
 ```
 
+#### How `features` reaches the bundle
+
+Some code reads a feature flag at module-evaluation time, before any decorator runs. A datastore's `base.js` is the common case. `isFeatureEnabled( 'rrmExpressSetup' )` decides which `settingSlugs` the store registers. So `getConfiguredCTAs()` exists only when the flag was on as the bundle loaded, and setting `enabledFeatures` from a decorator is too late.
+
+Storybook therefore sets the flags before the bundle runs, and the chain has three parts:
+
+1. The inline script in `storybook/preview-head.html` writes `window._googlesitekitBaseData.enabledFeatures`. It takes the flags from the `features` query parameter when the URL has one, and from the `googlesitekit-storybook-features` session storage key otherwise.
+2. `storybook/utils/resetGlobals.js` keeps `enabledFeatures` when it rebuilds `_googlesitekitBaseData`, so `assets/js/features/index.ts` reads the story's flags.
+3. The outermost decorator in `storybook/preview.js` calls `reloadForFeatures()`. When the page loaded with a different set, the helper stores the story's flags and reloads the Storybook app. The story then renders on the next load.
+
+Two things follow from that chain:
+
+- Selecting a story whose `features` differ from the story on screen reloads the whole Storybook app. That reload is expected, so `parameters.features` lists only the flags the story needs.
+- `tests/backstop/scenarios.js` adds the story's flags to every visual test URL as `&features=`. A capture then loads with the flags already set, and never reloads while BackstopJS waits. A flag written as anything other than a plain string in the story file never reaches that URL.
+
 ### Best Practices
 
 1. **Comprehensive Coverage**: Create stories for all component states (default, loading, error, empty)
@@ -462,24 +477,9 @@ component conventions) rather than redefining it here.
 Every story is smoke-tested by the Storybook **test-runner**
 (`@storybook/test-runner`, driven through Playwright). Running
 `npm run test:storybook` builds Storybook, serves it locally and visits each
-story, failing if a story throws while rendering. The shared assertion lives in
-the `puppeteerTest` parameter in `storybook/preview.js`, which checks that the
-story rendered without Storybook's error overlay:
+story, failing if a story throws while rendering.
 
-```javascript
-// storybook/preview.js
-export const parameters = {
-    async puppeteerTest( page ) {
-        await page.waitForTimeout( 50 );
-
-        expect(
-            await page.$eval( 'body', ( element ) =>
-                element.classList.contains( 'sb-show-errordisplay' )
-            )
-        ).toBe( false );
-    },
-};
-```
+`storybook/test-runner.js` configures that run. Its `preVisit` hook loads the page with the story's `parameters.features` before the story renders. Without that load the decorator described under [Story Parameters](#how-features-reaches-the-bundle) reloads the page mid-test. The runner then reports a pass for a story that never rendered.
 
 Component behaviour is otherwise covered by the co-located Jest +
 React Testing Library tests (`Component.test.js` / `Component.test.tsx`) that

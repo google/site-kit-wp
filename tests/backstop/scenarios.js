@@ -117,8 +117,8 @@ storyFiles.forEach( ( storyFile ) => {
 					}
 				} );
 
-				// The loop keeps only a string or a number, so the `features`
-				// array needs its own read.
+				// `nodeValue` takes a string, a number, or a boolean, and
+				// never an array, so the `features` list needs its own read.
 				if ( node.left.property?.name === 'parameters' ) {
 					const features = getFeatures( node.right );
 

@@ -1,8 +1,6 @@
 <script>
-	// The bundle reads `_googlesitekitBaseData.enabledFeatures` while it
-	// loads, so the flags have to be set first. The visual tests pass them in
-	// the `features` query parameter. The Storybook app stores them in session
-	// storage through `storybook/utils/reloadForFeatures.ts`.
+	// The bundle reads `_googlesitekitBaseData.enabledFeatures` at
+	// module-evaluation time, so the flags have to be set first.
 	( function () {
 		var STORAGE_KEY = 'googlesitekit-storybook-features';
 		var urlFeatures = new URLSearchParams( window.location.search ).get(
