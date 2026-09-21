@@ -749,11 +749,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_FORM_COMPLETION_RATE ]: {
 		title: __( 'Form completion rate', 'google-site-kit' ),
 		description: __(
-			'The percentage of total visitors who successfully completed a key action, like submitting a form',
+			'The percentage of total visitors who successfully completed a key action (like submitting a form)',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The percentage of total visitors who successfully completed a key action, like submitting a form',
+			'The percentage of total visitors who successfully completed a key action (like submitting a form)',
 			'google-site-kit'
 		),
 		documentationLinkSlug: 'site-goals-lead-generation-key-action',

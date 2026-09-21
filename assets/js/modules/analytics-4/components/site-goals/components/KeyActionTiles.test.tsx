@@ -43,6 +43,8 @@ jest.mock( './KeyActionChartTile', () => {
 describe( 'KeyActionTiles', () => {
 	const props = {
 		supportURL: 'https://example.com/help',
+		rateInfoTooltip:
+			'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
 		rateTitle: 'Sales Rate',
 		totalTitle: 'Total Sales',
 		totalSubtitle: '“purchase” events',

@@ -621,6 +621,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
+							rateInfoTooltip={ __(
+								'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
+								'google-site-kit'
+							) }
 							rateTitle={ __(
 								'Form completion rate',
 								'google-site-kit'

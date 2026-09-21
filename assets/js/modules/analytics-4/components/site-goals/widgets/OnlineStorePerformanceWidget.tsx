@@ -548,6 +548,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
 							supportURL={ keyActionDocumentationURL }
+							rateInfoTooltip={ __(
+								'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
+								'google-site-kit'
+							) }
 							rateTitle={
 								{
 									purchase: __(
