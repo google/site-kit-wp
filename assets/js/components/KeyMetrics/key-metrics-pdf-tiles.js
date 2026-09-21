@@ -294,6 +294,28 @@ async function getDetectedLeadEvents( registry ) {
 }
 
 /**
+ * Builds the async request-builder for a "Generating leads" PDF tile's
+ * `getTileData`: resolves the detected lead events, then hands them to
+ * `buildRequests` to build this tile's report request(s).
+ *
+ * Every "Generating leads" PDF tile needs the detected lead events before it
+ * can build its report options, so this centralizes that resolution instead
+ * of every tile repeating it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} buildRequests Given `(dates, detectedLeadEvents)`, returns this tile's report request(s), or a falsy value when there's nothing to fetch.
+ * @return {Function} An async `getTileData` request-builder function.
+ */
+function createLeadEventsPDFTileRequestBuilder( buildRequests ) {
+	return async ( dates, registry ) => {
+		const detectedLeadEvents = await getDetectedLeadEvents( registry );
+
+		return buildRequests( dates, detectedLeadEvents ) || [];
+	};
+}
+
+/**
  * Builds a PDF tile config for a single-report, ranked "Selling products" table tile.
  *
  * This tile is purchase-specific, so the primary event is always `purchase`
@@ -366,20 +388,17 @@ function createGeneratingLeadsTableTile( buildReportOptions, mapRows ) {
 	return {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const primaryEvent = await getDetectedLeadEvents( registry );
+			createLeadEventsPDFTileRequestBuilder( ( dates, primaryEvent ) => {
 				const options = buildReportOptions( {
 					dates: pdfTableDates( dates ),
 					primaryEvent,
 					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 				} );
 
-				if ( ! options ) {
-					return [];
-				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
+				return (
+					options && [ { moduleStore: MODULES_ANALYTICS_4, options } ]
+				);
+			} ),
 			( [ report ] ) => {
 				const rows = mapRows( report?.rows || [] );
 
@@ -2329,23 +2348,20 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOTAL_FORM_COMPLETIONS ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const detectedLeadEvents = await getDetectedLeadEvents(
-					registry
-				);
-				const options = buildPrimaryEventReportOptions(
-					dates,
-					detectedLeadEvents
-				);
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					const options = buildPrimaryEventReportOptions(
+						dates,
+						detectedLeadEvents
+					);
 
-				// No detected lead events means no data, so fetch nothing and
-				// let the empty reports drop the tile.
-				if ( ! options ) {
-					return [];
+					return (
+						options && [
+							{ moduleStore: MODULES_ANALYTICS_4, options },
+						]
+					);
 				}
-
-				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
-			},
+			),
 			( [ report ] ) => {
 				const { currentPrimaryCount, previousPrimaryCount } =
 					processReports( report || {}, {}, { aggregate: true } );
@@ -2370,32 +2386,27 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_FORM_COMPLETION_RATE ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const detectedLeadEvents = await getDetectedLeadEvents(
-					registry
-				);
-				const primaryEventOptions = buildPrimaryEventReportOptions(
-					dates,
-					detectedLeadEvents
-				);
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					const primaryEventOptions = buildPrimaryEventReportOptions(
+						dates,
+						detectedLeadEvents
+					);
 
-				// No detected lead events means no data, so fetch nothing and
-				// let the empty reports drop the tile.
-				if ( ! primaryEventOptions ) {
-					return [];
+					return (
+						primaryEventOptions && [
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: primaryEventOptions,
+							},
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: buildEngagementReportOptions( dates ),
+							},
+						]
+					);
 				}
-
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: primaryEventOptions,
-					},
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: buildEngagementReportOptions( dates ),
-					},
-				];
-			},
+			),
 			( [ primaryEventReport, engagementReport ] ) => {
 				const { currentRate, previousRate, currentSessions } =
 					processReports(
@@ -2428,24 +2439,15 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const detectedLeadEvents = await getDetectedLeadEvents(
-					registry
-				);
-
-				// No detected lead events means no data, so fetch nothing and
-				// let the empty reports drop the tile.
-				if ( ! detectedLeadEvents?.length ) {
-					return [];
-				}
-
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: buildEngagementReportOptions( dates ),
-					},
-				];
-			},
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) =>
+					detectedLeadEvents?.length && [
+						{
+							moduleStore: MODULES_ANALYTICS_4,
+							options: buildEngagementReportOptions( dates ),
+						},
+					]
+			),
 			( [ engagementReport ] ) => {
 				const {
 					currentEngagementRate,
@@ -2496,42 +2498,40 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const detectedLeadEvents = await getDetectedLeadEvents(
-					registry
-				);
-				// `context: GOAL_TYPES.LEAD` keeps this reportID distinct
-				// from the equivalent Selling products tile, which requests
-				// the same shape of report (same `top-authors` suffix) for
-				// a different primary event.
-				const options = buildTopAuthorsReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-					context: GOAL_TYPES.LEAD,
-				} );
-				// The percentage shown is each author's share of every
-				// matching event site-wide, not just the ranked authors
-				// above - see `buildGoalDriverTotalReportOptions`.
-				const totalOptions = buildGoalDriverTotalReportOptions( {
-					dates: pdfTableDates( dates ),
-					primaryEvent: detectedLeadEvents,
-					context: GOAL_TYPES.LEAD,
-					reportIDSuffix: 'top-authors',
-				} );
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					// `context: GOAL_TYPES.LEAD` keeps this reportID
+					// distinct from the equivalent Selling products tile,
+					// which requests the same shape of report (same
+					// `top-authors` suffix) for a different primary event.
+					const options = buildTopAuthorsReportOptions( {
+						dates: pdfTableDates( dates ),
+						primaryEvent: detectedLeadEvents,
+						limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+						context: GOAL_TYPES.LEAD,
+					} );
+					// The percentage shown is each author's share of every
+					// matching event site-wide, not just the ranked authors
+					// above - see `buildGoalDriverTotalReportOptions`.
+					const totalOptions = buildGoalDriverTotalReportOptions( {
+						dates: pdfTableDates( dates ),
+						primaryEvent: detectedLeadEvents,
+						context: GOAL_TYPES.LEAD,
+						reportIDSuffix: 'top-authors',
+					} );
 
-				if ( ! options || ! totalOptions ) {
-					return [];
+					return (
+						options &&
+						totalOptions && [
+							{ moduleStore: MODULES_ANALYTICS_4, options },
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: totalOptions,
+							},
+						]
+					);
 				}
-
-				return [
-					{ moduleStore: MODULES_ANALYTICS_4, options },
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: totalOptions,
-					},
-				];
-			},
+			),
 			( [ report, totalReport ] ) => {
 				const rows = report?.rows || [];
 
