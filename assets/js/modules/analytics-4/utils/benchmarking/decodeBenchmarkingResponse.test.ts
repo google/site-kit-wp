@@ -253,6 +253,90 @@ describe( 'decodeBenchmarkingResponse', () => {
 		}
 	);
 
+	// Destructuring a row that is not iterable throws, so a corrupt row must be
+	// dropped rather than read.
+	it.each( [
+		[ 'null', null ],
+		[ 'undefined', undefined ],
+		[ 'a number', 5 ],
+		[ 'a string', 'xy' ],
+		[ 'an object', {} ],
+		[ 'a boolean', true ],
+		[ 'a list shorter than its layout', [ 0 ] ],
+	] )(
+		'drops a row that is %s, and keeps the rows beside it',
+		( _label, row ) => {
+			const decoded = decodeBenchmarkingResponse( [
+				1,
+				[ 'a label' ],
+				'2025-08-18',
+				[ 132 ],
+				[ 412, 388 ],
+				{ 0: [ row, [ 0, 1, 2 ] ] },
+				[ 0 ],
+			] );
+
+			expect( decoded?.contextualData.channels ).toEqual( [
+				{ label: 'a label', current: 1, previous: 2 },
+			] );
+		}
+	);
+
+	it( 'drops a search query row shorter than its own layout', () => {
+		const decoded = decodeBenchmarkingResponse( [
+			1,
+			[ 'a label' ],
+			'2025-08-18',
+			[ 132 ],
+			[ 412, 388 ],
+			// A value row's three fields are not enough for a search query row.
+			{
+				4: [
+					[ 0, 1, 2 ],
+					[ 0, 1, 2, 3.5, 4.5 ],
+				],
+			},
+			[ 4 ],
+		] );
+
+		expect( decoded?.contextualData.searchQueries ).toEqual( [
+			{
+				label: 'a label',
+				current: 1,
+				previous: 2,
+				positionCurrent: 3.5,
+				positionPrevious: 4.5,
+			},
+		] );
+	} );
+
+	it( 'drops a content row shorter than its own layout', () => {
+		const decoded = decodeBenchmarkingResponse( [
+			1,
+			[ 'a label' ],
+			'2025-08-18',
+			[ 132 ],
+			[ 412, 388 ],
+			// A value row's three fields are not enough for a content row.
+			{
+				5: [
+					[ 0, 1, 2 ],
+					[ 0, 0, 1, 2 ],
+				],
+			},
+			[ 5 ],
+		] );
+
+		expect( decoded?.contextualData.content ).toEqual( [
+			{
+				url: 'a label',
+				title: 'a label',
+				visitors: 1,
+				publishedDaysAgo: 2,
+			},
+		] );
+	} );
+
 	it( 'decodes a dimension whose rows are not a list to no rows', () => {
 		const decoded = decodeBenchmarkingResponse( [
 			1,

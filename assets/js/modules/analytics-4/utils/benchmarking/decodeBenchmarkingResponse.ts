@@ -104,8 +104,14 @@ function decodeDimensionRows(
 	rows: unknown[][],
 	strings: string[]
 ) {
+	// A row shorter than its layout, or not a list at all, is dropped rather
+	// than destructured: destructuring a value that is not iterable throws.
+	function laidOut( fields: number ) {
+		return ( row: unknown ) => Array.isArray( row ) && row.length >= fields;
+	}
+
 	if ( code === 'CONTENT' ) {
-		return rows.map(
+		return rows.filter( laidOut( 4 ) ).map(
 			( [ url, title, visitors, publishedDaysAgo ] ) =>
 				( {
 					url: readString( strings, url ),
@@ -117,7 +123,7 @@ function decodeDimensionRows(
 	}
 
 	if ( code === 'SEARCH_QUERIES' ) {
-		return rows.map(
+		return rows.filter( laidOut( 5 ) ).map(
 			( [
 				label,
 				current,
@@ -135,7 +141,7 @@ function decodeDimensionRows(
 		);
 	}
 
-	return rows.map(
+	return rows.filter( laidOut( 3 ) ).map(
 		( [ label, current, previous ] ) =>
 			( {
 				label: readString( strings, label ),
