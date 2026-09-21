@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { HashRouter } from 'react-router-dom';
+
+/**
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
@@ -28,6 +33,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
+	fireEvent,
 	freezeFetch,
 	provideModules,
 	render,
@@ -199,13 +205,28 @@ describe( 'WhatsNewTab', () => {
 	} );
 
 	it( 'should render the empty state and mark nothing seen when no features are new', async () => {
-		const { container, waitForRegistry } = render( <WhatsNewTab />, {
-			registry,
-		} );
+		const { container, getByRole, waitForRegistry } = render(
+			<HashRouter>
+				<WhatsNewTab />
+			</HashRouter>,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
 		expect( getListedTitles( container ) ).toEqual( [] );
+
+		expect(
+			getByRole( 'heading', { name: 'You’re up to date!' } )
+		).toBeInTheDocument();
+
+		expect(
+			getByRole( 'button', { name: 'Explore features' } )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Explore features' } ) );
+
+		expect( global.location.hash ).toBe( '#/all-services' );
 
 		expect(
 			container.querySelector( EMPTY_STATE_SELECTOR )
