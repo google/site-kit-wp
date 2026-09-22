@@ -12,7 +12,7 @@ The full procedure is the shared, tool-agnostic playbook
 project's AI tools). Follow it exactly. Summary of the steps:
 
 1. **Watch the checks land** if they are still running (Step 0) — poll every 45s, report each as it completes, and say what is still pending rather than only what failed.
-2. **Collect the checks** — `gh pr checks <number>` and the `check-runs` API for the head SHA.
+2. **Collect the checks** — `gh pr checks <number>` and the `check-runs` API for the head SHA (resolve it with `gh pr view <number> --json headRefOid --jq .headRefOid`).
    Read results at job level, not workflow level: a workflow shows as failed when any one of its
    jobs fails.
 3. **Get the failure detail** — `gh run view <run-id> --log-failed`. Check-run annotations are

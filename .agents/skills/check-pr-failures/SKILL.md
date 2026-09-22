@@ -24,7 +24,7 @@ follow the playbook, which is the single source of truth shared with the other A
    classify each failure against the evidence tests, decide an action per class, verify locally,
    and report.
 2. **Collect the checks**: `gh pr checks $ARGUMENTS` and
-   `gh api "repos/google/site-kit-wp/commits/<sha>/check-runs?per_page=100"`. Stop and ask the
+   `gh api "repos/google/site-kit-wp/commits/$(gh pr view "$ARGUMENTS" --json headRefOid --jq .headRefOid)/check-runs?per_page=100"`. Stop and ask the
    user if the PR is missing or no checks have run.
 3. **Classify before fixing.** A failure is only the PR's to fix once the evidence says so. The
    playbook defines the four classes and the test that distinguishes each.

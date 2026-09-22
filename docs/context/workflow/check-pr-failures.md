@@ -16,7 +16,7 @@ When the PR has just been pushed, checks take ~30 minutes to complete and arrive
 order. Rather than polling by hand, watch them and report each as it lands:
 
 ```
-gh api "repos/google/site-kit-wp/commits/<sha>/check-runs?per_page=100" \
+gh api "repos/google/site-kit-wp/commits/$(gh pr view <number> --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
   --jq '.check_runs[]? | select(.status=="completed") | select(.conclusion!="skipped") | "\(.conclusion|ascii_upcase): \(.name)"'
 ```
 
@@ -38,7 +38,7 @@ already settled.
 
 ```
 gh pr checks <number>
-gh api "repos/google/site-kit-wp/commits/<head-sha>/check-runs?per_page=100" \
+gh api "repos/google/site-kit-wp/commits/$(gh pr view <number> --json headRefOid --jq .headRefOid)/check-runs?per_page=100" \
   --jq '.check_runs[] | select(.conclusion=="failure" or .status!="completed") | "\(.status)\t\(.conclusion // "-")\t\(.name)"'
 ```
 
@@ -67,7 +67,7 @@ Classify **before** changing anything. Each class has a test that settles it:
 
 | Class | Test | Evidence it produces |
 | --- | --- | --- |
-| **Order-dependent / flaky** | Run the suite alone: `npx jest --config=./jest.config.js <pattern>`, or `npm run test:e2e -- --testPathPattern "<spec>"` | Passes in isolation, fails in a full run. Often a *different* subset each run — that variation is itself the evidence. |
+| **Order-dependent / flaky** | Run the suite alone: `cd tests/js && npx jest --config=./jest.config.js <pattern>`, or `npm run test:e2e -- --testPathPattern "<spec>"` | Passes in isolation, fails in a full run. Often a *different* subset each run — that variation is itself the evidence. |
 | **Pre-existing** | Check out the merge base (`git merge-base HEAD origin/develop`) in a worktree or detached HEAD, reproduce there | Fails without any of this PR's changes |
 | **Environmental** | Compare local against CI for the same commit | Fails locally, passes in CI (or vice versa) |
 | **Caused by this PR** | Everything else, once the above are excluded | Green on `develop`, red here |
