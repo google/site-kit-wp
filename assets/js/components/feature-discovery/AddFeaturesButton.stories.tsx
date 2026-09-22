@@ -47,6 +47,9 @@ function Template() {
 
 export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
+Default.parameters = {
+	features: [ 'featureDiscoveryHub' ],
+};
 Default.scenario = {};
 
 export const WithNewFeatures = Template.bind( {} ) as Story;
@@ -67,6 +70,9 @@ WithNewFeatures.args = {
 				},
 			} );
 	},
+};
+WithNewFeatures.parameters = {
+	features: [ 'featureDiscoveryHub' ],
 };
 WithNewFeatures.scenario = {};
 
