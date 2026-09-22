@@ -113,9 +113,11 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 			{ options.map( ( option ) => (
 				<MenuItem
 					id={ option.id }
+					itemClassName="googlesitekit-feedback-menu__item"
 					key={ option.id }
 					// @ts-expect-error - The `MenuItem` component is not typed yet.
 					label={ option.label }
+					labelClassName="googlesitekit-feedback-menu__item-label"
 				/>
 			) ) }
 		</Menu>
