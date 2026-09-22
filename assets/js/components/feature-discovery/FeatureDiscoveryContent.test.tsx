@@ -25,8 +25,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry, render } from '@tests/js/test-utils';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
-const ALL_SERVICES_PLACEHOLDER =
-	'Feature Discovery Hub tab panel placeholder: All services and features';
+const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
 
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
 
@@ -47,13 +46,15 @@ describe( 'FeatureDiscoveryContent', () => {
 	} );
 
 	it( 'should render only the tab panel content for /all-services', () => {
-		const { container, getByText } = render( <FeatureDiscoveryContent />, {
+		const { container } = render( <FeatureDiscoveryContent />, {
 			registry,
 			route: '/all-services',
 			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
-		expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( ALL_SERVICES_SELECTOR )
+		).toBeInTheDocument();
 
 		expect(
 			container.querySelector( WHATS_NEW_SELECTOR )
@@ -61,7 +62,7 @@ describe( 'FeatureDiscoveryContent', () => {
 	} );
 
 	it( 'should render only the tab panel content for /whats-new', async () => {
-		const { container, queryByText, waitForRegistry } = render(
+		const { container, waitForRegistry } = render(
 			<FeatureDiscoveryContent />,
 			{
 				registry,
@@ -77,7 +78,7 @@ describe( 'FeatureDiscoveryContent', () => {
 		).toBeInTheDocument();
 
 		expect(
-			queryByText( ALL_SERVICES_PLACEHOLDER )
+			container.querySelector( ALL_SERVICES_SELECTOR )
 		).not.toBeInTheDocument();
 	} );
 
