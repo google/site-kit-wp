@@ -52,6 +52,48 @@ use WP_Error;
 abstract class Module {
 
 	/**
+	 * HTTP status a Google API answers with when the request was turned away for
+	 * asking too often.
+	 *
+	 * The newer APIs report nothing but this: an Analytics Data API error body carries
+	 * `code`, `message` and `status`, with no `error.errors` for the client to read a
+	 * reason out of, so a reason alone would miss every Analytics report.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const RATE_LIMIT_STATUS = 429;
+
+	/**
+	 * Google API error reasons that mean the same thing.
+	 *
+	 * The older APIs send these alongside a `403` rather than a `429`, so both are
+	 * checked. Kept in agreement with the same list in `assets/js/util/errors.ts`,
+	 * which decides whether the browser offers the reader a retry.
+	 *
+	 * @since n.e.x.t
+	 * @var string[]
+	 */
+	const RATE_LIMIT_REASONS = array(
+		'rateLimitExceeded',
+		'userRateLimitExceeded',
+		'quotaExceeded',
+	);
+
+	/**
+	 * Seconds the browser keeps a rate-limit error before it asks again.
+	 *
+	 * Search Console measures its short-term load quota over ten minutes, and the Analytics
+	 * Data API refreshes hourly tokens continuously rather than on the hour. Ten minutes
+	 * therefore clears the shorter of the two windows without holding a reader on an error
+	 * for the whole of the longer one.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const RATE_LIMIT_CACHE_TTL = 10 * MINUTE_IN_SECONDS;
+
+	/**
 	 * Plugin context.
 	 *
 	 * @since 1.0.0
@@ -716,6 +758,12 @@ abstract class Module {
 			'status' => $status,
 			'reason' => $reason,
 		);
+
+		// The browser caches an error carrying a `cacheTTL`, so a rate-limited request is
+		// not sent again until the quota has had time to recover.
+		if ( self::RATE_LIMIT_STATUS === $status || in_array( $reason, self::RATE_LIMIT_REASONS, true ) ) {
+			$data['cacheTTL'] = self::RATE_LIMIT_CACHE_TTL;
+		}
 
 		if ( ! empty( $reconnect_url ) ) {
 			$data['reconnectURL'] = $reconnect_url;
