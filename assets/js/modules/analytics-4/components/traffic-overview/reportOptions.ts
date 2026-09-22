@@ -46,10 +46,9 @@ export interface BreakdownReportDescriptor {
 /**
  * Builds the report-options fragment for the All Visitors totals report.
  *
- * Returns only the parts that vary between dashboard and PDF surfaces. The
- * dashboard combines this with start/end dates and entity URL via
- * `useAllTrafficWidgetReport`; the PDF loader combines it inside
- * `getTotalsReportArgs` below.
+ * Returns only the parts that differ between the dashboard and the PDF.
+ * `useTrafficReport` adds the date range and the entity URL for the
+ * dashboard. `getTotalsReportArgs` below does the same for the PDF.
  *
  * @since 1.181.0
  *

@@ -37,7 +37,6 @@ import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/compon
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
 import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -67,13 +66,7 @@ describe( 'Analytics 4 widget registrations', () => {
 
 	afterEach( () => {
 		enabledFeatures.delete( 'setupFlowRefresh' );
-		enabledFeatures.delete( 'trafficOverview' );
 	} );
-
-	const TRAFFIC_AREAS = [
-		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	];
 
 	/**
 	 * Lists the slugs of the widgets registered in one widget area.
@@ -90,89 +83,62 @@ describe( 'Analytics 4 widget registrations', () => {
 			.map( ( widget ) => widget.slug );
 	}
 
-	describe( 'All Traffic widget', () => {
-		const ALL_TRAFFIC_WIDGET_SLUG = 'analyticsAllTrafficGA4';
-
-		it( 'should register the All Traffic widget when the "trafficOverview" feature flag is disabled', () => {
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
-			).not.toBeNull();
-
-			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getWidgetSlugsInArea( areaSlug ) ).toContain(
-					ALL_TRAFFIC_WIDGET_SLUG
-				);
-			} );
-		} );
-
-		it( 'should not register the All Traffic widget when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
-
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
-			).toBeNull();
-
-			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getWidgetSlugsInArea( areaSlug ) ).not.toContain(
-					ALL_TRAFFIC_WIDGET_SLUG
-				);
-			} );
-		} );
-	} );
-
 	describe( 'Traffic Overview widget', () => {
-		it( 'should not register the Traffic Overview widget when the "trafficOverview" feature flag is disabled', () => {
+		it( 'should be the only Analytics card in the main dashboard Traffic section', () => {
 			registerWidgets( widgets );
 
 			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG )
-			).toBeNull();
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY )
+			).toEqual( [ 'analyticsTrafficOverview' ] );
 		} );
 
-		it( 'should register the Traffic Overview widget as the first widget in both traffic areas when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
+		it( 'should be the only Analytics card in the entity dashboard Traffic section', () => {
+			registerWidgets( widgets );
 
+			expect(
+				getWidgetSlugsInArea( AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY )
+			).toEqual( [ 'analyticsTrafficOverview' ] );
+		} );
+
+		it( 'should span the full width at the top of the Traffic section', () => {
 			registerWidgets( widgets );
 
 			const widget = registry
 				.select( CORE_WIDGETS )
-				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+				.getWidget( 'analyticsTrafficOverview' );
 
 			expect( widget.priority ).toEqual( 1 );
 			expect( widget.width ).toEqual( 'full' );
-			expect( widget.modules ).toEqual( [ 'analytics-4' ] );
-
-			const firstSlugs = TRAFFIC_AREAS.map(
-				( areaSlug ) => getWidgetSlugsInArea( areaSlug )[ 0 ]
-			);
-
-			expect( firstSlugs ).toEqual( [
-				'analyticsTrafficOverview',
-				'analyticsTrafficOverview',
-			] );
 		} );
 
-		it( 'should carry a "Site traffic over time" PDF entry and be eligible for the PDF report when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
-
+		it( 'should offer "Site traffic over time" in the PDF export', () => {
 			registerWidgets( widgets );
 
 			const widget = registry
 				.select( CORE_WIDGETS )
-				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+				.getWidget( 'analyticsTrafficOverview' );
 
 			expect( widget.pdf?.label ).toBe( 'Site traffic over time' );
 			expect( isActivePDFWidget( widget, registry.select ) ).toBe( true );
+		} );
+
+		it( 'should offer no PDF section when Analytics is disconnected', () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: false,
+				},
+			] );
+			registerWidgets( widgets );
+
+			const widget = registry
+				.select( CORE_WIDGETS )
+				.getWidget( 'analyticsTrafficOverview' );
+
+			expect( isActivePDFWidget( widget, registry.select ) ).toBe(
+				false
+			);
 		} );
 	} );
 

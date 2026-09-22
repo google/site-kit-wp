@@ -84,11 +84,7 @@ import {
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
-import {
-	DashboardAllTrafficWidgetGA4,
-	DashboardOverallPageMetricsWidgetGA4,
-} from '@/js/modules/analytics-4/components/dashboard';
-import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
+import { DashboardOverallPageMetricsWidgetGA4 } from '@/js/modules/analytics-4/components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -148,13 +144,6 @@ const PDFYourVisitorGroups = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/PDFYourVisitorGroups'
-	)
-);
-
-const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
-	import(
-		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
-		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
 	)
 );
 
@@ -224,53 +213,25 @@ function isSiteGoalsWidgetActive( goalType ) {
 }
 
 export function registerWidgets( widgets ) {
-	// Register Analytics 4 Widgets.
-
-	// Only register the ("old") All Traffic widget when the new, "Traffic"
-	// widget feature is disabled.
-	if ( ! isFeatureEnabled( 'trafficOverview' ) ) {
-		widgets.registerWidget(
-			'analyticsAllTrafficGA4',
-			{
-				Component: DashboardAllTrafficWidgetGA4,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				pdf: {
-					Component: DashboardAllTrafficWidgetGA4PDF,
-					getData: getAllTrafficPDFData,
-					label: __( 'Site traffic over time', 'google-site-kit' ),
-				},
+	widgets.registerWidget(
+		TRAFFIC_OVERVIEW_WIDGET_SLUG,
+		{
+			Component: TrafficOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: TrafficOverviewPDF,
+				getData: getTrafficOverviewPDFData,
+				label: __( 'Site traffic over time', 'google-site-kit' ),
 			},
-			[
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			]
-		);
-	}
-
-	if ( isFeatureEnabled( 'trafficOverview' ) ) {
-		widgets.registerWidget(
-			TRAFFIC_OVERVIEW_WIDGET_SLUG,
-			{
-				Component: TrafficOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				pdf: {
-					Component: TrafficOverviewPDF,
-					getData: getTrafficOverviewPDFData,
-					label: __( 'Site traffic over time', 'google-site-kit' ),
-				},
-			},
-			[
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			]
-		);
-	}
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
 
 	if ( isFeatureEnabled( 'setupFlowRefresh' ) ) {
 		widgets.registerWidget(

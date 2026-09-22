@@ -24,6 +24,15 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import TrafficOverviewWidget from '@/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { createTestRegistry, render } from '@tests/js/test-utils';
+import { provideModules } from '@tests/js/utils';
 import { getWelcomeTour } from './welcome';
 
 const KEY_METRICS_STEP = {
@@ -59,9 +68,9 @@ const AUDIENCE_SEGMENTATION_STEP = {
 };
 
 const TRAFFIC_STEP = {
-	target: '.googlesitekit-widget--analyticsAllTrafficGA4',
+	target: '.googlesitekit-widget--analyticsTrafficOverview',
 	floaterProps: {
-		target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
+		target: '.googlesitekit-traffic-overview__chart',
 	},
 	title: __( 'Track traffic trends, identify baselines', 'google-site-kit' ),
 	content: __(
@@ -349,6 +358,56 @@ describe( 'getWelcomeTour', () => {
 				DASHBOARD_SHARING_ANALYTICS_CONNECTED_STEP,
 			] );
 			expect( tour ).toBeDefined();
+		} );
+
+		it( 'should find both traffic step targets in the Traffic Overview card', async () => {
+			const registry = createTestRegistry();
+
+			registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyID( '1234567890' );
+			// `TrafficChart` reads the property's creation time. Setting the
+			// time here stops the request for the property.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/report'
+				),
+				{ body: {}, status: 200 }
+			);
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewWidget
+					{ ...getWidgetComponentProps(
+						TRAFFIC_OVERVIEW_WIDGET_SLUG
+					) }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( TRAFFIC_STEP.target )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( TRAFFIC_STEP.floaterProps.target )
+			).toBeInTheDocument();
 		} );
 
 		it( 'should not include the top search queries step if both the key metrics and audience segmentation features are set up', () => {

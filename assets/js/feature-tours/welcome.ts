@@ -295,9 +295,9 @@ export function getWelcomeTour( {
 				isResponsive: true,
 			},
 			{
-				target: '.googlesitekit-widget--analyticsAllTrafficGA4',
+				target: '.googlesitekit-widget--analyticsTrafficOverview',
 				floaterProps: {
-					target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
+					target: '.googlesitekit-traffic-overview__chart',
 				},
 				title: __(
 					'Track traffic trends, identify baselines',
