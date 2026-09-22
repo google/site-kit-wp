@@ -25,7 +25,7 @@ import type { ComponentType, FC } from 'react';
  * Internal dependencies
  */
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { useExpressSetupSurveyTriggers } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { useExpressSetupSurveyTriggers } from './hooks';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { SetupCTANewsletterSignup } from './cta-setups';
 import ExpressSetupDefault from './ExpressSetupDefault';
