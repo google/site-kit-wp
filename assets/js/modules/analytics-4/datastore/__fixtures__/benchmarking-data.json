@@ -1,0 +1,35 @@
+[
+	1,
+	[
+		"/how-to-plant-garlic/",
+		"How to plant garlic",
+		"/mulching-in-autumn/",
+		"how to plant garlic",
+		"mulching",
+		"garden.example.com",
+		"Organic Search",
+		"Direct"
+	],
+	"2025-08-18",
+	[ 132, 0, 147, 96 ],
+	[ 412, 388 ],
+	{
+		"5": [
+			[ 0, 1, 96, 14 ],
+			[ 2, null, 0, 3 ]
+		],
+		"4": [
+			[ 3, 74, 31, 8.4, 14.2 ],
+			[ 4, 12, 0, 3.5, null ]
+		],
+		"3": [
+			[ 5, 58, 44 ],
+			[ 0, 21, 19 ]
+		],
+		"0": [
+			[ 6, 210, 168 ],
+			[ 7, 132, 120 ]
+		]
+	},
+	[ 5, 4, 3, 0 ]
+]

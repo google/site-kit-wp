@@ -186,6 +186,9 @@ class Web_Tag extends Module_Web_Tag {
 			'redirectCookieName'     => Authenticator::COOKIE_REDIRECT_TO,
 			'redirectCookiePath'     => Authenticator::get_cookie_path(),
 			'redirectCookieTTL'      => $cookie_expire_time,
+			'nonceCookieName'        => Authenticator::COOKIE_NONCE,
+			'nonceCookiePath'        => Authenticator::get_cookie_path(),
+			'nonceCookieTTL'         => Authenticator::NONCE_TTL,
 			'shouldShowOneTapPrompt' => $should_show_one_tap_prompt,
 		);
 

@@ -15,18 +15,20 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class CheckFreeAccessResponse extends \Google\Model
 {
   /**
-   * True if free access should be allowed.
+   * Output only. True if free access should be allowed, false otherwise.
    *
    * @var bool
    */
   public $isAllowed;
 
   /**
+   * Output only. True if free access should be allowed, false otherwise.
+   *
    * @param bool $isAllowed
    */
   public function setIsAllowed($isAllowed)
@@ -42,4 +44,5 @@ class CheckFreeAccessResponse extends \Google\Model
   }
 }
 
-class_alias(CheckFreeAccessResponse::class, 'Google_Service_Webcontentpublisher_CheckFreeAccessResponse');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(CheckFreeAccessResponse::class, 'Google_Service_WebContentPublisher_CheckFreeAccessResponse');

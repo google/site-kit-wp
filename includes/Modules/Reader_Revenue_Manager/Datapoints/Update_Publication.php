@@ -17,9 +17,9 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\RrmProduct;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\TosAcceptance;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\RrmProduct;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\TosAcceptance;
 
 /**
  * Class for the publication update datapoint.
