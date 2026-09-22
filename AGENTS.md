@@ -3,6 +3,31 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
+## Writing an issue
+When asked to create, draft, or write a GitHub issue from a design doc, a bug report, or
+requirements in the message, to break an epic's design doc into issues, or to write **Acceptance
+criteria** for an existing issue, follow the shared, tool-agnostic playbook
+**`docs/context/workflow/write-issue.md`** (the single source of truth). Establish the type first —
+**ask the user which one when the request doesn't make it clear** — since a feature request and a
+bug report each get their own description sections, both followed by **Acceptance criteria**.
+Verify every class, hook, handle and path against the code before naming it. Criteria are checkable
+outcomes only — no rationale, technique notes, cause/fix, or "Out of scope" lists; the **scope
+boundary** is itself a criterion, written as the outcome at the edge. Never link local design docs
+or refer to a sibling by its design-doc position — always a real GitHub number. Touch only the
+type's authoring sections, leave an existing description alone, and don't create or edit an issue
+unless explicitly asked. (Claude Code: `write-issue` skill; Gemini: `/write-issue`; Antigravity:
+`/write-issue` workflow.)
+
+## Writing an implementation brief
+When asked to write, draft, fill in, or groom the **Implementation Brief** and **Test Coverage**
+sections of an issue, follow the shared, tool-agnostic playbook
+**`docs/context/workflow/write-implementation-brief.md`** (the single source of truth). Verify
+every class, method, hook, handle and path against the code before naming it — code wins over the
+design doc. Write **instructions only**: no rationale, no unneeded work, no routine commands, no
+links to local design docs. Touch only those two sections, and don't edit the issue or post a
+comment unless explicitly asked. (Claude Code: `write-implementation-brief` skill; Gemini:
+`/write-brief`; Antigravity: `/write-implementation-brief` workflow.)
+
 ## Implementing a GitHub issue
 When asked to implement, build, or work on a GitHub issue by number, follow the shared,
 tool-agnostic playbook **`docs/context/workflow/implement-issue.md`** (the single source of
