@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
@@ -75,6 +76,7 @@ describe( 'AddFeaturesButton', () => {
 	it( 'renders correctly', () => {
 		const { container, getByRole } = render( <AddFeaturesButton />, {
 			registry,
+			features: [ 'featureDiscoveryHub' ],
 		} );
 
 		expect( container ).toMatchSnapshot();
@@ -87,6 +89,7 @@ describe( 'AddFeaturesButton', () => {
 	it( 'links to the Feature Discovery Hub', () => {
 		const { getByRole } = render( <AddFeaturesButton />, {
 			registry,
+			features: [ 'featureDiscoveryHub' ],
 		} );
 
 		expect( getByRole( 'link', { name: buttonLabel } ) ).toHaveAttribute(
@@ -98,6 +101,7 @@ describe( 'AddFeaturesButton', () => {
 	it( 'shows the new features indicator when there are new features', () => {
 		const { getByText } = render( <AddFeaturesButton />, {
 			registry,
+			features: [ 'featureDiscoveryHub' ],
 		} );
 
 		expect( getByText( 'New features available' ) ).toBeInTheDocument();
@@ -113,12 +117,37 @@ describe( 'AddFeaturesButton', () => {
 
 		const { container, queryByText } = render( <AddFeaturesButton />, {
 			registry,
+			features: [ 'featureDiscoveryHub' ],
 		} );
 
 		expect( container ).toMatchSnapshot();
 
 		expect(
 			queryByText( 'New features available' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders nothing when the featureDiscoveryHub feature flag is not enabled', () => {
+		const { container, queryByRole } = render( <AddFeaturesButton />, {
+			registry,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+		expect(
+			queryByRole( 'link', { name: buttonLabel } )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders nothing on a view-only dashboard', () => {
+		const { container, queryByRole } = render( <AddFeaturesButton />, {
+			registry,
+			features: [ 'featureDiscoveryHub' ],
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+		expect(
+			queryByRole( 'link', { name: buttonLabel } )
 		).not.toBeInTheDocument();
 	} );
 } );
