@@ -78,7 +78,7 @@ function Header( { children, subHeader, showNavigation } ) {
 						<Cell
 							smSize={ 1 }
 							mdSize={ 2 }
-							lgSize={ 4 }
+							lgSize={ 2 }
 							className="googlesitekit-header__logo"
 							alignMiddle
 						>
@@ -96,7 +96,7 @@ function Header( { children, subHeader, showNavigation } ) {
 						<Cell
 							smSize={ 3 }
 							mdSize={ 6 }
-							lgSize={ 8 }
+							lgSize={ 10 }
 							className="googlesitekit-header__children"
 							alignMiddle
 						>
