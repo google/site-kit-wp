@@ -79,8 +79,6 @@ class REST_Intents_Controller {
 	protected function get_rest_routes() {
 		$can_setup = fn () => current_user_can( Permissions::SETUP );
 
-		// TODO: Find out whether the intent code parameter is named `intent_code` or `code`.
-		// See: https://github.com/google/site-kit-wp/issues/13467.
 		return array(
 			new REST_Route(
 				'core/intents/data/intent',
@@ -184,9 +182,9 @@ class REST_Intents_Controller {
 	 * @return string Plugin error code: `intent_not_found`, `intent_expired`, `intent_wrong_user`, or `intent_request_failed` for any other error.
 	 */
 	private function get_plugin_error_code( WP_Error $service_error ) {
-		// Keys are the Service's error codes. Values are the plugin's own codes.
+		// Keys are the Service's `error_code` values. Values are the plugin's own codes.
 		//
-		// TODO: Replace the keys with the error codes the Service sends.
+		// TODO: Replace the keys once we know the `error_code` values the Service sends.
 		// See: https://github.com/google/site-kit-wp/issues/13467.
 		$plugin_error_codes = array(
 			'intent_not_found'  => 'intent_not_found',
