@@ -99,6 +99,7 @@ import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
 import CurrentSurveyPortal from './surveys/CurrentSurveyPortal';
 import SurveyViewTrigger from './surveys/SurveyViewTrigger';
+import { useFeature } from '@/js/hooks/useFeature';
 
 function getLastWidgetAnchor( {
 	isMonetizationActive,
