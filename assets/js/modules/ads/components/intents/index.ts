@@ -1,5 +1,5 @@
 /**
- * Ads module intent registrations.
+ * Ads Intent components.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,15 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import type { IntentsAPI } from '@/js/googlesitekit/intents';
-import { AdsConversionTrackingIntent } from '@/js/modules/ads/components/intents';
-import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants';
-
-export function registerIntents( intents: IntentsAPI ): void {
-	intents.registerIntent( ADS_CONVERSION_TRACKING_INTENT_SLUG, {
-		Component: AdsConversionTrackingIntent,
-	} );
-}
+export { default as AdsConversionTrackingIntent } from './AdsConversionTrackingIntent';
