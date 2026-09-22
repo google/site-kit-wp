@@ -32,6 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import FeaturesMenu from '@/js/components/FeaturesMenu';
+import { ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH } from '@/js/components/FeaturesMenu/constants';
+import useShouldCollapseFeatureActions from '@/js/components/FeaturesMenu/useShouldCollapseFeatureActions';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -48,11 +50,6 @@ import {
 	CONTEXT_ENTITY_DASHBOARD_SPEED,
 	CONTEXT_ENTITY_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -76,7 +73,12 @@ import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
-	const breakpoint = useBreakpoint();
+	// On mobile and tablet, or when the "Add features" button would otherwise
+	// overlap the logo, the individual feature action icons collapse into the
+	// single three-dots features menu.
+	const shouldCollapseFeatureActions = useShouldCollapseFeatureActions(
+		ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH
+	);
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -223,11 +225,6 @@ function DashboardEntityApp() {
 		);
 	}
 
-	// On mobile and tablet the individual feature action icons collapse into
-	// the single three-dots features menu.
-	const isMobileOrTabletBreakpoint =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -235,7 +232,7 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ isMobileOrTabletBreakpoint ? (
+				{ shouldCollapseFeatureActions ? (
 					<Fragment>
 						<HelpMenu />
 						<FeaturesMenu hidePDFItem />
