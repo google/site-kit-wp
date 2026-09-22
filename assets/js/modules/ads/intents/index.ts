@@ -1,7 +1,7 @@
 /**
- * Ads module constants.
+ * Ads module intent registrations.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,15 @@
  * limitations under the License.
  */
 
-export const MODULE_SLUG_ADS = 'ads';
+/**
+ * Internal dependencies
+ */
+import type { IntentsAPI } from '@/js/googlesitekit/intents';
+import AdsConversionTrackingIntent from '@/js/modules/ads/components/intents/AdsConversionTrackingIntent';
+import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants';
 
-export const ADS_CONVERSION_TRACKING_INTENT_SLUG = 'ads-conversion-tracking';
+export function registerIntents( intents: IntentsAPI ): void {
+	intents.registerIntent( ADS_CONVERSION_TRACKING_INTENT_SLUG, {
+		Component: AdsConversionTrackingIntent,
+	} );
+}

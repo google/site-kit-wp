@@ -1,7 +1,7 @@
 /**
- * Ads module constants.
+ * Public Intents API entrypoint.
  *
- * Site Kit by Google, Copyright 2025 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,17 @@
  * limitations under the License.
  */
 
-export const MODULE_SLUG_ADS = 'ads';
+/**
+ * Internal dependencies
+ */
+import { createIntents } from './googlesitekit/intents';
 
-export const ADS_CONVERSION_TRACKING_INTENT_SLUG = 'ads-conversion-tracking';
+const Intents = createIntents();
+
+if ( typeof global.googlesitekit === 'undefined' ) {
+	global.googlesitekit = {};
+}
+
+global.googlesitekit.intents = Intents;
+
+export default Intents;
