@@ -28,7 +28,7 @@ const OUTBOUND_HREF = 'https://example.com/deal';
 /**
  * Classifies an href and a `rel` the way the listener does.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} rel  Value of the anchor's `rel` attribute; omitted when null.
  * @param {string} href Link address to classify.

@@ -34,9 +34,11 @@ use Google\Site_Kit\Core\Site_Health\Debug_Data;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Current_Screen;
+use Google\Site_Kit\Core\Util\Input;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Existing_Client_ID;
@@ -303,6 +305,10 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 	 * @param Authenticator_Interface $authenticator Authenticator instance.
 	 */
 	private function handle_auth_callback( Authenticator_Interface $authenticator ) {
+		if ( ! $this->is_connected() ) {
+			return;
+		}
+
 		$input = $this->context->input();
 
 		// Ignore the request if the request method is not POST.
@@ -311,11 +317,88 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 			return;
 		}
 
+		// Ignore the request unless it announces this site's origin, or none.
+		if ( ! $this->has_allowed_origin( $input ) ) {
+			return;
+		}
+
 		$redirect_to = $authenticator->authenticate_user( $input );
 		if ( ! empty( $redirect_to ) ) {
 			wp_safe_redirect( $redirect_to );
 			exit;
 		}
+	}
+
+	/**
+	 * Checks the request's `Origin` header against this site's own origins.
+	 *
+	 * A genuine sign-in request is made by this site's own script, so it either
+	 * announces this site's origin or announces none at all. The check confirms
+	 * that, alongside the nonce the request carries.
+	 *
+	 * The allowlist is this site's own origins, not the network's. Each request
+	 * is handled in one site's context, so these functions already describe the
+	 * only origin a genuine request can come from. On multisite, widening this
+	 * to every origin on the network would make the check meaningless, since
+	 * any other site on it would then be accepted.
+	 *
+	 * All four are consulted because the tag renders on the front end, on the
+	 * login page and on `profile.php`, and those can resolve to different
+	 * origins. Domain mapping can give a site a public host which differs from
+	 * its `siteurl`. `wp_login_url()` and `admin_url()` are filterable, and
+	 * both take their scheme from `force_ssl_admin()`. On a site terminating
+	 * TLS at a proxy which does not tell WordPress, that makes them https
+	 * while `site_url()` is still http.
+	 *
+	 * A request without an `Origin` header is allowed through, as browsers send
+	 * one on cross-origin POSTs.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return bool TRUE when the origin is absent or belongs to this site.
+	 */
+	private function has_allowed_origin( Input $input ) {
+		$origin = $input->filter( INPUT_SERVER, 'HTTP_ORIGIN' );
+
+		if ( empty( $origin ) ) {
+			return true;
+		}
+
+		$allowed = array_filter(
+			array(
+				$this->url_to_origin( home_url() ),
+				$this->url_to_origin( site_url() ),
+				$this->url_to_origin( wp_login_url() ),
+				$this->url_to_origin( admin_url() ),
+			)
+		);
+
+		return in_array( $this->url_to_origin( $origin ), $allowed, true );
+	}
+
+	/**
+	 * Reduces a URL to its origin, so two can be compared.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param string $url URL to reduce.
+	 * @return string Origin, or an empty string when the URL has no scheme and host.
+	 */
+	private function url_to_origin( $url ) {
+		$parts = URL::parse( (string) $url );
+
+		if ( empty( $parts['scheme'] ) || empty( $parts['host'] ) ) {
+			return '';
+		}
+
+		$origin = $parts['scheme'] . '://' . $parts['host'];
+
+		if ( ! empty( $parts['port'] ) ) {
+			$origin .= ':' . $parts['port'];
+		}
+
+		return $origin;
 	}
 
 	/**
@@ -454,6 +537,7 @@ final class Sign_In_With_Google extends Module implements Module_With_Inline_Dat
 						'googlesitekit-vendor',
 						'googlesitekit-api',
 						'googlesitekit-data',
+						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
 						'googlesitekit-datastore-site',

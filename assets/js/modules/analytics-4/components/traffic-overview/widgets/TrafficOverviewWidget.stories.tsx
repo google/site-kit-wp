@@ -27,15 +27,16 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { Story } from '@/js/types/Story';
 import {
@@ -55,7 +56,7 @@ const WidgetWithComponentProps = withWidgetComponentProps(
  * Connects Analytics and sets a fixed date range, so `MainDashboard` and
  * `EntityDashboard` start from the same state.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -75,18 +76,31 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
+	// Storing the creation time stops a request for the Analytics property.
+	// `2024-01-01` sits before the selected range, so the chart draws no marker.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
 }
 
 /**
- * Puts the Traffic Overview widget's five reports in the store, so a story
- * renders without sending a report request.
+ * Builds the five argument sets the panel passes to `getReport`, in this order:
  *
- * @since n.e.x.t
+ * 1. totals
+ * 2. graph
+ * 3. channels
+ * 4. locations
+ * 5. devices.
  *
- * @param {Object} registry The registry to put the reports in.
- * @return {void}
+ * @since 1.188.0
+ *
+ * @param {Object} registry The registry the date range and the entity URL come from.
+ * @return {Array<Object>} The five argument sets.
  */
-function provideTrafficOverviewReports( registry: WPDataRegistry ) {
+function getTrafficOverviewReportArgs(
+	registry: WPDataRegistry
+): ReportOptions[] {
 	const { startDate, endDate, compareStartDate, compareEndDate } = registry
 		.select( CORE_USER )
 		.getDateRangeDates( { compare: true } );
@@ -99,7 +113,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 		...( entityURL ? { url: entityURL } : {} ),
 	};
 
-	[
+	return [
 		getTotalsReportArgs( {
 			...sharedReportOptions,
 			compareStartDate,
@@ -113,7 +127,20 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 				reportID,
 			} )
 		),
-	].forEach( ( options ) =>
+	];
+}
+
+/**
+ * Puts the Traffic Overview widget's five reports in the store, so a story
+ * renders without sending a report request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+function provideTrafficOverviewReports( registry: WPDataRegistry ) {
+	getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
 		provideAnalytics4MockReport( registry, options )
 	);
 }
@@ -139,7 +166,9 @@ MainDashboard.args = {
 		provideTrafficOverviewReports( registry );
 	},
 };
-MainDashboard.scenario = {};
+MainDashboard.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
 
 /**
  * This story sets no `scenario`, so it runs no visual check. A current entity
@@ -156,6 +185,84 @@ EntityDashboard.args = {
 			currentEntityURL: 'https://example.com/about/',
 		} );
 		provideTrafficOverviewReports( registry );
+	},
+};
+
+export const Loading = Template.bind( {} ) as Story;
+Loading.storyName = 'Loading';
+Loading.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.startResolution( 'getReport', [ options ] )
+		);
+	},
+};
+
+export const GatheringData = Template.bind( {} ) as Story;
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+	},
+};
+GatheringData.scenario = {
+	viewport: 'large',
+};
+
+export const ZeroData = Template.bind( {} ) as Story;
+ZeroData.storyName = 'Zero Data';
+ZeroData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+
+		const [ totalsArgs, ...remainingArgs ] =
+			getTrafficOverviewReportArgs( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				totals: [
+					{ metricValues: [ { value: '0' } ] },
+					{ metricValues: [ { value: '0' } ] },
+				],
+			},
+			{ options: totalsArgs }
+		);
+		// A report with no rows is what the API returns for a range with no
+		// traffic.
+		remainingArgs.forEach( ( options ) =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetReport( {}, { options } )
+		);
+	},
+};
+
+export const ReportFailure = Template.bind( {} ) as Story;
+ReportFailure.storyName = 'Report Failure';
+ReportFailure.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+
+		getTrafficOverviewReportArgs( registry ).forEach( ( options ) => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+				{
+					code: 'test_error',
+					message:
+						'Request contains an invalid argument. Learn more about the Analytics Data API.',
+					data: { status: 400, reason: 'badRequest' },
+				},
+				'getReport',
+				[ options ]
+			);
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.finishResolution( 'getReport', [ options ] );
+		} );
 	},
 };
 

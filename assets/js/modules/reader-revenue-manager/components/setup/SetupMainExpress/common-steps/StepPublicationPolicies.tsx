@@ -54,6 +54,10 @@ import {
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 
 function isValidPolicyURL( value: string ) {
+	if ( ! /^https?:\/\/[^./\\-]/i.test( value ) ) {
+		return false;
+	}
+
 	try {
 		return [ 'http:', 'https:' ].includes( new URL( value ).protocol );
 	} catch {

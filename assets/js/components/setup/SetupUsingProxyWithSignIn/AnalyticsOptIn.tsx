@@ -78,7 +78,6 @@ export default function AnalyticsOptIn() {
 					{ __( 'Analytics', 'google-site-kit' ) }
 				</Typography>
 				<Badge
-					// @ts-expect-error The `Badge` component is not typed yet.
 					className="googlesitekit-splash__analytics-recommended-badge"
 					label={ __( 'Recommended', 'google-site-kit' ) }
 				/>
