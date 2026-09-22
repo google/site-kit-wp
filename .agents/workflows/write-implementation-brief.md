@@ -28,7 +28,9 @@ of this project's AI tools). Follow it exactly. Summary of the steps:
 5. **Write the Implementation Brief** — grouped by path, one instruction per bullet. Name real
    symbols, selectors, components, class names and user-facing strings; point at an existing
    exemplar rather than describing one; cross-reference sibling issues inline; fence the scope
-   in one line. No rationale, no unneeded work, no routine commands, no local design-doc links.
+   in one line. No rationale beyond a one-clause reason where the brief settles a real technical
+   choice an engineer would otherwise question; no unneeded work, no routine commands, no local
+   design-doc links.
 6. **Write the Test Coverage** — short. One bullet per test file or area, cases nested and
    phrased as behaviors, negative cases included, Storybook stories and VRT expectations listed
    here (not in the brief), plus any existing tests the change will break. Say when nothing is
