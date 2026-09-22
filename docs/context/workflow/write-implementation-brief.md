@@ -36,7 +36,7 @@ asks for.
 
 **Stop and ask the user** if the acceptance criteria are missing, ambiguous, or contradict each
 other. A brief written over guessed criteria is worse than no brief. Writing the criteria is a
-separate job with its own playbook, `write-issue.md` — offer it rather than filling the gap here.
+separate job with its own playbook, `write-issue-requirements.md` — offer it rather than filling the gap here.
 
 Feature Description and Acceptance criteria sit under a "managed by moderators only" notice in
 the issue template — do not edit them. QA Brief and Changelog entry are filled in later by other

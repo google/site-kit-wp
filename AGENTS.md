@@ -11,7 +11,7 @@ a skill of the same name; Antigravity as a workflow in `.agents/workflows/`.
 ### Writing an issue
 When asked to create, draft, or write a GitHub issue from a design doc, from a bug report or from
 requirements in the message, to break an epic's design doc into issues, or to write **Acceptance
-criteria** for an existing issue, follow **`docs/context/workflow/write-issue.md`**. Establish the
+criteria** for an existing issue, follow **`docs/context/workflow/write-issue-requirements.md`**. Establish the
 type first — a **feature request** (`.github/ISSUE_TEMPLATE/feature_request.md`) or a **bug
 report** (`.github/ISSUE_TEMPLATE/bug_report.md`) — and **ask the user which one when the request
 doesn't make it clear**. Do not create or edit a GitHub issue unless explicitly asked.

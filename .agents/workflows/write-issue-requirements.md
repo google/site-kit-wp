@@ -3,13 +3,13 @@ title: Write the requirements for an issue
 description: Write the description and Acceptance criteria of a Site Kit issue — a feature request or a bug report — from a design doc, a bug report or requirements, verified against the codebase.
 ---
 
-# Write an issue
+# Write an issue's requirements
 
-Run with `/write-issue <design-doc-path | issue-number | bug report | requirements>` in the Agent
+Run with `/write-issue-requirements <design-doc-path | issue-number | bug report | requirements>` in the Agent
 chat.
 
 The full procedure is the shared, tool-agnostic playbook
-**`docs/context/workflow/write-issue.md`** (the single source of truth used by all of this
+**`docs/context/workflow/write-issue-requirements.md`** (the single source of truth used by all of this
 project's AI tools). Follow it exactly. Summary of the steps:
 
 1. **Establish the issue type**, which decides the template and the sections you write. A

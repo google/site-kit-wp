@@ -1,5 +1,5 @@
 ---
-name: write-issue
+name: write-issue-requirements
 description: >
   Write the description and Acceptance criteria of a Site Kit issue — a feature request or a bug
   report — from a design doc, from a bug report, or from requirements given in the message. Use
@@ -12,7 +12,7 @@ argument-hint: "[design-doc-path, issue-number, bug report, or requirements]"
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---
 
-# Write an issue
+# Write an issue's requirements
 
 Write the **description** and the **Acceptance criteria** for **$ARGUMENTS** — a design doc path,
 a bug report, requirements stated in the user's message, or an existing issue that needs criteria.
@@ -21,7 +21,7 @@ of truth shared with the other AI tools.
 
 ## Procedure
 
-1. **Read the playbook** `docs/context/workflow/write-issue.md` and follow every step.
+1. **Read the playbook** `docs/context/workflow/write-issue-requirements.md` and follow every step.
 2. **Establish the issue type**, because it decides the template and the sections you write:
    - **Feature request** — `.github/ISSUE_TEMPLATE/feature_request.md`: the **Feature
      Description** and the **Acceptance criteria**.
