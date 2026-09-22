@@ -206,7 +206,7 @@ class REST_Intents_Controller {
 	private function create_error( $code ) {
 		$errors = array(
 			'intent_not_found'          => array(
-				__( 'This link can’t be found. It might have been used already. If not, go back to where you started and try again.', 'google-site-kit' ),
+				__( 'This link can’t be found. It might have been used already.', 'google-site-kit' ),
 				404,
 			),
 			'intent_expired'            => array(
