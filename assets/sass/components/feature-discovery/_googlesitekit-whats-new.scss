@@ -21,10 +21,13 @@
 
 	.googlesitekit-whats-new {
 		display: block;
-		padding-block: 30px;
+		padding-block: 10px;
 	}
 
 	.googlesitekit-whats-new__notifications {
+		&:not(:empty) {
+			margin-top: 20px;
+		}
 
 		.mdc-layout-grid,
 		.mdc-layout-grid__inner,
