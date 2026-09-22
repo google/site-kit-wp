@@ -299,7 +299,6 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
@@ -360,9 +359,7 @@ export default function DashboardMainApp() {
 					</Fragment>
 				) : (
 					<Fragment>
-						{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
-							<AddFeaturesButton />
-						) }
+						<AddFeaturesButton />
 						<ManageEmailReportsButton />
 						<PDFDownloadButton />
 						{ ! viewOnlyDashboard && (

@@ -53,7 +53,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { useFeature } from '@/js/hooks/useFeature';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
@@ -134,8 +133,6 @@ function DashboardEntityApp() {
 			'url-not-part-of-this-site'
 		);
 	} );
-
-	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 
 	useMonitorInternetConnection();
 
@@ -245,9 +242,7 @@ function DashboardEntityApp() {
 					</Fragment>
 				) : (
 					<Fragment>
-						{ featureDiscoveryHubEnabled && ! viewOnlyDashboard && (
-							<AddFeaturesButton />
-						) }
+						<AddFeaturesButton />
 						<ManageEmailReportsButton />
 						{ ! viewOnlyDashboard && (
 							<DashboardSharingSettingsButton />

@@ -36,13 +36,16 @@ import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import useViewOnly from '@/js/hooks/useViewOnly';
 import PlusHeavy from '@/svg/icons/plus-heavy.svg';
 
 const AddFeaturesButton: FC = () => {
+	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
+	const viewOnlyDashboard = useViewOnly();
+
 	const instanceID = useInstanceId( AddFeaturesButton );
 	const ariaDescribedBy = `googlesitekit-add-features-button-description-${ instanceID }`;
-
-	const buttonLabel = __( 'Add features', 'google-site-kit' );
 
 	const featuresURL = useSelect(
 		( select: Select ) =>
@@ -50,13 +53,20 @@ const AddFeaturesButton: FC = () => {
 		[]
 	);
 
+	const isButtonVisible = featureDiscoveryHubEnabled && ! viewOnlyDashboard;
+
 	// The count is `undefined` while the per-user newness state loads, which
 	// leaves the dot off until it is known to be needed.
 	const hasNewFeatures = useSelect(
 		( select: Select ) =>
+			isButtonVisible && // Skip the newness check if the button is not visible.
 			select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount() > 0,
-		[]
+		[ isButtonVisible ]
 	);
+
+	if ( ! isButtonVisible ) {
+		return null;
+	}
 
 	return (
 		<div className="googlesitekit-add-features-button-wrapper">
@@ -77,7 +87,7 @@ const AddFeaturesButton: FC = () => {
 					size={ SIZE_SMALL }
 					type={ TYPE_LABEL }
 				>
-					{ buttonLabel }
+					{ __( 'Add features', 'google-site-kit' ) }
 				</Typography>
 			</a>
 			{ hasNewFeatures && (
