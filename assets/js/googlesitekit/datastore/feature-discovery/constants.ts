@@ -90,3 +90,10 @@ export const FEATURE_BADGE_PROPS: Record< FeatureBadge, BadgeProps > = {
 		label: __( 'Recommended for you', 'google-site-kit' ),
 	},
 } as const;
+
+export const FEATURE_RELEVANCY_REASONS = {
+	JUST_HIDE: 'just_hide',
+	NOT_RELEVANT: 'not_relevant',
+	ALREADY_USING: 'already_using',
+	TOO_COMPLICATED: 'too_complicated',
+} as const;

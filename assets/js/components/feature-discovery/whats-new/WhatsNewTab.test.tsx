@@ -28,9 +28,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import {
 	createTestRegistry,
+	fireEvent,
 	freezeFetch,
 	provideModules,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import WhatsNewTab from './WhatsNewTab';
 
@@ -257,5 +259,64 @@ describe( 'WhatsNewTab', () => {
 		).not.toBeInTheDocument();
 
 		expect( fetchMock ).not.toHaveFetched( TIMERS_ENDPOINT );
+	} );
+	it( 'should immediately hide a dismissed card while feedback is pending and preserve the remaining order', async () => {
+		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+		provideFeatures( registry, TEST_FEATURES );
+		const triggerSurvey = jest
+			.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+			.mockImplementation( () => new Promise( () => {} ) );
+		freezeFetch( /^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/ );
+		const { container, getByRole, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{ registry }
+		);
+		await waitForRegistry();
+		fireEvent.click(
+			getByRole( 'button', { name: 'Dismiss Unread newer feature' } )
+		);
+		fireEvent.click(
+			getByRole( 'menuitem', { name: 'Setup seems complex' } )
+		);
+		await waitFor( () =>
+			expect( getListedTitles( container ) ).toEqual(
+				INITIAL_ORDER.slice( 1 )
+			)
+		);
+		expect( triggerSurvey ).toHaveBeenCalledWith(
+			'feedback:feature_relevancy_unread-newer:too_complicated'
+		);
+	} );
+
+	it( 'should show the empty state even when feedback fails after the final card is dismissed', async () => {
+		fetchMock.postOnce( TIMERS_ENDPOINT, { body: {}, status: 200 } );
+		fetchMock.postOnce(
+			/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/,
+			[ 'feature-discovery-dismissed-unread-older' ]
+		);
+		jest.spyOn(
+			registry.dispatch( CORE_USER ),
+			'triggerSurvey'
+		).mockResolvedValue( { error: { message: 'Feedback unavailable' } } );
+		provideFeatures( registry, [ TEST_FEATURES[ 2 ] ] );
+		const { container, getByRole, queryByText, waitForRegistry } = render(
+			<WhatsNewTab />,
+			{ registry }
+		);
+		await waitForRegistry();
+		fireEvent.click(
+			getByRole( 'button', { name: 'Dismiss Unread older feature' } )
+		);
+		fireEvent.click(
+			getByRole( 'menuitem', {
+				name: "It's not relevant to my site goals",
+			} )
+		);
+		await waitForRegistry();
+		expect( getListedTitles( container ) ).toEqual( [] );
+		expect(
+			container.querySelector( EMPTY_STATE_SELECTOR )
+		).toBeInTheDocument();
+		expect( queryByText( 'Feedback unavailable' ) ).not.toBeInTheDocument();
 	} );
 } );

@@ -141,6 +141,15 @@ NewDismissible.args = {
 };
 NewDismissible.scenario = {};
 
+export const Dismissing = Template.bind( {} ) as Story< StoryArgs >;
+Dismissing.storyName = 'New, Dismissing';
+Dismissing.args = NewDismissible.args;
+Dismissing.scenario = {
+	clickSelector: '.googlesitekit-feature-card__dismiss',
+	postInteractionWait: 300,
+	onReadyScript: 'mouse.js',
+};
+
 export const MultipleCards = Template.bind( {} ) as Story< StoryArgs >;
 MultipleCards.storyName = 'Multiple Cards';
 MultipleCards.args = {
@@ -162,6 +171,8 @@ export default {
 			const { setupRegistry = () => {}, ...rest } = args;
 
 			function setupStoryRegistry( registry: WPDataRegistry ) {
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 				registry
 					.dispatch( CORE_USER )
 					.receiveInitialSiteKitVersion( TEST_INITIAL_VERSION );

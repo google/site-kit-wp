@@ -81,6 +81,15 @@
 		margin: 0;
 	}
 
+	.googlesitekit-feature-card__dismiss-menu {
+		display: flex;
+		flex-shrink: 0;
+
+		.googlesitekit-feedback-menu {
+			inset-inline-end: 0;
+		}
+	}
+
 	.googlesitekit-feature-card__dismiss {
 		color: $c-surfaces-on-background-variant;
 		padding: 2px;

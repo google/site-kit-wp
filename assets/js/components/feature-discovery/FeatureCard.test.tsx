@@ -36,6 +36,7 @@ import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import {
 	act,
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	render,
 	waitFor,
@@ -299,4 +300,73 @@ describe( 'FeatureCard', () => {
 			} )
 		).toBeInTheDocument();
 	} );
+	it( 'should toggle the menu without dismissing and close on Escape', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" isDismissible />,
+			{ registry }
+		);
+		const button = getByRole( 'button', {
+			name: 'Dismiss Test feature title',
+		} );
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+		fireEvent.click( button );
+		expect( button ).toHaveAttribute( 'aria-expanded', 'true' );
+		expect( button ).toHaveAttribute(
+			'aria-controls',
+			getByRole( 'menu' ).id
+		);
+		fireEvent.click( button );
+		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+		fireEvent.click( button );
+		fireEvent.keyDown( getByRole( 'menu' ), { keyCode: 27 } );
+		expect( button ).toHaveFocus();
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+		expect( fetchMock ).not.toHaveFetched();
+	} );
+
+	it.each( [
+		[ 'Just hide this suggestion', undefined ],
+		[ "It's not relevant to my site goals", 'not_relevant' ],
+		[ "I'm already using another tool", 'already_using' ],
+		[ 'Setup seems complex', 'too_complicated' ],
+	] )(
+		'should dismiss the feature and send only the feedback chosen with "%s"',
+		async ( label, reason ) => {
+			provideFeatures( registry, [ TEST_FEATURE ] );
+			const triggerSurvey = jest
+				.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+				.mockResolvedValue( {} );
+			const endpoint =
+				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+			fetchMock.postOnce( endpoint, [
+				'feature-discovery-dismissed-test-feature',
+			] );
+			const { getByRole, queryByRole, waitForRegistry } = render(
+				<FeatureCard slug="test-feature" isDismissible />,
+				{ registry }
+			);
+			fireEvent.click(
+				getByRole( 'button', { name: 'Dismiss Test feature title' } )
+			);
+			fireEvent.click( getByRole( 'menuitem', { name: label } ) );
+			await waitForRegistry();
+			expect( fetchMock ).toHaveFetched( endpoint, {
+				body: {
+					data: {
+						slug: 'feature-discovery-dismissed-test-feature',
+						expiration: 0,
+					},
+				},
+			} );
+			if ( reason ) {
+				expect( triggerSurvey ).toHaveBeenCalledWith(
+					`feedback:feature_relevancy_test-feature:${ reason }`
+				);
+			} else {
+				expect( triggerSurvey ).not.toHaveBeenCalled();
+			}
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+		}
+	);
 } );
