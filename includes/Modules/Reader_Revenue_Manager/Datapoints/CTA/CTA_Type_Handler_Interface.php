@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\CTA;
 
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Cta;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Cta;
 
 /**
  * Interface for configuring a CTA model for a supported CTA type.
