@@ -25,7 +25,8 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import { createReducer } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import {
 	FEATURE_CATEGORY_ORDER,
 	FEATURE_EFFORTS,
@@ -143,6 +144,26 @@ export const actions = {
 			type: REGISTER_FEATURE,
 		};
 	},
+
+	/**
+	 * Starts the setup for the feature registered under a given slug.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Feature's slug.
+	 * @return {Object} Empty object.
+	 */
+	setupFeature: createValidatedAction(
+		( slug: string ) => {
+			invariant( slug, 'slug is required to set up a feature.' );
+		},
+		function* (): Generator< unknown, Record< string, never >, unknown > {
+			// TODO: #13338 -- Dispatch the mechanism named by `setup.type`.
+			yield commonActions.await( Promise.resolve() );
+
+			return {};
+		}
+	),
 };
 
 export const reducer = createReducer(
