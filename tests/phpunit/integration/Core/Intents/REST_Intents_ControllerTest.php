@@ -35,7 +35,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	use RestTestTrait;
 
 	/**
-	 * Plugin context.
+	 * Context instance.
 	 *
 	 * @var Context
 	 */
@@ -160,7 +160,7 @@ class REST_Intents_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 
 		// A view-only user can view the dashboard only after setup is complete.
-		// The Search Console module requires a property at the default priority, so this filter runs later.
+		// Search Console returns `false` from `googlesitekit_setup_complete` when the site has no property, so `__return_true` has to run after it.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
 		( new Module_Sharing_Settings( new Options( $this->context ) ) )->set(
@@ -185,8 +185,8 @@ class REST_Intents_ControllerTest extends TestCase {
 	public function test_register__adds_no_preload_path() {
 		$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
 
-		$this->assertNotContains( '/google-site-kit/v1/core/intents/data/intent', $preload_paths, 'The preload paths should not include the `core/intents/data/intent` route.' );
-		$this->assertNotContains( '/google-site-kit/v1/core/intents/data/complete-intent', $preload_paths, 'The preload paths should not include the `core/intents/data/complete-intent` route.' );
+		$this->assertNotContains( '/google-site-kit/v1/core/intents/data/intent', $preload_paths, '`googlesitekit_apifetch_preload_paths` should not include the `core/intents/data/intent` route.' );
+		$this->assertNotContains( '/google-site-kit/v1/core/intents/data/complete-intent', $preload_paths, '`googlesitekit_apifetch_preload_paths` should not include the `core/intents/data/complete-intent` route.' );
 	}
 
 	public function test_intent_route__returns_the_intent_the_service_sent() {
@@ -308,13 +308,16 @@ class REST_Intents_ControllerTest extends TestCase {
 		$this->assertCount( 0, $this->service_requests, 'The plugin should send no request to the Service for an unregistered intent.' );
 	}
 
-	public function test_intent_route__returns_intent_not_found_when_the_service_cannot_find_the_intent() {
+	/**
+	 * @dataProvider data_service_errors
+	 */
+	public function test_intent_route__returns_intent_not_found_for_every_service_error( $service_status, $service_error_code ) {
 		$this->connect_to_service();
 		$this->mock_service_response(
-			404,
+			$service_status,
 			array(
 				'error'      => 'Raw Service message.',
-				'error_code' => 'intent_not_found',
+				'error_code' => $service_error_code,
 			)
 		);
 
@@ -325,75 +328,18 @@ class REST_Intents_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 'intent_not_found', $response->get_data()['code'], 'The `core/intents/data/intent` route should return `intent_not_found` when the Service can\'t find the intent.' );
+		$this->assertEquals( 'intent_not_found', $response->get_data()['code'], "The `core/intents/data/intent` route should answer the Service's $service_error_code error with `intent_not_found`." );
 		$this->assertEquals( 404, $response->get_status(), 'The `intent_not_found` error should have a 404 status.' );
 		$this->assertStringNotContainsString( 'Raw Service message.', wp_json_encode( $response->get_data() ), 'The response should not include the Service message.' );
 	}
 
-	public function test_intent_route__returns_intent_expired_when_the_intent_has_expired() {
-		$this->connect_to_service();
-		$this->mock_service_response(
-			410,
-			array(
-				'error'      => 'Raw Service message.',
-				'error_code' => 'intent_expired',
-			)
+	public function data_service_errors() {
+		return array(
+			'an intent the Service cannot find'    => array( 404, 'intent_not_found' ),
+			'an expired intent'                    => array( 410, 'intent_expired' ),
+			'an intent for another Google account' => array( 403, 'intent_wrong_user' ),
+			'an error the plugin does not know'    => array( 502, 'internal_error' ),
 		);
-
-		$response = $this->get_intent(
-			array(
-				'slug'        => 'ads-conversion-tracking',
-				'intent_code' => 'abc123',
-			)
-		);
-
-		$this->assertEquals( 'intent_expired', $response->get_data()['code'], 'The `core/intents/data/intent` route should return `intent_expired` for an expired intent.' );
-		$this->assertEquals( 410, $response->get_status(), 'The `intent_expired` error should have a 410 status.' );
-		$this->assertStringNotContainsString( 'Raw Service message.', wp_json_encode( $response->get_data() ), 'The response should not include the Service message.' );
-	}
-
-	public function test_intent_route__returns_intent_wrong_user_when_the_intent_is_for_another_google_account() {
-		$this->connect_to_service();
-		$this->mock_service_response(
-			403,
-			array(
-				'error'      => 'Raw Service message.',
-				'error_code' => 'intent_wrong_user',
-			)
-		);
-
-		$response = $this->get_intent(
-			array(
-				'slug'        => 'ads-conversion-tracking',
-				'intent_code' => 'abc123',
-			)
-		);
-
-		$this->assertEquals( 'intent_wrong_user', $response->get_data()['code'], 'The `core/intents/data/intent` route should return `intent_wrong_user` for an intent created for another Google account.' );
-		$this->assertEquals( 403, $response->get_status(), 'The `intent_wrong_user` error should have a 403 status.' );
-		$this->assertStringNotContainsString( 'Raw Service message.', wp_json_encode( $response->get_data() ), 'The response should not include the Service message.' );
-	}
-
-	public function test_intent_route__returns_intent_request_failed_for_any_other_service_error() {
-		$this->connect_to_service();
-		$this->mock_service_response(
-			502,
-			array(
-				'error'      => 'Raw Service message.',
-				'error_code' => 'internal_error',
-			)
-		);
-
-		$response = $this->get_intent(
-			array(
-				'slug'        => 'ads-conversion-tracking',
-				'intent_code' => 'abc123',
-			)
-		);
-
-		$this->assertEquals( 'intent_request_failed', $response->get_data()['code'], 'The `core/intents/data/intent` route should return `intent_request_failed` for a Service error the plugin doesn\'t map.' );
-		$this->assertEquals( 500, $response->get_status(), 'The `intent_request_failed` error should have a 500 status.' );
-		$this->assertStringNotContainsString( 'Raw Service message.', wp_json_encode( $response->get_data() ), 'The response should not include the Service message.' );
 	}
 
 	public function test_intent_route__returns_400_when_the_slug_is_missing() {

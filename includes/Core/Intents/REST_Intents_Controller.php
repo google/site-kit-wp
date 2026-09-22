@@ -19,7 +19,7 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class for the REST routes the intent screen uses to get and complete an intent.
+ * Class for the REST routes the dashboard uses to get and complete an intent.
  *
  * @since n.e.x.t
  * @access private
@@ -62,7 +62,7 @@ class REST_Intents_Controller {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// The dashboard preloads neither route, because an intent is rare and each route sends a request to the Service.
+		// Neither route is added to `googlesitekit_apifetch_preload_paths`, because an intent is rare and each route sends a request to the Service.
 		add_filter(
 			'googlesitekit_rest_routes',
 			fn ( $routes ) => array_merge( $routes, $this->get_rest_routes() )
@@ -144,7 +144,7 @@ class REST_Intents_Controller {
 	 * @since n.e.x.t
 	 *
 	 * @param string $proxy_method `Google_Proxy` method to call, either `get_intent` or `complete_intent`.
-	 * @param string $slug         Intent ID.
+	 * @param string $slug         Intent slug.
 	 * @param string $intent_code  One-time code for the intent.
 	 * @return WP_REST_Response|WP_Error Response with the data the Service returned, or the plugin's own error.
 	 */
@@ -167,32 +167,10 @@ class REST_Intents_Controller {
 		);
 
 		if ( is_wp_error( $response ) ) {
-			return $this->create_error( $this->get_plugin_error_code( $response ) );
+			return $this->create_error( 'intent_not_found' );
 		}
 
 		return new WP_REST_Response( $response );
-	}
-
-	/**
-	 * Gets the plugin's error code for an error from the Site Kit Service.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param WP_Error $service_error Error from the Site Kit Service.
-	 * @return string Plugin error code: `intent_not_found`, `intent_expired`, `intent_wrong_user`, or `intent_request_failed` for any other error.
-	 */
-	private function get_plugin_error_code( WP_Error $service_error ) {
-		// Keys are the Service's `error_code` values. Values are the plugin's own codes.
-		//
-		// TODO: Replace the keys once we know the `error_code` values the Service sends.
-		// See: https://github.com/google/site-kit-wp/issues/13467.
-		$plugin_error_codes = array(
-			'intent_not_found'  => 'intent_not_found',
-			'intent_expired'    => 'intent_expired',
-			'intent_wrong_user' => 'intent_wrong_user',
-		);
-
-		return $plugin_error_codes[ $service_error->get_error_code() ] ?? 'intent_request_failed';
 	}
 
 	/**
@@ -200,35 +178,23 @@ class REST_Intents_Controller {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $code Plugin error code.
+	 * @param string $error_code Plugin error code, either `intent_not_found` or `intent_user_not_connected`.
 	 * @return WP_Error Error with a translated message and an HTTP status.
 	 */
-	private function create_error( $code ) {
+	private function create_error( $error_code ) {
 		$errors = array(
 			'intent_not_found'          => array(
-				__( 'This link can’t be found. It might have been used already.', 'google-site-kit' ),
+				__( 'This link can’t be used. Go back to where you started and try again.', 'google-site-kit' ),
 				404,
-			),
-			'intent_expired'            => array(
-				__( 'This link has expired. Go back to where you started and try again.', 'google-site-kit' ),
-				410,
-			),
-			'intent_wrong_user'         => array(
-				__( 'This link was created for a different Google account. Connect Site Kit with that account, then try again.', 'google-site-kit' ),
-				403,
 			),
 			'intent_user_not_connected' => array(
 				__( 'Your Google account isn’t connected to Site Kit. Connect Site Kit with your Google account, then try again.', 'google-site-kit' ),
 				403,
 			),
-			'intent_request_failed'     => array(
-				__( 'Site Kit couldn’t complete this request. Try again.', 'google-site-kit' ),
-				500,
-			),
 		);
 
-		list( $message, $status ) = $errors[ $code ];
+		list( $message, $status ) = $errors[ $error_code ];
 
-		return new WP_Error( $code, $message, array( 'status' => $status ) );
+		return new WP_Error( $error_code, $message, array( 'status' => $status ) );
 	}
 }
