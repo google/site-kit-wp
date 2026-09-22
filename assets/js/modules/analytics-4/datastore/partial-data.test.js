@@ -938,6 +938,45 @@ describe( 'modules/analytics-4 partial data', () => {
 				} );
 			}
 
+			it( 'should settle for a view-only reader, who is never sent a property ID', () => {
+				// What `REST_Modules_Controller` sends a view-only reader: the settings
+				// arrive, but `array_intersect_key` has already dropped `propertyID`.
+				// `availableAudiences` survives, being a view-only key of its own.
+				const freshRegistry = createTestRegistry();
+				provideModules( freshRegistry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+
+				const viewOnly = freshRegistry.dispatch( MODULES_ANALYTICS_4 );
+
+				viewOnly.receiveGetSettings( {
+					availableCustomDimensions: [ testCustomDimension ],
+				} );
+				viewOnly.receiveGetAudienceSettings( {
+					availableAudiences: [ testAudience1 ],
+				} );
+				viewOnly.receiveIsGatheringData( false );
+				viewOnly.receiveModuleData( {
+					resourceAvailabilityDates: {
+						audience: { [ testAudience1ResourceName ]: 20201220 },
+						customDimension: { [ testCustomDimension ]: 20201221 },
+						property: {},
+					},
+				} );
+
+				expect(
+					freshRegistry
+						.select( MODULES_ANALYTICS_4 )
+						.isLoadingAudienceTilePartialData( [
+							testAudience1ResourceName,
+						] )
+				).toBe( false );
+			} );
+
 			it( 'should wait until the property ID is known, without looking a date up for it', async () => {
 				// Asking before settings load would look a date up for no property at all.
 				freezeFetch(

@@ -358,11 +358,14 @@ const baseSelectors = {
 	 */
 	isLoadingAudienceTilePartialData: createRegistrySelector(
 		( select ) => ( state, audienceResourceNames ) => {
-			const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+			// Settings landing is what says the property ID is knowable, rather than the
+			// property ID itself: a view-only reader is never sent one, so waiting on the
+			// value would hold the badges back for good.
+			const settings = select( MODULES_ANALYTICS_4 ).getSettings();
 
 			// The badges read all three of these before they read a single date.
 			if (
-				propertyID === undefined ||
+				settings === undefined ||
 				select( MODULES_ANALYTICS_4 ).isGatheringData() === undefined ||
 				select( MODULES_ANALYTICS_4 ).getOrSyncAvailableAudiences() ===
 					undefined
@@ -370,8 +373,13 @@ const baseSelectors = {
 				return true;
 			}
 
+			const { propertyID } = settings;
+
 			const resources = [
-				[ propertyID, RESOURCE_TYPE_PROPERTY ],
+				// A reader without a property has no date to wait for on it.
+				...( propertyID
+					? [ [ propertyID, RESOURCE_TYPE_PROPERTY ] ]
+					: [] ),
 				[ postTypeDimension, RESOURCE_TYPE_CUSTOM_DIMENSION ],
 				...audienceResourceNames.map( ( audienceResourceName ) => [
 					audienceResourceName,
