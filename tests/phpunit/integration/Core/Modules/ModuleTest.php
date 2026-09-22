@@ -421,6 +421,49 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	public function test_exception_to_error__reads_the_rate_limit_rules_off_the_module() {
+		$module = new FakeModule_WithRateLimitOverrides( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response_errors = array(
+			array(
+				'message' => 'Slow down.',
+				'reason'  => 'tooManyRequests',
+			),
+		);
+		$exception       = new Google_Service_Exception( wp_json_encode( $response_errors ), 503, null, $response_errors );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status'   => 503,
+				'reason'   => 'tooManyRequests',
+				'cacheTTL' => 60,
+			),
+			$module->exception_to_error( $exception, 'test' )->get_error_data(),
+			'A module should be able to answer for its own API rather than the base class answering for it.'
+		);
+
+		// A status the module does not call a rate limit, so only its own reason can
+		// decide. Reading the reasons off the base class would miss this one.
+		$this->assertSame(
+			60,
+			$module->exception_to_error(
+				new Google_Service_Exception( wp_json_encode( $response_errors ), 500, null, $response_errors ),
+				'test'
+			)->get_error_data()['cacheTTL'],
+			'The overridden reasons should be the ones the module is measured against.'
+		);
+
+		// The base class rules no longer apply to a module that replaced them.
+		$this->assertArrayNotHasKey(
+			'cacheTTL',
+			$module->exception_to_error(
+				new Google_Service_Exception( 'quota', 429, null, null ),
+				'test'
+			)->get_error_data(),
+			'The overridden status should replace the base one, not extend it.'
+		);
+	}
+
 	public function test_exception_to_error__leaves_other_reasons_uncached() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
