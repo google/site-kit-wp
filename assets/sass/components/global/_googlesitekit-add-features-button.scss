@@ -73,18 +73,16 @@
 		flex-shrink: 0;
 	}
 
-	// The 8px dot reads as a 14px circle because of its 3px surround, which
-	// keeps it legible where it overlaps the pill's border.
+	// The white ring keeps the dot legible where it overlaps the pill's border.
 	.googlesitekit-add-features-button__new-indicator {
 		background-color: $c-red-r-400;
-		border: 3px solid $c-white;
 		border-radius: 50%;
-		box-sizing: border-box;
-		height: 14px;
+		box-shadow: 0 0 0 3px $c-white;
+		height: 8px;
+		inset-block-start: 0;
+		inset-inline-end: 0;
 		pointer-events: none;
 		position: absolute;
-		right: -3px;
-		top: -3px;
-		width: 14px;
+		width: 8px;
 	}
 }
