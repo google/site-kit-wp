@@ -34,26 +34,36 @@ class Existing_User_AuthenticatorTest extends TestCase {
 		'email' => 'someone@example.com',
 	);
 
-	/**
-	 * @var array
-	 */
-	private $post_data;
-
 	public function set_up() {
 		parent::set_up();
 
-		$this->post_data = $_POST;
+		// `WP_UnitTestCase_Base::set_up()` empties `$_GET`, `$_POST` and
+		// `$_REQUEST`, but not `$_COOKIE`, so clear it here to keep cookies
+		// from leaking between tests.
+		$_COOKIE = array();
 	}
 
-	public function tear_down() {
-		parent::tear_down();
-
-		$_POST = $this->post_data;
-	}
-
+	/**
+	 * Authenticates with a nonce cookie and token claim which match.
+	 *
+	 * The value is generated per call, so a test can only pass the nonce check
+	 * because the cookie reached the comparison, not because it happened to
+	 * reuse a value shared across the suite.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @param bool           $with_valid_nonce    Whether to send a valid `connect_nonce`.
+	 * @return string Redirect URL.
+	 */
 	private function do_authenticate_user( $profile_reader_data = array(), $with_valid_nonce = true ) {
 		if ( $with_valid_nonce ) {
 			$_POST['connect_nonce'] = wp_create_nonce( Authenticator::CONNECT_EXISTING_USER_NONCE_ACTION );
+		}
+
+		if ( is_array( $profile_reader_data ) ) {
+			$nonce = wp_generate_password( 32, false );
+
+			$profile_reader_data['nonce']           = $nonce;
+			$_COOKIE[ Authenticator::COOKIE_NONCE ] = $nonce;
 		}
 
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );

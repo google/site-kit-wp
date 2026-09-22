@@ -107,6 +107,7 @@ import {
 import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
 import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
@@ -170,6 +171,16 @@ const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
+	)
+);
+
+/**
+ * Lazy-loaded PDF component for the Traffic Overview widget.
+ */
+const TrafficOverviewPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/traffic-overview/pdf/indexPDF'
 	)
 );
 
@@ -264,6 +275,11 @@ export function registerWidgets( widgets ) {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: TrafficOverviewPDF,
+					getData: getTrafficOverviewPDFData,
+					label: __( 'Site traffic over time', 'google-site-kit' ),
+				},
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

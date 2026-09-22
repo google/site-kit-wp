@@ -324,11 +324,11 @@
             "dist": {
                 "type": "path",
                 "url": "packages/apiclient-services-webcontentpublisher",
-                "reference": "a674706122dd4b3f9ded5912c2a2d8b95c30b4ef"
+                "reference": "420bf3aecfa4b4051b2cf4357f37ac50c3e5d9ed"
             },
             "type": "library",
             "extra": {
-                "identifier": "caa48b64607f0cc0e0adaef59946f69b:4152583d88e5adcc6454220f6063f82b2ae650b6"
+                "identifier": "56e2b221d1d23d038b2d5360007d1b62:4152583d88e5adcc6454220f6063f82b2ae650b6"
             },
             "description": "This package is @generated automatically",
             "transport-options": {
