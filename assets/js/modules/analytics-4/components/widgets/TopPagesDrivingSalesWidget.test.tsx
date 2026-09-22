@@ -86,7 +86,7 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 	 * The `/product-c/` page deliberately has no matching page-titles row, to
 	 * exercise the fallback to the raw path when no title is available.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {void}
 	 */

@@ -36,7 +36,7 @@ class Get_CTAs extends Datapoint implements Executable_Datapoint {
 	/**
 	 * CTA synchronization instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var CTA_Synchronization
 	 */
 	private $synchronization;

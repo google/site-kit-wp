@@ -42,7 +42,6 @@ import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/consta
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useIsInitialSetupFlow from '@/js/hooks/useIsInitialSetupFlow';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -65,7 +64,6 @@ const FeaturesMenu: FC< FeaturesMenuProps > = ( { hidePDFItem = false } ) => {
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const isInitialSetupFlow = useIsInitialSetupFlow();
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 	const featureDiscoveryHubEnabled = useFeature( 'featureDiscoveryHub' );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
@@ -141,9 +139,8 @@ const FeaturesMenu: FC< FeaturesMenuProps > = ( { hidePDFItem = false } ) => {
 		? !! hasEmailReportingDataAccess
 		: ! isInitialSetupFlow;
 	const showSharingItem = ! viewOnlyDashboard;
-	const showPDFItem = pdfGenerationEnabled && ! hidePDFItem;
 
-	if ( ! showEmailReportsItem && ! showSharingItem && ! showPDFItem ) {
+	if ( ! showEmailReportsItem && ! showSharingItem && hidePDFItem ) {
 		return null;
 	}
 
@@ -205,17 +202,12 @@ const FeaturesMenu: FC< FeaturesMenuProps > = ( { hidePDFItem = false } ) => {
 								) }
 							</FeaturesMenuItem>
 						) }
-						{ showPDFItem && (
+						{ ! hidePDFItem && (
 							<FeaturesMenuItem
-								icon={
-									<DownloadIcon width={ 20 } height={ 20 } />
-								}
+								icon={ <DownloadIcon width={ 20 } height={ 20 } /> }
 								onClick={ openPDFDownloadPanel }
 							>
-								{ __(
-									'Download PDF report',
-									'google-site-kit'
-								) }
+								{ __( 'Download PDF report', 'google-site-kit' ) }
 							</FeaturesMenuItem>
 						) }
 					</Menu>

@@ -26,14 +26,14 @@ import TrafficOverviewTabBar, {
 
 describe( 'TrafficOverviewTabBar', () => {
 	const tabs: TrafficOverviewTab[] = [
-		{ id: 'traffic-overview', label: 'Traffic Overview' },
+		{ id: 'traffic-overview', label: 'Traffic overview' },
 		{ id: 'typical-traffic', label: 'Typical traffic' },
 	];
 
 	/**
 	 * Renders the tab bar with a mock `onTabChange`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} [activeTabID] Optional. The `id` of the tab to start on.
 	 * @return {Object} The render result, plus the mock `onTabChange`.
@@ -60,7 +60,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		expect(
 			renderedTabs.map( ( tab ) => [ tab.id, tab.textContent ] )
 		).toEqual( [
-			[ 'traffic-overview', 'Traffic Overview' ],
+			[ 'traffic-overview', 'Traffic overview' ],
 			[ 'typical-traffic', 'Typical traffic' ],
 		] );
 	} );
@@ -78,7 +78,7 @@ describe( 'TrafficOverviewTabBar', () => {
 
 		expect(
 			screen.getByRole( 'tab', { selected: true } )
-		).toHaveTextContent( 'Traffic Overview' );
+		).toHaveTextContent( 'Traffic overview' );
 	} );
 
 	it( 'calls onTabChange with the id of the tab the user clicks', () => {
@@ -125,7 +125,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		expect( onTabChange ).not.toHaveBeenCalled();
 		expect(
 			screen.getByRole( 'tab', { selected: true } )
-		).toHaveTextContent( 'Traffic Overview' );
+		).toHaveTextContent( 'Traffic overview' );
 	} );
 
 	it( 'renders the tab bar inside the scrollable tabs wrapper', () => {

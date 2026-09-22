@@ -37,7 +37,10 @@ test.describe(
 	{
 		annotation: [
 			asUser( 'editor', {
-				dismissedItems: [ 'shared_dashboard_splash' ],
+				dismissedItems: [
+					'shared_dashboard_splash',
+					'pdf_introduction_overlay_notification',
+				],
 			} ),
 			withPlugins( 'proxy-credentials.php' ),
 			withConnectedModules(
@@ -71,9 +74,16 @@ test.describe(
 				wp.page.getByRole( 'button', { name: 'View only' } )
 			).toBeVisible();
 			await expect( pageObject.manageEmailReportsButton ).toBeHidden();
-			// Without sharing, PDF download, or email reports access there is
-			// nothing for the features menu to offer, so it is hidden too.
-			await expect( pageObject.featuresMenuButton ).toBeHidden();
+			// The `Download PDF report` item renders for every user, so the
+			// features menu is always on screen. The PDF item also proves the
+			// menu opened.
+			await pageObject.featuresMenuButton.click();
+			await expect(
+				wp.page.getByRole( 'menuitem', {
+					name: 'Download PDF report',
+				} )
+			).toBeVisible();
+			await expect( pageObject.manageEmailReportsMenuItem ).toBeHidden();
 		} );
 	}
 );

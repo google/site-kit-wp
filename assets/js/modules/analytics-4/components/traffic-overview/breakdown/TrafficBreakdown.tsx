@@ -40,9 +40,17 @@ import TrafficBreakdownColumn from './TrafficBreakdownColumn';
 export interface TrafficBreakdownProps {
 	/** One report per breakdown column, keyed by the column's `id`. */
 	reports: Record< string, Report | undefined >;
+	/** Whether the three breakdown reports have arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-const TrafficBreakdown: FC< TrafficBreakdownProps > = ( { reports } ) => {
+const TrafficBreakdown: FC< TrafficBreakdownProps > = ( {
+	reports,
+	loaded = true,
+	gatheringData = false,
+} ) => {
 	// `useInstanceId` is typed as `string | number`, so it is read as a string
 	// the way `TextField` does.
 	const instanceID = useInstanceId(
@@ -69,8 +77,16 @@ const TrafficBreakdown: FC< TrafficBreakdownProps > = ( { reports } ) => {
 				{ TRAFFIC_BREAKDOWN_COLUMNS.map( ( { id, heading } ) => (
 					<TrafficBreakdownColumn
 						key={ id }
+						id={ id }
 						heading={ heading }
-						rows={ getBreakdownRows( reports[ id ] ) }
+						loaded={ loaded }
+						// A property still gathering data has no figures to
+						// show, so every column renders its empty state.
+						rows={
+							gatheringData
+								? []
+								: getBreakdownRows( reports[ id ] )
+						}
 					/>
 				) ) }
 			</div>

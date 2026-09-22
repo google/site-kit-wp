@@ -59,7 +59,7 @@ import WPDashboardReportError from '@/js/googlesitekit/widgets/components/WPDash
  * use it instead, so TS widget components (e.g. `WidgetNull`) don't fail to
  * type-check.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} widgetSlug The widget's slug.
  * @return {WidgetComponentProps} The widget-scoped component props.

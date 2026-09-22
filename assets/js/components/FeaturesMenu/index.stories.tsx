@@ -83,17 +83,12 @@ function Template( {
 	);
 }
 
-export const Default = Template.bind( {} ) as Story & {
-	parameters?: Record< string, unknown >;
-};
+export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
 Default.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		provideUserAuthentication( registry );
 	},
-};
-Default.parameters = {
-	features: [ 'pdfGeneration' ],
 };
 Default.scenario = {
 	delay: 3000,
@@ -119,23 +114,7 @@ WithAddFeaturesButton.scenario = {
 	onReadyScript: 'mouse.js',
 };
 
-export const WithoutPDFGeneration = Template.bind( {} ) as Story;
-WithoutPDFGeneration.storyName = 'Without PDF Generation';
-WithoutPDFGeneration.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		provideUserAuthentication( registry );
-	},
-};
-WithoutPDFGeneration.scenario = {
-	delay: 3000,
-	clickSelector: '.googlesitekit-features-menu__button',
-	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
-};
-
-export const ViewOnly = Template.bind( {} ) as Story & {
-	parameters?: Record< string, unknown >;
-};
+export const ViewOnly = Template.bind( {} ) as Story;
 ViewOnly.storyName = 'View Only';
 ViewOnly.args = {
 	viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -171,9 +150,6 @@ ViewOnly.args = {
 			}
 		);
 	},
-};
-ViewOnly.parameters = {
-	features: [ 'pdfGeneration' ],
 };
 ViewOnly.scenario = {
 	delay: 3000,

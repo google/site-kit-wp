@@ -412,6 +412,40 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_online_store_discovery_options__counts_the_store_events_across_the_whole_site_when_given_no_dimension() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+		$options = $builder->get_online_store_discovery_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventName' ) ),
+			$options['dimensions'],
+			'get_online_store_discovery_options() should group the count by event name alone when given no dimension.'
+		);
+		$this->assertSame(
+			array( 'purchase', 'add_to_cart' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_online_store_discovery_options() should still count both store events when given no dimension.'
+		);
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_online_store_discovery_options()' );
+	}
+
+	public function test_get_lead_discovery_options__counts_every_lead_event_across_the_whole_site_when_given_no_dimension() {
+		$builder = $this->create_builder_with_events( array( 'submit_lead_form', 'purchase', 'contact' ) );
+		$options = $builder->get_lead_discovery_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventName' ) ),
+			$options['dimensions'],
+			'get_lead_discovery_options() should group the count by event name alone when given no dimension.'
+		);
+		$this->assertSame(
+			array( 'contact', 'submit_lead_form' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_discovery_options() should still list every detected lead event when given no dimension.'
+		);
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_lead_discovery_options()' );
+	}
+
 	public function test_get_online_store_discovery_options__names_the_groups_from_the_ninety_days_before_the_report_period_ends() {
 		$builder = $this->create_builder_with_events( array( 'purchase' ) );
 		$options = $builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );
@@ -587,6 +621,20 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		$this->assertFalse(
 			$builder->has_lead_events(),
 			'has_lead_events() should be false when the detected events hold store events alone.'
+		);
+	}
+
+	public function test_is_site_goals_widget_active__is_true_only_for_a_widget_type_in_the_active_widgets_setting() {
+		$builder = $this->create_builder();
+		$builder->set_active_site_goals_widgets( array( 'lead' ) );
+
+		$this->assertTrue(
+			$builder->is_site_goals_widget_active( 'lead' ),
+			'`is_site_goals_widget_active()` should be true for `lead` when `activeWidgets` has `lead`.'
+		);
+		$this->assertFalse(
+			$builder->is_site_goals_widget_active( 'ecommerce' ),
+			'`is_site_goals_widget_active()` should be false for `ecommerce` when `activeWidgets` has `lead` alone.'
 		);
 	}
 

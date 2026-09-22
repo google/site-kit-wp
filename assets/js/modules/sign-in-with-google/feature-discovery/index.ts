@@ -36,7 +36,7 @@ import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.s
 /**
  * Registers Sign in with Google module features in the Feature Discovery catalog.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}
@@ -45,6 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'sign-in-with-google', {
+		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 		title: __(
 			'Boost onboarding, security, and trust on your site using Sign in with Google',
 			'google-site-kit'
