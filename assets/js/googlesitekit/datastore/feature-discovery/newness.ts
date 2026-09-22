@@ -114,13 +114,7 @@ export const selectors = {
 			const initialVersion =
 				select( CORE_USER ).getInitialSiteKitVersion();
 
-			// An unreleased feature carries the `n.e.x.t` placeholder as its
-			// version, which `compare()` throws on.
-			if (
-				! feature ||
-				! initialVersion ||
-				! compareVersions.validate( feature.addedInVersion )
-			) {
+			if ( ! feature || ! initialVersion ) {
 				return false;
 			}
 
