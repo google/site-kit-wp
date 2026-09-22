@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
+import {
+	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
+} from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { WELCOME_MODAL_NOTIFICATION } from '@/js/components/WelcomeModal';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import {
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
@@ -31,6 +36,9 @@ import {
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { createNotifications } from '@/js/googlesitekit/notifications';
+import { NOTIFICATION_GROUPS } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -113,6 +121,8 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 		global.location.href = 'http://example.com/wp-admin/admin.php';
 
 		provideSiteInfo( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'auth-error', () => {
@@ -459,6 +469,59 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';
 
 			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'feature-discovery-auto-update-cta', () => {
+		it( 'should be queued in feature discovery context and not in dashboard context', async () => {
+			const { registerNotification } = createNotifications( registry );
+
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+			provideUserCapabilities( registry, {
+				googlesitekit_update_plugins: true,
+			} );
+
+			registerNotification(
+				ENABLE_AUTO_UPDATES_BANNER_SLUG,
+				DEFAULT_NOTIFICATIONS[ ENABLE_AUTO_UPDATES_BANNER_SLUG ]
+			);
+			registerNotification(
+				FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+				]
+			);
+
+			const featureDiscoveryNotifications = await registry
+				.resolveSelect( CORE_NOTIFICATIONS )
+				.getQueuedNotifications(
+					VIEW_CONTEXT_FEATURE_DISCOVERY,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+
+			expect(
+				featureDiscoveryNotifications.map( ( { id } ) => id )
+			).toContain( FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG );
+			expect(
+				featureDiscoveryNotifications.map( ( { id } ) => id )
+			).not.toContain( ENABLE_AUTO_UPDATES_BANNER_SLUG );
+
+			const dashboardNotifications = await registry
+				.resolveSelect( CORE_NOTIFICATIONS )
+				.getQueuedNotifications(
+					VIEW_CONTEXT_MAIN_DASHBOARD,
+					NOTIFICATION_GROUPS.SETUP_CTAS
+				);
+
+			expect( dashboardNotifications.map( ( { id } ) => id ) ).toContain(
+				ENABLE_AUTO_UPDATES_BANNER_SLUG
+			);
+			expect(
+				dashboardNotifications.map( ( { id } ) => id )
+			).not.toContain( FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG );
 		} );
 	} );
 

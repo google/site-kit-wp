@@ -21,6 +21,19 @@
 
 	.googlesitekit-whats-new {
 		display: block;
-		padding-block: 10px;
+		padding-block: 30px;
+	}
+
+	.googlesitekit-whats-new__notifications {
+
+		.mdc-layout-grid,
+		.mdc-layout-grid__inner,
+		.mdc-layout-grid__cell {
+			padding: 0;
+		}
+
+		.mdc-layout-grid {
+			margin: 0;
+		}
 	}
 }

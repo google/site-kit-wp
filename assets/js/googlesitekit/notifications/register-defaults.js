@@ -35,6 +35,7 @@ import AuthError from '@/js/components/notifications/AuthError';
 import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
 import EnableAutoUpdateBannerNotification, {
 	ENABLE_AUTO_UPDATES_BANNER_SLUG,
+	FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG,
 } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import createFeatureTourNotification from '@/js/components/notifications/FeatureTourNotification';
 import GA4AdSenseLinkedNotification from '@/js/components/notifications/GA4AdSenseLinkedNotification';
@@ -58,6 +59,7 @@ import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_SETTINGS,
@@ -458,6 +460,19 @@ export const DEFAULT_NOTIFICATIONS = {
 			// Don't render anything if the user has no permission to update plugin,
 			// auto-updates can not be enabled for Site Kit, or auto updates are already
 			// enabled for Site Kit.
+			requireCapability( PERMISSION_UPDATE_PLUGINS ),
+			requireCanChangePluginAutoUpdates(),
+			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
+		),
+		isDismissible: true,
+	},
+	[ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG ]: {
+		Component: EnableAutoUpdateBannerNotification,
+		priority: PRIORITY.SETUP_CTA_LOW,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: asyncRequireAll(
 			requireCapability( PERMISSION_UPDATE_PLUGINS ),
 			requireCanChangePluginAutoUpdates(),
 			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
