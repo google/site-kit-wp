@@ -99,6 +99,7 @@ import {
 import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getLeadGenerationPerformancePDFData';
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
 import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
@@ -158,6 +159,16 @@ const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
 );
 
 /**
+ * Lazy-loaded PDF component for the Traffic Overview widget.
+ */
+const TrafficOverviewPDF = lazyWithPreload( () =>
+	import(
+		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
+		'@/js/modules/analytics-4/components/traffic-overview/pdf/indexPDF'
+	)
+);
+
+/**
  * Lazy-loaded PDF component for the Top content over time widget.
  */
 const ModulePopularPagesWidgetGA4PDF = lazyWithPreload( () =>
@@ -200,7 +211,7 @@ const LeadGenerationPerformanceWidgetPDF = lazyWithPreload( () =>
  * returns `undefined` until the Site Goals settings and the detected events
  * have loaded.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string} goalType The widget's goal type, one of `GOAL_TYPES`.
  * @return {Function} Condition that takes the registry `select` and returns whether the widget renders.
@@ -248,6 +259,11 @@ export function registerWidgets( widgets ) {
 				priority: 1,
 				wrapWidget: false,
 				modules: [ MODULE_SLUG_ANALYTICS_4 ],
+				pdf: {
+					Component: TrafficOverviewPDF,
+					getData: getTrafficOverviewPDFData,
+					label: __( 'Site traffic over time', 'google-site-kit' ),
+				},
 			},
 			[
 				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,

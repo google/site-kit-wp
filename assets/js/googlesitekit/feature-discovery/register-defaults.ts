@@ -39,7 +39,7 @@ import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.s
  *
  * Individual modules contribute their own features from their index.ts entrypoint.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}

@@ -21,7 +21,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
  * Class for registering Reader Revenue Manager synchronization.
  *
  * @since 1.146.0
- * @since n.e.x.t Renamed from Synchronize_Publication.
+ * @since 1.188.0 Renamed from Synchronize_Publication.
  * @access private
  * @ignore
  */
@@ -43,7 +43,7 @@ class Synchronization {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Reader_Revenue_Manager $reader_revenue_manager Reader Revenue Manager instance.
 	 * @param User_Options           $user_options           User Options instance.
@@ -116,7 +116,7 @@ class Synchronization {
 	/**
 	 * Gets request data for datapoints that identify a publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return array Datapoint request data.
 	 */

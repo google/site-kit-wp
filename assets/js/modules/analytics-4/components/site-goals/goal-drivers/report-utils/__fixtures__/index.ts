@@ -20,7 +20,7 @@
  * A fixed date range shared by the `report-utils` builder/mapper tests, so
  * every test file requests the same period rather than each picking its own.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const REPORT_UTILS_TEST_DATES = {
 	startDate: '2025-08-01',
@@ -30,7 +30,7 @@ export const REPORT_UTILS_TEST_DATES = {
 /**
  * Builds a minimal Analytics 4 report row for `report-utils` row-mapper tests.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string}    dimensionValue The row's first (and only) dimension value.
  * @param {...string} metricValues   The row's metric values, in order.
