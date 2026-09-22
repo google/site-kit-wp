@@ -20,6 +20,11 @@
  * Internal dependencies
  */
 import {
+	INITIAL_VERSION,
+	sampleFeatures,
+	sampleModules,
+} from '@/js/components/feature-discovery/__fixtures__/all-services';
+import {
 	PARTIALLY_SEEN_TIMERS,
 	SEEN_TIMERS,
 	WHATS_NEW_FEATURES,
@@ -29,6 +34,7 @@ import {
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -64,6 +70,20 @@ function Template( { setupRegistry = () => {} }: StoryArgs ) {
 export const AllServices = Template.bind( {} ) as Story< StoryArgs >;
 AllServices.storyName = 'All services and features';
 AllServices.parameters = { route: '/all-services' };
+AllServices.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideModules( registry, sampleModules );
+
+		// Seeded so the cards resolve their newness state without a request.
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		provideFeatures( registry, sampleFeatures );
+	},
+};
 AllServices.scenario = {};
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
