@@ -88,7 +88,7 @@ export default function EnableAutoUpdateBannerNotification( {
 	if ( enabledViaCTA ) {
 		// Use separate GA tracking event category for success banner variation.
 		const gaTrackingEventArgs = {
-			category: `${ viewContext }_${ ENABLE_AUTO_UPDATES_BANNER_SLUG }-success`,
+			category: `${ viewContext }_${ id }-success`,
 		};
 
 		return (
