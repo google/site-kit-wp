@@ -326,7 +326,10 @@ describe( 'SettingsEdit', () => {
 			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should not render the CTAs section when the feature flag is disabled', async () => {
+		it( 'should not render the CTAs section when the `rrmExpressSetup` feature flag is disabled', async () => {
+			registry = createTestRegistry();
+			setupRegistry();
+
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( {
