@@ -1043,6 +1043,127 @@ describe( 'BreakdownNoticeArea', () => {
 	} );
 
 	describe( 'against the conversion tracking setting', () => {
+		it.each( [
+			[ 'the dimensions are missing and it is on', [], true, true ],
+			[ 'the dimensions are missing and it is off', [], false, true ],
+			[
+				'the dimensions exist but it is off',
+				ALL_CUSTOM_DIMENSIONS,
+				false,
+				true,
+			],
+			[
+				'the dimensions exist and it is on',
+				ALL_CUSTOM_DIMENSIONS,
+				true,
+				false,
+			],
+		] )(
+			'shows the "New" notice only while the breakdown is not enabled, when %s',
+			async (
+				_,
+				availableCustomDimensions,
+				conversionTracking,
+				showsNotice
+			) => {
+				await setUpRegistry( { conversionTracking } );
+				seedAvailableCustomDimensions( availableCustomDimensions );
+
+				const { queryByText } = render(
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_WIDGET }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
+					/>,
+					{ registry }
+				);
+
+				expect( !! queryByText( 'Get breakdown' ) ).toBe( showsNotice );
+			}
+		);
+
+		it( 'tells a site that already has the dimensions that conversion tracking will be enabled', async () => {
+			// The dimensions came from another custom dimensions CTA, which
+			// leaves conversion tracking alone.
+			await setUpRegistry( { conversionTracking: false } );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+
+			const { getByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect(
+				getByText(
+					/Enabling this breakdown will also enable conversion tracking for your forms\./
+				)
+			).toBeInTheDocument();
+		} );
+
+		it( 'enables the breakdown once "Get breakdown" switches conversion tracking on for a site that already has the dimensions', async () => {
+			await setUpRegistry( { conversionTracking: false } );
+			provideUserAuthentication( registry, {
+				grantedScopes: [ EDIT_SCOPE ],
+			} );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
+					propertyID: '12345',
+				} );
+
+			fetchMock.postOnce( conversionTrackingEndpoint, {
+				body: { enabled: true },
+				status: 200,
+			} );
+			// Nothing is left to create, so the action only syncs.
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				),
+				{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+			);
+
+			const { getByRole, findByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Get breakdown' } ) );
+
+			expect(
+				await findByText( /Individual form tracking is now active/ )
+			).toBeInTheDocument();
+			expect(
+				registry.select( CORE_SITE ).isConversionTrackingEnabled()
+			).toBe( true );
+			expect( fetchMock ).not.toHaveFetched(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				)
+			);
+		} );
+
+		it( 'shows no notice while the setting is still loading, even when the dimensions exist', async () => {
+			await setUpRegistry( { conversionTracking: 'loading' } );
+			seedAvailableCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+
+			const { queryByText } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ GOAL_TYPES.LEAD ] }
+				/>,
+				{ registry }
+			);
+
+			expect( queryByText( 'Get breakdown' ) ).not.toBeInTheDocument();
+		} );
+
 		it( 'leaves conversion tracking off when the notice is dismissed', async () => {
 			await setUpRegistry( { conversionTracking: false } );
 			seedAvailableCustomDimensions( [] );

@@ -60,13 +60,17 @@ import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/componen
 import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
 import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import { useSiteGoalsBreakdownResultCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownResultCopy';
+import { isSiteGoalsBreakdownEnabled } from '@/js/modules/analytics-4/components/site-goals/utils/breakdownEnabled';
 import {
 	ALL_CUSTOM_DIMENSIONS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import { useBreakdownEnableHandler } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
-import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
+import {
+	ConversionTrackingSetting,
+	useConversionTrackingSetting,
+} from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
@@ -105,9 +109,15 @@ function deriveBreakdownScope( goalTypes: GoalType[] ): BreakdownScope {
 interface BreakdownDimensionStateArgs {
 	goalTypes: GoalType[];
 	presenceByGoalType: Record< GoalType, boolean | undefined >;
+	conversionTracking: ConversionTrackingSetting;
 }
 
 interface BreakdownDimensionState {
+	/**
+	 * Whether the breakdown is enabled: its dimensions exist and plugin
+	 * conversion tracking is on, the same condition the widgets use to show
+	 * the breakdown.
+	 */
 	hasBreakdownDimensions: boolean | undefined;
 	/**
 	 * Scope derived from the goal types whose dimension is still missing.
@@ -120,7 +130,7 @@ interface BreakdownDimensionState {
 function getBreakdownDimensionState(
 	args: BreakdownDimensionStateArgs
 ): BreakdownDimensionState {
-	const { goalTypes, presenceByGoalType } = args;
+	const { goalTypes, presenceByGoalType, conversionTracking } = args;
 
 	const dimensionsResolving = goalTypes.some(
 		( goalType ) => presenceByGoalType[ goalType ] === undefined
@@ -130,9 +140,10 @@ function getBreakdownDimensionState(
 	);
 
 	return {
-		hasBreakdownDimensions: dimensionsResolving
-			? undefined
-			: missingGoalTypes.length === 0,
+		hasBreakdownDimensions: isSiteGoalsBreakdownEnabled(
+			dimensionsResolving ? undefined : missingGoalTypes.length === 0,
+			conversionTracking
+		),
 		// Derived from what is still missing; once nothing is missing it falls
 		// back to the full set (then only used for the handler, never rendered).
 		missingScope: deriveBreakdownScope(
@@ -452,6 +463,10 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		[]
 	);
 
+	const conversionTracking = useConversionTrackingSetting();
+	const { canManageOptions, isConversionTrackingEnabled } =
+		conversionTracking;
+
 	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
 		{
 			goalTypes,
@@ -459,6 +474,7 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 				[ GOAL_TYPES.ECOMMERCE ]: hasEcommerceDimension,
 				[ GOAL_TYPES.LEAD ]: hasLeadDimension,
 			},
+			conversionTracking,
 		}
 	);
 
@@ -558,8 +574,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	}, [ origin, showBreakdownTooltip, setSiteGoalsBreakdownTooltipPending ] );
 
 	const isViewOnly = useViewOnly();
-	const { canManageOptions, isConversionTrackingEnabled } =
-		useConversionTrackingSetting();
 
 	const creationError = useSelect( ( select: Select ) => {
 		for ( const customDimension of ALL_CUSTOM_DIMENSIONS ) {
