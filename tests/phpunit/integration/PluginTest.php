@@ -116,8 +116,8 @@ class PluginTest extends TestCase {
 		$this->register_rest_routes();
 
 		$routes = rest_get_server()->get_routes();
-		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/intents/data/intent', $routes, 'The plugin should register the route that gets an intent.' );
-		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/intents/data/complete-intent', $routes, 'The plugin should register the route that completes an intent.' );
+		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/intent', $routes, 'The plugin should register the route that gets an intent.' );
+		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/complete-intent', $routes, 'The plugin should register the route that completes an intent.' );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {

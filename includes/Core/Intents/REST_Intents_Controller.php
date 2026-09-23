@@ -62,7 +62,7 @@ class REST_Intents_Controller {
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// Neither route is added to `googlesitekit_apifetch_preload_paths`, because an intent is rare and each route sends a request to the Service.
+		// Neither intent route is preloaded, because each one calls the Site Kit Service and most dashboard loads have no intent.
 		add_filter(
 			'googlesitekit_rest_routes',
 			fn ( $routes ) => array_merge( $routes, $this->get_rest_routes() )

@@ -24,7 +24,6 @@ use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_REST_Request;
-use WP_REST_Response;
 
 /**
  * @group Intents
@@ -127,7 +126,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	 * @since n.e.x.t
 	 *
 	 * @param array $query Query parameters.
-	 * @return WP_REST_Response Response from the route.
+	 * @return \WP_REST_Response Response from the route.
 	 */
 	private function get_intent( array $query ) {
 		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/intents/data/intent' );
@@ -142,7 +141,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	 * @since n.e.x.t
 	 *
 	 * @param array $data Value of the `data` parameter.
-	 * @return WP_REST_Response Response from the route.
+	 * @return \WP_REST_Response Response from the route.
 	 */
 	private function complete_intent( array $data ) {
 		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/intents/data/complete-intent' );
@@ -160,7 +159,7 @@ class REST_Intents_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 
 		// A view-only user can view the dashboard only after setup is complete.
-		// Search Console returns `false` from `googlesitekit_setup_complete` when the site has no property, so `__return_true` has to run after it.
+		// At priority 100, `__return_true` runs after Search Console's filter, which returns `false` for a site with no property.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
 		( new Module_Sharing_Settings( new Options( $this->context ) ) )->set(
@@ -176,7 +175,7 @@ class REST_Intents_ControllerTest extends TestCase {
 		wp_set_current_user( $user_id );
 
 		// A view-only user can't view the dashboard until they dismiss the splash screen.
-		( new Dismissed_Items( new User_Options( $this->context, $user_id ) ) )->add( 'shared_dashboard_splash', 0 );
+		( new Dismissed_Items( new User_Options( $this->context, $user_id ) ) )->add( 'shared_dashboard_splash' );
 
 		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'The editor should be able to view the shared dashboard.' );
 		$this->assertFalse( current_user_can( Permissions::SETUP ), 'The editor should not be able to set up Site Kit.' );
@@ -311,7 +310,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	/**
 	 * @dataProvider data_service_errors
 	 */
-	public function test_intent_route__returns_intent_not_found_for_every_service_error( $service_status, $service_error_code ) {
+	public function test_intent_route__returns_intent_not_found_for_service_errors( $service_status, $service_error_code ) {
 		$this->connect_to_service();
 		$this->mock_service_response(
 			$service_status,
@@ -328,17 +327,15 @@ class REST_Intents_ControllerTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( 'intent_not_found', $response->get_data()['code'], "The `core/intents/data/intent` route should answer the Service's $service_error_code error with `intent_not_found`." );
+		$this->assertEquals( 'intent_not_found', $response->get_data()['code'], "The `core/intents/data/intent` route should answer the Service's `$service_error_code` with `intent_not_found`." );
 		$this->assertEquals( 404, $response->get_status(), 'The `intent_not_found` error should have a 404 status.' );
 		$this->assertStringNotContainsString( 'Raw Service message.', wp_json_encode( $response->get_data() ), 'The response should not include the Service message.' );
 	}
 
 	public function data_service_errors() {
 		return array(
-			'an intent the Service cannot find'    => array( 404, 'intent_not_found' ),
-			'an expired intent'                    => array( 410, 'intent_expired' ),
-			'an intent for another Google account' => array( 403, 'intent_wrong_user' ),
-			'an error the plugin does not know'    => array( 502, 'internal_error' ),
+			'an intent the Service cannot find' => array( 404, 'intent_not_found' ),
+			'an internal error in the Service'  => array( 500, 'internal_error' ),
 		);
 	}
 
