@@ -21,14 +21,13 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import {
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
 	render,
@@ -38,14 +37,40 @@ import ExpressSetupDefault from './ExpressSetupDefault';
 
 jest.mock( './PoweredBy', () => () => null );
 
+// Renders the real publication setup step alongside a button that completes
+// it, so that navigation can be tested without submitting the step's form.
+jest.mock( './common-steps/StepPublicationSetup', () => {
+	const { createElement, Fragment } =
+		jest.requireActual( '@wordpress/element' );
+	const actual = jest.requireActual( './common-steps/StepPublicationSetup' );
+
+	return {
+		...actual,
+		publicationSetupStep: {
+			...actual.publicationSetupStep,
+			Component: ( props: { onComplete: () => void } ) =>
+				createElement(
+					Fragment,
+					null,
+					createElement( actual.default, props ),
+					createElement(
+						'button',
+						{ onClick: props.onComplete, type: 'button' },
+						'Test: complete step'
+					)
+				),
+		},
+	};
+} );
+
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
+	'connect-publication':
 		'To use Reader Revenue Manager, you will need to create a publication.',
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
+	'terms-of-service':
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
+	'publication-policies':
 		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
-	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: 'Reader Revenue Manager is set up',
+	'setup-complete': 'Reader Revenue Manager is set up',
 };
 
 describe( 'ExpressSetupDefault', () => {
@@ -78,23 +103,20 @@ describe( 'ExpressSetupDefault', () => {
 		providePublications( registry, [] );
 	} );
 
-	it( 'renders the default steps without a setup CTA step', () => {
+	it( 'renders the default steps in order, without a CTA step', () => {
 		global.location.href = 'http://example.com/';
 
-		const { getByText, queryByText, container } = render(
-			<ExpressSetupDefault />,
-			{ registry }
+		const { container } = render( <ExpressSetupDefault />, { registry } );
+
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
 		);
 
-		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
-		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Set up a sign-up form' )
-		).not.toBeInTheDocument();
-		expect(
-			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 3 );
+		expect( steps ).toHaveLength( 4 );
+		expect( steps[ 0 ] ).toHaveTextContent( 'Connect publication' );
+		expect( steps[ 1 ] ).toHaveTextContent( 'Accept terms of service' );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Add publication policies' );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Setup complete' );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
@@ -132,6 +154,50 @@ describe( 'ExpressSetupDefault', () => {
 
 		Object.values( STEP_CONTENT ).forEach( ( content ) => {
 			expect( queryByText( content ) ).not.toBeInTheDocument();
+		} );
+	} );
+
+	describe( 'completing a step', () => {
+		// `publications[ 2 ]` has not accepted the terms of service;
+		// `publications[ 0 ]` has.
+		it.each( [
+			[
+				'passes over the terms of service step when the terms are already accepted',
+				publications[ 0 ],
+				STEP_CONTENT[ 'publication-policies' ],
+			],
+			[
+				'advances to the terms of service step when the terms are not accepted',
+				publications[ 2 ],
+				STEP_CONTENT[ 'terms-of-service' ],
+			],
+		] )( '%s', async ( _, publication, expectedContent ) => {
+			global.location.href =
+				'http://example.com/?step=connect-publication';
+
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			const publicationID = publication.publicationId;
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID } );
+
+			providePublications( registry, [ publication ] );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<ExpressSetupDefault />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Test: complete step' } )
+			);
+
+			await waitFor( () => {
+				expect( getByText( expectedContent ) ).toBeInTheDocument();
+			} );
 		} );
 	} );
 } );

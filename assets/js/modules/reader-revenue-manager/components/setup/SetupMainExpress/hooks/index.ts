@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager express setup common steps.
+ * Reader Revenue Manager express setup hooks.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,19 +16,11 @@
  * limitations under the License.
  */
 
+export { default as useExpressSetupSurveyTriggers } from './useExpressSetupSurveyTriggers';
+export { default as useHasPreExistingCTAs } from './useHasPreExistingCTAs';
 export {
-	default as StepPublicationSetup,
-	publicationSetupStep,
-} from './StepPublicationSetup';
-export {
-	default as StepTermsOfService,
-	termsOfServiceStep,
-} from './StepTermsOfService';
-export {
-	default as StepPublicationPolicies,
-	publicationPoliciesStep,
-} from './StepPublicationPolicies';
-export {
-	default as StepSetupComplete,
-	setupCompleteStep,
-} from './StepSetupComplete';
+	default as useSetupFlow,
+	findBlockingStep,
+	resolveStep,
+} from './useSetupFlow';
+export { default as useStep } from './useStep';

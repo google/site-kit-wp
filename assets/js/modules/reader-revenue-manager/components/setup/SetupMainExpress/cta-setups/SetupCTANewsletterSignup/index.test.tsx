@@ -22,10 +22,7 @@
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import {
 	providePublication,
@@ -50,16 +47,46 @@ jest.mock(
 	() => () => null
 );
 
+// Renders the real publication setup step alongside a button that completes
+// it, so that navigation can be tested without submitting the step's form.
+jest.mock(
+	'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup',
+	() => {
+		const { createElement, Fragment } =
+			jest.requireActual( '@wordpress/element' );
+		const actual = jest.requireActual(
+			'@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationSetup'
+		);
+
+		return {
+			...actual,
+			publicationSetupStep: {
+				...actual.publicationSetupStep,
+				Component: ( props: { onComplete: () => void } ) =>
+					createElement(
+						Fragment,
+						null,
+						createElement( actual.default, props ),
+						createElement(
+							'button',
+							{ onClick: props.onComplete, type: 'button' },
+							'Test: complete step'
+						)
+					),
+			},
+		};
+	}
+);
+
 const STEP_CONTENT = {
-	[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]:
+	'connect-publication':
 		'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
-	[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]:
+	'terms-of-service':
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
-	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
+	'publication-policies':
 		'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
-	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up your sign-up form',
-	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
-		'Your newsletter signup form is ready!',
+	'newsletter-signup-form': 'Set up your sign-up form',
+	'setup-complete': 'Your newsletter signup form is ready!',
 };
 
 describe( 'SetupCTANewsletterSignup', () => {
@@ -92,18 +119,65 @@ describe( 'SetupCTANewsletterSignup', () => {
 		providePublications( registry, [] );
 	} );
 
-	it( 'renders the newsletter CTA step title in the sidebar', () => {
-		const { getByText, container } = render( <SetupCTANewsletterSignup />, {
+	it( 'renders its steps in order, with the newsletter CTA step before setup complete', () => {
+		const { container } = render( <SetupCTANewsletterSignup />, {
 			registry,
 		} );
 
-		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
-		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
-		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
-		expect(
-			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 4 );
+		const steps = container.querySelectorAll(
+			'.googlesitekit-stepper__step'
+		);
+
+		expect( steps ).toHaveLength( 5 );
+		expect( steps[ 0 ] ).toHaveTextContent( 'Connect publication' );
+		expect( steps[ 1 ] ).toHaveTextContent( 'Accept terms of service' );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Add publication policies' );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		expect( steps[ 4 ] ).toHaveTextContent( 'Setup complete' );
+	} );
+
+	describe( 'completing a step', () => {
+		// `publications[ 2 ]` has not accepted the terms of service;
+		// `publications[ 0 ]` has.
+		it.each( [
+			[
+				'passes over the terms of service step when the terms are already accepted',
+				publications[ 0 ],
+				STEP_CONTENT[ 'publication-policies' ],
+			],
+			[
+				'advances to the terms of service step when the terms are not accepted',
+				publications[ 2 ],
+				STEP_CONTENT[ 'terms-of-service' ],
+			],
+		] )( '%s', async ( _, publication, expectedContent ) => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			const publicationID = publication.publicationId;
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID } );
+
+			providePublications( registry, [ publication ] );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Test: complete step' } )
+			);
+
+			await waitFor( () => {
+				expect( getByText( expectedContent ) ).toBeInTheDocument();
+			} );
+		} );
 	} );
 
 	it.each( Object.entries( STEP_CONTENT ) )(
@@ -164,7 +238,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 			type: CTA_TYPES.NEWSLETTER_SIGNUP,
 		};
 
-		const setupCompleteURL = `http://example.com/?cta=newsletter-signup&step=${ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }`;
+		const setupCompleteURL =
+			'http://example.com/?cta=newsletter-signup&step=setup-complete';
 
 		const searchEndpoint = new RegExp( '^/wp/v2/search' );
 

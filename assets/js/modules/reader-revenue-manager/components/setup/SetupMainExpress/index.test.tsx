@@ -72,7 +72,7 @@ describe( 'SetupMainExpress', () => {
 
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', async () => {
 		global.location.href =
-			'http://example.com/?cta=newsletter-signup&step=setup-cta';
+			'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,

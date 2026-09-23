@@ -21,14 +21,11 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
-import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
-	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
@@ -80,7 +77,8 @@ const testPublication = {
 
 function renderStepSignupForm(
 	formValues: Record< string, string | boolean > = {},
-	registry: Registry = createTestRegistry() as Registry
+	registry: Registry = createTestRegistry() as Registry,
+	onComplete: () => void = () => {}
 ) {
 	provideSiteInfo( registry );
 
@@ -106,14 +104,12 @@ function renderStepSignupForm(
 	providePublications( registry, [ testPublication ] );
 
 	registry
-		.dispatch( CORE_UI )
-		.setValue( EXPRESS_SETUP_STEP_UI_KEY, EXPRESS_SETUP_STEPS.SETUP_CTA );
-
-	registry
 		.dispatch( CORE_FORMS )
 		.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, formValues );
 
-	return render( <StepSignupForm />, { registry } );
+	return render( <StepSignupForm onComplete={ onComplete } />, {
+		registry,
+	} );
 }
 
 describe( 'StepSignupForm', () => {
@@ -123,7 +119,8 @@ describe( 'StepSignupForm', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
+		global.location.href =
+			'http://example.com/?step=newsletter-signup-form';
 	} );
 
 	it( 'should disable publish when the display name is empty', () => {
@@ -232,11 +229,14 @@ describe( 'StepSignupForm', () => {
 			status: 500,
 		} );
 
+		const onComplete = jest.fn();
+
 		renderStepSignupForm(
 			{
 				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
 			},
-			registry
+			registry,
+			onComplete
 		);
 
 		fireEvent.click(
@@ -249,9 +249,7 @@ describe( 'StepSignupForm', () => {
 			);
 		} );
 
-		expect(
-			registry.select( CORE_UI ).getValue( EXPRESS_SETUP_STEP_UI_KEY )
-		).not.toBe( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
+		expect( onComplete ).not.toHaveBeenCalled();
 
 		expect( console ).toHaveErrored();
 	} );
@@ -327,7 +325,7 @@ describe( 'StepSignupForm', () => {
 		} );
 	} );
 
-	it( 'should navigate to setup complete on successful publish', async () => {
+	it( 'should call onComplete on successful publish', async () => {
 		fetchMock.postOnce( createCTAEndpoint, {
 			body: {
 				name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
@@ -336,11 +334,14 @@ describe( 'StepSignupForm', () => {
 			status: 200,
 		} );
 
+		const onComplete = jest.fn();
+
 		renderStepSignupForm(
 			{
 				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
 			},
-			registry
+			registry,
+			onComplete
 		);
 
 		fireEvent.click(
@@ -348,9 +349,7 @@ describe( 'StepSignupForm', () => {
 		);
 
 		await waitFor( () => {
-			expect(
-				registry.select( CORE_UI ).getValue( EXPRESS_SETUP_STEP_UI_KEY )
-			).toBe( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
+			expect( onComplete ).toHaveBeenCalledTimes( 1 );
 		} );
 	} );
 } );

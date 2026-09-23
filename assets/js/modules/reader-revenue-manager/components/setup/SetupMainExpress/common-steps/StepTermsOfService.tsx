@@ -52,31 +52,28 @@ import {
 	ExpressSetupStepHeadline,
 	ExpressSetupStepPublicationTypeRadio,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_TYPES,
 	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_TERMS_OF_SERVICE,
 	TERMS_OF_SERVICE_FORM,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { sanitizeHTML } from '@/js/util';
 
-interface StepTermsOfServiceProps {
+interface StepTermsOfServiceProps extends SetupStepProps {
 	description?: string;
-	onComplete: () => void;
 }
 
 const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	description,
 	onComplete,
 } ) => {
-	const [ , setShowTermsOfService ] = useFormValue< boolean >(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		SHOW_TERMS_OF_SERVICE
-	);
-
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ isSaving, setIsSaving ] = useState( false );
 
@@ -194,10 +191,6 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 		}
 	}, [ hasResolvedPublication, hasResolvedTermsOfService ] );
 
-	useEffect( () => {
-		setShowTermsOfService( true );
-	}, [ setShowTermsOfService ] );
-
 	if ( isLoading ) {
 		return <ProgressBar />;
 	}
@@ -282,6 +275,15 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 			</form>
 		</div>
 	);
+};
+
+export const termsOfServiceStep: SetupStep = {
+	slug: 'terms-of-service',
+	label: __( 'Accept terms of service', 'google-site-kit' ),
+	Component: StepTermsOfService,
+	isComplete: ( select: Select ) =>
+		!! select( MODULES_READER_REVENUE_MANAGER ).getPublication()?.rrmProduct
+			?.tosAcceptance?.userAccepted,
 };
 
 export default StepTermsOfService;
