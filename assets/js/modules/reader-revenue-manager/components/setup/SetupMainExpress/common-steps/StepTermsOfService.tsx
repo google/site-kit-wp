@@ -189,6 +189,19 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	);
 
 	useEffect( () => {
+		if ( publication?.publicationType ) {
+			setPublicationType( publication.publicationType );
+		}
+
+		const persistedEmailOptIn =
+			publication?.rrmProduct?.tosAcceptance?.emailOptIn;
+
+		if ( persistedEmailOptIn !== undefined ) {
+			setEmailOptIn( persistedEmailOptIn );
+		}
+	}, [ publication, setEmailOptIn, setPublicationType ] );
+
+	useEffect( () => {
 		if ( hasResolvedPublication && hasResolvedTermsOfService ) {
 			setIsLoading( false );
 		}
