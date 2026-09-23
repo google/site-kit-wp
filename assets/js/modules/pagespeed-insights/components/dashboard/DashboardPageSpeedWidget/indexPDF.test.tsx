@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { omit } from 'lodash';
 import TestRenderer from 'react-test-renderer';
 
 /**
@@ -26,6 +27,7 @@ import TestRenderer from 'react-test-renderer';
  */
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { findTextStrings } from '@/js/components/pdf-export/test-utils';
 import {
 	ScoredMetric,
@@ -35,6 +37,9 @@ import {
 import * as fixtures from '@/js/modules/pagespeed-insights/datastore/__fixtures__';
 import { SpeedPDFData, StrategyData } from './getPDFData';
 import DashboardPageSpeedWidgetPDF from './indexPDF';
+import MetricRow from './MetricRow';
+import MetricSection from './MetricSection';
+import MetricValueCell from './MetricValueCell';
 
 /**
  * Extracts the lab and field metrics from a fixture report, shaped as one
@@ -110,6 +115,73 @@ function renderJSON( data: SpeedPDFData[ 'data' ] | null ): string {
 	);
 }
 
+/**
+ * Removes field metrics from a fixture report, like a report whose CrUX data
+ * lacks them.
+ *
+ * @since n.e.x.t
+ *
+ * @param report  A PageSpeed Insights report fixture.
+ * @param metrics The `loadingExperience.metrics` keys to remove.
+ * @return The report without those metrics.
+ */
+function omitFieldMetrics( report: object, metrics: string[] ): object {
+	return omit(
+		report,
+		metrics.map( ( metric ) => `loadingExperience.metrics.${ metric }` )
+	);
+}
+
+/**
+ * Renders the widget and finds one of its metric sections.
+ *
+ * @since n.e.x.t
+ *
+ * @param data  The widget data to render.
+ * @param title The section's title, like "Real user data".
+ * @return The section, or undefined when the widget leaves it out.
+ */
+function findSection(
+	data: SpeedPDFData[ 'data' ],
+	title: string
+): TestRenderer.ReactTestInstance | undefined {
+	return TestRenderer.create(
+		<DashboardPageSpeedWidgetPDF data={ data } />
+	).root.findAll(
+		( node ) => node.type === MetricSection && node.props.title === title
+	)[ 0 ];
+}
+
+/**
+ * Collects the text a value cell renders.
+ *
+ * @since n.e.x.t
+ *
+ * @param cell A rendered value cell.
+ * @return The cell's text, empty when the cell renders no value.
+ */
+function getCellText( cell: TestRenderer.ReactTestInstance ): unknown[] {
+	return cell
+		.findAllByType( PDFTypography )
+		.map( ( typography ) => typography.props.children );
+}
+
+/**
+ * Flattens the style of a row's outer view into one object.
+ *
+ * @since n.e.x.t
+ *
+ * @param row A rendered metric row.
+ * @return The row's flattened style.
+ */
+function getRowStyle(
+	row: TestRenderer.ReactTestInstance
+): Record< string, unknown > {
+	const [ view ] = row.children as TestRenderer.ReactTestInstance[];
+
+	return Object.assign( {}, ...[ view.props.style ].flat() );
+}
+
 describe( 'DashboardPageSpeedWidgetPDF', () => {
 	it( 'renders Mobile and Desktop as column headers in each section card', () => {
 		const text = renderText( buildData() );
@@ -151,6 +223,159 @@ describe( 'DashboardPageSpeedWidgetPDF', () => {
 
 		expect( text ).not.toContain( 'Real user data' );
 		expect( text ).not.toContain( 'Interaction to Next Paint' );
+	} );
+
+	it( 'omits Real user data section when neither report holds any of the three field metrics', () => {
+		const threeMetrics = [
+			'LARGEST_CONTENTFUL_PAINT_MS',
+			'CUMULATIVE_LAYOUT_SHIFT_SCORE',
+			'INTERACTION_TO_NEXT_PAINT',
+		];
+		const data = buildData( {
+			mobileReport: omitFieldMetrics(
+				fixtures.pagespeedMobile,
+				threeMetrics
+			),
+			desktopReport: omitFieldMetrics(
+				fixtures.pagespeedDesktop,
+				threeMetrics
+			),
+		} );
+		const noFieldMetrics = {
+			largestContentfulPaint: null,
+			cumulativeLayoutShift: null,
+			interactionToNextPaint: null,
+		};
+
+		// The reports keep their other CrUX metrics, like First Contentful
+		// Paint, so each strategy still holds a field object.
+		expect( data?.mobile?.field ).toEqual( noFieldMetrics );
+		expect( data?.desktop?.field ).toEqual( noFieldMetrics );
+		expect( findSection( data, 'Real user data' ) ).toBeUndefined();
+		expect( renderText( data ) ).not.toContain( 'Real user data' );
+	} );
+
+	it( 'drops the Real user data rows whose metric holds no value for either strategy', () => {
+		const section = findSection(
+			buildData( {
+				mobileReport: fixtures.pagespeedMobilePartialFieldData,
+				desktopReport: fixtures.pagespeedDesktopPartialFieldData,
+			} ),
+			'Real user data'
+		);
+
+		expect(
+			section
+				?.findAllByType( MetricRow )
+				.map( ( row ) => row.props.title )
+		).toEqual( [ 'Interaction to Next Paint' ] );
+	} );
+
+	it( 'keeps the three Lab data rows when Real user data rows are dropped', () => {
+		const labSection = findSection(
+			buildData( {
+				mobileReport: fixtures.pagespeedMobilePartialFieldData,
+				desktopReport: fixtures.pagespeedDesktopPartialFieldData,
+			} ),
+			'Lab data'
+		);
+
+		expect(
+			labSection
+				?.findAllByType( MetricRow )
+				.map( ( row ) => row.props.title )
+		).toEqual( [
+			'Largest Contentful Paint',
+			'Cumulative Layout Shift',
+			'Total Blocking Time',
+		] );
+	} );
+
+	it( 'keeps the Mobile and Desktop headings in the Real user data section after rows are dropped', () => {
+		const section = findSection(
+			buildData( {
+				mobileReport: fixtures.pagespeedMobilePartialFieldData,
+				desktopReport: fixtures.pagespeedDesktopPartialFieldData,
+			} ),
+			'Real user data'
+		);
+
+		expect(
+			section
+				?.findAllByType( PDFTypography )
+				.map( ( typography ) => typography.props.children )
+		).toEqual(
+			expect.arrayContaining( [ 'Real user data', 'Mobile', 'Desktop' ] )
+		);
+	} );
+
+	it( 'keeps only the Largest Contentful Paint row when it is the only field metric Mobile holds and Desktop holds none', () => {
+		const data = buildData( {
+			mobileReport: omitFieldMetrics( fixtures.pagespeedMobile, [
+				'CUMULATIVE_LAYOUT_SHIFT_SCORE',
+				'INTERACTION_TO_NEXT_PAINT',
+			] ),
+			desktopReport: fixtures.pagespeedDesktopNoFieldData,
+		} );
+		const section = findSection( data, 'Real user data' );
+		const rows = section?.findAllByType( MetricRow ) ?? [];
+
+		expect( rows.map( ( row ) => row.props.title ) ).toEqual( [
+			'Largest Contentful Paint',
+		] );
+
+		const [ mobileCell, desktopCell ] =
+			rows[ 0 ].findAllByType( MetricValueCell );
+
+		expect( getCellText( mobileCell ) ).toContain(
+			data?.mobile?.field?.largestContentfulPaint?.displayValue
+		);
+		expect( getCellText( desktopCell ) ).toEqual( [] );
+	} );
+
+	it( 'keeps a Real user data row that only Desktop holds a value for, with the Mobile cell empty', () => {
+		const data = buildData( {
+			mobileReport: fixtures.pagespeedMobilePartialFieldData,
+		} );
+		const section = findSection( data, 'Real user data' );
+		const rows = section?.findAllByType( MetricRow ) ?? [];
+
+		// Desktop holds all three metrics, so all three rows stay.
+		expect( rows.map( ( row ) => row.props.title ) ).toEqual( [
+			'Largest Contentful Paint',
+			'Cumulative Layout Shift',
+			'Interaction to Next Paint',
+		] );
+
+		const [ mobileCell, desktopCell ] =
+			rows[ 0 ].findAllByType( MetricValueCell );
+
+		expect( getCellText( mobileCell ) ).toEqual( [] );
+		expect( getCellText( desktopCell ) ).toContain(
+			data?.desktop?.field?.largestContentfulPaint?.displayValue
+		);
+	} );
+
+	it( 'renders the last remaining Real user data row without a bottom divider', () => {
+		const section = findSection(
+			buildData( {
+				mobileReport: omitFieldMetrics( fixtures.pagespeedMobile, [
+					'INTERACTION_TO_NEXT_PAINT',
+				] ),
+				desktopReport: omitFieldMetrics( fixtures.pagespeedDesktop, [
+					'INTERACTION_TO_NEXT_PAINT',
+				] ),
+			} ),
+			'Real user data'
+		);
+		const rows = section?.findAllByType( MetricRow ) ?? [];
+
+		expect( rows.map( ( row ) => row.props.title ) ).toEqual( [
+			'Largest Contentful Paint',
+			'Cumulative Layout Shift',
+		] );
+		expect( getRowStyle( rows[ 0 ] ).borderBottomWidth ).not.toBe( 0 );
+		expect( getRowStyle( rows[ 1 ] ).borderBottomWidth ).toBe( 0 );
 	} );
 
 	it( 'renders an empty value cell for a null strategy while the other strategy still renders', () => {
