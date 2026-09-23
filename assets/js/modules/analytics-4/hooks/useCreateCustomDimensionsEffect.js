@@ -63,7 +63,7 @@ export default function useCreateCustomDimensionsEffect() {
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
-			await createCustomDimensions( customDimensions );
+			await createCustomDimensions();
 			setIsAutoCreatingCustomDimensions( false );
 		}
 
