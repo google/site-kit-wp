@@ -27,14 +27,6 @@ use WP_Error;
 class Response_Builder {
 
 	/**
-	 * Analytics 4 module instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Analytics_4
-	 */
-	private $analytics_4;
-
-	/**
 	 * Context instance.
 	 *
 	 * @since n.e.x.t
@@ -43,22 +35,30 @@ class Response_Builder {
 	private $context;
 
 	/**
+	 * Analytics 4 module instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Analytics_4
+	 */
+	private $analytics_4;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Analytics_4 $analytics_4 Analytics 4 module instance, which runs the reports.
 	 * @param Context     $context     Context instance.
+	 * @param Analytics_4 $analytics_4 Analytics 4 module instance, which runs the reports.
 	 */
-	public function __construct( Analytics_4 $analytics_4, Context $context ) {
-		$this->analytics_4 = $analytics_4;
+	public function __construct( Context $context, Analytics_4 $analytics_4 ) {
 		$this->context     = $context;
+		$this->analytics_4 = $analytics_4;
 	}
 
 	/**
 	 * Builds the response for a pair of dates.
 	 *
-	 * The reports behind the four fields are added in a follow-up, so today
+	 * The reports behind the four fields are added in #13595, so today
 	 * every field comes back empty. Nothing here is written to the site: the
 	 * response is assembled inside the request that asks for it.
 	 *
@@ -75,7 +75,7 @@ class Response_Builder {
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
 	 */
-	public function build( $start_date, $end_date ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The reports that read the two dates are added in a follow-up.
+	public function build( $start_date, $end_date ) { // phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.FoundAfterLastUsed -- The reports that read the two dates are added in #13595.
 		return array(
 			'visitors'       => array(),
 			'dailyTraffic'   => array(),
