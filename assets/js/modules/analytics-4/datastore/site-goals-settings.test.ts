@@ -310,6 +310,49 @@ describe( 'modules/analytics-4 site goals settings', () => {
 				).toEqual( [ 'ecommerce', 'lead' ] );
 			} );
 
+			it( 'should save the error only for the widget whose removal failed', async () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+
+				fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+					body: {
+						code: 'site_goals_widget_provider_active',
+						message:
+							'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+						data: { status: 400 },
+					},
+					status: 400,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.removeSiteGoalsWidget( 'ecommerce' );
+
+				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'removeSiteGoalsWidget', [
+							'ecommerce',
+						] )
+				).toEqual( {
+					code: 'site_goals_widget_provider_active',
+					message:
+						'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+					data: { status: 400 },
+				} );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getErrorForAction( 'removeSiteGoalsWidget', [
+							'lead',
+						] )
+				).toBeUndefined();
+			} );
+
 			it( 'should throw for a widget outside the Site Goals goal types', () => {
 				expect( () =>
 					registry

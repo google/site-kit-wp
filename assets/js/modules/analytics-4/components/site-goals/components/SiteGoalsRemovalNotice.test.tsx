@@ -34,7 +34,13 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { fireEvent, freezeFetch, render, waitFor } from '@tests/js/test-utils';
+import {
+	act,
+	fireEvent,
+	freezeFetch,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -217,6 +223,123 @@ describe( 'SiteGoalsRemovalNotice', () => {
 				.activeWidgets
 		).toEqual( [ 'ecommerce', 'lead' ] );
 		expect( getByRole( 'button', { name: /Got it/ } ) ).toBeEnabled();
+
+		expect( console ).toHaveErrored();
+	} );
+
+	it( 'shows the request error in an error notice when the removal request fails', async () => {
+		fetchMock.postOnce( removeWidgetEndpoint, {
+			body: {
+				code: 'site_goals_widget_provider_active',
+				message:
+					'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+				data: { status: 400 },
+			},
+			status: 400,
+		} );
+
+		const { container, findByText, getByRole, waitForRegistry } = render(
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-notice--error' )
+		).not.toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/ } ) );
+
+		const errorMessage = await findByText(
+			/can’t be removed while a plugin that tracks its events is active/
+		);
+
+		expect( errorMessage.closest( '.googlesitekit-notice' ) ).toHaveClass(
+			'googlesitekit-notice--error'
+		);
+
+		expect( console ).toHaveErrored();
+	} );
+
+	it( 'hides the error notice when a second "Got it" click removes the widget', async () => {
+		fetchMock.postOnce( removeWidgetEndpoint, {
+			body: {
+				code: 'site_goals_widget_provider_active',
+				message:
+					'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+				data: { status: 400 },
+			},
+			status: 400,
+		} );
+		fetchMock.postOnce( removeWidgetEndpoint, {
+			body: { activeWidgets: [ 'lead' ] },
+			status: 200,
+		} );
+
+		const { container, findByText, getByRole, waitForRegistry } = render(
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/ } ) );
+
+		await findByText(
+			/can’t be removed while a plugin that tracks its events is active/
+		);
+
+		fireEvent.click( getByRole( 'button', { name: /Got it/ } ) );
+
+		await waitFor( () => {
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
+					.activeWidgets
+			).toEqual( [ 'lead' ] );
+		} );
+
+		expect(
+			container.querySelector( '.googlesitekit-notice--error' )
+		).not.toBeInTheDocument();
+
+		expect( console ).toHaveErrored();
+	} );
+
+	it( 'shows no error notice for the lead generation widget when the removal request for the online store widget fails', async () => {
+		fetchMock.postOnce( removeWidgetEndpoint, {
+			body: {
+				code: 'site_goals_widget_provider_active',
+				message:
+					'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+				data: { status: 400 },
+			},
+			status: 400,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<SiteGoalsRemovalNotice goalType="lead" />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		await act( () =>
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'ecommerce' )
+		);
+
+		expect(
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getErrorForAction( 'removeSiteGoalsWidget', [ 'ecommerce' ] )
+		).toEqual( {
+			code: 'site_goals_widget_provider_active',
+			message:
+				'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+			data: { status: 400 },
+		} );
+		expect(
+			container.querySelector( '.googlesitekit-notice--error' )
+		).not.toBeInTheDocument();
 
 		expect( console ).toHaveErrored();
 	} );

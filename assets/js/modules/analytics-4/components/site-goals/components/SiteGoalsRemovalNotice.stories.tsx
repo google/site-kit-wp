@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -32,10 +33,18 @@ import SiteGoalsRemovalNotice, {
 	SiteGoalsRemovalNoticeProps,
 } from './SiteGoalsRemovalNotice';
 
-function Template( { goalType }: SiteGoalsRemovalNoticeProps ) {
+interface TemplateProps extends SiteGoalsRemovalNoticeProps {
+	/** Sets up the store state one story needs, such as a failed removal request. */
+	setupRegistry?: ( registry: WPDataRegistry ) => void;
+}
+
+function Template( { goalType, setupRegistry }: TemplateProps ) {
 	return (
 		<WithRegistrySetup
-			func={ ( registry: WPDataRegistry ) => provideSiteInfo( registry ) }
+			func={ ( registry: WPDataRegistry ) => {
+				provideSiteInfo( registry );
+				setupRegistry?.( registry );
+			} }
 		>
 			<SiteGoalsRemovalNotice goalType={ goalType } />
 		</WithRegistrySetup>
@@ -61,6 +70,29 @@ LeadGeneration.args = {
 	goalType: GOAL_TYPES.LEAD,
 };
 LeadGeneration.scenario = {
+	viewport: 'large',
+};
+
+export const OnlineStoreRemovalFailed = Template.bind(
+	{}
+) as Story< SiteGoalsRemovalNoticeProps >;
+OnlineStoreRemovalFailed.storyName = 'Ecommerce widget removal failed';
+OnlineStoreRemovalFailed.args = {
+	goalType: GOAL_TYPES.ECOMMERCE,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForAction(
+			{
+				code: 'site_goals_widget_provider_active',
+				message:
+					'This Site Goals widget can’t be removed while a plugin that tracks its events is active.',
+				data: { status: 400 },
+			},
+			'removeSiteGoalsWidget',
+			[ GOAL_TYPES.ECOMMERCE ]
+		);
+	},
+};
+OnlineStoreRemovalFailed.scenario = {
 	viewport: 'large',
 };
 

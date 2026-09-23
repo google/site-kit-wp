@@ -24,18 +24,20 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { Fragment, useCallback } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import ErrorNotice from '@/js/components/ErrorNotice';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { trackEvent } from '@/js/util';
+import { ErrorObject } from '@/js/util/errors';
 import { useSiteGoalsRemovalNoticeCopy } from './useSiteGoalsRemovalNoticeCopy';
 
 export interface SiteGoalsRemovalNoticeProps {
@@ -55,6 +57,15 @@ const SiteGoalsRemovalNotice: FC< SiteGoalsRemovalNoticeProps > = ( {
 		[]
 	) as boolean;
 
+	const removeWidgetError = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForAction(
+				'removeSiteGoalsWidget',
+				[ goalType ]
+			),
+		[ goalType ]
+	) as ErrorObject | undefined;
+
 	const { removeSiteGoalsWidget } = useDispatch( MODULES_ANALYTICS_4 );
 
 	const handleRemoveWidget = useCallback( () => {
@@ -68,16 +79,24 @@ const SiteGoalsRemovalNotice: FC< SiteGoalsRemovalNoticeProps > = ( {
 	}, [ goalType, removeSiteGoalsWidget, viewContext ] );
 
 	return (
-		<Notice
-			className="googlesitekit-site-goals-removal-notice"
-			type={ NOTICE_TYPES.WARNING }
-			title={ title }
-			description={ description }
-			dismissButton={ {
-				onClick: handleRemoveWidget,
-				disabled: isRemoving,
-			} }
-		/>
+		<Fragment>
+			<Notice
+				className="googlesitekit-site-goals-removal-notice"
+				type={ NOTICE_TYPES.WARNING }
+				title={ title }
+				description={ description }
+				dismissButton={ {
+					onClick: handleRemoveWidget,
+					disabled: isRemoving,
+				} }
+			/>
+			{ removeWidgetError && (
+				<ErrorNotice
+					className="googlesitekit-site-goals-removal-error-notice"
+					error={ removeWidgetError }
+				/>
+			) }
+		</Fragment>
 	);
 };
 

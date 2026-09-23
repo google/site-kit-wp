@@ -354,18 +354,10 @@ const baseActions = {
 		function* (
 			widget: GoalType
 		): Generator< unknown, RemoveWidgetResult, unknown > {
-			yield clearActionError( 'removeSiteGoalsWidget', [] );
-
-			const { response, error } =
-				( yield fetchRemoveSiteGoalsWidgetStore.actions.fetchRemoveSiteGoalsWidget(
-					widget
-				) ) as RemoveWidgetResult;
-
-			if ( error ) {
-				yield setErrorForAction( error, 'removeSiteGoalsWidget', [] );
-			}
-
-			return { response, error };
+			// The fetch store saves the request error under `[ widget ]`.
+			return ( yield fetchRemoveSiteGoalsWidgetStore.actions.fetchRemoveSiteGoalsWidget(
+				widget
+			) ) as RemoveWidgetResult;
 		}
 	),
 
