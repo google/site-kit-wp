@@ -106,7 +106,7 @@ class PluginTest extends TestCase {
 		$this->assertArrayHasKey( '/' . REST_Routes::REST_ROOT . '/core/user/data/user-input-settings', $routes, 'REST API should register the user-input-settings endpoint' );
 	}
 
-	public function test_register__init_intent_routes() {
+	public function test_register__registers_the_intent_routes() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		remove_all_actions( 'init' );
 
@@ -116,8 +116,9 @@ class PluginTest extends TestCase {
 		$this->register_rest_routes();
 
 		$routes = rest_get_server()->get_routes();
-		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/intent', $routes, 'The plugin should register the route that gets an intent.' );
-		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/complete-intent', $routes, 'The plugin should register the route that completes an intent.' );
+
+		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/intent', $routes, 'The plugin should register the `core/intents/data/intent` route.' );
+		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/complete-intent', $routes, 'The plugin should register the `core/intents/data/complete-intent` route.' );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
