@@ -122,8 +122,8 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 			}
 		}
 
-		// Both dates are zero-padded `YYYY-MM-DD` by the time they get here, so
-		// a string comparison orders them.
+		// Both dates are zero-padded `YYYY-MM-DD` once they pass the check above,
+		// so a string comparison orders them.
 		if ( $start_date > $end_date ) {
 			return $this->invalid_param_error(
 				__( 'Request parameter startDate must not be later than endDate.', 'google-site-kit' )
