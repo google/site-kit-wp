@@ -544,8 +544,13 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
-		if ( shouldShowRemovalNotice ) {
-			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.LEAD } />;
+		if ( shouldShowRemovalNotice !== false ) {
+			return (
+				<SiteGoalsRemovalNotice
+					goalType={ GOAL_TYPES.LEAD }
+					loading={ shouldShowRemovalNotice === undefined }
+				/>
+			);
 		}
 
 		if ( error ) {

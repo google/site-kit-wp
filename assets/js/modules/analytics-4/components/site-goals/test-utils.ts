@@ -69,7 +69,7 @@ export function buildSiteGoalsEventCountReportOptions(
  *
  * @param {WPDataRegistry} registry   Test registry whose selected date range the report covers.
  * @param {GoalType}       goalType   Goal type whose conversion events the report counts.
- * @param {string}         eventCount Total the report returns, as the string Analytics sends.
+ * @param {string}         eventCount Total the report returns, as the string Analytics sends, e.g. `'12'`, not `12`.
  * @return {void}
  */
 export function seedSiteGoalsEventCountReport(

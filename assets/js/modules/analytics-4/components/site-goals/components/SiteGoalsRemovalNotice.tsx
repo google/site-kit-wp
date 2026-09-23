@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, useCallback } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,6 +33,7 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import useViewContext from '@/js/hooks/useViewContext';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -43,10 +44,13 @@ import { useSiteGoalsRemovalNoticeCopy } from './useSiteGoalsRemovalNoticeCopy';
 export interface SiteGoalsRemovalNoticeProps {
 	/** The goal type of the Site Goals widget (`'ecommerce'` or `'lead'`). */
 	goalType: GoalType;
+	/** Shows a loading block in place of the notice when `true`. Defaults to `false`. */
+	loading?: boolean;
 }
 
 const SiteGoalsRemovalNotice: FC< SiteGoalsRemovalNoticeProps > = ( {
 	goalType,
+	loading = false,
 } ) => {
 	const viewContext = useViewContext();
 	const { title, description } = useSiteGoalsRemovalNoticeCopy( goalType );
@@ -68,7 +72,7 @@ const SiteGoalsRemovalNotice: FC< SiteGoalsRemovalNoticeProps > = ( {
 
 	const { removeSiteGoalsWidget } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const handleRemoveWidget = useCallback( () => {
+	function handleRemoveWidget() {
 		trackEvent(
 			`${ viewContext }_site-goals-widget`,
 			'remove_widget',
@@ -76,7 +80,11 @@ const SiteGoalsRemovalNotice: FC< SiteGoalsRemovalNoticeProps > = ( {
 		);
 
 		removeSiteGoalsWidget( goalType );
-	}, [ goalType, removeSiteGoalsWidget, viewContext ] );
+	}
+
+	if ( loading ) {
+		return <PreviewBlock width="100%" height="130px" />;
+	}
 
 	return (
 		<Fragment>

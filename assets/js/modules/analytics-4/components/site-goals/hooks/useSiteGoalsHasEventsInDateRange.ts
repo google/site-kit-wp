@@ -43,11 +43,11 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
  * @since n.e.x.t
  *
  * @param {GoalType} goalType Goal type whose conversion events to count.
- * @return {boolean|undefined} `true` when the selected date range has at least one event, and `false` when it has none. `undefined` while the report loads and when it fails.
+ * @return {(boolean|null|undefined)} `true` when the selected date range has at least one event, and `false` when it has none. `null` when the report fails, and `undefined` while it loads.
  */
 export function useSiteGoalsHasEventsInDateRange(
 	goalType: GoalType
-): boolean | undefined {
+): boolean | null | undefined {
 	const { startDate, endDate } = useSelect(
 		( select: Select ) =>
 			select( CORE_USER ).getDateRangeDates( { compare: false } ),
@@ -85,8 +85,12 @@ export function useSiteGoalsHasEventsInDateRange(
 		[ report, reportOptions ]
 	);
 
-	if ( isLoadingReport || reportError ) {
+	if ( isLoadingReport ) {
 		return undefined;
+	}
+
+	if ( reportError ) {
+		return null;
 	}
 
 	return ! isZeroReport( report );

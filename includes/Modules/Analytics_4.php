@@ -1071,7 +1071,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'site_goals_settings'      => $this->site_goals_settings,
 					'site_goals_site_settings' => $this->site_goals_site_settings,
 					'context'                  => $this->context,
-					'service'                  => '',
 				)
 			),
 			'GET:advanced-data-breakdowns-settings'       => new Get_Advanced_Data_Breakdowns_Settings(

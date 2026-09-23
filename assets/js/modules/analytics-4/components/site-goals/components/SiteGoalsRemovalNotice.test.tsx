@@ -30,7 +30,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -79,7 +78,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 
 	it( 'renders the online store title, description, and "Learn more" link for the ecommerce goal type', () => {
 		const { getByRole, getByText } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />,
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
 		);
 
@@ -98,7 +97,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 
 	it( 'renders the lead generation title and description for the lead goal type', () => {
 		const { getByText } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.LEAD } />,
+			<SiteGoalsRemovalNotice goalType="lead" />,
 			{ registry }
 		);
 
@@ -114,7 +113,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 
 	it( 'renders a warning notice with a single "Got it" button', () => {
 		const { container, getAllByRole } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />,
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
 		);
 
@@ -125,6 +124,21 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( getAllByRole( 'button' )[ 0 ] ).toHaveTextContent( 'Got it' );
 	} );
 
+	it( 'renders a loading block in place of the notice when `loading` is `true`', () => {
+		const { container, queryByRole, queryByText } = render(
+			<SiteGoalsRemovalNotice goalType="ecommerce" loading />,
+			{ registry }
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( /Online store performance was removed/ )
+		).not.toBeInTheDocument();
+		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+	} );
+
 	it( 'removes the ecommerce widget from the active widgets on a "Got it" click', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: { activeWidgets: [ 'lead' ] },
@@ -132,7 +146,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />,
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -164,7 +178,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.LEAD } />,
+			<SiteGoalsRemovalNotice goalType="lead" />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
@@ -184,7 +198,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		freezeFetch( removeWidgetEndpoint );
 
 		const { getByRole, waitForRegistry } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />,
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -207,7 +221,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		} );
 
 		const { getByRole, waitForRegistry } = render(
-			<SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />,
+			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
 		);
 		await waitForRegistry();

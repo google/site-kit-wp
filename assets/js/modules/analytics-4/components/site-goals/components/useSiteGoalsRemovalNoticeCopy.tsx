@@ -44,7 +44,8 @@ export interface SiteGoalsRemovalNoticeCopy {
 }
 
 /**
- * Gets the widget removal notice copy for a goal type.
+ * Picks the removal notice title and description for the online store or the
+ * lead generation widget.
  *
  * @since n.e.x.t
  *

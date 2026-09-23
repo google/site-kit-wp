@@ -464,8 +464,13 @@ const OnlineStorePerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
-		if ( shouldShowRemovalNotice ) {
-			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />;
+		if ( shouldShowRemovalNotice !== false ) {
+			return (
+				<SiteGoalsRemovalNotice
+					goalType={ GOAL_TYPES.ECOMMERCE }
+					loading={ shouldShowRemovalNotice === undefined }
+				/>
+			);
 		}
 
 		if ( error ) {

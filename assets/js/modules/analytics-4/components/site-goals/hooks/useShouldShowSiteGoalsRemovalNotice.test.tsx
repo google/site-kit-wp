@@ -25,7 +25,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	buildSiteGoalsEventCountReportOptions,
 	seedSiteGoalsEventCountReport,
@@ -59,10 +58,10 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.ECOMMERCE ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -73,10 +72,10 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		provideSiteInfo( registry, {
 			hasActiveLeadEventProviders: false,
 		} );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.LEAD ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'lead' ),
 			{ registry }
 		);
 
@@ -87,10 +86,10 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: true,
 		} );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.ECOMMERCE ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -101,10 +100,10 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		provideSiteInfo( registry, {
 			hasActiveLeadEventProviders: true,
 		} );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.LEAD ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'lead' ),
 			{ registry }
 		);
 
@@ -115,10 +114,10 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '7' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '7' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.ECOMMERCE ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -127,31 +126,76 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 
 	it( "doesn't show the removal notice for the ecommerce widget when Site Kit doesn't know whether an ecommerce plugin is active", () => {
 		provideSiteInfo( registry );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.ECOMMERCE ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
 
 		expect( result.current ).toBe( false );
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events is loading", () => {
+	it( 'waits to decide on the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [
-				buildSiteGoalsEventCountReportOptions(
-					registry,
-					GOAL_TYPES.ECOMMERCE
-				),
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
 			] );
 
 		const { result } = renderHook(
-			() => useShouldShowSiteGoalsRemovalNotice( GOAL_TYPES.ECOMMERCE ),
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
+			{ registry }
+		);
+
+		expect( result.current ).toBeUndefined();
+	} );
+
+	it( "doesn't show the removal notice for the ecommerce widget when an ecommerce plugin is active and the report of ecommerce events is loading", () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: true,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
+
+		const { result } = renderHook(
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
+			{ registry }
+		);
+
+		expect( result.current ).toBe( false );
+	} );
+
+	it( "doesn't show the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events fails", () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			'getReport',
+			[ buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ) ]
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
+
+		const { result } = renderHook(
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
 

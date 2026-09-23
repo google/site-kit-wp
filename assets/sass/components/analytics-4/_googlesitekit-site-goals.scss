@@ -157,7 +157,7 @@ $site-goals-tile-connector-offset: 3.5px;
 		}
 
 		.mdc-button {
-			min-height: 40px;
+			min-height: $mdc-button-min-height;
 			padding: 10px $grid-gap-phone;
 		}
 	}

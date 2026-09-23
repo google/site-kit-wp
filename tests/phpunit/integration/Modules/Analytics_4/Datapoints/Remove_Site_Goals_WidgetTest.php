@@ -89,7 +89,6 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 				'site_goals_settings'      => $site_goals_settings,
 				'site_goals_site_settings' => $this->site_goals_site_settings,
 				'context'                  => $context,
-				'service'                  => '',
 			)
 		);
 	}

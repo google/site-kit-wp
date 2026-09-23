@@ -46,7 +46,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
-import { seedSiteGoalsEventCountReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import {
+	buildSiteGoalsEventCountReportOptions,
+	seedSiteGoalsEventCountReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	ENUM_CONVERSION_EVENTS,
@@ -768,7 +771,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		seedBreakdown();
 		// Default to ecommerce events in the selected date range, so the removal
 		// notice does not render.
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '5' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
 
 		receiveKeyActionChartReports();
 	} );
@@ -893,7 +896,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			buildEngagementReportOptions( dates )
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '5' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '5' );
 		receiveKeyActionChartReports();
 
 		const { getByText, waitForRegistry } = render(
@@ -2066,18 +2069,15 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const dates = registry
 			.select( CORE_USER )
 			.getDateRangeDates( { compare: true } );
 		provideAnalytics4MockReport(
 			registry,
-			buildPrimaryEventReportOptions(
-				dates,
-				ENUM_CONVERSION_EVENTS.PURCHASE
-			)
+			buildPrimaryEventReportOptions( dates, 'purchase' )
 		);
 		provideAnalytics4MockReport(
 			registry,
@@ -2114,10 +2114,10 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+			.setDetectedEvents( [ 'purchase' ] );
 		seedBreakdown( { providerValues: [ 'woocommerce' ] } );
 		seedTabbedReports( { [ PROVIDER_DIMENSION ]: 'woocommerce' } );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { getByText, queryByRole, queryByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
@@ -2140,8 +2140,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 		seedReadyReports();
 
 		const { getByText, queryByText, waitForRegistry } = render(
@@ -2162,8 +2162,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '4' );
+			.setDetectedEvents( [ 'purchase' ] );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '4' );
 		seedReadyReports();
 
 		const { getByText, queryByText, waitForRegistry } = render(
@@ -2176,6 +2176,42 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			queryByText( /Online store performance was removed/ )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders a loading block in place of the widget when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'purchase' ] );
+
+		seedReadyReports();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
+
+		const { container, queryByText, unmount } = render(
+			<OnlineStorePerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsOnlineStorePerformance'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			queryByText( /Online store performance was removed/ )
+		).not.toBeInTheDocument();
+		unmount();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

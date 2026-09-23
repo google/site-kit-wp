@@ -26,16 +26,19 @@ import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-dr
 import { useSiteGoalsHasEventsInDateRange } from './useSiteGoalsHasEventsInDateRange';
 
 /**
- * Checks whether the removal notice should replace a Site Goals widget.
+ * Checks whether the removal notice replaces a Site Goals widget.
+ *
+ * The notice replaces the widget when no plugin for the goal type is active
+ * and the selected date range has no events of that goal type.
  *
  * @since n.e.x.t
  *
  * @param {GoalType} goalType Goal type of the widget to check.
- * @return {boolean} `true` when the removal notice should replace the widget, otherwise `false`.
+ * @return {(boolean|undefined)} `true` when the notice replaces the widget. `undefined` while no plugin is active and the event report loads. `false` otherwise.
  */
 export function useShouldShowSiteGoalsRemovalNotice(
 	goalType: GoalType
-): boolean {
+): boolean | undefined {
 	const hasActiveEventProviders = useSelect(
 		( select: Select ) => {
 			if ( goalType === GOAL_TYPES.ECOMMERCE ) {
@@ -49,5 +52,19 @@ export function useShouldShowSiteGoalsRemovalNotice(
 
 	const hasEventsInDateRange = useSiteGoalsHasEventsInDateRange( goalType );
 
-	return hasActiveEventProviders === false && hasEventsInDateRange === false;
+	// A failed report or an unknown plugin state shows the widget, so the
+	// loading block can't stay forever.
+	if (
+		hasActiveEventProviders !== false ||
+		hasEventsInDateRange === true ||
+		hasEventsInDateRange === null
+	) {
+		return false;
+	}
+
+	if ( hasEventsInDateRange === false ) {
+		return true;
+	}
+
+	return undefined;
 }

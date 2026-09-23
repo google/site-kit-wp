@@ -46,7 +46,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
-import { seedSiteGoalsEventCountReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
+import {
+	buildSiteGoalsEventCountReportOptions,
+	seedSiteGoalsEventCountReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -779,7 +782,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedBreakdown();
 		// Default to lead events in the selected date range, so the removal
 		// notice does not render.
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '5' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
 
 		// Add the chart tile's report for all four sets of lead events, so no
 		// test leaves the tile in its loading placeholder.
@@ -962,7 +965,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			buildEngagementReportOptions( dates )
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '5' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
 		receiveKeyActionChartReport( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const { getByText, waitForRegistry } = render(
@@ -2018,17 +2021,15 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
 
 		const dates = registry
 			.select( CORE_USER )
 			.getDateRangeDates( { compare: true } );
 		provideAnalytics4MockReport(
 			registry,
-			buildLeadEventsReportOptions( dates, [
-				ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
-			] )
+			buildLeadEventsReportOptions( dates, [ 'generate_lead' ] )
 		);
 		provideAnalytics4MockReport(
 			registry,
@@ -2065,7 +2066,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+			.setDetectedEvents( [ 'generate_lead' ] );
 		seedBreakdown( {
 			formIDs: [ '5' ],
 			formProviders: { 5: 'wpforms' },
@@ -2075,7 +2076,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			status: 200,
 		} );
 		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
 
 		const { getByText, queryByRole, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
@@ -2098,8 +2099,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
 		seedReadyReports();
 
 		const { getByText, queryByText, waitForRegistry } = render(
@@ -2120,8 +2121,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '4' );
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '4' );
 		seedReadyReports();
 
 		const { getByText, queryByText, waitForRegistry } = render(
@@ -2134,6 +2135,42 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByText( /Lead generation performance was removed/ )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders a loading block in place of the widget when no form plugin is active and the report of lead events is loading', () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+
+		seedReadyReports();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'lead' ),
+			] );
+
+		const { container, queryByText, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+			)
+		).not.toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+		unmount();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {

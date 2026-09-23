@@ -25,7 +25,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	buildSiteGoalsEventCountReportOptions,
 	seedSiteGoalsEventCountReport,
@@ -57,10 +56,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 	} );
 
 	it( 'reports events for the ecommerce goal type when the report counts at least one event', () => {
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '12' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '12' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.ECOMMERCE ),
+			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -68,10 +67,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 	} );
 
 	it( 'reports events for the lead goal type when the report counts at least one event', () => {
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '3' );
+		seedSiteGoalsEventCountReport( registry, 'lead', '3' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.LEAD ),
+			() => useSiteGoalsHasEventsInDateRange( 'lead' ),
 			{ registry }
 		);
 
@@ -79,10 +78,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 	} );
 
 	it( 'reports no ecommerce events when every count in the report is zero', () => {
-		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.ECOMMERCE, '0' );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.ECOMMERCE ),
+			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -90,20 +89,24 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 	} );
 
 	it( 'reports no ecommerce events when the report has no rows', () => {
-		const options = buildSiteGoalsEventCountReportOptions(
-			registry,
-			GOAL_TYPES.ECOMMERCE
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{ rows: [], totals: [] },
+			{
+				options: buildSiteGoalsEventCountReportOptions(
+					registry,
+					'ecommerce'
+				),
+			}
 		);
 
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( { rows: [], totals: [] }, { options } );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
+			.finishResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.ECOMMERCE ),
+			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
 			{ registry }
 		);
 
@@ -114,26 +117,18 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.startResolution( 'getReport', [
-				buildSiteGoalsEventCountReportOptions(
-					registry,
-					GOAL_TYPES.ECOMMERCE
-				),
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
 			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.ECOMMERCE ),
+			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
 			{ registry }
 		);
 
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( 'returns undefined when the report fails', () => {
-		const options = buildSiteGoalsEventCountReportOptions(
-			registry,
-			GOAL_TYPES.ECOMMERCE
-		);
-
+	it( 'returns null when the report fails', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'internal_server_error',
@@ -141,17 +136,20 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 				data: { status: 500 },
 			},
 			'getReport',
-			[ options ]
+			[ buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ) ]
 		);
+
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getReport', [ options ] );
+			.finishResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
+			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( GOAL_TYPES.ECOMMERCE ),
+			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
 			{ registry }
 		);
 
-		expect( result.current ).toBeUndefined();
+		expect( result.current ).toBeNull();
 	} );
 } );
