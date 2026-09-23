@@ -27,6 +27,7 @@ import publications from './publications';
 import service from './service';
 import termsOfService from './terms-of-service';
 import userSettings from './user-settings';
+import viewOnSite from './view-on-site';
 
 const store = combineStores(
 	baseModuleStore,
@@ -34,7 +35,8 @@ const store = combineStores(
 	publications,
 	service,
 	termsOfService,
-	userSettings
+	userSettings,
+	viewOnSite
 );
 
 export const initialState = store.initialState;

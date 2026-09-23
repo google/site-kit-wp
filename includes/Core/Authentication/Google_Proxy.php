@@ -41,6 +41,8 @@ class Google_Proxy {
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
 	const SUPPORT_LINK_URI          = '/support';
+	const INTENT_URI                = '/intent/%s/';
+	const INTENT_COMPLETE_URI       = '/intent/%s/complete/';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
@@ -349,6 +351,7 @@ class Google_Proxy {
 	 * Gets site fields.
 	 *
 	 * @since 1.5.0
+	 * @since n.e.x.t Added `intent_uri` to the fields.
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
@@ -369,6 +372,55 @@ class Google_Proxy {
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $return_uri,
 			'analytics_redirect_uri' => $analytics_redirect_uri,
+			'intent_uri'             => $this->context->admin_url( 'dashboard' ),
+		);
+	}
+
+	/**
+	 * Gets an intent from the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $intent_id    Intent ID.
+	 * @param string      $code         One-time code for the intent.
+	 * @param string      $access_token Access token.
+	 * @return array|WP_Error Intent payload, or WP_Error on failure.
+	 */
+	public function get_intent( Credentials $credentials, $intent_id, $code, $access_token ) {
+		return $this->request(
+			sprintf( self::INTENT_URI, $intent_id ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'body'         => array(
+					'intent_code' => $code,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Completes an intent on the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $intent_id    Intent ID.
+	 * @param string      $code         One-time code for the intent.
+	 * @param string      $access_token Access token.
+	 * @return array|WP_Error Completion response holding the URL to send the user to, or WP_Error on failure.
+	 */
+	public function complete_intent( Credentials $credentials, $intent_id, $code, $access_token ) {
+		return $this->request(
+			sprintf( self::INTENT_COMPLETE_URI, $intent_id ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'body'         => array(
+					'intent_code' => $code,
+				),
+			)
 		);
 	}
 
