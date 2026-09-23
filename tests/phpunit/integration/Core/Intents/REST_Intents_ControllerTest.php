@@ -76,7 +76,6 @@ class REST_Intents_ControllerTest extends TestCase {
 	public function tear_down() {
 		parent::tear_down();
 
-		// Each test registers its routes on a new REST server.
 		unset( $GLOBALS['wp_rest_server'] );
 	}
 
@@ -159,7 +158,6 @@ class REST_Intents_ControllerTest extends TestCase {
 		$this->fake_proxy_site_connection();
 
 		// A view-only user can view the dashboard only after setup is complete.
-		// At priority 100, `__return_true` runs after Search Console's filter, which returns `false` for a site with no property.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
 		( new Module_Sharing_Settings( new Options( $this->context ) ) )->set(
@@ -174,14 +172,14 @@ class REST_Intents_ControllerTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
 		wp_set_current_user( $user_id );
 
-		// A view-only user can't view the dashboard until they dismiss the splash screen.
+		// A view-only user can view the dashboard only after they dismiss the splash screen.
 		( new Dismissed_Items( new User_Options( $this->context, $user_id ) ) )->add( 'shared_dashboard_splash' );
 
 		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'The editor should be able to view the shared dashboard.' );
 		$this->assertFalse( current_user_can( Permissions::SETUP ), 'The editor should not be able to set up Site Kit.' );
 	}
 
-	public function test_register__adds_no_preload_path() {
+	public function test_register__does_not_preload_the_intent_routes() {
 		$preload_paths = apply_filters( 'googlesitekit_apifetch_preload_paths', array() );
 
 		$this->assertNotContains( '/google-site-kit/v1/core/intents/data/intent', $preload_paths, '`googlesitekit_apifetch_preload_paths` should not include the `core/intents/data/intent` route.' );

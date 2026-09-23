@@ -19,7 +19,7 @@ use WP_REST_Response;
 use WP_REST_Server;
 
 /**
- * Class for the REST routes the dashboard uses to get and complete an intent.
+ * Class for the REST routes that get and complete an intent.
  *
  * @since n.e.x.t
  * @access private
@@ -57,12 +57,11 @@ class REST_Intents_Controller {
 	}
 
 	/**
-	 * Registers functionality through WordPress hooks.
+	 * Registers the intent REST routes.
 	 *
 	 * @since n.e.x.t
 	 */
 	public function register() {
-		// Neither intent route is preloaded, because each one calls the Site Kit Service and most dashboard loads have no intent.
 		add_filter(
 			'googlesitekit_rest_routes',
 			fn ( $routes ) => array_merge( $routes, $this->get_rest_routes() )
@@ -70,11 +69,11 @@ class REST_Intents_Controller {
 	}
 
 	/**
-	 * Gets REST route instances.
+	 * Gets the intent REST routes.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return REST_Route[] List of REST_Route objects.
+	 * @return REST_Route[] List of `REST_Route` objects for the `core/intents/data/intent` and `core/intents/data/complete-intent` routes.
 	 */
 	protected function get_rest_routes() {
 		$can_setup = fn () => current_user_can( Permissions::SETUP );
@@ -146,7 +145,7 @@ class REST_Intents_Controller {
 	 * @param string $proxy_method `Google_Proxy` method to call, either `get_intent` or `complete_intent`.
 	 * @param string $slug         Intent slug.
 	 * @param string $intent_code  One-time code for the intent.
-	 * @return WP_REST_Response|WP_Error Response with the data the Service returned, or the plugin's own error.
+	 * @return WP_REST_Response|WP_Error Response with the Service's data, or an `intent_not_found` or `intent_user_not_connected` error.
 	 */
 	private function send_to_service( $proxy_method, $slug, $intent_code ) {
 		if ( ! $this->intents->get_intent( $slug ) ) {
@@ -174,11 +173,11 @@ class REST_Intents_Controller {
 	}
 
 	/**
-	 * Creates one of the plugin's intent errors.
+	 * Creates an intent error.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $error_code Plugin error code, either `intent_not_found` or `intent_user_not_connected`.
+	 * @param string $error_code Error code, either `intent_not_found` or `intent_user_not_connected`.
 	 * @return WP_Error Error with a translated message and an HTTP status.
 	 */
 	private function create_error( $error_code ) {
