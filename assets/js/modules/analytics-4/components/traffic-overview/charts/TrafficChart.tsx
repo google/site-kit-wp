@@ -47,9 +47,17 @@ import {
 export interface TrafficChartProps {
 	/** The daily-visitors report for the selected range. */
 	report?: Report;
+	/** Whether the daily-visitors report has arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
+const TrafficChart: FC< TrafficChartProps > = ( {
+	report,
+	loaded = true,
+	gatheringData = false,
+} ) => {
 	const viewOnly = useViewOnly();
 
 	const { startDate, endDate } = useSelect(
@@ -76,7 +84,9 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 	);
 
 	const { chartData, ticks, hasVisitors } = getTrafficChartData( {
-		report,
+		// A property still gathering data shows no visitors, so the chart draws
+		// a flat line at zero.
+		report: gatheringData ? undefined : report,
 		startDate,
 		endDate,
 	} );
@@ -161,28 +171,32 @@ const TrafficChart: FC< TrafficChartProps > = ( { report } ) => {
 				chartType="LineChart"
 				data={ chartData }
 				dateMarkers={ dateMarkers }
+				gatheringData={ gatheringData }
 				height="256px"
-				loadingHeight="224px"
+				loaded={ loaded }
+				loadingHeight="276px"
 				options={ options }
 				width="100%"
 			/>
-			<ChartLegend items={ legendItems } />
-			{ points.map( ( [ day, visitors ] ) => (
-				<VisuallyHidden key={ getDateString( day ) }>
-					{ sprintf(
-						/* translators: 1: a day, such as "January 15, 2025". 2: the visitors on that day, such as "1.2K" */
-						_n(
-							'%1$s: %2$s visitor',
-							'%1$s: %2$s visitors',
-							visitors,
-							'google-site-kit'
-						),
-						dayFormatter.format( day ),
-						numFmt( visitors )
-					) }
-				</VisuallyHidden>
-			) ) }
-			{ markerDate && (
+			{ loaded && <ChartLegend items={ legendItems } /> }
+			{ loaded &&
+				! gatheringData &&
+				points.map( ( [ day, visitors ] ) => (
+					<VisuallyHidden key={ getDateString( day ) }>
+						{ sprintf(
+							/* translators: 1: a day, such as "January 15, 2025". 2: the visitors on that day, such as "1.2K" */
+							_n(
+								'%1$s: %2$s visitor',
+								'%1$s: %2$s visitors',
+								visitors,
+								'google-site-kit'
+							),
+							dayFormatter.format( day ),
+							numFmt( visitors )
+						) }
+					</VisuallyHidden>
+				) ) }
+			{ loaded && markerDate && (
 				<VisuallyHidden>
 					{ sprintf(
 						/* translators: %s: the day the property was created, such as "January 15, 2025" */

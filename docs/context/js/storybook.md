@@ -432,7 +432,7 @@ Stories can accept configuration through parameters:
 // Story with custom parameters
 export const FeatureStory = Template.bind( {} );
 FeatureStory.parameters = {
-    features: [ 'pdfGeneration' ], // Enable feature flags (see feature-flags.json)
+    features: [ 'setupFlowRefresh' ], // Enable feature flags (see feature-flags.json)
     route: '/dashboard',           // Set router history location
     padding: '20px',               // Custom padding applied by the layout decorator
 };
