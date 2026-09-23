@@ -33,7 +33,6 @@ import {
 	createRegistryControl,
 	createRegistrySelector,
 } from 'googlesitekit-data';
-import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import {
 	CORE_USER,
@@ -168,23 +167,16 @@ const baseActions = {
 	 * @since 1.181.0 Added the Site Goals custom dimensions when the `siteGoals` feature flag is on and advanced data breakdowns is enabled.
 	 * @since 1.182.0 Created the missing custom dimensions on the selected property, and added the Site Goals dimensions only when advanced data breakdowns is enabled for that property.
 	 * @since 1.187.0 Removed the `siteGoals` feature flag check.
+	 * @since n.e.x.t Always created every Site Kit custom dimension, and removed the `customDimensions` parameter.
 	 *
-	 * @param {Array<string>} customDimensions Optional additional custom dimensions to create.
 	 * @return {Object} Object whose `error` property holds the available-dimensions sync error when the required dimensions already existed and that sync failed; otherwise an empty object.
 	 */
-	*createCustomDimensions( customDimensions = [] ) {
+	*createCustomDimensions() {
 		const registry = yield commonActions.getRegistry();
 
-		// Wait for the necessary settings to be loaded before checking.
+		// Wait for the settings to be loaded before reading the property ID.
 		yield commonActions.await(
-			Promise.all( [
-				registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
-				registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getAdvancedDataBreakdownsSettings(),
-				registry.resolveSelect( CORE_USER ).getKeyMetricsSettings(),
-				registry.resolveSelect( CORE_USER ).getUserInputSettings(),
-			] )
+			registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings()
 		);
 
 		const propertyID = registry
@@ -194,46 +186,6 @@ const baseActions = {
 		// Custom dimensions are created on the selected property, so there's
 		// nothing to create until a valid property is selected.
 		if ( ! isValidPropertyID( propertyID ) ) {
-			return {};
-		}
-
-		const selectedMetricTiles = registry
-			.select( CORE_USER )
-			.getKeyMetrics();
-
-		// Extract required custom dimensions from selected metric tiles.
-		const keyMetricsRequiredCustomDimensions = selectedMetricTiles.flatMap(
-			( tileName ) => {
-				const tile = KEY_METRICS_WIDGETS[ tileName ];
-				return tile?.requiredCustomDimensions || [];
-			}
-		);
-		const requiredCustomDimensions = [
-			...keyMetricsRequiredCustomDimensions,
-			...( Array.isArray( customDimensions ) ? customDimensions : [] ),
-		];
-
-		// Deduplicate if any custom dimensions are repeated among tiles.
-		const uniqueRequiredCustomDimensions = [
-			...new Set( requiredCustomDimensions ),
-		];
-
-		// Add the Site Goals custom dimensions when advanced data breakdowns is
-		// enabled for the selected property.
-		const isAdvancedDataBreakdownsEnabled = registry
-			.select( MODULES_ANALYTICS_4 )
-			.isAdvancedDataBreakdownsEnabled( propertyID );
-
-		if ( isAdvancedDataBreakdownsEnabled ) {
-			ALL_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
-				if ( ! uniqueRequiredCustomDimensions.includes( dimension ) ) {
-					uniqueRequiredCustomDimensions.push( dimension );
-				}
-			} );
-		}
-
-		// If no custom dimensions are required, there's nothing to create.
-		if ( ! uniqueRequiredCustomDimensions.length ) {
 			return {};
 		}
 
@@ -269,7 +221,7 @@ const baseActions = {
 		}
 
 		// Find out the missing custom dimensions.
-		const missingCustomDimensions = uniqueRequiredCustomDimensions.filter(
+		const missingCustomDimensions = ALL_CUSTOM_DIMENSIONS.filter(
 			( dimension ) => ! propertyCustomDimensions.includes( dimension )
 		);
 
