@@ -16,17 +16,29 @@
  * limitations under the License.
  */
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import DashboardMainEffectComponent from '@/js/modules/analytics-4/components/DashboardMainEffectComponent';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	ALL_CUSTOM_DIMENSIONS,
+	EDIT_SCOPE,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
 import {
@@ -36,6 +48,7 @@ import {
 	provideUserAuthentication,
 	provideUserCapabilities,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import withCustomDimensions from './withCustomDimensions';
 
@@ -91,6 +104,78 @@ describe( 'withCustomDimensions', () => {
 		expect( container ).toHaveTextContent(
 			'Update Analytics to track metric'
 		);
+	} );
+
+	it( 'creates every custom dimension when Update is clicked, leaving plugin conversion tracking unchanged', async () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EDIT_SCOPE ],
+		} );
+		registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 1 );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: false } );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+			propertyID,
+			availableCustomDimensions: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetCustomDimensions( [], { propertyID } );
+
+		const createEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+		);
+		// Respond to each create request with the dimension it was sent.
+		fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+			body: JSON.parse( body ).data.customDimension,
+			status: 200,
+		} ) );
+		fetchMock.postOnce(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+			),
+			{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+		);
+
+		const WidgetWithComponentProps = withWidgetComponentProps(
+			'widget-slug'
+		)( WithCustomDimensionsComponent );
+
+		const { getByRole } = render(
+			<Fragment>
+				<WidgetWithComponentProps />
+				<DashboardMainEffectComponent />
+			</Fragment>,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: /update/i } ) );
+
+		await waitFor( () => {
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getAvailableCustomDimensions()
+			).toEqual( ALL_CUSTOM_DIMENSIONS );
+		} );
+
+		const createdDimensionNames = fetchMock
+			.calls( createEndpoint )
+			.map(
+				( [ , request ] ) =>
+					JSON.parse( request.body ).data.customDimension
+						.parameterName
+			);
+
+		expect( createdDimensionNames ).toEqual( ALL_CUSTOM_DIMENSIONS );
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp(
+				'^/google-site-kit/v1/core/site/data/conversion-tracking'
+			)
+		);
+		expect(
+			registry.select( CORE_SITE ).isConversionTrackingEnabled()
+		).toBe( false );
 	} );
 
 	it( 'renders appropriate error if creating custom dimensions failed due to insufficient permissions', () => {
