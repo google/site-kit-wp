@@ -42,6 +42,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -55,10 +56,7 @@ import {
 	provideUserCapabilities,
 	renderHook,
 } from '@tests/js/test-utils';
-import {
-	ALL_CUSTOM_DIMENSIONS,
-	useBreakdownEnableHandler,
-} from './useBreakdownEnableHandler';
+import { useBreakdownEnableHandler } from './useBreakdownEnableHandler';
 
 describe( 'useBreakdownEnableHandler', () => {
 	let registry: WPDataRegistry;
@@ -160,16 +158,6 @@ describe( 'useBreakdownEnableHandler', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
-		// createCustomDimensions reads the key-metric settings to find required
-		// dimensions, so set them here to avoid extra network requests.
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( {} );
 	} );
 
 	it( 'triggers the OAuth flow and records the form state when the edit scope is missing', async () => {

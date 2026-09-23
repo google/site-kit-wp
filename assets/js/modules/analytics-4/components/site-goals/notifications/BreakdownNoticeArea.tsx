@@ -61,13 +61,11 @@ import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/s
 import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import { useSiteGoalsBreakdownResultCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownResultCopy';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	ALL_CUSTOM_DIMENSIONS,
-	useBreakdownEnableHandler,
-} from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
+import { useBreakdownEnableHandler } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
