@@ -192,7 +192,7 @@ const TopAuthorsGoalDriver: FC< GoalDriverComponentProps > = ( {
 			customDimensions: TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS,
 		} );
 
-		createCustomDimensions( TOP_AUTHORS_REQUIRED_CUSTOM_DIMENSIONS );
+		createCustomDimensions();
 	}, [
 		createCustomDimensions,
 		customDimensionsLoading,
