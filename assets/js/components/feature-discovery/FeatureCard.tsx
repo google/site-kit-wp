@@ -105,7 +105,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 			{
 				id: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
 				label: __(
-					"I'm already using another tool",
+					"I’m already using another tool",
 					'google-site-kit'
 				),
 				value: getFeatureRelevancyTriggerID(
