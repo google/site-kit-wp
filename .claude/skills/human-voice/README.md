@@ -47,7 +47,7 @@ The plugin starts off. A project turns it on with one line in its committed `.cl
 ```json
 {
   "enabledPlugins": {
-    "human-voice@google-site-kit-agents": true
+    "human-voice@<the marketplace>": true
   }
 }
 ```
@@ -126,7 +126,7 @@ Turn the plugin off for one project by setting its line to `false`. Removing the
 ```json
 {
   "enabledPlugins": {
-    "human-voice@google-site-kit-agents": false
+    "human-voice@<the marketplace>": false
   }
 }
 ```
