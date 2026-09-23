@@ -82,12 +82,15 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 	const onClick = useCallback( async () => {
 		setIsBusy( true );
 
-		// Awaited first, so the record lands before a setup that navigates away.
-		await triggerSurvey( `setup:feature_setup_${ slug }` );
+		try {
+			// Awaited first, so the record lands before a setup that
+			// navigates away.
+			await triggerSurvey( `setup:feature_setup_${ slug }` );
 
-		await setupFeature( slug );
-
-		setIsBusy( false );
+			await setupFeature( slug );
+		} finally {
+			setIsBusy( false );
+		}
 	}, [ setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
