@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import { useIsSiteGoalsBreakdownEnabled } from '@/js/modules/analytics-4/components/site-goals/hooks/useIsSiteGoalsBreakdownEnabled';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export type SiteGoalsWidgetViewAction =
@@ -39,12 +40,13 @@ interface UseSiteGoalsWidgetViewActionOptions {
  *
  * The widget's header/tabs area is always in exactly one of four mutually
  * exclusive states, matching what is actually rendered: the "aggregated"
- * default (no breakdown dimension, or no discovered breakdown values yet),
+ * default (breakdown not enabled, or no discovered breakdown values yet),
  * the "Gathering breakdown data" badge, the tabbed breakdown with a "Partial
  * data" badge, or the tabbed breakdown with the full selected date range
  * covered.
  *
  * @since 1.183.0
+ * @since n.e.x.t Treated a breakdown without plugin conversion tracking as not enabled.
  *
  * @param {Object}  options                    Hook options.
  * @param {string}  options.breakdownDimension The breakdown custom dimension slug for this goal type.
@@ -64,15 +66,18 @@ export function useSiteGoalsWidgetViewAction( {
 			),
 		[ breakdownDimension ]
 	);
+	const isBreakdownEnabled = useIsSiteGoalsBreakdownEnabled(
+		hasBreakdownDimension
+	);
 
 	const isGatheringData = useSelect(
 		( select: Select ) =>
-			hasBreakdownDimension
+			isBreakdownEnabled
 				? select(
 						MODULES_ANALYTICS_4
 				  ).areCustomDimensionsGatheringData( [ breakdownDimension ] )
 				: undefined,
-		[ hasBreakdownDimension, breakdownDimension ]
+		[ isBreakdownEnabled, breakdownDimension ]
 	);
 
 	const isPartialData = useSelect(
@@ -85,13 +90,13 @@ export function useSiteGoalsWidgetViewAction( {
 		[ hasBreakdownTabs, breakdownDimension ]
 	);
 
-	if ( hasBreakdownDimension === undefined ) {
+	if ( isBreakdownEnabled === undefined ) {
 		return undefined;
 	}
 
-	// No breakdown dimension (feature not enabled yet) — the original
-	// aggregated default.
-	if ( ! hasBreakdownDimension ) {
+	// No breakdown dimension or no plugin conversion tracking (feature not
+	// enabled yet) — the original aggregated default.
+	if ( ! isBreakdownEnabled ) {
 		return 'view_widget';
 	}
 
