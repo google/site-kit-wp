@@ -106,7 +106,7 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 
 export const ALL_CUSTOM_DIMENSIONS = Object.keys(
 	CUSTOM_DIMENSION_DEFINITIONS
-);
+) as ( keyof typeof CUSTOM_DIMENSION_DEFINITIONS )[];
 
 export const ENUM_CONVERSION_EVENTS = {
 	ADD_TO_CART: 'add_to_cart',
