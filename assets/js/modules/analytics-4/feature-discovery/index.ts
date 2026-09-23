@@ -38,7 +38,7 @@ import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
 /**
  * Registers Analytics module features in the Feature Discovery catalog.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}
@@ -47,6 +47,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'analytics', {
+		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __(
 			'Understand how visitors interact with your content',
 			'google-site-kit'
@@ -160,7 +161,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		detail: {
 			description: {
 				whatIs: __(
-					"Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighing what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals. You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.",
+					"Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighting what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals. You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.",
 					'google-site-kit'
 				),
 				whyUseHeading: __( 'Why use key metrics?', 'google-site-kit' ),
@@ -169,13 +170,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						term: __( 'Pin metrics:', 'google-site-kit' ),
 						description: __(
 							'Attach your most critical GA4 metrics directly to your main WordPress dashboard',
-							'google-site-kit'
-						),
-					},
-					{
-						term: __( 'Team alignment:', 'google-site-kit' ),
-						description: __(
-							'Keep everyone focused on core goals with a simplified performance view',
 							'google-site-kit'
 						),
 					},
@@ -190,6 +184,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						term: __( 'Save time:', 'google-site-kit' ),
 						description: __(
 							'Skip navigating through complex external Analytics menus',
+							'google-site-kit'
+						),
+					},
+
+					{
+						term: __( 'Team alignment:', 'google-site-kit' ),
+						description: __(
+							'Keep everyone focused on core goals with a simplified performance view',
 							'google-site-kit'
 						),
 					},
@@ -248,6 +250,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'enhanced-measurement', {
+		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
 			'Better understand what visitors do on your site with detailed tracking',

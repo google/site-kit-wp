@@ -27,6 +27,7 @@ import { SITE_KIT_VIEW_ONLY_CONTEXTS } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { isURLUsingHTTPS } from '@/js/util/is-url-using-https';
 
 /**
  * Returns a function that checks if the current user has the given scope.
@@ -70,8 +71,6 @@ export function requireIsAuthenticated() {
 export function requireCanViewSharedModule( slug ) {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The canViewSharedModule() selector relies on the resolution of
-			// the getModules() and getCapabilities() resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getCapabilities(),
 		] );
@@ -109,6 +108,27 @@ export function requireModuleConnected( slug ) {
 	return async function ( { resolveSelect } ) {
 		return (
 			true ===
+			( await resolveSelect( CORE_MODULES ).isModuleConnected( slug ) )
+		);
+	};
+}
+
+/**
+ * Returns a function that checks if the given module is not connected.
+ *
+ * This is not the inverse of `requireModuleConnected()`: the requirement is
+ * only satisfied when the module is known to be disconnected, so an
+ * unresolved `undefined` value does not pass.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is not connected or not.
+ */
+export function requireModuleNotConnected( slug ) {
+	return async function ( { resolveSelect } ) {
+		return (
+			false ===
 			( await resolveSelect( CORE_MODULES ).isModuleConnected( slug ) )
 		);
 	};
@@ -153,6 +173,22 @@ export function requireModuleAccess( slug ) {
 export function requireItemDismissed( item ) {
 	return async ( { resolveSelect } ) =>
 		true === ( await resolveSelect( CORE_USER ).isItemDismissed( item ) );
+}
+
+/**
+ * Returns a function that checks if the given prompt is dismissed.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} prompt Dismissible prompt ID.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given prompt is dismissed or not.
+ */
+export function requirePromptDismissed( prompt ) {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( CORE_USER ).getDismissedPrompts();
+
+		return true === select( CORE_USER ).isPromptDismissed( prompt );
+	};
 }
 
 /**
@@ -267,9 +303,6 @@ export function requireAuthError() {
 export function requireAccessToFeatureTour() {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The hasAccessToFeatureTour() selector relies on the resolution of
-			// the getModules(), getAuthentication() and getCapabilities()
-			// resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getAuthentication(),
 			resolveSelect( CORE_USER ).getCapabilities(),
@@ -288,8 +321,6 @@ export function requireAccessToFeatureTour() {
  */
 export function requireDataGatheringCompleteModalActive() {
 	return async ( { select, resolveSelect } ) => {
-		// The isDataGatheringCompleteModalActive() selector relies on the
-		// resolution of the getDismissedItems() resolver.
 		await resolveSelect( CORE_USER ).getDismissedItems();
 
 		return (
@@ -322,8 +353,6 @@ export function requireEmailReportingSubscribed() {
  */
 export function requireSetupError() {
 	return async ( { select, resolveSelect } ) => {
-		// The getSetupErrorMessage() selector relies on the resolution of the
-		// getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return !! select( CORE_SITE ).getSetupErrorMessage();
@@ -342,8 +371,6 @@ export function requireSetupError() {
  */
 export function requireConsentModeDisabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isConsentModeEnabled() selector relies on the resolution of the
-		// getConsentModeSettings() resolver.
 		await resolveSelect( CORE_SITE ).getConsentModeSettings();
 
 		return false === select( CORE_SITE ).isConsentModeEnabled();
@@ -371,8 +398,6 @@ export function requireAdsConnected() {
  */
 export function requireCanChangePluginAutoUpdates() {
 	return async ( { select, resolveSelect } ) => {
-		// The hasChangePluginAutoUpdatesCapacity() selector relies on the
-		// resolution of the getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return (
@@ -390,8 +415,6 @@ export function requireCanChangePluginAutoUpdates() {
  */
 export function requireSiteKitAutoUpdatesEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The getSiteKitAutoUpdatesEnabled() selector relies on the resolution
-		// of the getSiteInfo() resolver.
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 
 		return true === select( CORE_SITE ).getSiteKitAutoUpdatesEnabled();
@@ -419,8 +442,6 @@ export function requireAnyGoogleTagGatewayModuleConnected() {
  */
 export function requireGoogleTagGatewayEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isGoogleTagGatewayEnabled() selector relies on the resolution of
-		// the getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isGoogleTagGatewayEnabled();
@@ -439,8 +460,6 @@ export function requireGoogleTagGatewayEnabled() {
  */
 export function requireGTGHealthy() {
 	return async ( { select, resolveSelect } ) => {
-		// The isGTGHealthy() selector relies on the resolution of the
-		// getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isGTGHealthy();
@@ -459,8 +478,6 @@ export function requireGTGHealthy() {
  */
 export function requireGTGScriptAccessEnabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isScriptAccessEnabled() selector relies on the resolution of the
-		// getGoogleTagGatewaySettings() resolver.
 		await resolveSelect( CORE_SITE ).getGoogleTagGatewaySettings();
 
 		return true === select( CORE_SITE ).isScriptAccessEnabled();
@@ -479,8 +496,6 @@ export function requireGTGScriptAccessEnabled() {
  */
 export function requireSiteEmailReportingNotDisabled() {
 	return async ( { select, resolveSelect } ) => {
-		// The isEmailReportingEnabled() selector relies on the resolution of
-		// the getEmailReportingSettings() resolver.
 		await resolveSelect( CORE_SITE ).getEmailReportingSettings();
 
 		return false !== select( CORE_SITE ).isEmailReportingEnabled();
@@ -510,8 +525,6 @@ export function requireViewOnlyContext() {
 export function requireModuleViewable( slug ) {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The getViewableModules() selector relies on the resolution of the
-			// getModules() and getCapabilities() resolvers.
 			resolveSelect( CORE_MODULES ).getModules(),
 			resolveSelect( CORE_USER ).getCapabilities(),
 		] );
@@ -567,8 +580,6 @@ export function requireHasRecoverableModules() {
  */
 export function requireModuleZeroData( datastoreSlug ) {
 	return async ( { select, resolveSelect } ) => {
-		// The hasZeroData() selector relies on the resolution of the sample
-		// report.
 		await resolveSelect( datastoreSlug ).getReport(
 			select( datastoreSlug ).getSampleReportArgs()
 		);
@@ -594,5 +605,20 @@ export function requireQueryArg( name, value ) {
 		const queryArg = getQueryArg( location.href, name );
 
 		return undefined === value ? !! queryArg : queryArg === value;
+	};
+}
+
+/**
+ * Returns a function that checks if the site's home URL uses HTTPS.
+ *
+ * @since 1.188.0
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the home URL uses HTTPS or not.
+ */
+export function requireHomeURLUsingHTTPS() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		return isURLUsingHTTPS( select( CORE_SITE ).getHomeURL() );
 	};
 }

@@ -15,8 +15,8 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ContentPolicyStatus;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication as WCP_Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ContentPolicyStatus;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication as WCP_Publication;
 
 /**
  * @group Modules

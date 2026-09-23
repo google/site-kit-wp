@@ -29,6 +29,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -130,7 +131,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 	 * Adds the chart tile's report for every ecommerce event and provider tab,
 	 * so no test leaves the tile in its loading placeholder.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {void}
 	 */
@@ -195,14 +196,16 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		const topTrafficTotalOptions = {
 			...dates,
 			dimensionFilters,
 			metrics: [ { name: 'eventCount' } ],
-			reportID: `analytics-4_site-goals_top-traffic-channels-total_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-total_ecommerce',
 		};
 
 		const topTrafficRateOptions = {
@@ -218,7 +221,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels-rate_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-rate_ecommerce',
 		};
 
 		const topPagesOptions = {
@@ -234,7 +238,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-pages_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_top-pages_ecommerce',
 		};
 
 		const pagePaths = [ '/test-post-1/', '/test-post-2/', '/test-post-3/' ];
@@ -266,7 +270,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_visitor-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_visitor-type_ecommerce',
 		};
 
 		const citiesOptions = {
@@ -288,7 +292,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_cities_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_cities_ecommerce',
 		};
 
 		const countriesOptions = {
@@ -310,7 +314,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_countries_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_countries_ecommerce',
 		};
 
 		const deviceTypeOptions = {
@@ -326,7 +330,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_device-type_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID: 'analytics-4_goal-driver-reports_device-type_ecommerce',
 		};
 
 		if ( loading ) {
@@ -725,6 +729,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -848,6 +857,13 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 		expect( getByText( 'Sales by visitor type' ) ).toBeInTheDocument();
 		expect( getAllByText( 'Organic Search' ).length ).toBeGreaterThan( 0 );
+		// The site-wide total (100) is larger than the sum of the ranked
+		// rows above (54 + 23 + 16 = 93), so these percentages only match if
+		// "Top traffic channels" divides by that total rather than by the
+		// visible rows.
+		expect( getByText( '54%' ) ).toBeInTheDocument();
+		expect( getByText( '23%' ) ).toBeInTheDocument();
+		expect( getByText( '16%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelectorAll(
 				'.googlesitekit-site-goals-goal-drivers-section__tile:not(.googlesitekit-site-goals-goal-drivers-section__tile--empty)'
@@ -1241,7 +1257,8 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			],
 			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 			keepEmptyRows: false,
-			reportID: `analytics-4_site-goals_top-traffic-channels_${ GOAL_TYPES.ECOMMERCE }`,
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels_ecommerce',
 		};
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(

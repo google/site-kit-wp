@@ -50,7 +50,7 @@ describe( 'TrafficOverviewSourceLink', () => {
 	/**
 	 * Reads the rendered link's address and decodes it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return {string} The decoded address.
 	 */
@@ -137,5 +137,14 @@ describe( 'TrafficOverviewSourceLink', () => {
 		} );
 
 		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+	} );
+
+	it( 'renders nothing for a view-only user', () => {
+		const { container } = render( <TrafficOverviewSourceLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );
