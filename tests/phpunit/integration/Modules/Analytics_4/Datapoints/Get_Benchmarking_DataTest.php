@@ -90,20 +90,16 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->fake_proxy_site_connection();
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
-		// Store the token, the verification and the granted scopes first, then
-		// build the module on an Authentication that reads them back. A client
-		// that answered a scope question before the grant keeps its old answer.
-		$setup_auth = new Authentication( $this->context, $this->options, $user_options );
-		$setup_auth->verification()->set( true );
-		$setup_auth->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
-		$setup_auth->get_oauth_client()->set_granted_scopes(
+		$authentication = new Authentication( $this->context, $this->options, $user_options );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
+		$authentication->get_oauth_client()->set_granted_scopes(
 			array_merge(
-				$setup_auth->get_oauth_client()->get_required_scopes(),
+				$authentication->get_oauth_client()->get_required_scopes(),
 				array( Analytics_4::READONLY_SCOPE )
 			)
 		);
 
-		$authentication  = new Authentication( $this->context, $this->options, $user_options );
 		$this->analytics = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
 		$this->modules   = new Modules( $this->context, $this->options, $user_options, $authentication );
 
@@ -153,7 +149,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 	public function tear_down() {
 		parent::tear_down();
-		// This ensures the REST server is initialized fresh for each test using it.
+		// Leave no server behind for the next test class.
 		unset( $GLOBALS['wp_rest_server'] );
 	}
 
@@ -292,8 +288,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
-		// A datapoint the module never defines is a datapoint no report can run
-		// behind, which is what the refusal below stands for.
+		// The module never defines the datapoint, so no report can run.
 		$this->assertNotContains( 'benchmarking-data', $this->analytics->get_datapoints(), 'The datapoint should not be defined with the feature flag off.' );
 
 		$response = $this->request();
@@ -544,10 +539,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 	public function test_rest_endpoint__refuses_an_administrator_who_is_not_authenticated() {
 		$builder = $this->enable_datapoint();
 
-		// The route's own default for a read datapoint lets any user through
-		// who can run setup, whether or not they have connected an account.
-		// The datapoint declares a check that asks about the dashboard instead,
-		// and this administrator is the user the two answer differently for.
+		// The route default accepts anyone who can run setup; the datapoint asks
+		// about the dashboard instead. This administrator is where they disagree.
 		$other_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $other_admin );
 		$this->register_permissions_for_user( $other_admin );
