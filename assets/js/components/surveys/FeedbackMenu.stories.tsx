@@ -32,12 +32,12 @@ function Template() {
 					{ id: 'hide', label: 'Just hide this suggestion' },
 					{
 						id: 'not-relevant',
-						label: "It's not relevant to my site goals",
+						label: 'It’s not relevant to my site goals',
 						value: 'not_relevant',
 					},
 					{
 						id: 'already-using',
-						label: "I'm already using another tool",
+						label: 'I’m already using another tool',
 						value: 'already_using',
 					},
 					{

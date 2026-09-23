@@ -327,8 +327,8 @@ describe( 'FeatureCard', () => {
 
 	it.each( [
 		[ 'Just hide this suggestion', undefined ],
-		[ "It's not relevant to my site goals", 'not_relevant' ],
-		[ "I'm already using another tool", 'already_using' ],
+		[ 'It’s not relevant to my site goals', 'not_relevant' ],
+		[ 'I’m already using another tool', 'already_using' ],
 		[ 'Setup seems complex', 'too_complicated' ],
 	] )(
 		'should dismiss the feature and send only the feedback chosen with "%s"',

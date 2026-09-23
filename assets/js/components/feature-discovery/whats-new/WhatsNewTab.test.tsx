@@ -309,7 +309,7 @@ describe( 'WhatsNewTab', () => {
 		);
 		fireEvent.click(
 			getByRole( 'menuitem', {
-				name: "It's not relevant to my site goals",
+				name: 'It’s not relevant to my site goals',
 			} )
 		);
 		await waitForRegistry();

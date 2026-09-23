@@ -94,7 +94,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 			{
 				id: FEATURE_RELEVANCY_REASONS.NOT_RELEVANT,
 				label: __(
-					"It’s not relevant to my site goals",
+					'It’s not relevant to my site goals',
 					'google-site-kit'
 				),
 				value: getFeatureRelevancyTriggerID(
@@ -105,7 +105,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 			{
 				id: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
 				label: __(
-					"I’m already using another tool",
+					'I’m already using another tool',
 					'google-site-kit'
 				),
 				value: getFeatureRelevancyTriggerID(
