@@ -38,7 +38,7 @@ const ALREADY_REGISTERED_MESSAGE = 'has been already registered';
  *
  * @since n.e.x.t
  *
- * @param {Object} page Playwright page to patch.
+ * @param {Object} page The Playwright page to patch.
  */
 function ignoreRegisteredBindings( page ) {
 	if ( page.__ignoresRegisteredBindings ) {
@@ -65,16 +65,16 @@ module.exports = {
 	/**
 	 * Loads the page with the story's feature flags before the story renders.
 	 *
-	 * Without this load, the decorator in `storybook/preview.js` reloads the
-	 * page during the test. The test then passes, but the story never
-	 * rendered.
+	 * If the page loads without the story's feature flags, the decorator in
+	 * `storybook/preview.js` that calls `reloadForFeatures()` reloads the page
+	 * during the test. The test then passes, but the story never rendered.
 	 *
 	 * A page load removes the `__test` helper, so `preVisit()` adds it again.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} page    Playwright page for the current test file.
-	 * @param {Object} context Test runner context for the story.
+	 * @param {Object} page    The Playwright page for the current test file.
+	 * @param {Object} context The test runner context for the story.
 	 */
 	async preVisit( page, context ) {
 		// Wait for the preview to load its story store, which
@@ -83,15 +83,16 @@ module.exports = {
 
 		const { parameters } = await getStoryContext( page, context );
 		const features = parameters.features || [];
-		const activeFeatures = await page.evaluate(
+		const enabledFeatures = await page.evaluate(
 			() => window._googlesitekitBaseData.enabledFeatures
 		);
 
-		if ( xor( features, activeFeatures ).length > 0 ) {
+		if ( xor( features, enabledFeatures ).length > 0 ) {
 			// `storybook/preview-head.html` reads the `features` query
 			// parameter into session storage. `setupPage()` below loads
-			// `iframe.html` again with no query string, and reads the flags
-			// back from session storage.
+			// `iframe.html` again with no query string, and
+			// `storybook/preview-head.html` then reads the flags back from
+			// session storage.
 			await page.goto(
 				new URL(
 					`iframe.html?features=${ features.join( ',' ) }`,

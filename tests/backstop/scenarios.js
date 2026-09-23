@@ -48,11 +48,11 @@ const storyFiles = flatten(
 );
 
 /**
- * Reads the `features` list out of a `parameters` object in a story file.
+ * Gets the `features` list from the Babel node for a story file's `parameters` object.
  *
  * @since n.e.x.t
  *
- * @param {Object} parameters Babel node for the object assigned to `parameters`.
+ * @param {Object} parameters The Babel node for the object assigned to `parameters`.
  * @return {string[]|undefined} Feature flag names, or `undefined` when the object sets none.
  */
 function getFeatures( parameters ) {
@@ -117,8 +117,8 @@ storyFiles.forEach( ( storyFile ) => {
 					}
 				} );
 
-				// `nodeValue` takes a string, a number, or a boolean, and
-				// never an array, so the `features` list needs its own read.
+				// `nodeValue` keeps only a string, a number, or a boolean, so
+				// `getFeatures()` reads the `features` array.
 				if ( node.left.property?.name === 'parameters' ) {
 					const features = getFeatures( node.right );
 

@@ -22,6 +22,11 @@
 import { xor } from 'lodash';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs, hasQueryArg } from '@wordpress/url';
+
+/**
  * Reloads Storybook when a story needs different feature flags than the page
  * loaded with.
  *
@@ -32,30 +37,49 @@ import { xor } from 'lodash';
  *
  * @since n.e.x.t
  *
- * @param {string[]} [features] Optional. Feature flags the story needs.
- * @return {boolean} `true` when Storybook is reloading, so
- *                   `storybook/preview.js` renders nothing.
+ * @param {string[]} [features] Optional. The feature flags the story needs.
+ * @return {boolean} `true` when Storybook is reloading, and `false` when the
+ *                   page already has the flags or session storage can't store
+ *                   them.
  */
 export function reloadForFeatures( features: string[] = [] ): boolean {
 	// `enabledFeatures` is the list the bundle read at module-evaluation time.
-	const activeFeatures = window._googlesitekitBaseData.enabledFeatures || [];
+	const enabledFeatures = window._googlesitekitBaseData.enabledFeatures || [];
 
 	// `xor()` returns the flags only one list has, so an empty result means the
 	// page already has the flags the story needs.
-	if ( xor( activeFeatures, features ).length === 0 ) {
+	if ( xor( enabledFeatures, features ).length === 0 ) {
 		return false;
 	}
 
 	try {
 		// The inline script in `storybook/preview-head.html` reads the same
-		// key, so change both together.
+		// session storage entry, so a change to its name goes in that file too.
 		window.sessionStorage.setItem(
 			'googlesitekit-storybook-features',
 			JSON.stringify( features )
 		);
 	} catch {
-		// Without the stored flags, the page reloads forever.
+		// Reloading without the stored flags would load the old flags again and
+		// reload forever, so skip the reload.
 		return false;
+	}
+
+	// A story page opened outside the Storybook app can hold a `features` value
+	// in its URL, and `storybook/preview-head.html` reads that value before
+	// session storage. A plain reload would load the old flags forever, so
+	// `reloadForFeatures()` writes the story's flags into the URL instead.
+	if (
+		window.parent === window &&
+		hasQueryArg( window.location.href, 'features' )
+	) {
+		window.location.replace(
+			addQueryArgs( window.location.href, {
+				features: features.join( ',' ),
+			} )
+		);
+
+		return true;
 	}
 
 	// `parent` is the Storybook app, whose own URL holds the selected story, so

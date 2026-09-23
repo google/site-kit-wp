@@ -23,6 +23,7 @@ import { reloadForFeatures } from './reloadForFeatures';
 
 describe( 'reloadForFeatures', () => {
 	const pageReloadMock = jest.fn();
+	const pageReplaceMock = jest.fn();
 	let oldLocation: Location;
 
 	beforeAll( () => {
@@ -39,6 +40,15 @@ describe( 'reloadForFeatures', () => {
 					configurable: true,
 					value: pageReloadMock,
 				},
+				replace: {
+					configurable: true,
+					value: pageReplaceMock,
+				},
+				href: {
+					configurable: true,
+					writable: true,
+					value: '',
+				},
 			}
 		) as Location;
 	} );
@@ -49,8 +59,10 @@ describe( 'reloadForFeatures', () => {
 
 	afterEach( () => {
 		delete global._googlesitekitBaseData.enabledFeatures;
+		global.location.href = '';
 		window.sessionStorage.clear();
 		pageReloadMock.mockClear();
+		pageReplaceMock.mockClear();
 		jest.restoreAllMocks();
 	} );
 
@@ -107,8 +119,9 @@ describe( 'reloadForFeatures', () => {
 		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
 
 		// `jest-localstorage-mock` already makes `setItem` a mock, so
-		// `jest.restoreAllMocks()` does not remove the throw. Without `Once`,
-		// every later test in this file fails.
+		// `jest.restoreAllMocks()` does not remove the throw. Without
+		// `mockImplementationOnce()`, the throw stays on `setItem` and every
+		// later test in this file fails.
 		jest.spyOn( window.sessionStorage, 'setItem' ).mockImplementationOnce(
 			() => {
 				throw new Error( 'Session storage is unavailable.' );
@@ -116,6 +129,19 @@ describe( 'reloadForFeatures', () => {
 		);
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( false );
+		expect( pageReloadMock ).not.toHaveBeenCalled();
+	} );
+
+	it( 'sets the flags in the page URL and loads it when the URL holds a `features` value', () => {
+		global._googlesitekitBaseData.enabledFeatures = [];
+		global.location.href =
+			'http://localhost/iframe.html?viewMode=story&id=story-id&features=';
+
+		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
+		expect( pageReplaceMock ).toHaveBeenCalledWith(
+			'http://localhost/iframe.html?viewMode=story&id=story-id&features=rrmExpressSetup'
+		);
+		expect( pageReplaceMock ).toHaveBeenCalledTimes( 1 );
 		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 

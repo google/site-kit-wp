@@ -69,8 +69,8 @@ describe( 'SettingsEdit', () => {
 	};
 
 	/**
-	 * Gives the registry the site info, modules, user, and settings every test
-	 * starts from.
+	 * Gives the registry the site info, modules, user, publications, settings,
+	 * and dismissed items every test starts from.
 	 *
 	 * @since n.e.x.t
 	 */

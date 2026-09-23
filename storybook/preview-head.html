@@ -2,7 +2,7 @@
 	// The bundle reads `_googlesitekitBaseData.enabledFeatures` at
 	// module-evaluation time, so the flags have to be set first.
 	( function () {
-		var STORAGE_KEY = 'googlesitekit-storybook-features';
+		var FEATURES_STORAGE_KEY = 'googlesitekit-storybook-features';
 		var urlFeatures = new URLSearchParams( window.location.search ).get(
 			'features'
 		);
@@ -11,16 +11,17 @@
 		try {
 			if ( urlFeatures === null ) {
 				var storedFeatures =
-					window.sessionStorage.getItem( STORAGE_KEY );
+					window.sessionStorage.getItem( FEATURES_STORAGE_KEY );
 				features = storedFeatures ? JSON.parse( storedFeatures ) : [];
 			} else {
 				window.sessionStorage.setItem(
-					STORAGE_KEY,
+					FEATURES_STORAGE_KEY,
 					JSON.stringify( features )
 				);
 			}
 		} catch ( error ) {
-			// Without session storage, only the query parameter sets the flags.
+			// Without session storage, only the `features` query parameter sets
+			// the flags.
 		}
 
 		window._googlesitekitBaseData = { enabledFeatures: features };
