@@ -1,0 +1,8 @@
+{
+  "name": "human-voice",
+  "version": "0.2.0",
+  "author": {
+    "name": "Sherv"
+  },
+  "description": "Gets your writing rules followed rather than ignored. It reads every text Claude writes and reports each rule broken with the edit that fixes it. Four hooks read the text in Claude Code. One reads the reply in your terminal. One reads a file of any type Claude saves, with its name and the names of its folders. One reads the text inside a shell command before it runs. That is a commit message, a pull request body or a file written through the shell. One reads a subagent's report. An output style keeps every reply in the same voice while the plugin is on. A skill takes the same rules to a chat product, where no hook runs. The plugin stays off until a project's settings file turns it on."
+}
