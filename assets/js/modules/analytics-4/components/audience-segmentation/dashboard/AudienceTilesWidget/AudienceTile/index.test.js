@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
@@ -814,6 +815,47 @@ describe( 'AudienceTile', () => {
 					'mainDashboard_audiences-top-content-cta',
 					'setup_error_cancel'
 				);
+			} );
+		} );
+
+		describe( 'error on another custom dimension', () => {
+			beforeEach( async () => {
+				// The CTA creates every custom dimension, not only the post type
+				// one this tile reports on.
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_author',
+					error: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+				} );
+
+				( { getByText } = render(
+					<Fragment>
+						<WidgetWithComponentProps { ...props } />
+						<CustomDimensionErrorModal />
+					</Fragment>,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					await waitForDefaultTimeouts();
+				} );
+			} );
+
+			it( 'should show the generic error modal', () => {
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( 'audience-tiles-show-error-modal' )
+				).toBe( true );
+				expect(
+					getByText( /Failed to enable metric/i )
+				).toBeInTheDocument();
 			} );
 		} );
 	} );

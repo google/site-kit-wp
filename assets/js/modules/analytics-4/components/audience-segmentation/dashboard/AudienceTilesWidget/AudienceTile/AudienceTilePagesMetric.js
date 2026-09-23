@@ -42,6 +42,7 @@ import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
@@ -70,9 +71,14 @@ export default function AudienceTilePagesMetric( {
 			)
 	);
 
+	// The CTA creates every custom dimension, so a failure on any of them
+	// shows the error modal.
 	const customDimensionError = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
-			postTypeDimension
+		ALL_CUSTOM_DIMENSIONS.some(
+			( customDimension ) =>
+				!! select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
+					customDimension
+				)
 		)
 	);
 
