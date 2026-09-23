@@ -31,7 +31,7 @@ import type { ConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/u
  *
  * Only a user allowed to read the conversion tracking setting is held to it;
  * anyone else falls back to the dimensions alone, as the setting never loads
- * for them.
+ * for them. This matches how `BreakdownNoticeArea` waits for the setting.
  *
  * @since n.e.x.t
  *
@@ -52,10 +52,6 @@ export function isSiteGoalsBreakdownEnabled(
 	// Without the dimensions there is nothing to wait for.
 	if ( ! hasBreakdownDimensions ) {
 		return false;
-	}
-
-	if ( canManageOptions === undefined ) {
-		return undefined;
 	}
 
 	if ( ! canManageOptions ) {
