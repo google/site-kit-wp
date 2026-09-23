@@ -36,6 +36,7 @@ import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useIsSiteGoalsBreakdownEnabled } from '@/js/modules/analytics-4/components/site-goals/hooks/useIsSiteGoalsBreakdownEnabled';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 interface GatheringBreakdownDataBadgeProps {
@@ -47,9 +48,9 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 	goalType,
 	variant = 'panel',
 } ) => {
-	// Gate on this section's own breakdown dimension, matching the per-goal-type
-	// "New" notice (the ecommerce dimension for the store, the form dimension for
-	// lead generation).
+	// Gate on this section's own breakdown being enabled, matching the
+	// per-goal-type "New" notice (the ecommerce dimension for the store, the
+	// form dimension for lead generation, plus plugin conversion tracking).
 	const requiredDimension =
 		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
 	const hasBreakdownDimension = useSelect(
@@ -59,15 +60,18 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 			),
 		[ requiredDimension ]
 	);
+	const isBreakdownEnabled = useIsSiteGoalsBreakdownEnabled(
+		hasBreakdownDimension
+	);
 
 	const isGatheringData = useSelect(
 		( select: Select ) =>
-			hasBreakdownDimension
+			isBreakdownEnabled
 				? select(
 						MODULES_ANALYTICS_4
 				  ).areCustomDimensionsGatheringData( [ requiredDimension ] )
 				: undefined,
-		[ hasBreakdownDimension, requiredDimension ]
+		[ isBreakdownEnabled, requiredDimension ]
 	);
 
 	const isSyncing = useSelect(
@@ -87,7 +91,7 @@ const GatheringBreakdownDataBadge: FC< GatheringBreakdownDataBadgeProps > = ( {
 	// Avoid a flash while either gating selector is still resolving, or while a
 	// dimensions sync is in flight.
 	if (
-		hasBreakdownDimension === undefined ||
+		isBreakdownEnabled === undefined ||
 		isGatheringData === undefined ||
 		isSyncing
 	) {
