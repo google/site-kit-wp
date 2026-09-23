@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import {
@@ -27,6 +32,7 @@ import {
 import { provideKeyMetricsWidgetRegistrations } from '@/js/components/KeyMetrics/test-utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	CORE_USER,
@@ -46,9 +52,11 @@ import {
 	KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import DashboardMainEffectComponent from '@/js/modules/analytics-4/components/DashboardMainEffectComponent';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as analytics4Fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -59,6 +67,7 @@ import {
 	act,
 	fireEvent,
 	render,
+	waitFor,
 	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
 import {
@@ -938,6 +947,113 @@ describe( 'MetricsSelectionPanel', () => {
 						name: /Apply changes/i,
 					} )
 				).toBeInTheDocument();
+			} );
+
+			it( 'should create every custom dimension on save, leaving plugin conversion tracking unchanged', async () => {
+				fetchMock.reset();
+
+				const propertyID = '1234567';
+				const selectedMetrics = [
+					KM_SEARCH_CONSOLE_POPULAR_KEYWORDS,
+					KM_ANALYTICS_RETURNING_VISITORS,
+					KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
+				];
+
+				provideUserAuthentication( registry, {
+					grantedScopes: [ EDIT_SCOPE ],
+				} );
+				provideUserInfo( registry, { id: 1 } );
+				registry
+					.dispatch( CORE_SITE )
+					.setKeyMetricsSetupCompletedBy( 1 );
+				registry
+					.dispatch( CORE_SITE )
+					.receiveGetConversionTrackingSettings( { enabled: false } );
+
+				fetchMock.postOnce( coreKeyMetricsEndpointRegExp, {
+					body: {
+						widgetSlugs: selectedMetrics,
+						isWidgetHidden: false,
+					},
+					status: 200,
+				} );
+
+				provideKeyMetrics( registry, { widgetSlugs: selectedMetrics } );
+
+				registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+					propertyID,
+					availableCustomDimensions: [],
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetCustomDimensions( [], { propertyID } );
+
+				const createEndpoint = new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
+				);
+				// Respond to each create request with the dimension it was sent.
+				fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+					body: JSON.parse( body ).data.customDimension,
+					status: 200,
+				} ) );
+				fetchMock.postOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					),
+					{ body: ALL_CUSTOM_DIMENSIONS, status: 200 }
+				);
+
+				const { getByRole, unmount, waitForRegistry } = render(
+					<Fragment>
+						<MetricsSelectionPanel />
+						<DashboardMainEffectComponent />
+					</Fragment>,
+					{
+						registry,
+					}
+				);
+
+				await waitForRegistry();
+
+				await act( async () => {
+					fireEvent.click(
+						getByRole( 'button', { name: /Save selection/i } )
+					);
+
+					await waitFor( () => {
+						expect(
+							registry
+								.select( MODULES_ANALYTICS_4 )
+								.getAvailableCustomDimensions()
+						).toEqual( ALL_CUSTOM_DIMENSIONS );
+					} );
+
+					await waitForDefaultTimeouts();
+				} );
+
+				const createdDimensionNames = fetchMock
+					.calls( createEndpoint )
+					.map(
+						( [ , request ] ) =>
+							JSON.parse( request.body ).data.customDimension
+								.parameterName
+					);
+
+				expect( createdDimensionNames ).toEqual(
+					ALL_CUSTOM_DIMENSIONS
+				);
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/core/site/data/conversion-tracking'
+					)
+				);
+				expect(
+					registry.select( CORE_SITE ).isConversionTrackingEnabled()
+				).toBe( false );
+
+				// The save closes the panel, so unmount it here to keep its
+				// updates from leaking into the next test.
+				unmount();
 			} );
 		} );
 
