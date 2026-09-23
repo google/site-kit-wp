@@ -1088,12 +1088,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
 			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
 				array(
-					'module'   => $this,
-					'service'  => function () {
+					'module'  => $this,
+					'service' => function () {
 						return $this->get_service( 'analyticsdata' );
 					},
-					'settings' => $this->get_settings(),
-					'context'  => $this->context,
+					'context' => $this->context,
 				)
 			);
 		}
