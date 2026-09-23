@@ -90,21 +90,22 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->fake_proxy_site_connection();
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
-		$authentication = new Authentication( $this->context, $this->options, $user_options );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
-
-		$this->analytics = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
-		$this->modules   = new Modules( $this->context, $this->options, $user_options, $authentication );
-
-		// The module's own scope reaches the client through a filter its
-		// `register()` adds, which this test does not call.
-		$authentication->get_oauth_client()->set_granted_scopes(
+		// Store the token, the verification and the granted scopes first, then
+		// build the module on an Authentication that reads them back. A client
+		// that answered a scope question before the grant keeps its old answer.
+		$setup_auth = new Authentication( $this->context, $this->options, $user_options );
+		$setup_auth->verification()->set( true );
+		$setup_auth->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
+		$setup_auth->get_oauth_client()->set_granted_scopes(
 			array_merge(
-				$authentication->get_oauth_client()->get_required_scopes(),
-				$this->analytics->get_scopes()
+				$setup_auth->get_oauth_client()->get_required_scopes(),
+				array( Analytics_4::READONLY_SCOPE )
 			)
 		);
+
+		$authentication  = new Authentication( $this->context, $this->options, $user_options );
+		$this->analytics = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
+		$this->modules   = new Modules( $this->context, $this->options, $user_options, $authentication );
 
 		// Answer from the module instance the test holds, so a test can reach
 		// the datapoint the controller uses.
@@ -112,6 +113,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
 
 		$this->register_permissions_for_user( $this->admin_id );
+
+		// A REST server left behind by an earlier test class still holds that
+		// class's routes, and the request would reach its module rather than
+		// the one built above.
+		unset( $GLOBALS['wp_rest_server'] );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		( new REST_Modules_Controller( $this->modules ) )->register();
@@ -161,7 +167,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * @return Response_Builder The recording builder, whose `calls` property holds each `[ $start_date, $end_date ]` pair.
 	 */
 	private function create_recording_builder( $result = null ) {
-		return new class( $this->analytics, $this->context, $result ) extends Response_Builder {
+		return new class( $this->context, $this->analytics, $result ) extends Response_Builder {
 
 			/**
 			 * Each `[ $start_date, $end_date ]` pair `build()` was called with.
@@ -177,8 +183,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 			 */
 			private $result;
 
-			public function __construct( Analytics_4 $analytics_4, Context $context, $result ) {
-				parent::__construct( $analytics_4, $context );
+			public function __construct( Context $context, Analytics_4 $analytics_4, $result ) {
+				parent::__construct( $context, $analytics_4 );
 				$this->result = $result;
 			}
 
