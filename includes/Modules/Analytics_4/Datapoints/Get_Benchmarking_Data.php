@@ -20,7 +20,6 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
-use Google\Site_Kit\Modules\Analytics_4\Settings;
 use WP_Error;
 
 /**
@@ -55,14 +54,6 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	private $module;
 
 	/**
-	 * Module settings instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Settings
-	 */
-	private $settings;
-
-	/**
 	 * Context instance.
 	 *
 	 * @since n.e.x.t
@@ -88,9 +79,8 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 		$this->module           = $definition['module'];
-		$this->settings         = $definition['settings'];
 		$this->context          = $definition['context'];
-		$this->response_builder = new Response_Builder( $this->module, $this->context );
+		$this->response_builder = new Response_Builder( $this->context, $this->module );
 	}
 
 	/**
