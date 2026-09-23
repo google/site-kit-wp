@@ -277,6 +277,31 @@ describe( 'FeatureCard', () => {
 		expect( getByText( 'Paid service' ) ).toBeInTheDocument();
 	} );
 
+	it( 'should render the feature’s own CTA in the slot the card provides', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { container, getByRole } = render(
+			<FeatureCard slug="test-feature" />,
+			{ registry }
+		);
+
+		const cta = getByRole( 'button', { name: 'Try it now' } );
+
+		expect( cta ).toBeInTheDocument();
+		expect( cta ).toHaveClass( 'mdc-button--tertiary' );
+		expect(
+			container.querySelector( '.googlesitekit-feature-card__actions' )
+		).toContainElement( cta );
+	} );
+
 	it( 'should render the dismiss control only when the card is dismissible', () => {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 
