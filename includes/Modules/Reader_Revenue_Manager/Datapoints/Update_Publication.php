@@ -82,7 +82,7 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 		$publication_data = $data_request['data'];
 		$publication      = new Publication();
 		$update_mask      = array();
-		$rrm_product      = null;
+		$rrm_product      = new RrmProduct();
 		$tos_acceptance   = null;
 
 		if ( array_key_exists( 'publicationType', $publication_data ) ) {
@@ -106,7 +106,6 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 			}
 
 			if ( $tos_acceptance ) {
-				$rrm_product = $rrm_product ?: new RrmProduct();
 				$rrm_product->setTosAcceptance( $tos_acceptance );
 				$publication->setRrmProduct( $rrm_product );
 			}
