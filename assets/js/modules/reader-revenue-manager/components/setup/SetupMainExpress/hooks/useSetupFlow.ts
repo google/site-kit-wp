@@ -24,15 +24,10 @@ import { useCallback, useEffect } from 'react';
 /**
  * Internal dependencies
  */
-import {
-	type Registry,
-	Select,
-	useRegistry,
-	useSelect,
-} from 'googlesitekit-data';
-import { type SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { Registry, Select, useRegistry, useSelect } from 'googlesitekit-data';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import useStep from './useStep';
 
 /**
@@ -43,9 +38,9 @@ import useStep from './useStep';
  *
  * @since n.e.x.t
  *
- * @param {Array}    steps       Ordered step definitions.
- * @param {Function} select      Registry select function.
- * @param {number}   [fromIndex] Optional. Index to start from. Default 0.
+ * @param {Array.<Object>} steps       Ordered step definitions.
+ * @param {Function}       select      Registry select function.
+ * @param {number}         [fromIndex] Optional. Index to start from. Default 0.
  * @return {(Object|undefined)} The step definition, or `undefined` if every step from the index is complete.
  */
 export function resolveStep(
@@ -66,8 +61,8 @@ export function resolveStep(
  *
  * @since n.e.x.t
  *
- * @param {Array}    steps  Ordered step definitions.
- * @param {Function} select Registry select function.
+ * @param {Array.<Object>} steps  Ordered step definitions.
+ * @param {Function}       select Registry select function.
  * @return {(Object|undefined)} The step definition, or `undefined` if nothing is holding the flow back.
  */
 export function findBlockingStep(
@@ -89,7 +84,7 @@ export function findBlockingStep(
  *
  * @since n.e.x.t
  *
- * @param {Array} steps Ordered step definitions. Must be referentially stable.
+ * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.
  */
 export default function useSetupFlow( steps: SetupStep[] ): {

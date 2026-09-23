@@ -204,19 +204,24 @@ describe( 'SetupCTANewsletterSignup', () => {
 		}
 	);
 
-	it( 'renders no step content for an unknown step', () => {
+	it( 'redirects an unknown step to the first incomplete step', async () => {
 		global.location.href = 'http://example.com/?step=unknown-step';
 
-		const { getByText, queryByText } = render(
-			<SetupCTANewsletterSignup />,
-			{ registry }
-		);
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( { publicationID: '' } );
 
-		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
-
-		Object.values( STEP_CONTENT ).forEach( ( content ) => {
-			expect( queryByText( content ) ).not.toBeInTheDocument();
+		const { getByText } = render( <SetupCTANewsletterSignup />, {
+			registry,
 		} );
+
+		await waitFor( () => {
+			expect(
+				getByText( STEP_CONTENT[ 'connect-publication' ] )
+			).toBeInTheDocument();
+		} );
+
+		expect( global.location.href ).toContain( 'step=connect-publication' );
 	} );
 
 	describe( 'setup complete step', () => {

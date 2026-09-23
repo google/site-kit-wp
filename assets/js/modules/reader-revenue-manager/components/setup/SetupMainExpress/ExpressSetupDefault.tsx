@@ -31,7 +31,7 @@ import {
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { useSetupFlow } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
-import { type SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
 

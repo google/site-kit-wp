@@ -38,7 +38,7 @@ import {
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
 import { useSetupFlow } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
-import { type SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
 import ViewOnSiteCTA from './ViewOnSiteCTA';

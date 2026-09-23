@@ -27,7 +27,7 @@ import { FC } from 'react';
 import { Select, useSelect } from 'googlesitekit-data';
 import Stepper from '@/js/components/Stepper';
 import Step from '@/js/components/Stepper/Step';
-import { type SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 
 interface ExpressSetupStepsProps {
 	steps: SetupStep[];

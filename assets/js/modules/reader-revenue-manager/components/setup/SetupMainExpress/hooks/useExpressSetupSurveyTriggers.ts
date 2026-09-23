@@ -28,7 +28,7 @@ import { useMount } from 'react-use';
 import { useDispatch } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { setupCompleteStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepSetupComplete';
+import { setupCompleteStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import useStep from './useStep';
 
