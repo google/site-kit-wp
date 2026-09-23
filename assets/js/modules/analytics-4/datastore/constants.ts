@@ -104,7 +104,7 @@ export const CUSTOM_DIMENSION_DEFINITIONS = {
 	},
 };
 
-export const SITE_GOALS_CUSTOM_DIMENSIONS = Object.keys(
+export const ALL_CUSTOM_DIMENSIONS = Object.keys(
 	CUSTOM_DIMENSION_DEFINITIONS
 );
 

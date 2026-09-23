@@ -43,9 +43,9 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { isValidPropertyID } from '@/js/modules/analytics-4/utils/validation';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
-	SITE_GOALS_CUSTOM_DIMENSIONS,
 } from './constants';
 
 const customDimensionFields = [
@@ -225,7 +225,7 @@ const baseActions = {
 			.isAdvancedDataBreakdownsEnabled( propertyID );
 
 		if ( isAdvancedDataBreakdownsEnabled ) {
-			SITE_GOALS_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
+			ALL_CUSTOM_DIMENSIONS.forEach( ( dimension ) => {
 				if ( ! uniqueRequiredCustomDimensions.includes( dimension ) ) {
 					uniqueRequiredCustomDimensions.push( dimension );
 				}

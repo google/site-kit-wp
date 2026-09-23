@@ -26,10 +26,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
-	SITE_GOALS_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	act,
@@ -184,7 +184,7 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetCustomDimensions( SITE_GOALS_CUSTOM_DIMENSIONS, {
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
 				propertyID,
 			} );
 
@@ -212,7 +212,7 @@ describe( 'SettingsAdvancedDataBreakdowns', () => {
 		// Another property already has every Site Goals custom dimension.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetCustomDimensions( SITE_GOALS_CUSTOM_DIMENSIONS, {
+			.receiveGetCustomDimensions( ALL_CUSTOM_DIMENSIONS, {
 				propertyID: '654321',
 			} );
 
