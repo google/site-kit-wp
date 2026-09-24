@@ -83,9 +83,7 @@ function getTopAuthorsDrivingLeadsReportOptions( select: Select ) {
 
 /**
  * Gets the site-wide total report options for the Top Authors Driving
- * Leads widget, and whether no lead events are detected (so a
- * permanently-empty `reportOptions` can be told apart from one that's
- * still pending).
+ * Leads widget, plus whether no lead events are detected.
  *
  * The percentage shown is each author's share of every matching event
  * site-wide, not just the ranked authors above - see

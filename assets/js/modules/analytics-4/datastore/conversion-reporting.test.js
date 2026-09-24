@@ -561,10 +561,8 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 				expect( submitLeadForm ).toEqual( generatingLeadsWidgets );
 				expect( generateLead ).toEqual( generatingLeadsWidgets );
 
-				// The conversion event → widget mapping above says nothing about
-				// which Key Metrics group these widgets actually render under -
-				// a widget could be reassigned to a different group without this
-				// test noticing. Assert `metadata.group` directly for each one.
+				// The mapping above doesn't catch a widget being reassigned to
+				// the wrong group, so assert `metadata.group` directly too.
 				GENERATING_LEADS_WIDGET_SLUGS.forEach( ( slug ) => {
 					expect( KEY_METRICS_WIDGETS[ slug ].metadata.group ).toBe(
 						KEY_METRICS_GROUP_GENERATING_LEADS.SLUG

@@ -53,8 +53,7 @@ interface FormCompletionRateWidgetProps {
 
 /**
  * Gets the primary event report options for the Form Completion Rate
- * widget, and whether no lead events are detected (so a permanently-empty
- * `reportOptions` can be told apart from one that's still pending).
+ * widget, plus whether no lead events are detected.
  *
  * @since n.e.x.t
  *

@@ -51,9 +51,8 @@ interface LeadsByDeviceTypeWidgetProps {
 }
 
 /**
- * Gets the report options for the Leads By Device Type widget, and
- * whether no lead events are detected (so a permanently-empty
- * `reportOptions` can be told apart from one that's still pending).
+ * Gets the report options for the Leads By Device Type widget, plus
+ * whether no lead events are detected.
  *
  * @since n.e.x.t
  *
