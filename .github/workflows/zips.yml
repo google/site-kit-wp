@@ -93,6 +93,8 @@ jobs:
         ) ||
         github.event.pull_request.head.repo.fork
       )
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
@@ -207,6 +209,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
     needs: build-zips
     timeout-minutes: 20
+    permissions: {}
     steps:
       - name: Install SVN ( Subversion )
         run: |
@@ -240,6 +243,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
     needs: build-zips
     timeout-minutes: 20
+    permissions: {}
     steps:
       - name: Install SVN ( Subversion )
         run: |
