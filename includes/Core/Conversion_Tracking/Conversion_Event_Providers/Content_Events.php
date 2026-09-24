@@ -79,7 +79,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 *
 	 * @since n.e.x.t
 	 */
-	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span>';
+	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span>';
 
 	/**
 	 * Flag indicating whether content hooks have been bootstrapped.
@@ -399,7 +399,9 @@ class Content_Events extends Conversion_Events_Provider {
 
 		$this->is_last_page_of_multi_page_post = ! $multipage || $page >= $numpages;
 
-		$measurements = $this->measure_content( $content );
+		list( $content_without_page_links, $page_links ) = $this->split_off_page_links( $content );
+
+		$measurements = $this->measure_content( $content_without_page_links );
 
 		$this->word_count                  = $measurements['word_count'];
 		$this->estimated_read_time_seconds = $measurements['estimated_read_time_seconds'];
@@ -408,7 +410,32 @@ class Content_Events extends Conversion_Events_Provider {
 			return $content;
 		}
 
-		return $content . self::END_OF_CONTENT_MARKER;
+		return $content_without_page_links . self::END_OF_CONTENT_MARKER . $page_links;
+	}
+
+	/**
+	 * Splits the page links off the end of a paginated post's content.
+	 *
+	 * A block theme's Post Content block adds the `wp_link_pages()` links to the
+	 * end of the content before `the_content` runs. The author didn't write the
+	 * links, so the word count skips them. The marker goes before them, at the
+	 * end of the author's text.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $content Post content.
+	 * @return array The content without the page links, and the page links (an empty string when the content doesn't end with them).
+	 */
+	protected function split_off_page_links( $content ) {
+		global $multipage;
+
+		$page_links = $multipage ? wp_link_pages( array( 'echo' => 0 ) ) : '';
+
+		if ( '' === $page_links || substr( $content, -strlen( $page_links ) ) !== $page_links ) {
+			return array( $content, '' );
+		}
+
+		return array( substr( $content, 0, strlen( $content ) - strlen( $page_links ) ), $page_links );
 	}
 
 	/**
@@ -420,7 +447,14 @@ class Content_Events extends Conversion_Events_Provider {
 	 * @return array Array with the `word_count` and `estimated_read_time_seconds` keys.
 	 */
 	protected function measure_content( $content ) {
-		$text = wp_strip_all_tags( strip_shortcodes( $content ) );
+		// The block editor saves a typed `&` as `&amp;`, which would otherwise
+		// count as the word `amp`. The tags are removed first, so a typed `<`
+		// isn't mistaken for a tag.
+		$text = html_entity_decode(
+			wp_strip_all_tags( strip_shortcodes( $content ) ),
+			ENT_QUOTES | ENT_HTML5,
+			'UTF-8'
+		);
 
 		$word_count      = $this->count_words_with_intl( $text );
 		$character_count = 0;
