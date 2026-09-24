@@ -15,67 +15,122 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class NewsletterConfig extends \Google\Model
 {
   /**
-   * Custom consent text shown to the user.
+   * Optional. Custom consent or disclosure text shown to the user.
    *
    * @var string
    */
   public $customConsentText;
   /**
-   * A custom message displayed in the signup prompt.
+   * Optional. A custom message displayed to the user in the signup prompt.
    *
    * @var string
    */
   public $customMessage;
   /**
-   * Whether the user name is required.
+   * Optional. Whether the user is required to provide their name to sign up.
    *
    * @var bool
    */
   public $nameRequired;
   /**
-   * The title of the newsletter signup prompt.
+   * Optional. Whether checking the opt-in checkbox is required.
+   *
+   * @var bool
+   */
+  public $optInRequired;
+  /**
+   * Required. The title of the newsletter signup prompt.
    *
    * @var string
    */
   public $title;
 
+  /**
+   * Optional. Custom consent or disclosure text shown to the user.
+   *
+   * @param string $customConsentText
+   */
   public function setCustomConsentText($customConsentText)
   {
     $this->customConsentText = $customConsentText;
   }
+  /**
+   * @return string
+   */
   public function getCustomConsentText()
   {
     return $this->customConsentText;
   }
+  /**
+   * Optional. A custom message displayed to the user in the signup prompt.
+   *
+   * @param string $customMessage
+   */
   public function setCustomMessage($customMessage)
   {
     $this->customMessage = $customMessage;
   }
+  /**
+   * @return string
+   */
   public function getCustomMessage()
   {
     return $this->customMessage;
   }
+  /**
+   * Optional. Whether the user is required to provide their name to sign up.
+   *
+   * @param bool $nameRequired
+   */
   public function setNameRequired($nameRequired)
   {
     $this->nameRequired = $nameRequired;
   }
+  /**
+   * @return bool
+   */
   public function getNameRequired()
   {
     return $this->nameRequired;
   }
+  /**
+   * Optional. Whether checking the opt-in checkbox is required.
+   *
+   * @param bool $optInRequired
+   */
+  public function setOptInRequired($optInRequired)
+  {
+    $this->optInRequired = $optInRequired;
+  }
+  /**
+   * @return bool
+   */
+  public function getOptInRequired()
+  {
+    return $this->optInRequired;
+  }
+  /**
+   * Required. The title of the newsletter signup prompt.
+   *
+   * @param string $title
+   */
   public function setTitle($title)
   {
     $this->title = $title;
   }
+  /**
+   * @return string
+   */
   public function getTitle()
   {
     return $this->title;
   }
 }
 
-class_alias(NewsletterConfig::class, 'Google_Service_Webcontentpublisher_NewsletterConfig');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(NewsletterConfig::class, 'Google_Service_WebContentPublisher_NewsletterConfig');

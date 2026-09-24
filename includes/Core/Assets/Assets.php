@@ -331,14 +331,11 @@ final class Assets {
 			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 			'googlesitekit-notifications',
+			'googlesitekit-intents',
 		);
 
-		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-		}
-
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
-			array_push( $dependencies, 'googlesitekit-components' );
+			array_push( $dependencies, 'googlesitekit-components', 'googlesitekit-datastore-pdf' );
 		}
 
 		if ( 'dashboard-sharing' === $context ) {
@@ -599,6 +596,16 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-intents',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-intents.js',
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
 					),
 				)
 			),

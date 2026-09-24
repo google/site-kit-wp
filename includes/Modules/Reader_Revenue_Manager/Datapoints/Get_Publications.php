@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
 /**
  * Class for the publications retrieval datapoint.

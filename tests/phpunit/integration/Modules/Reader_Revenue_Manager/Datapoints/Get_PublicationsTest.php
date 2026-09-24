@@ -17,10 +17,10 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Datapoints\Get_Publications;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ContentPolicyStatus;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\ListPublicationsResponse;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ContentPolicyStatus;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\ListPublicationsResponse;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
 /**
  * @group Modules
@@ -217,7 +217,7 @@ class Get_PublicationsTest extends TestCase {
 		return new Get_Publications(
 			array(
 				'options'  => $options,
-				'service'  => fn () => new Webcontentpublisher( $client ),
+				'service'  => fn () => new WebContentPublisher( $client ),
 				'settings' => $module->get_settings(),
 			)
 		);

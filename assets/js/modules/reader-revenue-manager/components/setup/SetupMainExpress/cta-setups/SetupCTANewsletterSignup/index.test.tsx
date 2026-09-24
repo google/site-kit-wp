@@ -21,16 +21,25 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import {
+	providePublication,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
+	provideUserInfo,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -50,7 +59,7 @@ const STEP_CONTENT = {
 		'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
 	[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up your sign-up form',
 	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
-		'RRM express setup placeholder: setup complete step.',
+		'Your newsletter signup form is ready!',
 };
 
 describe( 'SetupCTANewsletterSignup', () => {
@@ -84,8 +93,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 	} );
 
 	it( 'renders the newsletter CTA step title in the sidebar', () => {
-		global.location.href = 'http://example.com/';
-
 		const { getByText, container } = render( <SetupCTANewsletterSignup />, {
 			registry,
 		} );
@@ -135,6 +142,302 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		Object.values( STEP_CONTENT ).forEach( ( content ) => {
 			expect( queryByText( content ) ).not.toBeInTheDocument();
+		} );
+	} );
+
+	describe( 'setup complete step', () => {
+		// Publication with accepted terms of service.
+		const publication = publications[ 3 ];
+
+		/* eslint-disable sitekit/acronym-case */
+		const organizationID = publication.organizationId;
+		const publicationID = publication.publicationId;
+		/* eslint-enable sitekit/acronym-case */
+
+		const preExistingCTA = {
+			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/1`,
+			type: CTA_TYPES.NEWSLETTER_SIGNUP,
+		};
+
+		const newsletterCTA = {
+			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/5`,
+			type: CTA_TYPES.NEWSLETTER_SIGNUP,
+		};
+
+		const setupCompleteURL = `http://example.com/?cta=newsletter-signup&step=${ EXPRESS_SETUP_STEPS.SETUP_COMPLETE }`;
+
+		const searchEndpoint = new RegExp( '^/wp/v2/search' );
+
+		let originalHref: string;
+
+		function setupRegistry( {
+			ctas = [ newsletterCTA ],
+			snippetMode = 'sitewide',
+			postTypes = [] as string[],
+		} = {} ) {
+			registry = createTestRegistry() as Registry;
+			provideSiteInfo( registry );
+			provideUserInfo( registry );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( {
+					organizationID,
+					publicationID,
+					snippetMode,
+					postTypes,
+				} );
+
+			providePublication( registry, publication );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetCTAs( { ctas, params: {} } );
+		}
+
+		beforeEach( () => {
+			setupRegistry();
+
+			originalHref = global.location.href;
+			global.location.href = setupCompleteURL;
+		} );
+
+		afterEach( () => {
+			global.location.href = originalHref;
+		} );
+
+		it( 'renders correctly without pre-existing CTAs', () => {
+			const { container, queryByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			expect( container ).toMatchSnapshot();
+
+			expect( queryByText( 'Display order' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'renders correctly with pre-existing CTAs', () => {
+			setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+
+			const { container, getByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			expect( container ).toMatchSnapshot();
+
+			expect( getByText( 'Display order' ) ).toBeInTheDocument();
+		} );
+
+		describe( 'links', () => {
+			it( 'links the display order detail to the Publisher Center overview', () => {
+				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+
+				const { getAllByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				const [ overviewLink ] = getAllByRole( 'link', {
+					name: /Publisher center/i,
+				} );
+
+				const serviceURL = new URL(
+					decodeServiceURL(
+						overviewLink.getAttribute( 'href' ) as string
+					) as string
+				);
+
+				expect( serviceURL.origin ).toBe(
+					'https://publishercenter.google.com'
+				);
+				expect( serviceURL.pathname ).toBe(
+					'/reader-revenue-manager/content-access/overview'
+				);
+				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
+					publicationID
+				);
+			} );
+
+			it( 'links the content detail to the Publisher Center CTA edit screen', () => {
+				const { getByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				const ctaEditLink = getByRole( 'link', {
+					name: /Publisher center/i,
+				} );
+
+				const serviceURL = new URL(
+					decodeServiceURL(
+						ctaEditLink.getAttribute( 'href' ) as string
+					) as string
+				);
+
+				expect( serviceURL.pathname ).toBe(
+					'/reader-revenue-manager/content-access/ctas/newsletter/5'
+				);
+				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
+					publicationID
+				);
+			} );
+
+			it( 'links contact support to the plugin support forum', () => {
+				const { getByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect(
+					getByRole( 'link', { name: /contact support/i } )
+				).toHaveAttribute(
+					'href',
+					'https://wordpress.org/support/plugin/google-site-kit/'
+				);
+			} );
+		} );
+
+		describe( '"View on your site" CTA', () => {
+			beforeEach( () => {
+				jest.spyOn( global, 'open' ).mockImplementation( () => null );
+			} );
+
+			afterEach( () => {
+				jest.restoreAllMocks();
+			} );
+
+			it( 'opens the front page for the sitewide snippet mode', () => {
+				const { getByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect(
+					getByRole( 'button', { name: /View on your site/i } )
+				).toBeInTheDocument();
+
+				expect( global.open ).not.toHaveBeenCalled();
+
+				fireEvent.click(
+					getByRole( 'button', { name: /View on your site/i } )
+				);
+
+				expect( global.open ).toHaveBeenCalledWith(
+					'http://example.com',
+					'_blank'
+				);
+			} );
+
+			it( 'opens the first matching post for the post_types snippet mode', async () => {
+				fetchMock.getOnce( searchEndpoint, {
+					body: [ { url: 'http://example.com/hello-world/' } ],
+					status: 200,
+				} );
+
+				setupRegistry( {
+					snippetMode: 'post_types',
+					postTypes: [ 'post' ],
+				} );
+
+				const { findByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect(
+					await findByRole( 'button', {
+						name: /View on your site/i,
+					} )
+				).toBeInTheDocument();
+
+				expect( fetchMock ).toHaveFetched( searchEndpoint );
+				expect( fetchMock.lastCall( searchEndpoint )?.[ 0 ] ).toContain(
+					'subtype=post'
+				);
+
+				expect( global.open ).not.toHaveBeenCalled();
+
+				fireEvent.click(
+					await findByRole( 'button', {
+						name: /View on your site/i,
+					} )
+				);
+
+				expect( global.open ).toHaveBeenCalledWith(
+					'http://example.com/hello-world/',
+					'_blank'
+				);
+			} );
+
+			it( 'is not rendered when no matching post can be resolved', async () => {
+				fetchMock.getOnce( searchEndpoint, {
+					body: [],
+					status: 200,
+				} );
+
+				setupRegistry( {
+					snippetMode: 'post_types',
+					postTypes: [ 'post' ],
+				} );
+
+				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				await waitFor( () =>
+					expect( fetchMock ).toHaveFetched( searchEndpoint )
+				);
+
+				expect(
+					queryByRole( 'button', { name: /View on your site/i } )
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'is not rendered for an unsupported snippet mode', () => {
+				setupRegistry( { snippetMode: 'per_post' } );
+
+				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect(
+					queryByRole( 'button', { name: /View on your site/i } )
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'is not rendered when the publication has pre-existing CTAs', () => {
+				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+
+				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				expect(
+					queryByRole( 'button', { name: /View on your site/i } )
+				).not.toBeInTheDocument();
+			} );
+
+			it( 'opens the resolved URL in a new tab', () => {
+				const openSpy = jest
+					.spyOn( global, 'open' )
+					.mockImplementation( () => null );
+
+				const { getByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+				} );
+
+				fireEvent.click(
+					getByRole( 'button', { name: /View on your site/i } )
+				);
+
+				expect( openSpy ).toHaveBeenCalledWith(
+					'http://example.com',
+					'_blank'
+				);
+
+				openSpy.mockRestore();
+			} );
 		} );
 	} );
 } );
