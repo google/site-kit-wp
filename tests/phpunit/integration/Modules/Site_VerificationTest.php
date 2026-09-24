@@ -210,11 +210,98 @@ class Site_VerificationTest extends TestCase {
 		$site_verification = new Site_Verification( $context );
 		$site_verification->register();
 
-		$this->assertEquals( array(), apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' ), 'Proxy setup URL params should be empty initially.' );
+		$this->assertEquals( array( 'verification_evidence' => Site_Verification::VERIFICATION_EVIDENCE_NONE ), apply_filters( 'googlesitekit_proxy_setup_url_params', array(), '', '' ), 'Proxy setup URL params should report no verification evidence initially.' );
 
 		do_action( 'googlesitekit_verify_site_ownership', 'testtoken', 'FILE' );
 
 		$this->assertEquals( 'testtoken', $user_options->get( Verification_File::OPTION ), 'Verification file option should be set with token.' );
+		$this->assertEquals( array( 'verification_evidence' => Site_Verification::VERIFICATION_TYPE_FILE ), apply_filters( 'googlesitekit_proxy_setup_url_params', array() ), 'Proxy setup URL params should report the just-stored verification token.' );
+	}
+
+	/**
+	 * @dataProvider data_setup_url_verification_evidence
+	 */
+	public function test_setup_url_params__verification_evidence( $file_token, $meta_token, $expected ) {
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+
+		if ( $file_token ) {
+			$user_options->set( Verification_File::OPTION, $file_token );
+		}
+		if ( $meta_token ) {
+			$user_options->set( Verification_Meta::OPTION, $meta_token );
+		}
+
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$this->assertEquals(
+			array(
+				'existing'              => 'value',
+				'verification_evidence' => $expected,
+			),
+			apply_filters( 'googlesitekit_proxy_setup_url_params', array( 'existing' => 'value' ) ),
+			'Proxy setup URL params should include the expected verification evidence.'
+		);
+	}
+
+	public function data_setup_url_verification_evidence() {
+		return array(
+			'no tokens'       => array( '', '', Site_Verification::VERIFICATION_EVIDENCE_NONE ),
+			'file token only' => array( 'file-token', '', Site_Verification::VERIFICATION_TYPE_FILE ),
+			'meta token only' => array( '', 'meta-token', Site_Verification::VERIFICATION_TYPE_META ),
+			'both tokens'     => array( 'file-token', 'meta-token', Site_Verification::VERIFICATION_TYPE_FILE ),
+		);
+	}
+
+	public function test_setup_url_params__verification_evidence__file_unsupported() {
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options = new User_Options( $context, $user_id );
+		$user_options->set( Verification_File::OPTION, 'file-token' );
+
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		// File verification is not supported for sites installed in a subdirectory.
+		add_filter(
+			'googlesitekit_canonical_home_url',
+			function () {
+				return 'https://example.com/subdirectory/';
+			}
+		);
+
+		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
+		$this->assertEquals( Site_Verification::VERIFICATION_EVIDENCE_NONE, $params['verification_evidence'], 'A file token should not be reported when file verification is unsupported.' );
+
+		$user_options->set( Verification_Meta::OPTION, 'meta-token' );
+
+		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
+		$this->assertEquals( Site_Verification::VERIFICATION_TYPE_META, $params['verification_evidence'], 'The meta token should be reported when file verification is unsupported.' );
+	}
+
+	public function test_setup_url_params__verification_evidence__ignores_other_users() {
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+
+		$other_user_id      = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		$other_user_options = new User_Options( $context, $other_user_id );
+		$other_user_options->set( Verification_File::OPTION, 'other-file-token' );
+		$other_user_options->set( Verification_Meta::OPTION, 'other-meta-token' );
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+
+		$site_verification = new Site_Verification( $context );
+		$site_verification->register();
+
+		$params = apply_filters( 'googlesitekit_proxy_setup_url_params', array() );
+		$this->assertEquals( Site_Verification::VERIFICATION_EVIDENCE_NONE, $params['verification_evidence'], 'Tokens stored for other users should be ignored.' );
 	}
 
 	public function test_get_module_scopes() {
