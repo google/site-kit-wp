@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, useCallback } from 'react';
 
 /**
  * WordPress dependencies
@@ -53,18 +53,21 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 	selectedCategories,
 	onToggleCategory,
 } ) => {
-	function handleToggleChip( ...args: unknown[] ) {
-		const chipID = args[ 0 ];
+	const handleToggleChip = useCallback(
+		( ...args: unknown[] ) => {
+			const chipID = args[ 0 ];
 
-		if ( chipID === ALL_SERVICES_CHIP_ID ) {
-			onToggleCategory( null );
-			return;
-		}
+			if ( chipID === ALL_SERVICES_CHIP_ID ) {
+				onToggleCategory( null );
+				return;
+			}
 
-		if ( typeof chipID === 'string' ) {
-			onToggleCategory( chipID as FeatureCategorySlug );
-		}
-	}
+			if ( typeof chipID === 'string' ) {
+				onToggleCategory( chipID as FeatureCategorySlug );
+			}
+		},
+		[ onToggleCategory ]
+	);
 
 	const categories = useSelect( ( select: Select ) => {
 		return select( CORE_FEATURE_DISCOVERY ).getFeatureCategories();
