@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\URL;
 use Exception;
 use WP_Error;
 
@@ -115,8 +114,7 @@ class Google_Proxy {
 			'short_verification_token',
 		);
 
-		$home_path = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_PATH );
-		if ( ! $home_path || '/' === $home_path ) {
+		if ( Verification_File::is_supported( $this->context ) ) {
 			$supports[] = 'file_verification';
 		}
 
