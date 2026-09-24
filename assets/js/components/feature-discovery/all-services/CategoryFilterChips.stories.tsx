@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
+import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
 import type { FeatureCategorySlug } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -34,25 +35,8 @@ interface TemplateProps {
 }
 
 const Template: FC< TemplateProps > = ( { initialSelection = [] } ) => {
-	const [ selectedCategories, setSelectedCategories ] =
-		useState< FeatureCategorySlug[] >( initialSelection );
-
-	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
-		if ( categorySlug === null ) {
-			setSelectedCategories( [] );
-			return;
-		}
-
-		setSelectedCategories( ( currentSelection ) => {
-			if ( currentSelection.includes( categorySlug ) ) {
-				return currentSelection.filter(
-					( category ) => category !== categorySlug
-				);
-			}
-
-			return [ ...currentSelection, categorySlug ];
-		} );
-	}
+	const [ selectedCategories, onToggleCategory ] =
+		useCategorySelection( initialSelection );
 
 	return (
 		<div className="googlesitekit-module-page googlesitekit-feature-discovery">

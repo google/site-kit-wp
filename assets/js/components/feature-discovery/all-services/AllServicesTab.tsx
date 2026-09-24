@@ -19,12 +19,13 @@
 /**
  * External dependencies
  */
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
 	Feature,
@@ -40,9 +41,7 @@ interface GoalGroup {
 }
 
 const AllServicesTab: FC = () => {
-	const [ selectedCategories, setSelectedCategories ] = useState<
-		FeatureCategorySlug[]
-	>( [] );
+	const [ selectedCategories, onToggleCategory ] = useCategorySelection();
 
 	const goalGroups: GoalGroup[] = useSelect(
 		( select: Select ) => {
@@ -92,25 +91,6 @@ const AllServicesTab: FC = () => {
 		},
 		[ selectedCategories ]
 	);
-
-	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
-		if ( categorySlug === null ) {
-			setSelectedCategories( [] );
-			return;
-		}
-
-		setSelectedCategories( ( currentSelection ) => {
-			if ( currentSelection.includes( categorySlug ) ) {
-				const nextSelection = currentSelection.filter(
-					( category ) => category !== categorySlug
-				);
-
-				return nextSelection;
-			}
-
-			return [ ...currentSelection, categorySlug ];
-		} );
-	}
 
 	return (
 		<div className="googlesitekit-all-services-tab">

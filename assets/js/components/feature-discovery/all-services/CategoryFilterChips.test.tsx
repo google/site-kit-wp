@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import { FC, useState } from 'react';
+import { FC } from 'react';
 
 /**
  * Internal dependencies
  */
+import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
 import type { FeatureCategorySlug } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { fireEvent, render, screen } from '@tests/js/test-utils';
 import CategoryFilterChips from './CategoryFilterChips';
@@ -33,25 +34,8 @@ interface TestHarnessProps {
 }
 
 const TestHarness: FC< TestHarnessProps > = ( { initialSelection = [] } ) => {
-	const [ selectedCategories, setSelectedCategories ] =
-		useState< FeatureCategorySlug[] >( initialSelection );
-
-	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
-		if ( categorySlug === null ) {
-			setSelectedCategories( [] );
-			return;
-		}
-
-		setSelectedCategories( ( currentSelection ) => {
-			if ( currentSelection.includes( categorySlug ) ) {
-				return currentSelection.filter(
-					( category ) => category !== categorySlug
-				);
-			}
-
-			return [ ...currentSelection, categorySlug ];
-		} );
-	}
+	const [ selectedCategories, onToggleCategory ] =
+		useCategorySelection( initialSelection );
 
 	return (
 		<CategoryFilterChips
