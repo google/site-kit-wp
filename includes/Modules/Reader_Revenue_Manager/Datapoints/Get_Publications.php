@@ -79,7 +79,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 */
 	public function create_request( Data_Request $data_request ) {
 		return $this->get_service()->organizations_publications->listOrganizationsPublications(
-			'organizations/*',
+			'organizations/-',
 			array( 'filter' => $this->get_publication_filter() )
 		);
 	}
