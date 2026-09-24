@@ -123,16 +123,16 @@ jobs:
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p "${{ github.ref }}"
+          mkdir -p "${GITHUB_REF}"
           sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
