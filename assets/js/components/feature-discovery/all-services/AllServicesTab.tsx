@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 /**
  * Internal dependencies
@@ -29,7 +29,9 @@ import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-dis
 import type {
 	Feature,
 	FeatureCategory,
+	FeatureCategorySlug,
 } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import CategoryFilterChips from './CategoryFilterChips';
 import FeatureGoalGroup from './FeatureGoalGroup';
 
 interface GoalGroup {
@@ -38,23 +40,85 @@ interface GoalGroup {
 }
 
 const AllServicesTab: FC = () => {
-	// Which features a group lists, and in what order, is the selectors'
-	// business. Only groups with nothing to list are dropped here.
-	const goalGroups: GoalGroup[] = useSelect( ( select: Select ) => {
-		const { getFeatureCategories, getFeaturesByGoal } = select(
-			CORE_FEATURE_DISCOVERY
-		);
+	const [ selectedCategories, setSelectedCategories ] = useState<
+		FeatureCategorySlug[]
+	>( [] );
 
-		return getFeatureCategories()
-			.map( ( category: FeatureCategory ) => ( {
-				category,
-				features: getFeaturesByGoal( category.slug ),
-			} ) )
-			.filter( ( { features }: GoalGroup ) => features.length > 0 );
-	}, [] );
+	const goalGroups: GoalGroup[] = useSelect(
+		( select: Select ) => {
+			const { getFeatureCategories, getAvailableFeatures } = select(
+				CORE_FEATURE_DISCOVERY
+			);
+			const categories = getFeatureCategories();
+			const selectedCategorySet = new Set( selectedCategories );
+			const groupedFeatures: Record< FeatureCategorySlug, Feature[] > =
+				Object.fromEntries(
+					categories.map( ( category: FeatureCategory ) => [
+						category.slug,
+						[],
+					] )
+				) as Record< FeatureCategorySlug, Feature[] >;
+
+			getAvailableFeatures().forEach( ( feature: Feature ) => {
+				const goalCategory = selectedCategories.length
+					? feature.goalCategories.find(
+							( category: FeatureCategorySlug ) =>
+								selectedCategorySet.has( category )
+					  )
+					: feature.goalCategories[ 0 ];
+
+				if ( ! goalCategory ) {
+					return;
+				}
+
+				groupedFeatures[ goalCategory ].push( feature );
+			} );
+
+			return categories
+				.filter( ( category: FeatureCategory ) => {
+					if (
+						selectedCategorySet.size > 0 &&
+						! selectedCategorySet.has( category.slug )
+					) {
+						return false;
+					}
+
+					return groupedFeatures[ category.slug ].length > 0;
+				} )
+				.map( ( category: FeatureCategory ) => ( {
+					category,
+					features: groupedFeatures[ category.slug ],
+				} ) );
+		},
+		[ selectedCategories ]
+	);
+
+	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
+		if ( categorySlug === null ) {
+			setSelectedCategories( [] );
+			return;
+		}
+
+		setSelectedCategories( ( currentSelection ) => {
+			if ( currentSelection.includes( categorySlug ) ) {
+				const nextSelection = currentSelection.filter(
+					( category ) => category !== categorySlug
+				);
+
+				return nextSelection;
+			}
+
+			return [ ...currentSelection, categorySlug ];
+		} );
+	}
 
 	return (
 		<div className="googlesitekit-all-services-tab">
+			<CategoryFilterChips
+				onToggleCategory={ onToggleCategory }
+				selectedCategories={ selectedCategories }
+			/>
+
 			{ goalGroups.map( ( { category, features } ) => (
 				<FeatureGoalGroup
 					category={ category }

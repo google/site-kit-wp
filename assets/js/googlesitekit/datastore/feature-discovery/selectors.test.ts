@@ -110,6 +110,25 @@ describe( 'core/feature-discovery selectors', () => {
 				FEATURE_CATEGORIES.PRODUCTIVITY,
 			] );
 		} );
+
+		it( 'should return each category with its chip label', () => {
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureCategories()
+					.map(
+						( { chipLabel }: { chipLabel: string } ) => chipLabel
+					)
+			).toEqual( [
+				'Know your audience',
+				'Engage your visitors',
+				'Monetize',
+				'Drive traffic',
+				'Manage privacy',
+				'Improve site speed',
+				'Collaborate',
+			] );
+		} );
 	} );
 
 	describe( 'isFeaturePrerequisiteMet', () => {
