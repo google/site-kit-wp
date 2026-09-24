@@ -620,10 +620,22 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					>
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
-							supportURL={ keyActionDocumentationURL }
-							rateInfoTooltip={ __(
-								'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
-								'google-site-kit'
+							rateInfoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via createInterpolateElement.
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ keyActionDocumentationURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
 							) }
 							rateTitle={ __(
 								'Form completion rate',

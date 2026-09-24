@@ -43,6 +43,7 @@ import {
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	CONVERSION_REPORTING_LEAD_EVENTS,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -745,26 +746,25 @@ describe( 'Generating leads Key Metric tiles', () => {
 		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	];
 
-	it.each( GENERATING_LEADS_SLUGS )(
-		'should offer %s when any lead event is detected',
-		( slug ) => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+	it.each(
+		GENERATING_LEADS_SLUGS.flatMap( ( slug ) =>
+			CONVERSION_REPORTING_LEAD_EVENTS.map( ( event ) => [ slug, event ] )
+		)
+	)( 'should offer %s when only %s is detected', ( slug, event ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [ event ] );
 
-			const widget = KEY_METRICS_WIDGETS[ slug ];
+		const widget = KEY_METRICS_WIDGETS[ slug ];
 
-			expect(
-				widget.displayInSelectionPanel( {
-					select: registry.select,
-					slug,
-				} )
-			).toBe( true );
-			expect(
-				widget.displayInList( { select: registry.select, slug } )
-			).toBe( true );
-		}
-	);
+		expect(
+			widget.displayInSelectionPanel( {
+				select: registry.select,
+				slug,
+			} )
+		).toBe( true );
+		expect(
+			widget.displayInList( { select: registry.select, slug } )
+		).toBe( true );
+	} );
 
 	it.each( GENERATING_LEADS_SLUGS )(
 		'should not offer %s when no lead event has been detected',

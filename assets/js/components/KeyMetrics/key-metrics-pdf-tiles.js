@@ -276,24 +276,6 @@ async function resolvePrimaryEcommerceEvent( registry ) {
 }
 
 /**
- * Resolves the detected lead events for a Generating leads PDF tile.
- *
- * `getDetectedLeadEvents` derives from `getDetectedEvents` but has no
- * resolver of its own, so this resolves the detected events first and reads
- * the derived value once they're in.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry WordPress data registry.
- * @return {Promise<string[]|undefined>} The detected lead event names.
- */
-async function getDetectedLeadEvents( registry ) {
-	await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
-
-	return registry.select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-}
-
-/**
  * Builds the async request-builder for a "Generating leads" PDF tile's
  * `getTileData`: resolves the detected lead events, then hands them to
  * `buildRequests` to build this tile's report request(s).
@@ -309,7 +291,10 @@ async function getDetectedLeadEvents( registry ) {
  */
 function createLeadEventsPDFTileRequestBuilder( buildRequests ) {
 	return async ( dates, registry ) => {
-		const detectedLeadEvents = await getDetectedLeadEvents( registry );
+		await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
+		const detectedLeadEvents = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getDetectedLeadEvents();
 
 		return buildRequests( dates, detectedLeadEvents ) || [];
 	};

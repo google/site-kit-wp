@@ -75,6 +75,7 @@ const FormCompletionEngagementRateWidget: FC<
 		getFormCompletionEngagementRateReportOptions,
 		[]
 	);
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
 	// `engagementReportOptions` is never `undefined` (it only depends on
 	// `dates`), so readiness is gated on the separately-selected
@@ -108,7 +109,7 @@ const FormCompletionEngagementRateWidget: FC<
 			) }
 			previousValue={ previousEngagementRate }
 			currentValue={ currentEngagementRate }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

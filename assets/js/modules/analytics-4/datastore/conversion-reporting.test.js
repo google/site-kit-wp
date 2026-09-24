@@ -19,6 +19,8 @@
 /**
  * Internal dependencies
  */
+import { KEY_METRICS_GROUP_GENERATING_LEADS } from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
@@ -538,7 +540,7 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getKeyMetricsConversionEventWidgets();
 
-				const generatingLeadsWidgets = expect.arrayContaining( [
+				const GENERATING_LEADS_WIDGET_SLUGS = [
 					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
 					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
@@ -550,11 +552,24 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 					KM_ANALYTICS_LEADS_BY_COUNTRIES,
 					KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
 					KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
-				] );
+				];
+				const generatingLeadsWidgets = expect.arrayContaining(
+					GENERATING_LEADS_WIDGET_SLUGS
+				);
 
 				expect( contact ).toEqual( generatingLeadsWidgets );
 				expect( submitLeadForm ).toEqual( generatingLeadsWidgets );
 				expect( generateLead ).toEqual( generatingLeadsWidgets );
+
+				// The conversion event → widget mapping above says nothing about
+				// which Key Metrics group these widgets actually render under -
+				// a widget could be reassigned to a different group without this
+				// test noticing. Assert `metadata.group` directly for each one.
+				GENERATING_LEADS_WIDGET_SLUGS.forEach( ( slug ) => {
+					expect( KEY_METRICS_WIDGETS[ slug ].metadata.group ).toBe(
+						KEY_METRICS_GROUP_GENERATING_LEADS.SLUG
+					);
+				} );
 			} );
 		} );
 

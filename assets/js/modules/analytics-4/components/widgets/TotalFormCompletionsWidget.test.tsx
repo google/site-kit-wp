@@ -38,10 +38,10 @@ import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import TotalFormCompletionsWidget from './TotalFormCompletionsWidget';
 import {
-	LEADS_WIDGET_REPORT_ENDPOINT,
-	provideLeadsWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/leadsWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -68,7 +68,7 @@ describe( 'TotalFormCompletionsWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the report', async () => {
-		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<TotalFormCompletionsWidget { ...widgetProps } />,
@@ -81,10 +81,25 @@ describe( 'TotalFormCompletionsWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<TotalFormCompletionsWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
 		TotalFormCompletionsWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render zero values when there are no form completions in either period', async () => {

@@ -37,11 +37,11 @@ import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import LeadsByCountriesWidget from './LeadsByCountriesWidget';
 import {
-	LEADS_WIDGET_REPORT_ENDPOINT,
-	provideLeadsWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
-} from './utils/leadsWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 describe( 'LeadsByCountriesWidget', () => {
 	let registry: WPDataRegistry;
@@ -88,7 +88,7 @@ describe( 'LeadsByCountriesWidget', () => {
 
 	it( 'should render the loading state while resolving the report', async () => {
 		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<LeadsByCountriesWidget { ...widgetProps } />,
@@ -101,16 +101,32 @@ describe( 'LeadsByCountriesWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<LeadsByCountriesWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
 		LeadsByCountriesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
 		LeadsByCountriesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {

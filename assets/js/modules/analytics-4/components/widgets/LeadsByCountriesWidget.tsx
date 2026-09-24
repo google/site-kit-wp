@@ -51,25 +51,36 @@ interface LeadsByCountriesWidgetProps {
 }
 
 /**
- * Gets the report options for the Leads By Countries widget.
+ * Gets the report options for the Leads By Countries widget, and whether
+ * no lead events are detected (so a permanently-empty `reportOptions` can
+ * be told apart from one that's still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getLeadsByCountriesReportOptions( select: Select ) {
-	return buildCountriesReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+function getLeadsByCountriesData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildCountriesReportOptions( {
+			dates: select( CORE_USER ).getDateRangeDates(),
+			primaryEvent: detectedLeadEvents,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		} ),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const LeadsByCountriesWidget: FC< LeadsByCountriesWidgetProps > = ( {
 	Widget,
 } ) => {
-	const reportOptions = useSelect( getLeadsByCountriesReportOptions, [] );
+	const { reportOptions, hasNoLeadEvents } = useSelect(
+		getLeadsByCountriesData,
+		[]
+	);
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
@@ -81,7 +92,7 @@ const LeadsByCountriesWidget: FC< LeadsByCountriesWidgetProps > = ( {
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_LEADS_BY_COUNTRIES }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			rows={ rows }
 			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }

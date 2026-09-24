@@ -52,18 +52,26 @@ interface FormCompletionRateWidgetProps {
 }
 
 /**
- * Gets the primary event report options for the Form Completion Rate widget.
+ * Gets the primary event report options for the Form Completion Rate
+ * widget, and whether no lead events are detected (so a permanently-empty
+ * `reportOptions` can be told apart from one that's still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getFormCompletionRatePrimaryReportOptions( select: Select ) {
-	return buildPrimaryEventReportOptions(
-		select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()
-	);
+function getFormCompletionRatePrimaryData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildPrimaryEventReportOptions(
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
+			detectedLeadEvents
+		),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 /**
@@ -83,10 +91,8 @@ function getFormCompletionRateEngagementReportOptions( select: Select ) {
 const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 	Widget,
 } ) => {
-	const primaryEventReportOptions = useSelect(
-		getFormCompletionRatePrimaryReportOptions,
-		[]
-	);
+	const { reportOptions: primaryEventReportOptions, hasNoLeadEvents } =
+		useSelect( getFormCompletionRatePrimaryData, [] );
 	const engagementReportOptions = useSelect(
 		getFormCompletionRateEngagementReportOptions,
 		[]
@@ -125,7 +131,7 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 			) }
 			previousValue={ previousRate }
 			currentValue={ currentRate }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

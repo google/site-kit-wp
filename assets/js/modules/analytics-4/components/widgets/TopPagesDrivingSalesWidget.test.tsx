@@ -42,11 +42,11 @@ import {
 } from '@tests/js/utils';
 import TopPagesDrivingSalesWidget from './TopPagesDrivingSalesWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 describe( 'TopPagesDrivingSalesWidget', () => {
 	let registry: WPDataRegistry;
@@ -173,7 +173,7 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 
 	it( 'should render the loading state while resolving the report', async () => {
 		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<TopPagesDrivingSalesWidget { ...widgetProps } />,
@@ -189,13 +189,15 @@ describe( 'TopPagesDrivingSalesWidget', () => {
 	testGenericReportError(
 		() => registry,
 		TopPagesDrivingSalesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
 		TopPagesDrivingSalesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {

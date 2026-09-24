@@ -43,24 +43,35 @@ interface TotalFormCompletionsWidgetProps {
 }
 
 /**
- * Gets the report options for the Total Form Completions widget.
+ * Gets the report options for the Total Form Completions widget, and
+ * whether no lead events are detected (so a permanently-empty
+ * `reportOptions` can be told apart from one that's still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getTotalFormCompletionsReportOptions( select: Select ) {
-	return buildPrimaryEventReportOptions(
-		select( CORE_USER ).getDateRangeDates( { compare: true } ),
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents()
-	);
+function getTotalFormCompletionsData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildPrimaryEventReportOptions(
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
+			detectedLeadEvents
+		),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 	Widget,
 } ) => {
-	const reportOptions = useSelect( getTotalFormCompletionsReportOptions, [] );
+	const { reportOptions, hasNoLeadEvents } = useSelect(
+		getTotalFormCompletionsData,
+		[]
+	);
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
@@ -81,7 +92,7 @@ const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 			subText={ undefined }
 			previousValue={ previousPrimaryCount }
 			currentValue={ currentPrimaryCount }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

@@ -44,11 +44,11 @@ import {
 } from '@tests/js/utils';
 import TopAuthorsDrivingLeadsWidget from './TopAuthorsDrivingLeadsWidget';
 import {
-	LEADS_WIDGET_REPORT_ENDPOINT,
-	provideLeadsWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
-} from './utils/leadsWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 describe( 'TopAuthorsDrivingLeadsWidget', () => {
 	let registry: WPDataRegistry;
@@ -142,7 +142,7 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		// Freeze the report fetch to keep the widget in loading state. Two
 		// reports are requested (the ranked list and the site-wide total),
 		// so this must match twice.
-		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
@@ -155,16 +155,32 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
 		TopAuthorsDrivingLeadsWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
 		TopAuthorsDrivingLeadsWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {

@@ -51,28 +51,35 @@ interface TopTrafficChannelsDrivingFormCompletionRateWidgetProps {
 }
 
 /**
- * Gets the report options for the Top Traffic Channels Driving Form Completion Rate widget.
+ * Gets the report options for the Top Traffic Channels Driving Form
+ * Completion Rate widget, and whether no lead events are detected (so a
+ * permanently-empty `reportOptions` can be told apart from one that's
+ * still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getTopTrafficChannelsDrivingFormCompletionRateReportOptions(
-	select: Select
-) {
-	return buildTopTrafficChannelsRateReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+function getTopTrafficChannelsDrivingFormCompletionRateData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildTopTrafficChannelsRateReportOptions( {
+			dates: select( CORE_USER ).getDateRangeDates(),
+			primaryEvent: detectedLeadEvents,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		} ),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const TopTrafficChannelsDrivingFormCompletionRateWidget: FC<
 	TopTrafficChannelsDrivingFormCompletionRateWidgetProps
 > = ( { Widget } ) => {
-	const reportOptions = useSelect(
-		getTopTrafficChannelsDrivingFormCompletionRateReportOptions,
+	const { reportOptions, hasNoLeadEvents } = useSelect(
+		getTopTrafficChannelsDrivingFormCompletionRateData,
 		[]
 	);
 
@@ -88,7 +95,7 @@ const TopTrafficChannelsDrivingFormCompletionRateWidget: FC<
 			widgetSlug={
 				KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE
 			}
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			rows={ rows }
 			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }

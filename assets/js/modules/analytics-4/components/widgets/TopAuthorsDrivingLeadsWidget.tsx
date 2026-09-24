@@ -82,25 +82,39 @@ function getTopAuthorsDrivingLeadsReportOptions( select: Select ) {
 }
 
 /**
- * Gets the site-wide total report options for the Top Authors Driving Leads widget.
+ * Gets the site-wide total report options for the Top Authors Driving
+ * Leads widget, and whether no lead events are detected (so a
+ * permanently-empty `reportOptions` can be told apart from one that's
+ * still pending).
  *
  * The percentage shown is each author's share of every matching event
  * site-wide, not just the ranked authors above - see
  * `buildGoalDriverTotalReportOptions`. Passes `context: GOAL_TYPES.LEAD`
  * for the same reason as the ranked report options above.
  *
+ * `hasNoLeadEvents` is derived here, rather than alongside the ranked
+ * report options above, because `getTopAuthorsDrivingLeadsReportOptions`
+ * is also passed directly to `withCustomDimensions` below, which expects
+ * it to keep returning bare report options.
+ *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getTopAuthorsDrivingLeadsTotalReportOptions( select: Select ) {
-	return buildGoalDriverTotalReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		context: GOAL_TYPES.LEAD,
-		reportIDSuffix: 'top-authors',
-	} );
+function getTopAuthorsDrivingLeadsTotalData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		totalReportOptions: buildGoalDriverTotalReportOptions( {
+			dates: select( CORE_USER ).getDateRangeDates(),
+			primaryEvent: detectedLeadEvents,
+			context: GOAL_TYPES.LEAD,
+			reportIDSuffix: 'top-authors',
+		} ),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const TopAuthorsDrivingLeadsWidget: FC<
@@ -110,8 +124,8 @@ const TopAuthorsDrivingLeadsWidget: FC<
 		getTopAuthorsDrivingLeadsReportOptions,
 		[]
 	);
-	const totalReportOptions = useSelect(
-		getTopAuthorsDrivingLeadsTotalReportOptions,
+	const { totalReportOptions, hasNoLeadEvents } = useSelect(
+		getTopAuthorsDrivingLeadsTotalData,
 		[]
 	);
 
@@ -137,7 +151,7 @@ const TopAuthorsDrivingLeadsWidget: FC<
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			rows={ rows }
 			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }

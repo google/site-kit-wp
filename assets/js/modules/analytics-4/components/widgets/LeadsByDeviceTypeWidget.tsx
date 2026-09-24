@@ -51,25 +51,36 @@ interface LeadsByDeviceTypeWidgetProps {
 }
 
 /**
- * Gets the report options for the Leads By Device Type widget.
+ * Gets the report options for the Leads By Device Type widget, and
+ * whether no lead events are detected (so a permanently-empty
+ * `reportOptions` can be told apart from one that's still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getLeadsByDeviceTypeReportOptions( select: Select ) {
-	return buildDeviceTypeReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+function getLeadsByDeviceTypeData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildDeviceTypeReportOptions( {
+			dates: select( CORE_USER ).getDateRangeDates(),
+			primaryEvent: detectedLeadEvents,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		} ),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const LeadsByDeviceTypeWidget: FC< LeadsByDeviceTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const reportOptions = useSelect( getLeadsByDeviceTypeReportOptions, [] );
+	const { reportOptions, hasNoLeadEvents } = useSelect(
+		getLeadsByDeviceTypeData,
+		[]
+	);
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
@@ -81,7 +92,7 @@ const LeadsByDeviceTypeWidget: FC< LeadsByDeviceTypeWidgetProps > = ( {
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_LEADS_BY_DEVICE_TYPE }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			rows={ rows }
 			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }

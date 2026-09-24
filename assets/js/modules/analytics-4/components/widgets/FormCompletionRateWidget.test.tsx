@@ -37,14 +37,18 @@ import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { render, within } from '@tests/js/test-utils';
-import { createTestRegistry, freezeFetch } from '@tests/js/utils';
+import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideSiteInfo,
+} from '@tests/js/utils';
 import FormCompletionRateWidget from './FormCompletionRateWidget';
 import {
-	LEADS_WIDGET_REPORT_ENDPOINT,
-	provideLeadsWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/leadsWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -80,7 +84,7 @@ describe( 'FormCompletionRateWidget', () => {
 	it( 'should render the loading state while resolving the reports', async () => {
 		// This widget requests two reports (primary event + engagement), so
 		// the frozen fetch mock must cover both GET requests.
-		freezeFetch( LEADS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<FormCompletionRateWidget { ...widgetProps } />,
@@ -93,10 +97,85 @@ describe( 'FormCompletionRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should append a working "Learn more" link to the info tooltip', async () => {
+		provideSiteInfo( registry );
+
+		const primaryEventReportOptions = getPrimaryEventReportOptions();
+		const engagementReportOptions = getEngagementReportOptions();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ rows: [] },
+				{ options: primaryEventReportOptions }
+			);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [] },
+				{ options: engagementReportOptions }
+			);
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const infoTooltip = container.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'like submitting a form', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining(
+				'doc=site-goals-lead-generation-key-action'
+			)
+		);
+	} );
+
 	testGenericReportError(
 		() => registry,
 		FormCompletionRateWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render zero values when there are no form completions or sessions in either period', async () => {

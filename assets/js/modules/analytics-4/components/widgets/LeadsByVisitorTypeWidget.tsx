@@ -51,25 +51,36 @@ interface LeadsByVisitorTypeWidgetProps {
 }
 
 /**
- * Gets the report options for the Leads By Visitor Type widget.
+ * Gets the report options for the Leads By Visitor Type widget, and
+ * whether no lead events are detected (so a permanently-empty
+ * `reportOptions` can be told apart from one that's still pending).
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object|undefined} The report options.
+ * @return {Object} The report options and lead-event detection state.
  */
-function getLeadsByVisitorTypeReportOptions( select: Select ) {
-	return buildVisitorTypeReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
-		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-	} );
+function getLeadsByVisitorTypeData( select: Select ) {
+	const detectedLeadEvents =
+		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
+
+	return {
+		reportOptions: buildVisitorTypeReportOptions( {
+			dates: select( CORE_USER ).getDateRangeDates(),
+			primaryEvent: detectedLeadEvents,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+		} ),
+		hasNoLeadEvents: detectedLeadEvents?.length === 0,
+	};
 }
 
 const LeadsByVisitorTypeWidget: FC< LeadsByVisitorTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const reportOptions = useSelect( getLeadsByVisitorTypeReportOptions, [] );
+	const { reportOptions, hasNoLeadEvents } = useSelect(
+		getLeadsByVisitorTypeData,
+		[]
+	);
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,
@@ -81,7 +92,7 @@ const LeadsByVisitorTypeWidget: FC< LeadsByVisitorTypeWidgetProps > = ( {
 		<MetricTileTable
 			Widget={ Widget }
 			widgetSlug={ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE }
-			loading={ loading }
+			loading={ loading && ! hasNoLeadEvents }
 			rows={ rows }
 			columns={ goalDriverTileColumns }
 			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }

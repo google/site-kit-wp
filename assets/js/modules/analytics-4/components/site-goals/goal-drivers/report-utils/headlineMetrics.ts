@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { HeadlineMetricReportDates } from './types';
 
@@ -56,12 +57,12 @@ export function buildPrimaryEventReportOptions(
 		...dates,
 		metrics: [ { name: 'eventCount' } ],
 		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: {
-			eventName: Array.isArray( primaryEvent )
-				? { filterType: 'inListFilter', value: primaryEvent }
-				: primaryEvent,
-			...breakdownFilter,
-		} as ReportOptions[ 'dimensionFilters' ],
+		dimensionFilters: ( Array.isArray( primaryEvent )
+			? getDimensionFiltersForEvents( primaryEvent, breakdownFilter )
+			: {
+					eventName: primaryEvent,
+					...breakdownFilter,
+			  } ) as ReportOptions[ 'dimensionFilters' ],
 		reportID: 'analytics-4_goal-driver-reports_primary-event',
 	};
 }

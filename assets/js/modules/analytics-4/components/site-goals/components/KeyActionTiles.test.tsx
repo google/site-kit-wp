@@ -42,9 +42,12 @@ jest.mock( './KeyActionChartTile', () => {
 
 describe( 'KeyActionTiles', () => {
 	const props = {
-		supportURL: 'https://example.com/help',
+		// `KeyActionTiles` treats this as opaque `ReactNode` content (no
+		// interpolation happens here since the diff moved that up into each
+		// caller), so a plain string stands in for it - nothing in this file
+		// asserts a link, that's covered by the callers' own tests instead.
 		rateInfoTooltip:
-			'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase).',
 		rateTitle: 'Sales Rate',
 		totalTitle: 'Total Sales',
 		totalSubtitle: '“purchase” events',
