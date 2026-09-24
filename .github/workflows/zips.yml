@@ -103,22 +103,13 @@ jobs:
           php-version: '8.4'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: npm
+          package-manager-cache: false
       - name: npm install
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
