@@ -4,9 +4,9 @@
 	"freshData",
 	"googleTagGateway",
 	"gtagUserData",
-	"pdfGeneration",
 	"rrmExpressSetup",
 	"setupFlowRefresh",
 	"setupFlowRefreshPhase4",
-	"trafficOverview"
+	"trafficOverview",
+	"typicalTraffic"
 ]

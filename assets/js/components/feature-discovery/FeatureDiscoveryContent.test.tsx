@@ -43,8 +43,7 @@ import {
 } from './constants';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
-const ALL_SERVICES_PLACEHOLDER =
-	'Feature Discovery Hub tab panel placeholder: All services and features';
+const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
 
 describe( 'FeatureDiscoveryContent', () => {
@@ -82,19 +81,21 @@ describe( 'FeatureDiscoveryContent', () => {
 		} );
 
 		it( 'should render only the tab panel content for /all-services', async () => {
-			const { container, getByText, waitForRegistry } =
+			const { container, waitForRegistry } =
 				renderContent( '/all-services' );
 
 			await waitForRegistry();
 
-			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 			expect(
 				container.querySelector( WHATS_NEW_SELECTOR )
 			).not.toBeInTheDocument();
 		} );
 
 		it( 'should render only the tab panel content for /whats-new', async () => {
-			const { container, queryByText, waitForRegistry } =
+			const { container, waitForRegistry } =
 				renderContent( '/whats-new' );
 
 			await waitForRegistry();
@@ -103,29 +104,35 @@ describe( 'FeatureDiscoveryContent', () => {
 				container.querySelector( WHATS_NEW_SELECTOR )
 			).toBeInTheDocument();
 			expect(
-				queryByText( ALL_SERVICES_PLACEHOLDER )
+				container.querySelector( ALL_SERVICES_SELECTOR )
 			).not.toBeInTheDocument();
 		} );
 
 		it( 'should render an explicit tab immediately without waiting for the routing state to resolve', async () => {
-			const { getByText, waitForRegistry } =
+			const { container, waitForRegistry } =
 				renderContent( '/all-services' );
 
 			// Asserted before awaiting anything, to prove the tab rendered
 			// without waiting for the default-tab routing state to resolve.
-			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 
 			await waitForRegistry();
 		} );
 
 		it( 'should respect direct tab URLs and remain switchable via hash-router navigation', async () => {
 			const history = createMemoryHistory();
-			const { container, getByText, queryByText, waitForRegistry } =
-				renderContent( '/all-services', history );
+			const { container, waitForRegistry } = renderContent(
+				'/all-services',
+				history
+			);
 
 			await waitForRegistry();
 
-			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 
 			act( () => {
 				history.push( '/whats-new' );
@@ -135,7 +142,7 @@ describe( 'FeatureDiscoveryContent', () => {
 				container.querySelector( WHATS_NEW_SELECTOR )
 			).toBeInTheDocument();
 			expect(
-				queryByText( ALL_SERVICES_PLACEHOLDER )
+				container.querySelector( ALL_SERVICES_SELECTOR )
 			).not.toBeInTheDocument();
 			expect( history.action ).toBe( 'PUSH' );
 
@@ -143,7 +150,9 @@ describe( 'FeatureDiscoveryContent', () => {
 				history.goBack();
 			} );
 
-			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 			expect( history.action ).toBe( 'POP' );
 
 			await waitForRegistry();
@@ -179,14 +188,16 @@ describe( 'FeatureDiscoveryContent', () => {
 				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
 			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-			const { getByText, history, waitForRegistry } =
+			const { container, history, waitForRegistry } =
 				renderContent( '/' );
 
 			await waitForRegistry();
 
 			expect( history.location.pathname ).toBe( '/all-services' );
 			expect( history.action ).toBe( 'REPLACE' );
-			expect( getByText( ALL_SERVICES_PLACEHOLDER ) ).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 		} );
 
 		it( 'should redirect a first-visit user installed before HUB_LAUNCH_VERSION to /whats-new', async () => {
