@@ -286,6 +286,60 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
+	it( 'should write the value labels in short form only on a chart with values of 100 or more', async () => {
+		provideReports( registry );
+		// Each of the 7 previous days has 58,000 impressions.
+		// Clicks stay under 100.
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			buildSearchConsoleReport().map( ( row, index ) =>
+				index < 7 ? { ...row, impressions: 58000 } : row
+			),
+			{ options: searchConsoleArgs }
+		);
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		const [ impressionsCall, clicksCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( impressionsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: 'short' },
+		} );
+		expect( clicksCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: undefined },
+		} );
+	} );
+
+	it( 'should leave room for the value labels and label every day', async () => {
+		provideReports( registry );
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 90 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+		} );
+	} );
+
 	it( 'should isolate a single failing metric to its own card without aborting the others', async () => {
 		// Pre-populate every report except Unique Visitors, which fails to fetch.
 		registry
