@@ -122,6 +122,8 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
+		// Isolate from filters registered by the plugin (e.g. force-active modules).
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
@@ -141,6 +143,8 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
+		// Isolate from filters registered by the plugin (e.g. force-active modules).
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 

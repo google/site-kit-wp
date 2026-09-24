@@ -197,6 +197,8 @@ class Analytics_4Test extends TestCase {
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
+		// Isolate from filters registered by the plugin (e.g. force-active modules).
+		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
 		$this->analytics->register();
 
 		$url = $this->authentication->get_google_proxy()->setup_url(
