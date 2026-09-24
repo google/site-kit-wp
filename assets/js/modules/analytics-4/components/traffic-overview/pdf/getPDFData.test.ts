@@ -353,6 +353,62 @@ describe( 'Traffic Overview getPDFData', () => {
 		).toBe( 'LineChart' );
 	} );
 
+	it( 'writes the value labels in short form, leaves room for them, and labels every day', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [ { metricValues: [ { value: '8400' } ] } ] },
+				{ options: getTotalsReportArgs( DATES ) }
+			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					[ '20250108', '900' ],
+					[ '20250109', '1200' ],
+					[ '20250110', '1500' ],
+					[ '20250111', '1100' ],
+					[ '20250112', '1300' ],
+					[ '20250113', '1000' ],
+					[ '20250114', '1400' ],
+				].map( ( [ date, users ] ) => ( {
+					dimensionValues: [ { value: date } ],
+					metricValues: [ { value: users } ],
+				} ) ),
+			},
+			{
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			}
+		);
+		seedDefaultBreakdownReports( registry );
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 45 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+			vAxis: { format: 'short' },
+		} );
+	} );
+
 	it( 'shapes each breakdown report with getBreakdownRows()', async () => {
 		seedTotalsAndGraphReports( registry );
 		const channelReport = buildBreakdownReport( [
