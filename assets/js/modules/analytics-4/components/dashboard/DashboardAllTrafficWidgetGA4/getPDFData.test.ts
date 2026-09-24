@@ -259,6 +259,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 					dimensionValues: [ { value: '20250109' } ],
 					metricValues: [ { value: '20' } ],
 				},
+				{
+					dimensionValues: [ { value: '20250110' } ],
+					metricValues: [ { value: '1500' } ],
+				},
 			],
 		};
 
@@ -313,6 +317,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( dataTable.addRows ).toHaveBeenCalledWith( [
 			[ new Date( 2025, 0, 8 ), 10 ],
 			[ new Date( 2025, 0, 9 ), 20 ],
+			[ new Date( 2025, 0, 10 ), 1500 ],
 		] );
 
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
@@ -320,17 +325,23 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( renderArgs.chartType ).toBe( 'LineChart' );
 		expect( renderArgs.width ).toBe( 506 );
 		expect( renderArgs.height ).toBe( 133 );
+		expect( renderArgs.scaleFactor ).toBe( 2 );
 		expect( renderArgs.signal ).toBe( signal );
 		expect( renderArgs.dataTable ).toBe( dataTable );
 		expect( renderArgs.options ).toMatchObject( {
 			curveType: 'function',
 			colors: [ '#3c7251' ],
+			chartArea: { right: 45 },
 			legend: { position: 'none' },
 			hAxis: {
 				format: 'MMM d',
 				textStyle: { fontName: 'Google Sans Text' },
+				ticks: [ { f: 'Jan 8' }, { f: 'Jan 9' }, { f: 'Jan 10' } ],
 			},
-			vAxis: { textStyle: { fontName: 'Google Sans Text' } },
+			vAxis: {
+				format: 'short',
+				textStyle: { fontName: 'Google Sans Text' },
+			},
 			series: { 0: { color: '#3c7251', lineWidth: 4 } },
 		} );
 
