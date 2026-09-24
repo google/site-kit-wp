@@ -29,7 +29,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 env:
   # Update this date suffix (YYYYMMDD) whenever the bundled plugins in the playwright-wp Dockerfile change.
@@ -67,6 +66,9 @@ jobs:
     name: Codegen
     runs-on: ubuntu-latest
     needs: changes
+    permissions:
+      contents: read
+      packages: write
     if: |
       needs.changes.outputs.codegen == 'true' ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'codegen'))
@@ -95,6 +97,9 @@ jobs:
     name: Backstop
     runs-on: ubuntu-latest
     needs: changes
+    permissions:
+      contents: read
+      packages: write
     if: |
       needs.changes.outputs.vrt == 'true' ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'vrt'))
@@ -116,6 +121,9 @@ jobs:
     name: Playwright WP 5.2.21
     runs-on: ubuntu-latest
     needs: changes
+    permissions:
+      contents: read
+      packages: write
     if: |
       needs.changes.outputs.playwright-wp == 'true' ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'playwright-wp'))
@@ -137,6 +145,9 @@ jobs:
     name: Playwright WP latest
     runs-on: ubuntu-latest
     needs: changes
+    permissions:
+      contents: read
+      packages: write
     if: |
       needs.changes.outputs.playwright-wp == 'true' ||
       (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'playwright-wp'))
@@ -167,6 +178,9 @@ jobs:
     name: Playwright WP nightly
     runs-on: ubuntu-latest
     needs: changes
+    permissions:
+      contents: read
+      packages: write
     if: |
       needs.changes.outputs.playwright-wp == 'true' ||
       github.event_name == 'schedule' ||

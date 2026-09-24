@@ -69,6 +69,9 @@ on:
         required: false
         default: ''
 
+permissions:
+  contents: read
+
 concurrency:
   group: zips-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true
@@ -100,36 +103,27 @@ jobs:
           php-version: '8.4'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Get Composer Cache Directory
-        id: composer-cache
-        run: echo "dir=$(composer config cache-files-dir)" >> "$GITHUB_OUTPUT"
-      - uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # ratchet:actions/cache@v5
-        with:
-          path: ${{ steps.composer-cache.outputs.dir }}
-          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-composer-
       - name: Composer Install
         run: composer install --no-interaction --no-progress --no-dev
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
-          cache: npm
+          package-manager-cache: false
       - name: npm install
         run: npm ci --include-workspace-root -w assets
       - name: Create destination directory and update file permissions
         run: |
-          mkdir -p "${{ github.ref }}"
+          mkdir -p "${GITHUB_REF}"
           sudo chown -R "$(id -u):$(id -g)" .
       - name: Build develop version
         run: |
           npm run dev-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit-dev.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit-dev.zip"
       - name: Build release version
         run: |
           npm run release-zip
-          mv ./*.zip "${{ github.ref }}/google-site-kit.zip"
+          mv ./*.zip "${GITHUB_REF}/google-site-kit.zip"
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
@@ -207,6 +201,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
     needs: build-zips
     timeout-minutes: 20
+    permissions: {}
     steps:
       - name: Install SVN ( Subversion )
         run: |
@@ -240,6 +235,7 @@ jobs:
     if: github.event_name == 'workflow_dispatch' && ( github.ref_type == 'tag' || inputs.release_version != '' )
     needs: build-zips
     timeout-minutes: 20
+    permissions: {}
     steps:
       - name: Install SVN ( Subversion )
         run: |
