@@ -2,8 +2,15 @@ FROM wordpress:php7.4-apache
 
 ARG WP_VERSION=latest
 
+# The wordpress:php7.4-apache image is based on Debian 11 (bullseye), which has reached the
+# end of its LTS period. Its security and updates suites are no longer served, so point apt
+# at the archived bullseye release instead.
 RUN set -eux; \
-    apt-get update && apt-get install -y --no-install-recommends unzip default-mysql-client && rm -rf /var/lib/apt/lists/*; \
+    echo 'deb http://archive.debian.org/debian bullseye main' > /etc/apt/sources.list; \
+    rm -f /etc/apt/sources.list.d/*; \
+    apt-get -o Acquire::Check-Valid-Until=false update; \
+    apt-get install -y --no-install-recommends unzip default-mysql-client; \
+    rm -rf /var/lib/apt/lists/*; \
     if [ "$WP_VERSION" = "nightly" ]; then \
         curl -fsSL "https://wordpress.org/nightly-builds/wordpress-latest.zip" -o /tmp/wordpress.zip; \
         unzip -o /tmp/wordpress.zip -d /tmp; \
