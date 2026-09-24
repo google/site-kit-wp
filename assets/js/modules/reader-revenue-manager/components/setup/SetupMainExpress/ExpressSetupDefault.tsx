@@ -30,13 +30,18 @@ import {
 	StepSetupComplete,
 	StepTermsOfService,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	useExpressSetupScopes,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
 const ExpressSetupDefault: FC = () => {
 	const [ step, setStep ] = useStep();
+
+	useExpressSetupScopes();
 
 	const stepContent: Record< string, ReactNode > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: (

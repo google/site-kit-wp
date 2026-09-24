@@ -17,9 +17,17 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { Fragment } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import AuthenticatedPermissionsModal from '@/js/components/PermissionsModal/AuthenticatedPermissionsModal';
 import { Registry } from '@/js/googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_STEPS,
@@ -29,8 +37,10 @@ import { providePublications } from '@/js/modules/reader-revenue-manager/utils/t
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -55,6 +65,10 @@ describe( 'ExpressSetupDefault', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
 
 		const moduleData = [
 			{
@@ -133,5 +147,105 @@ describe( 'ExpressSetupDefault', () => {
 		Object.values( STEP_CONTENT ).forEach( ( content ) => {
 			expect( queryByText( content ) ).not.toBeInTheDocument();
 		} );
+	} );
+
+	it( 'should show the permissions modal after consent and retry only on Proceed', async () => {
+		global.location.href =
+			'http://example.com/?notification=authentication_success&step=connect-publication';
+
+		provideUserAuthentication( registry );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveConnectURL( 'http://example.com/connect' );
+
+		const { getByText, getByRole } = render(
+			<Fragment>
+				<ExpressSetupDefault />
+				<AuthenticatedPermissionsModal />
+			</Fragment>,
+			{ registry }
+		);
+
+		expect(
+			getByText(
+				'Additional permissions are required to set up Reader Revenue Manager.'
+			)
+		).toBeInTheDocument();
+
+		expect(
+			getByText( STEP_CONTENT[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ] )
+		).toBeInTheDocument();
+
+		expect( global.location.assign ).not.toHaveBeenCalled();
+
+		fireEvent.click( getByRole( 'button', { name: 'Proceed' } ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				expect.stringContaining( 'http://example.com/connect?' )
+			);
+		} );
+
+		const connectURL = ( global.location.assign as jest.Mock ).mock
+			.calls[ 0 ][ 0 ];
+
+		expect( connectURL ).toMatchQueryParameters( {
+			'additional_scopes[0]': EXPRESS_SETUP_SCOPES[ 0 ].replace(
+				'https:',
+				'gttps:'
+			),
+			'additional_scopes[1]': EXPRESS_SETUP_SCOPES[ 1 ].replace(
+				'https:',
+				'gttps:'
+			),
+		} );
+
+		expect(
+			new URL( connectURL ).searchParams.has( 'errorRedirect' )
+		).toBe( false );
+	} );
+
+	it( 'should allow cancelling when only the required read-only scope is missing', async () => {
+		global.location.href =
+			'http://example.com/?notification=authentication_success&step=connect-publication';
+
+		provideUserAuthentication( registry, {
+			grantedScopes: [ EXPRESS_SETUP_SCOPES[ 1 ] ],
+			requiredScopes: [ EXPRESS_SETUP_SCOPES[ 0 ] ],
+			unsatisfiedScopes: [ EXPRESS_SETUP_SCOPES[ 0 ] ],
+		} );
+
+		const { getByRole, queryByRole, getByText, rerender } = render(
+			<Fragment>
+				<ExpressSetupDefault />
+				<AuthenticatedPermissionsModal />
+			</Fragment>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Proceed' } )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Cancel' } ) );
+
+		await waitFor( () => {
+			expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+		} );
+
+		rerender(
+			<Fragment>
+				<ExpressSetupDefault />
+				<AuthenticatedPermissionsModal />
+			</Fragment>
+		);
+		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+
+		expect(
+			getByText( STEP_CONTENT[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ] )
+		).toBeInTheDocument();
+
+		expect( global.location.assign ).not.toHaveBeenCalled();
 	} );
 } );

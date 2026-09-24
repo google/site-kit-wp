@@ -45,6 +45,7 @@ import useViewContext from './useViewContext';
 const useSelect = useSelectWithRequiredDeps as UseSelect;
 
 interface ActivateModuleOptions {
+	additionalScopes?: string[];
 	redirectQueryArgs?: Record< string, string >;
 }
 
@@ -55,7 +56,7 @@ interface ActivateModuleOptions {
  * @since 1.70.0
  *
  * @param {string} moduleSlug Module slug.
- * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs`.
+ * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
 export default function useActivateModuleCallback(

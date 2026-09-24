@@ -111,6 +111,65 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
+	/**
+	 * @dataProvider data_auth_scopes
+	 */
+	public function test_auth_scopes( $enabled, $authenticated, $connected, $granted_scopes, $expected_scopes ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+		$this->reader_revenue_manager->register();
+		if ( $authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		}
+		if ( $connected ) {
+			$this->reader_revenue_manager->get_settings()->merge( array( 'publicationID' => 'test-publication' ) );
+		}
+		$base_scopes = array( 'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( array_merge( $base_scopes, $granted_scopes ) );
+		$this->assertEqualSets(
+			array_merge( $base_scopes, $expected_scopes ),
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Only new setups and previously granted scopes should require the new RRM scopes.'
+		);
+	}
+
+	public function data_auth_scopes() {
+		$readonly = Reader_Revenue_Manager::READONLY_SCOPE;
+		$manage   = Reader_Revenue_Manager::MANAGE_SCOPE;
+		return array(
+			'unauthenticated'       => array( true, false, false, array(), array( $readonly ) ),
+			'new setup'             => array( true, true, false, array(), array( $readonly ) ),
+			'legacy connected user' => array( true, true, true, array(), array() ),
+			'readonly granted'      => array( true, true, true, array( $readonly ), array( $readonly ) ),
+			'manage granted'        => array( true, true, true, array( $manage ), array( $manage ) ),
+			'both granted'          => array( true, true, true, array( $readonly, $manage ), array( $readonly, $manage ) ),
+			'flag off during setup' => array( false, false, false, array(), array() ),
+			'flag off with grants'  => array( false, true, true, array( $readonly, $manage ), array() ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_express_write_datapoints
+	 */
+	public function test_express_write_datapoints_require_manage_scope( $datapoint ) {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( $this->reader_revenue_manager->get_scopes() );
+		$result = $this->reader_revenue_manager->set_data( $datapoint, array() );
+		$this->assertWPError( $result, 'Write requests without the manage scope should fail.' );
+		$this->assertSame( 'missing_required_scopes', $result->get_error_code(), 'The error should identify insufficient scopes.' );
+		$this->assertSame( array( Reader_Revenue_Manager::MANAGE_SCOPE ), $result->get_error_data()['scopes'], 'The error should request the manage scope.' );
+	}
+
+	public function data_express_write_datapoints() {
+		return array(
+			'create publication' => array( 'create-publication' ),
+			'update publication' => array( 'publication' ),
+			'create CTA'         => array( 'create-cta' ),
+		);
+	}
+
 	public function test_register__reset_product_id_dismissals_on_publication_change() {
 		$this->reader_revenue_manager->register();
 		$this->reader_revenue_manager->get_settings()->register();

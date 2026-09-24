@@ -108,7 +108,10 @@ function AuthenticatedPermissionsModal() {
 		return null;
 	}
 
+	// An explicit false requests the modal even where the standard scope alert
+	// is unavailable, such as module setup screens.
 	if (
+		permissionsError.data.skipModal !== false &&
 		unsatisfiedScopes &&
 		permissionsError?.data?.scopes.every( ( scope ) =>
 			unsatisfiedScopes.includes( scope )
