@@ -23,6 +23,14 @@ import type { IntentsAPI } from '@/js/googlesitekit/intents';
 import { AdsConversionTrackingIntent } from '@/js/modules/ads/components/intents';
 import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants';
 
+/**
+ * Registers Ads module intents in the intents registry.
+ *
+ * @since n.e.x.t
+ *
+ * @param {IntentsAPI} intents Intents registry.
+ * @return {void}
+ */
 export function registerIntents( intents: IntentsAPI ): void {
 	intents.registerIntent( ADS_CONVERSION_TRACKING_INTENT_SLUG, {
 		Component: AdsConversionTrackingIntent,
