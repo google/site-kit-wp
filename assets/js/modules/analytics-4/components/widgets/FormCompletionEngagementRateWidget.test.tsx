@@ -31,8 +31,12 @@ import {
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { render, within } from '@tests/js/test-utils';
-import { createTestRegistry, freezeFetch } from '@tests/js/utils';
+import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideSiteInfo,
+} from '@tests/js/utils';
 import FormCompletionEngagementRateWidget from './FormCompletionEngagementRateWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
@@ -167,5 +171,56 @@ describe( 'FormCompletionEngagementRateWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toHaveTextContent( '+10%' );
+	} );
+
+	it( 'should append a working "Learn more" link to the info tooltip', async () => {
+		provideSiteInfo( registry );
+
+		const engagementReportOptions = getEngagementReportOptions();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [] },
+				{ options: engagementReportOptions }
+			);
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const infoTooltip = container.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'engaged with your content', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining( 'doc=site-goals-engagement-rate' )
+		);
 	} );
 } );
