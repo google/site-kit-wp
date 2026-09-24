@@ -27,9 +27,9 @@ inputs:
     required: false
     default: ''
   push:
-    description: Whether to push the built image to the registry. When not 'true', the image is only built (no registry login or push).
+    description: Whether to push the built image to the registry. Pushing is opt-in; unless set to 'true', the image is only built (no registry login or push).
     required: false
-    default: 'true'
+    default: 'false'
 
 runs:
   using: composite

@@ -7,7 +7,7 @@ ARG WP_VERSION=latest
 # at the archived bullseye release instead.
 RUN set -eux; \
     echo 'deb http://archive.debian.org/debian bullseye main' > /etc/apt/sources.list; \
-    rm -f /etc/apt/sources.list.d/*; \
+    rm -rf /etc/apt/sources.list.d/*; \
     apt-get -o Acquire::Check-Valid-Until=false update; \
     apt-get install -y --no-install-recommends unzip default-mysql-client; \
     rm -rf /var/lib/apt/lists/*; \
