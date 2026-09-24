@@ -20,7 +20,7 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
-import { ElementType, Fragment } from 'react';
+import { ElementType } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,7 +30,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import AuthenticatedPermissionsModal from '@/js/components/PermissionsModal/AuthenticatedPermissionsModal';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
@@ -98,12 +97,7 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 }
 
 function Template() {
-	return (
-		<Fragment>
-			<SetupCTANewsletterSignup />
-			<AuthenticatedPermissionsModal />
-		</Fragment>
-	);
+	return <SetupCTANewsletterSignup />;
 }
 
 export const ConnectPublication = Template.bind( {} ) as Story;
@@ -174,21 +168,6 @@ SetupCompleteWithPreExistingCTAs.args = {
 	},
 };
 SetupCompleteWithPreExistingCTAs.scenario = {};
-
-export const MissingScopes = Template.bind( {} ) as Story;
-MissingScopes.storyName = 'Missing Scopes';
-MissingScopes.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		provideUserAuthentication( registry ),
-};
-MissingScopes.parameters = {
-	query: {
-		...BASE_QUERY,
-		notification: 'authentication_success',
-		step: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
-	},
-};
-MissingScopes.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletterSignup',

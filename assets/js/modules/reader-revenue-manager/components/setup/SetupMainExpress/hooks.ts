@@ -215,12 +215,13 @@ export function useHasPreExistingCTAs(): boolean | undefined {
  * @return {void}
  */
 export function useExpressSetupScopes( additionalScopes: string[] = [] ): void {
-	const [ notification ] = useQueryArg( 'notification' );
 	const requestedScopes = useRef( false );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
+
 	const scopes = Array.from(
 		new Set( [ ...EXPRESS_SETUP_SCOPES, ...additionalScopes ] )
 	);
+
 	const missingScopes = useSelect(
 		( select: Select ): string[] | undefined => {
 			const scopeStates = scopes.map( ( scope ) =>
@@ -233,13 +234,15 @@ export function useExpressSetupScopes( additionalScopes: string[] = [] ): void {
 		},
 		[ scopes ]
 	);
+
 	useEffect( () => {
 		if ( requestedScopes.current || ! missingScopes?.length ) {
 			return;
 		}
 
-		// Request once per mount so cancelling the modal does not reopen it.
+		// Request once per mount while navigation to authorization is pending.
 		requestedScopes.current = true;
+
 		setPermissionScopeError( {
 			code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
 			message: __(
@@ -249,11 +252,9 @@ export function useExpressSetupScopes( additionalScopes: string[] = [] ): void {
 			data: {
 				status: 403,
 				scopes: missingScopes,
-				// Granular consent can succeed without granting every scope.
-				// Require an explicit retry after returning to avoid a redirect loop.
-				skipModal: notification !== 'authentication_success',
+				skipModal: true,
 				redirectURL: global.location.href,
 			},
 		} );
-	}, [ missingScopes, notification, setPermissionScopeError ] );
+	}, [ missingScopes, setPermissionScopeError ] );
 }

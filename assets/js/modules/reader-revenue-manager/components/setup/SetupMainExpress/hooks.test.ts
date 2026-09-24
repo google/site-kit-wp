@@ -39,7 +39,6 @@ import {
 } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
-	actHook,
 	createTestRegistry,
 	fireEvent,
 	freezeFetch,
@@ -508,28 +507,6 @@ describe( 'useExpressSetupScopes', () => {
 		renderHook( () => useExpressSetupScopes(), {
 			registry,
 		} );
-		expect(
-			registry.select( CORE_USER ).getPermissionScopeError()
-		).toBeNull();
-	} );
-
-	it( 'should show the modal after completed consent and leave it dismissed after cancellation', () => {
-		global.location.href += '&notification=authentication_success';
-		provideUserAuthentication( registry, {
-			grantedScopes: [ EXPRESS_SETUP_SCOPES[ 0 ] ],
-		} );
-		const { rerender } = renderHook( () => useExpressSetupScopes(), {
-			registry,
-		} );
-		expect(
-			registry.select( CORE_USER ).getPermissionScopeError()
-		).toMatchObject( {
-			data: { scopes: [ EXPRESS_SETUP_SCOPES[ 1 ] ], skipModal: false },
-		} );
-		actHook( () => {
-			registry.dispatch( CORE_USER ).clearPermissionScopeError();
-		} );
-		rerender();
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
 		).toBeNull();
