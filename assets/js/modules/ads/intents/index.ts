@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import type { IntentsAPI } from '@/js/googlesitekit/intents';
+import { IntentsAPI } from '@/js/googlesitekit/intents';
 import { AdsConversionTrackingIntent } from '@/js/modules/ads/components/intents';
 import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants';
 

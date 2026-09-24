@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
-export default function AdsConversionTrackingIntent() {
-	return null;
-}
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+const AdsConversionTrackingIntent: FC = () => null;
+
+export default AdsConversionTrackingIntent;

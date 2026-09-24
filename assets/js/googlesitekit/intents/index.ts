@@ -19,9 +19,19 @@
 /**
  * External dependencies
  */
-import type { ComponentType } from 'react';
+import { ComponentType } from 'react';
 
+/**
+ * Intent registration type.
+ *
+ * @since n.e.x.t
+ */
 export interface IntentRegistration {
+	/**
+	 * Component rendered for the intent, given the intent's payload.
+	 *
+	 * @since n.e.x.t
+	 */
 	Component: ComponentType< { payload: unknown } >;
 }
 

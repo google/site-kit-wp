@@ -21,7 +21,6 @@
  */
 import { createIntents } from '@/js/googlesitekit/intents';
 import { AdsConversionTrackingIntent } from '@/js/modules/ads/components/intents';
-import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants';
 import { registerIntents } from './index';
 
 describe( 'registerIntents', () => {
@@ -31,8 +30,7 @@ describe( 'registerIntents', () => {
 		registerIntents( intents );
 
 		expect(
-			intents.getRegisteredIntent( ADS_CONVERSION_TRACKING_INTENT_SLUG )
-				?.Component
+			intents.getRegisteredIntent( 'ads-conversion-tracking' )?.Component
 		).toBe( AdsConversionTrackingIntent );
 	} );
 } );
