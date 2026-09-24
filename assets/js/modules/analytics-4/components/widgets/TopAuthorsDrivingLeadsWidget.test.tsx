@@ -1,5 +1,5 @@
 /**
- * TopAuthorsDrivingSalesWidget component tests.
+ * TopAuthorsDrivingLeadsWidget component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -27,7 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
@@ -42,23 +42,23 @@ import {
 	freezeFetch,
 	provideUserAuthentication,
 } from '@tests/js/utils';
-import TopAuthorsDrivingSalesWidget from './TopAuthorsDrivingSalesWidget';
+import TopAuthorsDrivingLeadsWidget from './TopAuthorsDrivingLeadsWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
 } from './utils/keyMetricsWidgetTestHelpers';
-import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
-describe( 'TopAuthorsDrivingSalesWidget', () => {
+describe( 'TopAuthorsDrivingLeadsWidget', () => {
 	let registry: WPDataRegistry;
 
 	const widgetProps = getWidgetComponentProps(
-		KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS
 	);
 	const propertyID = '12345';
 	const requiredCustomDimensions =
-		KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES ]
+		KEY_METRICS_WIDGETS[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]
 			.requiredCustomDimensions;
 
 	function getReportOptions() {
@@ -71,7 +71,11 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 			dimensionFilters: {
 				eventName: {
 					filterType: 'inListFilter',
-					value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					value: [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				},
 				'customEvent:googlesitekit_post_author': {
 					filterType: 'emptyFilter',
@@ -87,7 +91,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 			],
 			limit: 6,
 			keepEmptyRows: false,
-			reportID: 'analytics-4_goal-driver-reports_top-authors',
+			reportID: 'analytics-4_goal-driver-reports_top-authors_lead',
 		};
 	}
 
@@ -97,17 +101,21 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 			dimensionFilters: {
 				eventName: {
 					filterType: 'inListFilter',
-					value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					value: [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				},
 			},
 			metrics: [ { name: 'eventCount' } ],
-			reportID: 'analytics-4_goal-driver-reports_top-authors-total',
+			reportID: 'analytics-4_goal-driver-reports_top-authors-total_lead',
 		};
 	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSalesWidgetTestRegistry( registry );
+		provideLeadsWidgetTestRegistry( registry );
 		provideUserAuthentication( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -137,7 +145,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
-			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -147,16 +155,30 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
-		TopAuthorsDrivingSalesWidget,
+		TopAuthorsDrivingLeadsWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
-		TopAuthorsDrivingSalesWidget,
+		TopAuthorsDrivingLeadsWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
@@ -173,7 +195,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 			.receiveGetReport( {}, { options: totalReportOptions } );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -216,17 +238,13 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		// widget divides by this total rather than by the visible rows.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
-				rows: [
-					{
-						metricValues: [ { value: '200' } ],
-					},
-				],
+				rows: [ { metricValues: [ { value: '200' } ] } ],
 			},
 			{ options: totalReportOptions }
 		);
 
 		const { getByText, waitForRegistry } = render(
-			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -246,7 +264,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
 			{ registry }
 		);
 
@@ -275,7 +293,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		} );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
+			<TopAuthorsDrivingLeadsWidget { ...widgetProps } />,
 			{ registry }
 		);
 

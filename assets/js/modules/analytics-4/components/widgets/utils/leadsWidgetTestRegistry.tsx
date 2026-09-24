@@ -1,5 +1,5 @@
 /**
- * Shared test registry setup for the "Selling products" Key Metrics widgets.
+ * Shared test registry setup for the "Generating leads" Key Metrics widgets.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -35,17 +35,17 @@ import { provideKeyMetrics, provideModules } from '@tests/js/utils';
 
 /**
  * Configures a test registry with a connected Analytics-4 module, Key
- * Metrics settings, and a detected "purchase" conversion event.
+ * Metrics settings, and the detected lead-generation conversion events.
  *
- * Shared setup for the "Selling products" Key Metrics widget tests
- * (SalesRateWidget, TotalSalesWidget, TopPagesDrivingSalesWidget, etc).
+ * Shared setup for the "Generating leads" Key Metrics widget tests
+ * (FormCompletionRateWidget, TotalFormCompletionsWidget, LeadsByCountriesWidget, etc).
  *
- * @since 1.188.0
+ * @since n.e.x.t
  *
  * @param {Object} registry Data registry to configure.
  * @return {void}
  */
-export function provideSalesWidgetTestRegistry(
+export function provideLeadsWidgetTestRegistry(
 	registry: WPDataRegistry
 ): void {
 	registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
@@ -58,5 +58,9 @@ export function provideSalesWidgetTestRegistry(
 	);
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+		.setDetectedEvents( [
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
 }

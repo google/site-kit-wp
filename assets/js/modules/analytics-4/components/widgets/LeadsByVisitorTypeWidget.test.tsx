@@ -1,5 +1,5 @@
 /**
- * TopTrafficChannelsDrivingSalesRateWidget component tests.
+ * LeadsByVisitorTypeWidget component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
@@ -35,32 +35,36 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
-import TopTrafficChannelsDrivingSalesRateWidget from './TopTrafficChannelsDrivingSalesRateWidget';
+import LeadsByVisitorTypeWidget from './LeadsByVisitorTypeWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
 } from './utils/keyMetricsWidgetTestHelpers';
-import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
-describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
+describe( 'LeadsByVisitorTypeWidget', () => {
 	let registry: WPDataRegistry;
 
 	const widgetProps = getWidgetComponentProps(
-		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE
+		KM_ANALYTICS_LEADS_BY_VISITOR_TYPE
 	);
 
 	function getReportOptions() {
 		return {
 			...registry.select( CORE_USER ).getDateRangeDates(),
-			dimensions: [ 'sessionDefaultChannelGroup' ],
+			dimensions: [ 'newVsReturning' ],
 			dimensionFilters: {
 				eventName: {
 					filterType: 'inListFilter',
-					value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					value: [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				},
 			},
-			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
+			metrics: [ { name: 'eventCount' } ],
 			orderby: [
 				{
 					metric: { metricName: 'eventCount' },
@@ -69,14 +73,13 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 			],
 			limit: 6,
 			keepEmptyRows: false,
-			reportID:
-				'analytics-4_goal-driver-reports_top-traffic-channels-rate',
+			reportID: 'analytics-4_goal-driver-reports_visitor-type',
 		};
 	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSalesWidgetTestRegistry( registry );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
@@ -84,7 +87,7 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<LeadsByVisitorTypeWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -94,16 +97,30 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<LeadsByVisitorTypeWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
-		TopTrafficChannelsDrivingSalesRateWidget,
+		LeadsByVisitorTypeWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
-		TopTrafficChannelsDrivingSalesRateWidget,
+		LeadsByVisitorTypeWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
@@ -116,7 +133,7 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 			.receiveGetReport( {}, { options: reportOptions } );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<LeadsByVisitorTypeWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -131,23 +148,19 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( "should render each channel's own conversion rate rather than a share of the total", async () => {
+	it( "should render each visitor type's share of the total as a percentage", async () => {
 		const reportOptions = getReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				rows: [
 					{
-						dimensionValues: [ { value: 'Organic Search' } ],
-						metricValues: [ { value: '40' }, { value: '100' } ],
+						dimensionValues: [ { value: 'new' } ],
+						metricValues: [ { value: '75' } ],
 					},
 					{
-						dimensionValues: [ { value: 'Paid Search' } ],
-						metricValues: [ { value: '20' }, { value: '100' } ],
-					},
-					{
-						dimensionValues: [ { value: 'Direct' } ],
-						metricValues: [ { value: '10' }, { value: '200' } ],
+						dimensionValues: [ { value: 'returning' } ],
+						metricValues: [ { value: '25' } ],
 					},
 				],
 			},
@@ -155,19 +168,14 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		);
 
 		const { getByText, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<LeadsByVisitorTypeWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Organic Search' ) ).toBeInTheDocument();
-		expect( getByText( '40%' ) ).toBeInTheDocument();
-		expect( getByText( 'Paid Search' ) ).toBeInTheDocument();
-		expect( getByText( '20%' ) ).toBeInTheDocument();
-		expect( getByText( 'Direct' ) ).toBeInTheDocument();
-		// Direct's own rate (10/200 = 5%) is far lower than its share of the
-		// total event count (10/70 ≈ 14%) would be, confirming the value is
-		// each channel's own rate rather than a share of the total.
-		expect( getByText( '5%' ) ).toBeInTheDocument();
+		expect( getByText( 'New visitors' ) ).toBeInTheDocument();
+		expect( getByText( '75%' ) ).toBeInTheDocument();
+		expect( getByText( 'Returning visitors' ) ).toBeInTheDocument();
+		expect( getByText( '25%' ) ).toBeInTheDocument();
 	} );
 } );

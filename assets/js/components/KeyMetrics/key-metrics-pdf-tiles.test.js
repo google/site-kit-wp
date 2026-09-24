@@ -126,6 +126,11 @@ function smokeRegistry() {
 		getReferenceDate: jest.fn( () => '2025-02-04' ),
 		getServiceReportURL: jest.fn( () => 'https://example.com/report' ),
 		getPrimaryEcommerceEvent: jest.fn( () => 'purchase' ),
+		getDetectedLeadEvents: jest.fn( () => [
+			'submit_lead_form',
+			'contact',
+			'generate_lead',
+		] ),
 	};
 
 	return {

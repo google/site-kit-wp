@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { HeadlineMetricReportDates } from './types';
 
@@ -26,22 +27,29 @@ import { HeadlineMetricReportDates } from './types';
  * Builds the Analytics 4 report options for a headline metric's primary event count.
  *
  * Lifted from `OnlineStorePerformanceWidget`'s `getWidgetReportOptions`, this
- * report is goal-type agnostic like the goal driver builders, so the sibling
- * lead-generation Key Metric tiles can reuse it with a lead event.
+ * report is goal-type agnostic like the goal driver builders above. A single
+ * event name filters by equality, matching the ecommerce `purchase` event;
+ * lead generation has no single triggering event, so the lead-generation Key
+ * Metric tiles pass the detected lead events as an array, filtered with an
+ * `inListFilter` instead - both shapes share the same metric, dimension and
+ * report ID.
  *
  * @since 1.188.0
  *
- * @param {Object} dates             The date range, including the compare dates.
- * @param {string} [primaryEvent]    The primary conversion event name.
- * @param {Object} [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
+ * @param {Object}          dates             The date range, including the compare dates.
+ * @param {string|string[]} [primaryEvent]    The primary conversion event name, or names to match any of.
+ * @param {Object}          [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
  * @return {Object|undefined} The Analytics 4 `getReport` options, or `undefined` when there is no primary event.
  */
 export function buildPrimaryEventReportOptions(
 	dates: HeadlineMetricReportDates,
-	primaryEvent?: string,
+	primaryEvent?: string | string[],
 	breakdownFilter?: Record< string, unknown >
 ): ReportOptions | undefined {
-	if ( ! primaryEvent ) {
+	if (
+		! primaryEvent ||
+		( Array.isArray( primaryEvent ) && ! primaryEvent.length )
+	) {
 		return undefined;
 	}
 
@@ -49,10 +57,12 @@ export function buildPrimaryEventReportOptions(
 		...dates,
 		metrics: [ { name: 'eventCount' } ],
 		dimensions: [ { name: 'eventName' } ],
-		dimensionFilters: {
-			eventName: primaryEvent,
-			...breakdownFilter,
-		} as ReportOptions[ 'dimensionFilters' ],
+		dimensionFilters: ( Array.isArray( primaryEvent )
+			? getDimensionFiltersForEvents( primaryEvent, breakdownFilter )
+			: {
+					eventName: primaryEvent,
+					...breakdownFilter,
+			  } ) as ReportOptions[ 'dimensionFilters' ],
 		reportID: 'analytics-4_goal-driver-reports_primary-event',
 	};
 }

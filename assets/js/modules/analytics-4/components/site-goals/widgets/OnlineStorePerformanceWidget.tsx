@@ -24,6 +24,7 @@ import { FC, ReactNode, Ref } from 'react';
  */
 import {
 	Fragment,
+	createInterpolateElement,
 	forwardRef,
 	useCallback,
 	useEffect,
@@ -547,7 +548,23 @@ const OnlineStorePerformanceWidget = forwardRef<
 					>
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
-							supportURL={ keyActionDocumentationURL }
+							rateInfoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via createInterpolateElement.
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ keyActionDocumentationURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
 							rateTitle={
 								{
 									purchase: __(

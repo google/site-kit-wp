@@ -1,5 +1,5 @@
 /**
- * SalesRateWidget component tests.
+ * FormCompletionEngagementRateWidget component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,49 +26,32 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import {
 	CORE_USER,
-	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import {
-	buildEngagementReportOptions,
-	buildPrimaryEventReportOptions,
-} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
-import {
-	ENUM_CONVERSION_EVENTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { render, within } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
-import SalesRateWidget from './SalesRateWidget';
+import FormCompletionEngagementRateWidget from './FormCompletionEngagementRateWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 } from './utils/keyMetricsWidgetTestHelpers';
-import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-describe( 'SalesRateWidget', () => {
+describe( 'FormCompletionEngagementRateWidget', () => {
 	let registry: WPDataRegistry;
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
-		KM_ANALYTICS_SALES_RATE
+		KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE
 	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSalesWidgetTestRegistry( registry );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
-
-	function getPrimaryEventReportOptions() {
-		const dates = registry
-			.select( CORE_USER )
-			.getDateRangeDates( { compare: true } );
-
-		return buildPrimaryEventReportOptions(
-			dates,
-			ENUM_CONVERSION_EVENTS.PURCHASE
-		);
-	}
 
 	function getEngagementReportOptions() {
 		const dates = registry
@@ -78,13 +61,11 @@ describe( 'SalesRateWidget', () => {
 		return buildEngagementReportOptions( dates );
 	}
 
-	it( 'should render the loading state while resolving the reports', async () => {
-		// This widget requests two reports (primary event + engagement), so
-		// the frozen fetch mock must cover both GET requests.
-		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
+	it( 'should render the loading state while resolving the report', async () => {
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
-			<SalesRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -94,23 +75,30 @@ describe( 'SalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
-		SalesRateWidget,
+		FormCompletionEngagementRateWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
-	it( 'should render zero values when there are no purchases or sessions in either period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+	it( 'should render zero values when there is no engagement data in either period', async () => {
 		const engagementReportOptions = getEngagementReportOptions();
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport(
-				{ rows: [] },
-				{ options: primaryEventReportOptions }
-			);
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(
@@ -119,7 +107,7 @@ describe( 'SalesRateWidget', () => {
 			);
 
 		const { container, waitForRegistry } = render(
-			<SalesRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -142,31 +130,9 @@ describe( 'SalesRateWidget', () => {
 		expect( within( changeBadge ).getByText( '0%' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should render the current period sales rate, sessions subtext, and the change vs. the previous period', async () => {
-		const primaryEventReportOptions = getPrimaryEventReportOptions();
+	it( 'should render the current period engagement rate, sessions subtext, and the change vs. the previous period', async () => {
 		const engagementReportOptions = getEngagementReportOptions();
 
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-			{
-				rows: [
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
-							{ value: 'date_range_0' },
-						],
-						metricValues: [ { value: '150' } ],
-					},
-					{
-						dimensionValues: [
-							{ value: ENUM_CONVERSION_EVENTS.PURCHASE },
-							{ value: 'date_range_1' },
-						],
-						metricValues: [ { value: '100' } ],
-					},
-				],
-			},
-			{ options: primaryEventReportOptions }
-		);
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{
 				totals: [
@@ -184,23 +150,22 @@ describe( 'SalesRateWidget', () => {
 		);
 
 		const { container, getByText, waitForRegistry } = render(
-			<SalesRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
-		// currentRate = 150 purchases / 500 sessions = 30%.
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
-		).toHaveTextContent( '30%' );
-		expect( getByText( '30%' ) ).toBeInTheDocument();
+		).toHaveTextContent( '65%' );
+		expect( getByText( '65%' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
 		).toHaveTextContent( 'of 500 total sessions' );
 
-		// previousRate = 100 / 400 = 25%; change = 30% - 25% = +5 percentage points.
+		// change = currentEngagementRate (65%) - previousEngagementRate (55%) = +10 percentage points.
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
-		).toHaveTextContent( '+5%' );
+		).toHaveTextContent( '+10%' );
 	} );
 } );

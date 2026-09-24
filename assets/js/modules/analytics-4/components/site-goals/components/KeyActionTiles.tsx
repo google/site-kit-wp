@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
@@ -50,8 +50,8 @@ interface KeyActionTilesProps
 	 * alone.
 	 */
 	isOtherSourcesTab: boolean;
-	/** The URL the rate tile's info tooltip links to. */
-	supportURL: string;
+	/** The rate tile's info tooltip, including its "Learn more" link. */
+	rateInfoTooltip: ReactNode;
 	/** The rate tile's title. */
 	rateTitle: string;
 	/** The total tile's title. */
@@ -78,7 +78,7 @@ interface KeyActionTilesProps
 
 const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 	isOtherSourcesTab,
-	supportURL,
+	rateInfoTooltip,
 	rateTitle,
 	totalTitle,
 	totalSubtitle,
@@ -104,23 +104,7 @@ const KeyActionTiles: FC< KeyActionTilesProps > = ( {
 					__( 'of %s total sessions', 'google-site-kit' ),
 					numFmt( currentSessions, NUMBER_FORMAT )
 				) }
-				infoTooltip={ createInterpolateElement(
-					__(
-						'The percentage of total visitors who successfully completed a key action (like making a purchase). <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						a: (
-							// Content is supplied by createInterpolateElement.
-							// eslint-disable-next-line jsx-a11y/anchor-has-content
-							<a
-								href={ supportURL }
-								target="_blank"
-								rel="noreferrer noopener"
-							/>
-						),
-					}
-				) }
+				infoTooltip={ rateInfoTooltip }
 				currentValue={ currentRate }
 				previousValue={ previousRate }
 				format={ PERCENT_FORMAT }

@@ -31,6 +31,11 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -43,6 +48,7 @@ import {
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
@@ -56,11 +62,13 @@ import {
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -71,11 +79,16 @@ import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
 	buildCountriesReportOptions,
 	mapCountriesRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
+import {
+	buildDeviceTypeReportOptions,
+	mapDeviceTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/deviceType';
 import {
 	buildEngagementReportOptions,
 	buildPrimaryEventReportOptions,
@@ -263,6 +276,31 @@ async function resolvePrimaryEcommerceEvent( registry ) {
 }
 
 /**
+ * Builds the async request-builder for a "Generating leads" PDF tile's
+ * `getTileData`: resolves the detected lead events, then hands them to
+ * `buildRequests` to build this tile's report request(s).
+ *
+ * Every "Generating leads" PDF tile needs the detected lead events before it
+ * can build its report options, so this centralizes that resolution instead
+ * of every tile repeating it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} buildRequests Given `(dates, detectedLeadEvents)`, returns this tile's report request(s), or a falsy value when there's nothing to fetch.
+ * @return {Function} An async `getTileData` request-builder function.
+ */
+function createLeadEventsPDFTileRequestBuilder( buildRequests ) {
+	return async ( dates, registry ) => {
+		await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
+		const detectedLeadEvents = registry
+			.select( MODULES_ANALYTICS_4 )
+			.getDetectedLeadEvents();
+
+		return buildRequests( dates, detectedLeadEvents ) || [];
+	};
+}
+
+/**
  * Builds a PDF tile config for a single-report, ranked "Selling products" table tile.
  *
  * This tile is purchase-specific, so the primary event is always `purchase`
@@ -299,6 +337,53 @@ function createSellingProductsTableTile( buildReportOptions, mapRows ) {
 
 				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
 			},
+			( [ report ] ) => {
+				const rows = mapRows( report?.rows || [] );
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				return {
+					rows: rows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
+				};
+			}
+		),
+	};
+}
+
+/**
+ * Builds a PDF tile config for a single-report, ranked "Generating leads" table tile.
+ *
+ * The lead-generation counterpart to `createSellingProductsTableTile`: the
+ * primary event is the detected lead events rather than a hardcoded
+ * `purchase`, since lead generation has no single triggering event.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} buildReportOptions Builds this tile's Analytics 4 report options.
+ * @param {Function} mapRows            Maps this tile's report rows to `GoalDriverRow[]`.
+ * @return {*} The PDF tile config: its `TileComponent` and `getTileData`, matching every other entry in `KEY_METRICS_PDF_TILES`.
+ */
+function createGeneratingLeadsTableTile( buildReportOptions, mapRows ) {
+	return {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			createLeadEventsPDFTileRequestBuilder( ( dates, primaryEvent ) => {
+				const options = buildReportOptions( {
+					dates: pdfTableDates( dates ),
+					primaryEvent,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				return (
+					options && [ { moduleStore: MODULES_ANALYTICS_4, options } ]
+				);
+			} ),
 			( [ report ] ) => {
 				const rows = mapRows( report?.rows || [] );
 
@@ -2240,6 +2325,214 @@ export const KEY_METRICS_PDF_TILES = {
 								numFmt( row.metricValues?.[ 0 ]?.value ),
 						}
 					),
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOTAL_FORM_COMPLETIONS ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					const options = buildPrimaryEventReportOptions(
+						dates,
+						detectedLeadEvents
+					);
+
+					return (
+						options && [
+							{ moduleStore: MODULES_ANALYTICS_4, options },
+						]
+					);
+				}
+			),
+			( [ report ] ) => {
+				const { currentPrimaryCount, previousPrimaryCount } =
+					processReports( report || {}, {}, { aggregate: true } );
+
+				// No rows means the report has no data, so drop the tile.
+				if ( ! report?.rows?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentPrimaryCount, {
+						style: 'decimal',
+					} ),
+					...getPDFTileChange(
+						previousPrimaryCount,
+						currentPrimaryCount
+					),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_FORM_COMPLETION_RATE ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					const primaryEventOptions = buildPrimaryEventReportOptions(
+						dates,
+						detectedLeadEvents
+					);
+
+					return (
+						primaryEventOptions && [
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: primaryEventOptions,
+							},
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: buildEngagementReportOptions( dates ),
+							},
+						]
+					);
+				}
+			),
+			( [ primaryEventReport, engagementReport ] ) => {
+				const { currentRate, previousRate, currentSessions } =
+					processReports(
+						primaryEventReport || {},
+						engagementReport || {},
+						{ aggregate: true }
+					);
+
+				// No rows means the report has no data, so drop the tile.
+				if ( ! primaryEventReport?.rows?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentRate, TILE_PERCENT_FORMAT ),
+					subtext: sprintf(
+						/* translators: %s: formatted number of total sessions */
+						__( 'of %s total sessions', 'google-site-kit' ),
+						numFmt( currentSessions, { style: 'decimal' } )
+					),
+					// The metric is a percentage, so the badge shows the
+					// absolute point change, matching the dashboard tile.
+					...getPDFTileChange( previousRate, currentRate, {
+						isAbsolute: true,
+					} ),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE ]: {
+		TileComponent: PDFNumericMetricTile,
+		getTileData: createKeyMetricTileDataLoader(
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) =>
+					detectedLeadEvents?.length && [
+						{
+							moduleStore: MODULES_ANALYTICS_4,
+							options: buildEngagementReportOptions( dates ),
+						},
+					]
+			),
+			( [ engagementReport ] ) => {
+				const {
+					currentEngagementRate,
+					previousEngagementRate,
+					currentSessions,
+				} = processReports( {}, engagementReport || {} );
+
+				// No totals means the report has no data, so drop the tile.
+				if ( ! engagementReport?.totals?.length ) {
+					return null;
+				}
+
+				return {
+					value: numFmt( currentEngagementRate, TILE_PERCENT_FORMAT ),
+					subtext: sprintf(
+						/* translators: %s: formatted number of total sessions */
+						__( 'of %s total sessions', 'google-site-kit' ),
+						numFmt( currentSessions, { style: 'decimal' } )
+					),
+					// The metric is a percentage, so the badge shows the
+					// absolute point change, matching the dashboard tile.
+					...getPDFTileChange(
+						previousEngagementRate,
+						currentEngagementRate,
+						{ isAbsolute: true }
+					),
+				};
+			}
+		),
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE ]:
+		createGeneratingLeadsTableTile(
+			buildTopTrafficChannelsRateReportOptions,
+			mapTopTrafficChannelsRateRows
+		),
+	[ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE ]: createGeneratingLeadsTableTile(
+		buildVisitorTypeReportOptions,
+		mapVisitorTypeRows
+	),
+	[ KM_ANALYTICS_LEADS_BY_COUNTRIES ]: createGeneratingLeadsTableTile(
+		buildCountriesReportOptions,
+		mapCountriesRows
+	),
+	[ KM_ANALYTICS_LEADS_BY_DEVICE_TYPE ]: createGeneratingLeadsTableTile(
+		buildDeviceTypeReportOptions,
+		mapDeviceTypeRows
+	),
+	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]: {
+		TileComponent: PDFMetricTileTable,
+		getTileData: createKeyMetricTileDataLoader(
+			createLeadEventsPDFTileRequestBuilder(
+				( dates, detectedLeadEvents ) => {
+					// `context: GOAL_TYPES.LEAD` keeps this reportID
+					// distinct from the equivalent Selling products tile,
+					// which requests the same shape of report (same
+					// `top-authors` suffix) for a different primary event.
+					const options = buildTopAuthorsReportOptions( {
+						dates: pdfTableDates( dates ),
+						primaryEvent: detectedLeadEvents,
+						limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+						context: GOAL_TYPES.LEAD,
+					} );
+					// The percentage shown is each author's share of every
+					// matching event site-wide, not just the ranked authors
+					// above - see `buildGoalDriverTotalReportOptions`.
+					const totalOptions = buildGoalDriverTotalReportOptions( {
+						dates: pdfTableDates( dates ),
+						primaryEvent: detectedLeadEvents,
+						context: GOAL_TYPES.LEAD,
+						reportIDSuffix: 'top-authors',
+					} );
+
+					return (
+						options &&
+						totalOptions && [
+							{ moduleStore: MODULES_ANALYTICS_4, options },
+							{
+								moduleStore: MODULES_ANALYTICS_4,
+								options: totalOptions,
+							},
+						]
+					);
+				}
+			),
+			( [ report, totalReport ] ) => {
+				const rows = report?.rows || [];
+
+				if ( ! rows.length ) {
+					return null;
+				}
+
+				const mappedRows = makeShareOfExplicitTotalMapper(
+					getGoalDriverTotalCount( totalReport )
+				)( rows );
+
+				return {
+					rows: mappedRows.map( ( row ) => ( {
+						primary: row.label,
+						metric: row.value,
+					} ) ),
 					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}

@@ -1,5 +1,5 @@
 /**
- * TopTrafficChannelsDrivingSalesRateWidget component tests.
+ * TopTrafficChannelsDrivingFormCompletionRateWidget component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import {
 	CORE_USER,
-	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
@@ -35,19 +35,19 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
-import TopTrafficChannelsDrivingSalesRateWidget from './TopTrafficChannelsDrivingSalesRateWidget';
+import TopTrafficChannelsDrivingFormCompletionRateWidget from './TopTrafficChannelsDrivingFormCompletionRateWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
 } from './utils/keyMetricsWidgetTestHelpers';
-import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
-describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
+describe( 'TopTrafficChannelsDrivingFormCompletionRateWidget', () => {
 	let registry: WPDataRegistry;
 
 	const widgetProps = getWidgetComponentProps(
-		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE
 	);
 
 	function getReportOptions() {
@@ -57,7 +57,11 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 			dimensionFilters: {
 				eventName: {
 					filterType: 'inListFilter',
-					value: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
+					value: [
+						ENUM_CONVERSION_EVENTS.CONTACT,
+						ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+						ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+					],
 				},
 			},
 			metrics: [ { name: 'eventCount' }, { name: 'sessions' } ],
@@ -76,7 +80,7 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSalesWidgetTestRegistry( registry );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
@@ -84,7 +88,9 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<TopTrafficChannelsDrivingFormCompletionRateWidget
+				{ ...widgetProps }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -94,16 +100,32 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not remain stuck loading when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+
+		const { container, waitForRegistry } = render(
+			<TopTrafficChannelsDrivingFormCompletionRateWidget
+				{ ...widgetProps }
+			/>,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+	} );
+
 	testGenericReportError(
 		() => registry,
-		TopTrafficChannelsDrivingSalesRateWidget,
+		TopTrafficChannelsDrivingFormCompletionRateWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
-		TopTrafficChannelsDrivingSalesRateWidget,
+		TopTrafficChannelsDrivingFormCompletionRateWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
@@ -116,7 +138,9 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 			.receiveGetReport( {}, { options: reportOptions } );
 
 		const { container, getByText, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<TopTrafficChannelsDrivingFormCompletionRateWidget
+				{ ...widgetProps }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -155,7 +179,9 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		);
 
 		const { getByText, waitForRegistry } = render(
-			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
+			<TopTrafficChannelsDrivingFormCompletionRateWidget
+				{ ...widgetProps }
+			/>,
 			{ registry }
 		);
 		await waitForRegistry();

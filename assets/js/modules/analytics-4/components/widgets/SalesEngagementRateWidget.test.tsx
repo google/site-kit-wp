@@ -35,10 +35,10 @@ import { render, within } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import SalesEngagementRateWidget from './SalesEngagementRateWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -62,7 +62,7 @@ describe( 'SalesEngagementRateWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the report', async () => {
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<SalesEngagementRateWidget { ...widgetProps } />,
@@ -78,7 +78,8 @@ describe( 'SalesEngagementRateWidget', () => {
 	testGenericReportError(
 		() => registry,
 		SalesEngagementRateWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render zero values when there is no engagement data in either period', async () => {
