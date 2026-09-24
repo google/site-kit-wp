@@ -387,6 +387,73 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
+	it( 'should write the value labels in short form only on a chart with values of 100 or more', async () => {
+		provideReportsWithData();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		const [ earningsCall, , impressionsCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( impressionsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: 'short' },
+		} );
+		expect( earningsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: undefined },
+		} );
+	} );
+
+	it( 'should leave a wider value label column on the Page CTR chart, whose ratios need more digits', async () => {
+		provideReportsWithData();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		const [ earningsCall, , , pageCTRCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( earningsCall[ 0 ].options ).toMatchObject( {
+			chartArea: { right: 90 },
+		} );
+		expect( pageCTRCall[ 0 ].options ).toMatchObject( {
+			chartArea: { right: 110 },
+		} );
+	} );
+
+	it( 'should label every day', async () => {
+		provideReportsWithData();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+		} );
+	} );
+
 	it( 'should drop a metric with no data in either period, like its dashboard card', async () => {
 		// Page CTR is zero across both periods. The other metrics keep their data.
 		provideReports( {
