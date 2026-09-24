@@ -61,7 +61,8 @@ export interface IntentsAPI {
  * @return {IntentsAPI} Intents registry.
  */
 export function createIntents(): IntentsAPI {
-	const registeredIntents: Record< string, IntentRegistration > = {};
+	const registeredIntents: Record< string, IntentRegistration > =
+		Object.create( null );
 
 	const Intents = {
 		registerIntent( slug: string, settings: IntentRegistration ): void {

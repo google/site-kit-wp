@@ -30,7 +30,7 @@ describe( 'createIntents', () => {
 		return null;
 	}
 
-	it( 'returns a registered intent with the component it was registered with', () => {
+	it( 'should return a registered intent with the component it was registered with', () => {
 		const intents = createIntents();
 
 		intents.registerIntent( 'test-intent', { Component: TestIntent } );
@@ -40,7 +40,7 @@ describe( 'createIntents', () => {
 		} );
 	} );
 
-	it( 'returns undefined for a slug that was never registered', () => {
+	it( 'should return undefined for a slug that was never registered', () => {
 		const intents = createIntents();
 
 		expect( intents.getRegisteredIntent( 'never-registered' ) ).toBe(
@@ -48,7 +48,7 @@ describe( 'createIntents', () => {
 		);
 	} );
 
-	it( 'keeps each registry independent of the others', () => {
+	it( 'should keep each registry independent of the others', () => {
 		const intents = createIntents();
 		const otherIntents = createIntents();
 
@@ -59,7 +59,7 @@ describe( 'createIntents', () => {
 		);
 	} );
 
-	it( 'keeps the first registration and warns when a slug is registered twice', () => {
+	it( 'should keep the first registration and warn when a slug is registered twice', () => {
 		const intents = createIntents();
 
 		intents.registerIntent( 'duplicate-intent', { Component: TestIntent } );
@@ -73,5 +73,22 @@ describe( 'createIntents', () => {
 		expect(
 			intents.getRegisteredIntent( 'duplicate-intent' )?.Component
 		).toBe( TestIntent );
+	} );
+
+	it( 'should return undefined for an inherited Object property name', () => {
+		const intents = createIntents();
+
+		expect( intents.getRegisteredIntent( 'toString' ) ).toBe( undefined );
+	} );
+
+	it( 'should register an intent named after an inherited Object property', () => {
+		const intents = createIntents();
+
+		intents.registerIntent( 'toString', { Component: TestIntent } );
+
+		expect( console ).not.toHaveWarned();
+		expect( intents.getRegisteredIntent( 'toString' )?.Component ).toBe(
+			TestIntent
+		);
 	} );
 } );
