@@ -190,6 +190,8 @@ final class Plugin {
 				$intents = new Core\Intents\Intents();
 				$intents->register();
 
+				( new Core\Intents\REST_Intents_Controller( $intents, $authentication ) )->register();
+
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
 
