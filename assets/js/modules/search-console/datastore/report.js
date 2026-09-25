@@ -51,13 +51,13 @@ import { MODULES_SEARCH_CONSOLE } from './constants';
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
 	storeName: MODULES_SEARCH_CONSOLE,
-	controlCallback: ( { options }, { signal } = {} ) => {
+	controlCallback: ( { options }, fetchOptions = {} ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_SEARCH_CONSOLE,
 			'searchanalytics',
 			options,
-			{ signal }
+			fetchOptions
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
@@ -140,6 +140,7 @@ const baseSelectors = {
 	 * @since 1.15.0
 	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
+	 * @since n.e.x.t Accept an optional `cacheTTL` fetch option, in seconds.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -148,7 +149,7 @@ const baseSelectors = {
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/webmaster-tools/search-console-api-original/v3/searchanalytics/query#dimensionFilterGroups.filters.dimension|dimensions} to group results by. Default an empty array.
 	 * @param {string}         [options.url]        Optional. URL to get a report for only this URL. Default an empty string.
 	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
-	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it or `{ cacheTTL }` to change how long the response is cached.
 	 * @return {(Array.<Object>|undefined)} A Search Console report; `undefined` if not loaded.
 	 */
 	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.

@@ -42,6 +42,19 @@ export type ReportRequestOptions = {
 } & ( ReportOptions | { [ key: string ]: unknown } );
 
 /**
+ * Fetch options accepted by the shared `getReport` resolver and selector.
+ *
+ * These change how the request runs rather than what it asks for, so they
+ * stay out of `ReportRequestOptions` and out of the report cache key.
+ *
+ * @since n.e.x.t
+ */
+export type ReportFetchOptions = {
+	signal?: AbortSignal;
+	cacheTTL?: number;
+};
+
+/**
  * Removes `reportID` from report options.
  *
  * `reportID` is only a label that says which part of the plugin asked for the
