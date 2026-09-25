@@ -133,6 +133,7 @@
     "analyze": "phpstan analyze --memory-limit=2G",
     "lint": "phpcs",
     "lint-fix": "phpcbf",
+    "lint:autoload": "@composer dump-autoload --dry-run --optimize --strict-psr",
     "test": "phpunit",
     "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }
