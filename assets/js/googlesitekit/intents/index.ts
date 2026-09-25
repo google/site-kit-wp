@@ -22,17 +22,31 @@
 import { ComponentType } from 'react';
 
 /**
+ * Props an intent's component receives, once the Site Kit Service returns the intent.
+ *
+ * @since n.e.x.t
+ */
+export interface IntentComponentProps {
+	/** Slug the intent was registered under, e.g. `ads-conversion-tracking`. */
+	slug: string;
+	/** Code of the intent on the Site Kit Service, which `completeIntent()` takes along with the slug. */
+	intentCode: string;
+	/** Payload the Site Kit Service returned for the intent, whose fields depend on the intent type. */
+	payload: unknown;
+}
+
+/**
  * Intent registration type.
  *
  * @since n.e.x.t
  */
 export interface IntentRegistration {
 	/**
-	 * Component rendered for the intent, given the intent's payload.
+	 * Component rendered for the intent, given the intent's slug, intent code, and payload.
 	 *
 	 * @since n.e.x.t
 	 */
-	Component: ComponentType< { payload: unknown } >;
+	Component: ComponentType< IntentComponentProps >;
 }
 
 /**
