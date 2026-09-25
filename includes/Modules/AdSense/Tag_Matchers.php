@@ -1,14 +1,14 @@
 <?php
 /**
- * Class Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers
+ * Class Google\Site_Kit\Modules\AdSense\Tag_Matchers
  *
- * @package   Google\Site_Kit\Core\Modules\AdSense
+ * @package   Google\Site_Kit\Modules\AdSense
  * @copyright 2024 Google LLC
  * @license   https://www.apache.org/licenses/LICENSE-2.0 Apache License 2.0
  * @link      https://sitekit.withgoogle.com
  */
 
-namespace Google\Site_Kit\Core\Modules\AdSense;
+namespace Google\Site_Kit\Modules\AdSense;
 
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;
 use Google\Site_Kit\Core\Tags\Tag_Matchers_Interface;
