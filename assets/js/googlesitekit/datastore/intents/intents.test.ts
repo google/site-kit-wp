@@ -235,6 +235,61 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
+		it( 'keeps the intent of the first one-time code when a second one-time code of the same slug loads', () => {
+			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
+				{
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-30T10:15:00Z',
+					payload: {
+						tag_id: 'AW-123456789',
+						customer_name: 'Example Store',
+						consent_date: '2026-07-28',
+					},
+				},
+				{ slug: 'ads-conversion-tracking', code: 'abc123' }
+			);
+
+			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
+				{
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-31T08:00:00Z',
+					payload: {
+						tag_id: 'AW-987654321',
+						customer_name: 'Example Shop',
+						consent_date: '2026-07-30',
+					},
+				},
+				{ slug: 'ads-conversion-tracking', code: 'def456' }
+			);
+
+			expect(
+				registry
+					.select( CORE_INTENTS )
+					.getIntent( 'ads-conversion-tracking', 'abc123' )
+			).toEqual( {
+				intent: 'ads-conversion-tracking',
+				created: '2026-07-30T10:15:00Z',
+				payload: {
+					tag_id: 'AW-123456789',
+					customer_name: 'Example Store',
+					consent_date: '2026-07-28',
+				},
+			} );
+			expect(
+				registry
+					.select( CORE_INTENTS )
+					.getIntent( 'ads-conversion-tracking', 'def456' )
+			).toEqual( {
+				intent: 'ads-conversion-tracking',
+				created: '2026-07-31T08:00:00Z',
+				payload: {
+					tag_id: 'AW-987654321',
+					customer_name: 'Example Shop',
+					consent_date: '2026-07-30',
+				},
+			} );
+		} );
+
 		it( 'does not request an intent the store already has', async () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{

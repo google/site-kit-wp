@@ -93,10 +93,10 @@ const fetchGetIntentStore = createFetchStore( {
 			intent: Intent,
 			{ slug, code }: IntentParams
 		) => {
-			state.intents[ slug ] = {
-				...state.intents[ slug ],
-				[ code ]: intent,
-			};
+			if ( ! state.intents[ slug ] ) {
+				state.intents[ slug ] = {};
+			}
+			state.intents[ slug ][ code ] = intent;
 		}
 	),
 	argsToParams: ( slug: string, code: string ) => ( { slug, code } ),
