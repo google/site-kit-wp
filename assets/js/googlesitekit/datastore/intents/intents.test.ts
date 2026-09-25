@@ -88,7 +88,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'returns `undefined` while the intent loads', async () => {
+		it( 'returns `undefined` when the intent is still loading', async () => {
 			freezeFetch(
 				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' )
 			);
@@ -106,7 +106,7 @@ describe( 'core/intents', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'requests the intent again on the next page load', async () => {
+		it( 'requests the intent again when the next page loads', async () => {
 			fetchMock.getOnce(
 				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
 				{
@@ -142,7 +142,7 @@ describe( 'core/intents', () => {
 				'abc123'
 			);
 
-			// The next page load gets a new registry, so only the cache
+			// The next page load gets a new registry, so only the cache that
 			// `googlesitekit-api` keeps in session storage could return the
 			// earlier response.
 			const nextPageRegistry = createTestRegistry();
@@ -290,7 +290,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'does not request an intent the store already has', async () => {
+		it( 'does not request the intent when the store already has it', async () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
 					intent: 'ads-conversion-tracking',
@@ -315,7 +315,44 @@ describe( 'core/intents', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
-		it( 'returns the error from `getErrorForSelector` when loading the intent fails', async () => {
+		it( 'requests the intent for a one-time code named after an inherited `Object` property', async () => {
+			freezeFetch(
+				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' )
+			);
+
+			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
+				{
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-30T10:15:00Z',
+					payload: {
+						tag_id: 'AW-123456789',
+						customer_name: 'Example Store',
+						consent_date: '2026-07-28',
+					},
+				},
+				{ slug: 'ads-conversion-tracking', code: 'abc123' }
+			);
+
+			expect(
+				registry
+					.select( CORE_INTENTS )
+					.getIntent( 'ads-conversion-tracking', 'constructor' )
+			).toBeUndefined();
+
+			await waitForDefaultTimeouts();
+
+			expect( fetchMock ).toHaveFetched(
+				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
+				{
+					query: {
+						slug: 'ads-conversion-tracking',
+						intent_code: 'constructor',
+					},
+				}
+			);
+		} );
+
+		it( 'returns `undefined` and stores the error for `getErrorForSelector` when loading the intent fails', async () => {
 			fetchMock.getOnce(
 				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
 				{

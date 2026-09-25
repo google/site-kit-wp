@@ -44,7 +44,7 @@ export interface Intent {
 	intent: string;
 	/** Time the Site Kit Service created the intent, e.g. `2026-07-30T10:15:00Z`. */
 	created: string;
-	/** Data the intent screen shows, with different fields for each type of intent. */
+	/** Data the Site Kit Service holds for the intent, with different fields for each type of intent. */
 	payload: Record< string, unknown >;
 }
 
@@ -94,7 +94,7 @@ const fetchGetIntentStore = createFetchStore( {
 			{ slug, code }: IntentParams
 		) => {
 			if ( ! state.intents[ slug ] ) {
-				state.intents[ slug ] = {};
+				state.intents[ slug ] = Object.create( null );
 			}
 			state.intents[ slug ][ code ] = intent;
 		}
@@ -146,8 +146,8 @@ const baseResolvers = {
 		slug: string,
 		code: string
 	): Generator< unknown, void, unknown > {
-		const registryResult = yield commonActions.getRegistry();
-		const registry = registryResult as WPDataRegistry;
+		const registry =
+			( yield commonActions.getRegistry() ) as WPDataRegistry;
 
 		if (
 			registry.select( CORE_INTENTS ).getIntent( slug, code ) !==
@@ -184,7 +184,7 @@ const baseSelectors = {
 };
 
 const store = combineStores( fetchGetIntentStore, fetchCompleteIntentStore, {
-	initialState: { intents: {} },
+	initialState: { intents: Object.create( null ) },
 	actions: baseActions,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
