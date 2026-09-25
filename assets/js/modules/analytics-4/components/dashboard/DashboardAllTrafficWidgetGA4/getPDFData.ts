@@ -269,7 +269,6 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},

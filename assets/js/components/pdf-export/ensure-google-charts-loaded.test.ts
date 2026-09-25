@@ -14,11 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import { CHART_VERSION } from '@/js/components/GoogleChart/constants';
-
 const LOADER_SELECTOR =
 	'script[src="https://www.gstatic.com/charts/loader.js"]';
 
@@ -31,6 +26,20 @@ function setGoogle( value: unknown ) {
 
 function getLoaderScript(): Element | null {
 	return global.document.head.querySelector( LOADER_SELECTOR );
+}
+
+/**
+ * Sets the site locale that `getLocale()` reads.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string|undefined} locale The WordPress locale, such as `de_DE`, or `undefined` to remove it.
+ * @return {void}
+ */
+function setSiteLocale( locale: string | undefined ) {
+	(
+		global._googlesitekitLegacyData as unknown as { locale?: string }
+	 ).locale = locale;
 }
 
 describe( 'ensureGoogleChartsLoaded', () => {
@@ -49,6 +58,7 @@ describe( 'ensureGoogleChartsLoaded', () => {
 	afterEach( () => {
 		getLoaderScript()?.remove();
 		setGoogle( undefined );
+		setSiteLocale( undefined );
 	} );
 
 	it( 'should resolve immediately when Google Charts is already available', async () => {
@@ -72,8 +82,25 @@ describe( 'ensureGoogleChartsLoaded', () => {
 		script?.dispatchEvent( new Event( 'load' ) );
 
 		await expect( promise ).resolves.toBeUndefined();
-		expect( load ).toHaveBeenCalledWith( CHART_VERSION, {
+		expect( load ).toHaveBeenCalledWith( '49', {
 			packages: [ 'corechart' ],
+			language: 'en-US',
+		} );
+	} );
+
+	it( 'should load Google Charts in the site language', async () => {
+		const load = jest.fn( () => Promise.resolve() );
+		setSiteLocale( 'de_DE' );
+
+		const promise = ensureGoogleChartsLoaded();
+
+		setGoogle( { charts: { load } } );
+		getLoaderScript()?.dispatchEvent( new Event( 'load' ) );
+
+		await expect( promise ).resolves.toBeUndefined();
+		expect( load ).toHaveBeenCalledWith( '49', {
+			packages: [ 'corechart' ],
+			language: 'de-DE',
 		} );
 	} );
 

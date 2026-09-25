@@ -211,7 +211,7 @@ interface MetricCardResult {
  * @since 1.183.0
  * @since n.e.x.t Wrote large values as `58K`, and showed every axis label in full.
  *
- * @param {Object} options          The chart options.
+ * @param {Object} options          The line color, the dates, and the highest value for the chart.
  * @param {string} options.color    The series color for both lines.
  * @param {Date[]} options.dates    The days on the chart, in order.
  * @param {number} options.maxValue The highest value on either line.
@@ -243,7 +243,6 @@ function getLineChartOptions( {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},

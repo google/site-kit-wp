@@ -17,57 +17,122 @@
  */
 
 /**
- * The space for the value labels beside the chart area, in font sizes. It has
- * room for the widest label, such as `400M`, `12.5K`, or `0.125`, when the
- * highest value is 0.1 or more.
+ * Internal dependencies
+ */
+import {
+	GoogleVisualizationFormatter,
+	getVisualization,
+} from './render-google-chart-to-data-uri';
+
+/**
+ * The gutter beside the chart area, where the value labels go, in font sizes.
+ * It has room for the widest English label, such as `400M`, `12.5K`, or
+ * `0.125`, when the highest value is 0.1 or more.
  */
 const VALUE_AXIS_GUTTER = 3.2;
 
-/**
- * The width one more digit adds to a value label, in font sizes. It's a little
- * more than the widest digit, `0`.
- */
+/** The width one more digit adds to a value label, in font sizes. */
 const EXTRA_DIGIT_WIDTH = 0.7;
 
-/**
- * The space a date label takes, in font sizes: the widest date, `May 30`, plus
- * the gap Google Charts keeps between two labels.
- */
-const DATE_LABEL_SPACE = 4.4;
+/** The gap between the chart area and a value label, in font sizes. */
+const VALUE_LABEL_GAP = 0.45;
 
-/**
- * The width of each month's short name, from `Jan` to `Dec`, in font sizes, in
- * Google Sans Text.
- */
-const MONTH_WIDTHS = [
-	1.653, 1.687, 1.763, 1.611, 1.885, 1.666, 1.33, 1.771, 1.753, 1.665, 1.755,
-	1.796,
-];
-
-/**
- * The width of each digit, from `0` to `9`, in font sizes, in Google Sans Text.
- */
-const DIGIT_WIDTHS = [
-	0.668, 0.42, 0.528, 0.537, 0.577, 0.556, 0.564, 0.513, 0.546, 0.564,
-];
-
-/** The width of the space between the month and the day, in font sizes. */
-const SPACE_WIDTH = 0.256;
-
-/**
- * The date label format, such as `Sep 23`. The report loads Google Charts in
- * English, so every site shows English dates.
- */
-const DATE_LABEL_FORMAT = new Intl.DateTimeFormat( 'en-US', {
-	month: 'short',
-	day: 'numeric',
-} );
+/** The gap Google Charts needs between two date labels, in font sizes. */
+const DATE_LABEL_GAP = 1.05;
 
 export interface DateTick {
-	/** Where the middle of the label sits. */
+	/** Google Charts reads a tick's value from `v`, the point on the axis that lines up with the middle of the tick's label. */
 	v: Date;
-	/** The label, such as `Sep 23`. */
+	/** Google Charts reads a tick's label from `f`, such as `Sep 23`. */
 	f: string;
+}
+
+/**
+ * Gets the Google Charts formatter for a pattern. The formatter writes a value
+ * as the chart writes its labels, in the language Google Charts loaded with.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} type    The formatter, `DateFormat` or `NumberFormat`.
+ * @param {string} pattern The pattern, such as `MMM d` or `short`.
+ * @return {Object} A formatter with a `formatValue()` method.
+ */
+function getChartLabelFormatter(
+	type: 'DateFormat' | 'NumberFormat',
+	pattern: string
+): GoogleVisualizationFormatter {
+	const Formatter = getVisualization()?.[ type ];
+
+	if ( ! Formatter ) {
+		throw new Error(
+			`Site Kit: Google Charts ${ type } is missing after the library loaded.`
+		);
+	}
+
+	return new Formatter( { pattern } );
+}
+
+/**
+ * Gets the width of each label in Google Sans Text, the font the charts write
+ * their labels in.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} labels   The labels.
+ * @param {number}   fontSize The label font size, in chart pixels.
+ * @return {number[]} The label widths, in chart pixels, in order.
+ */
+function getLabelWidths( labels: string[], fontSize: number ): number[] {
+	const context = global.document
+		.createElement( 'canvas' )
+		.getContext( '2d' );
+
+	if ( ! context ) {
+		throw new Error(
+			'Site Kit: could not get a 2D canvas context to measure the chart labels.'
+		);
+	}
+
+	context.font = `${ fontSize }px "Google Sans Text"`;
+
+	return labels.map( ( label ) => context.measureText( label ).width );
+}
+
+/**
+ * Gets the labels the value axis can show in the `short` format.
+ *
+ * Google Charts puts a gridline on each multiple of a step, up to the first
+ * multiple above the highest value. The step is 1, 1.5, 2, 2.5, or 5 times a
+ * power of 10. A step that needs more than 20 labels is left out, because the
+ * chart has no room for them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} maxValue The highest value on the chart, 100 or more.
+ * @return {string[]} The labels.
+ */
+function getShortValueLabels( maxValue: number ): string[] {
+	const shortFormat = getChartLabelFormatter( 'NumberFormat', 'short' );
+	const largestPowerOfTen = 10 ** Math.floor( Math.log10( maxValue ) );
+
+	return [
+		largestPowerOfTen / 100,
+		largestPowerOfTen / 10,
+		largestPowerOfTen,
+	]
+		.flatMap( ( powerOfTen ) =>
+			[ 1, 1.5, 2, 2.5, 5 ].map(
+				( multiplier ) => multiplier * powerOfTen
+			)
+		)
+		.filter( ( step ) => maxValue / step <= 20 )
+		.flatMap( ( step ) =>
+			Array.from(
+				{ length: Math.floor( maxValue / step ) + 1 },
+				( _value, index ) =>
+					shortFormat.formatValue( ( index + 1 ) * step )
+			)
+		);
 }
 
 /**
@@ -102,49 +167,43 @@ export function getValueAxisGutter(
 	maxValue: number,
 	fontSize: number
 ): number {
-	// Each zero between the decimal point and the first digit, such as the two
-	// in `0.004`, adds a digit to the labels.
+	// Each zero right after the decimal point, such as the two in `0.004`, makes
+	// the labels one digit longer.
 	const zerosAfterPoint =
 		maxValue > 0 && maxValue < 1
 			? -1 - Math.floor( Math.log10( maxValue ) )
 			: 0;
+	const gutter =
+		( VALUE_AXIS_GUTTER + zerosAfterPoint * EXTRA_DIGIT_WIDTH ) * fontSize;
+
+	if ( getValueAxisFormat( maxValue ) !== 'short' ) {
+		return Math.ceil( gutter );
+	}
+
+	// In some languages the `short` format writes thousands in full, such as
+	// `400.000` in German, so the gutter grows to make room for the widest label
+	// the axis can show.
+	const widestLabelWidth = Math.max(
+		...getLabelWidths( getShortValueLabels( maxValue ), fontSize )
+	);
 
 	return Math.ceil(
-		( VALUE_AXIS_GUTTER + zerosAfterPoint * EXTRA_DIGIT_WIDTH ) * fontSize
-	);
-}
-
-/**
- * Gets the width of a date's label, in chart pixels.
- *
- * @since n.e.x.t
- *
- * @param {Date}   date     The date.
- * @param {number} fontSize The label font size, in chart pixels.
- * @return {number} The label width, in chart pixels.
- */
-function getDateLabelWidth( date: Date, fontSize: number ): number {
-	const dayWidth = String( date.getDate() )
-		.split( '' )
-		.reduce(
-			( width, digit ) => width + DIGIT_WIDTHS[ Number( digit ) ],
-			0
-		);
-
-	return (
-		( MONTH_WIDTHS[ date.getMonth() ] + SPACE_WIDTH + dayWidth ) * fontSize
+		Math.max( gutter, widestLabelWidth + VALUE_LABEL_GAP * fontSize )
 	);
 }
 
 /**
  * Gets the date labels for the horizontal axis.
  *
- * The first and last labels sit flush with the chart area's edges, as in the
- * Figma design. Google Charts puts the middle of a label on its tick, so these
- * two ticks move in by half the label's width.
+ * Each label uses the pattern of the dashboard's charts, such as `Sep 23`, in
+ * the language Google Charts loaded with. The first label starts at the chart
+ * area's left edge, and the last label ends at its right edge, as in the Figma
+ * design. Google Charts puts the middle of a label on its tick, so these two
+ * ticks move in by half the label's width.
  *
- * The labels between fall every few dates. Where they can, they split the dates
- * into equal parts. No two labels sit closer than a label's space.
+ * Between them, every few dates get a label. Where they can, the labels split
+ * the dates into equal parts. No two labels are closer than the widest date
+ * label plus `DATE_LABEL_GAP`.
  *
  * @since n.e.x.t
  *
@@ -158,10 +217,14 @@ export function pickDateTicks(
 	chartAreaWidth: number,
 	fontSize: number
 ): DateTick[] {
+	const dateFormat = getChartLabelFormatter( 'DateFormat', 'MMM d' );
+	function toLabel( date: Date ) {
+		return dateFormat.formatValue( date );
+	}
 	function toTick( date: Date ) {
 		return {
 			v: date,
-			f: DATE_LABEL_FORMAT.format( date ),
+			f: toLabel( date ),
 		};
 	}
 
@@ -171,23 +234,33 @@ export function pickDateTicks(
 
 	const lastIndex = dates.length - 1;
 	const startTime = dates[ 0 ].getTime();
-	const msPerPixel =
+	const millisecondsPerPixel =
 		( dates[ lastIndex ].getTime() - startTime ) / chartAreaWidth;
 	function getCenter( index: number ) {
-		return ( dates[ index ].getTime() - startTime ) / msPerPixel;
+		return ( dates[ index ].getTime() - startTime ) / millisecondsPerPixel;
 	}
 
-	const labelSpace = DATE_LABEL_SPACE * fontSize;
-	const firstCenter = getDateLabelWidth( dates[ 0 ], fontSize ) / 2;
-	const lastCenter =
-		chartAreaWidth - getDateLabelWidth( dates[ lastIndex ], fontSize ) / 2;
+	// Every day of a leap year, so `labelDistance` has room for the widest label
+	// any date can have.
+	const everyDayLabels = Array.from( { length: 366 }, ( _day, index ) =>
+		toLabel( new Date( 2024, 0, 1 + index ) )
+	);
+	const labelDistance =
+		Math.max( ...getLabelWidths( everyDayLabels, fontSize ) ) +
+		DATE_LABEL_GAP * fontSize;
+	const [ firstLabelWidth, lastLabelWidth ] = getLabelWidths(
+		[ toLabel( dates[ 0 ] ), toLabel( dates[ lastIndex ] ) ],
+		fontSize
+	);
+	const firstCenter = firstLabelWidth / 2;
+	const lastCenter = chartAreaWidth - lastLabelWidth / 2;
 	function hasRoom( index: number ) {
 		return (
-			getCenter( index ) - firstCenter >= labelSpace &&
-			lastCenter - getCenter( index ) >= labelSpace
+			getCenter( index ) - firstCenter >= labelDistance &&
+			lastCenter - getCenter( index ) >= labelDistance
 		);
 	}
-	const minStep = Math.ceil( ( labelSpace * lastIndex ) / chartAreaWidth );
+	const minStep = Math.ceil( ( labelDistance * lastIndex ) / chartAreaWidth );
 
 	// Find the smallest step that splits the dates into equal parts and leaves
 	// room beside the first and last labels.
@@ -234,32 +307,32 @@ export function pickDateTicks(
 		}
 	}
 
-	// A chart with missing dates can put two labels too close together, so a
-	// label stays only when it has a label's space from the one before it.
+	// Missing dates can put two labels too close together, so skip a label that
+	// is closer than `labelDistance` to the one before it.
 	const labeledIndexes: number[] = [];
 	middleIndexes.forEach( ( index ) => {
 		const previousCenter = labeledIndexes.length
 			? getCenter( labeledIndexes[ labeledIndexes.length - 1 ] )
 			: firstCenter;
 
-		if ( getCenter( index ) - previousCenter >= labelSpace ) {
+		if ( getCenter( index ) - previousCenter >= labelDistance ) {
 			labeledIndexes.push( index );
 		}
 	} );
 
-	function labelAt( date: Date, center: number ) {
+	function tickAt( date: Date, center: number ) {
 		return {
 			// This date is a point on the axis, not today's date, so the reference
 			// date doesn't apply.
 			// eslint-disable-next-line sitekit/no-direct-date
-			v: new Date( startTime + center * msPerPixel ),
-			f: DATE_LABEL_FORMAT.format( date ),
+			v: new Date( startTime + center * millisecondsPerPixel ),
+			f: toLabel( date ),
 		};
 	}
 
 	return [
-		labelAt( dates[ 0 ], firstCenter ),
+		tickAt( dates[ 0 ], firstCenter ),
 		...labeledIndexes.map( ( index ) => toTick( dates[ index ] ) ),
-		labelAt( dates[ lastIndex ], lastCenter ),
+		tickAt( dates[ lastIndex ], lastCenter ),
 	];
 }

@@ -24,6 +24,21 @@ import {
 	getValueAxisGutter,
 	pickDateTicks,
 } from './chart-axis';
+import { mockChartAxisLabels } from './test-utils';
+
+let chartAxisLabels: ReturnType< typeof mockChartAxisLabels >;
+
+beforeEach( () => {
+	chartAxisLabels = mockChartAxisLabels();
+	( global as unknown as { google?: unknown } ).google = {
+		visualization: chartAxisLabels,
+	};
+} );
+
+afterEach( () => {
+	jest.restoreAllMocks();
+	delete ( global as unknown as { google?: unknown } ).google;
+} );
 
 describe( 'getValueAxisFormat', () => {
 	it( 'returns the short format for a highest value of 100', () => {
@@ -36,7 +51,7 @@ describe( 'getValueAxisFormat', () => {
 } );
 
 describe( 'getValueAxisGutter', () => {
-	it( 'returns 45 pixels at a font size of 14 for a highest value of 58,000', () => {
+	it( 'returns 45 pixels for a highest value of 58,000 at a font size of 14', () => {
 		expect( getValueAxisGutter( 58000, 14 ) ).toBe( 45 );
 	} );
 
@@ -44,13 +59,42 @@ describe( 'getValueAxisGutter', () => {
 		expect( getValueAxisGutter( 0, 14 ) ).toBe( 45 );
 	} );
 
-	it( 'adds a digit for each zero after the decimal point, as in 0.05 and 0.004', () => {
+	it( "adds one digit's width for each zero right after the decimal point", () => {
 		expect( getValueAxisGutter( 0.05, 14 ) ).toBe( 55 );
 		expect( getValueAxisGutter( 0.004, 14 ) ).toBe( 65 );
 	} );
 
-	it( 'returns 90 pixels at a font size of 28', () => {
+	it( 'returns 90 pixels for a font size of 28', () => {
 		expect( getValueAxisGutter( 58000, 28 ) ).toBe( 90 );
+	} );
+
+	it( 'widens the gutter for German, which writes 400,000 in full as `400.000`', () => {
+		chartAxisLabels.NumberFormat.mockImplementation( () => ( {
+			formatValue: ( value: number ) => value.toLocaleString( 'de-DE' ),
+		} ) );
+
+		// The widest labels, such as `500.000`, are 49 pixels wide, plus a
+		// 6.3-pixel gap.
+		expect( getValueAxisGutter( 400000, 14 ) ).toBe( 56 );
+	} );
+
+	it( 'measures the value labels in the `short` format for a highest value of 100 or more', () => {
+		getValueAxisGutter( 58000, 14 );
+
+		expect( chartAxisLabels.NumberFormat ).toHaveBeenCalledWith( {
+			pattern: 'short',
+		} );
+	} );
+
+	it( 'throws when the canvas gives no 2D context', () => {
+		jest.spyOn(
+			global.HTMLCanvasElement.prototype,
+			'getContext'
+		).mockReturnValue( null );
+
+		expect( () => getValueAxisGutter( 58000, 14 ) ).toThrow(
+			'2D canvas context'
+		);
 	} );
 } );
 
@@ -76,30 +120,38 @@ describe( 'pickDateTicks', () => {
 		] );
 	} );
 
-	it( 'puts the first label flush with the start of the chart area', () => {
+	it( 'writes each label in the `MMM d` pattern of the dashboard charts', () => {
+		pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 );
+
+		expect( chartAxisLabels.DateFormat ).toHaveBeenCalledWith( {
+			pattern: 'MMM d',
+		} );
+	} );
+
+	it( 'starts the first label at the left edge of the chart area', () => {
 		const dates = Array.from(
 			{ length: 7 },
 			( _date, index ) => new Date( 2026, 6, 1 + index )
 		);
 
-		// `Jul 1` is 56 pixels wide, so the middle of its label sits 28 pixels,
-		// about 2 hours on the axis, after the start.
+		// `mockChartAxisLabels()` measures `Jul 1` as 70 pixels wide, so the middle
+		// of its label is 35 pixels, about 2.6 hours on the axis, after the start.
 		expect( pickDateTicks( dates, 1918, 28 )[ 0 ] ).toEqual( {
-			v: new Date( 2026, 6, 1, 2, 6, 30, 586 ),
+			v: new Date( 2026, 6, 1, 2, 37, 39, 854 ),
 			f: 'Jul 1',
 		} );
 	} );
 
-	it( 'puts the last label flush with the end of the chart area', () => {
+	it( 'ends the last label at the right edge of the chart area', () => {
 		const dates = Array.from(
 			{ length: 7 },
 			( _date, index ) => new Date( 2026, 6, 1 + index )
 		);
 
-		// `Jul 7` is 59 pixels wide, so the middle of its label sits 29 pixels,
-		// about 2 hours on the axis, before the end.
+		// `mockChartAxisLabels()` measures `Jul 7` as 70 pixels wide, so the middle
+		// of its label is 35 pixels, about 2.6 hours on the axis, before the end.
 		expect( pickDateTicks( dates, 1918, 28 )[ 6 ] ).toEqual( {
-			v: new Date( 2026, 6, 6, 21, 47, 37, 506 ),
+			v: new Date( 2026, 6, 6, 21, 22, 20, 145 ),
 			f: 'Jul 7',
 		} );
 	} );
@@ -153,8 +205,8 @@ describe( 'pickDateTicks', () => {
 		] );
 	} );
 
-	it( "keeps a label's space between two labels when dates are missing", () => {
-		// Jul 12 to Jul 27 are missing, so the first 11 dates sit close together.
+	it( 'skips a label that would be too near the one before it, when dates are missing', () => {
+		// Jul 12 to Jul 27 are missing, so the first 11 dates are close together.
 		const dates = [
 			...Array.from(
 				{ length: 11 },
@@ -168,9 +220,62 @@ describe( 'pickDateTicks', () => {
 		).toEqual( [ 'Jul 1', 'Jul 4', 'Jul 6', 'Jul 8', 'Jul 10', 'Jul 28' ] );
 	} );
 
-	it( 'labels a single date where it falls', () => {
+	it( 'labels fewer dates for German, whose month names are longer', () => {
+		const dates = Array.from(
+			{ length: 7 },
+			( _date, index ) => new Date( 2026, 6, 1 + index )
+		);
+
+		expect(
+			pickDateTicks( dates, 1000, 28 ).map( ( { f } ) => f )
+		).toEqual( [
+			'Jul 1',
+			'Jul 2',
+			'Jul 3',
+			'Jul 4',
+			'Jul 5',
+			'Jul 6',
+			'Jul 7',
+		] );
+
+		// The short month names Google Charts writes in German.
+		const months = [
+			'Jan.',
+			'Feb.',
+			'März',
+			'Apr.',
+			'Mai',
+			'Juni',
+			'Juli',
+			'Aug.',
+			'Sept.',
+			'Okt.',
+			'Nov.',
+			'Dez.',
+		];
+		chartAxisLabels.DateFormat.mockImplementation( () => ( {
+			formatValue: ( date: Date ) =>
+				`${ months[ date.getMonth() ] } ${ date.getDate() }`,
+		} ) );
+
+		expect(
+			pickDateTicks( dates, 1000, 28 ).map( ( { f } ) => f )
+		).toEqual( [ 'Juli 1', 'Juli 3', 'Juli 5', 'Juli 7' ] );
+	} );
+
+	it( 'labels a single date on the date itself', () => {
 		expect( pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 ) ).toEqual(
 			[ { v: new Date( 2026, 6, 1 ), f: 'Jul 1' } ]
 		);
+	} );
+
+	it( 'throws when Google Charts has no `DateFormat`', () => {
+		( global as unknown as { google?: unknown } ).google = {
+			visualization: { NumberFormat: chartAxisLabels.NumberFormat },
+		};
+
+		expect( () =>
+			pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 )
+		).toThrow( 'DateFormat is missing' );
 	} );
 } );

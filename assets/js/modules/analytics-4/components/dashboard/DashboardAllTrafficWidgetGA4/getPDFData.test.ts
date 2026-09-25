@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -146,7 +147,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		// `getPDFData` builds each chart's data with `new google.visualization.DataTable()`.
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -334,7 +338,6 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 			chartArea: { right: 45 },
 			legend: { position: 'none' },
 			hAxis: {
-				format: 'MMM d',
 				textStyle: { fontName: 'Google Sans Text' },
 				ticks: [ { f: 'Jan 8' }, { f: 'Jan 9' }, { f: 'Jan 10' } ],
 			},

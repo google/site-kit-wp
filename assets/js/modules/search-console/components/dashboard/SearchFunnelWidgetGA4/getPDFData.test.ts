@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -207,7 +208,10 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -286,10 +290,10 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'should write the value labels in short form only on a chart with values of 100 or more', async () => {
+	it( 'should write the value labels in short form only when either line has a value of 100 or more', async () => {
 		provideReports( registry );
-		// Each of the 7 previous days has 58,000 impressions.
-		// Clicks stay under 100.
+		// Only the 7 days of the previous period have 100 impressions or more, with
+		// 58,000 each. Clicks stay under 100 on every day.
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
 			buildSearchConsoleReport().map( ( row, index ) =>
 				index < 7 ? { ...row, impressions: 58000 } : row
@@ -313,7 +317,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'should leave room for the value labels and label every day', async () => {
+	it( 'should leave room for the value labels and label every day of a 7-day range', async () => {
 		provideReports( registry );
 
 		await getPDFData( {

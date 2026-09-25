@@ -61,8 +61,18 @@ export interface GoogleVisualizationDataTable {
 	addRows( rows: unknown[][] ): number;
 }
 
+export interface GoogleVisualizationFormatter {
+	formatValue( value: Date | number ): string;
+}
+
+type GoogleVisualizationFormatterConstructor = new ( options: {
+	pattern: string;
+} ) => GoogleVisualizationFormatter;
+
 export interface GoogleVisualization {
 	DataTable?: new () => GoogleVisualizationDataTable;
+	DateFormat?: GoogleVisualizationFormatterConstructor;
+	NumberFormat?: GoogleVisualizationFormatterConstructor;
 	LineChart?: GoogleVisualizationChartConstructor;
 	ColumnChart?: GoogleVisualizationChartConstructor;
 	BarChart?: GoogleVisualizationChartConstructor;

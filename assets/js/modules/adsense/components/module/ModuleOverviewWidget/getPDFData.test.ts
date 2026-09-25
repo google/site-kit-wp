@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
@@ -299,7 +300,10 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -387,7 +391,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'should write the value labels in short form only on a chart with values of 100 or more', async () => {
+	it( 'should write the value labels in short form only when either line has a value of 100 or more', async () => {
 		provideReportsWithData();
 
 		await getPDFData( {
@@ -407,7 +411,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'should leave a wider value label column on the Page CTR chart, whose ratios need more digits', async () => {
+	it( 'should leave more room for the value labels on the Page CTR chart, whose ratios need more digits', async () => {
 		provideReportsWithData();
 
 		await getPDFData( {
@@ -427,7 +431,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'should label every day', async () => {
+	it( 'should label every day of a 7-day range', async () => {
 		provideReportsWithData();
 
 		await getPDFData( {
