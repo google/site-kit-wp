@@ -62,11 +62,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 	const VERIFICATION_TYPE_FILE = 'FILE';
 
 	/**
-	 * Verification evidence value for when no verification token is stored.
-	 */
-	const VERIFICATION_EVIDENCE_NONE = 'none';
-
-	/**
 	 * Verification meta tag cache key.
 	 */
 	const TRANSIENT_VERIFICATION_META_TAGS = 'googlesitekit_verification_meta_tags';
@@ -84,11 +79,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			$this->get_method_proxy( 'handle_verification_token' ),
 			10,
 			2
-		);
-
-		add_filter(
-			'googlesitekit_proxy_setup_url_params',
-			$this->get_method_proxy( 'set_setup_url_verification_evidence_param' )
 		);
 
 		$print_site_verification_meta = function () {
@@ -418,47 +408,6 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 			case self::VERIFICATION_TYPE_META:
 				$this->authentication->verification_meta()->set( $token );
 		}
-	}
-
-	/**
-	 * Sets the `verification_evidence` query parameter for the proxy setup URL.
-	 *
-	 * The value reflects the verification token stored for the current user, so that
-	 * the service can re-register it rather than relying on the Site Verification API
-	 * alone. It is intentionally computed each time the URL is built, so that the
-	 * redirect back to the proxy after verification reports the token just stored.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $query_params Query parameters.
-	 * @return array Query parameters with `verification_evidence` included.
-	 */
-	private function set_setup_url_verification_evidence_param( $query_params ) {
-		$query_params['verification_evidence'] = $this->get_verification_evidence();
-
-		return $query_params;
-	}
-
-	/**
-	 * Gets the verification method the current user has stored evidence for.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string One of `FILE`, `META` or `none`.
-	 */
-	private function get_verification_evidence() {
-		if (
-			$this->authentication->verification_file()->get()
-			&& Verification_File::is_supported( $this->context )
-		) {
-			return self::VERIFICATION_TYPE_FILE;
-		}
-
-		if ( $this->authentication->verification_meta()->get() ) {
-			return self::VERIFICATION_TYPE_META;
-		}
-
-		return self::VERIFICATION_EVIDENCE_NONE;
 	}
 
 	/**

@@ -126,6 +126,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
+	 * @since n.e.x.t Includes the `verification_evidence` query parameter.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -141,8 +142,9 @@ class Google_Proxy {
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['service_version'] = 'v3';
-			$query_params['steps']           = 5;
+			$query_params['service_version']       = 'v3';
+			$query_params['steps']                 = 5;
+			$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
 
 			/**
 			 * Filters parameters included in the proxy setup URL.
@@ -429,17 +431,19 @@ class Google_Proxy {
 	 * Gets metadata fields.
 	 *
 	 * @since 1.68.0
+	 * @since n.e.x.t Added the `verification_evidence` field.
 	 *
 	 * @return array Metadata fields array.
 	 */
 	public function get_metadata_fields() {
 		$metadata = array(
-			'supports'         => implode( ' ', $this->get_supports() ),
-			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
-			'mode'             => '',
-			'hl'               => $this->context->get_locale( 'user' ),
-			'application_name' => self::get_application_name(),
-			'service_version'  => 'v2',
+			'supports'              => implode( ' ', $this->get_supports() ),
+			'nonce'                 => wp_create_nonce( self::NONCE_ACTION ),
+			'mode'                  => '',
+			'hl'                    => $this->context->get_locale( 'user' ),
+			'application_name'      => self::get_application_name(),
+			'service_version'       => 'v2',
+			'verification_evidence' => ( new Verification_Evidence( $this->context ) )->get(),
 		);
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {

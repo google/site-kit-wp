@@ -197,8 +197,6 @@ class Analytics_4Test extends TestCase {
 		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
-		// Isolate from filters registered by the plugin (e.g. force-active modules).
-		remove_all_filters( 'googlesitekit_proxy_setup_url_params' );
 		$this->analytics->register();
 
 		$url = $this->authentication->get_google_proxy()->setup_url(
@@ -208,11 +206,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
-			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=6',
-			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
-		);
+		wp_parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $query_params );
+
+		$this->assertEquals( '6', $query_params['steps'], 'Setup URL should include the steps query parameter as 6 when Analytics is active.' );
 	}
 
 	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
