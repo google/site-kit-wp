@@ -40,21 +40,22 @@ describe( 'core/intents', () => {
 	} );
 
 	describe( 'getIntent', () => {
-		it( 'returns the intent from the `core/intents/data/intent` route for the slug and the one-time code', async () => {
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						intent: 'ads-conversion-tracking',
-						created: '2026-07-30T10:15:00Z',
-						payload: {
-							tag_id: 'AW-123456789',
-							customer_name: 'Example Store',
-							consent_date: '2026-07-28',
-						},
+		const intentEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/intents/data/intent'
+		);
+
+		it( 'returns the intent from the `core/intents/data/intent` route for the slug and the intent code', async () => {
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-30T10:15:00Z',
+					payload: {
+						tag_id: 'AW-123456789',
+						customer_name: 'Example Store',
+						consent_date: '2026-07-28',
 					},
-				}
-			);
+				},
+			} );
 
 			registry
 				.select( CORE_INTENTS )
@@ -64,15 +65,12 @@ describe( 'core/intents', () => {
 				'abc123'
 			);
 
-			expect( fetchMock ).toHaveFetched(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					query: {
-						slug: 'ads-conversion-tracking',
-						intent_code: 'abc123',
-					},
-				}
-			);
+			expect( fetchMock ).toHaveFetched( intentEndpoint, {
+				query: {
+					slug: 'ads-conversion-tracking',
+					intent_code: 'abc123',
+				},
+			} );
 			expect(
 				registry
 					.select( CORE_INTENTS )
@@ -89,9 +87,7 @@ describe( 'core/intents', () => {
 		} );
 
 		it( 'returns `undefined` when the intent is still loading', async () => {
-			freezeFetch(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' )
-			);
+			freezeFetch( intentEndpoint );
 
 			registry
 				.select( CORE_INTENTS )
@@ -106,33 +102,27 @@ describe( 'core/intents', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'requests the intent again when the next page loads', async () => {
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						intent: 'ads-conversion-tracking',
-						created: '2026-07-30T10:15:00Z',
-						payload: {
-							tag_id: 'AW-123456789',
-							customer_name: 'Example Store',
-							consent_date: '2026-07-28',
-						},
+		it( 'sends a new request to the `core/intents/data/intent` route when the next page loads', async () => {
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-30T10:15:00Z',
+					payload: {
+						tag_id: 'AW-123456789',
+						customer_name: 'Example Store',
+						consent_date: '2026-07-28',
 					},
-				}
-			);
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						code: 'intent_not_found',
-						message:
-							'This link can’t be used. Go back to where you started and try again.',
-						data: { status: 404 },
-					},
-					status: 404,
-				}
-			);
+				},
+			} );
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					code: 'intent_not_found',
+					message:
+						'This link can’t be used. Go back to where you started and try again.',
+					data: { status: 404 },
+				},
+				status: 404,
+			} );
 
 			registry
 				.select( CORE_INTENTS )
@@ -164,35 +154,29 @@ describe( 'core/intents', () => {
 			expect( console ).toHaveErrored();
 		} );
 
-		it( 'requests the intent again for another one-time code of the same slug', async () => {
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						intent: 'ads-conversion-tracking',
-						created: '2026-07-30T10:15:00Z',
-						payload: {
-							tag_id: 'AW-123456789',
-							customer_name: 'Example Store',
-							consent_date: '2026-07-28',
-						},
+		it( 'sends a separate request for each intent code of the same slug', async () => {
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-30T10:15:00Z',
+					payload: {
+						tag_id: 'AW-123456789',
+						customer_name: 'Example Store',
+						consent_date: '2026-07-28',
 					},
-				}
-			);
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						intent: 'ads-conversion-tracking',
-						created: '2026-07-31T08:00:00Z',
-						payload: {
-							tag_id: 'AW-987654321',
-							customer_name: 'Example Shop',
-							consent_date: '2026-07-30',
-						},
+				},
+			} );
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					intent: 'ads-conversion-tracking',
+					created: '2026-07-31T08:00:00Z',
+					payload: {
+						tag_id: 'AW-987654321',
+						customer_name: 'Example Shop',
+						consent_date: '2026-07-30',
 					},
-				}
-			);
+				},
+			} );
 
 			registry
 				.select( CORE_INTENTS )
@@ -211,15 +195,12 @@ describe( 'core/intents', () => {
 			);
 
 			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect( fetchMock ).toHaveFetched(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					query: {
-						slug: 'ads-conversion-tracking',
-						intent_code: 'def456',
-					},
-				}
-			);
+			expect( fetchMock ).toHaveFetched( intentEndpoint, {
+				query: {
+					slug: 'ads-conversion-tracking',
+					intent_code: 'def456',
+				},
+			} );
 			expect(
 				registry
 					.select( CORE_INTENTS )
@@ -235,7 +216,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'keeps the intent of the first one-time code when a second one-time code of the same slug loads', () => {
+		it( 'keeps the first intent when a second intent code of the same slug is stored', () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
 					intent: 'ads-conversion-tracking',
@@ -246,7 +227,7 @@ describe( 'core/intents', () => {
 						consent_date: '2026-07-28',
 					},
 				},
-				{ slug: 'ads-conversion-tracking', code: 'abc123' }
+				{ slug: 'ads-conversion-tracking', intentCode: 'abc123' }
 			);
 
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
@@ -259,7 +240,7 @@ describe( 'core/intents', () => {
 						consent_date: '2026-07-30',
 					},
 				},
-				{ slug: 'ads-conversion-tracking', code: 'def456' }
+				{ slug: 'ads-conversion-tracking', intentCode: 'def456' }
 			);
 
 			expect(
@@ -290,7 +271,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'does not request the intent when the store already has it', async () => {
+		it( "doesn't request the intent when the store already has it", async () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
 					intent: 'ads-conversion-tracking',
@@ -301,7 +282,7 @@ describe( 'core/intents', () => {
 						consent_date: '2026-07-28',
 					},
 				},
-				{ slug: 'ads-conversion-tracking', code: 'abc123' }
+				{ slug: 'ads-conversion-tracking', intentCode: 'abc123' }
 			);
 
 			registry
@@ -315,10 +296,8 @@ describe( 'core/intents', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
-		it( 'requests the intent for a one-time code named after an inherited `Object` property', async () => {
-			freezeFetch(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' )
-			);
+		it( 'requests the intent for the intent code `constructor`', async () => {
+			freezeFetch( intentEndpoint );
 
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
@@ -330,9 +309,11 @@ describe( 'core/intents', () => {
 						consent_date: '2026-07-28',
 					},
 				},
-				{ slug: 'ads-conversion-tracking', code: 'abc123' }
+				{ slug: 'ads-conversion-tracking', intentCode: 'abc123' }
 			);
 
+			// Every object has a `constructor` property. With `{}` for each slug's
+			// intents, this call would return that property and send no request.
 			expect(
 				registry
 					.select( CORE_INTENTS )
@@ -341,30 +322,46 @@ describe( 'core/intents', () => {
 
 			await waitForDefaultTimeouts();
 
-			expect( fetchMock ).toHaveFetched(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					query: {
-						slug: 'ads-conversion-tracking',
-						intent_code: 'constructor',
-					},
-				}
-			);
+			expect( fetchMock ).toHaveFetched( intentEndpoint, {
+				query: {
+					slug: 'ads-conversion-tracking',
+					intent_code: 'constructor',
+				},
+			} );
+		} );
+
+		it( 'requests the intent for the slug `constructor`', async () => {
+			freezeFetch( intentEndpoint );
+
+			// The intent code is `name`, because the `Object` function has a
+			// `name`. With `{}` in `state.intents`, this call would return
+			// `'Object'`.
+			expect(
+				registry
+					.select( CORE_INTENTS )
+					.getIntent( 'constructor', 'name' )
+			).toBeUndefined();
+
+			await waitForDefaultTimeouts();
+
+			expect( fetchMock ).toHaveFetched( intentEndpoint, {
+				query: {
+					slug: 'constructor',
+					intent_code: 'name',
+				},
+			} );
 		} );
 
 		it( 'returns `undefined` and stores the error for `getErrorForSelector` when loading the intent fails', async () => {
-			fetchMock.getOnce(
-				new RegExp( '^/google-site-kit/v1/core/intents/data/intent' ),
-				{
-					body: {
-						code: 'intent_not_found',
-						message:
-							'This link can’t be used. Go back to where you started and try again.',
-						data: { status: 404 },
-					},
-					status: 404,
-				}
-			);
+			fetchMock.getOnce( intentEndpoint, {
+				body: {
+					code: 'intent_not_found',
+					message:
+						'This link can’t be used. Go back to where you started and try again.',
+					data: { status: 404 },
+				},
+				status: 404,
+			} );
 
 			registry
 				.select( CORE_INTENTS )
@@ -401,45 +398,39 @@ describe( 'core/intents', () => {
 			).toThrow( 'slug is required.' );
 		} );
 
-		it( 'throws an error when the one-time code is missing', () => {
+		it( 'throws an error when the intent code is missing', () => {
 			expect( () =>
 				registry
 					.select( CORE_INTENTS )
 					.getIntent( 'ads-conversion-tracking', undefined )
-			).toThrow( 'code is required.' );
+			).toThrow( 'intentCode is required.' );
 		} );
 	} );
 
 	describe( 'completeIntent', () => {
-		it( 'returns the URL from the `core/intents/data/complete-intent` route for the slug and the one-time code', async () => {
-			fetchMock.postOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/intents/data/complete-intent'
-				),
-				{
-					body: {
-						return_url: 'https://example.com/ads/conversions',
-					},
-				}
-			);
+		const completeIntentEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/intents/data/complete-intent'
+		);
+
+		it( 'returns the URL from the `core/intents/data/complete-intent` route for the slug and the intent code', async () => {
+			fetchMock.postOnce( completeIntentEndpoint, {
+				body: {
+					return_url: 'https://example.com/ads/conversions',
+				},
+			} );
 
 			const { response, error } = await registry
 				.dispatch( CORE_INTENTS )
 				.completeIntent( 'ads-conversion-tracking', 'abc123' );
 
-			expect( fetchMock ).toHaveFetched(
-				new RegExp(
-					'^/google-site-kit/v1/core/intents/data/complete-intent'
-				),
-				{
-					body: {
-						data: {
-							slug: 'ads-conversion-tracking',
-							intent_code: 'abc123',
-						},
+			expect( fetchMock ).toHaveFetched( completeIntentEndpoint, {
+				body: {
+					data: {
+						slug: 'ads-conversion-tracking',
+						intent_code: 'abc123',
 					},
-				}
-			);
+				},
+			} );
 			expect( response ).toEqual( {
 				return_url: 'https://example.com/ads/conversions',
 			} );
@@ -447,20 +438,15 @@ describe( 'core/intents', () => {
 		} );
 
 		it( 'returns the error when completing the intent fails', async () => {
-			fetchMock.postOnce(
-				new RegExp(
-					'^/google-site-kit/v1/core/intents/data/complete-intent'
-				),
-				{
-					body: {
-						code: 'intent_not_found',
-						message:
-							'This link can’t be used. Go back to where you started and try again.',
-						data: { status: 404 },
-					},
-					status: 404,
-				}
-			);
+			fetchMock.postOnce( completeIntentEndpoint, {
+				body: {
+					code: 'intent_not_found',
+					message:
+						'This link can’t be used. Go back to where you started and try again.',
+					data: { status: 404 },
+				},
+				status: 404,
+			} );
 
 			const { response, error } = await registry
 				.dispatch( CORE_INTENTS )
@@ -497,12 +483,12 @@ describe( 'core/intents', () => {
 			).toThrow( 'slug is required.' );
 		} );
 
-		it( 'throws an error when the one-time code is missing', () => {
+		it( 'throws an error when the intent code is missing', () => {
 			expect( () =>
 				registry
 					.dispatch( CORE_INTENTS )
 					.completeIntent( 'ads-conversion-tracking', undefined )
-			).toThrow( 'code is required.' );
+			).toThrow( 'intentCode is required.' );
 		} );
 	} );
 } );
