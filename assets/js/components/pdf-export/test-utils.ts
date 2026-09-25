@@ -218,7 +218,7 @@ export function renderPDFChildStyles(
  *
  * @since n.e.x.t
  *
- * @return The `DateFormat` and `NumberFormat` mocks.
+ * @return {Object} The `DateFormat` and `NumberFormat` mocks.
  */
 export function mockChartAxisLabels() {
 	jest.spyOn(

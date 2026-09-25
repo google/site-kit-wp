@@ -26,12 +26,12 @@ import {
 } from './chart-axis';
 import { mockChartAxisLabels } from './test-utils';
 
-let chartAxisLabels: ReturnType< typeof mockChartAxisLabels >;
+let formatterMocks: ReturnType< typeof mockChartAxisLabels >;
 
 beforeEach( () => {
-	chartAxisLabels = mockChartAxisLabels();
+	formatterMocks = mockChartAxisLabels();
 	( global as unknown as { google?: unknown } ).google = {
-		visualization: chartAxisLabels,
+		visualization: formatterMocks,
 	};
 } );
 
@@ -69,7 +69,7 @@ describe( 'getValueAxisGutter', () => {
 	} );
 
 	it( 'widens the gutter for German, which writes 400,000 in full as `400.000`', () => {
-		chartAxisLabels.NumberFormat.mockImplementation( () => ( {
+		formatterMocks.NumberFormat.mockImplementation( () => ( {
 			formatValue: ( value: number ) => value.toLocaleString( 'de-DE' ),
 		} ) );
 
@@ -81,7 +81,7 @@ describe( 'getValueAxisGutter', () => {
 	it( 'measures the value labels in the `short` format for a highest value of 100 or more', () => {
 		getValueAxisGutter( 58000, 14 );
 
-		expect( chartAxisLabels.NumberFormat ).toHaveBeenCalledWith( {
+		expect( formatterMocks.NumberFormat ).toHaveBeenCalledWith( {
 			pattern: 'short',
 		} );
 	} );
@@ -123,7 +123,7 @@ describe( 'pickDateTicks', () => {
 	it( 'writes each label in the `MMM d` pattern of the dashboard charts', () => {
 		pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 );
 
-		expect( chartAxisLabels.DateFormat ).toHaveBeenCalledWith( {
+		expect( formatterMocks.DateFormat ).toHaveBeenCalledWith( {
 			pattern: 'MMM d',
 		} );
 	} );
@@ -253,7 +253,7 @@ describe( 'pickDateTicks', () => {
 			'Nov.',
 			'Dez.',
 		];
-		chartAxisLabels.DateFormat.mockImplementation( () => ( {
+		formatterMocks.DateFormat.mockImplementation( () => ( {
 			formatValue: ( date: Date ) =>
 				`${ months[ date.getMonth() ] } ${ date.getDate() }`,
 		} ) );
@@ -271,7 +271,7 @@ describe( 'pickDateTicks', () => {
 
 	it( 'throws when Google Charts has no `DateFormat`', () => {
 		( global as unknown as { google?: unknown } ).google = {
-			visualization: { NumberFormat: chartAxisLabels.NumberFormat },
+			visualization: { NumberFormat: formatterMocks.NumberFormat },
 		};
 
 		expect( () =>

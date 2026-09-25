@@ -24,22 +24,6 @@ import {
 	getVisualization,
 } from './render-google-chart-to-data-uri';
 
-/**
- * The gutter beside the chart area, where the value labels go, in font sizes.
- * It has room for the widest English label, such as `400M`, `12.5K`, or
- * `0.125`, when the highest value is 0.1 or more.
- */
-const VALUE_AXIS_GUTTER = 3.2;
-
-/** The width one more digit adds to a value label, in font sizes. */
-const EXTRA_DIGIT_WIDTH = 0.7;
-
-/** The gap between the chart area and a value label, in font sizes. */
-const VALUE_LABEL_GAP = 0.45;
-
-/** The gap Google Charts needs between two date labels, in font sizes. */
-const DATE_LABEL_GAP = 1.05;
-
 export interface DateTick {
 	/** Google Charts reads a tick's value from `v`, the point on the axis that lines up with the middle of the tick's label. */
 	v: Date;
@@ -138,9 +122,9 @@ function getShortValueLabels( maxValue: number ): string[] {
 /**
  * Gets the number format for the value labels.
  *
- * The `short` format writes 58,000 as `58K`. But it also writes `0.025` as
- * `0.03`. From 100 up, every gridline is a whole number, so no label loses a
- * digit.
+ * The `short` format writes 58,000 as `58K`. But it also writes 0.025 as
+ * `0.03`. When the highest value is 100 or more, every gridline is a whole
+ * number, so no label loses a digit.
  *
  * @since n.e.x.t
  *
@@ -152,7 +136,8 @@ export function getValueAxisFormat( maxValue: number ): 'short' | undefined {
 }
 
 /**
- * Gets the width the value labels need beside the chart area, in chart pixels.
+ * Gets the gutter, the space beside the chart area where the value labels go,
+ * in chart pixels.
  *
  * Google Charts cuts off a value label that is wider than the gutter, and ends
  * it with an ellipsis.
@@ -167,14 +152,16 @@ export function getValueAxisGutter(
 	maxValue: number,
 	fontSize: number
 ): number {
+	// A gutter 3.2 times the font size has room for the widest English label,
+	// such as `400M`, `12.5K`, or `0.125`, when the highest value is 0.1 or more.
 	// Each zero right after the decimal point, such as the two in `0.004`, makes
-	// the labels one digit longer.
+	// the labels one digit longer. The gutter grows by 0.7 times the font size
+	// for each one.
 	const zerosAfterPoint =
 		maxValue > 0 && maxValue < 1
 			? -1 - Math.floor( Math.log10( maxValue ) )
 			: 0;
-	const gutter =
-		( VALUE_AXIS_GUTTER + zerosAfterPoint * EXTRA_DIGIT_WIDTH ) * fontSize;
+	const gutter = ( 3.2 + zerosAfterPoint * 0.7 ) * fontSize;
 
 	if ( getValueAxisFormat( maxValue ) !== 'short' ) {
 		return Math.ceil( gutter );
@@ -187,9 +174,8 @@ export function getValueAxisGutter(
 		...getLabelWidths( getShortValueLabels( maxValue ), fontSize )
 	);
 
-	return Math.ceil(
-		Math.max( gutter, widestLabelWidth + VALUE_LABEL_GAP * fontSize )
-	);
+	// A value label starts 0.45 times the font size from the chart area.
+	return Math.ceil( Math.max( gutter, widestLabelWidth + 0.45 * fontSize ) );
 }
 
 /**
@@ -203,7 +189,7 @@ export function getValueAxisGutter(
  *
  * Between them, every few dates get a label. Where they can, the labels split
  * the dates into equal parts. No two labels are closer than the widest date
- * label plus `DATE_LABEL_GAP`.
+ * label plus the gap Google Charts needs between them.
  *
  * @since n.e.x.t
  *
@@ -245,9 +231,11 @@ export function pickDateTicks(
 	const everyDayLabels = Array.from( { length: 366 }, ( _day, index ) =>
 		toLabel( new Date( 2024, 0, 1 + index ) )
 	);
+	// Google Charts needs a gap 1.05 times the font size between two date
+	// labels.
 	const labelDistance =
 		Math.max( ...getLabelWidths( everyDayLabels, fontSize ) ) +
-		DATE_LABEL_GAP * fontSize;
+		1.05 * fontSize;
 	const [ firstLabelWidth, lastLabelWidth ] = getLabelWidths(
 		[ toLabel( dates[ 0 ] ), toLabel( dates[ lastIndex ] ) ],
 		fontSize
@@ -288,16 +276,22 @@ export function pickDateTicks(
 			.filter( hasRoom );
 
 		if ( indexesWithRoom.length ) {
-			const lowest = indexesWithRoom[ 0 ];
-			const highest = indexesWithRoom[ indexesWithRoom.length - 1 ];
+			const firstIndexWithRoom = indexesWithRoom[ 0 ];
+			const lastIndexWithRoom =
+				indexesWithRoom[ indexesWithRoom.length - 1 ];
 			const runLength =
-				Math.floor( ( highest - lowest ) / minStep ) * minStep;
-			const middleIndex =
+				Math.floor(
+					( lastIndexWithRoom - firstIndexWithRoom ) / minStep
+				) * minStep;
+			const midpointIndex =
 				( ( firstCenter + lastCenter ) / 2 / chartAreaWidth ) *
 				lastIndex;
 			const runStart = Math.min(
-				Math.max( Math.round( middleIndex - runLength / 2 ), lowest ),
-				highest - runLength
+				Math.max(
+					Math.round( midpointIndex - runLength / 2 ),
+					firstIndexWithRoom
+				),
+				lastIndexWithRoom - runLength
 			);
 
 			middleIndexes = Array.from(

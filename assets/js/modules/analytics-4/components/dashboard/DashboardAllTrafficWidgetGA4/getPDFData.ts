@@ -243,8 +243,8 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  * @since 1.182.0
  * @since n.e.x.t Wrote large values as `58K`, and showed every axis label in full.
  *
- * @param points Parsed chart points.
- * @return Google Charts options object.
+ * @param {Array<Object>} points Parsed chart points.
+ * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
 	const fontSize = 14;

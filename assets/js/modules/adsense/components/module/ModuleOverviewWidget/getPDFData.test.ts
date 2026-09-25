@@ -393,6 +393,17 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 
 	it( 'should write the value labels in short form only when either line has a value of 100 or more', async () => {
 		provideReportsWithData();
+		// Only the 7 days of the previous period have 100 impressions or more,
+		// with 300 each. The current period has 60 a day. Earnings stay under 100
+		// on every day.
+		registry.dispatch( MODULES_ADSENSE ).receiveGetReport(
+			buildChartReport( {
+				days: CURRENT_RANGE_DAYS,
+				dailyValues: [ 1.5, 2.5, 60, 0.05 ],
+				totals: [ 10.5, 2.5, 420, 0.05 ],
+			} ),
+			{ options: getCurrentRangeChartArgs( DATES ) }
+		);
 
 		await getPDFData( {
 			registry,
