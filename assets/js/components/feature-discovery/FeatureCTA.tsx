@@ -36,6 +36,7 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureSetupSurveyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
@@ -82,11 +83,10 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 	const onClick = useCallback( async () => {
 		setIsBusy( true );
 
-		try {
-			// Awaited first, so the record lands before a setup that
-			// navigates away.
-			await triggerSurvey( `setup:feature_setup_${ slug }` );
+		// Not awaited: recording the setup must never block or fail it.
+		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
+		try {
 			await setupFeature( slug );
 		} finally {
 			setIsBusy( false );
@@ -97,8 +97,15 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 		return null;
 	}
 
-	// Tri-state: `undefined` is still loading, not unavailable.
-	if ( canActivateModule === false || meetsRequirements === false ) {
+	// Each check is tri-state, and an applicable one that has not resolved
+	// hides the CTA rather than showing one that may be withdrawn.
+	if (
+		canActivateModule === false ||
+		meetsRequirements === false ||
+		( !! setupModuleSlug && canActivateModule === undefined ) ||
+		( typeof feature.checkRequirements === 'function' &&
+			meetsRequirements === undefined )
+	) {
 		return null;
 	}
 

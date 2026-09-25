@@ -167,6 +167,36 @@ describe( 'FeatureCTA', () => {
 			expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 		} );
 
+		it( 'should render nothing while the service’s requirements are still resolving', () => {
+			provideSetupFlowFeature();
+
+			// No `receiveCheckRequirements*`, so `canActivateModule` is
+			// `undefined`.
+			const { queryByRole } = render( <FeatureCTA slug="analytics" />, {
+				registry,
+			} );
+
+			expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+		} );
+
+		it( 'should render nothing while the feature’s own requirements are still resolving', () => {
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					checkRequirements: () => undefined,
+				},
+			] );
+
+			const { queryByRole } = render(
+				<FeatureCTA slug="test-feature" />,
+				{
+					registry,
+				}
+			);
+
+			expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+		} );
+
 		it( 'should render the CTA for a setup-flow feature that activates no module', () => {
 			provideFeatures( registry, [
 				{
