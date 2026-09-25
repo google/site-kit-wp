@@ -85,7 +85,11 @@ export default function useActivateModuleCallback(
 				moduleSlug
 			);
 
-			await setItem( 'module_setup', moduleSlug, { ttl: 300 } );
+			await setItem(
+				'module_setup',
+				{ slug: moduleSlug, options },
+				{ ttl: 300 }
+			);
 
 			navigateTo( response.moduleReauthURL );
 		} else {
