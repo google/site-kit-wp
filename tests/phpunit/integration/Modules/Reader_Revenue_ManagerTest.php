@@ -988,8 +988,13 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 * @param array $settings               Settings to set.
 	 * @param array $expected_feature_metrics Expected feature metrics.
 	 * @param string $message                Message for the assertion.
+	 * @param bool $enable_feature_flag      Optional. Whether to enable the rrmExpressSetup feature flag. Default false.
 	 */
-	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message, $enable_feature_flag = false ) {
+		if ( $enable_feature_flag ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+
 		$this->reader_revenue_manager->get_settings()->set( $settings );
 
 		$feature_metrics = $this->reader_revenue_manager->get_feature_metrics();
@@ -1014,6 +1019,70 @@ class Reader_Revenue_ManagerTest extends TestCase {
 					'rrm_publication_onboarding_state' => 'PENDING_VERIFICATION',
 				),
 				'When publication onboarding state is set to PENDING_VERIFICATION or some state, the feature metric should reflect that.',
+			),
+			'when feature flag is off, configured CTAs metric is not reported'                          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+				),
+				'When rrmExpressSetup feature flag is off, the `rrm_publication_configured_ctas` metric should not be reported.',
+			),
+			'when configuredCTAs is empty, the metric is an empty string'                                => array(
+				array(
+					'configuredCTAs' => array(),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => '',
+				),
+				'When configuredCTAs is empty, the metric should be an empty string.',
+				true,
+			),
+			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup' ),
+				),
+				'When configuredCTAs contains one CTA type, the metric should be an array with that single type.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains multiple distinct CTA types, the metric is an array of those types' => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains multiple distinct types, the metric should be an array of those distinct types.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains duplicates, the metric contains each type only once'         => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'newsletter-signup',
+						'cta-3' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains duplicate types, each type should appear only once in the metric.',
+				true, // Enable feature flag.
 			),
 		);
 	}
