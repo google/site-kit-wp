@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { type Select, useSelect } from 'googlesitekit-data';
+import { SIZE_SMALL, TYPE_TITLE } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { useFinishSetup, useModuleSetupTracking } from './hooks';
@@ -64,12 +66,16 @@ export default function DefaultModuleSetup( {
 								<Grid>
 									<Row>
 										<Cell size={ 12 }>
-											<p className="googlesitekit-setup__intro-title">
+											<P
+												className="googlesitekit-setup__intro-title"
+												size={ SIZE_SMALL }
+												type={ TYPE_TITLE }
+											>
 												{ __(
 													'Connect Service',
 													'google-site-kit'
 												) }
-											</p>
+											</P>
 											<SetupComponent
 												module={ module }
 												finishSetup={ finishSetup }

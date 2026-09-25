@@ -34,6 +34,8 @@ import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import SettingsGroup from '@/js/components/settings/SettingsGroup';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import { ConversionIDTextField } from '@/js/modules/ads/components/common';
@@ -91,7 +93,10 @@ export default function SettingsForm() {
 						>
 							{ __( 'Conversion ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P
+							className="googlesitekit-settings-module__meta-item-data"
+							size={ SIZE_MEDIUM }
+						>
 							{ conversionIDValue === '' &&
 								__( 'None', 'google-site-kit' ) }
 							{ conversionIDValue ||
@@ -100,7 +105,7 @@ export default function SettingsForm() {
 										value={ conversionIDValue }
 									/>
 								) ) }
-						</p>
+						</P>
 					</div>
 					<div className="googlesitekit-settings-module__meta-item">
 						<Typography
@@ -111,14 +116,17 @@ export default function SettingsForm() {
 						>
 							{ __( 'Customer ID', 'google-site-kit' ) }
 						</Typography>
-						<p className="googlesitekit-settings-module__meta-item-data">
+						<P
+							className="googlesitekit-settings-module__meta-item-data"
+							size={ SIZE_MEDIUM }
+						>
 							{ extCustomerID === '' &&
 								__( 'None', 'google-site-kit' ) }
 							{ extCustomerID ||
 								( typeof extCustomerID === 'undefined' && (
 									<DisplaySetting value={ extCustomerID } />
 								) ) }
-						</p>
+						</P>
 					</div>
 				</div>
 			) }

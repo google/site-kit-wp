@@ -38,6 +38,7 @@ import {
 	TextField,
 } from 'googlesitekit-components';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { trackEvent } from '@/js/util';
@@ -254,12 +255,15 @@ class SearchConsole extends Component {
 						'google-site-kit'
 					) }
 				</Typography>
-				<p className="googlesitekit-setup-module__text--no-margin">
+				<P
+					className="googlesitekit-setup-module__text--no-margin"
+					size={ SIZE_MEDIUM }
+				>
 					{ __(
 						'Your Search Console is set up with Site Kit.',
 						'google-site-kit'
 					) }
-				</p>
+				</P>
 				{ /* TODO This needs a continue button or redirect. */ }
 			</section>
 		);
@@ -335,7 +339,12 @@ class SearchConsole extends Component {
 				</Typography>
 
 				{ errorMsg && 0 < errorMsg.length && (
-					<p className="googlesitekit-error-text">{ errorMsg }</p>
+					<P
+						className="googlesitekit-error-text"
+						size={ SIZE_MEDIUM }
+					>
+						{ errorMsg }
+					</P>
 				) }
 
 				{ isAuthenticated && shouldSetup && this.renderForm() }

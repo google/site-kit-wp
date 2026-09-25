@@ -9,7 +9,7 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
       class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
     >
       <p
-        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+        class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-title googlesitekit-typography--label googlesitekit-typography--small"
       >
         Create groups suggested by Site Kit
       </p>
@@ -29,7 +29,7 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
             New visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who visited the site for the first time
           </p>
@@ -61,7 +61,7 @@ exports[`AudienceCreationNotice should not render the missing scope notice if th
             Returning visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who have visited your site at least once before
           </p>
@@ -108,7 +108,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
       class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
     >
       <p
-        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+        class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-title googlesitekit-typography--label googlesitekit-typography--small"
       >
         Create groups suggested by Site Kit
       </p>
@@ -128,7 +128,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
             New visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who visited the site for the first time
           </p>
@@ -160,7 +160,7 @@ exports[`AudienceCreationNotice should render the missing scope notice if the us
             Returning visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who have visited your site at least once before
           </p>
@@ -239,7 +239,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
       class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
     >
       <p
-        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+        class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-title googlesitekit-typography--label googlesitekit-typography--small"
       >
         Create groups suggested by Site Kit
       </p>
@@ -259,7 +259,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
             New visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who visited the site for the first time
           </p>
@@ -291,7 +291,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
             Returning visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who have visited your site at least once before
           </p>
@@ -338,7 +338,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
       class="googlesitekit-audience-selection-panel__audience-creation-notice-header"
     >
       <p
-        class="googlesitekit-audience-selection-panel__audience-creation-notice-title"
+        class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-title googlesitekit-typography--label googlesitekit-typography--small"
       >
         Create groups suggested by Site Kit
       </p>
@@ -358,7 +358,7 @@ exports[`AudienceCreationNotice should render the notice if the user has not dis
             Returning visitors
           </h3>
           <p
-            class="googlesitekit-audience-selection-panel__audience-creation-notice-audience-description"
+            class="googlesitekit-typography googlesitekit-audience-selection-panel__audience-creation-notice-audience-description googlesitekit-typography--body googlesitekit-typography--small"
           >
             People who have visited your site at least once before
           </p>
