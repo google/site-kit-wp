@@ -225,6 +225,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -243,6 +244,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -266,6 +268,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -288,6 +291,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -310,6 +314,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: true,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -334,6 +339,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: true,
 			} );
 
@@ -358,6 +364,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: true,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: true,
 			} );
 
@@ -374,6 +381,59 @@ describe( 'getWelcomeTour', () => {
 			] );
 			expect( tour ).toBeDefined();
 		} );
+
+		it( 'should highlight the Traffic Overview card in the traffic step when the Traffic Overview widget is present', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
+				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: true,
+				isAudienceSegmentationWidgetPresent: false,
+			} );
+
+			expect( tour.steps[ 0 ] ).toEqual( {
+				target: '.googlesitekit-widget--analyticsTrafficOverview',
+				floaterProps: {
+					target: '.googlesitekit-traffic-overview__chart',
+				},
+				title: 'Track traffic trends, identify baselines',
+				content: expect.stringContaining(
+					'Know what’s normal for your site.'
+				),
+				offset: 35,
+				spotlightPadding: 0,
+				placement: 'top',
+				isResponsive: true,
+			} );
+		} );
+
+		it( 'should keep the traffic step directly after the key metrics step when the Traffic Overview widget is present', () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
+				isKeyMetricsWidgetPresent: true,
+				isTrafficOverviewWidgetPresent: true,
+				isAudienceSegmentationWidgetPresent: true,
+			} );
+
+			expect( tour.steps ).toMatchObject( [
+				{
+					target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',
+				},
+				{ target: '.googlesitekit-widget--analyticsTrafficOverview' },
+				{
+					target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
+				},
+				{
+					target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
+				},
+				{ target: '.googlesitekit-header' },
+			] );
+		} );
 	} );
 
 	describe( 'Search Console only tour variant', () => {
@@ -384,6 +444,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -400,6 +461,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -421,6 +483,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -442,6 +505,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -463,6 +527,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -485,6 +550,7 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
 				isKeyMetricsWidgetPresent: false,
+				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
