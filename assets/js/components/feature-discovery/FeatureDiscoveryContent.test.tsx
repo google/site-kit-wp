@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry, render } from '@tests/js/test-utils';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
@@ -40,6 +41,7 @@ describe( 'FeatureDiscoveryContent', () => {
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.186.0' );
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	} );
 
@@ -47,6 +49,7 @@ describe( 'FeatureDiscoveryContent', () => {
 		const { container } = render( <FeatureDiscoveryContent />, {
 			registry,
 			route: '/all-services',
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		expect(
@@ -58,11 +61,17 @@ describe( 'FeatureDiscoveryContent', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should render only the tab panel content for /whats-new', () => {
-		const { container } = render( <FeatureDiscoveryContent />, {
-			registry,
-			route: '/whats-new',
-		} );
+	it( 'should render only the tab panel content for /whats-new', async () => {
+		const { container, waitForRegistry } = render(
+			<FeatureDiscoveryContent />,
+			{
+				registry,
+				route: '/whats-new',
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect(
 			container.querySelector( WHATS_NEW_SELECTOR )
@@ -73,11 +82,17 @@ describe( 'FeatureDiscoveryContent', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should redirect base path to /whats-new', () => {
-		const { container, history } = render( <FeatureDiscoveryContent />, {
-			registry,
-			route: '/',
-		} );
+	it( 'should redirect base path to /whats-new', async () => {
+		const { container, history, waitForRegistry } = render(
+			<FeatureDiscoveryContent />,
+			{
+				registry,
+				route: '/',
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( history.location.pathname ).toBe( '/whats-new' );
 		expect( history.action ).toBe( 'REPLACE' );
@@ -87,11 +102,17 @@ describe( 'FeatureDiscoveryContent', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should redirect unknown paths to /whats-new', () => {
-		const { container, history } = render( <FeatureDiscoveryContent />, {
-			registry,
-			route: '/unknown',
-		} );
+	it( 'should redirect unknown paths to /whats-new', async () => {
+		const { container, history, waitForRegistry } = render(
+			<FeatureDiscoveryContent />,
+			{
+				registry,
+				route: '/unknown',
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
+
+		await waitForRegistry();
 
 		expect( history.location.pathname ).toBe( '/whats-new' );
 		expect( history.action ).toBe( 'REPLACE' );

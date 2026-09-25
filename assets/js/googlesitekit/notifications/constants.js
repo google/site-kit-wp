@@ -50,6 +50,8 @@ export const PRIORITY = {
 export const NOTIFICATION_AREAS = {
 	HEADER: 'notification-area-header',
 	DASHBOARD_TOP: 'notification-area-dashboard-top',
+	FEATURE_DISCOVERY_WHATS_NEW_TOP:
+		'notification-area-feature-discovery-whats-new-top',
 	OVERLAYS: 'notification-area-overlays',
 	SPLASH_CONTENT: 'notification-area-splash-content',
 };

@@ -31,9 +31,17 @@ import {
 	provideFeatures,
 	provideWhatsNewState,
 } from '@/js/components/feature-discovery/__fixtures__/whats-new';
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
-import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideNotifications,
+	provideSiteInfo,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import WhatsNewTab from './WhatsNewTab';
 
@@ -70,6 +78,23 @@ NoFeatures.args = {
 		provideWhatsNewState( registry );
 	},
 };
+export const WithAutoUpdatesNotice = Template.bind( {} ) as Story< StoryArgs >;
+WithAutoUpdatesNotice.storyName = 'With Auto-updates Notice';
+WithAutoUpdatesNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			siteKitAutoUpdatesEnabled: false,
+		} );
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+		provideNotifications( registry, [] );
+	},
+};
+WithAutoUpdatesNotice.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/WhatsNewTab',
@@ -92,7 +117,11 @@ export default {
 
 			return (
 				<WithRegistrySetup func={ setupStoryRegistry }>
-					<StoryComponent { ...rest } />
+					<ViewContextProvider
+						value={ VIEW_CONTEXT_FEATURE_DISCOVERY }
+					>
+						<StoryComponent { ...rest } />
+					</ViewContextProvider>
 				</WithRegistrySetup>
 			);
 		},
