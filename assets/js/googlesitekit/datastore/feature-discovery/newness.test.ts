@@ -266,6 +266,51 @@ describe( 'core/feature-discovery newness', () => {
 		} );
 	} );
 
+	describe( 'dismissFeature', () => {
+		it( 'should permanently dismiss a feature, remove it from "What’s new" and its count, and keep it available', async () => {
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
+
+			const dismissalKey = getFeatureDismissalKey( 'feature' );
+
+			provideNewnessState();
+
+			registerFeature( 'feature' );
+
+			fetchMock.postOnce( endpoint, [ dismissalKey ] );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount()
+			).toBe( 1 );
+
+			await registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.dismissFeature( 'feature' );
+
+			expect( fetchMock ).toHaveFetched( endpoint, {
+				body: {
+					data: {
+						slug: dismissalKey,
+						expiration: 0,
+					},
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures()
+			).toEqual( [] );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount()
+			).toBe( 0 );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getAvailableFeatures()
+			).toEqual( [ expect.objectContaining( { slug: 'feature' } ) ] );
+		} );
+	} );
+
 	describe( 'markFeaturesSeen', () => {
 		it( 'should seed timers for several features in one request', async () => {
 			const endpoint = new RegExp(

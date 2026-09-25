@@ -59,6 +59,24 @@ function hasNewnessState( select: Select ) {
 
 export const actions = {
 	/**
+	 * Dismisses a feature permanently for the current user.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Feature slug.
+	 * @return {Object} Generator instance.
+	 */
+	*dismissFeature(
+		slug: string
+	): Generator< unknown, unknown, WPDataRegistry > {
+		const registry = yield commonActions.getRegistry();
+
+		return registry
+			.dispatch( CORE_USER )
+			.dismissItem( getFeatureDismissalKey( slug ) );
+	},
+
+	/**
 	 * Marks features as seen by starting each feature's newness timer.
 	 *
 	 * @since 1.188.0

@@ -25,17 +25,21 @@ import { FC, useCallback } from 'react';
 /**
  * WordPress dependencies
  */
-import { useEffect, useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { useEffect, useMemo, useRef, useState } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Select, useSelect } from 'googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import Link from '@/js/components/Link';
+import FeedbackMenu, {
+	FeedbackMenuOption,
+} from '@/js/components/surveys/FeedbackMenu';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
@@ -48,8 +52,11 @@ import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_BADGES,
 	FEATURE_BADGE_PROPS,
+	FEATURE_RELEVANCY_REASONS,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureRelevancyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import SiteKitIcon from '@/svg/graphics/logo-g.svg';
 import CloseIcon from '@/svg/icons/close.svg';
@@ -68,6 +75,71 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	hideUnreadDot = false,
 } ) => {
 	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
+	const [ isFeedbackMenuOpen, setIsFeedbackMenuOpen ] = useState( false );
+	const dismissButtonRef = useRef< HTMLButtonElement >( null );
+	const menuWrapperRef = useRef< HTMLDivElement >( null );
+	const menuID = useInstanceId(
+		FeatureCard,
+		'feature-feedback-menu'
+	) as string;
+	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
+		() => [
+			{
+				id: FEATURE_RELEVANCY_REASONS.JUST_HIDE,
+				label: __( 'Just hide this suggestion', 'google-site-kit' ),
+			},
+			{
+				id: FEATURE_RELEVANCY_REASONS.NOT_RELEVANT,
+				label: __(
+					'It’s not relevant to my site goals',
+					'google-site-kit'
+				),
+				value: getFeatureRelevancyTriggerID(
+					slug,
+					FEATURE_RELEVANCY_REASONS.NOT_RELEVANT
+				),
+			},
+			{
+				id: FEATURE_RELEVANCY_REASONS.ALREADY_USING,
+				label: __(
+					'I’m already using another tool',
+					'google-site-kit'
+				),
+				value: getFeatureRelevancyTriggerID(
+					slug,
+					FEATURE_RELEVANCY_REASONS.ALREADY_USING
+				),
+			},
+			{
+				id: FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED,
+				label: __( 'Setup seems complex', 'google-site-kit' ),
+				value: getFeatureRelevancyTriggerID(
+					slug,
+					FEATURE_RELEVANCY_REASONS.TOO_COMPLICATED
+				),
+			},
+		],
+		[ slug ]
+	);
+
+	const onCloseFeedbackMenu = useCallback( () => {
+		setIsFeedbackMenuOpen( false );
+	}, [] );
+
+	const onSelectFeedback = useCallback(
+		( value: string | undefined ) => {
+			dismissFeature( slug );
+
+			if ( value ) {
+				// Feedback is independent of dismissal and must not delay it.
+				triggerSurvey( value );
+			}
+		},
+		[ dismissFeature, slug, triggerSurvey ]
+	);
 
 	const isFeatureNew = useSelect(
 		( select: Select ) =>
@@ -101,7 +173,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		module?.name || __( 'Site Kit feature', 'google-site-kit' );
 
 	const onClickDismiss = useCallback( () => {
-		// TODO: #13357 -- Implement dismiss-with-feedback menu.
+		setIsFeedbackMenuOpen( ( isOpen ) => ! isOpen );
 	}, [] );
 
 	const onClickReadMore = useCallback( () => {
@@ -167,18 +239,36 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 					</div>
 
 					{ isDismissible && (
-						<Link
-							aria-label={ sprintf(
-								/* translators: %s: feature name */
-								__( 'Dismiss %s', 'google-site-kit' ),
-								title
-							) }
-							className="googlesitekit-feature-card__dismiss"
-							onClick={ onClickDismiss }
-							linkButton
+						<div
+							ref={ menuWrapperRef }
+							className="googlesitekit-feature-card__dismiss-menu mdc-menu-surface--anchor"
 						>
-							<CloseIcon width={ 12 } height={ 12 } />
-						</Link>
+							<Link
+								aria-controls={ menuID }
+								aria-expanded={ isFeedbackMenuOpen }
+								aria-haspopup="menu"
+								ref={ dismissButtonRef }
+								aria-label={ sprintf(
+									/* translators: %s: feature name */
+									__( 'Dismiss %s', 'google-site-kit' ),
+									title
+								) }
+								className="googlesitekit-feature-card__dismiss"
+								onClick={ onClickDismiss }
+								linkButton
+							>
+								<CloseIcon width={ 12 } height={ 12 } />
+							</Link>
+							<FeedbackMenu
+								id={ menuID }
+								isOpen={ isFeedbackMenuOpen }
+								onClose={ onCloseFeedbackMenu }
+								onSelect={ onSelectFeedback }
+								options={ feedbackOptions }
+								sourceRef={ dismissButtonRef }
+								wrapperRef={ menuWrapperRef }
+							/>
+						</div>
 					) }
 				</div>
 
