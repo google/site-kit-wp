@@ -30,6 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -139,37 +140,43 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'removes the ecommerce widget from the active widgets on a "Got it" click', async () => {
-		fetchMock.postOnce( removeWidgetEndpoint, {
-			body: { activeWidgets: [ 'lead' ] },
-			status: 200,
-		} );
-
-		const { getByRole, waitForRegistry } = render(
-			<SiteGoalsRemovalNotice goalType="ecommerce" />,
-			{ registry }
-		);
-		await waitForRegistry();
-
-		expect( fetchMock ).not.toHaveFetched( removeWidgetEndpoint );
-		expect(
-			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
-				.activeWidgets
-		).toEqual( [ 'ecommerce', 'lead' ] );
-
-		fireEvent.click( getByRole( 'button', { name: /Got it/ } ) );
-
-		await waitFor( () => {
-			expect( fetchMock ).toHaveFetched( removeWidgetEndpoint, {
-				body: { data: { widget: 'ecommerce' } },
+	it.each< [ string, GoalType, GoalType[] ] >( [
+		[ 'online store', 'ecommerce', [ 'lead' ] ],
+		[ 'lead generation', 'lead', [ 'ecommerce' ] ],
+	] )(
+		'removes the %s widget from the active widgets on a "Got it" click',
+		async ( _label, goalType, remainingWidgets ) => {
+			fetchMock.postOnce( removeWidgetEndpoint, {
+				body: { activeWidgets: remainingWidgets },
+				status: 200,
 			} );
-		} );
 
-		expect(
-			registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
-				.activeWidgets
-		).toEqual( [ 'lead' ] );
-	} );
+			const { getByRole, waitForRegistry } = render(
+				<SiteGoalsRemovalNotice goalType={ goalType } />,
+				{ registry }
+			);
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( removeWidgetEndpoint );
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
+					.activeWidgets
+			).toEqual( [ 'ecommerce', 'lead' ] );
+
+			fireEvent.click( getByRole( 'button', { name: /Got it/ } ) );
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( removeWidgetEndpoint, {
+					body: { data: { widget: goalType } },
+				} );
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getSiteGoalsSettings()
+					.activeWidgets
+			).toEqual( remainingWidgets );
+		}
+	);
 
 	it( 'tracks a "remove_widget" event on a "Got it" click', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
@@ -192,6 +199,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 				'lead'
 			);
 		} );
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 
 	it( 'disables the "Got it" button while the removal request runs', async () => {

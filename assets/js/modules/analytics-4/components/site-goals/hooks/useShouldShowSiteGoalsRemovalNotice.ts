@@ -50,7 +50,9 @@ export function useShouldShowSiteGoalsRemovalNotice(
 		[ goalType ]
 	) as boolean | undefined;
 
-	const hasEventsInDateRange = useSiteGoalsHasEventsInDateRange( goalType );
+	const hasEventsInDateRange = useSiteGoalsHasEventsInDateRange( goalType, {
+		shouldFetchReport: hasActiveEventProviders === false,
+	} );
 
 	// A failed report or an unknown plugin state shows the widget, so the
 	// loading block can't stay forever.

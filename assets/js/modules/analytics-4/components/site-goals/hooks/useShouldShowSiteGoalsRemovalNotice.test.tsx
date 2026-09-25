@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -41,6 +46,10 @@ import { useShouldShowSiteGoalsRemovalNotice } from './useShouldShowSiteGoalsRem
 
 describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 	let registry: WPDataRegistry;
+
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -154,23 +163,19 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when an ecommerce plugin is active and the report of ecommerce events is loading", () => {
+	it( "doesn't show the removal notice for the ecommerce widget or request the report of ecommerce events when an ecommerce plugin is active", async () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: true,
 		} );
 
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.startResolution( 'getReport', [
-				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
-			] );
-
-		const { result } = renderHook(
+		const { result, waitForRegistry } = renderHook(
 			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
 			{ registry }
 		);
+		await waitForRegistry();
 
 		expect( result.current ).toBe( false );
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
 	it( "doesn't show the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events fails", () => {

@@ -12,7 +12,8 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Core\Permissions\Permissions;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
@@ -23,6 +24,7 @@ use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Site_Settings;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
+use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -31,6 +33,15 @@ use Google\Site_Kit\Tests\TestCase;
  * @group Datapoints
  */
 class Remove_Site_Goals_WidgetTest extends TestCase {
+
+	use Fake_Site_Connection_Trait;
+
+	/**
+	 * Context instance.
+	 *
+	 * @var Context
+	 */
+	private $context;
 
 	/**
 	 * Remove_Site_Goals_Widget instance.
@@ -71,9 +82,9 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 
-		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$user_options = new User_Options( $context, $user_id );
-		$options      = new Options( $context );
+		$this->context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$user_options  = new User_Options( $this->context, $user_id );
+		$options       = new Options( $this->context );
 
 		$site_goals_settings = new Site_Goals_Settings( $user_options );
 		$site_goals_settings->register();
@@ -88,7 +99,7 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 			array(
 				'site_goals_settings'      => $site_goals_settings,
 				'site_goals_site_settings' => $this->site_goals_site_settings,
-				'context'                  => $context,
+				'context'                  => $this->context,
 			)
 		);
 	}
@@ -179,11 +190,31 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 		);
 	}
 
-	public function test_permission_callback__checks_the_view_dashboard_capability() {
-		$this->assertSame(
-			current_user_can( Permissions::VIEW_DASHBOARD ),
+	public function test_permission_callback__allows_a_view_only_user() {
+		$editor_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $editor_id );
+
+		$this->grant_editors_view_only_dashboard_access();
+
+		// `Permissions` lets a view-only user view the dashboard only after they
+		// dismiss the `shared_dashboard_splash` item.
+		$editor_dismissed_items = new Dismissed_Items( new User_Options( $this->context, $editor_id ) );
+		$editor_dismissed_items->add( 'shared_dashboard_splash', 0 );
+
+		$this->assertTrue(
 			$this->datapoint->permission_callback(),
-			'The datapoint should allow the same users the `googlesitekit_view_dashboard` capability allows.'
+			'The datapoint should let a view-only user remove a Site Goals widget.'
+		);
+	}
+
+	public function test_permission_callback__refuses_a_subscriber() {
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
+
+		$this->grant_editors_view_only_dashboard_access();
+
+		$this->assertFalse(
+			$this->datapoint->permission_callback(),
+			'The datapoint should not let a subscriber remove a Site Goals widget.'
 		);
 	}
 
@@ -191,5 +222,25 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 		$settings = array( 'activeWidgets' => array( 'lead' ) );
 
 		$this->assertSame( $settings, $this->datapoint->parse_response( $settings, $this->build_request( 'ecommerce' ) ), 'The `parse_response` method should return the response unchanged.' );
+	}
+
+	/**
+	 * Shares Analytics with editors on a site that has finished the Site Kit setup.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function grant_editors_view_only_dashboard_access() {
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->fake_proxy_site_connection();
+
+		$module_sharing_settings = new Module_Sharing_Settings( new Options( $this->context ) );
+		$module_sharing_settings->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
 	}
 }

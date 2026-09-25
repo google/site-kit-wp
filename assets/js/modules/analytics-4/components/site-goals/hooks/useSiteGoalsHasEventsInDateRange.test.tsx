@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -31,16 +36,21 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { renderHook } from '@tests/js/test-utils';
+import { freezeFetch, renderHook } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { useSiteGoalsHasEventsInDateRange } from './useSiteGoalsHasEventsInDateRange';
 
 describe( 'useSiteGoalsHasEventsInDateRange', () => {
 	let registry: WPDataRegistry;
+
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -59,7 +69,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 		seedSiteGoalsEventCountReport( registry, 'ecommerce', '12' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
@@ -70,7 +83,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 		seedSiteGoalsEventCountReport( registry, 'lead', '3' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'lead' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'lead', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
@@ -81,7 +97,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
@@ -106,7 +125,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
@@ -121,7 +143,10 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
@@ -146,10 +171,56 @@ describe( 'useSiteGoalsHasEventsInDateRange', () => {
 			] );
 
 		const { result } = renderHook(
-			() => useSiteGoalsHasEventsInDateRange( 'ecommerce' ),
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
 			{ registry }
 		);
 
 		expect( result.current ).toBeNull();
+	} );
+
+	it( 'requests the report of ecommerce events when `shouldFetchReport` is `true`', async () => {
+		freezeFetch( reportEndpoint );
+
+		const { waitForRegistry } = renderHook(
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: true,
+				} ),
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 1, reportEndpoint );
+	} );
+
+	it( 'returns `undefined` and requests no report when `shouldFetchReport` is `false`', async () => {
+		const { result } = renderHook(
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: false,
+				} ),
+			{ registry }
+		);
+		await waitForDefaultTimeouts();
+
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		expect( result.current ).toBeUndefined();
+	} );
+
+	it( 'returns `undefined` when `shouldFetchReport` is `false` and the report of ecommerce events has already loaded', () => {
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '12' );
+
+		const { result } = renderHook(
+			() =>
+				useSiteGoalsHasEventsInDateRange( 'ecommerce', {
+					shouldFetchReport: false,
+				} ),
+			{ registry }
+		);
+
+		expect( result.current ).toBeUndefined();
 	} );
 } );

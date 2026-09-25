@@ -27,11 +27,15 @@ import { useMemo } from '@wordpress/element';
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { getDimensionFiltersForEvents } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/utils';
+import { getSiteGoalsEventCountReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/getSiteGoalsEventCountReportOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { SITE_GOALS_WIDGET_EVENTS } from '@/js/modules/analytics-4/datastore/site-goals-settings';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
+
+interface UseSiteGoalsHasEventsInDateRangeOptions {
+	/** Whether to request the event report. */
+	shouldFetchReport: boolean;
+}
 
 /**
  * Checks whether the selected dashboard date range has any conversion event
@@ -42,11 +46,14 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
  *
  * @since n.e.x.t
  *
- * @param {GoalType} goalType Goal type whose conversion events to count.
- * @return {(boolean|null|undefined)} `true` when the selected date range has at least one event, and `false` when it has none. `null` when the report fails, and `undefined` while it loads.
+ * @param {GoalType} goalType                  The goal type whose conversion events the hook counts.
+ * @param {Object}   options                   The hook options.
+ * @param {boolean}  options.shouldFetchReport Whether to request the event report.
+ * @return {(boolean|null|undefined)} `true` when the selected date range has at least one event, and `false` when it has none. `null` when the report fails, and `undefined` while it loads or while `shouldFetchReport` is `false`.
  */
 export function useSiteGoalsHasEventsInDateRange(
-	goalType: GoalType
+	goalType: GoalType,
+	{ shouldFetchReport }: UseSiteGoalsHasEventsInDateRangeOptions
 ): boolean | null | undefined {
 	const { startDate, endDate } = useSelect(
 		( select: Select ) =>
@@ -55,22 +62,20 @@ export function useSiteGoalsHasEventsInDateRange(
 	) as { startDate: string; endDate: string };
 
 	const reportOptions: ReportOptions = useMemo(
-		() => ( {
-			startDate,
-			endDate,
-			metrics: [ { name: 'eventCount' } ],
-			dimensionFilters: getDimensionFiltersForEvents(
-				SITE_GOALS_WIDGET_EVENTS[ goalType ]
+		() =>
+			getSiteGoalsEventCountReportOptions(
+				{ startDate, endDate },
+				goalType
 			),
-			reportID: `analytics-4_site-goals_events-in-date-range_${ goalType }`,
-		} ),
 		[ endDate, goalType, startDate ]
 	);
 
 	const report = useInViewSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport( reportOptions ),
-		[ reportOptions ]
+			shouldFetchReport
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ reportOptions, shouldFetchReport ]
 	);
 
 	const isLoadingReport = useSelect(
@@ -85,7 +90,7 @@ export function useSiteGoalsHasEventsInDateRange(
 		[ report, reportOptions ]
 	);
 
-	if ( isLoadingReport ) {
+	if ( ! shouldFetchReport || isLoadingReport ) {
 		return undefined;
 	}
 

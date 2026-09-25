@@ -174,6 +174,8 @@ class Conversion_Reporting_ProviderTest extends TestCase {
 		$site_goals_settings->merge( array( 'activeWidgets' => array( 'ecommerce' ) ) );
 		$site_goals_settings->remove_widget( 'ecommerce' );
 
+		$this->assertSame( array(), $site_goals_settings->get()['activeWidgets'], 'The `remove_widget()` method should leave no active widget before the cron runs.' );
+
 		Conversion_Tracking::$providers = array(
 			FakeEcommerceEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeEcommerceEventProvider_Active::class,
 		);

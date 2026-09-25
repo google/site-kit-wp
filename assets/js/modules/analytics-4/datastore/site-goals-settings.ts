@@ -178,8 +178,8 @@ function validateSiteGoalsSettings( settings: unknown ): void {
 }
 
 /**
- * Throws an error unless the widget a removal request names is a Site Goals
- * goal type, `ecommerce` or `lead`.
+ * Throws an error unless the widget in a removal request is a Site Goals goal
+ * type, `ecommerce` or `lead`.
  *
  * @since n.e.x.t
  *
