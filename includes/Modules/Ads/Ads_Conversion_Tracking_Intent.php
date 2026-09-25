@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Util\Feature_Flags;
 /**
  * Class for the intent to set up Ads conversion tracking.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -25,14 +25,14 @@ class Ads_Conversion_Tracking_Intent extends Intent {
 	/**
 	 * Intent ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	const INTENT_ID = 'ads-conversion-tracking';
 
 	/**
 	 * Gets the intent ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return string Intent ID.
 	 */
@@ -43,7 +43,7 @@ class Ads_Conversion_Tracking_Intent extends Intent {
 	/**
 	 * Checks whether the intent can currently be handled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return bool True if the `adsConversionTrackingIntent` feature flag is enabled, false otherwise.
 	 */

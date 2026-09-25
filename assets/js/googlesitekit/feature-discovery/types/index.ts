@@ -24,13 +24,13 @@ import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-disco
 /**
  * Feature Discovery API instance type.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export interface FeatureDiscoveryAPI {
 	/**
 	 * Registers a feature in the catalog.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string}          slug     Feature's slug.
 	 * @param {FeatureSettings} settings Feature's settings.

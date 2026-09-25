@@ -28,9 +28,14 @@ import {
 	KM_ANALYTICS_SALES_RATE,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
@@ -123,48 +128,6 @@ function loadTile( slug, report ) {
 function loadTileWithReports( slug, reports ) {
 	return KEY_METRICS_PDF_TILES[ slug ].getTileData( {
 		registry: registryReturningReports( reports ),
-		dates: DATES,
-		signal: new AbortController().signal,
-	} );
-}
-
-/**
- * Builds a registry for the tiles that read a report before deciding what to
- * fetch: `resolveSelect().getReport` returns `resolvedReport` for that first
- * read, and `fetchGetReport` returns `fetchReports` in order for the rest.
- *
- * @since 1.186.0
- *
- * @param {Object}   resolvedReport The report the tile reads up front.
- * @param {Object[]} fetchReports   The report responses the tile then fetches.
- * @return {Object} A mock registry.
- */
-function registryWithResolvedReport( resolvedReport, fetchReports ) {
-	let call = 0;
-	const fetchGetReport = jest.fn( () =>
-		Promise.resolve( { response: fetchReports[ call++ ] } )
-	);
-	return {
-		resolveSelect: jest.fn( () => ( {
-			getReport: jest.fn( () => Promise.resolve( resolvedReport ) ),
-		} ) ),
-		dispatch: jest.fn( () => ( { fetchGetReport } ) ),
-	};
-}
-
-/**
- * Loads a tile that reads a report before deciding what to fetch.
- *
- * @since 1.186.0
- *
- * @param {string}   slug           The key metric slug.
- * @param {Object}   resolvedReport The report the tile reads up front.
- * @param {Object[]} fetchReports   The report responses the tile then fetches.
- * @return {Promise<Object|null>} The resolved tile data.
- */
-function loadPrecheckedTile( slug, resolvedReport, fetchReports ) {
-	return KEY_METRICS_PDF_TILES[ slug ].getTileData( {
-		registry: registryWithResolvedReport( resolvedReport, fetchReports ),
 		dates: DATES,
 		signal: new AbortController().signal,
 	} );
@@ -490,66 +453,56 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 		} );
 	} );
 
-	describe( 'Top Traffic Source Driving Purchases getTileData (purchase pre-check)', () => {
-		// The per-source report always names a top source, because
-		// `ecommercePurchases` reports a zero-valued row rather than no data.
-		const sourceReport = {
+	describe( 'Top traffic channels by total sales getTileData', () => {
+		const channelsReport = {
 			rows: [
 				{
-					dimensionValues: [
-						{ value: 'Organic Search' },
-						{ value: 'date_range_0' },
-					],
-					metricValues: [ { value: '5' } ],
+					dimensionValues: [ { value: 'Organic Search' } ],
+					metricValues: [ { value: '100' } ],
+				},
+				{
+					dimensionValues: [ { value: 'Direct' } ],
+					metricValues: [ { value: '60' } ],
 				},
 			],
 		};
+		// The ranked rows sum to 160, so dividing by this 400 rather than by
+		// that sum is what the percentages below prove.
+		const totalReport = {
+			rows: [ { metricValues: [ { value: '400' } ] } ],
+		};
 
-		it( 'drops the tile when no period has a purchase, despite a named top source', async () => {
-			const noPurchases = {
-				rows: [
-					{
-						dimensionValues: [ { value: 'date_range_0' } ],
-						metricValues: [ { value: '0' } ],
-					},
-					{
-						dimensionValues: [ { value: 'date_range_1' } ],
-						metricValues: [ { value: '0' } ],
-					},
-				],
-			};
-
-			const data = await loadPrecheckedTile(
+		it( "reports each channel's share of the site-wide total", async () => {
+			const data = await loadTileWithReports(
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-				noPurchases,
-				[ noPurchases, sourceReport ]
+				[ channelsReport, totalReport ]
+			);
+
+			expect( data.rows ).toEqual( [
+				{ primary: 'Organic Search', metric: '25%' },
+				{ primary: 'Direct', metric: '15%' },
+			] );
+		} );
+
+		it( 'falls back to the ranked rows when the total report is empty', async () => {
+			const data = await loadTileWithReports(
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+				[ channelsReport, {} ]
+			);
+
+			expect( data.rows ).toEqual( [
+				{ primary: 'Organic Search', metric: '62.5%' },
+				{ primary: 'Direct', metric: '37.5%' },
+			] );
+		} );
+
+		it( 'drops the tile when the ranked report has no rows', async () => {
+			const data = await loadTileWithReports(
+				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+				[ {}, totalReport ]
 			);
 
 			expect( data ).toBeNull();
-		} );
-
-		it( 'renders the top source when at least one period has a purchase', async () => {
-			const withPurchases = {
-				rows: [
-					{
-						dimensionValues: [ { value: 'date_range_0' } ],
-						metricValues: [ { value: '10' } ],
-					},
-					{
-						dimensionValues: [ { value: 'date_range_1' } ],
-						metricValues: [ { value: '8' } ],
-					},
-				],
-			};
-
-			const data = await loadPrecheckedTile(
-				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
-				withPurchases,
-				[ withPurchases, sourceReport ]
-			);
-
-			expect( data ).not.toBeNull();
-			expect( data.value ).toBe( 'Organic Search' );
 		} );
 	} );
 } );
@@ -708,4 +661,114 @@ describe( 'Selling products Key Metric tiles', () => {
 			).toBe( true );
 		} );
 	} );
+} );
+
+describe( 'the renamed ACR Key Metric tiles', () => {
+	// The rename changed the copy only. A user who picked one of these tiles
+	// before the rename has its slug saved in their selection, so the slug is
+	// what has to survive - the title is looked up from it.
+	const RENAMED = [
+		[
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+			'Top traffic channels by total sales',
+			'Where do most of your buyers come from?',
+		],
+		[
+			KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+			'Sales by device type',
+			'Are people buying more on mobile or desktop?',
+		],
+		[
+			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+			'Top traffic channels by Form completions',
+			'Where do most of your leads come from?',
+		],
+		[
+			KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+			'Sales by cities',
+			'Which cities bring in the most buyers?',
+		],
+		[
+			KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+			'Leads by cities',
+			'Which cities are people reaching out from?',
+		],
+		[
+			KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+			'Top pages driving leads',
+			'Which pages get people to take action?',
+		],
+	];
+
+	it.each( RENAMED )(
+		'still resolves the slug %s to "%s"',
+		( slug, title, description ) => {
+			expect( KEY_METRICS_WIDGETS[ slug ] ).toBeDefined();
+			expect( KEY_METRICS_WIDGETS[ slug ].title ).toBe( title );
+			expect( KEY_METRICS_WIDGETS[ slug ].description ).toBe(
+				description
+			);
+		}
+	);
+
+	it.each( RENAMED )(
+		'gives %s the same string in its panel description and its tooltip',
+		( slug, title, description ) => {
+			// `MetricTileWrapper` falls back to the description when a tile
+			// declares no tooltip of its own.
+			expect(
+				KEY_METRICS_WIDGETS[ slug ].infoTooltip ||
+					KEY_METRICS_WIDGETS[ slug ].description
+			).toBe( description );
+		}
+	);
+} );
+
+describe( 'the renamed ACR PDF tiles', () => {
+	const RENAMED_TABLE_TILES = [
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+		KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
+		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+		KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
+		KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	];
+
+	it.each( RENAMED_TABLE_TILES )(
+		'requests %s without the compare dates, matching its single-period dashboard tile',
+		async ( slug ) => {
+			const fetchGetReport = jest.fn( () =>
+				Promise.resolve( { response: {} } )
+			);
+			const registry = {
+				dispatch: jest.fn( () => ( { fetchGetReport } ) ),
+				resolveSelect: jest.fn( () => ( {
+					getDetectedEvents: jest.fn( () =>
+						Promise.resolve( [ 'purchase', 'submit_lead_form' ] )
+					),
+				} ) ),
+				select: jest.fn( () => ( {
+					getDetectedLeadEvents: jest.fn( () => [
+						'submit_lead_form',
+					] ),
+				} ) ),
+			};
+
+			await KEY_METRICS_PDF_TILES[ slug ].getTileData( {
+				registry,
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+
+			expect( fetchGetReport ).toHaveBeenCalled();
+
+			// Compare dates would make GA4 return duplicated previous-period
+			// rows, skewing every percentage.
+			fetchGetReport.mock.calls.forEach( ( [ options ] ) => {
+				expect( options.startDate ).toBe( DATES.startDate );
+				expect( options.endDate ).toBe( DATES.endDate );
+				expect( options.compareStartDate ).toBeUndefined();
+				expect( options.compareEndDate ).toBeUndefined();
+			} );
+		}
+	);
 } );

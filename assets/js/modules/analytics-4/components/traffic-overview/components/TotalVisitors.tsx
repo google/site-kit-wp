@@ -31,6 +31,10 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import ChangeBadge from '@/js/components/ChangeBadge';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '@/js/components/GatheringDataNotice';
+import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
@@ -48,7 +52,7 @@ import { calculateChange, numFmt } from '@/js/util';
  *
  * The API returns metric values as strings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} row A totals row.
  * @return {number} The row's visitor count, or `0` when it is missing or not a number.
@@ -60,9 +64,17 @@ function getTotalUsers( row?: ReportRow ): number {
 export interface TotalVisitorsProps {
 	/** The totals report, holding the selected range then the range before it. */
 	report?: Report;
+	/** Whether the totals report has arrived. */
+	loaded?: boolean;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-const TotalVisitors: FC< TotalVisitorsProps > = ( { report } ) => {
+const TotalVisitors: FC< TotalVisitorsProps > = ( {
+	report,
+	loaded = true,
+	gatheringData = false,
+} ) => {
 	const comparisonDays = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
 		[]
@@ -87,36 +99,45 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( { report } ) => {
 			>
 				{ __( 'Total visitors', 'google-site-kit' ) }
 			</Typography>
-			<div className="googlesitekit-traffic-overview__total-visitors-metric">
-				<div className="googlesitekit-traffic-overview__total-visitors-figure">
-					{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
-					<Typography
-						as="span"
-						type={ TYPE_DISPLAY }
-						size={ SIZE_LARGE }
-					>
-						{ numFmt( currentValue ) }
-					</Typography>
-				</div>
-				{ hasChange && (
-					<div className="googlesitekit-traffic-overview__total-visitors-change">
-						<ChangeBadge
-							previousValue={ previousValue }
-							currentValue={ currentValue }
-						/>
-						<P
-							size={ SIZE_SMALL }
-							className="googlesitekit-traffic-overview__total-visitors-comparison"
+			{ ! loaded && <PreviewBlock width="220px" height="64px" /> }
+			{ loaded && gatheringData && (
+				<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
+			) }
+			{ loaded && ! gatheringData && (
+				<div className="googlesitekit-traffic-overview__total-visitors-metric">
+					<div className="googlesitekit-traffic-overview__total-visitors-figure">
+						{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
+						<Typography
+							as="span"
+							type={ TYPE_DISPLAY }
+							size={ SIZE_LARGE }
 						>
-							{ sprintf(
-								/* translators: %d: number of days in the comparison period */
-								__( 'Vs. prev. %d days', 'google-site-kit' ),
-								comparisonDays
-							) }
-						</P>
+							{ numFmt( currentValue ) }
+						</Typography>
 					</div>
-				) }
-			</div>
+					{ hasChange && (
+						<div className="googlesitekit-traffic-overview__total-visitors-change">
+							<ChangeBadge
+								previousValue={ previousValue }
+								currentValue={ currentValue }
+							/>
+							<P
+								size={ SIZE_SMALL }
+								className="googlesitekit-traffic-overview__total-visitors-comparison"
+							>
+								{ sprintf(
+									/* translators: %d: number of days in the comparison period */
+									__(
+										'Vs. prev. %d days',
+										'google-site-kit'
+									),
+									comparisonDays
+								) }
+							</P>
+						</div>
+					) }
+				</div>
+			) }
 		</div>
 	);
 };

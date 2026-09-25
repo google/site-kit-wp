@@ -101,7 +101,7 @@ class Email_Reporting_Data_Requests {
 	/**
 	 * Site Goals site settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Site_Goals_Site_Settings
 	 */
 	private $site_goals_site_settings;
@@ -358,7 +358,7 @@ class Email_Reporting_Data_Requests {
 	 *
 	 * @since 1.168.0
 	 * @since 1.187.0 Added the detected events and every custom dimension's availability to the report options.
-	 * @since n.e.x.t Added the active Site Goals widgets to the report options.
+	 * @since 1.188.0 Added the active Site Goals widgets to the report options.
 	 *
 	 * @param object $module     Module instance.
 	 * @param array  $date_range Date range payload.

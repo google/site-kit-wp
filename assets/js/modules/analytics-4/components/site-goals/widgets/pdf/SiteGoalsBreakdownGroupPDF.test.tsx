@@ -37,7 +37,7 @@ import SiteGoalsBreakdownGroupPDF from './SiteGoalsBreakdownGroupPDF';
 /**
  * Renders the Site Goals breakdown group and reads the text it outputs.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} props The props to render the Site Goals breakdown group with.
  * @return {Array<string>} The text strings the Site Goals breakdown group renders, in order.

@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getGraphReportArgs } from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
@@ -52,9 +52,6 @@ jest.mock( '@/js/components/GoogleChart', () => {
 describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
 
-	// `getAnalytics4MockResponse` returns the same numbers for the same options,
-	// so the report for `2025-01-14` to `2025-01-16` always has 55, 14, and 3
-	// visitors.
 	const reportOptions = getGraphReportArgs( {
 		startDate: '2025-01-14',
 		endDate: '2025-01-16',
@@ -385,6 +382,96 @@ describe( 'TrafficChart', () => {
 				'Google Analytics property created on November 2, 2024.'
 			)
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'reads no day to a screen reader while the report loads', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficChart loaded={ false } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const { loaded } = await getLastChartProps();
+
+		expect( loaded ).toBe( false );
+		expect(
+			container.querySelectorAll( '.screen-reader-text' )
+		).toHaveLength( 0 );
+	} );
+
+	it( 'draws a flat line at zero while the property is gathering data, even though the report has visitors', async () => {
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		const { data, options } = await getLastChartProps();
+
+		expect( data.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 15 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
+		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
+	} );
+
+	it( 'reads no day to a screen reader while the property is gathering data', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const { gatheringData } = await getLastChartProps();
+
+		expect( gatheringData ).toBe( true );
+		expect(
+			container.querySelectorAll( '.screen-reader-text' )
+		).toHaveLength( 0 );
+	} );
+
+	it( 'sizes the placeholder to cover the chart and its legend', async () => {
+		render( <TrafficChart loaded={ false } />, { registry } );
+
+		const { height, loadingHeight } = await getLastChartProps();
+
+		expect( height ).toBe( '256px' );
+		expect( loadingHeight ).toBe( '276px' );
+	} );
+
+	it( 'shows no legend while the report loads', async () => {
+		const { queryByRole, waitForRegistry } = render(
+			<TrafficChart loaded={ false } />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( queryByRole( 'listitem' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the legend while the property is gathering data', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getByRole( 'listitem' ) ).toHaveTextContent(
+			'Last 3 days traffic'
+		);
 	} );
 
 	it( 'gives the chart no click handler', async () => {

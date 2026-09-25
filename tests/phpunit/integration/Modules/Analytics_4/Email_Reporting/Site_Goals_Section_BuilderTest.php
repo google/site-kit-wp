@@ -160,6 +160,22 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * Builds the site-wide key action report over the discovery days.
+	 *
+	 * @param array $counts Event counts, keyed by event name.
+	 * @return array Report with one row per event name.
+	 */
+	private function build_site_wide_discovery_report( array $counts ) {
+		$rows = array();
+
+		foreach ( $counts as $event_name => $count ) {
+			$rows[] = array( array( $event_name ), array( $count ) );
+		}
+
+		return $this->build_report( array( 'eventName' ), array( 'eventCount' ), $rows );
+	}
+
+	/**
 	 * Creates a published `wpforms` post, which is what `Get_Form_Metadata` reads a title
 	 * from.
 	 *
@@ -178,16 +194,19 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 	/**
 	 * Builds the payload of an online store report split by event provider.
 	 *
-	 * WooCommerce and Easy Digital Downloads each get a group of their own, and the
-	 * "(not set)" row goes into the "Other sources" group.
+	 * WooCommerce and Easy Digital Downloads each get a group of their own.
+	 * `site_goals_online_store_primary` counts 7 sales more than those two in the current
+	 * period, and 4 more in the previous one. The "Other sources" group shows those sales.
 	 *
-	 * @return array Module payload holding the key action report, the engagement report and
-	 *               the discovery report.
+	 * @return array Module payload with the key action reports, the engagement report and
+	 *               the discovery reports.
 	 */
 	private function build_online_store_by_provider_payload() {
 		$provider_dimension = 'customEvent:googlesitekit_event_provider';
 
 		return array(
+			'site_goals_online_store_primary'             => $this->build_primary_report( 'purchase', '144', '124' ),
+			'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1560' ) ),
 			'site_goals_online_store_discovery'           => $this->build_discovery_report(
 				'purchase',
 				$provider_dimension,
@@ -268,7 +287,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'text'      => 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.',
+				'text'      => 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.',
 				'link_text' => 'enable data breakdown',
 			),
 			$sections[0]['prompt'],
@@ -352,6 +371,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 
 		$sections = $this->builder->build_sections(
 			array(
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '123', '104' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1290' ) ),
 				'site_goals_online_store_primary_by_provider' => $this->build_report(
 					array( 'eventName', $provider_dimension, 'dateRange' ),
 					array( 'eventCount' ),
@@ -389,11 +410,13 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build_sections__builds_no_other_sources_group_when_the_discovery_report_names_a_plugin_for_every_sale() {
+	public function test_build_sections__builds_no_other_sources_group_when_woocommerce_sends_every_sale_the_site_counts() {
 		$provider_dimension = 'customEvent:googlesitekit_event_provider';
 
 		$sections = $this->builder->build_sections(
 			array(
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1200' ) ),
 				'site_goals_online_store_primary_by_provider' => $this->build_report(
 					array( 'eventName', $provider_dimension, 'dateRange' ),
 					array( 'eventCount' ),
@@ -417,7 +440,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$this->assertSame(
 			array( 'WooCommerce' ),
 			array_column( $sections[0]['groups'], 'label' ),
-			'build_sections() should build no "Other sources" group when the discovery report names a plugin for every sale.'
+			'build_sections() should build no "Other sources" group when WooCommerce sends every sale the site-wide reports count.'
 		);
 	}
 
@@ -599,6 +622,8 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		$sections = $this->builder->build_sections(
 			array(
 				// The report period names WooCommerce for every sale it holds.
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1260' ) ),
 				'site_goals_online_store_primary_by_provider' => $this->build_report(
 					array( 'eventName', $provider_dimension, 'dateRange' ),
 					array( 'eventCount' ),
@@ -631,6 +656,128 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			'0',
 			$sections[0]['groups'][1]['metrics'][0]['value'],
 			'build_sections() should count the report period in the "Other sources" total, which holds no sale here.'
+		);
+	}
+
+	public function test_build_sections__shows_the_other_sources_group_for_the_sales_the_provider_report_leaves_out() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				// The site-wide reports count 2 sales the provider reports leave out.
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '5', '1' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '6' ) ),
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '2' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '1' ) ),
+						array( array( 'purchase', 'easy-digital-downloads', 'date_range_0' ), array( '1' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array(
+						'woocommerce'            => '3',
+						'easy-digital-downloads' => '1',
+					)
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array(
+						'woocommerce'            => array( '2', '1' ),
+						'easy-digital-downloads' => array( '1', '0' ),
+					)
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'WooCommerce', 'Easy Digital Downloads', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should show the "Other sources" group for the sales the provider reports leave out.'
+		);
+		$this->assertSame(
+			array(
+				'label' => 'Total sales',
+				'value' => '2',
+				'trend' => null,
+			),
+			$sections[0]['groups'][2]['metrics'][0],
+			'build_sections() should show an "Other sources" total of 2, with no change badge, because the previous period counts no such sale.'
+		);
+	}
+
+	public function test_build_sections__builds_the_online_store_section_when_the_provider_report_counts_no_sale() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '5', '3' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1208' ) ),
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array()
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array( 'woocommerce' => '1200' )
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '0', '0' ) )
+				),
+			)
+		);
+
+		$this->assertCount( 1, $sections, 'build_sections() should build the online store section from the site-wide report when the provider report counts no sale.' );
+		$this->assertSame(
+			array( 'WooCommerce', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should keep the WooCommerce group the discovery report names, and add the "Other sources" group.'
+		);
+		$this->assertSame(
+			'5',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should count every sale of the report period in the "Other sources" total.'
+		);
+	}
+
+	public function test_build_sections__shows_an_other_sources_total_of_zero_when_a_plugin_counts_more_sales_than_the_site_wide_report() {
+		$provider_dimension = 'customEvent:googlesitekit_event_provider';
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '110', '100' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'purchase' => '1260' ) ),
+				'site_goals_online_store_primary_by_provider' => $this->build_report(
+					array( 'eventName', $provider_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'purchase', 'woocommerce', 'date_range_0' ), array( '116' ) ),
+						array( array( 'purchase', 'woocommerce', 'date_range_1' ), array( '100' ) ),
+					)
+				),
+				'site_goals_online_store_discovery' => $this->build_discovery_report(
+					'purchase',
+					$provider_dimension,
+					array( 'woocommerce' => '1200' )
+				),
+				'site_goals_engagement_by_provider' => $this->build_engagement_report_by_dimension(
+					$provider_dimension,
+					array( 'woocommerce' => array( '2000', '2600' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			'0',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should show an "Other sources" total of 0, never a negative number, when WooCommerce counts 116 sales and the site-wide report counts 110.'
 		);
 	}
 
@@ -712,7 +859,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 		);
 		$this->assertSame(
 			array(
-				'text'      => 'Your events data might be grouped together across forms. To see separate results by form, %s.',
+				'text'      => 'Your events data may be grouped together across forms. To see separate results by form, %s.',
 				'link_text' => 'enable data breakdown',
 			),
 			$sections[0]['prompt'],
@@ -727,7 +874,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 
 		$sections = $this->builder->build_sections(
 			array(
-				'site_goals_lead_primary_by_form' => $this->build_report(
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '146', '124' ),
+				'site_goals_lead_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'contact' => '1590' ) ),
+				'site_goals_lead_primary_by_form'     => $this->build_report(
 					array( 'eventName', $form_dimension, 'dateRange' ),
 					array( 'eventCount' ),
 					array(
@@ -739,7 +888,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', '(not set)', 'date_range_1' ), array( '4' ) ),
 					)
 				),
-				'site_goals_lead_discovery'       => $this->build_discovery_report(
+				'site_goals_lead_discovery'           => $this->build_discovery_report(
 					'contact',
 					$form_dimension,
 					array(
@@ -748,7 +897,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'(not set)'         => '90',
 					)
 				),
-				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
 					$form_dimension,
 					array(
 						$newsletter_form_id => array( '2000', '2600' ),
@@ -860,6 +1009,13 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 
 		$sections = $this->builder->build_sections(
 			array(
+				'site_goals_online_store_primary'   => $this->build_primary_report( 'purchase', '116', '100' ),
+				'site_goals_online_store_discovery_site_wide' => $this->build_site_wide_discovery_report(
+					array(
+						'purchase'    => '1200',
+						'add_to_cart' => '500',
+					)
+				),
 				'site_goals_online_store_primary_by_provider' => $this->build_report(
 					array( 'eventName', $provider_dimension, 'dateRange' ),
 					array( 'eventCount' ),
@@ -1028,7 +1184,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 
 		$sections = $this->builder->build_sections(
 			array(
-				'site_goals_lead_primary_by_form' => $this->build_report(
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '125', '104' ),
+				'site_goals_lead_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'contact' => '1290' ) ),
+				'site_goals_lead_primary_by_form'     => $this->build_report(
 					array( 'eventName', $form_dimension, 'dateRange' ),
 					array( 'eventCount' ),
 					array(
@@ -1038,7 +1196,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', '(other)', 'date_range_1' ), array( '4' ) ),
 					)
 				),
-				'site_goals_lead_discovery'       => $this->build_discovery_report(
+				'site_goals_lead_discovery'           => $this->build_discovery_report(
 					'contact',
 					$form_dimension,
 					array(
@@ -1046,7 +1204,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						'(other)'           => '90',
 					)
 				),
-				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
 					$form_dimension,
 					array( $newsletter_form_id => array( '2000', '2600' ) )
 				),
@@ -1071,7 +1229,9 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 
 		$sections = $this->builder->build_sections(
 			array(
-				'site_goals_lead_primary_by_form' => $this->build_report(
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '125', '104' ),
+				'site_goals_lead_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'contact' => '1290' ) ),
+				'site_goals_lead_primary_by_form'     => $this->build_report(
 					array( 'eventName', $form_dimension, 'dateRange' ),
 					array( 'eventCount' ),
 					array(
@@ -1081,7 +1241,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						array( array( 'contact', array(), 'date_range_1' ), array( '4' ) ),
 					)
 				),
-				'site_goals_lead_discovery'       => $this->build_discovery_report(
+				'site_goals_lead_discovery'           => $this->build_discovery_report(
 					'contact',
 					$form_dimension,
 					array(
@@ -1089,7 +1249,7 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 						''                  => '90',
 					)
 				),
-				'site_goals_engagement_by_form'   => $this->build_engagement_report_by_dimension(
+				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
 					$form_dimension,
 					array( $newsletter_form_id => array( '2000', '2600' ) )
 				),
@@ -1105,6 +1265,80 @@ class Site_Goals_Section_BuilderTest extends TestCase {
 			'9',
 			$sections[0]['groups'][1]['metrics'][0]['value'],
 			'build_sections() should count the completions of a row whose form dimension holds no value in the "Other sources" total.'
+		);
+	}
+
+	public function test_build_sections__shows_the_other_sources_group_for_the_form_completions_the_form_report_leaves_out() {
+		$form_dimension     = 'customEvent:googlesitekit_form_id';
+		$newsletter_form_id = $this->create_form( 'Newsletter signup form' );
+
+		$sections = $this->builder->build_sections(
+			array(
+				// The site-wide reports count 1 form completion the form reports leave out.
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '6', '5' ),
+				'site_goals_lead_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'contact' => '11' ) ),
+				'site_goals_lead_primary_by_form'     => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array(
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_0' ), array( '5' ) ),
+						array( array( 'contact', (string) $newsletter_form_id, 'date_range_1' ), array( '5' ) ),
+					)
+				),
+				'site_goals_lead_discovery'           => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array( $newsletter_form_id => '10' )
+				),
+				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+					$form_dimension,
+					array( $newsletter_form_id => array( '50', '50' ) )
+				),
+			)
+		);
+
+		$this->assertSame(
+			array( 'Newsletter signup form', 'Other sources' ),
+			array_column( $sections[0]['groups'], 'label' ),
+			'build_sections() should show the "Other sources" group for the form completions the form reports leave out.'
+		);
+		$this->assertSame(
+			'1',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should show an "Other sources" total of 1 for the form completion the form report leaves out.'
+		);
+	}
+
+	public function test_build_sections__builds_the_lead_generation_section_when_the_form_report_counts_no_completion() {
+		$form_dimension     = 'customEvent:googlesitekit_form_id';
+		$newsletter_form_id = $this->create_form( 'Newsletter signup form' );
+
+		$sections = $this->builder->build_sections(
+			array(
+				'site_goals_lead_primary'             => $this->build_primary_report( 'contact', '4', '0' ),
+				'site_goals_lead_discovery_site_wide' => $this->build_site_wide_discovery_report( array( 'contact' => '14' ) ),
+				'site_goals_lead_primary_by_form'     => $this->build_report(
+					array( 'eventName', $form_dimension, 'dateRange' ),
+					array( 'eventCount' ),
+					array()
+				),
+				'site_goals_lead_discovery'           => $this->build_discovery_report(
+					'contact',
+					$form_dimension,
+					array( $newsletter_form_id => '10' )
+				),
+				'site_goals_engagement_by_form'       => $this->build_engagement_report_by_dimension(
+					$form_dimension,
+					array( $newsletter_form_id => array( '0', '0' ) )
+				),
+			)
+		);
+
+		$this->assertCount( 1, $sections, 'build_sections() should build the lead generation section from the site-wide report when the form report counts no completion.' );
+		$this->assertSame(
+			'4',
+			$sections[0]['groups'][1]['metrics'][0]['value'],
+			'build_sections() should count every form completion of the report period in the "Other sources" total.'
 		);
 	}
 

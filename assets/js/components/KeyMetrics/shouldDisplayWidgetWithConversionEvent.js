@@ -30,7 +30,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.136.0
  * @since 1.137.0 Moved function to its own file.
- * @since n.e.x.t Use `isConversionEventCurrentlyActive()` so a metric stays selectable once picked or named as a business goal, even after its event stops being "detected".
+ * @since 1.188.0 Use `isConversionEventCurrentlyActive()` so a metric stays selectable once picked or named as a business goal, even after its event stops being "detected".
  *
  * @param {Object}   options        Options object.
  * @param {Function} options.select Data store select function.

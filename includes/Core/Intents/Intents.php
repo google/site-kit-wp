@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Intents;
 /**
  * Class for collecting the intents Site Kit can be asked to handle.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ class Intents {
 	/**
 	 * Registered intents keyed by intent ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var array<string, Intent>
 	 */
 	private $intents = array();
@@ -30,13 +30,13 @@ class Intents {
 	/**
 	 * Collects the intents to handle.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 */
 	public function register() {
 		/**
 		 * Fires when intents are collected.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.188.0
 		 *
 		 * @param Intents $intents Intents registry to register intents on.
 		 */
@@ -48,7 +48,7 @@ class Intents {
 	 *
 	 * The intent registered first for an ID stays; a later one with the same ID is ignored.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Intent $intent Intent to register.
 	 */
@@ -65,7 +65,7 @@ class Intents {
 	/**
 	 * Gets the intent registered for an ID, if it can currently be handled.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param string $id Intent ID.
 	 * @return Intent|null Intent instance, or null if no intent is registered for the ID or the registered one is unavailable.

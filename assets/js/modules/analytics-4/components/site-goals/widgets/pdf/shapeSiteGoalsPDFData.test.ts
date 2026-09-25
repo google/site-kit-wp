@@ -187,19 +187,16 @@ describe( 'shapeSiteGoalsPDFData', () => {
 	} );
 
 	describe( 'Other sources', () => {
-		const eventsWithUnattributed = {
-			rows: [
-				...( eventsReport.rows ?? [] ),
-				groupedRow( 'some-other-plugin', 'date_range_0', [ 7 ] ),
-				groupedRow( 'some-other-plugin', 'date_range_1', [ 3 ] ),
-				groupedRow( '(not set)', 'date_range_0', [ 2 ] ),
-			],
-		} as Report;
-
-		it( 'folds unattributed rows into a trailing total-only group', () => {
+		it( 'puts the events no group covers into a trailing total-only group', () => {
 			const groups = shapeSiteGoalsPDFData( {
-				eventsReport: eventsWithUnattributed,
+				eventsReport,
 				engagementReport,
+				aggregatedEventsReport: {
+					totals: [
+						totalsRow( 'date_range_0', [ 79 ] ),
+						totalsRow( 'date_range_1', [ 68 ] ),
+					],
+				} as Report,
 				breakdownValues,
 				labels,
 				aggregatedLabel,
@@ -209,17 +206,50 @@ describe( 'shapeSiteGoalsPDFData', () => {
 
 			expect( otherSources.id ).toBe( OTHER_SOURCES_GROUP_ID );
 			expect( otherSources.label ).toBe( 'Other sources' );
-			// 7 + 2 current, 3 + 0 previous.
 			expect( otherSources.total ).toEqual( { current: 9, previous: 3 } );
 			expect( otherSources.rate ).toBeUndefined();
 			expect( otherSources.engagementRate ).toBeUndefined();
 			expect( otherSources.sessions ).toBeUndefined();
 		} );
 
-		it( 'omits the group when every row is attributed', () => {
+		it( 'counts the sales Analytics leaves out of the grouped report', () => {
+			// The `(not set)` row reports 4 sales, and the site-wide total is 9
+			// more than the two plugin groups. Analytics left the other 5 out.
+			const groups = shapeSiteGoalsPDFData( {
+				eventsReport: {
+					rows: [
+						...( eventsReport.rows ?? [] ),
+						groupedRow( '(not set)', 'date_range_0', [ 4 ] ),
+					],
+				} as Report,
+				engagementReport,
+				aggregatedEventsReport: {
+					totals: [
+						totalsRow( 'date_range_0', [ 79 ] ),
+						totalsRow( 'date_range_1', [ 68 ] ),
+					],
+				} as Report,
+				breakdownValues,
+				labels,
+				aggregatedLabel,
+			} );
+
+			expect( groups[ groups.length - 1 ].total ).toEqual( {
+				current: 9,
+				previous: 3,
+			} );
+		} );
+
+		it( 'omits the group when the plugin groups add up to the site-wide total', () => {
 			const groups = shapeSiteGoalsPDFData( {
 				eventsReport,
 				engagementReport,
+				aggregatedEventsReport: {
+					totals: [
+						totalsRow( 'date_range_0', [ 70 ] ),
+						totalsRow( 'date_range_1', [ 65 ] ),
+					],
+				} as Report,
 				breakdownValues,
 				labels,
 				aggregatedLabel,
@@ -230,20 +260,26 @@ describe( 'shapeSiteGoalsPDFData', () => {
 			).toBe( false );
 		} );
 
-		it( 'omits the group when unattributed rows carry no events', () => {
+		it( 'shows zero rather than a negative count when the site-wide total is lower than the plugin groups', () => {
 			const groups = shapeSiteGoalsPDFData( {
-				eventsReport: {
-					rows: [
-						groupedRow( 'woocommerce', 'date_range_0', [ 5 ] ),
-						groupedRow( 'unknown', 'date_range_0', [ 0 ] ),
+				eventsReport,
+				engagementReport,
+				aggregatedEventsReport: {
+					totals: [
+						totalsRow( 'date_range_0', [ 60 ] ),
+						totalsRow( 'date_range_1', [ 68 ] ),
 					],
 				} as Report,
-				engagementReport,
-				breakdownValues: [ 'woocommerce' ],
+				breakdownValues,
+				labels,
 				aggregatedLabel,
 			} );
 
-			expect( groups ).toHaveLength( 1 );
+			expect( groups[ groups.length - 1 ] ).toEqual( {
+				id: 'other-sources',
+				label: 'Other sources',
+				total: { current: 0, previous: 3 },
+			} );
 		} );
 	} );
 

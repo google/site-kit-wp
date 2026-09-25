@@ -57,9 +57,10 @@ export interface LeadGenerationPerformancePDFData {
  *
  * The section renders one group per form, plus one more group for the
  * completions that belong to none of them. When no form has completions in the
- * date range, the section falls back to a single group for the whole site.
+ * date range, or on a property without the breakdown dimension, the section
+ * falls back to a single group for the whole site.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}      params          Lead generation performance PDF loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -85,28 +86,31 @@ export default async function getLeadGenerationPerformancePDFData( {
 	const leadEvents: string[] =
 		registry.select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents() || [];
 
-	const groupedReportOptions = getLeadGroupedReportOptions(
-		dates,
-		leadEvents
-	);
+	const breakdownDimension =
+		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ GOAL_TYPES.LEAD ];
+
+	const hasBreakdownDimension =
+		registry
+			.select( MODULES_ANALYTICS_4 )
+			.hasCustomDimensions( breakdownDimension ) === true;
+
+	const groupedReportOptions = hasBreakdownDimension
+		? getLeadGroupedReportOptions( dates, leadEvents )
+		: null;
 	const aggregatedReportOptions = getLeadAggregatedReportOptions(
 		dates,
 		leadEvents
 	);
 
-	if ( ! groupedReportOptions || ! aggregatedReportOptions ) {
+	if ( ! aggregatedReportOptions ) {
 		return { data: null };
 	}
 
-	const breakdownValues: string[] =
-		( await registry
-			.resolveSelect( MODULES_ANALYTICS_4 )
-			.getBreakdownValues(
-				SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[
-					GOAL_TYPES.LEAD
-				],
-				[]
-			) ) || [];
+	const breakdownValues: string[] = hasBreakdownDimension
+		? ( await registry
+				.resolveSelect( MODULES_ANALYTICS_4 )
+				.getBreakdownValues( breakdownDimension, [] ) ) || []
+		: [];
 
 	if ( signal.aborted ) {
 		return { data: null };

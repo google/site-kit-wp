@@ -33,13 +33,6 @@ import renderGoogleChartToDataURI, {
 	getVisualization,
 } from '@/js/components/pdf-export/render-google-chart-to-data-uri';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	Report,
-	ReportOptions,
-} from '@/js/modules/analytics-4/datastore/types';
-import { extractAnalyticsDataForPieChart } from '@/js/modules/analytics-4/utils/chart';
-import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -47,7 +40,14 @@ import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-} from './reportOptions';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	Report,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
+import { extractAnalyticsDataForPieChart } from '@/js/modules/analytics-4/utils/chart';
+import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
 
 /**
  * The chart draws at 506 by 133, and the tile displays the image in a

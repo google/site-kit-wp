@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Core\Intents;
 /**
  * Base class for an intent that an external Google surface can ask Site Kit to handle.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -22,7 +22,7 @@ abstract class Intent {
 	/**
 	 * Gets the intent ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return string Intent ID.
 	 */
@@ -33,7 +33,7 @@ abstract class Intent {
 	 *
 	 * Subclasses override this when the intent is only handled under some condition.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return bool True if the intent can be handled, false otherwise.
 	 */

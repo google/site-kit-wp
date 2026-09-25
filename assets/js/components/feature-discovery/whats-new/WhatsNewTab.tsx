@@ -1,5 +1,5 @@
 /**
- * WhatsNewTab placeholder component.
+ * WhatsNewTab component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,8 +21,73 @@
  */
 import { FC } from 'react';
 
-const WhatsNewTab: FC = () => (
-	<p>Feature Discovery Hub tab panel placeholder: What’s new?</p>
-);
+/**
+ * WordPress dependencies
+ */
+import { useEffect, useState } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+
+const WhatsNewTab: FC = () => {
+	// The list is held in state so that marking its features seen, which
+	// changes how they sort, doesn't reorder the list under the user.
+	const [ features, setFeatures ] = useState< Feature[] | undefined >();
+
+	const whatsNewFeatures = useSelect(
+		( select: Select ): Feature[] | undefined =>
+			select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures(),
+		[]
+	);
+
+	const { markFeaturesSeen } = useDispatch( CORE_FEATURE_DISCOVERY );
+
+	useEffect( () => {
+		if ( features !== undefined || whatsNewFeatures === undefined ) {
+			return;
+		}
+
+		setFeatures( [ ...whatsNewFeatures ] );
+
+		if ( whatsNewFeatures.length > 0 ) {
+			markFeaturesSeen(
+				whatsNewFeatures.map( ( feature ) => feature.slug )
+			);
+		}
+	}, [ features, markFeaturesSeen, whatsNewFeatures ] );
+
+	// Nothing is rendered until the list has resolved, so that the empty state
+	// doesn't show in place of features that are still loading.
+	if ( features === undefined ) {
+		return <div className="googlesitekit-whats-new" />;
+	}
+
+	return (
+		<div className="googlesitekit-whats-new">
+			{ features.length === 0 ? (
+				// TODO: #13327 -- Replace this placeholder with the empty
+				// tab's icon, copy and CTA.
+				<p className="googlesitekit-whats-new__empty-state">
+					Feature Discovery Hub tab panel placeholder: nothing new to
+					show.
+				</p>
+			) : (
+				features.map( ( feature ) => (
+					<FeatureListItem
+						key={ feature.slug }
+						slug={ feature.slug }
+						isDismissible
+						hideNewBadge
+					/>
+				) )
+			) }
+		</div>
+	);
+};
 
 export default WhatsNewTab;

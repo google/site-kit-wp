@@ -22,7 +22,7 @@ use Google\Site_Kit\Modules\Analytics_4;
  * and counts them over the report period.
  *
  * @since 1.187.0
- * @since n.e.x.t Named the groups from the discovery report.
+ * @since 1.188.0 Named the groups from the discovery report.
  * @access private
  * @ignore
  */
@@ -157,15 +157,18 @@ class Site_Goals_Section_Builder {
 	private function build_online_store_section( array $module_payload ) {
 		$is_split_by_provider = ! empty( $module_payload[ Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ] );
 
-		$primary_report = $is_split_by_provider
-			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY )
-			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY );
+		$site_wide_rows = $this->report_processor->extract_report_rows(
+			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_PRIMARY_KEY )
+		);
 
-		$primary_rows  = $this->report_processor->extract_report_rows( $primary_report );
-		$primary_event = $this->find_primary_event( $primary_rows );
+		$primary_rows = $is_split_by_provider
+			? $this->report_processor->extract_report_rows( $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_PRIMARY_BY_PROVIDER_KEY ) )
+			: $site_wide_rows;
 
-		// Both tile labels depend on the event the report counted. A report that names
-		// no event gets no section.
+		// Both tile labels name the event the report counted. Analytics can leave every
+		// key action out of the split report, and the site-wide rows still give the name.
+		$primary_event = $this->find_primary_event( array_merge( $primary_rows, $site_wide_rows ) );
+
 		if ( '' === $primary_event ) {
 			return array();
 		}
@@ -182,29 +185,42 @@ class Site_Goals_Section_Builder {
 			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_DISCOVERY_KEY )
 		);
 
+		$site_wide_discovery_rows = $this->report_processor->extract_report_rows(
+			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_ONLINE_STORE_DISCOVERY_SITE_WIDE_KEY )
+		);
+
 		$group_labels = $is_split_by_provider
 			? $this->get_provider_group_labels(
 				$this->data_processor->sum_metric_by_group( $discovery_rows, $group_dimension, 'eventCount' )
 			)
 			: self::AGGREGATED_GROUP_LABELS;
 
+		$report_period_counts = $this->data_processor->sum_metric_by_group( $primary_rows, $group_dimension, 'eventCount' );
+
+		// A plugin gets a group when it sends either store event, but the card counts one
+		// of them. These counts leave the other store event out.
+		$discovery_counts = $this->data_processor->sum_metric_by_group(
+			$this->filter_rows_by_event( $discovery_rows, $primary_event ),
+			$group_dimension,
+			'eventCount'
+		);
+
 		return $this->build_section(
 			array(
-				'section_key'         => self::ONLINE_STORE_SECTION_KEY,
-				'counts'              => $this->data_processor->sum_metric_by_group( $primary_rows, $group_dimension, 'eventCount' ),
-				'sessions'            => $this->sum_sessions( $engagement_report, $group_dimension ),
-				'group_labels'        => $group_labels,
-				// The group labels count both store events, but this total counts only
-				// the one named by the card.
-				'shows_other_sources' => $is_split_by_provider && $this->has_other_sources(
-					$this->filter_rows_by_event( $discovery_rows, $primary_event ),
-					$group_dimension,
+				'section_key'          => self::ONLINE_STORE_SECTION_KEY,
+				'counts'               => $report_period_counts,
+				'sessions'             => $this->sum_sessions( $engagement_report, $group_dimension ),
+				'group_labels'         => $group_labels,
+				'shows_other_sources'  => $is_split_by_provider && $this->has_other_sources(
+					$this->filter_rows_by_event( $site_wide_discovery_rows, $primary_event ),
+					$discovery_counts,
 					array_keys( $group_labels )
 				),
-				'metric_labels'       => $this->get_online_store_metric_labels( $primary_event ),
-				'prompt'              => $is_split_by_provider ? array() : $this->build_breakdown_prompt(
+				'other_sources_counts' => $this->count_other_sources( $site_wide_rows, $report_period_counts, array_keys( $group_labels ) ),
+				'metric_labels'        => $this->get_online_store_metric_labels( $primary_event ),
+				'prompt'               => $is_split_by_provider ? array() : $this->build_breakdown_prompt(
 					/* translators: %s: link text, "enable data breakdown". */
-					__( 'Your events data might be grouped together across plugins. To see separate results by plugin, %s.', 'google-site-kit' )
+					__( 'Your events data may be grouped together across plugins. To see separate results by plugin, %s.', 'google-site-kit' )
 				),
 			)
 		);
@@ -221,15 +237,17 @@ class Site_Goals_Section_Builder {
 	private function build_lead_generation_section( array $module_payload ) {
 		$is_split_by_form = ! empty( $module_payload[ Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ] );
 
-		$primary_report = $is_split_by_form
-			? $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY )
-			: $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_KEY );
+		$site_wide_rows = $this->report_processor->extract_report_rows(
+			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_KEY )
+		);
 
-		$primary_rows = $this->report_processor->extract_report_rows( $primary_report );
+		$primary_rows = $is_split_by_form
+			? $this->report_processor->extract_report_rows( $this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_PRIMARY_BY_FORM_KEY ) )
+			: $site_wide_rows;
 
-		// A report that holds no row gets no section, the same as in
-		// build_online_store_section().
-		if ( empty( $primary_rows ) ) {
+		// Analytics can leave every form completion out of the split report, so one row in
+		// either report is enough for a section.
+		if ( empty( $primary_rows ) && empty( $site_wide_rows ) ) {
 			return array();
 		}
 
@@ -245,30 +263,37 @@ class Site_Goals_Section_Builder {
 			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_DISCOVERY_KEY )
 		);
 
+		$site_wide_discovery_rows = $this->report_processor->extract_report_rows(
+			$this->read_report( $module_payload, Report_Request_Assembler::SITE_GOALS_LEAD_DISCOVERY_SITE_WIDE_KEY )
+		);
+
+		$discovery_counts = $this->data_processor->sum_metric_by_group( $discovery_rows, $group_dimension, 'eventCount' );
+
 		$group_labels = $is_split_by_form
-			? $this->get_form_group_labels(
-				$this->data_processor->sum_metric_by_group( $discovery_rows, $group_dimension, 'eventCount' )
-			)
+			? $this->get_form_group_labels( $discovery_counts )
 			: self::AGGREGATED_GROUP_LABELS;
+
+		$report_period_counts = $this->data_processor->sum_metric_by_group( $primary_rows, $group_dimension, 'eventCount' );
 
 		return $this->build_section(
 			array(
-				'section_key'         => self::LEAD_GENERATION_SECTION_KEY,
-				'counts'              => $this->data_processor->sum_metric_by_group( $primary_rows, $group_dimension, 'eventCount' ),
-				'sessions'            => $this->sum_sessions( $engagement_report, $group_dimension ),
-				'group_labels'        => $group_labels,
-				'shows_other_sources' => $is_split_by_form && $this->has_other_sources(
-					$discovery_rows,
-					$group_dimension,
+				'section_key'          => self::LEAD_GENERATION_SECTION_KEY,
+				'counts'               => $report_period_counts,
+				'sessions'             => $this->sum_sessions( $engagement_report, $group_dimension ),
+				'group_labels'         => $group_labels,
+				'shows_other_sources'  => $is_split_by_form && $this->has_other_sources(
+					$site_wide_discovery_rows,
+					$discovery_counts,
 					array_keys( $group_labels )
 				),
-				'metric_labels'       => array(
+				'other_sources_counts' => $this->count_other_sources( $site_wide_rows, $report_period_counts, array_keys( $group_labels ) ),
+				'metric_labels'        => array(
 					'rate'  => __( 'Form completion rate', 'google-site-kit' ),
 					'total' => __( 'Total form completions', 'google-site-kit' ),
 				),
-				'prompt'              => $is_split_by_form ? array() : $this->build_breakdown_prompt(
+				'prompt'               => $is_split_by_form ? array() : $this->build_breakdown_prompt(
 					/* translators: %s: link text, "enable data breakdown". */
-					__( 'Your events data might be grouped together across forms. To see separate results by form, %s.', 'google-site-kit' )
+					__( 'Your events data may be grouped together across forms. To see separate results by form, %s.', 'google-site-kit' )
 				),
 			)
 		);
@@ -278,19 +303,21 @@ class Site_Goals_Section_Builder {
 	 * Builds one section payload from the counts each group holds.
 	 *
 	 * @since 1.187.0
+	 * @since 1.188.0 Added the "Other sources" counts to the section input.
 	 *
 	 * @param array $section_input {
 	 *     What the section is built from.
 	 *
-	 *     @type string $section_key         Section key the payload sits under.
-	 *     @type array  $counts              Key action counts, by group name and date range key.
-	 *     @type array  $sessions            Session counts, by group name and date range key.
-	 *     @type array  $group_labels        Map of group name to its label, in the order the
-	 *                                       section shows the groups.
-	 *     @type bool   $shows_other_sources Whether the section shows an "Other sources" group.
-	 *     @type array  $metric_labels       Tile labels, holding `rate` and `total`.
-	 *     @type array  $prompt              Prompt asking the reader to turn the data breakdown
-	 *                                       on. Empty when the section already splits its results.
+	 *     @type string $section_key          Section key the payload sits under.
+	 *     @type array  $counts               Key action counts, by group name and date range key.
+	 *     @type array  $sessions             Session counts, by group name and date range key.
+	 *     @type array  $group_labels         Map of group name to its label, in the order the
+	 *                                        section shows the groups.
+	 *     @type bool   $shows_other_sources  Whether the section shows an "Other sources" group.
+	 *     @type array  $other_sources_counts Key action counts of the "Other sources" group, by date range key.
+	 *     @type array  $metric_labels        Tile labels, holding `rate` and `total`.
+	 *     @type array  $prompt               Prompt asking the reader to turn the data breakdown
+	 *                                        on. Empty when the section already splits its results.
 	 * }
 	 * @return array Section payload.
 	 */
@@ -308,7 +335,7 @@ class Site_Goals_Section_Builder {
 
 		if ( $section_input['shows_other_sources'] ) {
 			$groups[] = $this->build_other_sources_group(
-				$this->sum_other_sources_counts( $section_input['counts'], array_keys( $section_input['group_labels'] ) ),
+				$section_input['other_sources_counts'],
 				$section_input['metric_labels']['total']
 			);
 		}
@@ -437,25 +464,31 @@ class Site_Goals_Section_Builder {
 	}
 
 	/**
-	 * Adds up the counts of every group name the section shows no group for.
+	 * Counts the key actions that belong to no group the section shows.
 	 *
-	 * @since 1.187.0
+	 * Analytics leaves some key actions out of a report split by a custom dimension, so this
+	 * subtracts the group counts from the site-wide count. The dashboard's "Other sources"
+	 * tab subtracts the same way.
 	 *
-	 * @param array $counts      Key action counts, by group name and date range key.
-	 * @param array $group_names Group names the section shows a group for.
-	 * @return array Summed counts, by date range key.
+	 * @since 1.188.0
+	 *
+	 * @param array $site_wide_rows Rows of the site-wide key action report.
+	 * @param array $group_counts   Key action counts, by group name and date range key.
+	 * @param array $group_names    Group names the section shows a group for.
+	 * @return array Counts, by date range key. A count never falls below zero.
 	 */
-	private function sum_other_sources_counts( array $counts, array $group_names ) {
-		$other_sources = array();
+	private function count_other_sources( array $site_wide_rows, array $group_counts, array $group_names ) {
+		$site_wide_counts = $this->data_processor->sum_metric_by_group( $site_wide_rows, '', 'eventCount' );
+		$other_sources    = array();
 
-		foreach ( $counts as $group_name => $totals ) {
-			if ( in_array( $group_name, $group_names, true ) ) {
-				continue;
+		foreach ( $site_wide_counts[''] ?? array() as $date_range_key => $site_wide_count ) {
+			$group_count = 0.0;
+
+			foreach ( $group_names as $group_name ) {
+				$group_count += $group_counts[ $group_name ][ $date_range_key ] ?? 0.0;
 			}
 
-			foreach ( $totals as $date_range_key => $total ) {
-				$other_sources[ $date_range_key ] = ( $other_sources[ $date_range_key ] ?? 0.0 ) + $total;
-			}
+			$other_sources[ $date_range_key ] = max( 0.0, $site_wide_count - $group_count );
 		}
 
 		return $other_sources;
@@ -464,39 +497,28 @@ class Site_Goals_Section_Builder {
 	/**
 	 * Whether the section shows an "Other sources" group.
 	 *
-	 * The discovery report holds a row per dimension value, so a row outside the named
-	 * groups settles this, `UNSET_DIMENSION_VALUE` and `OTHER_DIMENSION_VALUE` included.
-	 * The dashboard reaches the same answer by subtracting one report from another.
+	 * The discovery days decide this group, the same way they decide the named groups.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
-	 * @param array  $discovery_rows  Rows of the discovery report.
-	 * @param string $group_dimension Dimension whose value names the group.
-	 * @param array  $group_names     Group names the section shows a group for.
-	 * @return bool True when a group outside those names counted an event, false otherwise.
+	 * @param array $site_wide_discovery_rows Rows of the site-wide key action report over the
+	 *                                        discovery days.
+	 * @param array $discovery_counts         Key action counts over the discovery days, by group
+	 *                                        name and date range key.
+	 * @param array $group_names              Group names the section shows a group for.
+	 * @return bool True when the discovery report counts a key action no group covers, false otherwise.
 	 */
-	private function has_other_sources( array $discovery_rows, $group_dimension, array $group_names ) {
-		// A form ID arrives as an integer group name, so matching it against the
-		// report's string would always fail.
-		$group_names = array_map( 'strval', $group_names );
+	private function has_other_sources( array $site_wide_discovery_rows, array $discovery_counts, array $group_names ) {
+		$other_sources = $this->count_other_sources( $site_wide_discovery_rows, $discovery_counts, $group_names );
 
-		foreach ( $discovery_rows as $row ) {
-			if ( in_array( $row['dimensions'][ $group_dimension ] ?? '', $group_names, true ) ) {
-				continue;
-			}
-
-			if ( (float) ( $row['metrics']['eventCount'] ?? 0 ) > 0.0 ) {
-				return true;
-			}
-		}
-
-		return false;
+		// The discovery report covers one date range, so every count sits under `date_range_0`.
+		return ( $other_sources['date_range_0'] ?? 0.0 ) > 0.0;
 	}
 
 	/**
 	 * Keeps the rows of one event name.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array  $rows       Report rows.
 	 * @param string $event_name Event name to keep.

@@ -35,7 +35,7 @@ interface TransportProperties {
  * A web link navigates away, so its event has to survive the page unloading. An
  * app-scheme link hands off to another application and leaves the page in place.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {URL} url Parsed link address.
  * @return {Object} Transport properties to spread into the event payload.
@@ -56,7 +56,7 @@ function getTransportProperties( url: URL ): TransportProperties {
  * Listening on the document also covers links added after the page loads, such
  * as a floating chat button.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @return {void}
  */

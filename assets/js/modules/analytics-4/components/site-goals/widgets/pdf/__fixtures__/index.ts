@@ -68,8 +68,10 @@ export const ONLINE_STORE_PDF_REPORT_FIXTURES: SiteGoalsPDFReportFixtures = {
 			),
 		],
 	},
+	// The four `groupedEventsReport` rows add up to these totals, so a change to
+	// one row changes these numbers too.
 	aggregatedEventsReport: {
-		totals: buildAggregatedTotalsRows( [ '112' ], [ '105' ] ),
+		totals: buildAggregatedTotalsRows( [ '121' ], [ '111' ] ),
 	},
 	aggregatedEngagementReport: {
 		totals: buildAggregatedTotalsRows(

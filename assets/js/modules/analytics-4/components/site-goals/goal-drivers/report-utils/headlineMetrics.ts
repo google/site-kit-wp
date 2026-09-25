@@ -29,7 +29,7 @@ import { HeadlineMetricReportDates } from './types';
  * report is goal-type agnostic like the goal driver builders, so the sibling
  * lead-generation Key Metric tiles can reuse it with a lead event.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} dates             The date range, including the compare dates.
  * @param {string} [primaryEvent]    The primary conversion event name.
@@ -63,7 +63,7 @@ export function buildPrimaryEventReportOptions(
  * Lifted from `OnlineStorePerformanceWidget`'s `getWidgetReportOptions` and
  * `EngagementRateTile`, which request the same shape.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} dates             The date range, including the compare dates.
  * @param {Object} [breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.

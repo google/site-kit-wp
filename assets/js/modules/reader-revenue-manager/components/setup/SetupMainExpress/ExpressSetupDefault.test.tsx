@@ -45,8 +45,7 @@ const STEP_CONTENT = {
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
-	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
-		'RRM express setup placeholder: setup complete step.',
+	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: 'Reader Revenue Manager is set up',
 };
 
 describe( 'ExpressSetupDefault', () => {

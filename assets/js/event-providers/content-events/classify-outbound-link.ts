@@ -24,14 +24,14 @@
  * rather than the attribute, so one link written `rel="nofollow sponsored"` and
  * another written `rel="sponsored,nofollow"` report the same value.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const OUTBOUND_REL_QUALIFICATIONS = [ 'sponsored', 'ugc', 'nofollow' ];
 
 /**
  * Classifies a link as a qualified outbound link, or as none of them.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {HTMLAnchorElement} anchor Anchor that was clicked.
  * @param {URL}               url    Parsed link address.

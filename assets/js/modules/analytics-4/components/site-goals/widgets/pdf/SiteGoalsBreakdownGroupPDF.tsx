@@ -104,7 +104,7 @@ function getChange( metric: SiteGoalsPDFMetric | undefined ) {
  * `Tile`. A rate that rose from zero takes the green background, even though
  * the tile shows no change badge.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {(Object|undefined)} rate The Key action rate for the current and the previous period, or `undefined` when the tile has none.
  * @return {(string|undefined)} The background color behind the rate tile, or `undefined` when the rate is zero in both periods.
@@ -127,7 +127,7 @@ function getRateTileBackgroundColor(
  * `PDFMetricTile` renders its caption whenever `changeLabel` is set, and its
  * badge only when there is a change.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {(Object|undefined)} metric          The Site Goals PDF metric to compare, or `undefined` when the tile has none.
  * @param {(string|undefined)} comparisonLabel The caption under the badge, such as "Vs. prev. 28 days".

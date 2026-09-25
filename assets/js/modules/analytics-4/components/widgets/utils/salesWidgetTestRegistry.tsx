@@ -57,7 +57,7 @@ type WidgetProps = ReturnType< typeof getWidgetComponentProps >;
  * Shared setup for the "Selling products" Key Metrics widget tests
  * (SalesRateWidget, TotalSalesWidget, TopPagesDrivingSalesWidget, etc).
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} registry Data registry to configure.
  * @return {void}
@@ -85,7 +85,7 @@ export function provideSalesWidgetTestRegistry(
  * an error response exercises each tile's error UI the same way, no matter
  * which specific report(s) the tile itself requests.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  */
 export const SALES_WIDGET_REPORT_ENDPOINT = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/report'
@@ -94,7 +94,7 @@ export const SALES_WIDGET_REPORT_ENDPOINT = new RegExp(
 /**
  * Registers the shared "generic report error" test for a Selling products widget.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function}      getRegistry Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component   The widget component under test.
@@ -142,7 +142,7 @@ export function testGenericReportError(
  * Only the `MetricTileTable`-based tiles use this - the `MetricTileNumeric`
  * ones don't have a dedicated insufficient-permissions variant.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function}      getRegistry Returns the current test's registry (called lazily, after `beforeEach` has run).
  * @param {ComponentType} Component   The widget component under test.

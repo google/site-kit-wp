@@ -149,7 +149,7 @@ class Plain_Text_Formatter {
 	 * Formats a section based on its template type.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Added the Site Goals sections.
+	 * @since 1.188.0 Added the Site Goals sections.
 	 *
 	 * @param array $section Section configuration including title, section_template, section_parts.
 	 * @return string Formatted section text.
@@ -446,7 +446,7 @@ class Plain_Text_Formatter {
 	/**
 	 * Formats the Site Goals section, which groups its metrics by plugin or by form.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param array $section Section configuration.
 	 * @return string Formatted section text.

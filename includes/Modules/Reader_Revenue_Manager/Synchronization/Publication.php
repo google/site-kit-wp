@@ -12,12 +12,12 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
 
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication as WCP_Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication as WCP_Publication;
 
 /**
  * Class for synchronizing publication data with Reader Revenue Manager settings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  * @access private
  * @ignore
  */
@@ -31,7 +31,7 @@ class Publication {
 	/**
 	 * Reader Revenue Manager settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -39,7 +39,7 @@ class Publication {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Settings $settings Reader Revenue Manager settings.
 	 */
@@ -50,7 +50,7 @@ class Publication {
 	/**
 	 * Synchronizes the connected publication with the module settings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param WCP_Publication $publication WCP Publication object.
 	 * @return void No return value.
@@ -97,7 +97,7 @@ class Publication {
 	/**
 	 * Reschedules publication synchronization to run in one hour.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @return void No return value.
 	 */
@@ -117,7 +117,7 @@ class Publication {
 	/**
 	 * Returns the payment option for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param WCP_Publication $publication Publication object.
 	 * @return string Payment option for settings.
@@ -135,7 +135,7 @@ class Publication {
 	/**
 	 * Returns the product IDs for the given publication.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param WCP_Publication $publication Publication object.
 	 * @return array Product IDs.

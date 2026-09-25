@@ -35,7 +35,7 @@ interface TotalVisitorsStoryProps {
  *
  * The values are strings, the way the API returns them.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {number} currentValue  Visitors over the selected range.
  * @param {number} previousValue Visitors over the range before it.

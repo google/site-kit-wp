@@ -17,7 +17,7 @@ use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Setting_Exception;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication as Publication_Synchronization;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication;
 
 /**
  * Class for the publication retrieval datapoint.
@@ -39,7 +39,7 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Synchronization instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 * @var Publication_Synchronization
 	 */
 	private $synchronization;

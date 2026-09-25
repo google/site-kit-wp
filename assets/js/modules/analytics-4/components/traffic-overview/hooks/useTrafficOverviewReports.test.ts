@@ -58,7 +58,7 @@ describe( 'useTrafficOverviewReports', () => {
 	 * Builds the five argument sets the hook passes to `getReport`, in the order
 	 * totals, graph, channels, locations, and devices.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {string} [url] Optional. The entity URL to add to every argument set.
 	 * @return {Object[]} The five expected argument sets.
@@ -116,7 +116,7 @@ describe( 'useTrafficOverviewReports', () => {
 	/**
 	 * Adds a mock report to the store for each argument set it receives.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object[]} expectedArgs The argument sets to add a report under.
 	 * @return {void}
@@ -130,7 +130,7 @@ describe( 'useTrafficOverviewReports', () => {
 	/**
 	 * Gets the argument sets whose `getReport` resolution has finished.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param {Object[]} expectedArgs The argument sets to check.
 	 * @return {Object[]} The argument sets the hook has finished resolving.
@@ -263,7 +263,7 @@ describe( 'useTrafficOverviewReports', () => {
 		expect( result.current.loaded ).toBe( false );
 	} );
 
-	it( 'sets `loaded` to `true` and leaves `error` undefined after all five reports have finished', async () => {
+	it( 'sets `loaded` to `true` and returns no errors after all five reports have finished', async () => {
 		provideReports( getExpectedArgs() );
 
 		const { result, waitForRegistry } = renderHook(
@@ -274,7 +274,7 @@ describe( 'useTrafficOverviewReports', () => {
 		await waitForRegistry();
 
 		expect( result.current.loaded ).toBe( true );
-		expect( result.current.error ).toBeUndefined();
+		expect( result.current.errors ).toEqual( [] );
 	} );
 
 	it( 'returns the total visitors report as totalsReport and the daily visitors report as graphReport', async () => {
@@ -333,7 +333,7 @@ describe( 'useTrafficOverviewReports', () => {
 		);
 	} );
 
-	it( 'returns the channels error when the channels report and the devices report both fail', async () => {
+	it( 'returns the channels error then the devices error when both reports fail', async () => {
 		const expectedArgs = getExpectedArgs();
 		provideReports( expectedArgs );
 
@@ -366,6 +366,9 @@ describe( 'useTrafficOverviewReports', () => {
 
 		await waitForRegistry();
 
-		expect( result.current.error ).toEqual( channelsError );
+		expect( result.current.errors ).toEqual( [
+			channelsError,
+			devicesError,
+		] );
 	} );
 } );

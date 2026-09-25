@@ -75,7 +75,7 @@ type Registry = WPDataRegistry & {
 /**
  * Gets the CTA ID from a WCP CTA resource name.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param  name Optional CTA resource name.
  * @return {string|undefined} CTA ID, or undefined if none can be determined.
@@ -91,7 +91,7 @@ function getCTAID( name?: string ): string | undefined {
 /**
  * Syncs configured CTAs into settings and savedSettings.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} state Module state.
  * @param {Array}  ctas  CTAs to sync from.

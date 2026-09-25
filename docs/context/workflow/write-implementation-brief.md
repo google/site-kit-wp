@@ -36,7 +36,7 @@ asks for.
 
 **Stop and ask the user** if the acceptance criteria are missing, ambiguous, or contradict each
 other. A brief written over guessed criteria is worse than no brief. Writing the criteria is a
-separate job with its own playbook, `write-issue.md` — offer it rather than filling the gap here.
+separate job with its own playbook, `write-issue-requirements.md` — offer it rather than filling the gap here.
 
 Feature Description and Acceptance criteria sit under a "managed by moderators only" notice in
 the issue template — do not edit them. QA Brief and Changelog entry are filled in later by other
@@ -212,8 +212,10 @@ Do **not** include:
 
 - **Rationale.** No "because", no "this keeps X out of Y", no trade-off discussion, no
   restatement of a decision's benefits. The design doc and the acceptance criteria hold the
-  *why*; the brief holds the *what*. The one reason the brief does give is for a section the
-  issue template asks for that needs nothing — see the next bullet.
+  *why*; the brief holds the *what*. A reason is the exception, allowed in two places only:
+  where the brief settles a real technical choice an engineer would otherwise stop and
+  question — keep it to a clause — and for a section the issue template asks for that needs
+  nothing (see the next bullet).
 - **Work that isn't needed.** No "no migration needed", "no new settings", "no REST route" for a
   concern the issue never raised. Silence already says it. The exception is what the template
   asks for by name — automated tests, and Storybook and VRT changes: when those aren't needed,

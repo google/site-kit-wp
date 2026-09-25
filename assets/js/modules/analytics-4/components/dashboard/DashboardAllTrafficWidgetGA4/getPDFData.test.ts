@@ -32,13 +32,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	createTestRegistry,
-	provideSiteInfo,
-	waitForDefaultTimeouts,
-} from '@tests/js/utils';
-import getPDFData, { GetPDFDataParams } from './getPDFData';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -46,7 +39,14 @@ import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-} from './reportOptions';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import {
+	createTestRegistry,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
+import getPDFData, { GetPDFDataParams } from './getPDFData';
 
 jest.mock( '@/js/components/pdf-export/ensure-google-charts-loaded', () => ( {
 	__esModule: true,

@@ -37,7 +37,7 @@ export { actions, registerStore, selectors };
 /**
  * Creates a new instance of Feature Discovery.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}   registry          Datastore registry.
  * @param {Function} registry.dispatch Registry dispatch function.
@@ -50,7 +50,7 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		/**
 		 * Registers a feature in the catalog.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.188.0
 		 *
 		 * @param {string}         slug                           Feature's slug.
 		 * @param {Object}         settings                       Feature's settings.

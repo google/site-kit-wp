@@ -1018,6 +1018,90 @@ describe( 'modules/analytics-4 report', () => {
 			} );
 		} );
 
+		describe( 'getReportErrors', () => {
+			const reportOptions1 = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'sessions' ],
+			};
+
+			const reportOptions2 = {
+				startDate: '2022-11-02',
+				endDate: '2022-11-04',
+				metrics: [ 'pageViews' ],
+			};
+
+			const error1 = {
+				code: 'error_code_1',
+				message: 'Error message 1',
+				data: { status: 500 },
+			};
+
+			const error2 = {
+				code: 'error_code_2',
+				message: 'Error message 2',
+				data: { status: 400 },
+			};
+
+			it( 'should return an empty array when no report options are provided', () => {
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors();
+
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'should return an empty array when no reports have errors', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetReport( fixtures.report, {
+						options: reportOptions1,
+					} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.finishResolution( 'getReport', [ reportOptions1 ] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1 );
+
+				expect( result ).toEqual( [] );
+			} );
+
+			it( 'should return every error, in the order the report options were given', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error1, 'getReport', [
+						reportOptions1,
+					] );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( [ error1, error2 ] );
+			} );
+
+			it( 'should leave out the reports that have no error', () => {
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setErrorForSelector( error2, 'getReport', [
+						reportOptions2,
+					] );
+
+				const result = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReportErrors( reportOptions1, reportOptions2 );
+
+				expect( result ).toEqual( [ error2 ] );
+			} );
+		} );
+
 		describe( 'getFirstReportError', () => {
 			const reportOptions = {
 				startDate: '2022-11-02',

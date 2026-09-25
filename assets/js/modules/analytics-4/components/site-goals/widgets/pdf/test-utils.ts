@@ -21,6 +21,7 @@
  */
 import { Registry } from '@/js/googlesitekit/data/types';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
+import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
@@ -54,7 +55,7 @@ export interface SiteGoalsPDFReportFixtures {
 /**
  * Builds the two rows one dimension value adds to a grouped report.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {string}        dimensionValue       The dimension value the rows belong to.
  * @param {Array<string>} currentMetricValues  The metric values for the current period.
@@ -78,7 +79,7 @@ export function buildBreakdownReportRows(
 /**
  * Builds the two rows of metric value totals an aggregated report uses.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Array<string>} currentMetricValues  The metric values for the current period.
  * @param {Array<string>} previousMetricValues The metric values for the previous period.
@@ -105,7 +106,7 @@ export function buildAggregatedTotalsRows(
  * cannot tell the reports apart by name. It checks the request URL's query
  * parameters instead.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} reports The Analytics report bodies to answer with.
  * @return {void}
@@ -149,31 +150,34 @@ export function provideSiteGoalsPDFReports(
 }
 
 /**
- * Puts the detected conversion events into the Analytics 4 settings store.
+ * Puts the detected conversion events and the property's custom dimensions into
+ * the Analytics 4 settings store.
  *
  * The `MODULES_ANALYTICS_4` store keeps the first settings it receives, so each
  * test sets its own events instead of replacing a shared set.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
- * @param {Object}        registry       The WordPress data registry the test runs against.
- * @param {Array<string>} detectedEvents The detected conversion event names.
+ * @param {Object}        registry                    The WordPress data registry the test runs against.
+ * @param {Array<string>} detectedEvents              The detected conversion event names.
+ * @param {Array<string>} [availableCustomDimensions] Optional. The custom dimensions the Analytics property has.
  * @return {void}
  */
 export function provideDetectedEvents(
 	registry: Registry,
-	detectedEvents: string[]
+	detectedEvents: string[],
+	availableCustomDimensions: string[] = SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS
 ): void {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetSettings( { detectedEvents } );
+		.receiveGetSettings( { detectedEvents, availableCustomDimensions } );
 }
 
 /**
  * Runs a Site Goals PDF loader with the fixed test date range and a fresh
  * abort signal.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function} loader                    The Site Goals PDF loader to run.
  * @param {Object}   registry                  The WordPress data registry the Site Goals PDF loader runs against.

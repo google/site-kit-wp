@@ -242,7 +242,7 @@ export interface ShapeSiteGoalsPDFDataArgs {
 	 * dashboard.
 	 */
 	engagementReport?: Report;
-	/** Aggregated event report, used when there is no breakdown. */
+	/** Aggregated event report, used when there is no breakdown, and for the "Other sources" count. */
 	aggregatedEventsReport?: Report;
 	/** Aggregated engagement report, used when there is no breakdown. */
 	aggregatedEngagementReport?: Report;
@@ -261,11 +261,12 @@ export interface ShapeSiteGoalsPDFDataArgs {
  * Shapes Site Goals reports into the list of groups the PDF renders.
  *
  * Groups follow `breakdownValues` order, which is the order the dashboard tabs
- * use, so the PDF stacks them the same way the dashboard lists them. Rows whose
- * dimension value is not a supported breakdown value carry no attribution, so
- * they fold into a trailing "Other sources" group with the total only.
+ * use, so the PDF stacks them the same way the dashboard lists them. Every event
+ * no group covers goes into a trailing "Other sources" group with the total
+ * only.
  *
  * @since 1.187.0
+ * @since 1.188.0 Counted "Other sources" from the site-wide total, so it matches the dashboard.
  *
  * @param args                            Reports, breakdown values and labels.
  * @param args.eventsReport               Grouped event report.
@@ -321,22 +322,28 @@ export function shapeSiteGoalsPDFData( {
 		)
 	);
 
-	// Anything the breakdown does not recognise is unattributed, and is only
-	// ever shown as a total.
-	const unattributed = Array.from( eventRowsByValue.entries() )
-		.filter( ( [ value ] ) => ! supportedValues.includes( value ) )
-		.map( ( [ , rows ] ) => rows );
+	// Analytics leaves events out of a report grouped by a custom dimension, so
+	// we subtract the groups from the site-wide total, as
+	// `getUnattributedEventCounts` does for the dashboard.
+	const siteTotal = toMetric(
+		getTotalsPair( aggregatedEventsReport ),
+		EVENT_COUNT_INDEX
+	);
+	const groupsTotal = sumTotals(
+		supportedValues.map( ( value ) => eventRowsByValue.get( value ) ?? {} )
+	);
 
-	if ( unattributed.length ) {
-		const total = sumTotals( unattributed );
+	const otherSourcesTotal: SiteGoalsPDFMetric = {
+		current: Math.max( 0, siteTotal.current - groupsTotal.current ),
+		previous: Math.max( 0, siteTotal.previous - groupsTotal.previous ),
+	};
 
-		if ( total.current > 0 || total.previous > 0 ) {
-			groups.push( {
-				id: OTHER_SOURCES_GROUP_ID,
-				label: __( 'Other sources', 'google-site-kit' ),
-				total,
-			} );
-		}
+	if ( otherSourcesTotal.current > 0 || otherSourcesTotal.previous > 0 ) {
+		groups.push( {
+			id: OTHER_SOURCES_GROUP_ID,
+			label: __( 'Other sources', 'google-site-kit' ),
+			total: otherSourcesTotal,
+		} );
 	}
 
 	return groups;

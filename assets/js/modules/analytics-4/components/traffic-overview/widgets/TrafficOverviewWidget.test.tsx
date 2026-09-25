@@ -28,6 +28,7 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -77,6 +78,9 @@ describe( 'TrafficOverviewWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveIsGatheringData( false );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -159,6 +163,69 @@ describe( 'TrafficOverviewWidget', () => {
 				name: 'Analytics (opens in a new tab)',
 			} )
 		);
+	} );
+
+	it( 'renders the tab bar and the "Source: Analytics" footer while the five reports load', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				inView: false,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByRole( 'tab', { name: 'Traffic overview' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the tab bar and the "Source: Analytics" footer when a report fails', async () => {
+		const { startDate, endDate } = registry
+			.select( CORE_USER )
+			.getDateRangeDates();
+		const graphReportArgs = getGraphReportArgs( { startDate, endDate } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The daily visitors report failed.',
+				data: { status: 500, reason: 'backendError' },
+			},
+			'getReport',
+			[ graphReportArgs ]
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ graphReportArgs ] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByText( 'The daily visitors report failed.' )
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'tab', { name: 'Traffic overview' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
 	} );
 
 	it( 'renders nothing when Analytics is not connected', async () => {

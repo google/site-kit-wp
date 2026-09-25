@@ -412,6 +412,40 @@ class Analytics_4_Report_OptionsTest extends TestCase {
 		);
 	}
 
+	public function test_get_online_store_discovery_options__counts_the_store_events_across_the_whole_site_when_given_no_dimension() {
+		$builder = $this->create_builder_with_events( array( 'purchase' ) );
+		$options = $builder->get_online_store_discovery_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventName' ) ),
+			$options['dimensions'],
+			'get_online_store_discovery_options() should group the count by event name alone when given no dimension.'
+		);
+		$this->assertSame(
+			array( 'purchase', 'add_to_cart' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_online_store_discovery_options() should still count both store events when given no dimension.'
+		);
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_online_store_discovery_options()' );
+	}
+
+	public function test_get_lead_discovery_options__counts_every_lead_event_across_the_whole_site_when_given_no_dimension() {
+		$builder = $this->create_builder_with_events( array( 'submit_lead_form', 'purchase', 'contact' ) );
+		$options = $builder->get_lead_discovery_options();
+
+		$this->assertEquals(
+			array( array( 'name' => 'eventName' ) ),
+			$options['dimensions'],
+			'get_lead_discovery_options() should group the count by event name alone when given no dimension.'
+		);
+		$this->assertSame(
+			array( 'contact', 'submit_lead_form' ),
+			$options['dimensionFilters']['eventName']['value'],
+			'get_lead_discovery_options() should still list every detected lead event when given no dimension.'
+		);
+		$this->assert_report_covers_discovery_days( $options, '2023-10-09', '2024-01-07', 'get_lead_discovery_options()' );
+	}
+
 	public function test_get_online_store_discovery_options__names_the_groups_from_the_ninety_days_before_the_report_period_ends() {
 		$builder = $this->create_builder_with_events( array( 'purchase' ) );
 		$options = $builder->get_online_store_discovery_options( Analytics_4::CUSTOM_DIMENSION_EVENT_PROVIDER );

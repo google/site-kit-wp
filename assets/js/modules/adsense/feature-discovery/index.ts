@@ -36,7 +36,7 @@ import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.s
 /**
  * Registers AdSense module features in the Feature Discovery catalog.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {FeatureDiscoveryAPI} featureDiscoveryAPI Feature Discovery API instance.
  * @return {void}
@@ -142,7 +142,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'ad-blocker-detection', {
+	registerFeature( 'ad-blocking-recovery', {
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
 		shortDescription: __(

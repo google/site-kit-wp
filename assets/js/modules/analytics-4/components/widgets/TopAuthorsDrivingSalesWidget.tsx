@@ -63,7 +63,7 @@ interface TopAuthorsDrivingSalesWidgetProps {
  * otherwise the tile would silently start showing add-to-cart data under a
  * "sales" label.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function} select Data store 'select' function.
  * @return {Object|undefined} The report options.
@@ -82,7 +82,7 @@ function getTopAuthorsDrivingSalesReportOptions( select: Select ) {
  * The percentage shown is each author's share of every matching event
  * site-wide, not just the ranked authors above.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Function} select Data store 'select' function.
  * @return {Object|undefined} The report options.

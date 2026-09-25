@@ -31,6 +31,26 @@ class Authenticator implements Authenticator_Interface {
 	const COOKIE_REDIRECT_TO = 'googlesitekit_auth_redirect_to';
 
 	/**
+	 * Cookie name to store the nonce passed to Google Identity Services.
+	 *
+	 * The module's script generates a random value before initializing the
+	 * library, stores it here, and passes it to Google, which embeds it as the
+	 * `nonce` claim of the signed ID token it returns. Comparing the claim with
+	 * this cookie establishes that the token was issued for a sign-in this
+	 * browser started.
+	 */
+	const COOKIE_NONCE = 'googlesitekit_auth_nonce';
+
+	/**
+	 * Lifetime of the nonce cookie, in seconds.
+	 *
+	 * Long enough for a user to choose an account and complete any Google
+	 * sign-in prompts, and short enough to limit how long an unused value
+	 * remains valid.
+	 */
+	const NONCE_TTL = 900;
+
+	/**
 	 * Error codes.
 	 */
 	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
@@ -93,9 +113,17 @@ class Authenticator implements Authenticator_Interface {
 	public function authenticate_user( Input $input ) {
 		$credential = $input->filter( INPUT_POST, 'credential' );
 
+		// Read and clear the nonce before anything else, so a given value can
+		// only ever be used for one sign-in attempt.
+		$expected_nonce = $this->consume_nonce_cookie( $input );
+
 		$user    = null;
 		$payload = $this->profile_reader->get_profile_data( $credential );
 		if ( ! is_wp_error( $payload ) ) {
+			if ( ! $this->nonce_matches( $expected_nonce, $payload ) ) {
+				return $this->get_error_redirect_url( self::ERROR_INVALID_REQUEST );
+			}
+
 			$user = $this->find_user( $payload );
 			if ( null === $user ) {
 				// We haven't found the user using their Google user id and email. Thus we need to create
@@ -453,5 +481,54 @@ class Authenticator implements Authenticator_Interface {
 		}
 
 		return $cookie_redirect_to;
+	}
+
+	/**
+	 * Reads the nonce cookie and asks the browser to drop it.
+	 *
+	 * Clearing happens here rather than after a successful sign-in, so an
+	 * abandoned attempt does not leave the value sitting in the browser.
+	 *
+	 * Note this is not single-use enforcement: only the browser is asked to
+	 * forget the value, and nothing is recorded server side. The cookie also
+	 * carries no secrecy, since the same value travels in the token as a
+	 * readable claim. What the pair establishes is that the request came from
+	 * a context able to set a cookie on this site.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param Input $input Input instance.
+	 * @return string Nonce from the cookie, or an empty string when not set.
+	 */
+	protected function consume_nonce_cookie( Input $input ) {
+		$nonce = $input->filter( INPUT_COOKIE, self::COOKIE_NONCE );
+
+		if ( ! empty( $nonce ) && ! headers_sent() ) {
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.cookies_setcookie
+			setcookie( self::COOKIE_NONCE, '', time() - 3600, self::get_cookie_path(), COOKIE_DOMAIN );
+		}
+
+		return is_string( $nonce ) ? $nonce : '';
+	}
+
+	/**
+	 * Checks the nonce claim of the Google auth payload against the expected value.
+	 *
+	 * Both must be present. A token carrying no `nonce` claim was not issued
+	 * for a sign-in started here, so an absent claim is a mismatch rather than
+	 * a check which does not apply.
+	 *
+	 * @since 1.188.0.t
+	 *
+	 * @param string $expected_nonce Nonce read from the cookie.
+	 * @param array  $payload        Google auth payload.
+	 * @return bool TRUE when the nonce matches, FALSE otherwise.
+	 */
+	protected function nonce_matches( $expected_nonce, $payload ) {
+		if ( empty( $expected_nonce ) || empty( $payload['nonce'] ) ) {
+			return false;
+		}
+
+		return hash_equals( $expected_nonce, (string) $payload['nonce'] );
 	}
 }

@@ -167,6 +167,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
+						'googlesitekit-intents',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
@@ -228,7 +229,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	/**
 	 * Registers the intent to set up Ads conversion tracking.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.188.0
 	 *
 	 * @param Intents $intents Intents registry.
 	 */

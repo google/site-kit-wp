@@ -67,7 +67,7 @@ export interface UseGoalDriverReportResult {
  * dimensions gating) still have their own component, but can start from this
  * hook rather than re-deriving the same report/error/loading wiring.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object}          args                          Hook args.
  * @param {string}          args.id                       The driver's `GOAL_DRIVER_IDS` id.

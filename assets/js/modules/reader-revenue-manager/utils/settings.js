@@ -29,7 +29,7 @@ import { CTA_TYPE_LABELS } from '@/js/modules/reader-revenue-manager/constants';
 /**
  * Gets the configured CTAs as a list of CTA IDs and their display labels.
  *
- * @since n.e.x.t
+ * @since 1.188.0
  *
  * @param {Object} configuredCTAs The `configuredCTAs` setting value, keyed by CTA ID with the CTA type as the value.
  * @return {Array.<Object>} List of objects with `ctaID` and `label` properties.
