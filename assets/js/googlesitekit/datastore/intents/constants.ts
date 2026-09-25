@@ -1,5 +1,5 @@
 /**
- * Public Intents API entrypoint.
+ * `core/intents` data store: constants.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,21 +16,4 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import Data from 'googlesitekit-data';
-import { registerStore } from './googlesitekit/datastore/intents';
-import { createIntents } from './googlesitekit/intents';
-
-registerStore( Data );
-
-const Intents = createIntents();
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
-}
-
-global.googlesitekit.intents = Intents;
-
-export default Intents;
+export const CORE_INTENTS = 'core/intents';
