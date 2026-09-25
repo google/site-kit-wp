@@ -44,9 +44,11 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from './constants';
 import {
-	type CTA,
-	type CreateCTAData,
+	CTA,
+	CTA_STATES,
+	CreateCTAData,
 	getCTATypeHandler,
+	isCTAState,
 	isCTAType,
 } from './cta-types';
 import {
@@ -148,16 +150,24 @@ function validateCreateCTAParams( params: unknown ): void {
 		'data is required and must be a non-empty object.'
 	);
 
-	const { type, config, displayName } = data as Record< string, unknown >;
+	const { type, config, displayName, state } = data as Record<
+		string,
+		unknown
+	>;
 
 	invariant( isCTAType( type ), 'data.type is not supported.' );
 
-	getCTATypeHandler( type ).validateConfig( config );
+	invariant(
+		state === undefined || isCTAState( state ),
+		'data.state is not supported.'
+	);
 
 	invariant(
 		displayName === undefined || typeof displayName === 'string',
 		'data.displayName must be a string.'
 	);
+
+	getCTATypeHandler( type ).validateConfig( config );
 }
 
 const fetchGetCTAsStore = createFetchStore( {
@@ -247,6 +257,7 @@ const baseActions = {
 	 * Creates a CTA for the given publication.
 	 *
 	 * @since 1.187.0
+	 * @since n.e.x.t Added support for the CTA `state` property. Defaults to `ACTIVE`.
 	 *
 	 * @param  params                  Parameters.
 	 * @param  params.organizationID   Optional. Organization ID. Defaults to the configured setting on the server.
@@ -254,6 +265,7 @@ const baseActions = {
 	 * @param  params.data             CTA data.
 	 * @param  params.data.type        CTA type.
 	 * @param  params.data.config      Type-specific CTA configuration.
+	 * @param  params.data.state       Optional. CTA state (`ACTIVE` or `DRAFT`). Defaults to `ACTIVE`.
 	 * @param  params.data.displayName Optional. Internal display name.
 	 * @return {Object} Object with `response` and `error`.
 	 */
@@ -273,7 +285,13 @@ const baseActions = {
 			}
 
 			// @ts-expect-error createFetchStore is not properly typed yet.
-			return yield fetchCreateCTAStore.actions.fetchCreateCTA( params );
+			return yield fetchCreateCTAStore.actions.fetchCreateCTA( {
+				...params,
+				data: {
+					...params.data,
+					state: params.data.state ?? CTA_STATES.ACTIVE,
+				},
+			} );
 		}
 	),
 };
