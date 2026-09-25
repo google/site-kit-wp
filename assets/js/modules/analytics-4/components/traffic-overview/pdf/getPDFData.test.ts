@@ -357,7 +357,7 @@ describe( 'Traffic Overview getPDFData', () => {
 		).toBe( 'LineChart' );
 	} );
 
-	it( 'writes the value labels in short form, leaves room for them, and labels every day', async () => {
+	it( 'writes the value labels in short form, makes their space 45 pixels wide, and labels every day of a 7-day range', async () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport(

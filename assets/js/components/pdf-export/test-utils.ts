@@ -213,8 +213,8 @@ export function renderPDFChildStyles(
  * half the font size wide, and the Google Charts `DateFormat` and
  * `NumberFormat`, which write English labels, such as `Sep 23` and `58K`.
  *
- * Call it before each test, and add its result to the `google.visualization`
- * mock.
+ * Call `mockChartAxisLabels()` before each test, and add its result to the
+ * `google.visualization` mock.
  *
  * @since n.e.x.t
  *

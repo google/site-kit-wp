@@ -62,10 +62,12 @@ export interface GoogleVisualizationDataTable {
 }
 
 export interface GoogleVisualizationFormatter {
+	/** Returns the label for a date or a number, in the formatter's pattern, such as `Sep 23` or `58K`. */
 	formatValue( value: Date | number ): string;
 }
 
 type GoogleVisualizationFormatterConstructor = new ( options: {
+	/** The pattern the labels follow, such as `MMM d` or `short`. */
 	pattern: string;
 } ) => GoogleVisualizationFormatter;
 

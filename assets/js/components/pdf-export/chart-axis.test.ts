@@ -41,11 +41,11 @@ afterEach( () => {
 } );
 
 describe( 'getValueAxisFormat', () => {
-	it( 'returns the short format for a highest value of 100', () => {
+	it( 'returns the `short` format for a highest value of 100', () => {
 		expect( getValueAxisFormat( 100 ) ).toBe( 'short' );
 	} );
 
-	it( 'keeps the default format for a highest value of 99', () => {
+	it( 'returns the default format for a highest value of 99', () => {
 		expect( getValueAxisFormat( 99 ) ).toBeUndefined();
 	} );
 } );
@@ -55,7 +55,7 @@ describe( 'getValueAxisGutter', () => {
 		expect( getValueAxisGutter( 58000, 14 ) ).toBe( 45 );
 	} );
 
-	it( 'returns the same 45 pixels for a chart with no data', () => {
+	it( 'returns 45 pixels for a chart with no data', () => {
 		expect( getValueAxisGutter( 0, 14 ) ).toBe( 45 );
 	} );
 
@@ -68,7 +68,7 @@ describe( 'getValueAxisGutter', () => {
 		expect( getValueAxisGutter( 58000, 28 ) ).toBe( 90 );
 	} );
 
-	it( 'widens the gutter for German, which writes 400,000 in full as `400.000`', () => {
+	it( 'makes the gutter wider for German, which writes 400,000 in full as `400.000`', () => {
 		formatterMocks.NumberFormat.mockImplementation( () => ( {
 			formatValue: ( value: number ) => value.toLocaleString( 'de-DE' ),
 		} ) );
@@ -81,12 +81,13 @@ describe( 'getValueAxisGutter', () => {
 	it( 'measures the value labels in the `short` format for a highest value of 100 or more', () => {
 		getValueAxisGutter( 58000, 14 );
 
+		expect( formatterMocks.NumberFormat ).toHaveBeenCalledTimes( 1 );
 		expect( formatterMocks.NumberFormat ).toHaveBeenCalledWith( {
 			pattern: 'short',
 		} );
 	} );
 
-	it( 'throws when the canvas gives no 2D context', () => {
+	it( 'throws when the canvas returns no 2D context', () => {
 		jest.spyOn(
 			global.HTMLCanvasElement.prototype,
 			'getContext'
@@ -98,8 +99,8 @@ describe( 'getValueAxisGutter', () => {
 	} );
 } );
 
-// 1918 and 28 are the chart area width and the font size of a Search Console
-// chart.
+// `1918` and `28` are the chart area width and the font size of a Search
+// Console chart.
 describe( 'pickDateTicks', () => {
 	it( 'labels every date for a week', () => {
 		const dates = Array.from(
@@ -123,6 +124,7 @@ describe( 'pickDateTicks', () => {
 	it( 'writes each label in the `MMM d` pattern of the dashboard charts', () => {
 		pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 );
 
+		expect( formatterMocks.DateFormat ).toHaveBeenCalledTimes( 1 );
 		expect( formatterMocks.DateFormat ).toHaveBeenCalledWith( {
 			pattern: 'MMM d',
 		} );
@@ -134,8 +136,9 @@ describe( 'pickDateTicks', () => {
 			( _date, index ) => new Date( 2026, 6, 1 + index )
 		);
 
-		// `mockChartAxisLabels()` measures `Jul 1` as 70 pixels wide, so the middle
-		// of its label is 35 pixels, about 2.6 hours on the axis, after the start.
+		// `mockChartAxisLabels()` measures `Jul 1` as 70 pixels wide. So the label's
+		// middle is 35 pixels from the left edge, about 2.6 hours after the first
+		// date on the axis.
 		expect( pickDateTicks( dates, 1918, 28 )[ 0 ] ).toEqual( {
 			v: new Date( 2026, 6, 1, 2, 37, 39, 854 ),
 			f: 'Jul 1',
@@ -148,8 +151,9 @@ describe( 'pickDateTicks', () => {
 			( _date, index ) => new Date( 2026, 6, 1 + index )
 		);
 
-		// `mockChartAxisLabels()` measures `Jul 7` as 70 pixels wide, so the middle
-		// of its label is 35 pixels, about 2.6 hours on the axis, before the end.
+		// `mockChartAxisLabels()` measures `Jul 7` as 70 pixels wide. So the label's
+		// middle is 35 pixels from the right edge, about 2.6 hours before the last
+		// date on the axis.
 		expect( pickDateTicks( dates, 1918, 28 )[ 6 ] ).toEqual( {
 			v: new Date( 2026, 6, 6, 21, 22, 20, 145 ),
 			f: 'Jul 7',
@@ -238,7 +242,7 @@ describe( 'pickDateTicks', () => {
 			'Jul 7',
 		] );
 
-		// The short month names Google Charts writes in German.
+		// Google Charts writes these short month names in German.
 		const months = [
 			'Jan.',
 			'Feb.',
@@ -263,7 +267,7 @@ describe( 'pickDateTicks', () => {
 		).toEqual( [ 'Juli 1', 'Juli 3', 'Juli 5', 'Juli 7' ] );
 	} );
 
-	it( 'labels a single date on the date itself', () => {
+	it( 'lines up the label with the date for a chart with one date', () => {
 		expect( pickDateTicks( [ new Date( 2026, 6, 1 ) ], 1918, 28 ) ).toEqual(
 			[ { v: new Date( 2026, 6, 1 ), f: 'Jul 1' } ]
 		);

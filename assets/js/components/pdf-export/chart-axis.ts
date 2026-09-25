@@ -33,12 +33,13 @@ export interface DateTick {
 
 /**
  * Gets the Google Charts formatter for a pattern. The formatter writes a value
- * as the chart writes its labels, in the language Google Charts loaded with.
+ * the same way the chart writes its labels, in the language Google Charts
+ * loaded with.
  *
  * @since n.e.x.t
  *
- * @param {string} type    The formatter, `DateFormat` or `NumberFormat`.
- * @param {string} pattern The pattern, such as `MMM d` or `short`.
+ * @param {string} type    The Google Charts formatter class, `DateFormat` or `NumberFormat`.
+ * @param {string} pattern The label pattern, such as `MMM d` or `short`.
  * @return {Object} A formatter with a `formatValue()` method.
  */
 function getChartLabelFormatter(
@@ -62,7 +63,7 @@ function getChartLabelFormatter(
  *
  * @since n.e.x.t
  *
- * @param {string[]} labels   The labels.
+ * @param {string[]} labels   The labels to measure, such as `Sep 23`.
  * @param {number}   fontSize The label font size, in chart pixels.
  * @return {number[]} The label widths, in chart pixels, in order.
  */
@@ -85,7 +86,7 @@ function getLabelWidths( labels: string[], fontSize: number ): number[] {
 /**
  * Gets the labels the value axis can show in the `short` format.
  *
- * Google Charts puts a gridline on each multiple of a step, up to the first
+ * Google Charts shows a gridline at each multiple of a step, up to the first
  * multiple above the highest value. The step is 1, 1.5, 2, 2.5, or 5 times a
  * power of 10. A step that needs more than 20 labels is left out, because the
  * chart has no room for them.
@@ -93,7 +94,7 @@ function getLabelWidths( labels: string[], fontSize: number ): number[] {
  * @since n.e.x.t
  *
  * @param {number} maxValue The highest value on the chart, 100 or more.
- * @return {string[]} The labels.
+ * @return {string[]} The labels the axis can show, such as `5K` and `60K`.
  */
 function getShortValueLabels( maxValue: number ): string[] {
 	const shortFormat = getChartLabelFormatter( 'NumberFormat', 'short' );
@@ -123,8 +124,8 @@ function getShortValueLabels( maxValue: number ): string[] {
  * Gets the number format for the value labels.
  *
  * The `short` format writes 58,000 as `58K`. But it also writes 0.025 as
- * `0.03`. When the highest value is 100 or more, every gridline is a whole
- * number, so no label loses a digit.
+ * `0.03`. So the labels use `short` only for a highest value of 100 or more.
+ * Every gridline is then a whole number, so no label loses a digit.
  *
  * @since n.e.x.t
  *
@@ -184,12 +185,12 @@ export function getValueAxisGutter(
  * Each label uses the pattern of the dashboard's charts, such as `Sep 23`, in
  * the language Google Charts loaded with. The first label starts at the chart
  * area's left edge, and the last label ends at its right edge, as in the Figma
- * design. Google Charts puts the middle of a label on its tick, so these two
- * ticks move in by half the label's width.
+ * design. Google Charts lines up the middle of a label with its tick, so these
+ * two ticks move in by half the label's width.
  *
  * Between them, every few dates get a label. Where they can, the labels split
- * the dates into equal parts. No two labels are closer than the widest date
- * label plus the gap Google Charts needs between them.
+ * the dates into equal parts. No two labels are closer together than the width
+ * of the widest date label, plus the gap Google Charts needs between them.
  *
  * @since n.e.x.t
  *
@@ -226,8 +227,8 @@ export function pickDateTicks(
 		return ( dates[ index ].getTime() - startTime ) / millisecondsPerPixel;
 	}
 
-	// Every day of a leap year, so `labelDistance` has room for the widest label
-	// any date can have.
+	// Write a label for every day of a leap year, so `labelDistance` is wide
+	// enough for the widest label any date can have.
 	const everyDayLabels = Array.from( { length: 366 }, ( _day, index ) =>
 		toLabel( new Date( 2024, 0, 1 + index ) )
 	);
@@ -248,10 +249,13 @@ export function pickDateTicks(
 			lastCenter - getCenter( index ) >= labelDistance
 		);
 	}
+	// A step is the number of dates from one label to the next. When no date is
+	// missing, `minStep` is the smallest step with at least `labelDistance`
+	// between two labels.
 	const minStep = Math.ceil( ( labelDistance * lastIndex ) / chartAreaWidth );
 
-	// Find the smallest step that splits the dates into equal parts and leaves
-	// room beside the first and last labels.
+	// Find the smallest step that splits the dates into equal parts, with at
+	// least `labelDistance` after the first label and before the last.
 	const evenStep = Array.from(
 		{ length: Math.floor( lastIndex / 2 ) - minStep + 1 },
 		( _value, offset ) => minStep + offset
@@ -269,8 +273,9 @@ export function pickDateTicks(
 			( _value, position ) => ( position + 1 ) * evenStep
 		);
 	} else {
-		// No step splits the dates into equal parts, so put a run of labels, one
-		// every `minStep` dates, in the middle between the first and last labels.
+		// No step splits the dates into equal parts. So add a label every
+		// `minStep` dates, in a run with its middle halfway between the first and
+		// last labels.
 		const indexesWithRoom = dates
 			.map( ( _date, index ) => index )
 			.filter( hasRoom );
@@ -301,8 +306,8 @@ export function pickDateTicks(
 		}
 	}
 
-	// Missing dates can put two labels too close together, so skip a label that
-	// is closer than `labelDistance` to the one before it.
+	// When dates are missing, two labels can be too close together, so skip a
+	// label that is closer than `labelDistance` to the one before it.
 	const labeledIndexes: number[] = [];
 	middleIndexes.forEach( ( index ) => {
 		const previousCenter = labeledIndexes.length

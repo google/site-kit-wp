@@ -33,7 +33,7 @@ function getLoaderScript(): Element | null {
  *
  * @since n.e.x.t
  *
- * @param {string|undefined} locale The WordPress locale, such as `de_DE`, or `undefined` to remove it.
+ * @param {string|undefined} locale The WordPress locale, such as `de_DE`, or `undefined` so `getLocale()` falls back to the browser language.
  * @return {void}
  */
 function setSiteLocale( locale: string | undefined ) {
@@ -90,6 +90,7 @@ describe( 'ensureGoogleChartsLoaded', () => {
 
 	it( 'should load Google Charts in the site language', async () => {
 		const load = jest.fn( () => Promise.resolve() );
+
 		setSiteLocale( 'de_DE' );
 
 		const promise = ensureGoogleChartsLoaded();

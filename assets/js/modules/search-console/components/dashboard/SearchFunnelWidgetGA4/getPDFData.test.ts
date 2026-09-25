@@ -290,8 +290,9 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'should write the value labels in short form only when either line has a value of 100 or more', async () => {
+	it( 'should write the value labels in short form only when either period has a value of 100 or more', async () => {
 		provideReports( registry );
+
 		// Only the 7 days of the previous period have 100 impressions or more, with
 		// 58,000 each. Clicks stay under 100 on every day.
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
@@ -317,7 +318,7 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 		} );
 	} );
 
-	it( 'should leave room for the value labels and label every day of a 7-day range', async () => {
+	it( 'should make the space for the value labels 90 pixels wide, and label every day of a 7-day range', async () => {
 		provideReports( registry );
 
 		await getPDFData( {

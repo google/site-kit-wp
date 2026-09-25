@@ -391,11 +391,12 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'should write the value labels in short form only when either line has a value of 100 or more', async () => {
+	it( 'should write the value labels in short form only when either period has a value of 100 or more', async () => {
 		provideReportsWithData();
+
 		// Only the 7 days of the previous period have 100 impressions or more,
-		// with 300 each. The current period has 60 a day. Earnings stay under 100
-		// on every day.
+		// with 300 each. The current period has 60 impressions a day. Earnings
+		// stay under 100 on every day.
 		registry.dispatch( MODULES_ADSENSE ).receiveGetReport(
 			buildChartReport( {
 				days: CURRENT_RANGE_DAYS,
@@ -422,7 +423,7 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 		} );
 	} );
 
-	it( 'should leave more room for the value labels on the Page CTR chart, whose ratios need more digits', async () => {
+	it( 'should give the value labels more space on the Page CTR chart, whose ratios need more digits', async () => {
 		provideReportsWithData();
 
 		await getPDFData( {

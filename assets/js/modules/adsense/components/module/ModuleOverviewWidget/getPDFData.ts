@@ -233,7 +233,7 @@ interface MetricCardResult {
  * @param {Object} options          The line color, the dates, and the highest value for the chart.
  * @param {string} options.color    The series color for both lines.
  * @param {Date[]} options.dates    The days on the chart, in order.
- * @param {number} options.maxValue The highest value on either line.
+ * @param {number} options.maxValue The highest value in either period.
  * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( {
@@ -382,8 +382,6 @@ function renderMetricChart( {
 	color: string;
 	signal: AbortSignal;
 } ): Promise< string > {
-	// Each row has the day `Date`, a tooltip, then the current and previous
-	// values.
 	const dates = dataRows.map( ( row ) => row[ 0 ] as Date );
 	const maxValue = dataRows.reduce(
 		( highest, row ) =>
