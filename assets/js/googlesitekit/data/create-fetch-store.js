@@ -53,13 +53,14 @@ function defaultValidateParams() {}
  * and the error key, so the params and the fetch options stay separate.
  *
  * This helper reads the fetch options from a last argument that is a plain
- * object with a `signal` key. A last argument of `undefined` means the
- * caller passes no fetch options. So a resolver can always pass its
- * `fetchOptions` argument, with or without a value. A store's own params
- * must not use a `signal` key, because the helper finds the fetch options
- * by that key.
+ * object with a `signal` or `cacheTTL` key. A last argument of `undefined`
+ * means the caller passes no fetch options. So a resolver can always pass
+ * its `fetchOptions` argument, with or without a value. A store's own params
+ * must not use a `signal` or `cacheTTL` key, because the helper finds the
+ * fetch options by those keys.
  *
  * @since 1.182.0
+ * @since n.e.x.t Also detect a `cacheTTL` key, so fetch options passed without a `signal` are still recognized.
  *
  * @param {Array} args All arguments passed to the generated `fetchX` action.
  * @return {Object} An object with `fetchArgs`, the arguments that build the
@@ -69,7 +70,10 @@ function defaultValidateParams() {}
 function separateFetchOptionsFromArgs( args ) {
 	const lastArg = args[ args.length - 1 ];
 
-	if ( isPlainObject( lastArg ) && 'signal' in lastArg ) {
+	if (
+		isPlainObject( lastArg ) &&
+		( 'signal' in lastArg || 'cacheTTL' in lastArg )
+	) {
 		return {
 			fetchArgs: args.slice( 0, -1 ),
 			fetchOptions: lastArg,
@@ -131,6 +135,7 @@ const {
  *
  * @since 1.10.0
  * @since 1.182.0 Accept an optional fetch options object on the generated `fetchX` action, such as `{ signal }` to cancel the request, and pass it to `controlCallback` as a second argument.
+ * @since n.e.x.t Also recognize a `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the request's response is cached.
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.

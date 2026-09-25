@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { commonActions } from 'googlesitekit-data';
 import {
+	ReportFetchOptions,
 	ReportRequestOptions,
 	getReportCacheKey,
 } from '@/js/util/report-options';
@@ -57,6 +58,7 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
  * one call's cancellation abort another call's report.
  *
  * @since 1.183.0
+ * @since n.e.x.t Accept an optional `cacheTTL` fetch option, forwarded to the report request unchanged and left out of the report cache key.
  *
  * @param storeName Report datastore name, such as `modules/analytics-4`.
  * @return Generator resolver for the store's `getReport` selector.
@@ -86,7 +88,7 @@ export function createGetReportResolver( storeName: string ) {
 	// caller sent.
 	return function* getReport(
 		options?: ReportRequestOptions,
-		fetchOptions?: { signal?: AbortSignal }
+		fetchOptions?: ReportFetchOptions
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;
