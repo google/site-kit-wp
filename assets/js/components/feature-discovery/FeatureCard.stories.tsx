@@ -108,7 +108,6 @@ Default.args = {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 	},
 };
-Default.scenario = {};
 
 export const ModuleFeature = Template.bind( {} ) as Story< StoryArgs >;
 ModuleFeature.storyName = 'Module Feature';
@@ -118,7 +117,6 @@ ModuleFeature.args = {
 		provideFeatures( registry, [ TEST_MODULE_FEATURE ] );
 	},
 };
-ModuleFeature.scenario = {};
 
 export const New = Template.bind( {} ) as Story< StoryArgs >;
 New.storyName = 'New';
@@ -129,7 +127,6 @@ New.args = {
 		provideFeatures( registry, [ TEST_NEW_FEATURE ] );
 	},
 };
-New.scenario = {};
 
 export const NewDismissible = Template.bind( {} ) as Story< StoryArgs >;
 NewDismissible.storyName = 'New, Dismissible';
@@ -139,7 +136,6 @@ NewDismissible.args = {
 		provideFeatures( registry, [ TEST_NEW_MODULE_FEATURE ] );
 	},
 };
-NewDismissible.scenario = {};
 
 export const MultipleCards = Template.bind( {} ) as Story< StoryArgs >;
 MultipleCards.storyName = 'Multiple Cards';
@@ -149,7 +145,6 @@ MultipleCards.args = {
 		provideFeatures( registry, [ TEST_FEATURE, TEST_MODULE_FEATURE ] );
 	},
 };
-MultipleCards.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureCard',

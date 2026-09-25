@@ -60,11 +60,16 @@ export function provideFeatures(
 		badges: [],
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			ctaLabel: 'Set up now',
 		},
 	};
 
 	features.forEach( ( feature ) => {
-		const { slug, ...settings } = { ...defaultFeature, ...feature };
+		const { slug, ...settings } = {
+			...defaultFeature,
+			...feature,
+			setup: { ...defaultFeature.setup, ...feature.setup },
+		};
 
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )

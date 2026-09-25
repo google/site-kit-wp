@@ -277,6 +277,27 @@ describe( 'FeatureCard', () => {
 		expect( getByText( 'Paid service' ) ).toBeInTheDocument();
 	} );
 
+	it( 'should render the feature’s own CTA in the slot the card provides', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+			registry,
+		} );
+
+		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
+		expect(
+			getByRole( 'button', { name: 'Try it now' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render the dismiss control only when the card is dismissible', () => {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 

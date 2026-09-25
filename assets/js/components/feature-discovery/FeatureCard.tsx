@@ -35,6 +35,7 @@ import { Button } from 'googlesitekit-components';
 import { Select, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
+import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import {
@@ -205,8 +206,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 				</div>
 
 				<div className="googlesitekit-feature-card__actions">
-					{ /* TODO: #13322 -- Implement FeatureCTA  */ }
-					<code>&lt;FeatureCTA /&gt;</code>
+					<FeatureCTA slug={ slug } isTertiary />
 
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button onClick={ onClickReadMore }>
