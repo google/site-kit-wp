@@ -151,7 +151,7 @@ describe( 'useFeatureCountCache', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 
-		freezeFetch( /core\/modules\/data\/list/ );
+		freezeFetch( new RegExp( 'core/modules/data/list' ) );
 
 		renderHook( useFeatureCountCache, {
 			registry,
