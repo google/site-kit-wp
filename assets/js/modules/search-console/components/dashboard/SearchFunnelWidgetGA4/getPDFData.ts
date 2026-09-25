@@ -30,6 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getValueAxisFormat,
+	getValueAxisGutter,
+	pickDateTicks,
+} from '@/js/components/pdf-export/chart-axis';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
@@ -204,28 +209,33 @@ interface MetricCardResult {
  * dotted line of the same color, mirroring the dashboard.
  *
  * @since 1.183.0
+ * @since n.e.x.t Wrote large values as `58K`, and showed every axis label in full.
  *
- * @param options         Options.
- * @param options.color   Series color for both lines.
- * @param options.ticks   Date ticks for the horizontal axis.
- * @param options.hasData Whether any data point is greater than zero.
- * @return Google Charts options object.
+ * @param {Object} options          The line color, the dates, and the highest value for the chart.
+ * @param {string} options.color    The series color for both lines.
+ * @param {Date[]} options.dates    The days on the chart, in order.
+ * @param {number} options.maxValue The highest value in either period.
+ * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( {
 	color,
-	ticks,
-	hasData,
+	dates,
+	maxValue,
 }: {
 	color: string;
-	ticks: Date[];
-	hasData: boolean;
+	dates: Date[];
+	maxValue: number;
 } ): object {
+	const fontSize = 14 * LINE_CHART_OPTION_SCALE;
+	const chartAreaLeft = 8 * LINE_CHART_OPTION_SCALE;
+	const valueAxisGutter = getValueAxisGutter( maxValue, fontSize );
+
 	return {
 		curveType: 'function',
 		colors: [ color ],
 		chartArea: {
-			left: 8 * LINE_CHART_OPTION_SCALE,
-			right: 40 * LINE_CHART_OPTION_SCALE,
+			left: chartAreaLeft,
+			right: valueAxisGutter,
 			top: 12 * LINE_CHART_OPTION_SCALE,
 			bottom: 22 * LINE_CHART_OPTION_SCALE,
 		},
@@ -233,18 +243,24 @@ function getLineChartOptions( {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14 * LINE_CHART_OPTION_SCALE,
+				fontSize,
 			},
-			ticks,
+			ticks: pickDateTicks(
+				dates,
+				LINE_CHART_WIDTH * LINE_CHART_SCALE_FACTOR -
+					chartAreaLeft -
+					valueAxisGutter,
+				fontSize
+			),
 		},
 		vAxis: {
+			format: getValueAxisFormat( maxValue ),
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
@@ -254,12 +270,13 @@ function getLineChartOptions( {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14 * LINE_CHART_OPTION_SCALE,
+				fontSize,
 			},
 			viewWindow: {
 				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
-				...( hasData ? {} : { max: 1 } ),
+				// With no data, stop the axis at 1, so the flat line at zero is still
+				// easy to read.
+				...( maxValue > 0 ? {} : { max: 1 } ),
 			},
 		},
 		series: {
@@ -345,18 +362,21 @@ function renderMetricChart( {
 	color: string;
 	signal: AbortSignal;
 } ): Promise< string > {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's Search Funnel charts. The leading column is always
-	// the day `Date`.
-	const [ , ...ticks ] = dataRows.map( ( row ) => row[ 0 ] as Date );
-	const hasData = dataRows.some(
-		( row ) => Number( row[ 2 ] ) > 0 || Number( row[ 3 ] ) > 0
+	const dates = dataRows.map( ( row ) => row[ 0 ] as Date );
+	const maxValue = dataRows.reduce(
+		( highest, row ) =>
+			Math.max(
+				highest,
+				Number( row[ 2 ] ) || 0,
+				Number( row[ 3 ] ) || 0
+			),
+		0
 	);
 
 	return renderGoogleChartToDataURI( {
 		chartType: 'LineChart',
 		dataTable: buildChartDataTable( dataRows, currentLabel ),
-		options: getLineChartOptions( { color, ticks, hasData } ),
+		options: getLineChartOptions( { color, dates, maxValue } ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
 		scaleFactor: LINE_CHART_SCALE_FACTOR,

@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -217,7 +218,10 @@ describe( 'Traffic Overview getPDFData', () => {
 		// `getPDFData` builds the chart's data with `new google.visualization.DataTable()`.
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -351,6 +355,62 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect(
 			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].chartType
 		).toBe( 'LineChart' );
+	} );
+
+	it( 'writes the value labels in short form, makes their space 45 pixels wide, and labels every day of a 7-day range', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [ { metricValues: [ { value: '8400' } ] } ] },
+				{ options: getTotalsReportArgs( DATES ) }
+			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					[ '20250108', '900' ],
+					[ '20250109', '1200' ],
+					[ '20250110', '1500' ],
+					[ '20250111', '1100' ],
+					[ '20250112', '1300' ],
+					[ '20250113', '1000' ],
+					[ '20250114', '1400' ],
+				].map( ( [ date, users ] ) => ( {
+					dimensionValues: [ { value: date } ],
+					metricValues: [ { value: users } ],
+				} ) ),
+			},
+			{
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			}
+		);
+		seedDefaultBreakdownReports( registry );
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 45 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+			vAxis: { format: 'short' },
+		} );
 	} );
 
 	it( 'shapes each breakdown report with getBreakdownRows()', async () => {

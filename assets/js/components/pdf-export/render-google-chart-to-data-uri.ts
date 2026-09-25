@@ -61,8 +61,20 @@ export interface GoogleVisualizationDataTable {
 	addRows( rows: unknown[][] ): number;
 }
 
+export interface GoogleVisualizationFormatter {
+	/** Returns the label for a date or a number, in the formatter's pattern, such as `Sep 23` or `58K`. */
+	formatValue( value: Date | number ): string;
+}
+
+type GoogleVisualizationFormatterConstructor = new ( options: {
+	/** The pattern the labels follow, such as `MMM d` or `short`. */
+	pattern: string;
+} ) => GoogleVisualizationFormatter;
+
 export interface GoogleVisualization {
 	DataTable?: new () => GoogleVisualizationDataTable;
+	DateFormat?: GoogleVisualizationFormatterConstructor;
+	NumberFormat?: GoogleVisualizationFormatterConstructor;
 	LineChart?: GoogleVisualizationChartConstructor;
 	ColumnChart?: GoogleVisualizationChartConstructor;
 	BarChart?: GoogleVisualizationChartConstructor;

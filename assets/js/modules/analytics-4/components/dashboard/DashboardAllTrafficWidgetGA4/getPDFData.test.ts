@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PIE_CHART_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -146,7 +147,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		// `getPDFData` builds each chart's data with `new google.visualization.DataTable()`.
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -259,6 +263,10 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 					dimensionValues: [ { value: '20250109' } ],
 					metricValues: [ { value: '20' } ],
 				},
+				{
+					dimensionValues: [ { value: '20250110' } ],
+					metricValues: [ { value: '1500' } ],
+				},
 			],
 		};
 
@@ -313,6 +321,7 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( dataTable.addRows ).toHaveBeenCalledWith( [
 			[ new Date( 2025, 0, 8 ), 10 ],
 			[ new Date( 2025, 0, 9 ), 20 ],
+			[ new Date( 2025, 0, 10 ), 1500 ],
 		] );
 
 		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
@@ -320,17 +329,22 @@ describe( 'DashboardAllTrafficWidgetGA4 getPDFData', () => {
 		expect( renderArgs.chartType ).toBe( 'LineChart' );
 		expect( renderArgs.width ).toBe( 506 );
 		expect( renderArgs.height ).toBe( 133 );
+		expect( renderArgs.scaleFactor ).toBe( 2 );
 		expect( renderArgs.signal ).toBe( signal );
 		expect( renderArgs.dataTable ).toBe( dataTable );
 		expect( renderArgs.options ).toMatchObject( {
 			curveType: 'function',
 			colors: [ '#3c7251' ],
+			chartArea: { right: 45 },
 			legend: { position: 'none' },
 			hAxis: {
-				format: 'MMM d',
+				textStyle: { fontName: 'Google Sans Text' },
+				ticks: [ { f: 'Jan 8' }, { f: 'Jan 9' }, { f: 'Jan 10' } ],
+			},
+			vAxis: {
+				format: 'short',
 				textStyle: { fontName: 'Google Sans Text' },
 			},
-			vAxis: { textStyle: { fontName: 'Google Sans Text' } },
 			series: { 0: { color: '#3c7251', lineWidth: 4 } },
 		} );
 

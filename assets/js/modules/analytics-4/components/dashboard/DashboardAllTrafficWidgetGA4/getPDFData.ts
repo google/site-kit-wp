@@ -24,6 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getValueAxisFormat,
+	getValueAxisGutter,
+	pickDateTicks,
+} from '@/js/components/pdf-export/chart-axis';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import {
 	PDF_COLORS,
@@ -56,6 +61,12 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
  */
 const LINE_CHART_WIDTH = 506;
 const LINE_CHART_HEIGHT = 133;
+
+/**
+ * How many times bigger than its display size the line chart renders, so the
+ * line stays sharp in the PDF.
+ */
+const LINE_CHART_SCALE_FACTOR = 2;
 
 /**
  * The size of the hole in the middle of each breakdown donut, from 0 to 1.
@@ -230,24 +241,27 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  * Builds Google Charts options matching the dashboard's All Visitors line chart.
  *
  * @since 1.182.0
+ * @since n.e.x.t Wrote large values as `58K`, and showed every axis label in full.
  *
- * @param points Parsed chart points.
- * @return Google Charts options object.
+ * @param {Array<Object>} points Parsed chart points.
+ * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's `UserCountGraph`.
-	const [ , ...ticks ] = points.map( ( { date } ) => date );
-
-	const hasData = points.some( ( { value } ) => value > 0 );
+	const fontSize = 14;
+	const chartAreaLeft = 8;
+	const maxValue = points.reduce(
+		( highest, { value } ) => Math.max( highest, value ),
+		0
+	);
+	const valueAxisGutter = getValueAxisGutter( maxValue, fontSize );
 
 	return {
 		curveType: 'function',
 		// Matches the dashboard's All Visitors line color.
 		colors: [ PDF_COLORS.SITE_KIT_SK_500 ],
 		chartArea: {
-			left: 8,
-			right: 40,
+			left: chartAreaLeft,
+			right: valueAxisGutter,
 			top: 16,
 			bottom: 28,
 		},
@@ -255,7 +269,6 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},
@@ -263,11 +276,18 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
-			ticks,
+			ticks: pickDateTicks(
+				points.map( ( { date } ) => date ),
+				LINE_CHART_WIDTH * LINE_CHART_SCALE_FACTOR -
+					chartAreaLeft -
+					valueAxisGutter,
+				fontSize
+			),
 		},
 		vAxis: {
+			format: getValueAxisFormat( maxValue ),
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
@@ -280,12 +300,13 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
 			viewWindow: {
 				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
-				...( hasData ? {} : { max: 100 } ),
+				// With no data, stop the axis at 100, so the flat line at zero is
+				// still easy to read.
+				...( maxValue > 0 ? {} : { max: 100 } ),
 			},
 		},
 		series: {
@@ -529,6 +550,7 @@ export default async function getPDFData( {
 		options: getLineChartOptions( points ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
+		scaleFactor: LINE_CHART_SCALE_FACTOR,
 		signal,
 	} );
 
