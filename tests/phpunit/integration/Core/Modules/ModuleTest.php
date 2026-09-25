@@ -332,6 +332,160 @@ class ModuleTest extends TestCase {
 		);
 	}
 
+	/**
+	 * The reasons are written out rather than read from the constant, so a typo in the
+	 * constant fails here instead of being fed back into its own assertion.
+	 */
+	public function data_rate_limit_reasons() {
+		return array(
+			'rate limit exceeded'      => array( 'rateLimitExceeded' ),
+			'user rate limit exceeded' => array( 'userRateLimitExceeded' ),
+			'quota exceeded'           => array( 'quotaExceeded' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_rate_limit_reasons
+	 *
+	 * @param string $reason Google API error reason.
+	 */
+	public function test_exception_to_error__caches_a_rate_limit_error( $reason ) {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response_errors = array(
+			array(
+				'message' => 'Quota exceeded for quota metric.',
+				'reason'  => $reason,
+			),
+		);
+		$exception       = new Google_Service_Exception( wp_json_encode( $response_errors ), 429, null, $response_errors );
+		$error           = $module->exception_to_error( $exception, 'test' );
+
+		// Ten minutes, written out rather than read from the constant: shortening the
+		// window is a decision about Google's quota cooldowns, not a detail to change
+		// without the test noticing.
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status'   => 429,
+				'reason'   => $reason,
+				'cacheTTL' => 600,
+			),
+			$error->get_error_data(),
+			'A rate limit error should carry a cacheTTL so the browser holds the request back.'
+		);
+		// The message the reader sees is unchanged; only the retry and caching differ.
+		$this->assertWPErrorWithMessage( 'Quota exceeded for quota metric.', $error );
+	}
+
+	public function test_exception_to_error__caches_a_rate_limit_status_without_a_reason() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// What the Analytics Data API sends: no `error.errors`, so the client parses no
+		// reason and the status is all there is to go on.
+		$body      = '{"error":{"code":429,"message":"Exhausted property tokens for a project per hour.","status":"RESOURCE_EXHAUSTED"}}';
+		$exception = new Google_Service_Exception( $body, 429, null, null );
+		$error     = $module->exception_to_error( $exception, 'test' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status'   => 429,
+				'reason'   => '',
+				'cacheTTL' => 600,
+			),
+			$error->get_error_data(),
+			'A 429 with no parsed reason should still be held back.'
+		);
+	}
+
+	public function test_exception_to_error__caches_a_rate_limit_reason_without_the_status() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		// The older APIs send the reason alongside a 403 rather than a 429.
+		$response_errors = array(
+			array(
+				'message' => 'Rate Limit Exceeded',
+				'reason'  => 'rateLimitExceeded',
+			),
+		);
+		$exception       = new Google_Service_Exception( wp_json_encode( $response_errors ), 403, null, $response_errors );
+		$error           = $module->exception_to_error( $exception, 'test' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status'   => 403,
+				'reason'   => 'rateLimitExceeded',
+				'cacheTTL' => 600,
+			),
+			$error->get_error_data(),
+			'A rate limit reason should be held back whatever status carried it.'
+		);
+	}
+
+	public function test_exception_to_error__reads_the_rate_limit_rules_off_the_module() {
+		$module = new FakeModule_WithRateLimitOverrides( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response_errors = array(
+			array(
+				'message' => 'Slow down.',
+				'reason'  => 'tooManyRequests',
+			),
+		);
+		$exception       = new Google_Service_Exception( wp_json_encode( $response_errors ), 503, null, $response_errors );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status'   => 503,
+				'reason'   => 'tooManyRequests',
+				'cacheTTL' => 60,
+			),
+			$module->exception_to_error( $exception, 'test' )->get_error_data(),
+			'A module should be able to answer for its own API rather than the base class answering for it.'
+		);
+
+		// A status the module does not call a rate limit, so only its own reason can
+		// decide. Reading the reasons off the base class would miss this one.
+		$this->assertSame(
+			60,
+			$module->exception_to_error(
+				new Google_Service_Exception( wp_json_encode( $response_errors ), 500, null, $response_errors ),
+				'test'
+			)->get_error_data()['cacheTTL'],
+			'The overridden reasons should be the ones the module is measured against.'
+		);
+
+		// The base class rules no longer apply to a module that replaced them.
+		$this->assertArrayNotHasKey(
+			'cacheTTL',
+			$module->exception_to_error(
+				new Google_Service_Exception( 'quota', 429, null, null ),
+				'test'
+			)->get_error_data(),
+			'The overridden status should replace the base one, not extend it.'
+		);
+	}
+
+	public function test_exception_to_error__leaves_other_reasons_uncached() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response_errors = array(
+			array(
+				'message' => 'Backend error.',
+				'reason'  => 'backendError',
+			),
+		);
+		$exception       = new Google_Service_Exception( wp_json_encode( $response_errors ), 500, null, $response_errors );
+		$error           = $module->exception_to_error( $exception, 'test' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'status' => 500,
+				'reason' => 'backendError',
+			),
+			$error->get_error_data(),
+			'An error that is not a rate limit should be left for the reader to retry.'
+		);
+	}
+
 	public function test_exception_to_error__with_proxy_code_exception() {
 		$this->fake_proxy_site_connection();
 
