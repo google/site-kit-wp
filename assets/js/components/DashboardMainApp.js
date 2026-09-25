@@ -30,6 +30,7 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { useSelect } from 'googlesitekit-data';
 import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
@@ -60,6 +61,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
+import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -74,6 +76,11 @@ import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audi
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
 import SiteGoalsSurveyTriggers from '@/js/modules/analytics-4/components/site-goals/SiteGoalsSurveyTriggers';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	MANAGE_SCOPE,
+	READONLY_SCOPE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { DAY_IN_SECONDS } from '@/js/util';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { AdminScreenTooltip } from './AdminScreenTooltip';
@@ -338,6 +345,17 @@ export default function DashboardMainApp() {
 		isKeyMetricsActive,
 	} );
 
+	const onSetupActivate = useActivateModuleCallback(
+		MODULE_SLUG_READER_REVENUE_MANAGER,
+		{
+			redirectQueryArgs: {
+				expressSetup: true,
+				cta: 'newsletter-signup',
+			},
+			additionalScopes: [ READONLY_SCOPE, MANAGE_SCOPE ],
+		}
+	);
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -370,6 +388,7 @@ export default function DashboardMainApp() {
 			</Header>
 
 			<div className="googlesitekit-page-content">
+				<Button onClick={ onSetupActivate }>RRM Express Setup</Button>
 				{ /*
 					These notifications are rendered at the top of the dashboard,
 					but are not attached to the header. The first component renders the

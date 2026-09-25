@@ -46,7 +46,7 @@ export function createModules( { dispatch } ) {
 		 * @since 1.8.0
 		 *
 		 * @param {string} slug      Slug of the module to activate.
-		 * @param {Object} [options] Optional. Activation options with `redirectQueryArgs`.
+		 * @param {Object} [options] Optional. Activation options.
 		 * @return {Promise} The dispatched action.
 		 */
 		activateModule: ( slug, options = {} ) => {
