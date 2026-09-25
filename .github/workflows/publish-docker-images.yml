@@ -10,6 +10,16 @@ on:
       - 'tests/backstop/Dockerfile'
       - 'tests/playwright/docker/wordpress/Dockerfile'
       - '.github/workflows/publish-docker-images.yml'
+      - '.github/actions/build-push-docker-image/**'
+  # Build (but do not push) images on pull requests that change them, to verify they build before merging.
+  pull_request:
+    paths:
+      - 'codegen/Dockerfile'
+      - 'codegen/library.lock'
+      - 'tests/backstop/Dockerfile'
+      - 'tests/playwright/docker/wordpress/Dockerfile'
+      - '.github/workflows/publish-docker-images.yml'
+      - '.github/actions/build-push-docker-image/**'
   schedule:
     # This cron job is used to build WordPress:nightly image only. All other images
     # ignore this schedule.
@@ -38,6 +48,10 @@ jobs:
   changes:
     name: Detect Changed Files
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      # Required by dorny/paths-filter to list changed files on pull requests.
+      pull-requests: read
     outputs:
       codegen: ${{ steps.filter.outputs.codegen }}
       vrt: ${{ steps.filter.outputs.vrt }}
@@ -55,12 +69,15 @@ jobs:
               - 'codegen/Dockerfile'
               - 'codegen/library.lock'
               - '.github/workflows/publish-docker-images.yml'
+              - '.github/actions/build-push-docker-image/**'
             vrt:
               - 'tests/backstop/Dockerfile'
               - '.github/workflows/publish-docker-images.yml'
+              - '.github/actions/build-push-docker-image/**'
             playwright-wp:
               - 'tests/playwright/docker/wordpress/Dockerfile'
               - '.github/workflows/publish-docker-images.yml'
+              - '.github/actions/build-push-docker-image/**'
 
   publish-codegen:
     name: Codegen
@@ -92,6 +109,7 @@ jobs:
           labels: org.opencontainers.image.description=Docker image used to run code generation for Site Kit.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
+          push: ${{ github.event_name != 'pull_request' }}
 
   publish-vrt:
     name: Backstop
@@ -111,11 +129,12 @@ jobs:
         uses: ./.github/actions/build-push-docker-image
         with:
           # Update the version number here when updating the Backstop version within the Dockerfile.
-          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22-chrome146.0.7680.164
+          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22-chrome150.0.7871.100
           context: ./tests/backstop
           labels: org.opencontainers.image.description=Docker image used to run visual regression tests for Site Kit.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
+          push: ${{ github.event_name != 'pull_request' }}
 
   publish-playwright-wp-fixed:
     name: Playwright WP 5.2.21
@@ -140,6 +159,7 @@ jobs:
           labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image (with bundled test plugins, e.g. WooCommerce) for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
+          push: ${{ github.event_name != 'pull_request' }}
 
   publish-playwright-wp-latest:
     name: Playwright WP latest
@@ -173,6 +193,7 @@ jobs:
           labels: org.opencontainers.image.description=WordPress latest Docker image for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
+          push: ${{ github.event_name != 'pull_request' }}
 
   publish-playwright-wp-nightly:
     name: Playwright WP nightly
@@ -198,3 +219,4 @@ jobs:
           labels: org.opencontainers.image.description=WordPress nightly Docker image for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
+          push: ${{ github.event_name != 'pull_request' }}
