@@ -40,6 +40,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 	const OPTION_ADDITIONAL_AUTH_SCOPES = 'googlesitekit_additional_auth_scopes';
 	const OPTION_REDIRECT_URL           = 'googlesitekit_redirect_url';
 	const OPTION_ERROR_REDIRECT_URL     = 'googlesitekit_error_redirect_url';
+	const OPTION_OAUTH_STATE            = 'googlesitekit_oauth_state';
 	const CRON_REFRESH_PROFILE_DATA     = 'googlesitekit_cron_refresh_profile_data';
 
 	/**
@@ -372,10 +373,13 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		$this->user_options->set( self::OPTION_REDIRECT_URL, $redirect_url );
 		$this->user_options->set( self::OPTION_ERROR_REDIRECT_URL, $error_redirect_url );
+		$state = wp_generate_uuid4();
+		$this->user_options->set( self::OPTION_OAUTH_STATE, $state );
 
 		// Ensure the latest required scopes are requested.
 		$scopes = array_merge( $this->get_required_scopes(), $additional_scopes );
 		$this->get_client()->setScopes( array_unique( $scopes ) );
+		$this->get_client()->setState( $state );
 
 		return add_query_arg(
 			$this->google_proxy->get_metadata_fields(),
@@ -416,14 +420,27 @@ final class OAuth_Client extends OAuth_Client_Base {
 		// If the OAuth redirects with an error code, handle it.
 		if ( ! empty( $error_code ) ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, $error_code );
+			$this->user_options->delete( self::OPTION_OAUTH_STATE );
 			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
 		}
 
 		if ( ! $this->credentials->has() ) {
 			$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_credentials_not_exist' );
+			$this->user_options->delete( self::OPTION_OAUTH_STATE );
 			wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
 			exit();
+		}
+
+		if ( ! empty( $code ) ) {
+			$state        = $this->context->input()->filter( INPUT_GET, 'state' );
+			$stored_state = $this->user_options->get( self::OPTION_OAUTH_STATE );
+			if ( empty( $stored_state ) || empty( $state ) || ! hash_equals( (string) $stored_state, (string) $state ) ) {
+				$this->user_options->set( self::OPTION_ERROR_CODE, 'oauth_state_mismatch' );
+				$this->user_options->delete( self::OPTION_OAUTH_STATE );
+				wp_safe_redirect( $this->get_authorize_user_redirect_url_for_error() );
+				exit();
+			}
 		}
 
 		try {
@@ -454,6 +471,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 
 		// Update the access token and refresh token.
 		$this->set_token( $token_response );
+		$this->user_options->delete( self::OPTION_OAUTH_STATE );
 
 		// Store the previously granted scopes for use in the action below before they're updated.
 		$previous_scopes = $this->get_granted_scopes();

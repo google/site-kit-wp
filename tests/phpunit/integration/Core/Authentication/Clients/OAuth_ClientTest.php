@@ -312,6 +312,8 @@ class OAuth_ClientTest extends TestCase {
 		 */
 		$this->assertEquals( add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ), $params['redirect_uri'], 'Authentication request should use fixed OAuth callback URI.' );
 		$this->assertEquals( $client_id, $params['client_id'], 'Authentication request should use connected client ID.' );
+		$this->assertNotEmpty( $params['state'], 'Authentication request should include an OAuth state parameter.' );
+		$this->assertEquals( $user_options->get( OAuth_Client::OPTION_OAUTH_STATE ), $params['state'], 'Authentication state should match the stored state.' );
 		$this->assertEqualSets(
 			explode( ' ', $params['scope'] ),
 			$base_scopes,
@@ -429,6 +431,7 @@ class OAuth_ClientTest extends TestCase {
 		// If all goes smooth, we expect to be redirected to $success_redirect.
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
+		$_GET['state'] = $user_options->get( OAuth_Client::OPTION_OAUTH_STATE );
 
 		$this->mock_google_client( $client );
 
@@ -446,6 +449,39 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals( 'fresh@foo.com', $profile['email'], 'Authorization should store People API email.' );
 		$this->assertEquals( 'https://example.com/fresh.jpg', $profile['photo'], 'Authorization should store People API photo.' );
 		$this->assertEquals( 'Dr Funkenstein', $profile['full_name'], 'Authorization should store People API display name.' );
+		$this->assertFalse( $user_options->get( OAuth_Client::OPTION_OAUTH_STATE ), 'Successful authorization should clear stored OAuth state.' );
+	}
+
+	public function test_authorize_user__rejects_mismatched_oauth_state() {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		$this->fake_site_connection();
+		$client->get_authentication_url( admin_url( 'success-redirect' ) );
+
+		$_GET['code']  = 'test-code';
+		$_GET['state'] = 'attacker-controlled-state';
+
+		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
+			->setMethods( array( 'fetchAccessTokenWithAuthCode' ) )->getMock();
+
+		$google_client_mock->expects( $this->never() )
+			->method( 'fetchAccessTokenWithAuthCode' );
+
+		$this->force_set_property( $client, 'google_client', $google_client_mock );
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected to throw a RedirectException!' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals( 'oauth_state_mismatch', $user_options->get( OAuth_Client::OPTION_ERROR_CODE ), 'OAuth callback should reject mismatched state.' );
+			$this->assertEquals( admin_url( 'admin.php?page=googlesitekit-splash' ), $redirect->get_location(), 'State mismatch should redirect to the OAuth error page.' );
+		}
+
+		$this->assertFalse( $user_options->get( OAuth_Client::OPTION_ACCESS_TOKEN ), 'State mismatch should not store an access token.' );
 	}
 
 	public function test_authorize_user__with_show_search_console() {
@@ -576,6 +612,7 @@ class OAuth_ClientTest extends TestCase {
 		$client           = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
 		$success_redirect = admin_url( 'success-redirect' );
 		$client->get_authentication_url( $success_redirect );
+		$_GET['state'] = $user_options->get( OAuth_Client::OPTION_OAUTH_STATE );
 
 		// Mock Google client for token fetching.
 		$google_client_mock = $this->getMockBuilder( 'Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client' )
@@ -639,6 +676,7 @@ class OAuth_ClientTest extends TestCase {
 		// Create a new client instance to test the second attempt.
 		$client2 = new OAuth_Client( $context, null, $user_options, null, null, null, null, $transients );
 		$client2->get_authentication_url( $success_redirect );
+		$_GET['state'] = $user_options->get( OAuth_Client::OPTION_OAUTH_STATE );
 
 		// For the second client, we can verify it never calls `fetchAccessTokenWithAuthCode`
 		// by setting up a mock that will fail the test if called.
