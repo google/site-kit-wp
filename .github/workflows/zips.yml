@@ -96,11 +96,13 @@ jobs:
         ) ||
         github.event.pull_request.head.repo.fork
       )
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Composer Install
