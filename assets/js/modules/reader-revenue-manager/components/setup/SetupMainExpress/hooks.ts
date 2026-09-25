@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 /**
  * WordPress dependencies
@@ -56,6 +56,8 @@ const PREREQUISITE_STEPS: Step[] = [
 	EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
 	EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
 ];
+
+const EMPTY_SCOPES: string[] = [];
 
 /**
  * Returns the current express setup step and a setter.
@@ -211,26 +213,34 @@ export function useHasPreExistingCTAs(): boolean | undefined {
  *
  * @since n.e.x.t
  *
- * @param {string[]} additionalScopes Scopes required by the specific flow.
+ * @param {string[]} [additionalScopes] Scopes required by the specific flow.
  * @return {void}
  */
-export function useExpressSetupScopes( additionalScopes: string[] = [] ): void {
+export function useExpressSetupScopes(
+	additionalScopes: string[] = EMPTY_SCOPES
+): void {
 	const requestedScopes = useRef( false );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 
-	const scopes = Array.from(
-		new Set( [ ...EXPRESS_SETUP_SCOPES, ...additionalScopes ] )
+	const scopes = useMemo(
+		() =>
+			Array.from(
+				new Set( [ ...EXPRESS_SETUP_SCOPES, ...additionalScopes ] )
+			),
+		[ additionalScopes ]
 	);
 
 	const missingScopes = useSelect(
 		( select: Select ): string[] | undefined => {
-			const scopeStates = scopes.map( ( scope ) =>
-				select( CORE_USER ).hasScope( scope )
-			);
-			if ( scopeStates.some( ( hasScope ) => hasScope === undefined ) ) {
+			const grantedScopes = select( CORE_USER ).getGrantedScopes();
+
+			if ( grantedScopes === undefined ) {
 				return undefined;
 			}
-			return scopes.filter( ( _, index ) => ! scopeStates[ index ] );
+
+			return scopes.filter(
+				( scope ) => ! grantedScopes.includes( scope )
+			);
 		},
 		[ scopes ]
 	);
