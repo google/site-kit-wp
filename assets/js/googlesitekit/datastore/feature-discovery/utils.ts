@@ -23,3 +23,7 @@ export function getFeatureDismissalKey( slug: string ) {
 export function getFeatureNewnessKey( slug: string ) {
 	return `feature-discovery-new-${ slug }`;
 }
+
+export function getFeatureSetupSurveyTriggerID( slug: string ) {
+	return `setup:feature_setup_${ slug }`;
+}
