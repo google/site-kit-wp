@@ -1,0 +1,131 @@
+# Site Kit OpenTelemetry PoC — collector configuration.
+#
+# READ THIS FILE IF YOU READ NOTHING ELSE IN THE PoC.
+#
+# This is a working model of the job the proposal asks the Site Kit Service
+# proxy to take on. Site Kit runs on millions of installs we do not own and
+# cannot update on demand, so every safety control has to live on the one hop
+# we do control. That hop is this collector in the PoC, and SK Service in
+# production.
+#
+# Four jobs, in order:
+#   1. Receive  — accept OTLP from the browser and from PHP.
+#   2. Redact   — strip anything that could carry PII off the site.
+#   3. Control  — cap volume, so a bad release cannot melt the ingest.
+#   4. Forward  — hand off to storage (here Grafana; in production, Google
+#                 Cloud Observability via telemetry.googleapis.com).
+
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+        # The browser posts here directly from the WordPress admin, so the
+        # collector has to allow that origin. In production this is moot:
+        # SK Service is same-origin with the proxy calls Site Kit already
+        # makes, and CORS is handled the way the existing proxy endpoints
+        # handle it.
+        cors:
+          allowed_origins:
+            - 'http://localhost:9002'   # `npm run env:start` (tests/e2e)
+            - 'http://localhost:8888'
+            - 'http://localhost'
+            - 'https://*.local'         # Local by Flywheel / LocalWP
+      grpc:
+        endpoint: 0.0.0.0:4317
+
+processors:
+  # Standard backpressure guard. Named here mostly to make the point that the
+  # ingest needs one — an untrusted firehose is the normal state, not the
+  # exception.
+  memory_limiter:
+    check_interval: 1s
+    limit_mib: 512
+    spike_limit_mib: 128
+
+  # --- Redaction -----------------------------------------------------------
+  #
+  # Defence in depth: the plugin already scrubs before sending, and this runs
+  # again on the server. The plugin-side pass is the one that matters legally
+  # (data never leaves the site), this one catches what the plugin missed and
+  # can be fixed without shipping a plugin release — which is the whole reason
+  # it has to exist. We cannot patch 5M installs; we can patch this in minutes.
+  #
+  # Capture groups are deliberately avoided below. The collector's config
+  # resolver treats `${...}` as an environment variable reference, so regex
+  # backreferences are an easy way to produce a config that fails to load.
+  # Three literal statements beat one clever one.
+  transform/redact:
+    error_mode: ignore
+    log_statements:
+      - context: log
+        statements:
+          # Absolute filesystem paths leak the hosting account username, which
+          # is the single most likely PII carrier in a WordPress stack trace.
+          # e.g. /home/acmeclient/public_html/wp-content/plugins/...
+          - replace_pattern(log.attributes["exception.stacktrace"], "/home/[^/\\s\"']+", "/home/<redacted>")
+          - replace_pattern(log.attributes["exception.stacktrace"], "/Users/[^/\\s\"']+", "/Users/<redacted>")
+          - replace_pattern(log.attributes["exception.stacktrace"], "/var/www/[^/\\s\"']+", "/var/www/<redacted>")
+          - replace_pattern(log.attributes["exception.message"], "/home/[^/\\s\"']+", "/home/<redacted>")
+          - replace_pattern(log.attributes["exception.message"], "/Users/[^/\\s\"']+", "/Users/<redacted>")
+
+          # Google OAuth access tokens. Site Kit handles these constantly, and
+          # an exception message that echoes a failed request body is exactly
+          # how one ends up in a log.
+          - replace_pattern(log.attributes["exception.message"], "ya29\\.[A-Za-z0-9_\\-]+", "<redacted-token>")
+          - replace_pattern(log.attributes["exception.stacktrace"], "ya29\\.[A-Za-z0-9_\\-]+", "<redacted-token>")
+
+          # Email addresses.
+          - replace_pattern(log.attributes["exception.message"], "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}", "<redacted-email>")
+          - replace_pattern(log.body, "[a-zA-Z0-9._%+\\-]+@[a-zA-Z0-9.\\-]+\\.[a-zA-Z]{2,}", "<redacted-email>")
+
+  # --- Volume control ------------------------------------------------------
+  #
+  # Not enabled in the PoC, because the demo wants to see every record. It is
+  # written out because it is the control that stops a bad release from
+  # generating an unbounded bill, and because it has to be server-side: a
+  # sampling rate baked into the plugin is a rate we cannot change for years.
+  #
+  # probabilistic_sampler:
+  #   sampling_percentage: 10
+  #   attribute_source: record
+  #   from_attribute: sitekit.fingerprint   # sample per-issue, not per-event,
+  #                                         # so rare bugs are never sampled away
+
+  batch:
+    timeout: 5s
+    send_batch_size: 512
+
+exporters:
+  # Storage. Swapping this one block for the Google Cloud OTLP endpoint is the
+  # entire migration from PoC to production — that is the vendor-neutrality
+  # argument, in a form you can diff.
+  #
+  #   otlp_http/google:
+  #     endpoint: https://telemetry.googleapis.com
+  #     headers: { ... auth ... }
+  otlp_http/lgtm:
+    endpoint: http://lgtm:4318
+
+  # Prints every record to the collector's stdout. `docker compose logs -f
+  # collector` is the fastest way to confirm the plugin is emitting anything
+  # at all, before worrying about whether Grafana is querying correctly.
+  debug:
+    verbosity: detailed
+
+service:
+  pipelines:
+    logs:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, transform/redact, batch ]
+      exporters: [ otlp_http/lgtm, debug ]
+
+    # Phase 5 in the proposal. Wired up so the path exists, unused for now.
+    traces:
+      receivers: [ otlp ]
+      processors: [ memory_limiter, batch ]
+      exporters: [ otlp_http/lgtm, debug ]
+
+  telemetry:
+    logs:
+      level: info

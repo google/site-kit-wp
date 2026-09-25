@@ -34,6 +34,7 @@ import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActio
 import ViewContextContext from '@/js/components/Root/ViewContextContext';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { trackEvent } from '@/js/util';
+import { ERROR_SOURCE, reportError } from '@/js/util/otel';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -57,6 +58,17 @@ class ErrorHandler extends Component {
 			// label has a max-length of 500 bytes.
 			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
 		);
+
+		// Reported alongside the event above rather than in place of it. The
+		// event keeps historical continuity and remains the right tool for
+		// counting how often something happens; this carries the full message,
+		// stack and context that a 500-byte label cannot, for working out why.
+		// No-ops unless the site has opted in to OTLP reporting.
+		reportError( error, {
+			source: ERROR_SOURCE.REACT_BOUNDARY,
+			viewContext: this.context,
+			componentStack: info?.componentStack,
+		} );
 	}
 
 	render() {

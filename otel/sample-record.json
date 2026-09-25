@@ -1,0 +1,30 @@
+{
+  "resourceLogs": [{
+    "resource": { "attributes": [
+      { "key": "service.name",             "value": { "stringValue": "site-kit-wp" } },
+      { "key": "service.version",          "value": { "stringValue": "1.187.0" } },
+      { "key": "sitekit.site_url",         "value": { "stringValue": "https://example-store.com" } },
+      { "key": "sitekit.wp_version",       "value": { "stringValue": "6.8.1" } },
+      { "key": "sitekit.php_version",      "value": { "stringValue": "8.2.14" } },
+      { "key": "sitekit.modules_active",   "value": { "stringValue": "search-console,analytics-4,adsense" } },
+      { "key": "sitekit.is_authenticated", "value": { "boolValue": true } }
+    ]},
+    "scopeLogs": [{
+      "scope": { "name": "sitekit.browser", "version": "0.1.0" },
+      "logRecords": [{
+        "timeUnixNano": "TIMESTAMP_NS",
+        "severityNumber": 17,
+        "severityText": "ERROR",
+        "body": { "stringValue": "Cannot destructure property 'triggerTourForView' of '(0 , l.useDispatch)(...)' as it is null." },
+        "attributes": [
+          { "key": "exception.type",        "value": { "stringValue": "TypeError" } },
+          { "key": "exception.message",     "value": { "stringValue": "Cannot destructure property 'triggerTourForView' of '(0 , l.useDispatch)(...)' as it is null. Token was ya29.a0AfB_byGSecretTokenValue123 and contact was admin@example-store.com" } },
+          { "key": "exception.stacktrace",  "value": { "stringValue": "at FeatureTours (/home/acmeclient/public_html/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-main-dashboard.js:2:184913)\n    at DashboardMainApp (/home/acmeclient/public_html/wp-content/plugins/google-site-kit/dist/assets/js/googlesitekit-main-dashboard.js:2:201447)" } },
+          { "key": "sitekit.error_source",  "value": { "stringValue": "react_boundary" } },
+          { "key": "sitekit.view_context",  "value": { "stringValue": "mainDashboard" } },
+          { "key": "sitekit.fingerprint",   "value": { "stringValue": "a3f9c2e1b7d45608" } }
+        ]
+      }]
+    }]
+  }]
+}

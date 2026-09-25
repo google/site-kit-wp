@@ -1,0 +1,66 @@
+# Site Kit OpenTelemetry PoC — local backend.
+#
+# Two services, mirroring the topology this proposal argues for in production:
+#
+#   Site Kit (browser + PHP)  ->  collector  ->  storage + UI
+#   [5M+ installs we don't own]   [SK Service]    [Google Cloud Observability]
+#
+# The collector is the interesting part. In production that role belongs to
+# the Site Kit Service proxy: it is the only place we control that sits
+# between untrusted installs and our storage, so redaction, sampling and rate
+# limiting all have to happen there. `collector-config.yaml` shows what that
+# job actually looks like.
+#
+# The `lgtm` service stands in for Google Cloud Observability. It is Grafana's
+# all-in-one OTel backend (Loki for logs, Tempo for traces, Prometheus for
+# metrics, Grafana for the UI) and exists here purely so the PoC needs no
+# cloud provisioning to demo.
+
+name: sitekit-otel-poc
+
+services:
+  collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: sitekit-otel-collector
+    command: [ '--config=/etc/otelcol/config.yaml' ]
+    volumes:
+      - ./collector-config.yaml:/etc/otelcol/config.yaml:ro
+    ports:
+      # OTLP/HTTP — what the plugin posts to. This is the only port Site Kit
+      # needs to know about (GOOGLESITEKIT_OTLP_ENDPOINT).
+      - '4318:4318'
+      # OTLP/gRPC — unused by the plugin, exposed for experimentation.
+      - '4317:4317'
+    depends_on:
+      - lgtm
+
+  lgtm:
+    image: grafana/otel-lgtm:latest
+    container_name: sitekit-otel-lgtm
+    ports:
+      # Grafana UI.
+      - '3000:3000'
+      # Loki's own API, exposed so ingestion can be verified from the host
+      # without going through Grafana (see seed-errors.js).
+      - '3100:3100'
+    environment:
+      # Skip the login screen — this is a throwaway local backend, and one
+      # fewer step for anyone cloning the branch to try it.
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+      - GF_AUTH_DISABLE_LOGIN_FORM=true
+
+  # The triage viewer. Grafana is powerful but it is a general observability
+  # tool, and the point this PoC has to make is about the review workflow —
+  # so the demo ends on a page that shows distinct bugs rather than a log
+  # stream. nginx serves the page and proxies Loki from the same origin.
+  viewer:
+    image: nginx:alpine
+    container_name: sitekit-otel-viewer
+    ports:
+      - '8080:80'
+    volumes:
+      - ./viewer/index.html:/usr/share/nginx/html/index.html:ro
+      - ./viewer/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - lgtm
