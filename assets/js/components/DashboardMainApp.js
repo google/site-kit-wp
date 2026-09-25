@@ -31,6 +31,7 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
 	ANCHOR_ID_CONTENT,
@@ -136,6 +137,8 @@ function getLastWidgetAnchor( {
 // complexity for this component.
 // eslint-disable-next-line complexity
 export default function DashboardMainApp() {
+	useFeatureCountCache();
+
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
 	const viewContext = useViewContext();
