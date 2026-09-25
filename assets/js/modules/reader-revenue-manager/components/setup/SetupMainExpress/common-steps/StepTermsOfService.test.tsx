@@ -187,6 +187,39 @@ describe( 'StepTermsOfService', () => {
 		} );
 	} );
 
+	it( 'should populate the form with the publication values', async () => {
+		const publicationWithTermsValues: Publication = {
+			...TEST_PUBLICATION,
+			publicationType: PUBLICATION_TYPES.NON_PROFIT,
+			rrmProduct: {
+				...TEST_PUBLICATION.rrmProduct,
+				tosAcceptance: {
+					...TEST_PUBLICATION.rrmProduct?.tosAcceptance,
+					userAccepted: true,
+					emailOptIn: true,
+				},
+			},
+		};
+
+		providePublication( registry, publicationWithTermsValues );
+		provideTermsOfService( registry );
+
+		const { getByRole } = render(
+			<StepTermsOfService onComplete={ () => {} } />,
+			{ registry }
+		);
+
+		await waitFor( () => {
+			expect(
+				getByRole( 'radio', { name: 'Non-profit' } )
+			).toBeChecked();
+			expect(
+				getByRole( 'checkbox', {
+					name: 'Yes, send me customized help, performance suggestions and product updates for Reader Revenue Manager',
+				} )
+			).toBeChecked();
+		} );
+	} );
 	it( 'should update the publication on submission', async () => {
 		provideTermsOfService( registry );
 

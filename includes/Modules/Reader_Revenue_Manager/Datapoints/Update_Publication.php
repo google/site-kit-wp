@@ -82,18 +82,33 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 		$publication_data = $data_request['data'];
 		$publication      = new Publication();
 		$update_mask      = array();
+		$rrm_product      = new RrmProduct();
+		$tos_acceptance   = null;
+
+		if ( array_key_exists( 'publicationType', $publication_data ) ) {
+			$publication->setPublicationType( $publication_data['publicationType'] );
+			$update_mask[] = 'publicationType';
+		}
 
 		if ( isset( $publication_data['rrmProduct']['tosAcceptance'] ) ) {
 			$tos_acceptance_data = $publication_data['rrmProduct']['tosAcceptance'];
 
-			$tos_acceptance = new TosAcceptance();
-			$tos_acceptance->setUserAccepted( ! empty( $tos_acceptance_data['userAccepted'] ) );
+			if ( array_key_exists( 'userAccepted', $tos_acceptance_data ) ) {
+				$tos_acceptance = $tos_acceptance ?: new TosAcceptance();
+				$tos_acceptance->setUserAccepted( $tos_acceptance_data['userAccepted'] );
+				$update_mask[] = 'rrmProduct.tosAcceptance.userAccepted';
+			}
 
-			$rrm_product = new RrmProduct();
-			$rrm_product->setTosAcceptance( $tos_acceptance );
+			if ( array_key_exists( 'emailOptIn', $tos_acceptance_data ) ) {
+				$tos_acceptance = $tos_acceptance ?: new TosAcceptance();
+				$tos_acceptance->setEmailOptIn( $tos_acceptance_data['emailOptIn'] );
+				$update_mask[] = 'rrmProduct.tosAcceptance.emailOptIn';
+			}
 
-			$publication->setRrmProduct( $rrm_product );
-			$update_mask[] = 'rrmProduct.tosAcceptance.userAccepted';
+			if ( $tos_acceptance ) {
+				$rrm_product->setTosAcceptance( $tos_acceptance );
+				$publication->setRrmProduct( $rrm_product );
+			}
 		}
 
 		if ( array_key_exists( 'publicationTosUrl', $publication_data ) ) {
