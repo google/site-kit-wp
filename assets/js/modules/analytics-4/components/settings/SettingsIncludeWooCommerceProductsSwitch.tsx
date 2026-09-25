@@ -47,12 +47,17 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 > = ( { hasModuleAccess = true } ) => {
 	const freshDataEnabled = useFeature( 'freshData' );
 
-	const { isWooCommerceInstalled, isAnalyticsConnected } = useSelect(
+	const {
+		isWooCommerceInstalled,
+		isAnalyticsConnected,
+		hasResolvedSettings,
+	} = useSelect(
 		( select: Select ) => {
 			if ( ! freshDataEnabled ) {
 				return {
 					isWooCommerceInstalled: false,
 					isAnalyticsConnected: false,
+					hasResolvedSettings: false,
 				};
 			}
 
@@ -62,6 +67,8 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 				isAnalyticsConnected: select( CORE_MODULES ).isModuleConnected(
 					MODULE_SLUG_ANALYTICS_4
 				),
+				hasResolvedSettings:
+					select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
 			};
 		},
 		[ freshDataEnabled ]
@@ -89,12 +96,13 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 	}
 
 	// `includesWooCommerceProducts` is intentionally excluded here: unlike
-	// the two selectors above, it can be `undefined` even once settings
-	// have fully resolved (e.g. a settings object saved before this
-	// setting existed), so it isn't a reliable loading signal.
+	// the values above, it can be `undefined` even once settings have fully
+	// resolved (e.g. a settings object saved before this setting existed),
+	// so `hasResolvedSettings` is used instead as the reliable signal.
 	const loading =
 		isWooCommerceInstalled === undefined ||
-		isAnalyticsConnected === undefined;
+		isAnalyticsConnected === undefined ||
+		! hasResolvedSettings;
 
 	return (
 		<div>

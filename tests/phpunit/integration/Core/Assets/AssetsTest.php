@@ -339,6 +339,9 @@ class AssetsTest extends TestCase {
 	}
 
 	/**
+	 * `class_alias()` cannot be undone within a process, so this must run in isolation
+	 * to avoid making `WooCommerce` exist for every other test in the suite.
+	 *
 	 * @runInSeparateProcess
 	 */
 	public function test_base_data__woocommerce_active() {
