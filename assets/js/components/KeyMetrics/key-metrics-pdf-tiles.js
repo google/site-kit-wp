@@ -73,9 +73,17 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
+	buildCitiesReportOptions,
+	mapCitiesRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/cities';
+import {
 	buildCountriesReportOptions,
 	mapCountriesRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/countries';
+import {
+	buildDeviceTypeReportOptions,
+	mapDeviceTypeRows,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/deviceType';
 import {
 	buildEngagementReportOptions,
 	buildPrimaryEventReportOptions,
@@ -84,9 +92,11 @@ import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/comp
 import {
 	getGoalDriverTotalCount,
 	makeShareOfExplicitTotalMapper,
+	parseMetricValue,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
 import { buildTopAuthorsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topAuthors';
 import { buildTopPagesReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topPages';
+import { buildTopTrafficChannelsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannels';
 import {
 	buildTopTrafficChannelsRateReportOptions,
 	mapTopTrafficChannelsRateRows,
@@ -119,21 +129,12 @@ import {
 } from '@/js/modules/analytics-4/components/widgets/ReturningVisitorsWidget';
 import { getTopCategoriesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopCategoriesWidget';
 import { getTopCitiesDrivingAddToCartReportOptions } from '@/js/modules/analytics-4/components/widgets/TopCitiesDrivingAddToCartWidget';
-import {
-	getTopCitiesDrivingLeadsEventNames,
-	getTopCitiesDrivingLeadsReportOptions,
-} from '@/js/modules/analytics-4/components/widgets/TopCitiesDrivingLeadsWidget';
-import { getTopCitiesDrivingPurchasesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopCitiesDrivingPurchasesWidget';
 import { getTopCitiesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopCitiesWidget';
 import {
 	getTopConvertingTrafficSourceReportOptions,
 	getTopConvertingTrafficSourceSubtext,
 } from '@/js/modules/analytics-4/components/widgets/TopConvertingTrafficSourceWidget';
 import { getTopCountriesReportOptions } from '@/js/modules/analytics-4/components/widgets/TopCountriesWidget';
-import {
-	getTopDeviceDrivingPurchasesReportOptions,
-	getTopDeviceDrivingPurchasesSubtext,
-} from '@/js/modules/analytics-4/components/widgets/TopDeviceDrivingPurchasesWidget';
 import {
 	getTopPagesDrivingLeadsEventNames,
 	getTopPagesDrivingLeadsReportOptions,
@@ -147,15 +148,6 @@ import {
 	getTopTrafficSourceDrivingAddToCartReportOptions,
 	getTopTrafficSourceDrivingAddToCartSubtext,
 } from '@/js/modules/analytics-4/components/widgets/TopTrafficSourceDrivingAddToCartWidget';
-import {
-	getTopTrafficSourceDrivingLeadsEventNames,
-	getTopTrafficSourceDrivingLeadsReportOptions,
-	getTopTrafficSourceDrivingLeadsSubtext,
-} from '@/js/modules/analytics-4/components/widgets/TopTrafficSourceDrivingLeadsWidget';
-import {
-	getTopTrafficSourceDrivingPurchasesReportOptions,
-	getTopTrafficSourceDrivingPurchasesSubtext,
-} from '@/js/modules/analytics-4/components/widgets/TopTrafficSourceDrivingPurchasesWidget';
 import {
 	getTopTrafficSourceReportOptions,
 	getTopTrafficSourceSubtext,
@@ -271,8 +263,8 @@ async function resolvePrimaryEcommerceEvent( registry ) {
  * "add-to-cart" data under the "sales" label.
  *
  * Covers the tiles that need nothing beyond that single ranked report and its
- * row mapper - `Top traffic channels by sales rate`, `Sales by visitor type`
- * and `Sales by countries`. `Top authors driving sales` (a second, site-wide
+ * row mapper - `Top traffic channels by sales rate`, `Sales by visitor type`,
+ * `Sales by countries`, `Sales by cities` and `Sales by device type`. `Top authors driving sales` (a second, site-wide
  * total report) and `Top pages driving sales` (a second, page-titles report)
  * have extra requirements and keep their own tile config.
  *
@@ -315,6 +307,87 @@ function createSellingProductsTableTile( buildReportOptions, mapRows ) {
 				};
 			}
 		),
+	};
+}
+
+/**
+ * Resolves the detected lead events a lead tile reports on.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry WordPress data registry.
+ * @return {Promise<string[]>} The detected lead event names, empty when none are detected.
+ */
+async function resolveDetectedLeadEvents( registry ) {
+	await registry.resolveSelect( MODULES_ANALYTICS_4 ).getDetectedEvents();
+
+	return registry.select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents() || [];
+}
+
+/**
+ * Builds the two requests a traffic channels tile needs.
+ *
+ * Each channel's percentage is its share of every matching event site-wide
+ * rather than of the ranked channels shown, so the site-wide total is a second
+ * request. The ranked report asks for the same row limit the Site Goals tile
+ * does, so both surfaces rank the same channels.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}          dates        The single-period date range.
+ * @param {string|string[]} primaryEvent The primary conversion event name(s).
+ * @return {Object[]} The report requests, or an empty array when there is no primary event.
+ */
+function buildTopTrafficChannelsRequests( dates, primaryEvent ) {
+	const options = buildTopTrafficChannelsReportOptions( {
+		dates,
+		primaryEvent,
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+	const totalOptions = buildGoalDriverTotalReportOptions( {
+		dates,
+		primaryEvent,
+		reportIDSuffix: 'top-traffic-channels',
+	} );
+
+	if ( ! options || ! totalOptions ) {
+		return [];
+	}
+
+	return [
+		{ moduleStore: MODULES_ANALYTICS_4, options },
+		{ moduleStore: MODULES_ANALYTICS_4, options: totalOptions },
+	];
+}
+
+/**
+ * Reads a traffic channels tile's two reports into its rows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} [report]      The ranked channels report.
+ * @param {Object} [totalReport] The site-wide total report.
+ * @return {Object|null} The tile data, or `null` when the report has no rows.
+ */
+function extractTopTrafficChannelsTile( report, totalReport ) {
+	const sourceRows = report?.rows || [];
+	// Falls back to summing the ranked rows when the site-wide total came back
+	// empty, so the tile shows a sensible percentage rather than 0%.
+	const totalCount =
+		getGoalDriverTotalCount( totalReport ) ||
+		sourceRows.reduce( ( sum, row ) => sum + parseMetricValue( row ), 0 );
+	const rows = makeShareOfExplicitTotalMapper( totalCount )( sourceRows );
+
+	if ( ! rows.length ) {
+		return null;
+	}
+
+	return {
+		rows: rows.map( ( row ) => ( {
+			primary: row.label,
+			metric: row.value,
+		} ) ),
+		limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	};
 }
 
@@ -1344,130 +1417,35 @@ export const KEY_METRICS_PDF_TILES = {
 		),
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
-		TileComponent: PDFMetricTileText,
+		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
 			// The report options depend on the detected lead events, so this
 			// resolves them from the registry before building the requests.
 			async ( dates, registry ) => {
-				const detectedEvents = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const eventNames =
-					getTopTrafficSourceDrivingLeadsEventNames( detectedEvents );
+				const leadEvents = await resolveDetectedLeadEvents( registry );
 
-				// No detected lead events means no data, so fetch nothing and
-				// let the empty reports drop the tile.
-				if ( eventNames.length === 0 ) {
-					return [];
-				}
-
-				const { totalLeads, trafficSource } =
-					getTopTrafficSourceDrivingLeadsReportOptions(
-						dates,
-						eventNames
-					);
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: totalLeads,
-					},
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: trafficSource,
-					},
-				];
+				return buildTopTrafficChannelsRequests(
+					pdfTableDates( dates ),
+					leadEvents
+				);
 			},
-			( [ totalReport, sourceReport ] ) => {
-				const { rows: totalRows = [] } = totalReport || {};
-				const { rows: sourceRows = [] } = sourceReport || {};
-
-				// The date-range dimension shifts position with the event
-				// filter, so match a row by any dimension holding the range.
-				function rowFor( rows, dateRange ) {
-					return rows.find( ( row ) =>
-						( row?.dimensionValues || [] ).some(
-							( dimension ) => dimension?.value === dateRange
-						)
-					);
-				}
-
-				const topSource = rowFor( sourceRows, 'date_range_0' )
-					?.dimensionValues?.[ 0 ]?.value;
-
-				// No top source row means the report has no data.
-				if ( ! topSource ) {
-					return null;
-				}
-
-				function rateFor( dateRange ) {
-					const total =
-						Number(
-							rowFor( totalRows, dateRange )?.metricValues?.[ 0 ]
-								?.value
-						) || 0;
-					const sourceValue =
-						Number(
-							rowFor( sourceRows, dateRange )?.metricValues?.[ 0 ]
-								?.value
-						) || 0;
-					return total ? sourceValue / total : 0;
-				}
-
-				const currentRate = rateFor( 'date_range_0' );
-				const previousRate = rateFor( 'date_range_1' );
-
-				return {
-					value: topSource,
-					subtext:
-						getTopTrafficSourceDrivingLeadsSubtext( currentRate ),
-					...getPDFTileChange( previousRate, currentRate, {
-						isAbsolute: true,
-					} ),
-				};
-			}
+			( [ report, totalReport ] ) =>
+				extractTopTrafficChannelsTile( report, totalReport )
 		),
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
-		TileComponent: PDFMetricTileText,
+		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const { totalPurchases, trafficSource } =
-					getTopTrafficSourceDrivingPurchasesReportOptions( dates );
-
-				// `ecommercePurchases` returns a zero-valued row rather than
-				// no data, so the per-source report can still name a top
-				// source for a period with no purchases. Confirm a purchase
-				// happened before requesting it, matching the dashboard's
-				// TopTrafficSourceDrivingPurchasesWidget.
-				const totalReport = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getReport( totalPurchases );
-
-				const hasPurchases = ( totalReport?.rows || [] ).some(
-					( row ) => Number( row?.metricValues?.[ 0 ]?.value ) > 0
-				);
-
-				if ( ! hasPurchases ) {
-					return [];
-				}
-
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: totalPurchases,
-					},
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: trafficSource,
-					},
-				];
-			},
-			( [ totalReport, sourceReport ] ) =>
-				extractTopSourceShareTile(
-					totalReport,
-					sourceReport,
-					getTopTrafficSourceDrivingPurchasesSubtext
-				)
+			// This tile is purchase-specific, so the primary event is always
+			// `purchase` rather than `getPrimaryEcommerceEvent()`'s detected
+			// fallback to `add_to_cart`.
+			( dates ) =>
+				buildTopTrafficChannelsRequests(
+					pdfTableDates( dates ),
+					ENUM_CONVERSION_EVENTS.PURCHASE
+				),
+			( [ report, totalReport ] ) =>
+				extractTopTrafficChannelsTile( report, totalReport )
 		),
 	},
 	[ KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE ]: {
@@ -1622,46 +1600,34 @@ export const KEY_METRICS_PDF_TILES = {
 		getTileData: createKeyMetricTileDataLoader(
 			// The report options depend on the detected lead events, so this
 			// resolves them from the registry before building the request.
-			async ( rawDates, registry ) => {
-				const detectedEvents = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getDetectedEvents();
-				const eventNames =
-					getTopCitiesDrivingLeadsEventNames( detectedEvents );
+			async ( dates, registry ) => {
+				const leadEvents = await resolveDetectedLeadEvents( registry );
 
-				// No detected lead events means no data, so fetch nothing and
-				// let the empty report drop the tile.
-				if ( eventNames.length === 0 ) {
+				const options = buildCitiesReportOptions( {
+					dates: pdfTableDates( dates ),
+					primaryEvent: leadEvents,
+					limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+				} );
+
+				if ( ! options ) {
 					return [];
 				}
 
-				// Table tiles request a single date range; drop the
-				// export's compare dates.
-				const dates = pdfTableDates( rawDates );
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: getTopCitiesDrivingLeadsReportOptions(
-							dates,
-							eventNames
-						),
-					},
-				];
+				return [ { moduleStore: MODULES_ANALYTICS_4, options } ];
 			},
-			( [ citiesReport ] ) => {
-				const { rows = [] } = citiesReport || {};
+			( [ report ] ) => {
+				const rows = mapCitiesRows( report?.rows || [] );
 
-				// No rows means the report has no data.
-				if ( rows.length === 0 ) {
+				if ( ! rows.length ) {
 					return null;
 				}
 
 				return {
 					rows: rows.map( ( row ) => ( {
-						primary: row.dimensionValues[ 0 ].value,
-						metric: numFmt( row.metricValues[ 0 ].value ),
+						primary: row.label,
+						metric: row.value,
 					} ) ),
-					limit: 3,
+					limit: GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 				};
 			}
 		),
@@ -1698,75 +1664,16 @@ export const KEY_METRICS_PDF_TILES = {
 			}
 		),
 	},
-	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
-		TileComponent: PDFMetricTileTable,
-		getTileData: createKeyMetricTileDataLoader(
-			( dates ) => [
-				{
-					moduleStore: MODULES_ANALYTICS_4,
-					options: getTopCitiesDrivingPurchasesReportOptions(
-						pdfTableDates( dates )
-					),
-				},
-			],
-			( [ report ] ) => {
-				const { rows = [] } = report || {};
-
-				// No rows means the report has no data, so drop the tile.
-				if ( ! rows.length ) {
-					return null;
-				}
-
-				return {
-					rows: rows.map( ( row ) => ( {
-						primary: row.dimensionValues[ 0 ].value,
-						metric: numFmt( row.metricValues[ 0 ].value ),
-					} ) ),
-					limit: 3,
-				};
-			}
+	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]:
+		createSellingProductsTableTile(
+			buildCitiesReportOptions,
+			mapCitiesRows
 		),
-	},
-	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
-		TileComponent: PDFMetricTileText,
-		getTileData: createKeyMetricTileDataLoader(
-			async ( dates, registry ) => {
-				const { totalPurchases, device } =
-					getTopDeviceDrivingPurchasesReportOptions( dates );
-
-				// `ecommercePurchases` returns a zero-valued row rather than
-				// no data, so the per-device report can still name a top
-				// device for a period with no purchases. Confirm a purchase
-				// happened before requesting it, matching the dashboard's
-				// TopDeviceDrivingPurchasesWidget.
-				const totalReport = await registry
-					.resolveSelect( MODULES_ANALYTICS_4 )
-					.getReport( totalPurchases );
-
-				const hasPurchases = ( totalReport?.rows || [] ).some(
-					( row ) => Number( row?.metricValues?.[ 0 ]?.value ) > 0
-				);
-
-				if ( ! hasPurchases ) {
-					return [];
-				}
-
-				return [
-					{
-						moduleStore: MODULES_ANALYTICS_4,
-						options: totalPurchases,
-					},
-					{ moduleStore: MODULES_ANALYTICS_4, options: device },
-				];
-			},
-			( [ totalReport, deviceReport ] ) =>
-				extractTopSourceShareTile(
-					totalReport,
-					deviceReport,
-					getTopDeviceDrivingPurchasesSubtext
-				)
+	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]:
+		createSellingProductsTableTile(
+			buildDeviceTypeReportOptions,
+			mapDeviceTypeRows
 		),
-	},
 	[ KM_ANALYTICS_TOP_COUNTRIES ]: {
 		TileComponent: PDFMetricTileTable,
 		getTileData: createKeyMetricTileDataLoader(

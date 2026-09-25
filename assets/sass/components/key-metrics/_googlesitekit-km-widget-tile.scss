@@ -31,6 +31,7 @@
 
 		.googlesitekit-info-tooltip {
 			color: $c-neutral-n-500;
+			height: 16px;
 		}
 
 		.googlesitekit-km-widget-tile__title-container {
@@ -39,7 +40,9 @@
 			flex-grow: 1;
 		}
 
-		.googlesitekit-km-widget-tile__title {
+		// The title renders through `Typography` as a small label, whose
+		// medium weight would otherwise win over the regular weight set here.
+		.googlesitekit-km-widget-tile__title.googlesitekit-typography {
 			color: $c-surfaces-on-background-variant;
 			flex: 1;
 			font-weight: $fw-normal;
@@ -69,6 +72,10 @@
 				align-self: auto;
 			}
 		}
+
+		.googlesitekit-change-badge {
+			border-radius: 4px;
+		}
 	}
 
 	.googlesitekit-km-widget-tile--numeric {
@@ -94,7 +101,7 @@
 				font-size: $fs-label-md;
 				font-weight: $fw-normal;
 				line-height: $lh-label-md;
-				margin: -4px 0 1px;
+				margin: -4px 0 2px;
 			}
 		}
 	}
@@ -108,7 +115,10 @@
 			text-transform: capitalize;
 
 			@media (min-width: $bp-nonMobile) {
-				margin: 5px 0 0;
+				font-size: $fs-title-md;
+				letter-spacing: $ls-xxs;
+				line-height: $lh-title-md;
+				margin: 15px 0 0;
 			}
 		}
 
@@ -122,7 +132,7 @@
 				font-size: $fs-label-md;
 				font-weight: $fw-normal;
 				line-height: $lh-label-md;
-				margin: 0;
+				margin: 1px 0 2px;
 			}
 		}
 	}
@@ -133,7 +143,11 @@
 			display: flex;
 			flex-direction: column;
 			font-size: $fs-label-sm;
-			margin-top: 12px;
+			line-height: $lh-label-sm;
+
+			// With the title's 4px bottom margin, this leaves 12px between the
+			// title and the first row.
+			margin-top: 8px;
 			width: 100%;
 		}
 
@@ -141,7 +155,6 @@
 			display: flex;
 			flex-direction: row;
 			justify-content: space-between;
-			padding: 2px 0;
 		}
 
 		.googlesitekit-table__body-item {
@@ -158,6 +171,7 @@
 
 			strong {
 				font-weight: $fw-medium;
+				letter-spacing: $ls-xs;
 			}
 
 			.googlesitekit-cta-link {
@@ -336,6 +350,15 @@
 		.googlesitekit-km-widget-tile > div {
 			@media (min-width: $bp-tablet) {
 				grid-column: 1 / -1;
+			}
+		}
+
+		// The tile's 150px min-height doesn't size the rows it shares with the
+		// tiles beside it, so the body keeps what is left of it: 150px minus
+		// the 18px top and bottom padding and the 20px title row.
+		.googlesitekit-km-widget-tile__body {
+			@media (min-width: $bp-tablet) {
+				min-height: 94px;
 			}
 		}
 
