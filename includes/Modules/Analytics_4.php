@@ -69,6 +69,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
@@ -1083,6 +1084,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
+			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
+				array(
+					'module'  => $this,
+					'service' => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'context' => $this->context,
+				)
+			);
+		}
 
 		return $this->datapoints;
 	}
