@@ -1,5 +1,5 @@
 /**
- * Public Intents API entrypoint.
+ * `googlesitekit-intents` entry point tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,18 +19,15 @@
 /**
  * Internal dependencies
  */
+import './googlesitekit-intents';
 import Data from 'googlesitekit-data';
-import { registerStore } from './googlesitekit/datastore/intents';
-import { createIntents } from './googlesitekit/intents';
 
-registerStore( Data );
-
-const Intents = createIntents();
-
-if ( typeof global.googlesitekit === 'undefined' ) {
-	global.googlesitekit = {};
-}
-
-global.googlesitekit.intents = Intents;
-
-export default Intents;
+describe( 'googlesitekit-intents', () => {
+	it( 'registers the `core/intents` store on `googlesitekit-data`', () => {
+		expect( Data.select( 'core/intents' ) ).toEqual(
+			expect.objectContaining( {
+				getIntent: expect.any( Function ),
+			} )
+		);
+	} );
+} );
