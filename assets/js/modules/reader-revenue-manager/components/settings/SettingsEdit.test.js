@@ -33,6 +33,7 @@ import * as tracking from '@/js/util/tracking';
 import {
 	act,
 	createTestRegistry,
+	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
@@ -240,6 +241,36 @@ describe( 'SettingsEdit', () => {
 	describe( 'with configured CTAs', () => {
 		const configuredCTAs = { 'cta-1': 'newsletter-signup' };
 
+		it( 'should track the CTA slug when clicking its Manage settings link', async () => {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { ...settings, configuredCTAs } );
+
+			const { getByRole, waitForRegistry } = render( <SettingsEdit />, {
+				registry,
+				features: [ 'rrmExpressSetup' ],
+				viewContext: VIEW_CONTEXT_SETTINGS,
+			} );
+
+			await waitForRegistry();
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				'settings_rrm',
+				'click_cta_manage_settings_link',
+				'newsletter-signup'
+			);
+
+			fireEvent.click(
+				getByRole( 'link', { name: /Manage settings/i } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'settings_rrm',
+				'click_cta_manage_settings_link',
+				'newsletter-signup'
+			);
+		} );
+
 		it( 'should render each configured CTA with a link to its edit screen when the `rrmExpressSetup` feature flag is enabled', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -315,9 +346,13 @@ describe( 'SettingsEdit', () => {
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( { ...settings, configuredCTAs } );
 
-			const { queryByText, waitForRegistry } = render( <SettingsEdit />, {
-				registry,
-			} );
+			const { queryByText, queryByRole, waitForRegistry } = render(
+				<SettingsEdit />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SETTINGS,
+				}
+			);
 
 			await waitForRegistry();
 
@@ -325,6 +360,14 @@ describe( 'SettingsEdit', () => {
 			expect(
 				queryByText( 'Newsletter sign-up form' )
 			).not.toBeInTheDocument();
+			expect(
+				queryByRole( 'link', { name: /Manage settings/i } )
+			).not.toBeInTheDocument();
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				'settings_rrm',
+				'click_cta_manage_settings_link',
+				'newsletter-signup'
+			);
 		} );
 
 		it( 'should leave the CTA placement settings unchanged', async () => {
