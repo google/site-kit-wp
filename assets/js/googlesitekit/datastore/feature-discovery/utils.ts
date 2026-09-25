@@ -32,7 +32,7 @@ export function getFeatureNewnessKey( slug: string ) {
 /**
  * Gets the survey trigger ID for a feature relevancy reason.
  *
- * @since 1.188.0
+ * @since n.e.x.t
  *
  * @param {string} slug   Feature slug.
  * @param {string} reason Feature relevancy reason.

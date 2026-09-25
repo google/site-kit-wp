@@ -43,16 +43,21 @@ describe( 'FeedbackMenu', () => {
 				isOpen
 			/>
 		);
+
 		expect(
 			getByRole( 'heading', { name: 'Help us improve' } )
 		).toBeInTheDocument();
+
 		expect( getAllByRole( 'menuitem' ) ).toHaveLength( 2 );
+
 		expect(
 			getByRole( 'menu', { name: 'Help us improve' } )
 		).not.toContainElement( getByRole( 'heading' ) );
+
 		expect(
 			getByRole( 'menu', { name: 'Help us improve' } )
 		).toHaveAttribute( 'aria-labelledby', getByRole( 'heading' ).id );
+
 		rerender(
 			<FeedbackMenu
 				id="feedback-menu"
@@ -61,6 +66,7 @@ describe( 'FeedbackMenu', () => {
 				options={ options }
 			/>
 		);
+
 		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
 	} );
 
@@ -72,6 +78,7 @@ describe( 'FeedbackMenu', () => {
 		async ( label, value ) => {
 			const onSelect = jest.fn();
 			const onClose = jest.fn();
+
 			const { getByRole } = render(
 				<FeedbackMenu
 					id="feedback-menu"
@@ -81,10 +88,13 @@ describe( 'FeedbackMenu', () => {
 					isOpen
 				/>
 			);
+
 			fireEvent.click( getByRole( 'menuitem', { name: label } ) );
+
 			await waitFor( () =>
 				expect( onSelect ).toHaveBeenCalledWith( value )
 			);
+
 			expect( onClose ).toHaveBeenCalledTimes( 1 );
 			expect( fetchMock ).not.toHaveFetched();
 		}
@@ -92,6 +102,7 @@ describe( 'FeedbackMenu', () => {
 
 	it( 'should close after selection without an onSelect callback', async () => {
 		const onClose = jest.fn();
+
 		const { getByRole } = render(
 			<FeedbackMenu
 				id="feedback-menu"
@@ -100,7 +111,9 @@ describe( 'FeedbackMenu', () => {
 				isOpen
 			/>
 		);
+
 		fireEvent.click( getByRole( 'menuitem', { name: 'Give feedback' } ) );
+
 		await waitFor( () => expect( onClose ).toHaveBeenCalledTimes( 1 ) );
 	} );
 
@@ -109,8 +122,10 @@ describe( 'FeedbackMenu', () => {
 		( keyCode ) => {
 			const onClose = jest.fn();
 			const onSelect = jest.fn();
+
 			const sourceRef = createRef< HTMLButtonElement >();
 			const wrapperRef = createRef< HTMLDivElement >();
+
 			const { getByRole } = render(
 				<div ref={ wrapperRef }>
 					<button ref={ sourceRef }>Open menu</button>
@@ -125,7 +140,9 @@ describe( 'FeedbackMenu', () => {
 					/>
 				</div>
 			);
+
 			fireEvent.keyDown( getByRole( 'menu' ), { keyCode } );
+
 			expect( onClose ).toHaveBeenCalledTimes( 1 );
 			expect( onSelect ).not.toHaveBeenCalled();
 			expect( sourceRef.current ).toHaveFocus();
@@ -135,6 +152,7 @@ describe( 'FeedbackMenu', () => {
 	it( 'should close on click away without selecting', () => {
 		const onClose = jest.fn();
 		const onSelect = jest.fn();
+
 		render(
 			<FeedbackMenu
 				id="feedback-menu"
@@ -144,13 +162,16 @@ describe( 'FeedbackMenu', () => {
 				isOpen
 			/>
 		);
+
 		fireEvent.mouseDown( document.body );
+
 		expect( onClose ).toHaveBeenCalledTimes( 1 );
 		expect( onSelect ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should navigate and select options with the keyboard', async () => {
 		const onSelect = jest.fn();
+
 		const { getByRole } = render(
 			<FeedbackMenu
 				id="feedback-menu"
@@ -160,14 +181,21 @@ describe( 'FeedbackMenu', () => {
 				isOpen
 			/>
 		);
+
 		const firstItem = getByRole( 'menuitem', {
 			name: 'Just hide this suggestion',
 		} );
+
 		act( () => firstItem.focus() );
+
 		fireEvent.keyDown( firstItem, { key: 'ArrowDown', keyCode: DOWN } );
+
 		const secondItem = getByRole( 'menuitem', { name: 'Give feedback' } );
+
 		expect( secondItem ).toHaveFocus();
+
 		fireEvent.keyDown( secondItem, { key: 'Enter', keyCode: ENTER } );
+
 		await waitFor( () =>
 			expect( onSelect ).toHaveBeenCalledWith( 'selected-value' )
 		);

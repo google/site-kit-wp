@@ -267,9 +267,10 @@ describe( 'core/feature-discovery newness', () => {
 	} );
 
 	describe( 'dismissFeature', () => {
-		it( 'should permanently dismiss a feature, remove it from Whats new and its count, and keep it available', async () => {
-			const endpoint =
-				/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item/;
+		it( 'should permanently dismiss a feature, remove it from "What’s new" and its count, and keep it available', async () => {
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
 
 			const dismissalKey = getFeatureDismissalKey( 'feature' );
 
