@@ -175,6 +175,9 @@ class Setup_Test extends TestCase {
 		$has_credentials     = $params['has_credentials'];
 		$error_code          = $params['error_code'];
 		$expected_error_code = $params['expected_error_code'];
+		$error_message       = array_key_exists( 'error_message', $params )
+			? $params['error_message']
+			: ( $has_credentials ? 'Test error message.' : null );
 
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
@@ -195,16 +198,13 @@ class Setup_Test extends TestCase {
 		// Fake a WP_Error IF a request is made to the Google Proxy server.
 		add_filter(
 			'pre_http_request',
-			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $has_credentials, $error_code ) {
+			function ( $preempt, $args, $url ) use ( $context, &$proxy_server_requests, $error_code, $error_message ) {
 				if ( ( new Google_Proxy( $context ) )->url( Google_Proxy::OAUTH2_SITE_URI ) !== $url ) {
 					return $preempt;
 				}
 				// Collect any HTTP requests to the proxy server to register/sync site with the proxy server.
 				$proxy_server_requests[] = $args;
 
-				// Using the two cases for $has_credentials, we can test the error message
-				// and the fallback to an error code when there is no message.
-				$error_message = $has_credentials ? 'Test error message.' : null;
 				return new WP_Error( $error_code, $error_message );
 			},
 			10,
@@ -217,11 +217,12 @@ class Setup_Test extends TestCase {
 		} catch ( RedirectException $redirect ) {
 			$this->fail( 'Expected WPDieException!' );
 		} catch ( WPDieException $exception ) {
-			$error = $has_credentials ? 'Test error message.' : $error_code;
+			// Empty messages fall back to the error code in the die message.
+			$displayed_error = ! empty( $error_message ) ? $error_message : $error_code;
 			$this->assertStringContainsString(
 				sprintf(
 					'The request to the authentication proxy has failed with an error: %1$s <a href="https://sitekit.withgoogle.com/support?error_id=%2$s" target="_blank">Get help</a>.',
-					$error,
+					$displayed_error,
 					$expected_error_code
 				),
 				$exception->getMessage(),
@@ -260,6 +261,46 @@ class Setup_Test extends TestCase {
 					'has_credentials'     => false,
 					'error_code'          => 'request_failed',
 					'expected_error_code' => 'request_to_auth_proxy_failed',
+				),
+			),
+			'curl error 7 message'                       => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'http_request_failed',
+					'error_message'       => 'cURL error 7: Failed to connect to sitekit.withgoogle.com',
+					'expected_error_code' => 'curl-error-7-operation-timed-out',
+				),
+			),
+			'curl error 28 message'                      => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'http_request_failed',
+					'error_message'       => 'cURL error 28: Operation timed out after 5000 milliseconds',
+					'expected_error_code' => 'curl-error-28-operation-timed-out',
+				),
+			),
+			'blocked http requests by code'              => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'http_request_not_executed',
+					'error_message'       => 'User has blocked requests through HTTP.',
+					'expected_error_code' => 'user-has-blocked-requests-through-http',
+				),
+			),
+			'site url already exists message'            => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'request_failed',
+					'error_message'       => 'A site with the given URL already exists',
+					'expected_error_code' => 'a-site-with-the-given-url-already-exists',
+				),
+			),
+			'unable to retrieve site connection message' => array(
+				array(
+					'has_credentials'     => true,
+					'error_code'          => 'request_failed',
+					'error_message'       => 'Unable to retrieve site connection. You may need to perform a plugin reset',
+					'expected_error_code' => 'unable-to-retrieve-site-connection-you-may-need-to-perform-a-plugin-reset',
 				),
 			),
 		);
