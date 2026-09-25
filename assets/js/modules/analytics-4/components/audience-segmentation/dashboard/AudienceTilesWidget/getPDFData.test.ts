@@ -196,8 +196,37 @@ function buildRegistry( {
 		return Promise.resolve( { response: { rows: [] } } );
 	} );
 
+	function isSiteKitAudienceName( name: string ) {
+		return (
+			AVAILABLE_AUDIENCES.find( ( item ) => item.name === name )
+				?.audienceType === 'SITE_KIT_AUDIENCE'
+		);
+	}
+
+	// Mirrors the precedence the real selectors apply, so the options above keep driving
+	// what each card shows.
+	function isAudienceTilePartialData( name: string ) {
+		return (
+			!! propertyID &&
+			! isSiteKitAudienceName( name ) &&
+			! isPropertyPartialData &&
+			partialDataAudiences.has( name )
+		);
+	}
+
+	function isAudienceTileTopContentPartialData( name: string ) {
+		return (
+			!! propertyID &&
+			! isPropertyPartialData &&
+			! isAudienceTilePartialData( name ) &&
+			isPostTypePartialData
+		);
+	}
+
 	const analytics4Selectors = {
 		getOrSyncAvailableAudiences: () => AVAILABLE_AUDIENCES,
+		isAudienceTilePartialData,
+		isAudienceTileTopContentPartialData,
 		hasAudiencePartialData: () => isSiteKitPartialData,
 		getPartialDataSiteKitAudience: ( name: string ) => {
 			const found = AVAILABLE_AUDIENCES.find(
@@ -238,6 +267,10 @@ function buildRegistry( {
 	// The loader reads only `resolveSelect`, `select`, and `dispatch`. The mock
 	// stubs those three, then casts to the full registry type the loader's
 	// parameters declare.
+	// The badge selectors read `isGatheringData()` first, so the loader has to resolve it
+	// before it builds the cards. A spy proves it did.
+	const isGatheringData = jest.fn( () => Promise.resolve( false ) );
+
 	const registry = {
 		resolveSelect: () => ( {
 			getConfiguredAudiences: () =>
@@ -245,14 +278,14 @@ function buildRegistry( {
 			getOrSyncAvailableAudiences: () =>
 				Promise.resolve( AVAILABLE_AUDIENCES ),
 			getSettings: () => Promise.resolve( {} ),
-			isGatheringData: () => Promise.resolve( false ),
+			isGatheringData,
 			getResourceDataAvailabilityDate: () => Promise.resolve( 20240101 ),
 		} ),
 		select: () => analytics4Selectors,
 		dispatch: () => ( { fetchGetReport } ),
 	} as unknown as PDFRegistry;
 
-	return { registry, fetchGetReport };
+	return { registry, fetchGetReport, isGatheringData };
 }
 
 /**
@@ -568,6 +601,39 @@ describe( 'AudienceTilesWidget getPDFData', () => {
 			const otherCard = findCard( audiences, OTHER_B );
 			expect( otherCard.isAudiencePartialData ).toBe( false );
 			expect( otherCard.isTopContentPartialData ).toBe( true );
+		} );
+
+		it( "takes each card's flags from its own audience", async () => {
+			const { registry } = buildRegistry( {
+				partialDataAudiences: new Set( [ OTHER_A ] ),
+			} );
+
+			const audiences = getAudiences( await runPDFData( registry ) );
+
+			expect( findCard( audiences, OTHER_A ).isAudiencePartialData ).toBe(
+				true
+			);
+			expect( findCard( audiences, OTHER_B ).isAudiencePartialData ).toBe(
+				false
+			);
+		} );
+
+		it( 'resolves the gathering data state with no Site Kit audience configured', async () => {
+			// A Site Kit audience resolves this on its own path. With none configured
+			// nothing else does, and the badge selectors answer undefined — which is what
+			// kept the badges out of the report.
+			const { registry, isGatheringData } = buildRegistry( {
+				configuredAudiences: [ OTHER_A, OTHER_B ],
+				isPostTypePartialData: true,
+			} );
+
+			const card = findCard(
+				getAudiences( await runPDFData( registry ) ),
+				OTHER_A
+			);
+
+			expect( isGatheringData ).toHaveBeenCalled();
+			expect( card.isTopContentPartialData ).toBe( true );
 		} );
 
 		it( 'never sets the header flag for a Site Kit audience', async () => {
