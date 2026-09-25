@@ -110,9 +110,41 @@ export const selectors = {
 			),
 		};
 
+		const chipLabels = {
+			[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+				'Know your audience',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+				'Engage your visitors',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.MONETIZATION ]: __(
+				'Monetize',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.TRAFFIC ]: __(
+				'Drive traffic',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PRIVACY ]: __(
+				'Manage privacy',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+				'Improve site speed',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
+				'Collaborate',
+				'google-site-kit'
+			),
+		};
+
 		return FEATURE_CATEGORY_ORDER.map( ( slug ) => ( {
 			slug,
 			title: titles[ slug ],
+			chipLabel: chipLabels[ slug ],
 		} ) );
 	},
 

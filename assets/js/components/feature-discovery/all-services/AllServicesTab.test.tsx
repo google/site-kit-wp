@@ -39,6 +39,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	render,
 } from '@tests/js/test-utils';
@@ -185,6 +186,83 @@ describe( 'AllServicesTab', () => {
 
 		expect( engagementGroup ).toHaveTextContent( ENGAGEMENT_HEADING );
 		expect( engagementGroup ).toHaveTextContent( 'Multi goal feature' );
+	} );
+
+	it( 'should place a feature under a selected secondary goal when filtered', async () => {
+		provideFeatures( registry, [ multiGoalFeature ] );
+
+		const { getByText, queryByRole, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+
+		expect(
+			queryByRole( 'heading', { name: ENGAGEMENT_HEADING } )
+		).not.toBeInTheDocument();
+
+		const audienceGroupHeading = queryByRole( 'heading', {
+			name: AUDIENCE_HEADING,
+		} );
+		expect( audienceGroupHeading ).toBeInTheDocument();
+		expect(
+			audienceGroupHeading?.closest( '.googlesitekit-feature-goal-group' )
+		).toHaveTextContent( 'Multi goal feature' );
+	} );
+
+	it( 'should render a feature once under the first selected goal in its own goal order', async () => {
+		provideFeatures( registry, [ multiGoalFeature ] );
+
+		const { container, getAllByRole, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		fireEvent.click( getByText( 'Engage your visitors' ) );
+
+		expect(
+			getAllByRole( 'heading', { name: 'Multi goal feature' } )
+		).toHaveLength( 1 );
+
+		const [ firstGroup ] = Array.from(
+			container.querySelectorAll( '.googlesitekit-feature-goal-group' )
+		);
+
+		expect( firstGroup ).toHaveTextContent( ENGAGEMENT_HEADING );
+		expect( firstGroup ).toHaveTextContent( 'Multi goal feature' );
+	} );
+
+	it( 'should only render selected goal headings with features, in curated order', async () => {
+		provideFeatures( registry, [
+			audienceFeature,
+			monetizationFeature,
+			productivityFeature,
+		] );
+
+		const { container, getByText, queryByRole, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Collaborate' ) );
+		fireEvent.click( getByText( 'Know your audience' ) );
+
+		expect( getHeadings( container ) ).toEqual( [
+			AUDIENCE_HEADING,
+			PRODUCTIVITY_HEADING,
+		] );
+
+		expect(
+			queryByRole( 'heading', { name: MONETIZATION_HEADING } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should keep catalog registration order within a group', async () => {
