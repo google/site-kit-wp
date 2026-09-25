@@ -35,7 +35,6 @@ class Google_Proxy {
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
-	const SETUP_URI                 = '/v2/site-management/setup/';
 	const SETUP_V3_URI              = '/v3/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -161,9 +160,7 @@ class Google_Proxy {
 
 		return add_query_arg(
 			$query_params,
-			$this->url(
-				Feature_Flags::enabled( 'setupFlowRefresh' ) ? self::SETUP_V3_URI : self::SETUP_URI
-			)
+			$this->url( self::SETUP_V3_URI )
 		);
 	}
 
@@ -359,14 +356,14 @@ class Google_Proxy {
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
 	public function get_site_fields() {
-		$return_uri             = Feature_Flags::enabled( 'setupFlowRefresh' )
-			? admin_url( 'index.php' )
-			: $this->context->admin_url( 'splash' );
-		$analytics_redirect_uri = add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$analytics_redirect_uri = add_query_arg( 'service_version', 'v3', $analytics_redirect_uri );
-		}
+		$return_uri             = admin_url( 'index.php' );
+		$analytics_redirect_uri = add_query_arg(
+			array(
+				'gatoscallback'   => 1,
+				'service_version' => 'v3',
+			),
+			admin_url( 'index.php' )
+		);
 
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
@@ -441,12 +438,8 @@ class Google_Proxy {
 			'mode'             => '',
 			'hl'               => $this->context->get_locale( 'user' ),
 			'application_name' => self::get_application_name(),
-			'service_version'  => 'v2',
+			'service_version'  => 'v3',
 		);
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$metadata['service_version'] = 'v3';
-		}
 
 		/**
 		 * Filters the setup mode.

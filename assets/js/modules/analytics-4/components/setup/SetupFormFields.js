@@ -27,7 +27,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import {
 	AccountSelect,
 	PropertyHint,
@@ -71,8 +70,6 @@ export default function SetupFormFields() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	useEffect( () => {
 		if ( hasExistingTag ) {
 			setUseSnippet( existingTag !== measurementID );
@@ -107,16 +104,14 @@ export default function SetupFormFields() {
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled &&
-						isValidAccountID( accountID ) && <PropertyHint /> }
+					{ isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
 				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled &&
-						isValidAccountID( accountID ) && <WebDataStreamHint /> }
+					{ isValidAccountID( accountID ) && <WebDataStreamHint /> }
 				</div>
 			</div>
 

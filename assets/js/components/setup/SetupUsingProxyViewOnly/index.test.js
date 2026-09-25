@@ -105,7 +105,7 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		await waitForRegistry();
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success'
 		);
 	} );
 
@@ -125,7 +125,7 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		await waitForRegistry();
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=initial_setup_success'
 		);
 	} );
 

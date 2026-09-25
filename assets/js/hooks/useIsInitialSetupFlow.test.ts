@@ -35,27 +35,15 @@ describe( 'useIsInitialSetupFlow', () => {
 	it( 'is true when the feature is enabled and the flow marks the screen', () => {
 		setQueryString( '&showProgress=true' );
 
-		const { result } = renderHook( () => useIsInitialSetupFlow(), {
-			features: [ 'setupFlowRefresh' ],
-		} );
+		const { result } = renderHook( () => useIsInitialSetupFlow(), {} );
 
 		expect( result.current ).toBe( true );
-	} );
-
-	it( 'is false when the feature is disabled', () => {
-		setQueryString( '&showProgress=true' );
-
-		const { result } = renderHook( () => useIsInitialSetupFlow() );
-
-		expect( result.current ).toBe( false );
 	} );
 
 	it( 'is false when the screen is not part of the flow', () => {
 		setQueryString( '' );
 
-		const { result } = renderHook( () => useIsInitialSetupFlow(), {
-			features: [ 'setupFlowRefresh' ],
-		} );
+		const { result } = renderHook( () => useIsInitialSetupFlow(), {} );
 
 		expect( result.current ).toBe( false );
 	} );
@@ -63,9 +51,7 @@ describe( 'useIsInitialSetupFlow', () => {
 	it( 'is false for a `showProgress` value other than "true"', () => {
 		setQueryString( '&showProgress=false' );
 
-		const { result } = renderHook( () => useIsInitialSetupFlow(), {
-			features: [ 'setupFlowRefresh' ],
-		} );
+		const { result } = renderHook( () => useIsInitialSetupFlow(), {} );
 
 		expect( result.current ).toBe( false );
 	} );

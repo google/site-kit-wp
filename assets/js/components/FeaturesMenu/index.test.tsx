@@ -156,7 +156,6 @@ describe( 'FeaturesMenu', () => {
 			const { queryByText } = render( <FeaturesMenu />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			expect(

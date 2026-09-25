@@ -25,7 +25,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @group Authentication
  */
 class Google_ProxyTest extends TestCase {
-
 	use Fake_Site_Connection_Trait;
 
 	/**
@@ -80,7 +79,7 @@ class Google_ProxyTest extends TestCase {
 				'foo'     => 'foo-789',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
 
 		$url = $this->google_proxy->setup_url(
 			array(
@@ -88,7 +87,7 @@ class Google_ProxyTest extends TestCase {
 				'site_code' => 'site_code-456',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
 
 		// Check an exception is thrown when `code` query param is not passed.
 		try {
@@ -107,22 +106,7 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
-	public function test_setup_url__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
-		$url = $this->google_proxy->setup_url(
-			array(
-				'code'    => 'code-123',
-				'site_id' => 'site_id-456',
-				'foo'     => 'foo-789',
-			)
-		);
-
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
-	}
-
 	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(
@@ -141,7 +125,6 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		add_filter(
@@ -194,24 +177,6 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_get_site_fields() {
-		$this->assertEqualSetsWithIndex(
-			array(
-				'url'                    => home_url(),
-				'action_uri'             => admin_url( 'index.php' ),
-				'name'                   => get_bloginfo( 'name' ),
-				'return_uri'             => $this->context->admin_url( 'splash' ),
-				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
-				'intent_uri'             => $this->context->admin_url( 'dashboard' ),
-			),
-			$this->google_proxy->get_site_fields(),
-			'Site fields should contain all required site information.'
-		);
-	}
-
-	public function test_get_site_fields__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
 		$this->assertEqualSetsWithIndex(
 			array(
 				'url'                    => home_url(),

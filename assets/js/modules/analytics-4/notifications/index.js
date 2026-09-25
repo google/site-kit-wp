@@ -19,7 +19,6 @@
 /**
  * Internal dependencies
  */
-import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -103,9 +102,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			requireDataIsAvailableOnLoad(),
 			asyncRequire( false, requireAudienceSegmentationSetupCompleted() ),
 			async ( { resolveSelect, select } ) => {
-				if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
-					return true;
-				}
 				await resolveSelect( CORE_USER ).getInitialSetupSettings();
 				return ! select( CORE_USER ).isAnalyticsSetupComplete();
 			}
@@ -176,10 +172,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
 			( { select, dispatch } ) => {
-				if (
-					! isFeatureEnabled( 'setupFlowRefresh' ) ||
-					! isInitialWelcomeModalActive()
-				) {
+				if ( ! isInitialWelcomeModalActive() ) {
 					return true;
 				}
 
@@ -243,10 +236,7 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			// this code won't run again until it expires. This way: no separate
 			// "already dismissed" check is needed.
 			( { select, dispatch } ) => {
-				if (
-					! isFeatureEnabled( 'setupFlowRefresh' ) ||
-					! isInitialWelcomeModalActive()
-				) {
+				if ( ! isInitialWelcomeModalActive() ) {
 					return true;
 				}
 

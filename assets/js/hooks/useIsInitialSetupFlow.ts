@@ -19,22 +19,19 @@
 /**
  * Internal dependencies
  */
-import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 
 /**
  * Determines whether the current screen was reached from the refreshed initial setup flow.
  *
- * The flow marks its screens with a `showProgress` query arg, and only exists
- * when the `setupFlowRefresh` feature is enabled.
+ * The flow marks its screens with a `showProgress` query arg.
  *
  * @since 1.186.0
  *
  * @return {boolean} TRUE when the screen is part of the initial setup flow, otherwise FALSE.
  */
 export default function useIsInitialSetupFlow(): boolean {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const [ showProgress ] = useQueryArg( 'showProgress' );
 
-	return !! setupFlowRefreshEnabled && showProgress === 'true';
+	return showProgress === 'true';
 }

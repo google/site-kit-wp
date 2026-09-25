@@ -145,7 +145,7 @@ describe( 'SetupForm', () => {
 		expect( getByText( 'Web data stream' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the form correctly with setupFlowRefresh enabled', async () => {
+	it( 'renders the form correctly with the "Set up" CTA', async () => {
 		registry.dispatch( CORE_SITE ).receiveGetConversionTrackingSettings( {
 			enabled: true, // Hide notice for this case.
 		} );
@@ -186,7 +186,6 @@ describe( 'SetupForm', () => {
 			<SetupForm />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			}
 		);
 		await waitForRegistry();
@@ -259,9 +258,7 @@ describe( 'SetupForm', () => {
 		} );
 
 		act( () => {
-			fireEvent.click(
-				getByRole( 'button', { name: /Complete setup/i } )
-			);
+			fireEvent.click( getByRole( 'button', { name: /Set up/i } ) );
 		} );
 
 		await waitForRegistry();
@@ -370,7 +367,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Complete setup/i } )
+			getByRole( 'button', { name: /Set up/i } )
 		).toBeInTheDocument();
 
 		await waitForRegistry();
@@ -447,7 +444,7 @@ describe( 'SetupForm', () => {
 
 		// Ensure the form rendered successfully.
 		expect(
-			getByRole( 'button', { name: /Complete setup/i } )
+			getByRole( 'button', { name: /Set up/i } )
 		).toBeInTheDocument();
 
 		// While not strictly needed, add waits to match the successful auto-submit test case to help avoid a false positive result.
@@ -620,7 +617,6 @@ describe( 'SetupForm', () => {
 		it( 'should track `click_learn_more_link` when the "Learn more" link is clicked', async () => {
 			const { container, waitForRegistry } = render( <SetupForm />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MODULE_SETUP,
 			} );
 
@@ -656,7 +652,6 @@ describe( 'SetupForm', () => {
 			it( 'should track `click_learn_more_link` with the `_setup` event category', async () => {
 				const { container, waitForRegistry } = render( <SetupForm />, {
 					registry,
-					features: [ 'setupFlowRefresh' ],
 					viewContext: VIEW_CONTEXT_MODULE_SETUP,
 				} );
 

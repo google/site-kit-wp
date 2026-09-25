@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
-import { isFeatureEnabled } from '@/js/features';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
@@ -41,21 +40,17 @@ import { getWordPressAdminBarHeight } from '@/js/util/scroll';
 import { trackEvent } from '@/js/util/tracking';
 import TourTooltip from './TourTooltip';
 
-const setupFlowRefreshEnabled = isFeatureEnabled( 'setupFlowRefresh' );
-
 /** For available options, see: {@link https://github.com/gilbarbara/react-joyride/blob/3e08384415a831b20ce21c8423b6c271ad419fbf/src/styles.js}. */
 export const joyrideStyles = {
 	options: {
 		arrowColor: '#3c7251', // $c-content-primary
 		backgroundColor: '#3c7251', // $c-content-primary
-		overlayColor: setupFlowRefreshEnabled
-			? 'rgba(0, 0, 0, 0.25)'
-			: 'rgba(0, 0, 0, 0.6)',
+		overlayColor: 'rgba(0, 0, 0, 0.25)',
 		textColor: '#fff', // $c-content-on-primary
 		zIndex: 20000,
 	},
 	spotlight: {
-		border: setupFlowRefreshEnabled ? 'none' : '2px solid #3c7251', // $c-content-primary
+		border: 'none',
 		backgroundColor: '#fff',
 	},
 };
@@ -379,20 +374,15 @@ export default function TourTooltips( {
 		},
 	};
 
-	// Customize floater props based on feature flag.
-	const floaterStyles = setupFlowRefreshEnabled
-		? {
-				...floaterProps.styles,
-				floater: {
-					filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
-				},
-		  }
-		: floaterProps.styles;
-
 	const customFloaterProps = {
 		...floaterProps,
 		options: floaterOptions,
-		styles: floaterStyles,
+		styles: {
+			...floaterProps.styles,
+			floater: {
+				filter: 'drop-shadow(rgba(0, 0, 0, 0.25) 0px 4px 16px)',
+			},
+		},
 	};
 
 	return (
@@ -405,7 +395,7 @@ export default function TourTooltips( {
 			steps={ parsedSteps }
 			styles={ joyrideStyles }
 			tooltipComponent={ TourTooltip }
-			showProgress={ ! setupFlowRefreshEnabled }
+			showProgress={ false }
 			continuous
 			disableOverlayClose
 			disableScrolling
