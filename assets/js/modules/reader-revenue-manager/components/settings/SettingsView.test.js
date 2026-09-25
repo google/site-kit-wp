@@ -28,6 +28,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import {
 	createTestRegistry,
+	createTestRegistryWithFeatures,
 	provideModuleRegistrations,
 	provideModules,
 	provideUserInfo,
@@ -47,9 +48,13 @@ describe( 'SettingsView', () => {
 		publicationId: publicationID,
 	} = publication;
 
-	beforeEach( () => {
-		registry = createTestRegistry();
-
+	/**
+	 * Gives the registry the connected module, its publications, and the user
+	 * every test starts from.
+	 *
+	 * @since n.e.x.t
+	 */
+	function setupRegistry() {
 		const moduleData = [
 			{
 				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -64,6 +69,11 @@ describe( 'SettingsView', () => {
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetPublications( publications );
+	}
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+		setupRegistry();
 	} );
 
 	it( 'should render the "SettingsView" component', async () => {
@@ -187,6 +197,11 @@ describe( 'SettingsView', () => {
 			},
 		};
 
+		beforeEach( () => {
+			registry = createTestRegistryWithFeatures( [ 'rrmExpressSetup' ] );
+			setupRegistry();
+		} );
+
 		it( 'should display the configured CTAs when the `rrmExpressSetup` feature flag is enabled', async () => {
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -243,7 +258,10 @@ describe( 'SettingsView', () => {
 			expect( queryByText( 'CTAs' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'should not display the CTAs item when the feature flag is disabled', async () => {
+		it( 'should not display the CTAs item when the `rrmExpressSetup` feature flag is disabled', async () => {
+			registry = createTestRegistry();
+			setupRegistry();
+
 			registry
 				.dispatch( MODULES_READER_REVENUE_MANAGER )
 				.receiveGetSettings( settings );
