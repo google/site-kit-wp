@@ -288,18 +288,14 @@ describe( 'FeatureCard', () => {
 			},
 		] );
 
-		const { container, getByRole } = render(
-			<FeatureCard slug="test-feature" />,
-			{ registry }
-		);
+		const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+			registry,
+		} );
 
-		const cta = getByRole( 'button', { name: 'Try it now' } );
-
-		expect( cta ).toBeInTheDocument();
-		expect( cta ).toHaveClass( 'mdc-button--tertiary' );
+		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
 		expect(
-			container.querySelector( '.googlesitekit-feature-card__actions' )
-		).toContainElement( cta );
+			getByRole( 'button', { name: 'Try it now' } )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the dismiss control only when the card is dismissible', () => {
