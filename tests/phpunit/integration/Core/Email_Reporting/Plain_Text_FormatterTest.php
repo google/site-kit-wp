@@ -709,4 +709,71 @@ class Plain_Text_FormatterTest extends TestCase {
 		$this->assertStringContainsString( 'get help (https://example.com/help)', $result, 'Multiple body links should be converted.' );
 		$this->assertStringNotContainsString( '<a ', $result, 'No HTML anchor tags should remain in plain text.' );
 	}
+
+	public function test_format_section__decodes_html_entities_in_page_metric_labels() {
+		$section = array(
+			'title'            => 'What’s grabbing their attention?',
+			'section_template' => 'section-page-metrics',
+			'section_parts'    => array(
+				'top_categories' => array(
+					'data' => array(
+						'change_context'   => 'Compared to previous 7 days',
+						'dimension_values' => array(
+							array(
+								'label' => 'Tips &amp; Tricks',
+								'url'   => 'https://example.com/category/tips-tricks/',
+							),
+							array(
+								'label' => 'Dana&#8217;s Guide &#038; Tips',
+								'url'   => 'https://example.com/danas-guide-tips/',
+							),
+						),
+						'values'           => array( '500', '300' ),
+						'changes'          => array( 10.5, -2.3 ),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( '• Tips & Tricks: 500 (+10.5%)', $result, 'Category names with ampersand entities should decode for plain text.' );
+		$this->assertStringContainsString( '• Dana’s Guide & Tips: 300 (-2.3%)', $result, 'Page titles with numeric entities should decode for plain text.' );
+		$this->assertStringNotContainsString( '&amp;', $result, 'Plain text should not contain ampersand entities.' );
+		$this->assertStringNotContainsString( '&#8217;', $result, 'Plain text should not contain apostrophe entities.' );
+		$this->assertStringNotContainsString( '&#038;', $result, 'Plain text should not contain encoded ampersand entities.' );
+	}
+
+	public function test_format_section__decodes_html_entities_in_site_goals_metric_values() {
+		$section = array(
+			'title'            => 'Are people reaching out to my business?',
+			'section_template' => 'section-site-goals',
+			'dashboard_url'    => 'https://example.com/dashboard',
+			'section_parts'    => array(
+				'site_goals_lead_generation' => array(
+					'data' => array(
+						'change_context' => 'Compared to previous 7 days',
+						'groups'         => array(
+							array(
+								'label'   => '',
+								'metrics' => array(
+									array(
+										'label' => 'Total form completions',
+										'value' => '1&nbsp;234',
+										'trend' => 0.6,
+									),
+								),
+							),
+						),
+						'prompt'         => array(),
+					),
+				),
+			),
+		);
+
+		$result = Plain_Text_Formatter::format_section( $section );
+
+		$this->assertStringContainsString( 'Total form completions: 1 234 (+0.6%)', $result, 'Site Goals totals with non-breaking space entities should decode for plain text.' );
+		$this->assertStringNotContainsString( '&nbsp;', $result, 'Plain text should not contain non-breaking space entities.' );
+	}
 }
