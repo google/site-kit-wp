@@ -1,5 +1,5 @@
 name: Build and Push Docker Image
-description: Sets up QEMU and Docker Buildx, logs in to a container registry, and builds and pushes a Docker image.
+description: Sets up QEMU and Docker Buildx, logs in to a container registry, and builds and (optionally) pushes a Docker image.
 
 inputs:
   registry-username:
@@ -23,9 +23,13 @@ inputs:
     required: false
     default: ''
   skip-if-exists-tag:
-    description: If provided, skip the build when this image tag already exists in the registry
+    description: If provided, skip the build when this image tag already exists in the registry. Ignored when not pushing.
     required: false
     default: ''
+  push:
+    description: Whether to push the built image to the registry. Pushing is opt-in; unless set to 'true', the image is only built (no registry login or push).
+    required: false
+    default: 'false'
 
 runs:
   using: composite
@@ -37,6 +41,7 @@ runs:
       uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # ratchet:docker/setup-buildx-action@v4
 
     - name: Log in to container registry
+      if: inputs.push == 'true'
       uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # ratchet:docker/login-action@v4
       with:
         registry: ghcr.io
@@ -45,7 +50,7 @@ runs:
 
     - name: Check if image already exists in registry
       id: image_check
-      if: inputs.skip-if-exists-tag != ''
+      if: inputs.push == 'true' && inputs.skip-if-exists-tag != ''
       shell: bash
       run: |
         if docker buildx imagetools inspect ${{ inputs.skip-if-exists-tag }} > /dev/null 2>&1; then
@@ -63,5 +68,5 @@ runs:
         tags: ${{ inputs.tags }}
         build-args: ${{ inputs.build-args }}
         labels: ${{ inputs.labels }}
-        push: true
+        push: ${{ inputs.push == 'true' }}
         platforms: linux/amd64,linux/arm64

@@ -30,12 +30,12 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';

@@ -28,15 +28,18 @@ import {
 	render,
 } from './test-utils';
 
-const POST_ID = 42;
-
 function baseConfig(
 	overrides: Partial< ContentEventsConfig > = {}
 ): ContentEventsConfig {
 	return {
-		postID: POST_ID,
+		postID: 42,
 		isSinglePost: true,
 		hasVimeoEmbed: false,
+		wordCount: 0,
+		estimatedReadTimeSeconds: 0,
+		isLastPageOfMultiPagePost: true,
+		readTimeThresholdPercent: 85,
+		minimumReadTimeSeconds: 5,
 		...overrides,
 	};
 }
@@ -80,7 +83,7 @@ describe( 'initializePagination', () => {
 		expect( gtagEventMock ).toHaveBeenCalledWith( 'pagination_click', {
 			pagination_type: 'post',
 			page_number: 3,
-			post_id: POST_ID,
+			post_id: 42,
 			transport_type: 'beacon',
 		} );
 	} );
@@ -158,7 +161,7 @@ describe( 'initializePagination', () => {
 		expect( gtagEventMock ).toHaveBeenCalledWith( 'pagination_click', {
 			pagination_type: 'bbpress',
 			page_number: 2,
-			post_id: POST_ID,
+			post_id: 42,
 			transport_type: 'beacon',
 		} );
 	} );
@@ -253,7 +256,7 @@ describe( 'initializePagination', () => {
 			5,
 		],
 		[
-			'the anchor text when the href carries no number',
+			'the anchor text when the href has no number',
 			'https://example.com/my-post/',
 			'1',
 			1,

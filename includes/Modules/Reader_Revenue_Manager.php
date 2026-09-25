@@ -73,7 +73,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Web_Tag;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle as Google_Service_SubscribewithGoogle;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher as Google_Service_Webcontentpublisher;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher as Google_Service_WebContentPublisher;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
 
@@ -287,7 +287,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		);
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
-			$services['webcontentpublisher'] = new Google_Service_Webcontentpublisher( $client );
+			$services['webcontentpublisher'] = new Google_Service_WebContentPublisher( $client );
 		}
 
 		return $services;

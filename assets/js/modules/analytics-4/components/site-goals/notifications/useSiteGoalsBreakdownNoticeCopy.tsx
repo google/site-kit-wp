@@ -36,6 +36,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { BREAKDOWN_SCOPE_BOTH } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 
 export interface BreakdownNoticeCopy {
 	title: string;
@@ -73,7 +74,13 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		[]
 	);
 
+	const { isConversionTrackingEnabled } = useConversionTrackingSetting();
+
 	const ctaLabel = __( 'Get breakdown', 'google-site-kit' );
+	// Only disclosed to someone who would actually have the setting switched on
+	// by the CTA. `undefined` means it has not loaded, so nothing is shown.
+	const showConversionTrackingDisclosure =
+		isConversionTrackingEnabled === false;
 	const learnMoreLink = (
 		<Link
 			href={ documentationURL }
@@ -96,10 +103,15 @@ export function useSiteGoalsBreakdownNoticeCopy(
 					'google-site-kit'
 				),
 				description: createInterpolateElement(
-					__(
-						'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
-						'google-site-kit'
-					),
+					showConversionTrackingDisclosure
+						? __(
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
+								'google-site-kit'
+						  )
+						: __(
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+								'google-site-kit'
+						  ),
 					{ a: learnMoreLink }
 				),
 				ctaLabel,
@@ -114,10 +126,15 @@ export function useSiteGoalsBreakdownNoticeCopy(
 				'google-site-kit'
 			),
 			description: createInterpolateElement(
-				__(
-					'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
-					'google-site-kit'
-				),
+				showConversionTrackingDisclosure
+					? __(
+							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
+							'google-site-kit'
+					  )
+					: __(
+							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+							'google-site-kit'
+					  ),
 				{ a: learnMoreLink }
 			),
 			ctaLabel,
@@ -135,10 +152,15 @@ export function useSiteGoalsBreakdownNoticeCopy(
 					'google-site-kit'
 				),
 				description: createInterpolateElement(
-					__(
-						'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
-						'google-site-kit'
-					),
+					showConversionTrackingDisclosure
+						? __(
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
+								'google-site-kit'
+						  )
+						: __(
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+								'google-site-kit'
+						  ),
 					{ a: learnMoreLink }
 				),
 				ctaLabel,
@@ -153,10 +175,15 @@ export function useSiteGoalsBreakdownNoticeCopy(
 				'google-site-kit'
 			),
 			description: createInterpolateElement(
-				__(
-					'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
-					'google-site-kit'
-				),
+				showConversionTrackingDisclosure
+					? __(
+							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
+							'google-site-kit'
+					  )
+					: __(
+							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+							'google-site-kit'
+					  ),
 				{ a: learnMoreLink }
 			),
 			ctaLabel,
@@ -166,10 +193,15 @@ export function useSiteGoalsBreakdownNoticeCopy(
 	return {
 		title: __( 'Want to see results for each form?', 'google-site-kit' ),
 		description: createInterpolateElement(
-			__(
-				'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. <a>Learn more</a>',
-				'google-site-kit'
-			),
+			showConversionTrackingDisclosure
+				? __(
+						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms. <a>Learn more</a>',
+						'google-site-kit'
+				  )
+				: __(
+						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'google-site-kit'
+				  ),
 			{ a: learnMoreLink }
 		),
 		ctaLabel,

@@ -41,7 +41,6 @@ import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/consta
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useIsInitialSetupFlow from '@/js/hooks/useIsInitialSetupFlow';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -60,7 +59,6 @@ const FeaturesMenu: FC = () => {
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const isInitialSetupFlow = useIsInitialSetupFlow();
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -135,11 +133,6 @@ const FeaturesMenu: FC = () => {
 		? !! hasEmailReportingDataAccess
 		: ! isInitialSetupFlow;
 	const showSharingItem = ! viewOnlyDashboard;
-	const showPDFItem = pdfGenerationEnabled;
-
-	if ( ! showEmailReportsItem && ! showSharingItem && ! showPDFItem ) {
-		return null;
-	}
 
 	return (
 		<Fragment>
@@ -196,19 +189,12 @@ const FeaturesMenu: FC = () => {
 								) }
 							</FeaturesMenuItem>
 						) }
-						{ showPDFItem && (
-							<FeaturesMenuItem
-								icon={
-									<DownloadIcon width={ 20 } height={ 20 } />
-								}
-								onClick={ openPDFDownloadPanel }
-							>
-								{ __(
-									'Download PDF report',
-									'google-site-kit'
-								) }
-							</FeaturesMenuItem>
-						) }
+						<FeaturesMenuItem
+							icon={ <DownloadIcon width={ 20 } height={ 20 } /> }
+							onClick={ openPDFDownloadPanel }
+						>
+							{ __( 'Download PDF report', 'google-site-kit' ) }
+						</FeaturesMenuItem>
 					</Menu>
 				}
 			</div>

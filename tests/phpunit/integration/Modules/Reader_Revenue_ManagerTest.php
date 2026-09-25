@@ -185,8 +185,8 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			'SubscribewithGoogle service class should exist.'
 		);
 		$this->assertTrue(
-			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher' ),
-			'Webcontentpublisher service class should exist.'
+			class_exists( 'Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher' ),
+			'WebContentPublisher service class should exist.'
 		);
 	}
 
