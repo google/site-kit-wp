@@ -36,7 +36,10 @@ import {
 } from '../../utils';
 
 describe( 'Reauthentication needed admin notice', () => {
+	const additionalScope = 'https://www.googleapis.com/auth/e2e.additional';
+
 	let simulateAbandonSetup = true;
+	let oauthRequestURL;
 
 	beforeAll( async () => {
 		await page.setRequestInterception( true );
@@ -45,6 +48,8 @@ describe( 'Reauthentication needed admin notice', () => {
 			if (
 				url.startsWith( 'https://sitekit.withgoogle.com/o/oauth2/auth' )
 			) {
+				oauthRequestURL = url;
+
 				if ( simulateAbandonSetup ) {
 					request.respond( {
 						status: 302,
@@ -79,6 +84,9 @@ describe( 'Reauthentication needed admin notice', () => {
 	} );
 
 	beforeEach( async () => {
+		simulateAbandonSetup = true;
+		oauthRequestURL = undefined;
+
 		await setupSiteKit();
 		await activatePlugin( 'e2e-tests-oauth-callback-plugin' );
 	} );
@@ -88,7 +96,7 @@ describe( 'Reauthentication needed admin notice', () => {
 		await resetSiteKit();
 	} );
 
-	it( 'redirects to analytics setup after reauth if the flow has been previously interrupted', async () => {
+	async function startAndAbandonAnalyticsSetup() {
 		await activatePlugin( 'e2e-tests-mock-analytics-scopes-revoked' );
 
 		await visitAdminPage( 'admin.php', 'page=googlesitekit-settings' );
@@ -105,6 +113,10 @@ describe( 'Reauthentication needed admin notice', () => {
 		await page.waitForSelector(
 			'#googlesitekit-notice-needs_reauthentication'
 		);
+	}
+
+	it( 'redirects to analytics setup after reauth if the flow has been previously interrupted', async () => {
+		await startAndAbandonAnalyticsSetup();
 
 		simulateAbandonSetup = false;
 
@@ -116,6 +128,59 @@ describe( 'Reauthentication needed admin notice', () => {
 		);
 
 		await page.waitForNavigation();
+
+		await expect( page ).toMatchElement(
+			'.googlesitekit-setup-module--analytics'
+		);
+	} );
+
+	it( 'passes the activation options of an interrupted setup through reauth', async () => {
+		await startAndAbandonAnalyticsSetup();
+
+		// Add the options a setup such as the RRM express setup stores, which
+		// the notice should pass through to reauthentication.
+		await page.evaluate(
+			( options ) => {
+				for ( const storage of [ localStorage, sessionStorage ] ) {
+					const key = Object.keys( storage ).find( ( k ) =>
+						/^googlesitekit_.*_module_setup$/.test( k )
+					);
+
+					if ( key ) {
+						const item = JSON.parse( storage.getItem( key ) );
+						item.value.options = options;
+						storage.setItem( key, JSON.stringify( item ) );
+						return;
+					}
+				}
+
+				throw new Error( 'The module setup was not found in storage.' );
+			},
+			{
+				additionalScopes: [ additionalScope ],
+				redirectQueryArgs: { foo: 'bar' },
+			}
+		);
+
+		simulateAbandonSetup = false;
+
+		await expect( page ).toClick(
+			'#googlesitekit-notice-needs_reauthentication',
+			{
+				text: /click here/i,
+			}
+		);
+
+		await page.waitForNavigation();
+
+		const requestedScopes = new URL( oauthRequestURL ).searchParams
+			.get( 'scope' )
+			.split( ' ' );
+		expect( requestedScopes ).toContain( additionalScope );
+
+		const { searchParams } = new URL( page.url() );
+		expect( searchParams.get( 'slug' ) ).toBe( 'analytics-4' );
+		expect( searchParams.get( 'foo' ) ).toBe( 'bar' );
 
 		await expect( page ).toMatchElement(
 			'.googlesitekit-setup-module--analytics'
