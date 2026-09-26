@@ -24,9 +24,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 1 of 4 (completed)."
+                  aria-label="Step 1 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 1 of 4 (completed)."
+                  title="Step 1 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -51,9 +51,36 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 2 of 4 (completed)."
+                  aria-label="Step 2 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 2 of 4 (completed)."
+                  title="Step 2 of 5 (completed)."
+                >
+                  <svg />
+                </span>
+                <div
+                  class="googlesitekit-stepper__step-progress-line"
+                />
+              </div>
+              <div
+                class="googlesitekit-stepper__step-info"
+              >
+                <div
+                  class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--body googlesitekit-typography--medium"
+                >
+                  Accept terms of service
+                </div>
+              </div>
+            </li>
+            <li
+              class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
+            >
+              <div
+                class="googlesitekit-stepper__step-progress"
+              >
+                <span
+                  aria-label="Step 3 of 5 (completed)."
+                  class="googlesitekit-stepper__step-number"
+                  title="Step 3 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -78,9 +105,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 3 of 4 (completed)."
+                  aria-label="Step 4 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 3 of 4 (completed)."
+                  title="Step 4 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -105,9 +132,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly with pre
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 4 of 4 (active)."
+                  aria-label="Step 5 of 5 (active)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 4 of 4 (active)."
+                  title="Step 5 of 5 (active)."
                 />
               </div>
               <div
@@ -334,9 +361,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 1 of 4 (completed)."
+                  aria-label="Step 1 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 1 of 4 (completed)."
+                  title="Step 1 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -361,9 +388,36 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 2 of 4 (completed)."
+                  aria-label="Step 2 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 2 of 4 (completed)."
+                  title="Step 2 of 5 (completed)."
+                >
+                  <svg />
+                </span>
+                <div
+                  class="googlesitekit-stepper__step-progress-line"
+                />
+              </div>
+              <div
+                class="googlesitekit-stepper__step-info"
+              >
+                <div
+                  class="googlesitekit-typography googlesitekit-stepper__step-title googlesitekit-typography--body googlesitekit-typography--medium"
+                >
+                  Accept terms of service
+                </div>
+              </div>
+            </li>
+            <li
+              class="googlesitekit-stepper__step googlesitekit-stepper__step--completed"
+            >
+              <div
+                class="googlesitekit-stepper__step-progress"
+              >
+                <span
+                  aria-label="Step 3 of 5 (completed)."
+                  class="googlesitekit-stepper__step-number"
+                  title="Step 3 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -388,9 +442,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 3 of 4 (completed)."
+                  aria-label="Step 4 of 5 (completed)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 3 of 4 (completed)."
+                  title="Step 4 of 5 (completed)."
                 >
                   <svg />
                 </span>
@@ -415,9 +469,9 @@ exports[`SetupCTANewsletterSignup setup complete step renders correctly without 
                 class="googlesitekit-stepper__step-progress"
               >
                 <span
-                  aria-label="Step 4 of 4 (active)."
+                  aria-label="Step 5 of 5 (active)."
                   class="googlesitekit-stepper__step-number"
-                  title="Step 4 of 4 (active)."
+                  title="Step 5 of 5 (active)."
                 />
               </div>
               <div

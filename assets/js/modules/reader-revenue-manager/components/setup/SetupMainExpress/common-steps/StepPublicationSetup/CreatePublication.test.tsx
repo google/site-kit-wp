@@ -27,7 +27,6 @@ import {
 	CREATE_PUBLICATION_FORM,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -70,25 +69,6 @@ describe( 'CreatePublication', () => {
 
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
-	} );
-
-	it( 'should show the terms step when displaying the creation form', () => {
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: false,
-			} );
-
-		render( <CreatePublication onComplete={ () => {} } />, { registry } );
-
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( true );
 	} );
 
 	it.each( [
@@ -218,7 +198,7 @@ describe( 'CreatePublication', () => {
 		);
 
 		await waitFor( () => {
-			expect( onComplete ).toHaveBeenCalledWith( false );
+			expect( onComplete ).toHaveBeenCalledWith();
 		} );
 
 		expect( fetchMock ).toHaveFetched( createPublicationEndpoint );

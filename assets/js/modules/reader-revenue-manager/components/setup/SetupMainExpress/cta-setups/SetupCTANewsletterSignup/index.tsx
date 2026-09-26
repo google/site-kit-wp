@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { FC, ReactNode } from 'react';
+import type { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,86 +30,75 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import {
-	StepPublicationPolicies,
-	StepPublicationSetup,
-	StepSetupComplete,
-	StepTermsOfService,
+	publicationPoliciesStep,
+	publicationSetupStep,
+	setupCompleteStep,
+	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { useSetupFlow } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
-import StepSignupForm from './StepSignupForm';
+import { signupFormStep } from './StepSignupForm';
 import ViewOnSiteCTA from './ViewOnSiteCTA';
 
-const SetupCTANewsletterSignup: FC = () => {
-	const [ step, setStep ] = useStep();
+const STEPS: SetupStep[] = [
+	publicationSetupStep,
+	termsOfServiceStep,
+	publicationPoliciesStep,
+	signupFormStep,
+	setupCompleteStep,
+];
 
-	const stepContent: Record< string, ReactNode > = {
-		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: (
-			<StepPublicationSetup
-				connectDescription={ __(
-					'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
-					'google-site-kit'
-				) }
-				createDescription={ __(
-					'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
-					'google-site-kit'
-				) }
-				onComplete={ ( hasAcceptedTerms: boolean ) =>
-					setStep(
-						hasAcceptedTerms
-							? EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES
-							: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
-					)
-				}
-			/>
-		),
-		[ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE ]: (
-			<StepTermsOfService
-				onComplete={ () =>
-					setStep( EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES )
-				}
-			/>
-		),
-		[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]: (
-			<StepPublicationPolicies
-				description={ __(
-					'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
-					'google-site-kit'
-				) }
-				onComplete={ () => setStep( EXPRESS_SETUP_STEPS.SETUP_CTA ) }
-			/>
-		),
-		[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: <StepSignupForm />,
-		[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: (
-			<StepSetupComplete
-				title={ __(
-					'Your newsletter signup form is ready!',
-					'google-site-kit'
-				) }
-				secondaryCTA={ <ViewOnSiteCTA /> }
-			>
-				<StepSetupCompleteNewsletterSignup />
-			</StepSetupComplete>
-		),
+const SetupCTANewsletterSignup: FC = () => {
+	const { currentStep, advance } = useSetupFlow( STEPS );
+
+	// Copy this flow overrides on the shared steps, keyed by step slug.
+	const stepProps: Record< string, object > = {
+		[ publicationSetupStep.slug ]: {
+			connectDescription: __(
+				'To set up a newsletter sign-up form using Reader Revenue Manager, connect your publication or create a new one.',
+				'google-site-kit'
+			),
+			createDescription: __(
+				'To set up a newsletter sign-up form using Reader Revenue Manager, you will need to create a publication.',
+				'google-site-kit'
+			),
+		},
+		[ publicationPoliciesStep.slug ]: {
+			description: __(
+				'To set up a newsletter using Reader Revenue Manager, you will need to add links to your publication’s policies.',
+				'google-site-kit'
+			),
+		},
+		[ setupCompleteStep.slug ]: {
+			title: __(
+				'Your newsletter signup form is ready!',
+				'google-site-kit'
+			),
+			secondaryCTA: <ViewOnSiteCTA />,
+			children: <StepSetupCompleteNewsletterSignup />,
+		},
 	};
+
+	const StepComponent = currentStep?.Component;
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
-					extraSteps={ {
-						[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: __(
-							'Set up a sign-up form',
-							'google-site-kit'
-						),
-					} }
+					steps={ STEPS }
+					activeSlug={ currentStep?.slug }
 				/>
 			}
 		>
-			{ step ? stepContent[ step ] : null }
+			{ StepComponent ? (
+				<StepComponent
+					{ ...stepProps[ currentStep.slug ] }
+					onComplete={ advance }
+				/>
+			) : null }
 		</ExpressSetupLayout>
 	);
 };

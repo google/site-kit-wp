@@ -22,62 +22,83 @@
 import { Registry } from '@/js/googlesitekit-data';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
+	publicationPoliciesStep,
+	publicationSetupStep,
+	setupCompleteStep,
+	termsOfServiceStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
-import { mockLocation } from '@tests/js/mock-browser-utils';
 import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
-describe( 'ExpressSetupSteps', () => {
-	mockLocation();
+function StepContent() {
+	return null;
+}
 
+const STEPS: SetupStep[] = [
+	{ slug: 'first', label: 'First step', Component: StepContent },
+	{ slug: 'second', label: 'Second step', Component: StepContent },
+	{ slug: 'third', label: 'Third step', Component: StepContent },
+];
+
+describe( 'ExpressSetupSteps', () => {
 	let registry: Registry;
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
-
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.finishResolution( 'getSettings', [] );
-
-		providePublications( registry, [] );
 	} );
 
-	it( 'renders the default steps without extra steps', () => {
-		global.location.href = 'http://example.com/';
+	function getSteps( container: Element ) {
+		return container.querySelectorAll( '.googlesitekit-stepper__step' );
+	}
 
-		const { getByText, queryByText, container } = render(
-			<ExpressSetupSteps />,
-			{ registry }
-		);
-
-		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( getByText( 'Add publication policies' ) ).toBeInTheDocument();
-		expect( getByText( 'Setup complete' ) ).toBeInTheDocument();
-		expect(
-			queryByText( 'Set up a sign-up form' )
-		).not.toBeInTheDocument();
-		expect(
-			container.querySelectorAll( '.googlesitekit-stepper__step' )
-		).toHaveLength( 3 );
-	} );
-
-	it( 'renders the correct steps when creating a new publication', () => {
-		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
+	it( 'should render the steps it is given, in the order it is given them', () => {
+		const { container } = render( <ExpressSetupSteps steps={ STEPS } />, {
 			registry,
 		} );
 
-		expect( getByText( 'Connect publication' ) ).toBeInTheDocument();
-		expect( queryByText( 'Create publication' ) ).not.toBeInTheDocument();
+		const steps = getSteps( container );
+
+		expect( steps ).toHaveLength( 3 );
+		expect( steps[ 0 ] ).toHaveTextContent( 'First step' );
+		expect( steps[ 1 ] ).toHaveTextContent( 'Second step' );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Third step' );
+	} );
+
+	it( 'should render the labels of the shared step definitions', () => {
+		const { container } = render(
+			<ExpressSetupSteps
+				steps={ [
+					publicationSetupStep,
+					termsOfServiceStep,
+					publicationPoliciesStep,
+					setupCompleteStep,
+				] }
+			/>,
+			{ registry }
+		);
+
+		const steps = getSteps( container );
+
+		expect( steps[ 0 ] ).toHaveTextContent( 'Connect publication' );
+		expect( steps[ 1 ] ).toHaveTextContent( 'Accept terms of service' );
+		expect( steps[ 2 ] ).toHaveTextContent( 'Add publication policies' );
+		expect( steps[ 3 ] ).toHaveTextContent( 'Setup complete' );
+	} );
+
+	it( 'should resolve a function label against state', () => {
+		const { container } = render(
+			<ExpressSetupSteps steps={ [ publicationSetupStep ] } />,
+			{ registry }
+		);
+
+		expect( getSteps( container )[ 0 ] ).toHaveTextContent(
+			'Connect publication'
+		);
 
 		act( () => {
 			registry
@@ -87,69 +108,18 @@ describe( 'ExpressSetupSteps', () => {
 				} );
 		} );
 
-		expect( queryByText( 'Connect publication' ) ).not.toBeInTheDocument();
-		expect( getByText( 'Create publication' ) ).toBeInTheDocument();
+		expect( getSteps( container )[ 0 ] ).toHaveTextContent(
+			'Create publication'
+		);
 	} );
 
-	it( 'should show the terms step based on the form value', () => {
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: false,
-			} );
-
-		const { getByText, queryByText } = render( <ExpressSetupSteps />, {
-			registry,
-		} );
-
-		expect(
-			queryByText( 'Accept terms of service' )
-		).not.toBeInTheDocument();
-
-		act( () => {
-			registry
-				.dispatch( CORE_FORMS )
-				.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-					[ SHOW_TERMS_OF_SERVICE ]: true,
-				} );
-		} );
-
-		expect( getByText( 'Accept terms of service' ) ).toBeInTheDocument();
-	} );
-
-	it( 'includes extra steps before setup complete', () => {
-		global.location.href = 'http://example.com/';
-
-		const { getByText, container } = render(
-			<ExpressSetupSteps
-				extraSteps={ {
-					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
-					'custom-step': 'Custom step',
-				} }
-			/>,
+	it( 'should mark the step matching the active slug as active', () => {
+		const { container } = render(
+			<ExpressSetupSteps steps={ STEPS } activeSlug="second" />,
 			{ registry }
 		);
 
-		const steps = container.querySelectorAll(
-			'.googlesitekit-stepper__step'
-		);
-
-		expect( getByText( 'Set up a sign-up form' ) ).toBeInTheDocument();
-		expect( getByText( 'Custom step' ) ).toBeInTheDocument();
-		expect( steps ).toHaveLength( 5 );
-		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
-		expect( steps[ 3 ] ).toHaveTextContent( 'Custom step' );
-		expect( steps[ 4 ] ).toHaveTextContent( 'Setup complete' );
-	} );
-
-	it( 'marks the step matching the step query arg as active', () => {
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`;
-
-		const { container } = render( <ExpressSetupSteps />, { registry } );
-
-		const steps = container.querySelectorAll(
-			'.googlesitekit-stepper__step'
-		);
+		const steps = getSteps( container );
 
 		expect( steps[ 0 ] ).toHaveClass(
 			'googlesitekit-stepper__step--completed'
@@ -162,25 +132,15 @@ describe( 'ExpressSetupSteps', () => {
 		);
 	} );
 
-	it( 'marks an extra step as active when it is included and selected', () => {
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.SETUP_CTA }`;
+	it( 'should mark every step as upcoming when no step is active', () => {
+		const { container } = render( <ExpressSetupSteps steps={ STEPS } />, {
+			registry,
+		} );
 
-		const { container } = render(
-			<ExpressSetupSteps
-				extraSteps={ {
-					[ EXPRESS_SETUP_STEPS.SETUP_CTA ]: 'Set up a sign-up form',
-				} }
-			/>,
-			{ registry }
-		);
-
-		const steps = container.querySelectorAll(
-			'.googlesitekit-stepper__step'
-		);
-
-		expect( steps[ 2 ] ).toHaveClass(
-			'googlesitekit-stepper__step--active'
-		);
-		expect( steps[ 2 ] ).toHaveTextContent( 'Set up a sign-up form' );
+		getSteps( container ).forEach( ( step ) => {
+			expect( step ).toHaveClass(
+				'googlesitekit-stepper__step--upcoming'
+			);
+		} );
 	} );
 } );

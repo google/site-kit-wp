@@ -59,23 +59,17 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 interface CreatePublicationProps {
 	description?: string;
-	onComplete: ( hasAcceptedTerms: boolean ) => void;
+	onComplete: () => void;
 }
 
 const CreatePublication: FC< CreatePublicationProps > = ( {
 	description,
 	onComplete,
 } ) => {
-	const [ , setShowTermsOfService ] = useFormValue< boolean >(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		SHOW_TERMS_OF_SERVICE
-	);
-
 	const [ isBusy, setIsBusy ] = useState( false );
 
 	const defaultDescription = __(
@@ -192,7 +186,7 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 				return;
 			}
 
-			onComplete( false );
+			onComplete();
 		},
 		[
 			createPublication,
@@ -219,10 +213,6 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 			setDisplayName( siteName );
 		}
 	}, [ displayName, setDisplayName, siteName ] );
-
-	useEffect( () => {
-		setShowTermsOfService( true );
-	}, [ setShowTermsOfService ] );
 
 	return (
 		<form
