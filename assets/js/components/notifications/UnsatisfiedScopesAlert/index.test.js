@@ -25,6 +25,9 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { READONLY_SCOPE } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -35,6 +38,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
+	waitFor,
 } from '@tests/js/test-utils';
 import UnsatisfiedScopesAlert from '.';
 
@@ -116,7 +120,10 @@ describe( 'UnsatisfiedScopesAlert', () => {
 			body: { needsReauthentication: false },
 		} );
 
-		setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4 );
+		setItem( 'module_setup', {
+			slug: MODULE_SLUG_ANALYTICS_4,
+			options: {},
+		} );
 
 		const { getByRole, waitForRegistry } = render(
 			<NotificationWithComponentProps />,
@@ -139,6 +146,71 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( moduleActivationEndpoint );
+	} );
+
+	it( 'should persist additional activation options on retry', async () => {
+		const authentication = {
+			authenticated: true,
+			needsReauthentication: true,
+			grantedScopes: [],
+			unsatisfiedScopes: [ READONLY_SCOPE ],
+		};
+
+		provideUserAuthentication( registry, authentication );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveConnectURL( 'http://example.com/connect' );
+
+		fetchMock.postOnce( moduleActivationEndpoint, {
+			body: { success: true },
+		} );
+
+		fetchMock.getOnce( userAuthenticationEndpoint, {
+			body: authentication,
+		} );
+
+		await setItem( 'module_setup', {
+			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+			options: {
+				additionalScopes: EXPRESS_SETUP_SCOPES,
+				redirectQueryArgs: {
+					expressSetup: 'true',
+					cta: 'newsletter-signup',
+				},
+			},
+		} );
+
+		const { getByRole, waitForRegistry } = render(
+			<NotificationWithComponentProps />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'button', { name: /Redo setup/i } ) );
+
+		await waitFor( () =>
+			expect( global.location.assign ).toHaveBeenCalled()
+		);
+
+		const [ connectURL ] = global.location.assign.mock.calls[ 0 ];
+
+		expect( connectURL ).toMatchQueryParameters( {
+			'additional_scopes[0]':
+				'gttps://www.googleapis.com/auth/webcontentpublisher.publications.readonly',
+			'additional_scopes[1]':
+				'gttps://www.googleapis.com/auth/webcontentpublisher.publications.manage',
+		} );
+
+		expect(
+			new URL( connectURL ).searchParams.get( 'redirect' )
+		).toMatchQueryParameters( {
+			page: 'googlesitekit-dashboard',
+			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+			reAuth: 'true',
+			expressSetup: 'true',
+			cta: 'newsletter-signup',
+		} );
 	} );
 
 	describe( 'checkRequirements', () => {

@@ -67,7 +67,11 @@ export default function SetupModule( { slug, name, description } ) {
 				slug
 			);
 
-			await setItem( 'module_setup', slug, { ttl: 300 } );
+			await setItem(
+				'module_setup',
+				{ slug, options: {} },
+				{ ttl: 300 }
+			);
 
 			navigateTo( response.moduleReauthURL );
 		} else {
