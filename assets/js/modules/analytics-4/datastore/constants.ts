@@ -28,6 +28,11 @@ export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
 export const FORM_SETUP = 'analyticsSetup';
 
+// Setting key for whether "Fresh Data" cards/widgets should include
+// WooCommerce products.
+export const FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS =
+	'freshDataIncludesWooCommerceProducts';
+
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 /**

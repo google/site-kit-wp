@@ -33,7 +33,7 @@ import {
 	PROPERTY_CREATE,
 	WEBDATASTREAM_CREATE,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '@tests/js/utils';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsForm from './SettingsForm';
 
@@ -313,6 +313,29 @@ WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
 WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
+
+export const WithWooCommerceProductsToggle = Template.bind( null );
+WithWooCommerceProductsToggle.storyName = 'With WooCommerce products toggle';
+WithWooCommerceProductsToggle.parameters = {
+	features: [ 'freshData' ],
+};
+WithWooCommerceProductsToggle.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideSiteInfo( registry, {
+				wooCommerceInstalled: true,
+				wooCommerceActive: true,
+			} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithWooCommerceProductsToggle.scenario = {};
 
 export const WithSiteGoalsBreakdownsRow = Template.bind( null );
 WithSiteGoalsBreakdownsRow.storyName = 'With Site Goals custom dimensions row';

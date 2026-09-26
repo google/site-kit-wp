@@ -53,6 +53,7 @@ import EnhancedConversionsSettingsNotice from './EnhancedConversionsSettingsNoti
 import SettingsAdvancedDataBreakdowns from './SettingsAdvancedDataBreakdowns';
 import SettingsControls from './SettingsControls';
 import SettingsEnhancedMeasurementSwitch from './SettingsEnhancedMeasurementSwitch';
+import SettingsIncludeWooCommerceProductsSwitch from './SettingsIncludeWooCommerceProductsSwitch';
 
 export default function SettingsForm( { hasModuleAccess } ) {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
@@ -85,6 +86,10 @@ export default function SettingsForm( { hasModuleAccess } ) {
 			<SettingsControls hasModuleAccess={ hasModuleAccess } />
 
 			{ isValidAccountID( accountID ) && <TrackingExclusionSwitches /> }
+
+			<SettingsIncludeWooCommerceProductsSwitch
+				hasModuleAccess={ hasModuleAccess }
+			/>
 
 			{ hasModuleAccess && (
 				<EntityOwnershipChangeNotice

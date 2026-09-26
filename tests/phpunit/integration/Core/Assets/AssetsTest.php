@@ -330,4 +330,28 @@ class AssetsTest extends TestCase {
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
 	}
+
+	public function test_base_data__woocommerce_not_installed() {
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is not installed.' );
+		$this->assertFalse( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be false when WooCommerce is not installed.' );
+	}
+
+	/**
+	 * `class_alias()` cannot be undone within a process, so this must run in isolation
+	 * to avoid making `WooCommerce` exist for every other test in the suite.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_base_data__woocommerce_active() {
+		// Fake the existence of the `WooCommerce` class.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['wooCommerceActive'], 'wooCommerceActive should be true when the WooCommerce class exists.' );
+	}
 }

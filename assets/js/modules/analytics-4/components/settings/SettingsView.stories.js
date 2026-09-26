@@ -24,7 +24,7 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import * as fixtures from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { provideModules } from '@tests/js/utils';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SettingsView from './SettingsView';
 
@@ -96,6 +96,56 @@ WithEnhancedConversionsNotice.storyName = 'With enhanced conversions notice';
 WithEnhancedConversionsNotice.parameters = {
 	features: [ 'gtagUserData' ],
 };
+
+export const WithWooCommerceProductsToggle = Template.bind( null );
+WithWooCommerceProductsToggle.storyName = 'With WooCommerce products toggle';
+WithWooCommerceProductsToggle.parameters = {
+	features: [ 'freshData' ],
+};
+WithWooCommerceProductsToggle.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideSiteInfo( registry, {
+				wooCommerceInstalled: true,
+				wooCommerceActive: true,
+			} );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithWooCommerceProductsToggle.scenario = {};
+
+export const WithWooCommerceProductsToggleOff = Template.bind( null );
+WithWooCommerceProductsToggleOff.storyName =
+	'With WooCommerce products toggle off';
+WithWooCommerceProductsToggleOff.parameters = {
+	features: [ 'freshData' ],
+};
+WithWooCommerceProductsToggleOff.decorators = [
+	( Story ) => {
+		function setupRegistry( registry ) {
+			provideSiteInfo( registry, {
+				wooCommerceInstalled: true,
+				wooCommerceActive: true,
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setFreshDataIncludesWooCommerceProducts( false );
+		}
+
+		return (
+			<WithRegistrySetup func={ setupRegistry }>
+				<Story />
+			</WithRegistrySetup>
+		);
+	},
+];
+WithWooCommerceProductsToggleOff.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Settings/SettingsView',

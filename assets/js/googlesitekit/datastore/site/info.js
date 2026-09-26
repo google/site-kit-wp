@@ -202,6 +202,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasMultipleActiveEcommerceEventProviders,
 				activeConversionEventProviders,
 				wpPrivacyURL,
+				wooCommerceActive,
+				wooCommerceInstalled,
 			} = payload.siteInfo;
 
 			state.siteInfo = {
@@ -245,6 +247,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				hasMultipleActiveEcommerceEventProviders,
 				activeConversionEventProviders,
 				wpPrivacyURL,
+				wooCommerceActive,
+				wooCommerceInstalled,
 			};
 			break;
 
@@ -344,6 +348,8 @@ export const resolvers = {
 			hasMultipleActiveEcommerceEventProviders,
 			activeConversionEventProviders,
 			wpPrivacyURL,
+			wooCommerceActive,
+			wooCommerceInstalled,
 		} = baseData;
 
 		const {
@@ -394,6 +400,8 @@ export const resolvers = {
 			hasMultipleActiveEcommerceEventProviders,
 			activeConversionEventProviders,
 			wpPrivacyURL,
+			wooCommerceActive,
+			wooCommerceInstalled,
 		} );
 	},
 };
@@ -1142,6 +1150,26 @@ export const selectors = {
 	 * @return {(string|undefined)} The privacy policy URL.
 	 */
 	getPrivacyPolicyURL: getSiteInfoProperty( 'wpPrivacyURL' ),
+
+	/**
+	 * Determines whether the WooCommerce plugin is active.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if WooCommerce is active, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWooCommerceActivated: getSiteInfoProperty( 'wooCommerceActive' ),
+
+	/**
+	 * Determines whether the WooCommerce plugin is installed.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if WooCommerce is installed, `false` if not. Returns `undefined` if not loaded.
+	 */
+	isWooCommerceInstalled: getSiteInfoProperty( 'wooCommerceInstalled' ),
 };
 
 export default {
