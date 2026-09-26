@@ -63,6 +63,8 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import IntroModal, {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { getSiteGoalsEventCountReportOptions } from '@/js/modules/analytics-4/components/site-goals/utils/getSiteGoalsEventCountReportOptions';
+import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/components/site-goals/utils/isSiteGoalsWidgetShowingContent';
 import {
 	LEGACY_ENHANCED_MEASUREMENT_ACTIVATION_BANNER_DISMISSED_ITEM_KEY as LEGACY_ENHANCED_MEASUREMENT_SETUP_CTA_DISMISSED_ITEM_KEY,
 	MODULE_SLUG_ANALYTICS_4,
@@ -270,23 +272,50 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			//
 			// Require Analytics 4 module to be connected to show this notifications.
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
-			// At least one Site Goals widget must render. This is the same
-			// condition the widget registrations apply, so the modal never
-			// introduces a section that won't appear. `activeWidgets` comes from
-			// the site goals settings endpoint, so that needs resolving too.
+			// At least one Site Goals widget must show its own content, since
+			// the modal introduces that content and the tour points at it.
+			// `activeWidgets` comes from the site goals settings endpoint, so
+			// that needs resolving too.
 			async ( { select, resolveSelect } ) => {
 				await Promise.all( [
 					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 					resolveSelect( MODULES_ANALYTICS_4 ).getSiteGoalsSettings(),
 				] );
 
-				return (
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.ECOMMERCE
-					) === true ||
-					select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-						GOAL_TYPES.LEAD
-					) === true
+				const goalTypes = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ];
+				const dates = select( CORE_USER ).getDateRangeDates( {
+					compare: false,
+				} );
+
+				// A widget that renders with no plugin for its goal type waits
+				// on its event report, so load that report before the check.
+				await Promise.all(
+					goalTypes
+						.filter(
+							( goalType ) =>
+								select(
+									MODULES_ANALYTICS_4
+								).isSiteGoalsWidgetRenderable( goalType ) ===
+									true &&
+								isSiteGoalsWidgetShowingContent(
+									select,
+									goalType
+								) === undefined
+						)
+						.map( ( goalType ) =>
+							resolveSelect( MODULES_ANALYTICS_4 ).getReport(
+								getSiteGoalsEventCountReportOptions(
+									dates,
+									goalType
+								)
+							)
+						)
+				);
+
+				return goalTypes.some(
+					( goalType ) =>
+						isSiteGoalsWidgetShowingContent( select, goalType ) ===
+						true
 				);
 			},
 			async ( { select, resolveSelect } ) => {

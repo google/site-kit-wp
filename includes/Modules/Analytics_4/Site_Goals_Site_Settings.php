@@ -99,6 +99,26 @@ class Site_Goals_Site_Settings extends Setting {
 	}
 
 	/**
+	 * Removes a widget from the active widgets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $widget Widget to remove, `ecommerce` or `lead`.
+	 * @return array The settings after the removal.
+	 */
+	public function remove_widget( $widget ) {
+		$settings = $this->get();
+
+		$settings['activeWidgets'] = array_values(
+			array_diff( $settings['activeWidgets'] ?? array(), array( $widget ) )
+		);
+
+		$this->set( $settings );
+
+		return $settings;
+	}
+
+	/**
 	 * Sanitizes the settings.
 	 *
 	 * @since 1.182.0

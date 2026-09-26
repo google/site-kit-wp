@@ -146,6 +146,10 @@ $site-goals-tile-connector-offset: 3.5px;
 		line-height: $lh-label-md;
 	}
 
+	.googlesitekit-site-goals-removal-error-notice {
+		margin-top: $grid-gap-phone;
+	}
+
 	.googlesitekit-site-goals-other-sources-notice {
 		margin-bottom: 24px;
 	}
