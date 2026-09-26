@@ -79,7 +79,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 */
 	public function create_request( Data_Request $data_request ) {
 		return $this->get_service()->organizations_publications->listOrganizationsPublications(
-			'organizations/*',
+			'organizations/-',
 			array( 'filter' => $this->get_publication_filter() )
 		);
 	}
@@ -104,38 +104,48 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	/**
 	 * Gets the filter for retrieving publications for the current site.
 	 *
-	 * @since 1.186.0
+	 * The API performs an exact string match against stored canonical_domain
+	 * values. Combines hostname permutations (www / non-www, IDN) with URL
+	 * permutations both with and without a trailing slash, so publications
+	 * created in Site Kit or Publisher Center can still match.
 	 *
-	 * @return string Permutations for site hosts or URL.
+	 * @since 1.186.0
+	 * @since n.e.x.t Updated to use `canonical_domain` filter.
+	 *
+	 * @return string Filter expression using canonical_domain variants.
 	 */
 	private function get_publication_filter() {
 		$sc_settings = $this->options->get( Search_Console_Settings::OPTION );
 		$property_id = $sc_settings['propertyID'];
 
 		if ( 0 === strpos( $property_id, 'sc-domain:' ) ) { // Domain property.
-			$host   = str_replace( 'sc-domain:', '', $property_id );
-			$filter = join(
-				' OR ',
-				array_map(
-					function ( $domain ) {
-						return sprintf( 'domain = "%s"', $domain );
-					},
-					URL::permute_site_hosts( $host )
-				)
-			);
+			$host     = str_replace( 'sc-domain:', '', $property_id );
+			$site_url = "https://$host";
 		} else { // URL property.
-			$filter = join(
-				' OR ',
-				array_map(
-					function ( $url ) {
-						return sprintf( 'site_url = "%s"', $url );
-					},
-					URL::permute_site_url( $property_id )
-				)
-			);
+			$host     = URL::parse( $property_id, PHP_URL_HOST );
+			$site_url = $property_id;
 		}
 
-		return $filter;
+		$site_urls = URL::permute_site_url( $site_url );
+
+		$canonical_domains = array_unique(
+			array_merge(
+				URL::permute_site_hosts( $host ),
+				$site_urls,
+				array_map( 'untrailingslashit', $site_urls ),
+				array_map( 'trailingslashit', $site_urls )
+			)
+		);
+
+		return implode(
+			' OR ',
+			array_map(
+				function ( $domain ) {
+					return sprintf( 'canonical_domain = "%s"', $domain );
+				},
+				$canonical_domains
+			)
+		);
 	}
 
 	/**
