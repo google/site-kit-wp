@@ -115,3 +115,9 @@ export const enum CREATE_PUBLICATION_FORM {
 	LANGUAGE_CODE = 'languageCode',
 	REGION_CODE = 'regionCode',
 }
+
+export const READONLY_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
+
+export const MANAGE_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';

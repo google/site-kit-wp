@@ -26,6 +26,7 @@ import { createElement } from '@wordpress/element';
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_STEPS,
@@ -42,10 +43,12 @@ import {
 	fireEvent,
 	freezeFetch,
 	muteFetch,
+	provideUserAuthentication,
 	render,
 	renderHook,
 } from '@tests/js/test-utils';
-import { useHasPreExistingCTAs, useStep } from './hooks';
+import { EXPRESS_SETUP_SCOPES } from './constants';
+import { useExpressSetupScopes, useHasPreExistingCTAs, useStep } from './hooks';
 
 // eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
 const PUBLICATION_ID = publications[ 0 ].publicationId;
@@ -421,5 +424,91 @@ describe( 'useHasPreExistingCTAs', () => {
 		} );
 
 		expect( result.current ).toBe( true );
+	} );
+} );
+
+describe( 'useExpressSetupScopes', () => {
+	mockLocation();
+	let registry: Registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry() as Registry;
+		global.location.href = 'http://example.com/?expressSetup=true';
+		provideUserAuthentication( registry );
+	} );
+
+	it.each( [
+		[ 'default scopes', [], [], EXPRESS_SETUP_SCOPES ],
+		[
+			'additional scopes',
+			[ 'extra-scope' ],
+			[],
+			[ ...EXPRESS_SETUP_SCOPES, 'extra-scope' ],
+		],
+		[
+			'only missing scopes',
+			[],
+			[ EXPRESS_SETUP_SCOPES[ 0 ] ],
+			[ EXPRESS_SETUP_SCOPES[ 1 ] ],
+		],
+		[
+			'deduplicated scopes',
+			EXPRESS_SETUP_SCOPES,
+			[],
+			EXPRESS_SETUP_SCOPES,
+		],
+	] )(
+		'should request %s once',
+		( _, additionalScopes, grantedScopes, expectedScopes ) => {
+			provideUserAuthentication( registry, { grantedScopes } );
+			const dispatch = jest.spyOn(
+				registry.dispatch( CORE_USER ),
+				'setPermissionScopeError'
+			);
+			const { rerender } = renderHook(
+				() => useExpressSetupScopes( additionalScopes ),
+				{ registry }
+			);
+			rerender();
+
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
+			expect(
+				registry.select( CORE_USER ).getPermissionScopeError()
+			).toMatchObject( {
+				data: {
+					scopes: expectedScopes,
+					skipModal: true,
+					redirectURL: global.location.href,
+				},
+			} );
+			expect(
+				registry.select( CORE_USER ).getPermissionScopeError().data
+			).not.toHaveProperty( 'errorRedirectURL' );
+		}
+	);
+
+	it( 'should not request scopes that are already granted', () => {
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
+		renderHook( () => useExpressSetupScopes(), {
+			registry,
+		} );
+		expect(
+			registry.select( CORE_USER ).getPermissionScopeError()
+		).toBeNull();
+	} );
+
+	it( 'should wait for authentication to resolve before requesting scopes', () => {
+		registry = createTestRegistry() as Registry;
+		freezeFetch(
+			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+		);
+		renderHook( () => useExpressSetupScopes(), {
+			registry,
+		} );
+		expect(
+			registry.select( CORE_USER ).getPermissionScopeError()
+		).toBeNull();
 	} );
 } );

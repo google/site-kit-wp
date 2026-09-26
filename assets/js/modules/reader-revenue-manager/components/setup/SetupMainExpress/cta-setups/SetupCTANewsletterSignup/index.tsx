@@ -37,7 +37,10 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	useExpressSetupScopes,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import StepSignupForm from './StepSignupForm';
@@ -45,6 +48,8 @@ import ViewOnSiteCTA from './ViewOnSiteCTA';
 
 const SetupCTANewsletterSignup: FC = () => {
 	const [ step, setStep ] = useStep();
+
+	useExpressSetupScopes();
 
 	const stepContent: Record< string, ReactNode > = {
 		[ EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION ]: (
