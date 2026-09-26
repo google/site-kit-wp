@@ -127,11 +127,7 @@ describe( 'Reauthentication needed admin notice', () => {
 			}
 		);
 
-		await page.waitForNavigation();
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics'
-		);
+		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 	} );
 
 	it( 'passes the activation options of an interrupted setup through reauth', async () => {
@@ -171,7 +167,7 @@ describe( 'Reauthentication needed admin notice', () => {
 			}
 		);
 
-		await page.waitForNavigation();
+		await page.waitForSelector( '.googlesitekit-setup-module--analytics' );
 
 		const requestedScopes = new URL( oauthRequestURL ).searchParams
 			.get( 'scope' )
@@ -181,9 +177,5 @@ describe( 'Reauthentication needed admin notice', () => {
 		const { searchParams } = new URL( page.url() );
 		expect( searchParams.get( 'slug' ) ).toBe( 'analytics-4' );
 		expect( searchParams.get( 'foo' ) ).toBe( 'bar' );
-
-		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module--analytics'
-		);
 	} );
 } );

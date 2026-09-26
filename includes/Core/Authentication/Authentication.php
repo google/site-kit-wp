@@ -1142,7 +1142,7 @@ final class Authentication implements Provides_Feature_Metrics {
 						?>
 						<a
 							href="#"
-							onclick="reauthenticateAndContinueSetup()"
+							onclick="event.preventDefault(); reauthenticateAndContinueSetup();"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
 					<?php
