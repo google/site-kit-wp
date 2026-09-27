@@ -14,6 +14,7 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
@@ -59,7 +60,7 @@ class Google_ProxyTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$this->google_proxy = new Google_Proxy( $this->context );
 	}
 
@@ -191,6 +192,34 @@ class Google_ProxyTest extends TestCase {
 			),
 			'Existing params should be retained when adding step parameter.'
 		);
+	}
+
+	public function test_get_metadata_fields__intent_purpose() {
+		$_GET['purpose'] = 'intent';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( 'intent-step', $metadata['mode'], 'The mode should be `intent-step` when the request has `purpose=intent`.' );
+	}
+
+	public function test_get_metadata_fields__no_purpose() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has no `purpose`.' );
+	}
+
+	public function test_get_metadata_fields__other_purpose() {
+		$_GET['purpose'] = 'something-else';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has a `purpose` other than `intent`.' );
 	}
 
 	public function test_get_site_fields() {
