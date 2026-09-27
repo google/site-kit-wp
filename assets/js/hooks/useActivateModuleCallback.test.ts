@@ -164,9 +164,14 @@ describe( 'useActivateModuleCallback', () => {
 		expect( global.location.assign ).toHaveBeenCalledWith( reauthURL );
 	} );
 
-	it( 'should set an item in storage before navigating to the module reauthentication URL', async () => {
+	it( 'should persist the module and activation options before navigating to the module reauthentication URL', async () => {
+		const options = {
+			additionalScopes: [ 'extra-scope' ],
+			redirectQueryArgs: { foo: 'bar' },
+		};
+
 		const { result } = renderHook(
-			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4 ),
+			() => useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4, options ),
 			{ registry }
 		);
 
@@ -193,7 +198,10 @@ describe( 'useActivateModuleCallback', () => {
 
 		storageItem = await getItem( 'module_setup' );
 
-		expect( storageItem.value ).toBe( MODULE_SLUG_ANALYTICS_4 );
+		expect( storageItem.value ).toEqual( {
+			slug: MODULE_SLUG_ANALYTICS_4,
+			options,
+		} );
 	} );
 
 	it( 'should set internal error state when module activation fails', async () => {
