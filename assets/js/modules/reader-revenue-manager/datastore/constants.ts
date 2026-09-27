@@ -52,6 +52,10 @@ export const ACTIVE_POLICY_VIOLATION_STATES = [
 	CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 ];
 
+export const EXTREME_POLICY_VIOLATION_STATES = [
+	CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+];
+
 export const POLICY_VIOLATION_STATES = [
 	...PENDING_POLICY_VIOLATION_STATES,
 	...ACTIVE_POLICY_VIOLATION_STATES,
@@ -111,3 +115,9 @@ export const enum CREATE_PUBLICATION_FORM {
 	LANGUAGE_CODE = 'languageCode',
 	REGION_CODE = 'regionCode',
 }
+
+export const READONLY_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
+
+export const MANAGE_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';

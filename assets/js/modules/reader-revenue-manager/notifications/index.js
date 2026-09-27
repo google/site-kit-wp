@@ -17,17 +17,18 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { requireModuleConnected } from '@/js/googlesitekit/data-requirements';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	requireCanActivateModule,
+	requireItemDismissed,
+	requireModuleActive,
+	requireModuleConnected,
+	requireModuleNotConnected,
+	requirePromptDismissed,
+	requireQueryArg,
+} from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -59,70 +60,97 @@ import {
 	RRM_SETUP_SUCCESS_NOTIFICATION_ID,
 } from '@/js/modules/reader-revenue-manager/constants';
 import {
-	ACTIVE_POLICY_VIOLATION_STATES,
-	CONTENT_POLICY_STATES,
+	requireContentPolicyState,
+	requireExpressSetupCTAActioned,
+	requireExpressSetupCTAConfigured,
+	requirePaymentOption,
+	requireProductID,
+	requireProductIDs,
+	requirePublicationOnboardingState,
+	requireSettingsAvailable,
+} from '@/js/modules/reader-revenue-manager/data-requirements';
+import {
 	EXPRESS_SETUP_CTAS,
+	EXTREME_POLICY_VIOLATION_STATES,
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 	MODULES_READER_REVENUE_MANAGER,
-	PENDING_POLICY_VIOLATION_STATES,
+	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { checkRequirementsForExpressSetupResumeNotification } from '@/js/modules/reader-revenue-manager/utils/notifications';
-import { asyncRequireAll } from '@/js/util/async';
+import {
+	asyncRequire,
+	asyncRequireAll,
+	asyncRequireAny,
+} from '@/js/util/async';
 
 /**
- * Checks if the setup success notification is currently being shown.
+ * Requires the Reader Revenue Manager setup success notification to be showing.
  *
- * @since 1.172.0
+ * @since n.e.x.t
  *
- * @return {boolean} True if the setup success notification is being shown, false otherwise.
+ * @return {function(): Promise<boolean>} Whether the setup success notification is being shown or not.
  */
-function isShowingSuccessNotification() {
-	const notification = getQueryArg( location.href, 'notification' );
-	const slug = getQueryArg( location.href, 'slug' );
-	return (
-		notification === 'authentication_success' &&
-		slug === MODULE_SLUG_READER_REVENUE_MANAGER
+function requireShowingSetupSuccessNotification() {
+	return asyncRequireAll(
+		requireQueryArg( 'notification', 'authentication_success' ),
+		requireQueryArg( 'slug', MODULE_SLUG_READER_REVENUE_MANAGER )
 	);
 }
 
-async function checkRequirementsForProductIDNotification(
-	{ select, resolveSelect },
-	requiredPaymentOption
-) {
-	const readerRevenueManagerActive = select( CORE_MODULES ).isModuleActive(
-		MODULE_SLUG_READER_REVENUE_MANAGER
-	);
+/**
+ * Requires the publication onboarding state to have just changed.
+ *
+ * As a side effect, the changed flag is reset and the settings are saved when
+ * it is set, so that the publication approved overlay is not shown again for
+ * this reason.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(): Promise<boolean>} Whether the publication onboarding state has just changed or not.
+ */
+function requirePublicationOnboardingStateChanged() {
+	return async ( { resolveSelect, dispatch } ) => {
+		const { publicationOnboardingStateChanged } =
+			( await resolveSelect(
+				MODULES_READER_REVENUE_MANAGER
+			).getSettings() ) || {};
 
-	if ( ! readerRevenueManagerActive ) {
-		return false;
-	}
+		if ( publicationOnboardingStateChanged !== true ) {
+			return false;
+		}
 
-	await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
+		const { saveSettings, setPublicationOnboardingStateChanged } = dispatch(
+			MODULES_READER_REVENUE_MANAGER
+		);
 
-	const publicationOnboardingState = select(
-		MODULES_READER_REVENUE_MANAGER
-	).getPublicationOnboardingState();
+		setPublicationOnboardingStateChanged( false );
+		saveSettings();
 
-	const paymentOption = select(
-		MODULES_READER_REVENUE_MANAGER
-	).getPaymentOption();
-
-	const productIDs = select( MODULES_READER_REVENUE_MANAGER ).getProductIDs();
-
-	const productID = select( MODULES_READER_REVENUE_MANAGER ).getProductID();
-
-	if (
-		publicationOnboardingState ===
-			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-		productIDs.length > 0 &&
-		productID === 'openaccess' &&
-		paymentOption === requiredPaymentOption
-	) {
 		return true;
-	}
+	};
+}
 
-	return false;
+/**
+ * Requires the conditions for showing a product ID notification to be met.
+ *
+ * The publication must be onboarded and offer at least one product, while its
+ * default `openaccess` product ID must still be the selected one.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} paymentOption Payment option the notification is for.
+ * @return {function(): Promise<boolean>} Whether the product ID notification should be shown or not.
+ */
+function requireProductIDNotification( paymentOption ) {
+	return asyncRequireAll(
+		requireModuleActive( MODULE_SLUG_READER_REVENUE_MANAGER ),
+		requirePublicationOnboardingState(
+			PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+		),
+		requireProductIDs(),
+		requireProductID( 'openaccess' ),
+		requirePaymentOption( paymentOption )
+	);
 }
 
 export const NOTIFICATIONS = {
@@ -132,43 +160,17 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isPromptDismissed selector relies on the resolution
-				// of the getDismissedPrompts() resolver.
-				resolveSelect( CORE_USER ).getDismissedPrompts(),
-				resolveSelect( CORE_MODULES ).isModuleConnected(
-					MODULE_SLUG_READER_REVENUE_MANAGER
-				),
-				resolveSelect( CORE_MODULES ).canActivateModule(
-					MODULE_SLUG_READER_REVENUE_MANAGER
-				),
-			] );
-
-			// Check if the prompt with the legacy key used before the banner was refactored
-			// to use the `notification ID` as the dismissal key, is dismissed.
-			const isLegacyDismissed = select( CORE_USER ).isPromptDismissed(
-				LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY
-			);
-
-			const isRRMModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			const canActivateRRMModule = select(
-				CORE_MODULES
-			).canActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if (
-				isLegacyDismissed === false &&
-				isRRMModuleConnected === false &&
-				canActivateRRMModule
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			// The prompt with the legacy key, used before the banner was
+			// refactored to use the notification ID as its dismissal key, must
+			// not be dismissed.
+			asyncRequire(
+				false,
+				requirePromptDismissed( LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY )
+			),
+			requireModuleNotConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requireCanActivateModule( MODULE_SLUG_READER_REVENUE_MANAGER )
+		),
 		isDismissible: true,
 		dismissRetries: 1,
 	},
@@ -176,29 +178,15 @@ export const NOTIFICATIONS = {
 		Component: RRMSetupSuccessSubtleNotification,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-			const publicationOnboardingState = await select(
-				MODULES_READER_REVENUE_MANAGER
-			).getPublicationOnboardingState();
-
-			if (
-				isShowingSuccessNotification() &&
-				publicationOnboardingState !== undefined
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requireShowingSetupSuccessNotification(),
+			// The publication onboarding state must have been synced.
+			asyncRequire(
+				false,
+				requirePublicationOnboardingState( undefined )
+			)
+		),
 		isDismissible: false,
 	},
 	[ RRM_PRODUCT_ID_CONTRIBUTIONS_NOTIFICATION_ID ]: {
@@ -207,14 +195,7 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
-			const isActive = await checkRequirementsForProductIDNotification(
-				registry,
-				'contributions'
-			);
-
-			return isActive;
-		},
+		checkRequirements: requireProductIDNotification( 'contributions' ),
 	},
 	[ RRM_PRODUCT_ID_SUBSCRIPTIONS_NOTIFICATION_ID ]: {
 		Component: ProductIDSubscriptionsNotification,
@@ -222,14 +203,7 @@ export const NOTIFICATIONS = {
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( registry ) => {
-			const isActive = await checkRequirementsForProductIDNotification(
-				registry,
-				'subscriptions'
-			);
-
-			return isActive;
-		},
+		checkRequirements: requireProductIDNotification( 'subscriptions' ),
 	},
 	[ RRM_PUBLICATION_APPROVED_OVERLAY_NOTIFICATION ]: {
 		Component: PublicationApprovedOverlayNotification,
@@ -238,50 +212,24 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { resolveSelect, dispatch } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			const {
-				publicationOnboardingState,
-				paymentOption,
-				publicationOnboardingStateChanged,
-			} =
-				( await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
-
-			// Show the overlay if the publication onboarding state is complete, and if either
-			// setup has just been completed but there is no paymentOption selected, or if the
-			// publication onboarding state has just changed.
-			if (
-				publicationOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				( ( isShowingSuccessNotification() && paymentOption === '' ) ||
-					publicationOnboardingStateChanged === true )
-			) {
-				// If the publication onboarding state has changed, reset it to false and save the settings.
-				// This is to ensure that the overlay is not shown again for this reason.
-				if ( publicationOnboardingStateChanged === true ) {
-					const {
-						saveSettings,
-						setPublicationOnboardingStateChanged,
-					} = dispatch( MODULES_READER_REVENUE_MANAGER );
-
-					setPublicationOnboardingStateChanged( false );
-					saveSettings();
-				}
-
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			requirePublicationOnboardingState(
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			),
+			asyncRequireAny(
+				// This check resets the changed flag as a side effect, so it
+				// has to run whenever the onboarding state is complete, ahead
+				// of the alternative below.
+				requirePublicationOnboardingStateChanged(),
+				// Setup has just been completed but no payment option has been
+				// selected yet.
+				asyncRequireAll(
+					requireShowingSetupSuccessNotification(),
+					requirePaymentOption( '' )
+				)
+			)
+		),
 	},
 	[ RRM_INTRODUCTORY_OVERLAY_NOTIFICATION ]: {
 		Component: RRMIntroductoryOverlayNotification,
@@ -290,44 +238,21 @@ export const NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			const rrmConnected = await resolveSelect(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER );
-
-			if ( ! rrmConnected ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_READER_REVENUE_MANAGER ).getSettings();
-
-			const contentPolicyState = select(
-				MODULES_READER_REVENUE_MANAGER
-			).getContentPolicyState();
-
-			if (
-				contentPolicyState ===
-				CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-			) {
-				return false;
-			}
-
-			const { publicationOnboardingState, paymentOption } =
-				( await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings() ) || {};
-
-			if (
-				publicationOnboardingState ===
-					PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE &&
-				[ 'noPayment', '' ].includes( paymentOption ) &&
-				! isShowingSuccessNotification()
-			) {
-				return true;
-			}
-
-			return false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			requirePublicationOnboardingState(
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
+			),
+			asyncRequireAny(
+				requirePaymentOption( 'noPayment' ),
+				requirePaymentOption( '' )
+			),
+			asyncRequire(
+				false,
+				requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
+			)
+		),
 	},
 	[ RRM_POLICY_VIOLATION_MODERATE_HIGH_NOTIFICATION_ID ]: {
 		Component: PolicyViolationNotification,
@@ -337,31 +262,13 @@ export const NOTIFICATIONS = {
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
-					return false;
-				}
-
-				await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings();
-
-				const contentPolicyState = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getContentPolicyState();
-
-				// Show for pending or active violation states (not extreme).
-				return (
-					contentPolicyState !==
-						CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE &&
-					( PENDING_POLICY_VIOLATION_STATES.includes(
-						contentPolicyState
-					) ||
-						ACTIVE_POLICY_VIOLATION_STATES.includes(
-							contentPolicyState
-						) )
-				);
-			}
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			// Show for pending or active violation states (not extreme).
+			asyncRequire(
+				false,
+				requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
+			),
+			requireContentPolicyState( POLICY_VIOLATION_STATES )
 		),
 	},
 	[ RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID ]: {
@@ -373,39 +280,19 @@ export const NOTIFICATIONS = {
 		dismissRetries: 5,
 		checkRequirements: asyncRequireAll(
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
-			async ( { select, resolveSelect } ) => {
-				if ( isShowingSuccessNotification() ) {
-					return false;
-				}
-
-				await resolveSelect( CORE_USER ).getDismissedItems();
-
-				const isItemDismissed = select( CORE_USER ).isItemDismissed(
+			asyncRequire( false, requireShowingSetupSuccessNotification() ),
+			// Due to the addition of the `dismissRetries` property, the notification dismissal
+			// logic uses prompts instead of items to track the dismissal status.
+			// However, it is possible that the notification is dismissed using dismissed items
+			// at the setup success notification stage.
+			asyncRequire(
+				false,
+				requireItemDismissed(
 					RRM_POLICY_VIOLATION_EXTREME_NOTIFICATION_ID
-				);
-
-				// Due to the addition of the `dismissRetries` property, the notification dismissal
-				// logic uses prompts instead of items to track the dismissal status.
-				// However, it is possible that the notification is dismissed using dismissed items
-				// at the setup success notification stage.
-				if ( isItemDismissed ) {
-					return false;
-				}
-
-				await resolveSelect(
-					MODULES_READER_REVENUE_MANAGER
-				).getSettings();
-
-				const contentPolicyState = select(
-					MODULES_READER_REVENUE_MANAGER
-				).getContentPolicyState();
-
-				// Show only for EXTREME severity.
-				return (
-					contentPolicyState ===
-					CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE
-				);
-			}
+				)
+			),
+			// Show only for EXTREME severity.
+			requireContentPolicyState( EXTREME_POLICY_VIOLATION_STATES )
 		),
 	},
 	[ RRM_EXPRESS_SETUP_RESUME_NEWSLETTER_NOTIFICATION_ID ]: {
@@ -416,11 +303,20 @@ export const NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		featureFlag: 'rrmExpressSetup',
 		isDismissible: true,
-		checkRequirements: async ( registry ) =>
-			await checkRequirementsForExpressSetupResumeNotification(
-				registry,
+		checkRequirements: asyncRequireAll(
+			requireExpressSetupCTAActioned(
 				EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
 			),
+			// An unavailable settings response leaves the configured CTAs
+			// unknown, in which case the notification is not shown.
+			requireSettingsAvailable(),
+			asyncRequire(
+				false,
+				requireExpressSetupCTAConfigured(
+					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+				)
+			)
+		),
 	},
 };
 

@@ -27,6 +27,7 @@ import fetchMock from 'fetch-mock';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { snapshotAllStores } from '@/js/googlesitekit/data/create-snapshot-store';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
@@ -80,6 +81,11 @@ describe( 'SiteGoalsSelectionPanel', () => {
 
 	beforeEach( async () => {
 		registry = createTestRegistry();
+		// The breakdown notice reads this setting; `true` keeps these tests on
+		// the existing notice, without the conversion tracking disclosure.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 
 		// Mark the breakdown notice's throttled availability sync as already done,
 		// so it doesn't schedule a background sync during these tests.

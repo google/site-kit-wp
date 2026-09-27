@@ -13,6 +13,7 @@
 namespace Google\Site_Kit\Tests\Modules;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Sign_In_With_Google;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Authenticator_Interface;
@@ -72,10 +73,18 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	/**
-	 * Registers the module and writes a placeholder `clientID` so `is_connected()` returns true.
+	 * Registers the module's hooks, then connects it.
 	 */
 	private function register_and_connect_module() {
 		$this->module->register();
+		$this->connect_module();
+	}
+
+	/**
+	 * Writes a placeholder `clientID` so `is_connected()` returns true, without
+	 * registering the module's hooks.
+	 */
+	private function connect_module() {
 		$this->module->get_settings()->register();
 		$this->module->get_settings()->set(
 			array( 'clientID' => '1234567890.googleusercontent.com' )
@@ -651,6 +660,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_handle_auth_callback_should_not_redirect_for_non_post_method() {
+		$this->connect_module();
+
 		try {
 			$_SERVER['REQUEST_METHOD'] = 'GET';
 			$this->call_handle_auth_callback( $this->get_mock_authenticator( 'https://example.com' ) );
@@ -661,6 +672,8 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	public function test_handle_auth_callback_should_redirect_for_post_method() {
+		$this->connect_module();
+
 		$redirect_uri              = home_url( '/test-page/' );
 		$_SERVER['REQUEST_METHOD'] = 'POST';
 
@@ -669,6 +682,158 @@ class Sign_In_With_GoogleTest extends TestCase {
 			$this->fail( 'Expected to redirect' );
 		} catch ( RedirectException $e ) {
 			$this->assertEquals( $redirect_uri, $e->get_location(), 'POST auth callback should redirect to provided URI.' );
+		}
+	}
+
+	/**
+	 * Being active without a client ID is a normal pre-setup state, and a
+	 * token cannot be verified without one.
+	 */
+	public function test_handle_auth_callback_should_not_authenticate_when_not_connected() {
+		$this->module->get_settings()->register();
+		$this->module->get_settings()->set( array( 'clientID' => '' ) );
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+
+		$authenticator = $this->createMock( Authenticator_Interface::class );
+		$authenticator->expects( $this->never() )
+			->method( 'authenticate_user' );
+
+		try {
+			$this->call_handle_auth_callback( $authenticator );
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection when the module is not connected' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_not_authenticate_when_settings_are_unset() {
+		$this->module->get_settings()->register();
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+
+		$authenticator = $this->createMock( Authenticator_Interface::class );
+		$authenticator->expects( $this->never() )
+			->method( 'authenticate_user' );
+
+		try {
+			$this->call_handle_auth_callback( $authenticator );
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection when the module has no settings' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_redirect_for_a_same_origin_request() {
+		$this->connect_module();
+
+		$redirect_uri              = home_url( '/test-page/' );
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = home_url();
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from this site should be handled.' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_not_redirect_for_another_sites_origin() {
+		$this->connect_module();
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://another-site.example.com';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( home_url( '/test-page/' ) ) );
+			$this->expectNotToPerformAssertions();
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection for a request announcing another origin' );
+		}
+	}
+
+	public function test_handle_auth_callback_should_not_authenticate_for_another_sites_origin() {
+		$this->connect_module();
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://another-site.example.com';
+
+		$authenticator = $this->createMock( Authenticator_Interface::class );
+		$authenticator->expects( $this->never() )
+			->method( 'authenticate_user' );
+
+		$this->call_handle_auth_callback( $authenticator );
+	}
+
+	/**
+	 * The login page can sit on an origin `site_url()` does not describe. It is
+	 * filterable, and it takes its scheme from `force_ssl_admin()`.
+	 */
+	public function test_handle_auth_callback_should_redirect_for_the_login_page_origin() {
+		$this->connect_module();
+
+		$redirect_uri = home_url( '/test-page/' );
+
+		add_filter(
+			'login_url',
+			function () {
+				return 'https://login.example.net/wp-login.php';
+			}
+		);
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://login.example.net';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from the login page should be handled.' );
+		}
+	}
+
+	/**
+	 * The existing-user link flow runs on `profile.php`, so admin requests are
+	 * a third origin a genuine sign-in can announce.
+	 */
+	public function test_handle_auth_callback_should_redirect_for_the_admin_origin() {
+		$this->connect_module();
+
+		$redirect_uri = home_url( '/test-page/' );
+
+		add_filter(
+			'admin_url',
+			function () {
+				return 'https://admin.example.net/wp-admin/';
+			}
+		);
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://admin.example.net';
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( $redirect_uri ) );
+			$this->fail( 'Expected to redirect' );
+		} catch ( RedirectException $e ) {
+			$this->assertEquals( $redirect_uri, $e->get_location(), 'A request from the admin area should be handled.' );
+		}
+	}
+
+	/**
+	 * A host sharing this site's cookie domain is still a different origin.
+	 */
+	public function test_handle_auth_callback_should_not_redirect_for_a_host_sharing_the_cookie_domain() {
+		$this->connect_module();
+
+		$host = URL::parse( home_url(), PHP_URL_HOST );
+
+		$_SERVER['REQUEST_METHOD'] = 'POST';
+		$_SERVER['HTTP_ORIGIN']    = 'https://other.' . $host;
+
+		try {
+			$this->call_handle_auth_callback( $this->get_mock_authenticator( home_url( '/test-page/' ) ) );
+			$this->expectNotToPerformAssertions();
+		} catch ( RedirectException $e ) {
+			$this->fail( 'Expected no redirection for a host sharing the cookie domain' );
 		}
 	}
 

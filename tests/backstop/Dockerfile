@@ -9,7 +9,7 @@ ENV BACKSTOPJS_VERSION=$BACKSTOPJS_VERSION
 # This version is the only version available on both arm64 and amd64 architectures as of Sept 2025.
 # This verison appears to change periodically with security updates, so if this version cannot
 # be found, check https://packages.debian.org/bookworm/chromium-common for the latest version.
-ARG CHROMIUM_VERSION=146.0.7680.164-1~deb12u1
+ARG CHROMIUM_VERSION=150.0.7871.100-1~deb12u1
 ENV CHROMIUM_VERSION=$CHROMIUM_VERSION
 
 # Install all required packages.

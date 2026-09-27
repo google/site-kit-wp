@@ -1255,14 +1255,9 @@ private function get_asset_dependencies( $context = '' ) {
         'googlesitekit-notifications',
     );
 
-    // Conditional: PDF datastore when feature flag is enabled
-    if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-        array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-    }
-
-    // Components needed for dashboard and dashboard-sharing contexts
+    // Components and the PDF datastore for dashboard and dashboard-sharing contexts
     if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
-        array_push( $dependencies, 'googlesitekit-components' );
+        array_push( $dependencies, 'googlesitekit-components', 'googlesitekit-datastore-pdf' );
     }
 
     // Dashboard sharing data for dashboard-sharing context

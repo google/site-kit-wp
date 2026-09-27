@@ -28,8 +28,10 @@ import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
+import { EXPRESS_SETUP_SCOPES } from './constants';
 import SetupMainExpress from './index';
 
 jest.mock( './PoweredBy', () => () => null );
@@ -41,6 +43,10 @@ describe( 'SetupMainExpress', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
 
 		const moduleData = [
 			{

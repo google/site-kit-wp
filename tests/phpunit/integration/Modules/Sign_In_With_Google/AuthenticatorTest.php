@@ -48,37 +48,43 @@ class AuthenticatorTest extends TestCase {
 		'family_name' => 'Last',
 	);
 
-	/**
-	 * The original $_COOKIE data.
-	 *
-	 * @var array
-	 */
-	private $cookie_data;
-
-	/**
-	 * The original $_POST data.
-	 *
-	 * @var array
-	 */
-	private $post_data;
-
 	public function set_up() {
 		parent::set_up();
 
-		// Store the original $_COOKIE and $_POST data.
-		$this->cookie_data = $_COOKIE;
-		$this->post_data   = $_POST;
+		// `WP_UnitTestCase_Base::set_up()` empties `$_GET`, `$_POST` and
+		// `$_REQUEST`, but not `$_COOKIE`, so clear it here to keep cookies
+		// from leaking between tests.
+		$_COOKIE = array();
 	}
 
-	public function tear_down() {
-		parent::tear_down();
-
-		// Restore the original $_COOKIE and $_POST data.
-		$_COOKIE = $this->cookie_data;
-		$_POST   = $this->post_data;
-	}
-
+	/**
+	 * Authenticates with a nonce cookie and token claim which match.
+	 *
+	 * The value is generated per call, so a test can only pass the nonce check
+	 * because the cookie reached the comparison, not because it happened to
+	 * reuse a value shared across the suite.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @return string Redirect URL.
+	 */
 	private function do_authenticate_user( $profile_reader_data = array() ) {
+		if ( is_array( $profile_reader_data ) ) {
+			$nonce = wp_generate_password( 32, false );
+
+			$profile_reader_data['nonce']           = $nonce;
+			$_COOKIE[ Authenticator::COOKIE_NONCE ] = $nonce;
+		}
+
+		return $this->authenticate( $profile_reader_data );
+	}
+
+	/**
+	 * Authenticates with whatever nonce state the caller has already set up.
+	 *
+	 * @param array|WP_Error $profile_reader_data Payload the profile reader returns.
+	 * @return string Redirect URL.
+	 */
+	private function authenticate( $profile_reader_data ) {
 		$user_options        = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 		$mock_profile_reader = $this->getMockBuilder( Profile_Reader_Interface::class )
 									->setMethods( array( 'get_profile_data' ) )
@@ -94,6 +100,44 @@ class AuthenticatorTest extends TestCase {
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
 
 		$this->assertEquals( $expected, $actual, 'Should redirect to login with invalid request error when profile reader returns error.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_nonce_cookie_is_missing() {
+		// The token carries a nonce, but this browser never started a sign-in,
+		// so it holds no cookie to compare against.
+		$payload          = self::$existing_user_payload;
+		$payload['nonce'] = 'nonce-from-the-token';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( $payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token when no nonce was stored for this browser.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in without a stored nonce.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_nonce_does_not_match() {
+		// A token issued for some other sign-in attempt.
+		$payload          = self::$existing_user_payload;
+		$payload['nonce'] = 'nonce-from-the-token';
+
+		$_COOKIE[ Authenticator::COOKIE_NONCE ] = 'a-different-nonce';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( $payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token issued for a different sign-in attempt.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in when the nonce does not match.' );
+	}
+
+	public function test_authenticate_user_fails_when_the_payload_has_no_nonce() {
+		// A cookie was stored, but the token carries no nonce claim at all.
+		$_COOKIE[ Authenticator::COOKIE_NONCE ] = 'nonce-we-issued';
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
+		$actual   = $this->authenticate( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should reject a token which carries no nonce claim.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in for a token without a nonce claim.' );
 	}
 
 	public function test_authenticate_user_fails_when_find_user_returns_error() {

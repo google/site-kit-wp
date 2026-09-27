@@ -29,10 +29,12 @@
 		padding-block: 30px;
 		padding-inline-end: $grid-gap-phone;
 		row-gap: var(--googlesitekit-feature-card-gap-m);
+	}
 
-		&:last-child {
-			border-bottom: none;
-		}
+	// The last card closes the "What's new?" list, where the other tabs keep
+	// the rule under every card.
+	.googlesitekit-whats-new .googlesitekit-feature-card:last-child {
+		border-bottom: none;
 	}
 
 	.googlesitekit-feature-card__status {

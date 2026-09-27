@@ -19,26 +19,31 @@
 /**
  * External dependencies
  */
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { useDispatch, useSelect } from '@wordpress/data';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Select } from '@/js/googlesitekit-data';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import { EXPRESS_SETUP_STEP_UI_KEY } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import {
+	EXPRESS_SETUP_SCOPES,
+	EXPRESS_SETUP_STEP_UI_KEY,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
+import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
 type Step = EXPRESS_SETUP_STEPS;
 
@@ -51,6 +56,8 @@ const PREREQUISITE_STEPS: Step[] = [
 	EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
 	EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
 ];
+
+const EMPTY_SCOPES: string[] = [];
 
 /**
  * Returns the current express setup step and a setter.
@@ -173,4 +180,91 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
 	}, [ cta, publication, publicationID, setStep, step ] );
 
 	return [ step, setStep ];
+}
+
+/**
+ * Determines whether the connected publication had CTAs before the one that
+ * was just created in this setup flow.
+ *
+ * The CTA created during setup is itself part of the configured CTAs, so the
+ * publication had pre-existing CTAs when more than one is configured.
+ *
+ * @since n.e.x.t
+ *
+ * @return {(boolean|undefined)} `true` when there are pre-existing CTAs, `false` when
+ *                               there are none, `undefined` while the CTAs are loading.
+ */
+export function useHasPreExistingCTAs(): boolean | undefined {
+	const ctas = useSelect(
+		( select: Select ) =>
+			select( MODULES_READER_REVENUE_MANAGER ).getCTAs(),
+		[]
+	);
+
+	if ( ctas === undefined ) {
+		return undefined;
+	}
+
+	return ctas.length > 1;
+}
+
+/**
+ * Requests missing permissions on entry to an express setup flow.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string[]} [additionalScopes] Scopes required by the specific flow.
+ * @return {void}
+ */
+export function useExpressSetupScopes(
+	additionalScopes: string[] = EMPTY_SCOPES
+): void {
+	const requestedScopes = useRef( false );
+	const { setPermissionScopeError } = useDispatch( CORE_USER );
+
+	const scopes = useMemo(
+		() =>
+			Array.from(
+				new Set( [ ...EXPRESS_SETUP_SCOPES, ...additionalScopes ] )
+			),
+		[ additionalScopes ]
+	);
+
+	const missingScopes = useSelect(
+		( select: Select ): string[] | undefined => {
+			const grantedScopes = select( CORE_USER ).getGrantedScopes();
+
+			if ( grantedScopes === undefined ) {
+				return undefined;
+			}
+
+			return scopes.filter(
+				( scope ) => ! grantedScopes.includes( scope )
+			);
+		},
+		[ scopes ]
+	);
+
+	useEffect( () => {
+		if ( requestedScopes.current || ! missingScopes?.length ) {
+			return;
+		}
+
+		// Request once per mount while navigation to authorization is pending.
+		requestedScopes.current = true;
+
+		setPermissionScopeError( {
+			code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+			message: __(
+				'Additional permissions are required to set up Reader Revenue Manager.',
+				'google-site-kit'
+			),
+			data: {
+				status: 403,
+				scopes: missingScopes,
+				skipModal: true,
+				redirectURL: global.location.href,
+			},
+		} );
+	}, [ missingScopes, setPermissionScopeError ] );
 }

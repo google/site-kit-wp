@@ -44,6 +44,7 @@ import SetupCTA from '@/js/googlesitekit/notifications/components/layout/SetupCT
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import { useFeature } from '@/js/hooks/useFeature';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { WEEK_IN_SECONDS } from '@/js/util';
 import BannerExpressSetupSVGMobile from '@/svg/graphics/banner-rrm-express-setup-cta-mobile.svg?url';
@@ -70,6 +71,7 @@ export default function ReaderRevenueManagerSetupCTABanner( {
 				expressSetup: 'true',
 				cta: 'newsletter-signup',
 			},
+			additionalScopes: EXPRESS_SETUP_SCOPES,
 		}
 	);
 
