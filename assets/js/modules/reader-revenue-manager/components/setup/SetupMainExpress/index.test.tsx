@@ -24,10 +24,12 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
+import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
 import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
+	provideSiteInfo,
 	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
@@ -43,6 +45,9 @@ describe( 'SetupMainExpress', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		provideUserAuthentication( registry );
+		provideSiteInfo( registry );
+		mockSurveyEndpoints();
 
 		provideUserAuthentication( registry, {
 			grantedScopes: EXPRESS_SETUP_SCOPES,
@@ -70,22 +75,28 @@ describe( 'SetupMainExpress', () => {
 		providePublications( registry, [] );
 	} );
 
-	it( 'renders the newsletter CTA component for newsletter-signup CTA', () => {
+	it( 'renders the newsletter CTA component for newsletter-signup CTA', async () => {
 		global.location.href =
 			'http://example.com/?cta=newsletter-signup&step=setup-cta';
 
-		const { getByText } = render( <SetupMainExpress />, { registry } );
+		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
+			registry,
+		} );
+
+		await waitForRegistry();
 
 		expect( getByText( 'Set up your sign-up form' ) ).toBeInTheDocument();
 	} );
 
-	it( 'renders the default express setup when no CTA is specified', () => {
+	it( 'renders the default express setup when no CTA is specified', async () => {
 		global.location.href = 'http://example.com/?step=connect-publication';
 
-		const { getByText, queryByText, container } = render(
+		const { getByText, queryByText, container, waitForRegistry } = render(
 			<SetupMainExpress />,
 			{ registry }
 		);
+
+		await waitForRegistry();
 
 		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(
@@ -96,13 +107,16 @@ describe( 'SetupMainExpress', () => {
 		).toHaveLength( 4 );
 	} );
 
-	it( 'renders the default express setup for an unknown CTA', () => {
+	it( 'renders the default express setup for an unknown CTA', async () => {
 		global.location.href =
 			'http://example.com/?cta=unknown-cta&step=connect-publication';
 
-		const { getByText, queryByText } = render( <SetupMainExpress />, {
-			registry,
-		} );
+		const { getByText, queryByText, waitForRegistry } = render(
+			<SetupMainExpress />,
+			{ registry }
+		);
+
+		await waitForRegistry();
 
 		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
 		expect(

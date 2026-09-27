@@ -120,7 +120,7 @@ describe( 'UnsatisfiedScopesAlert', () => {
 			body: { needsReauthentication: false },
 		} );
 
-		setItem( 'module_setup', {
+		await setItem( 'module_setup', {
 			slug: MODULE_SLUG_ANALYTICS_4,
 			options: {},
 		} );
@@ -146,6 +146,11 @@ describe( 'UnsatisfiedScopesAlert', () => {
 		} );
 
 		expect( fetchMock ).toHaveFetched( moduleActivationEndpoint );
+
+		// Wait for the retry to navigate, so it doesn't finish during a later test.
+		await waitFor( () =>
+			expect( global.location.assign ).toHaveBeenCalled()
+		);
 	} );
 
 	it( 'should persist additional activation options on retry', async () => {
