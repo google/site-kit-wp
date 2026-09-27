@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
+use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
@@ -63,6 +64,7 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 	 *
 	 * @since 1.167.0
 	 * @since 1.187.0 Added a nonce to the provisioning redirect URI.
+	 * @since n.e.x.t Added the `intent` and `intent_code` arguments to the provisioning redirect URI.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @throws Missing_Required_Param_Exception Thrown if a required parameter is missing or empty.
@@ -101,6 +103,17 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 			// Add `show_progress` query parameter if `showProgress` is set and truthy.
 			if ( ! empty( $data_request->data['showProgress'] ) ) {
 				$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
+			}
+
+			// The user comes back from the terms of service on this URI, so the intent
+			// has to be on it to reach the dashboard.
+			$intent_args = Intents::get_query_args(
+				$data_request->data['intent'] ?? null,
+				$data_request->data['intentCode'] ?? null
+			);
+
+			if ( $intent_args ) {
+				$redirect_uri = add_query_arg( $intent_args, $redirect_uri );
 			}
 		}
 
