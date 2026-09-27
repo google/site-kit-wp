@@ -1142,7 +1142,7 @@ final class Authentication implements Provides_Feature_Metrics {
 						?>
 						<a
 							href="#"
-							onclick="reauthenticateAndContinueSetup()"
+							onclick="event.preventDefault(); reauthenticateAndContinueSetup();"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
 					<?php
@@ -1150,11 +1150,32 @@ final class Authentication implements Provides_Feature_Metrics {
 						sprintf(
 							"
 							function reauthenticateAndContinueSetup() {
-								const moduleSlug = getAbandonedModuleSlug();
+								const moduleSetup = getAbandonedModuleSetup();
 
-								if ( moduleSlug ) {
-									const redirect = '%3\$s&slug=' + moduleSlug;
-									document.location = '%2\$s&redirect=' + encodeURIComponent( redirect );
+								if ( moduleSetup?.slug ) {
+									const {
+										additionalScopes = [],
+										redirectQueryArgs = {},
+									} = moduleSetup.options || {};
+
+									const redirect = new URL( '%3\$s' );
+									redirect.searchParams.set( 'slug', moduleSetup.slug );
+									Object.entries( redirectQueryArgs ).forEach( ( [ key, value ] ) =>
+										redirect.searchParams.set( key, value )
+									);
+
+									const connect = new URL( '%2\$s' );
+									connect.searchParams.set( 'redirect', redirect.toString() );
+									// Rewrite the scheme as getConnectURL does, to avoid host security
+									// filters that block query parameters beginning with a URL.
+									additionalScopes.forEach( ( scope ) =>
+										connect.searchParams.append(
+											'additional_scopes[]',
+											scope.replace( /^http(s)?:/, 'gttp\$1:' )
+										)
+									);
+
+									document.location = connect.toString();
 								} else {
 									if ( localStorage ) {
 										localStorage.clear();
@@ -1166,7 +1187,7 @@ final class Authentication implements Provides_Feature_Metrics {
 								}
 							}
 
-							function getAbandonedModuleSlug() {
+							function getAbandonedModuleSetup() {
 								for ( const storage of [ localStorage, sessionStorage ] ) {
 									if ( ! storage ) {
 										continue;
