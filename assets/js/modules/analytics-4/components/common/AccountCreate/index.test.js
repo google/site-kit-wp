@@ -291,53 +291,6 @@ describe( 'AccountCreate', () => {
 			);
 		} );
 
-		describe( 'with `intent` and `intent_code` in the URL', () => {
-			beforeEach( () => {
-				cleanup();
-			} );
-
-			// The `beforeEach` above renders before a test sets the URL, so reset it to keep the intent out of later tests.
-			afterEach( () => {
-				global.location.href = '';
-			} );
-
-			it( 'should include `intent` and `intentCode` in the `create-account-ticket` request data', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&intent=ads-conversion-tracking&intent_code=abc123';
-
-				( { getByRole, waitForRegistry } = render( <AccountCreate />, {
-					registry,
-				} ) );
-
-				fireEvent.click(
-					getByRole( 'button', { name: 'Create Account' } )
-				);
-
-				await waitForRegistry();
-
-				expect( fetchMock ).toHaveFetched(
-					new RegExp(
-						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
-					),
-					{
-						body: {
-							data: {
-								displayName: 'My Site Name',
-								propertyName: 'example.com',
-								dataStreamName: 'example.com',
-								timezone: 'America/Detroit',
-								regionCode: 'US',
-								enhancedMeasurementStreamEnabled: true,
-								showProgress: true,
-								intent: 'ads-conversion-tracking',
-								intentCode: 'abc123',
-							},
-						},
-					}
-				);
-			} );
-		} );
-
 		it( 'should set the `showProgress` property to `true` in the `create-account-ticket` request when the `showProgress` query parameter is "true"', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true';
@@ -748,85 +701,6 @@ describe( 'AccountCreate', () => {
 
 				expect( global.location.assign ).toHaveBeenCalledWith(
 					expect.stringContaining( 'page=googlesitekit-dashboard' )
-				);
-			} );
-
-			it( 'should forward `intent` and `intent_code` to the dashboard URL when clicked', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel&intent=ads-conversion-tracking&intent_code=abc123';
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/initial-setup-settings'
-					),
-					{
-						body: { isAnalyticsSetupComplete: true },
-						status: 200,
-					}
-				);
-
-				const { getByRole, waitForRegistry } = render(
-					<AccountCreate />,
-					{
-						registry,
-						features: [ 'setupFlowRefresh' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				fireEvent.click(
-					getByRole( 'button', {
-						name: /continue without analytics/i,
-					} )
-				);
-
-				await waitForRegistry();
-
-				expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
-				expect( global.location.assign ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&intent=ads-conversion-tracking&intent_code=abc123'
-				);
-			} );
-
-			it( 'should forward `intent` and `intent_code` to the Key Metrics setup URL when clicked with the `setupFlowRefreshPhase4` feature flag enabled', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel&intent=ads-conversion-tracking&intent_code=abc123';
-
-				fetchMock.postOnce(
-					new RegExp(
-						'^/google-site-kit/v1/core/user/data/initial-setup-settings'
-					),
-					{
-						body: { isAnalyticsSetupComplete: true },
-						status: 200,
-					}
-				);
-
-				const { getByRole, waitForRegistry } = render(
-					<AccountCreate />,
-					{
-						registry,
-						features: [
-							'setupFlowRefresh',
-							'setupFlowRefreshPhase4',
-						],
-					}
-				);
-
-				await waitForRegistry();
-
-				fireEvent.click(
-					getByRole( 'button', {
-						name: /continue without analytics/i,
-					} )
-				);
-
-				await waitForRegistry();
-
-				expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
-				expect( global.location.assign ).toHaveBeenCalledWith(
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-key-metrics-setup&intent=ads-conversion-tracking&intent_code=abc123&showProgress=true'
 				);
 			} );
 

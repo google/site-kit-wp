@@ -21,7 +21,6 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Modules\Analytics_4\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module;
@@ -1244,7 +1243,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @since 1.98.0 Extended to handle callback from Admin API (no UA entities).
 	 * @since 1.121.0 Migrated method from original Analytics class to Analytics_4 class.
 	 * @since 1.187.0 Added nonce verification and required a stored account ticket ID.
-	 * @since n.e.x.t Added the `intent` and `intent_code` arguments to the setup flow redirect URLs.
 	 */
 	protected function handle_provisioning_callback() {
 		if ( defined( 'WP_CLI' ) && WP_CLI ) {
@@ -1266,20 +1264,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		// flag enabled, and is therefore present on the callback URL when applicable.
 		$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
 
-		// `Create_Account_Ticket` also sets `intent` and `intent_code` on the provisioning redirect URI
-		// when the setup flow fulfills an intent, so that the next screen can pass them on to the dashboard.
-		$intent_args = Intents::get_query_args(
-			$input->filter( INPUT_GET, 'intent' ),
-			$input->filter( INPUT_GET, 'intent_code' )
-		);
-
 		// Verify the nonce added to the provisioning redirect URI by
 		// `Create_Account_Ticket`, which confirms this user started the flow.
 		$nonce = $input->filter( INPUT_GET, 'nonce' ) ?? '';
 
 		if ( ! wp_verify_nonce( $nonce, self::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ) ) {
 			wp_safe_redirect(
-				$this->get_provisioning_callback_error_redirect_url( 'invalid_nonce', $show_progress, $intent_args )
+				$this->get_provisioning_callback_error_redirect_url( 'invalid_nonce', $show_progress )
 			);
 			exit;
 		}
@@ -1306,7 +1297,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			|| $account_ticket->get_id() !== $account_ticket_id
 		) {
 			wp_safe_redirect(
-				$this->get_provisioning_callback_error_redirect_url( 'account_ticket_id_mismatch', $show_progress, $intent_args )
+				$this->get_provisioning_callback_error_redirect_url( 'account_ticket_id_mismatch', $show_progress )
 			);
 			exit;
 		}
@@ -1315,7 +1306,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		$error = $input->filter( INPUT_GET, 'error' );
 		if ( ! empty( $error ) ) {
 			wp_safe_redirect(
-				$this->get_provisioning_callback_error_redirect_url( htmlspecialchars( $error ), $show_progress, $intent_args )
+				$this->get_provisioning_callback_error_redirect_url( htmlspecialchars( $error ), $show_progress )
 			);
 			exit;
 		}
@@ -1327,7 +1318,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		if ( empty( $account_id ) ) {
 			wp_safe_redirect(
-				$this->get_provisioning_callback_error_redirect_url( 'callback_missing_parameter', $show_progress, $intent_args )
+				$this->get_provisioning_callback_error_redirect_url( 'callback_missing_parameter', $show_progress )
 			);
 			exit;
 		}
@@ -1345,11 +1336,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'key-metrics-setup',
-					array_merge(
-						array(
-							'showProgress' => $show_progress ? 'true' : null,
-						),
-						$intent_args
+					array(
+						'showProgress' => $show_progress ? 'true' : null,
 					)
 				)
 			);
@@ -1378,17 +1366,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * `error_code` query parameter is used.
 	 *
 	 * @since 1.180.0
-	 * @since n.e.x.t Added the `$intent_args` parameter.
 	 *
 	 * @param string $error_code    The error code to surface.
 	 * @param bool   $show_progress Whether the initial setup flow's progress
 	 *                              bar should be retained on the redirect URL.
-	 * @param array  $intent_args   Intent query arguments from `Intents::get_query_args()` to retain
-	 *                              on the redirect URL back to the Analytics setup screen, empty
-	 *                              when the flow has no intent.
 	 * @return string The URL to redirect to.
 	 */
-	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress, array $intent_args ) {
+	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
 			// If the account creation was triggered from the settings edit screen,
 			// redirect back to the settings edit screen with the error code.
@@ -1411,7 +1395,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				$args['showProgress'] = 'true';
 			}
 
-			return $this->context->admin_url( 'dashboard', array_merge( $args, $intent_args ) );
+			return $this->context->admin_url( 'dashboard', $args );
 		}
 
 		return $this->context->admin_url( 'dashboard', array( 'error_code' => $error_code ) );

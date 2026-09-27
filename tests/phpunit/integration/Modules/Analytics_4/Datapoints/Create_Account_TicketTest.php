@@ -209,8 +209,6 @@ class Create_Account_TicketTest extends TestCase {
 			'dataStreamName' => 'test stream name',
 			'timezone'       => 'UTC',
 			'showProgress'   => true,
-			'intent'         => 'ads-conversion-tracking',
-			'intentCode'     => 'abc123',
 		);
 
 		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-account-ticket', $data );
@@ -233,71 +231,6 @@ class Create_Account_TicketTest extends TestCase {
 			$redirect_uri,
 			'Redirect URI should match the base analytics redirect URI plus the nonce when setupFlowRefresh is disabled.'
 		);
-	}
-
-	/**
-	 * Creates an account ticket with the given extra data and returns the query arguments of its redirect URI.
-	 *
-	 * @param array $extra_data Data to add to the create-account-ticket request.
-	 * @return array Query arguments of the provisioning redirect URI.
-	 */
-	private function get_redirect_uri_query_args( array $extra_data ) {
-		$this->provision_account_ticket_request = null;
-
-		$data = array_merge(
-			array(
-				'displayName'    => 'test account name',
-				'regionCode'     => 'US',
-				'propertyName'   => 'test property name',
-				'dataStreamName' => 'test stream name',
-				'timezone'       => 'UTC',
-			),
-			$extra_data
-		);
-
-		$data_request = new Data_Request( 'POST', 'modules', 'analytics-4', 'create-account-ticket', $data );
-		$request      = $this->datapoint->create_request( $data_request );
-		$this->analytics->get_client()->execute( $request );
-
-		$account_ticket_request = new Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest(
-			json_decode( $this->provision_account_ticket_request->getBody()->getContents(), true ) // must be array to hydrate model.
-		);
-
-		parse_str( wp_parse_url( $account_ticket_request->getRedirectUri(), PHP_URL_QUERY ), $query_args );
-
-		return $query_args;
-	}
-
-	public function test_create_request__adds_the_intent_to_the_redirect_uri() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
-		$query_args = $this->get_redirect_uri_query_args(
-			array(
-				'intent'     => 'ads-conversion-tracking',
-				'intentCode' => 'ab+c/d=',
-			)
-		);
-
-		$this->assertEquals(
-			array(
-				'gatoscallback'   => '1',
-				'nonce'           => wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION ),
-				'service_version' => 'v3',
-				'intent'          => 'ads-conversion-tracking',
-				'intent_code'     => 'ab+c/d=',
-			),
-			$query_args,
-			'Redirect URI should keep its arguments and add the intent, with the code encoded so that it comes back unchanged.'
-		);
-	}
-
-	public function test_create_request__does_not_add_an_incomplete_intent_to_the_redirect_uri() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
-		$query_args = $this->get_redirect_uri_query_args( array( 'intent' => 'ads-conversion-tracking' ) );
-
-		$this->assertArrayNotHasKey( 'intent', $query_args, 'Redirect URI should not include an intent without its code.' );
-		$this->assertArrayNotHasKey( 'intent_code', $query_args, 'Redirect URI should not include an intent code without an intent.' );
 	}
 
 	public function test_create_request__adds_a_verifiable_nonce_to_the_redirect_uri() {

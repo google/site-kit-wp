@@ -32,7 +32,7 @@ import {
 	useState,
 } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { getQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -51,7 +51,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
-import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell } from '@/js/material-components';
@@ -133,19 +132,16 @@ export default function AccountCreate( { className } ) {
 			'plugin-conversion-tracking'
 		);
 	} );
-	const forwardableParams = useForwardableParams();
 	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			forwardableParams
-		)
+		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
 	);
-	const sitePurposeSetupURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-key-metrics-setup', {
-			...forwardableParams,
-			showProgress,
-		} )
-	);
+	const sitePurposeSetupURL = useSelect( ( select ) => {
+		const url = select( CORE_SITE ).getAdminURL(
+			'googlesitekit-key-metrics-setup'
+		);
+
+		return addQueryArgs( url, { showProgress } );
+	} );
 
 	const viewContext = useViewContext();
 	const { setValues, createSnapshot } = useDispatch( CORE_FORMS );
@@ -248,8 +244,6 @@ export default function AccountCreate( { className } ) {
 
 		const { error } = await createAccount( {
 			showProgress: showProgress === 'true',
-			intent: forwardableParams.intent,
-			intentCode: forwardableParams.intent_code,
 		} );
 		if ( ! error ) {
 			setConversionTrackingEnabled( true );
@@ -262,8 +256,6 @@ export default function AccountCreate( { className } ) {
 		setAutoSubmit,
 		isInitialSetupFlow,
 		createAccount,
-		forwardableParams.intent,
-		forwardableParams.intent_code,
 		showProgress,
 		setPermissionScopeError,
 		viewContext,

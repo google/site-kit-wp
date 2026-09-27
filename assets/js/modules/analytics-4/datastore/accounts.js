@@ -157,15 +157,12 @@ const baseActions = {
 	 *
 	 * @since 1.98.0
 	 * @since 1.165.0 Add `showProgress` option.
-	 * @since n.e.x.t Add `intent` and `intentCode` options.
 	 *
 	 * @param {Object}  [options={}]                 Optional options object.
 	 * @param {boolean} [options.showProgress=false] Whether to show the progress indicator.
-	 * @param {string}  [options.intent]             Intent ID to add to the provisioning redirect URI.
-	 * @param {string}  [options.intentCode]         One-time code for the intent.
 	 * @return {Object} Object with `response` and `error`.
 	 */
-	*createAccount( { showProgress = false, intent, intentCode } = {} ) {
+	*createAccount( { showProgress = false } = {} ) {
 		const registry = yield commonActions.getRegistry();
 
 		const { getValue } = registry.select( CORE_FORMS );
@@ -180,8 +177,6 @@ const baseActions = {
 				ENHANCED_MEASUREMENT_ENABLED
 			),
 			showProgress,
-			intent,
-			intentCode,
 		};
 
 		yield clearActionError( 'createAccount', [] );
