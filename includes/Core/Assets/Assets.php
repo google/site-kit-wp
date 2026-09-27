@@ -331,6 +331,7 @@ final class Assets {
 			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 			'googlesitekit-notifications',
+			'googlesitekit-intents',
 		);
 
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
@@ -595,6 +596,16 @@ final class Assets {
 						'googlesitekit-data',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
+					),
+				)
+			),
+			new Script(
+				'googlesitekit-intents',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-intents.js',
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
 					),
 				)
 			),

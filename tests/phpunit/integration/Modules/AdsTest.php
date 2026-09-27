@@ -163,6 +163,31 @@ class AdsTest extends TestCase {
 		);
 	}
 
+	public function test_get_assets() {
+		$script = $this->ads->get_assets()[0];
+		$script->register( $this->context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-ads'];
+
+		$this->assertEquals( $this->context->url( 'dist/assets/' ) . 'js/googlesitekit-modules-ads.js', $dependency->src, 'Ads script should have the correct source URL.' );
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-vendor',
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-feature-discovery',
+				'googlesitekit-modules',
+				'googlesitekit-notifications',
+				'googlesitekit-intents',
+				'googlesitekit-datastore-site',
+				'googlesitekit-datastore-user',
+				'googlesitekit-components',
+			),
+			$dependency->deps,
+			'Ads script should have the correct dependencies.'
+		);
+	}
+
 	public function test_is_connected__when_ads_conversion_id_is_set() {
 		$this->assertFalse( $this->ads->is_connected(), 'Ads module should not be connected without conversion ID.' );
 
