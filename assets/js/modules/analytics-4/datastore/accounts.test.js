@@ -114,6 +114,54 @@ describe( 'modules/analytics-4 accounts', () => {
 				);
 			} );
 
+			it( 'includes the `intent` and `intentCode` properties in the request body when passed as options', async () => {
+				fetchMock.post(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						// eslint-disable-next-line sitekit/acronym-case
+						body: { accountTicketId: accountTicketID },
+						status: 200,
+					}
+				);
+
+				registry
+					.dispatch( CORE_FORMS )
+					.setValues( FORM_ACCOUNT_CREATE, {
+						accountName,
+						propertyName,
+						dataStreamName,
+						timezone,
+						countryCode,
+					} );
+
+				await registry.dispatch( MODULES_ANALYTICS_4 ).createAccount( {
+					intent: 'ads-conversion-tracking',
+					intentCode: 'abc123',
+				} );
+
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/create-account-ticket'
+					),
+					{
+						body: {
+							data: {
+								displayName: accountName,
+								propertyName,
+								dataStreamName,
+								timezone,
+								regionCode: countryCode,
+								showProgress: false,
+								intent: 'ads-conversion-tracking',
+								intentCode: 'abc123',
+							},
+						},
+					}
+				);
+			} );
+
 			it( 'includes the `showProgress` property in the request body when passed as an option', async () => {
 				fetchMock.post(
 					new RegExp(
