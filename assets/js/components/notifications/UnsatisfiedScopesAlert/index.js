@@ -104,7 +104,8 @@ export default function UnsatisfiedScopesAlert( { id, Notification } ) {
 		}
 
 		const { error, response } = await activateModule(
-			inProgressModuleSetup
+			inProgressModuleSetup.slug,
+			inProgressModuleSetup.options
 		);
 
 		if ( ! error ) {
