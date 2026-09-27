@@ -161,6 +161,7 @@ const siteKitExternals = {
 	'googlesitekit-data': [ 'googlesitekit', 'data' ],
 	'googlesitekit-feature-discovery': [ 'googlesitekit', 'featureDiscovery' ],
 	'googlesitekit-modules': [ 'googlesitekit', 'modules' ],
+	'googlesitekit-intents': [ 'googlesitekit', 'intents' ],
 	'googlesitekit-widgets': [ 'googlesitekit', 'widgets' ],
 	'googlesitekit-notifications': [ 'googlesitekit', 'notifications' ],
 	'googlesitekit-components': [ 'googlesitekit', 'components' ],
