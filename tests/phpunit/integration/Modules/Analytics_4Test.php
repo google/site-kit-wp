@@ -213,6 +213,40 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_register__proxy_setup_mode_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
+		$this->assertEquals(
+			'analytics-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should be `analytics-step` when the original mode is empty and Analytics is not connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_when_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+		$this->connect_analytics_module( $this->analytics );
+
+		$this->assertSame(
+			'',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should stay empty when Analytics is connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_with_intent_step_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
+		$this->assertEquals(
+			'intent-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', 'intent-step' ),
+			'The setup mode should stay `intent-step` when Analytics is not connected.'
+		);
+	}
+
 	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
 		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
 		$key_metrics_setup_is_widget_area_hidden->register();
@@ -781,6 +815,63 @@ class Analytics_4Test extends TestCase {
 				),
 			),
 		);
+	}
+
+	public function test_handle_provisioning_callback__keeps_the_intent_on_the_key_metrics_setup_redirect() {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		// Intercept Google API requests to avoid failures.
+		FakeHttp::fake_google_http_handler(
+			$analytics->get_client()
+		);
+
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['accountId']     = '12345678';
+		$_GET['show_progress'] = '1';
+		$_GET['intent']        = 'ads-conversion-tracking';
+		$_GET['intent_code']   = 'abc123';
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected a redirect to the Key Metrics Setup screen with the intent.' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				admin_url( 'admin.php?page=googlesitekit-key-metrics-setup&showProgress=true&intent=ads-conversion-tracking&intent_code=abc123' ),
+				$redirect->get_location(),
+				'Should redirect to the Key Metrics Setup screen with the intent.'
+			);
+		}
+	}
+
+	public function test_handle_provisioning_callback__keeps_the_intent_on_the_analytics_setup_redirect_after_an_error() {
+		$this->enable_feature( 'setupFlowRefresh' );
+
+		$test_variables              = $this->set_up_handle_provisioning_callback_test();
+		$method                      = $test_variables['method'];
+		$analytics                   = $test_variables['analytics'];
+		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
+
+		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
+		$_GET['error']         = 'user_cancel';
+		$_GET['show_progress'] = '1';
+		$_GET['intent']        = 'ads-conversion-tracking';
+		$_GET['intent_code']   = 'abc123';
+
+		try {
+			$method->invokeArgs( $analytics, array() );
+			$this->fail( 'Expected a redirect to the Analytics setup screen with the intent after the `user_cancel` error.' );
+		} catch ( RedirectException $redirect ) {
+			$this->assertEquals(
+				admin_url( 'admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel&showProgress=true&intent=ads-conversion-tracking&intent_code=abc123' ),
+				$redirect->get_location(),
+				'Should redirect back to the Analytics setup screen with the error code and the intent.'
+			);
+		}
 	}
 
 	/**
