@@ -36,11 +36,12 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { renderHook } from '@tests/js/test-utils';
+import { actHook as act, renderHook } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { useShouldShowSiteGoalsRemovalNotice } from './useShouldShowSiteGoalsRemovalNotice';
 
@@ -61,9 +62,15 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			detectedEvents: [ 'purchase', 'contact' ],
+		} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 	} );
 
-	it( 'shows the removal notice for the ecommerce widget when no ecommerce plugin is active and the selected date range has no ecommerce events', () => {
+	it( 'should show the removal notice for the ecommerce widget when no ecommerce plugin is active and the selected date range has no ecommerce events', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
@@ -77,7 +84,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'shows the removal notice for the lead generation widget when no form plugin is active and the selected date range has no lead events', () => {
+	it( 'should show the removal notice for the lead generation widget when no form plugin is active and the selected date range has no lead events', () => {
 		provideSiteInfo( registry, {
 			hasActiveLeadEventProviders: false,
 		} );
@@ -91,7 +98,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when an ecommerce plugin is active and the selected date range has no ecommerce events", () => {
+	it( 'should not show the removal notice for the ecommerce widget when an ecommerce plugin is active and the selected date range has no ecommerce events', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: true,
 		} );
@@ -105,7 +112,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( "doesn't show the removal notice for the lead generation widget when a form plugin is active and the selected date range has no lead events", () => {
+	it( 'should not show the removal notice for the lead generation widget when a form plugin is active and the selected date range has no lead events', () => {
 		provideSiteInfo( registry, {
 			hasActiveLeadEventProviders: true,
 		} );
@@ -119,7 +126,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when no ecommerce plugin is active and the selected date range has ecommerce events", () => {
+	it( 'should not show the removal notice for the ecommerce widget when no ecommerce plugin is active and the selected date range has ecommerce events', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
@@ -133,7 +140,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when Site Kit doesn't know whether an ecommerce plugin is active", () => {
+	it( "should not show the removal notice for the ecommerce widget when Site Kit doesn't know whether an ecommerce plugin is active", () => {
 		provideSiteInfo( registry );
 		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
 
@@ -145,7 +152,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( 'waits to decide on the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
+	it( 'should wait to decide on the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
@@ -163,7 +170,7 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget or request the report of ecommerce events when an ecommerce plugin is active", async () => {
+	it( 'should not show the removal notice for the ecommerce widget or request the report of ecommerce events when an ecommerce plugin is active', async () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: true,
 		} );
@@ -178,7 +185,54 @@ describe( 'useShouldShowSiteGoalsRemovalNotice', () => {
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( "doesn't show the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events fails", () => {
+	it( 'should not show the removal notice for the ecommerce widget when the widget is out of view and an ecommerce plugin is active', () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: true,
+		} );
+
+		const { result } = renderHook(
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
+			{ registry, inView: false }
+		);
+
+		expect( result.current ).toBe( false );
+	} );
+
+	it( 'should wait to decide on the removal notice without requesting the event report when no ecommerce plugin is active and the widget is out of view', async () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+
+		const { result } = renderHook(
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
+			{ registry, inView: false }
+		);
+
+		await waitForDefaultTimeouts();
+
+		expect( result.current ).toBeUndefined();
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	it( 'should wait for the ecommerce widget to come into view before it shows the removal notice, even when the report of ecommerce events has already loaded', () => {
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+		seedSiteGoalsEventCountReport( registry, 'ecommerce', '0' );
+
+		const { result, setInView } = renderHook(
+			() => useShouldShowSiteGoalsRemovalNotice( 'ecommerce' ),
+			{ registry, inView: false }
+		);
+
+		expect( result.current ).toBeUndefined();
+
+		act( () => setInView?.( true ) );
+
+		expect( result.current ).toBe( true );
+	} );
+
+	it( 'should not show the removal notice for the ecommerce widget when no ecommerce plugin is active and the report of ecommerce events fails', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );

@@ -785,6 +785,60 @@ describe( 'IntroModal', () => {
 
 			expect( isActive ).toBe( true );
 		} );
+
+		describe( 'before the site info loads', () => {
+			let baseData;
+
+			beforeEach( () => {
+				baseData = global._googlesitekitBaseData;
+				global._googlesitekitBaseData = {
+					...baseData,
+					hasActiveEcommerceEventProviders: false,
+					hasActiveLeadEventProviders: false,
+				};
+
+				registry = createTestRegistry();
+				provideModules( registry, [
+					{
+						slug: MODULE_SLUG_ANALYTICS_4,
+						active: true,
+						connected: true,
+					},
+				] );
+				provideUserAuthentication( registry );
+				registry
+					.dispatch( CORE_MODULES )
+					.receiveCheckModuleAccess(
+						{ access: true },
+						{ slug: MODULE_SLUG_ANALYTICS_4 }
+					);
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					detectedEvents: [ 'purchase', 'contact' ],
+				} );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ 'ecommerce', 'lead' ],
+					} );
+			} );
+
+			afterEach( () => {
+				global._googlesitekitBaseData = baseData;
+			} );
+
+			it( 'returns `false` when both widgets show the removal notice', async () => {
+				fetchMock.get( reportEndpoint, {
+					body: buildEventCountReport( '0' ),
+				} );
+
+				const isActive = await notification.checkRequirements(
+					registry,
+					VIEW_CONTEXT_MAIN_DASHBOARD
+				);
+
+				expect( isActive ).toBe( false );
+			} );
+		} );
 	} );
 
 	describe( 'view tracking', () => {

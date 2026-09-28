@@ -35,6 +35,7 @@ import {
 	requireModuleOwnership,
 	requireScope,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -274,12 +275,14 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			// At least one Site Goals widget must show its own content, since
 			// the modal introduces that content and the tour points at it.
-			// `activeWidgets` comes from the site goals settings endpoint, so
-			// that needs resolving too.
+			// `activeWidgets` comes from the site goals settings endpoint, and
+			// whether a plugin for each goal type is active comes from the site
+			// info, so both need resolving too.
 			async ( { select, resolveSelect } ) => {
 				await Promise.all( [
 					resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
 					resolveSelect( MODULES_ANALYTICS_4 ).getSiteGoalsSettings(),
+					resolveSelect( CORE_SITE ).getSiteInfo(),
 				] );
 
 				const goalTypes = [ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ];

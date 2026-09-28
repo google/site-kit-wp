@@ -168,6 +168,23 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 		);
 	}
 
+	public function test_create_request__refuses_to_remove_the_lead_widget_when_a_form_plugin_is_active() {
+		Conversion_Tracking::$providers = array(
+			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,
+		);
+
+		$response = $this->datapoint->create_request( $this->build_request( 'lead' ) );
+
+		$this->assertWPError( $response, 'A request to remove the lead widget should return an error while a form plugin is active.' );
+		$this->assertSame( 'site_goals_widget_provider_active', $response->get_error_code(), 'The error code should be `site_goals_widget_provider_active`.' );
+		$this->assertSame( 400, $response->get_error_data()['status'], 'The error should have a 400 status.' );
+		$this->assertSame(
+			array( 'ecommerce', 'lead' ),
+			$this->site_goals_site_settings->get()['activeWidgets'],
+			'A refused request should leave both widgets active.'
+		);
+	}
+
 	public function test_create_request__removes_the_ecommerce_widget_while_only_a_form_plugin_is_active() {
 		Conversion_Tracking::$providers = array(
 			FakeLeadEventProvider_Active::CONVERSION_EVENT_PROVIDER_SLUG => FakeLeadEventProvider_Active::class,

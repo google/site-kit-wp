@@ -770,9 +770,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -2137,7 +2137,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders a loading block in place of the widget when no form plugin is active and the report of lead events is loading', () => {
+	it( 'shows the widget title and a loading block when no form plugin is active and the report of lead events is loading', () => {
 		provideSiteInfo( registry, {
 			hasActiveLeadEventProviders: false,
 		} );
@@ -2154,19 +2154,20 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				buildSiteGoalsEventCountReportOptions( registry, 'lead' ),
 			] );
 
-		const { container, queryByText, unmount } = render(
+		const { container, getByText, queryByText, unmount } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 
 		expect(
-			container.querySelector( '.googlesitekit-preview-block' )
+			getByText( 'Lead generation performance' )
 		).toBeInTheDocument();
 		expect(
 			container.querySelector(
-				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance .googlesitekit-preview-block'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
 		expect(
 			queryByText( /Lead generation performance was removed/ )
 		).not.toBeInTheDocument();

@@ -26,12 +26,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { SITE_GOALS_WIDGET_EVENTS } from '@/js/modules/analytics-4/datastore/site-goals-settings';
+import {
+	MODULES_ANALYTICS_4,
+	SITE_GOALS_WIDGET_EVENTS,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 
 /**
- * Builds the report options `useSiteGoalsHasEventsInDateRange()` requests.
+ * Builds the options of the report that counts a goal type's conversion events
+ * in the selected date range.
  *
  * @since n.e.x.t
  *
@@ -62,8 +65,8 @@ export function buildSiteGoalsEventCountReportOptions(
 }
 
 /**
- * Stores a finished event count report, so `useSiteGoalsHasEventsInDateRange()`
- * reads it without a request.
+ * Stores a finished event count report for the selected date range, so the code
+ * under test reads it without a request.
  *
  * @since n.e.x.t
  *

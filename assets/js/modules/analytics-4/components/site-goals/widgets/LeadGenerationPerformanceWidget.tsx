@@ -544,12 +544,27 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
-		if ( shouldShowRemovalNotice !== false ) {
+		if ( shouldShowRemovalNotice === true ) {
+			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.LEAD } />;
+		}
+
+		if ( shouldShowRemovalNotice === undefined ) {
 			return (
-				<SiteGoalsRemovalNotice
-					goalType={ GOAL_TYPES.LEAD }
-					loading={ shouldShowRemovalNotice === undefined }
-				/>
+				<WidgetComponent
+					onToggleCollapsed={ handleToggleCollapsed }
+					Header={ WidgetHeaderTitle }
+					headerContents={
+						<span>
+							{ __(
+								'Lead generation performance',
+								'google-site-kit'
+							) }
+						</span>
+					}
+					collapsible
+				>
+					<PreviewBlock width="100%" height="130px" />
+				</WidgetComponent>
 			);
 		}
 

@@ -20,10 +20,9 @@
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { useInView } from '@/js/hooks/useInView';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { useSiteGoalsHasEventsInDateRange } from './useSiteGoalsHasEventsInDateRange';
+import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/components/site-goals/utils/isSiteGoalsWidgetShowingContent';
 
 /**
  * Checks whether the removal notice replaces a Site Goals widget.
@@ -34,39 +33,24 @@ import { useSiteGoalsHasEventsInDateRange } from './useSiteGoalsHasEventsInDateR
  * @since n.e.x.t
  *
  * @param {GoalType} goalType Goal type of the widget to check.
- * @return {(boolean|undefined)} `true` when the notice replaces the widget. `undefined` while no plugin is active and the event report loads. `false` otherwise.
+ * @return {(boolean|undefined)} `true` when the notice replaces the widget, and `false` when the widget shows its content. `undefined` while the Analytics settings, the Site Goals settings, or the event report load. With no plugin for the goal type active, also `undefined` until the widget is in view.
  */
 export function useShouldShowSiteGoalsRemovalNotice(
 	goalType: GoalType
 ): boolean | undefined {
-	const hasActiveEventProviders = useSelect(
-		( select: Select ) => {
-			if ( goalType === GOAL_TYPES.ECOMMERCE ) {
-				return select( CORE_SITE ).hasActiveEcommerceEventProviders();
-			}
+	const isInView = useInView( { sticky: true } );
 
-			return select( CORE_SITE ).hasActiveLeadEventProviders();
-		},
-		[ goalType ]
+	const isShowingContent = useSelect(
+		( select: Select ) =>
+			isSiteGoalsWidgetShowingContent( select, goalType, {
+				shouldFetchReport: isInView,
+			} ),
+		[ goalType, isInView ]
 	) as boolean | undefined;
 
-	const hasEventsInDateRange = useSiteGoalsHasEventsInDateRange( goalType, {
-		shouldFetchReport: hasActiveEventProviders === false,
-	} );
-
-	// A failed report or an unknown plugin state shows the widget, so the
-	// loading block can't stay forever.
-	if (
-		hasActiveEventProviders !== false ||
-		hasEventsInDateRange === true ||
-		hasEventsInDateRange === null
-	) {
-		return false;
+	if ( isShowingContent === undefined ) {
+		return undefined;
 	}
 
-	if ( hasEventsInDateRange === false ) {
-		return true;
-	}
-
-	return undefined;
+	return ! isShowingContent;
 }

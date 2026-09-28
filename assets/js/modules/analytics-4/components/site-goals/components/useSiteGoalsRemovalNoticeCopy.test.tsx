@@ -37,7 +37,7 @@ describe( 'useSiteGoalsRemovalNoticeCopy', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'returns the title "Online store performance was removed from your dashboard" for the ecommerce goal type', () => {
+	it( 'should return the title "Online store performance was removed from your dashboard" for the ecommerce goal type', () => {
 		const { result } = renderHook(
 			() => useSiteGoalsRemovalNoticeCopy( GOAL_TYPES.ECOMMERCE ),
 			{ registry }
@@ -48,7 +48,7 @@ describe( 'useSiteGoalsRemovalNoticeCopy', () => {
 		);
 	} );
 
-	it( 'returns the title "Lead generation performance was removed from your dashboard" for the lead goal type', () => {
+	it( 'should return the title "Lead generation performance was removed from your dashboard" for the lead goal type', () => {
 		const { result } = renderHook(
 			() => useSiteGoalsRemovalNoticeCopy( GOAL_TYPES.LEAD ),
 			{ registry }
@@ -59,7 +59,7 @@ describe( 'useSiteGoalsRemovalNoticeCopy', () => {
 		);
 	} );
 
-	it( 'returns a description with a "Learn more" link to the conversion tracking support page', () => {
+	it( 'should return a description with a "Learn more" link to the conversion tracking support page', () => {
 		const { result } = renderHook(
 			() => useSiteGoalsRemovalNoticeCopy( GOAL_TYPES.ECOMMERCE ),
 			{ registry }

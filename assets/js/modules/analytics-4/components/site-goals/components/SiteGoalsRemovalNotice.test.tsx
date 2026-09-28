@@ -77,7 +77,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		mockTrackEvent.mockClear();
 	} );
 
-	it( 'renders the online store title, description, and "Learn more" link for the ecommerce goal type', () => {
+	it( 'should render the online store title, description, and "Learn more" link for the ecommerce goal type', () => {
 		const { getByRole, getByText } = render(
 			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
@@ -96,7 +96,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the lead generation title and description for the lead goal type', () => {
+	it( 'should render the lead generation title and description for the lead goal type', () => {
 		const { getByText } = render(
 			<SiteGoalsRemovalNotice goalType="lead" />,
 			{ registry }
@@ -112,7 +112,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders a warning notice with a single "Got it" button', () => {
+	it( 'should render a warning notice with a single "Got it" button', () => {
 		const { container, getAllByRole } = render(
 			<SiteGoalsRemovalNotice goalType="ecommerce" />,
 			{ registry }
@@ -125,26 +125,11 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( getAllByRole( 'button' )[ 0 ] ).toHaveTextContent( 'Got it' );
 	} );
 
-	it( 'renders a loading block in place of the notice when `loading` is `true`', () => {
-		const { container, queryByRole, queryByText } = render(
-			<SiteGoalsRemovalNotice goalType="ecommerce" loading />,
-			{ registry }
-		);
-
-		expect(
-			container.querySelector( '.googlesitekit-preview-block' )
-		).toBeInTheDocument();
-		expect(
-			queryByText( /Online store performance was removed/ )
-		).not.toBeInTheDocument();
-		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
-	} );
-
 	it.each< [ string, GoalType, GoalType[] ] >( [
 		[ 'online store', 'ecommerce', [ 'lead' ] ],
 		[ 'lead generation', 'lead', [ 'ecommerce' ] ],
 	] )(
-		'removes the %s widget from the active widgets on a "Got it" click',
+		'should remove the %s widget from the active widgets on a "Got it" click',
 		async ( _label, goalType, remainingWidgets ) => {
 			fetchMock.postOnce( removeWidgetEndpoint, {
 				body: { activeWidgets: remainingWidgets },
@@ -178,7 +163,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		}
 	);
 
-	it( 'tracks a "remove_widget" event on a "Got it" click', async () => {
+	it( 'should track a "remove_widget" event on a "Got it" click', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: { activeWidgets: [ 'ecommerce' ] },
 			status: 200,
@@ -202,7 +187,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'disables the "Got it" button while the removal request runs', async () => {
+	it( 'should disable the "Got it" button while the removal request runs', async () => {
 		freezeFetch( removeWidgetEndpoint );
 
 		const { getByRole, waitForRegistry } = render(
@@ -218,7 +203,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		} );
 	} );
 
-	it( 'keeps the ecommerce widget in the active widgets when the removal request fails', async () => {
+	it( 'should keep the ecommerce widget in the active widgets when the removal request fails', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: {
 				code: 'site_goals_widget_provider_active',
@@ -249,7 +234,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'shows the request error in an error notice when the removal request fails', async () => {
+	it( 'should show the request error in an error notice when the removal request fails', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: {
 				code: 'site_goals_widget_provider_active',
@@ -279,11 +264,14 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( errorMessage.closest( '.googlesitekit-notice' ) ).toHaveClass(
 			'googlesitekit-notice--error'
 		);
+		expect( errorMessage ).toHaveTextContent(
+			/^Error: This Site Goals widget can’t be removed while a plugin that tracks its events is active\.$/
+		);
 
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'hides the error notice when a second "Got it" click removes the widget', async () => {
+	it( 'should hide the error notice when a second "Got it" click removes the widget', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: {
 				code: 'site_goals_widget_provider_active',
@@ -326,7 +314,7 @@ describe( 'SiteGoalsRemovalNotice', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'shows no error notice for the lead generation widget when the removal request for the online store widget fails', async () => {
+	it( 'should show no error notice for the lead generation widget when the removal request for the online store widget fails', async () => {
 		fetchMock.postOnce( removeWidgetEndpoint, {
 			body: {
 				code: 'site_goals_widget_provider_active',

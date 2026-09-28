@@ -759,9 +759,9 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -1502,6 +1502,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 			] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
 			visitorEngagement: {
 				[ GOAL_TYPES.ECOMMERCE ]: [],
 				[ GOAL_TYPES.LEAD ]: [],
@@ -2178,7 +2179,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'renders a loading block in place of the widget when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
+	it( 'shows the widget title and a loading block when no ecommerce plugin is active and the report of ecommerce events is loading', () => {
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,
 		} );
@@ -2195,19 +2196,18 @@ describe( 'OnlineStorePerformanceWidget', () => {
 				buildSiteGoalsEventCountReportOptions( registry, 'ecommerce' ),
 			] );
 
-		const { container, queryByText, unmount } = render(
+		const { container, getByText, queryByText, unmount } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 
-		expect(
-			container.querySelector( '.googlesitekit-preview-block' )
-		).toBeInTheDocument();
+		expect( getByText( 'Online store performance' ) ).toBeInTheDocument();
 		expect(
 			container.querySelector(
-				'.googlesitekit-widget--analyticsOnlineStorePerformance'
+				'.googlesitekit-widget--analyticsOnlineStorePerformance .googlesitekit-preview-block'
 			)
-		).not.toBeInTheDocument();
+		).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
 		expect(
 			queryByText( /Online store performance was removed/ )
 		).not.toBeInTheDocument();

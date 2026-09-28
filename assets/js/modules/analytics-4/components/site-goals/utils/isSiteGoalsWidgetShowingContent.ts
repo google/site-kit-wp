@@ -28,6 +28,11 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
 import { getSiteGoalsEventCountReportOptions } from './getSiteGoalsEventCountReportOptions';
 
+interface IsSiteGoalsWidgetShowingContentOptions {
+	/** Whether to request the event report while no plugin for the goal type is active. Defaults to `true`. */
+	shouldFetchReport?: boolean;
+}
+
 /**
  * Checks whether a goal type's Site Goals widget shows its own content, rather
  * than the removal notice.
@@ -37,13 +42,16 @@ import { getSiteGoalsEventCountReportOptions } from './getSiteGoalsEventCountRep
  *
  * @since n.e.x.t
  *
- * @param {Select}   select   The registry `select` function.
- * @param {GoalType} goalType The goal type of the widget to check.
- * @return {(boolean|undefined)} `true` when the widget shows its own content, and `false` when the widget doesn't render or shows the removal notice. `undefined` while the detected events, the Site Goals settings, or the event report load.
+ * @param {Select}   select                      The registry `select` function.
+ * @param {GoalType} goalType                    The goal type of the widget to check.
+ * @param {Object}   [options]                   Optional. The check options.
+ * @param {boolean}  [options.shouldFetchReport] Optional. Whether to request the event report while no plugin for the goal type is active. Defaults to `true`.
+ * @return {(boolean|undefined)} `true` when the widget shows its own content, and `false` when the widget doesn't render or shows the removal notice. `undefined` while the Analytics settings, the Site Goals settings, or the event report load, and while `shouldFetchReport` is `false` and no plugin for the goal type is active.
  */
 export function isSiteGoalsWidgetShowingContent(
 	select: Select,
-	goalType: GoalType
+	goalType: GoalType,
+	{ shouldFetchReport = true }: IsSiteGoalsWidgetShowingContentOptions = {}
 ): boolean | undefined {
 	const isRenderable =
 		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable( goalType );
@@ -59,6 +67,10 @@ export function isSiteGoalsWidgetShowingContent(
 
 	if ( hasActiveEventProviders !== false ) {
 		return true;
+	}
+
+	if ( ! shouldFetchReport ) {
+		return undefined;
 	}
 
 	const reportOptions = getSiteGoalsEventCountReportOptions(

@@ -22,7 +22,7 @@
 import { getSiteGoalsEventCountReportOptions } from './getSiteGoalsEventCountReportOptions';
 
 describe( 'getSiteGoalsEventCountReportOptions', () => {
-	it( "builds the options of the report that counts the goal type's conversion events in the given date range", () => {
+	it( "should build the options of the report that counts the goal type's conversion events in the given date range", () => {
 		expect(
 			getSiteGoalsEventCountReportOptions(
 				{ startDate: '2026-08-28', endDate: '2026-09-24' },

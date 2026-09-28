@@ -46,26 +46,9 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { VisitorEngagementSelectionState } from '@/js/modules/analytics-4/components/site-goals/visitor-engagement/registry';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-	CONVERSION_REPORTING_LEAD_EVENTS,
-	MODULES_ANALYTICS_4,
-} from './constants';
+import { MODULES_ANALYTICS_4, SITE_GOALS_WIDGET_EVENTS } from './constants';
 
 const { setErrorForAction, clearActionError } = errorStoreActions;
-
-/**
- * Conversion events that belong to each Site Goals widget category.
- *
- * Mirrors the pairing in
- * `Conversion_Reporting_Provider::update_active_site_goals_widgets()`, which
- * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
- * when it populates the site-wide `activeWidgets` list.
- */
-export const SITE_GOALS_WIDGET_EVENTS: Record< string, string[] > = {
-	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
-	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
-};
 
 /**
  * Per-user fields that the SAVE endpoint accepts.
@@ -506,7 +489,8 @@ const baseSelectors = {
 	isSiteGoalsWidgetRenderable: createRegistrySelector(
 		( select: Select ) =>
 			( _state: State, category: string ): boolean | undefined => {
-				const events = SITE_GOALS_WIDGET_EVENTS[ category ];
+				const events: string[] | undefined =
+					SITE_GOALS_WIDGET_EVENTS[ category as GoalType ];
 
 				if ( ! events ) {
 					return false;

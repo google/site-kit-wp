@@ -42,6 +42,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideSiteInfo,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import { isSiteGoalsWidgetShowingContent } from './isSiteGoalsWidgetShowingContent';
 
@@ -82,7 +83,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		} );
 	}
 
-	it( "returns `false` for a goal type whose widget isn't active", () => {
+	it( "should return `false` for a goal type whose widget isn't active", () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
 			activeWidgets: [ 'ecommerce' ],
 		} );
@@ -92,7 +93,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		);
 	} );
 
-	it( 'returns `undefined` while the Site Goals settings load', async () => {
+	it( 'should return `undefined` while the Site Goals settings load', async () => {
 		muteFetch( siteGoalsSettingsEndpoint );
 
 		expect(
@@ -107,17 +108,20 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		).getSiteGoalsSettings();
 	} );
 
-	it( 'returns `true` without requesting the event report while a plugin for the goal type is active', () => {
+	it( 'should return `true` without requesting the event report when a plugin for the goal type is active', async () => {
 		provideActiveWidgets();
 		provideSiteInfo( registry, { hasActiveEcommerceEventProviders: true } );
 
 		expect( isSiteGoalsWidgetShowingContent( select, 'ecommerce' ) ).toBe(
 			true
 		);
+
+		await waitForDefaultTimeouts();
+
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
 
-	it( "returns `true` while Site Kit doesn't know whether a plugin for the goal type is active", () => {
+	it( "should return `true` while Site Kit doesn't know whether a plugin for the goal type is active", () => {
 		provideActiveWidgets();
 
 		expect( isSiteGoalsWidgetShowingContent( select, 'ecommerce' ) ).toBe(
@@ -125,7 +129,24 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		);
 	} );
 
-	it( 'returns `undefined` while no plugin for the goal type is active and the event report loads', () => {
+	it( 'should return `undefined` without requesting the event report when no plugin for the goal type is active and `shouldFetchReport` is `false`', async () => {
+		provideActiveWidgets();
+		provideSiteInfo( registry, {
+			hasActiveEcommerceEventProviders: false,
+		} );
+
+		expect(
+			isSiteGoalsWidgetShowingContent( select, 'ecommerce', {
+				shouldFetchReport: false,
+			} )
+		).toBeUndefined();
+
+		await waitForDefaultTimeouts();
+
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	it( 'should return `undefined` while no plugin for the goal type is active and the event report loads', () => {
 		freezeFetch( reportEndpoint );
 		provideActiveWidgets();
 		provideSiteInfo( registry, {
@@ -137,7 +158,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'returns `false` when no plugin for the goal type is active and the event report counts no events', () => {
+	it( 'should return `false` when no plugin for the goal type is active and the event report counts no events', () => {
 		provideActiveWidgets();
 		provideSiteInfo( registry, { hasActiveLeadEventProviders: false } );
 		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
@@ -147,7 +168,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		);
 	} );
 
-	it( 'returns `true` when no plugin for the goal type is active and the event report counts at least one event', () => {
+	it( 'should return `true` when no plugin for the goal type is active and the event report counts at least one event', () => {
 		provideActiveWidgets();
 		provideSiteInfo( registry, { hasActiveLeadEventProviders: false } );
 		seedSiteGoalsEventCountReport( registry, 'lead', '12' );
@@ -157,7 +178,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 		);
 	} );
 
-	it( 'returns `true` when no plugin for the goal type is active and the event report fails', () => {
+	it( 'should return `true` when no plugin for the goal type is active and the event report fails', () => {
 		provideActiveWidgets();
 		provideSiteInfo( registry, {
 			hasActiveEcommerceEventProviders: false,

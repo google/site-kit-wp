@@ -196,6 +196,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 	HTMLDivElement,
 	OnlineStorePerformanceWidgetProps
 >(
+	// eslint-disable-next-line complexity
 	(
 		{
 			Widget,
@@ -464,12 +465,27 @@ const OnlineStorePerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
-		if ( shouldShowRemovalNotice !== false ) {
+		if ( shouldShowRemovalNotice === true ) {
+			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />;
+		}
+
+		if ( shouldShowRemovalNotice === undefined ) {
 			return (
-				<SiteGoalsRemovalNotice
-					goalType={ GOAL_TYPES.ECOMMERCE }
-					loading={ shouldShowRemovalNotice === undefined }
-				/>
+				<WidgetComponent
+					onToggleCollapsed={ handleToggleCollapsed }
+					Header={ WidgetHeaderTitle }
+					headerContents={
+						<span>
+							{ __(
+								'Online store performance',
+								'google-site-kit'
+							) }
+						</span>
+					}
+					collapsible
+				>
+					<PreviewBlock width="100%" height="130px" />
+				</WidgetComponent>
 			);
 		}
 
