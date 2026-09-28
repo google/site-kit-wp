@@ -127,9 +127,9 @@ function smokeRegistry() {
 		getServiceReportURL: jest.fn( () => 'https://example.com/report' ),
 		getPrimaryEcommerceEvent: jest.fn( () => 'purchase' ),
 		getDetectedLeadEvents: jest.fn( () => [
-			'submit_lead_form',
 			'contact',
 			'generate_lead',
+			'submit_lead_form',
 		] ),
 	};
 
