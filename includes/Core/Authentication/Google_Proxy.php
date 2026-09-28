@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\URL;
 use Exception;
 use WP_Error;
 
@@ -42,6 +41,8 @@ class Google_Proxy {
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
 	const SUPPORT_LINK_URI          = '/support';
+	const INTENT_URI                = '/intent/%s/';
+	const INTENT_COMPLETE_URI       = '/intent/%s/complete/';
 	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
 	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
 	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
@@ -113,8 +114,7 @@ class Google_Proxy {
 			'short_verification_token',
 		);
 
-		$home_path = URL::parse( $this->context->get_canonical_home_url(), PHP_URL_PATH );
-		if ( ! $home_path || '/' === $home_path ) {
+		if ( Verification_File::is_supported( $this->context ) ) {
 			$supports[] = 'file_verification';
 		}
 
@@ -126,6 +126,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
+	 * @since n.e.x.t Includes the `verification_evidence` query parameter.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -141,8 +142,9 @@ class Google_Proxy {
 		}
 
 		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['service_version'] = 'v3';
-			$query_params['steps']           = 5;
+			$query_params['service_version']       = 'v3';
+			$query_params['steps']                 = 5;
+			$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
 
 			/**
 			 * Filters parameters included in the proxy setup URL.
@@ -352,6 +354,7 @@ class Google_Proxy {
 	 * Gets site fields.
 	 *
 	 * @since 1.5.0
+	 * @since n.e.x.t Added `intent_uri` to the fields.
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
@@ -372,6 +375,55 @@ class Google_Proxy {
 			'action_uri'             => admin_url( 'index.php' ),
 			'return_uri'             => $return_uri,
 			'analytics_redirect_uri' => $analytics_redirect_uri,
+			'intent_uri'             => $this->context->admin_url( 'dashboard' ),
+		);
+	}
+
+	/**
+	 * Gets an intent from the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $intent_id    Intent ID.
+	 * @param string      $code         One-time code for the intent.
+	 * @param string      $access_token Access token.
+	 * @return array|WP_Error Intent payload, or WP_Error on failure.
+	 */
+	public function get_intent( Credentials $credentials, $intent_id, $code, $access_token ) {
+		return $this->request(
+			sprintf( self::INTENT_URI, $intent_id ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'body'         => array(
+					'intent_code' => $code,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Completes an intent on the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $intent_id    Intent ID.
+	 * @param string      $code         One-time code for the intent.
+	 * @param string      $access_token Access token.
+	 * @return array|WP_Error Completion response holding the URL to send the user to, or WP_Error on failure.
+	 */
+	public function complete_intent( Credentials $credentials, $intent_id, $code, $access_token ) {
+		return $this->request(
+			sprintf( self::INTENT_COMPLETE_URI, $intent_id ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'body'         => array(
+					'intent_code' => $code,
+				),
+			)
 		);
 	}
 
@@ -379,17 +431,19 @@ class Google_Proxy {
 	 * Gets metadata fields.
 	 *
 	 * @since 1.68.0
+	 * @since n.e.x.t Added the `verification_evidence` field.
 	 *
 	 * @return array Metadata fields array.
 	 */
 	public function get_metadata_fields() {
 		$metadata = array(
-			'supports'         => implode( ' ', $this->get_supports() ),
-			'nonce'            => wp_create_nonce( self::NONCE_ACTION ),
-			'mode'             => '',
-			'hl'               => $this->context->get_locale( 'user' ),
-			'application_name' => self::get_application_name(),
-			'service_version'  => 'v2',
+			'supports'              => implode( ' ', $this->get_supports() ),
+			'nonce'                 => wp_create_nonce( self::NONCE_ACTION ),
+			'mode'                  => '',
+			'hl'                    => $this->context->get_locale( 'user' ),
+			'application_name'      => self::get_application_name(),
+			'service_version'       => 'v2',
+			'verification_evidence' => ( new Verification_Evidence( $this->context ) )->get(),
 		);
 
 		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {

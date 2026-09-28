@@ -65,7 +65,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -298,8 +297,6 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
@@ -361,7 +358,7 @@ export default function DashboardMainApp() {
 				) : (
 					<Fragment>
 						<ManageEmailReportsButton />
-						{ pdfGenerationEnabled && <PDFDownloadButton /> }
+						<PDFDownloadButton />
 						{ ! viewOnlyDashboard && (
 							<DashboardSharingSettingsButton />
 						) }
@@ -457,12 +454,8 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && (
-				<Fragment>
-					<PDFSectionsSelectionPanel />
-					<PDFExportRoot />
-				</Fragment>
-			) }
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 
 			<UserSettingsSelectionPanel />
 			<PUESurveyTriggers />

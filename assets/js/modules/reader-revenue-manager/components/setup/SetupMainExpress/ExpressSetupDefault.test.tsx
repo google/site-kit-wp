@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_STEPS,
@@ -31,6 +32,7 @@ import {
 	createTestRegistry,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -45,8 +47,7 @@ const STEP_CONTENT = {
 		'To create a publication, you need to accept the Reader Revenue Manager Terms of Service.',
 	[ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES ]:
 		'To use Reader Revenue Manager, you will need to add links to your publication’s policies.',
-	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]:
-		'RRM express setup placeholder: setup complete step.',
+	[ EXPRESS_SETUP_STEPS.SETUP_COMPLETE ]: 'Reader Revenue Manager is set up',
 };
 
 describe( 'ExpressSetupDefault', () => {
@@ -56,6 +57,10 @@ describe( 'ExpressSetupDefault', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
 
 		const moduleData = [
 			{
