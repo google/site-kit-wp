@@ -1058,7 +1058,7 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$feature_metrics = $this->reader_revenue_manager->get_feature_metrics();
 
-		$this->assertEqualSets( $expected_feature_metrics, $feature_metrics, $message );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
 	public function data_feature_metrics_settings() {
@@ -1090,15 +1090,15 @@ class Reader_Revenue_ManagerTest extends TestCase {
 				),
 				'When rrmExpressSetup feature flag is off, the `rrm_publication_configured_ctas` metric should not be reported.',
 			),
-			'when configuredCTAs is empty, the metric is an empty string'                                => array(
+			'when configuredCTAs is empty, the metric is an empty array'                                => array(
 				array(
 					'configuredCTAs' => array(),
 				),
 				array(
 					'rrm_publication_onboarding_state' => '',
-					'rrm_publication_configured_ctas'  => '',
+					'rrm_publication_configured_ctas'  => array(),
 				),
-				'When configuredCTAs is empty, the metric should be an empty string.',
+				'When configuredCTAs is empty, the metric should be an empty array.',
 				true,
 			),
 			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
