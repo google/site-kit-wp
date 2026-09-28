@@ -1,0 +1,142 @@
+/**
+ * `modules/ads` data store: intents.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
+ * Internal dependencies
+ */
+import { commonActions } from 'googlesitekit-data';
+import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_INTENTS } from '@/js/googlesitekit/datastore/intents/constants';
+import { CompleteIntentResult } from '@/js/googlesitekit/datastore/intents/intents';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	ADS_CONVERSION_TRACKING_INTENT_SLUG,
+	MODULE_SLUG_ADS,
+} from '@/js/modules/ads/constants';
+import { isValidConversionID } from '@/js/modules/ads/utils/validation';
+import { ErrorObject } from '@/js/util/errors';
+import { MODULES_ADS } from './constants';
+
+type Registry = WPDataRegistry & {
+	resolveSelect: WPDataRegistry[ 'select' ];
+};
+
+interface ActionResult {
+	/** Error from the request, or `undefined` when the request succeeds. */
+	error?: ErrorObject;
+}
+
+interface CompleteConversionTrackingIntentResult {
+	/** URL to send the user back to Google Ads, or `undefined` when a step fails. */
+	returnURL?: string;
+	/** Error from the step that failed, or `undefined` when every step succeeds. */
+	error?: ErrorObject;
+}
+
+const actions = {
+	/**
+	 * Places the Google tag of an Ads conversion tracking intent, then completes the intent.
+	 *
+	 * Activates the Ads module if it isn't active yet, saves the tag as the
+	 * conversion ID, and completes the intent on the Site Kit Service. Stops at
+	 * the first step that fails.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} intentCode Code the Site Kit Service created for the intent.
+	 * @param {string} tagID      Google tag ID to save as the conversion ID, e.g. `AW-123456789`.
+	 * @return {Object} Object with `returnURL`, the URL to send the user back to Google Ads, or with `error` when a step fails.
+	 */
+	completeConversionTrackingIntent: createValidatedAction(
+		( intentCode: string, tagID: string ) => {
+			invariant( intentCode, 'intentCode is required.' );
+			invariant(
+				isValidConversionID( tagID ),
+				'a valid tagID is required.'
+			);
+		},
+		function* (
+			intentCode: string,
+			tagID: string
+		): Generator<
+			unknown,
+			CompleteConversionTrackingIntentResult,
+			unknown
+		> {
+			const { dispatch, resolveSelect } =
+				( yield commonActions.getRegistry() ) as Registry;
+
+			const isAdsModuleActive = yield commonActions.await(
+				resolveSelect( CORE_MODULES ).isModuleActive( MODULE_SLUG_ADS )
+			);
+
+			// Other callers send the user to `moduleReauthURL` to set up the
+			// module after activating it. Saving the tag below is all the
+			// setup this flow needs.
+			if ( ! isAdsModuleActive ) {
+				const { error } = ( yield commonActions.await(
+					dispatch( CORE_MODULES ).activateModule( MODULE_SLUG_ADS )
+				) ) as ActionResult;
+
+				if ( error ) {
+					return { error };
+				}
+			}
+
+			dispatch( MODULES_ADS ).setConversionID( tagID );
+
+			const { error: saveError } = ( yield commonActions.await(
+				dispatch( MODULES_ADS ).submitChanges()
+			) ) as ActionResult;
+
+			if ( saveError ) {
+				return { error: saveError };
+			}
+
+			const { response, error: completeError } =
+				( yield commonActions.await(
+					dispatch( CORE_INTENTS ).completeIntent(
+						ADS_CONVERSION_TRACKING_INTENT_SLUG,
+						intentCode
+					)
+				) ) as CompleteIntentResult;
+
+			if ( completeError ) {
+				return { error: completeError };
+			}
+
+			return { returnURL: response?.return_url };
+		}
+	),
+};
+
+const store = {
+	actions,
+};
+
+export default store;
