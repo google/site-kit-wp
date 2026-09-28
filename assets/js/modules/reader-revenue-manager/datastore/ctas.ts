@@ -44,9 +44,9 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from './constants';
 import {
-	CTA,
+	type CTA,
 	CTA_STATES,
-	CreateCTAData,
+	type CreateCTAData,
 	getCTATypeHandler,
 	isCTAState,
 	isCTAType,
