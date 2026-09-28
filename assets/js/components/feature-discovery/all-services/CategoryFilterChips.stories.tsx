@@ -24,20 +24,20 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
 import type { FeatureCategorySlug } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import CategoryFilterChips from './CategoryFilterChips';
 
 interface TemplateProps {
-	initialSelection?: FeatureCategorySlug[];
+	selectedCategories?: FeatureCategorySlug[];
+	onToggleCategory?: ( categorySlug: FeatureCategorySlug | null ) => void;
 }
 
-const Template: FC< TemplateProps > = ( { initialSelection = [] } ) => {
-	const [ selectedCategories, onToggleCategory ] =
-		useCategorySelection( initialSelection );
-
+const Template: FC< TemplateProps > = ( {
+	selectedCategories = [],
+	onToggleCategory = () => {},
+} ) => {
 	return (
 		<div className="googlesitekit-module-page googlesitekit-feature-discovery">
 			<div className="googlesitekit-feature-discovery__content">
@@ -52,14 +52,15 @@ const Template: FC< TemplateProps > = ( { initialSelection = [] } ) => {
 
 export const AllServicesSelected = Template.bind( {} ) as Story;
 AllServicesSelected.storyName = 'All Services Selected';
-AllServicesSelected.scenario = {};
+AllServicesSelected.args = {
+	selectedCategories: [],
+};
 
 export const TwoCategoriesSelected = Template.bind( {} ) as Story;
 TwoCategoriesSelected.storyName = 'Two Categories Selected';
 TwoCategoriesSelected.args = {
-	initialSelection: [ 'audience', 'monetization' ],
+	selectedCategories: [ 'audience', 'monetization' ],
 };
-TwoCategoriesSelected.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/CategoryFilterChips',

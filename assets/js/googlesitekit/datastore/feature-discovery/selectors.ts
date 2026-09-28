@@ -308,6 +308,47 @@ export const selectors = {
 					);
 			}
 	),
+
+	/**
+	 * Gets available features to show under a category for the current filter.
+	 *
+	 * @since 1.186.0
+	 *
+	 * @param {Object} state              Data store's state.
+	 * @param {string} category           Goal category slug.
+	 * @param {Array}  selectedCategories Selected filter category slugs.
+	 * @return {Array.<Object>} Filtered features in registration order.
+	 */
+	getFeaturesFilteredByGoal: createRegistrySelector(
+		( select: Select ) =>
+			(
+				state: FeatureDiscoveryState,
+				category: FeatureCategorySlug,
+				selectedCategories: FeatureCategorySlug[] = []
+			): Feature[] => {
+				invariant(
+					category,
+					'category is required to get filtered features by goal.'
+				);
+
+				return select( CORE_FEATURE_DISCOVERY )
+					.getAvailableFeatures()
+					.filter( ( feature: Feature ) => {
+						const primaryCategory = feature.goalCategories[ 0 ];
+
+						if ( selectedCategories.length === 0 ) {
+							return primaryCategory === category;
+						}
+
+						const firstSelectedCategory =
+							feature.goalCategories.find( ( goal ) =>
+								selectedCategories.includes( goal )
+							);
+
+						return firstSelectedCategory === category;
+					} );
+			}
+	),
 };
 
 export default {

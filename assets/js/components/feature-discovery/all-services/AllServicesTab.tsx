@@ -19,13 +19,12 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, useState } from 'react';
 
 /**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type {
 	Feature,
@@ -41,56 +40,45 @@ interface GoalGroup {
 }
 
 const AllServicesTab: FC = () => {
-	const [ selectedCategories, onToggleCategory ] = useCategorySelection();
+	const [ selectedCategories, setSelectedCategories ] = useState<
+		FeatureCategorySlug[]
+	>( [] );
 
 	const goalGroups: GoalGroup[] = useSelect(
 		( select: Select ) => {
-			const { getFeatureCategories, getAvailableFeatures } = select(
+			const { getFeatureCategories, getFeaturesFilteredByGoal } = select(
 				CORE_FEATURE_DISCOVERY
 			);
-			const categories = getFeatureCategories();
-			const selectedCategorySet = new Set( selectedCategories );
-			const groupedFeatures: Record< FeatureCategorySlug, Feature[] > =
-				Object.fromEntries(
-					categories.map( ( category: FeatureCategory ) => [
-						category.slug,
-						[],
-					] )
-				) as Record< FeatureCategorySlug, Feature[] >;
 
-			getAvailableFeatures().forEach( ( feature: Feature ) => {
-				const goalCategory = selectedCategories.length
-					? feature.goalCategories.find(
-							( category: FeatureCategorySlug ) =>
-								selectedCategorySet.has( category )
-					  )
-					: feature.goalCategories[ 0 ];
-
-				if ( ! goalCategory ) {
-					return;
-				}
-
-				groupedFeatures[ goalCategory ].push( feature );
-			} );
-
-			return categories
-				.filter( ( category: FeatureCategory ) => {
-					if (
-						selectedCategorySet.size > 0 &&
-						! selectedCategorySet.has( category.slug )
-					) {
-						return false;
-					}
-
-					return groupedFeatures[ category.slug ].length > 0;
-				} )
+			return getFeatureCategories()
 				.map( ( category: FeatureCategory ) => ( {
 					category,
-					features: groupedFeatures[ category.slug ],
-				} ) );
+					features: getFeaturesFilteredByGoal(
+						category.slug,
+						selectedCategories
+					),
+				} ) )
+				.filter( ( { features }: GoalGroup ) => features.length > 0 );
 		},
 		[ selectedCategories ]
 	);
+
+	function onToggleCategory( categorySlug: FeatureCategorySlug | null ) {
+		if ( categorySlug === null ) {
+			setSelectedCategories( [] );
+			return;
+		}
+
+		setSelectedCategories( ( currentSelection ) => {
+			if ( currentSelection.includes( categorySlug ) ) {
+				return currentSelection.filter(
+					( category ) => category !== categorySlug
+				);
+			}
+
+			return [ ...currentSelection, categorySlug ];
+		} );
+	}
 
 	return (
 		<div className="googlesitekit-all-services-tab">

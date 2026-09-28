@@ -19,7 +19,11 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-category-filter-chips {
-        margin-top: 32px;
+		margin-top: 32px;
+
+		.googlesitekit-chip-multi-select {
+			gap: 10px;
+		}
 
 		.googlesitekit-chip-multi-select__item {
             &.googlesitekit-chip {
@@ -27,8 +31,6 @@
             }
 
 			&.mdc-chip--selected {
-				gap: 0;
-
 				.mdc-chip__text {
 					padding: 0 11px;
 				}

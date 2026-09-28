@@ -17,33 +17,10 @@
  */
 
 /**
- * External dependencies
- */
-import { FC } from 'react';
-
-/**
  * Internal dependencies
  */
-import { useCategorySelection } from '@/js/components/feature-discovery/hooks/useCategorySelection';
-import type { FeatureCategorySlug } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { fireEvent, render, screen } from '@tests/js/test-utils';
 import CategoryFilterChips from './CategoryFilterChips';
-
-interface TestHarnessProps {
-	initialSelection?: FeatureCategorySlug[];
-}
-
-const TestHarness: FC< TestHarnessProps > = ( { initialSelection = [] } ) => {
-	const [ selectedCategories, onToggleCategory ] =
-		useCategorySelection( initialSelection );
-
-	return (
-		<CategoryFilterChips
-			onToggleCategory={ onToggleCategory }
-			selectedCategories={ selectedCategories }
-		/>
-	);
-};
 
 function expectSelected( label: string, selected = true ) {
 	const chip = screen.getByText( label ).closest( '.mdc-chip' ) as Element;
@@ -54,50 +31,57 @@ function expectSelected( label: string, selected = true ) {
 
 describe( 'CategoryFilterChips', () => {
 	it( 'should have All services selected by default', () => {
-		render( <TestHarness /> );
+		render(
+			<CategoryFilterChips
+				onToggleCategory={ () => {} }
+				selectedCategories={ [] }
+			/>
+		);
 
 		expectSelected( 'All services' );
 		expectSelected( 'Know your audience', false );
 	} );
 
-	it( 'should clear All services when selecting a category', () => {
-		render( <TestHarness /> );
+	it( 'should call onToggleCategory with category slug when selecting a category', () => {
+		const onToggleCategory = jest.fn();
+
+		render(
+			<CategoryFilterChips
+				onToggleCategory={ onToggleCategory }
+				selectedCategories={ [] }
+			/>
+		);
 
 		fireEvent.click( screen.getByText( 'Know your audience' ) );
 
-		expectSelected( 'All services', false );
-		expectSelected( 'Know your audience' );
+		expect( onToggleCategory ).toHaveBeenCalledWith( 'audience' );
 	} );
 
-	it( 'should allow selecting multiple categories', () => {
-		render( <TestHarness /> );
+	it( 'should render selected state for multiple selected categories', () => {
+		render(
+			<CategoryFilterChips
+				onToggleCategory={ () => {} }
+				selectedCategories={ [ 'audience', 'monetization' ] }
+			/>
+		);
 
-		fireEvent.click( screen.getByText( 'Know your audience' ) );
-		fireEvent.click( screen.getByText( 'Monetize' ) );
-
+		expectSelected( 'All services', false );
 		expectSelected( 'Know your audience' );
 		expectSelected( 'Monetize' );
-		expectSelected( 'All services', false );
 	} );
 
-	it( 'should return to All services when deselecting the last selected category', () => {
-		render( <TestHarness initialSelection={ [ 'audience' ] } /> );
+	it( 'should call onToggleCategory with null when clicking All services', () => {
+		const onToggleCategory = jest.fn();
 
-		fireEvent.click( screen.getByText( 'Know your audience' ) );
-
-		expectSelected( 'All services' );
-		expectSelected( 'Know your audience', false );
-	} );
-
-	it( 'should clear selected categories when clicking All services', () => {
 		render(
-			<TestHarness initialSelection={ [ 'audience', 'monetization' ] } />
+			<CategoryFilterChips
+				onToggleCategory={ onToggleCategory }
+				selectedCategories={ [ 'audience' ] }
+			/>
 		);
 
 		fireEvent.click( screen.getByText( 'All services' ) );
 
-		expectSelected( 'All services' );
-		expectSelected( 'Know your audience', false );
-		expectSelected( 'Monetize', false );
+		expect( onToggleCategory ).toHaveBeenCalledWith( null );
 	} );
 } );
