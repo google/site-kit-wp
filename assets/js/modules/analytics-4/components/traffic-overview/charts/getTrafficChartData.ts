@@ -128,7 +128,7 @@ export function getTrafficChartData( {
 	startDate,
 	endDate,
 }: TrafficChartDataOptions ): TrafficChartData {
-	const points = report?.rows
+	const points = report?.rows?.length
 		? getReportPoints( report.rows )
 		: getZeroVisitorPoints( startDate, endDate );
 

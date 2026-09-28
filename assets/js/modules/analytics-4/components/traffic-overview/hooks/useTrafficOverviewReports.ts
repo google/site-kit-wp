@@ -26,12 +26,12 @@ import { useMemo } from '@wordpress/element';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	getBreakdownReportOptions,
 	getGraphReportOptions,
 	getTotalsReportOptions,
-} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { useTrafficReport } from './useTrafficReport';
@@ -52,8 +52,7 @@ export interface TrafficOverviewReports {
 	/** `true` when all five reports have finished resolving. */
 	loaded: boolean;
 	/**
-	 * The first error among the five reports. If multiple errors exist, the
-	 * first in this order is used in the error output shown to users:
+	 * Every error among the five reports, in the order the hook requests them:
 	 *
 	 * 1. totals
 	 * 2. graph
@@ -61,9 +60,10 @@ export interface TrafficOverviewReports {
 	 * 4. locations
 	 * 5. devices
 	 *
-	 * Should be set to `undefined` when no report has an error.
+	 * The array is empty when no report failed. The "Retry" button re-requests
+	 * only the reports whose errors it receives, so every error has to go in.
 	 */
-	error?: Record< string, unknown >;
+	errors: Array< Record< string, unknown > >;
 }
 
 /**
@@ -71,7 +71,7 @@ export interface TrafficOverviewReports {
  *
  * @since 1.188.0
  *
- * @return {Object} The five reports, whether they have all finished, and the first error among them.
+ * @return {Object} The five reports, whether they have all finished, and every error among them.
  */
 export function useTrafficOverviewReports(): TrafficOverviewReports {
 	const { compareStartDate, compareEndDate } = useSelect(
@@ -120,9 +120,9 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 		[ totals.args, graph.args, channels.args, locations.args, devices.args ]
 	);
 
-	const error = useSelect(
+	const errors = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getFirstReportError( ...allArgs ),
+			select( MODULES_ANALYTICS_4 ).getReportErrors( ...allArgs ),
 		[ totals.args, graph.args, channels.args, locations.args, devices.args ]
 	);
 
@@ -140,6 +140,6 @@ export function useTrafficOverviewReports(): TrafficOverviewReports {
 		graphReport: graph.report,
 		breakdownReports,
 		loaded,
-		error,
+		errors,
 	};
 }

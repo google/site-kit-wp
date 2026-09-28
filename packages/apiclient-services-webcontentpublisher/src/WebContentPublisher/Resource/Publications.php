@@ -15,15 +15,15 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher\Resource;
+namespace Google\Service\WebContentPublisher\Resource;
 
-use Google\Service\Webcontentpublisher\CheckFreeAccessResponse;
+use Google\Service\WebContentPublisher\CheckFreeAccessResponse;
 
 /**
  * The "publications" collection of methods.
  * Typical usage is:
  *  <code>
- *   $webcontentpublisherService = new Google\Service\Webcontentpublisher(...);
+ *   $webcontentpublisherService = new Google\Service\WebContentPublisher(...);
  *   $publications = $webcontentpublisherService->publications;
  *  </code>
  */
@@ -50,4 +50,5 @@ class Publications extends \Google\Service\Resource
   }
 }
 
-class_alias(Publications::class, 'Google_Service_Webcontentpublisher_Resource_Publications');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(Publications::class, 'Google_Service_WebContentPublisher_Resource_Publications');

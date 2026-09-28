@@ -79,6 +79,7 @@
 
 // Global
 @import "components/global/googlesitekit-accordion";
+@import "components/global/googlesitekit-add-features-button";
 @import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-autocomplete";
 @import "components/global/googlesitekit-badge";
@@ -224,8 +225,10 @@
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
 
 // Feature Discovery
+@import "components/feature-discovery/googlesitekit-all-services-tab";
 @import "components/feature-discovery/googlesitekit-effort-indicator";
 @import "components/feature-discovery/googlesitekit-feature-card";
+@import "components/feature-discovery/googlesitekit-whats-new";
 
 // Modules
 @import "components/ads";

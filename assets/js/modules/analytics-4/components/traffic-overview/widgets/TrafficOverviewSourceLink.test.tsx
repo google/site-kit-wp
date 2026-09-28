@@ -138,4 +138,13 @@ describe( 'TrafficOverviewSourceLink', () => {
 
 		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 	} );
+
+	it( 'renders nothing for a view-only user', () => {
+		const { container } = render( <TrafficOverviewSourceLink />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
 } );

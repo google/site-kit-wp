@@ -61,12 +61,7 @@ import {
 	CONTEXT_MAIN_DASHBOARD_SPEED,
 	CONTEXT_MAIN_DASHBOARD_TRAFFIC,
 } from '@/js/googlesitekit/widgets/default-contexts';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
-import { useFeature } from '@/js/hooks/useFeature';
+import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -86,7 +81,10 @@ import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton
 import PUESurveyTriggers from './email-reporting/PUESurveyTriggers';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import AddFeaturesButton from './feature-discovery/AddFeaturesButton';
 import FeaturesMenu from './FeaturesMenu';
+import { MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH } from './FeaturesMenu/constants';
+import useShouldCollapseFeatureActions from './FeaturesMenu/useShouldCollapseFeatureActions';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import useDisplayCTAWidget from './KeyMetrics/hooks/useDisplayCTAWidget';
@@ -144,6 +142,12 @@ export default function DashboardMainApp() {
 
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
+	// On mobile and tablet, or when the "Add features" button would otherwise
+	// overlap the logo, the individual feature action icons collapse into the
+	// single three-dots features menu.
+	const shouldCollapseFeatureActions = useShouldCollapseFeatureActions(
+		MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH
+	);
 	const breakpoint = useBreakpoint();
 
 	const [ widgetArea, setWidgetArea ] = useQueryArg( 'widgetArea' );
@@ -301,8 +305,6 @@ export default function DashboardMainApp() {
 		);
 	} );
 
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
-
 	const hasAccessToFeatureTour = useSelect( ( select ) =>
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
@@ -330,11 +332,6 @@ export default function DashboardMainApp() {
 	// Welcome modal shows). They're only hidden while the welcome tour runs.
 	const showSetupModals = ! isWelcomeTourActive;
 
-	// On mobile and tablet the individual feature action icons collapse into
-	// the single three-dots features menu.
-	const isMobileOrTabletBreakpoint =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
 		isSpeedActive,
@@ -354,7 +351,7 @@ export default function DashboardMainApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				{ isMobileOrTabletBreakpoint ? (
+				{ shouldCollapseFeatureActions ? (
 					<Fragment>
 						<HelpMenu
 							showFeatureTour={ !! hasAccessToFeatureTour }
@@ -363,8 +360,9 @@ export default function DashboardMainApp() {
 					</Fragment>
 				) : (
 					<Fragment>
+						<AddFeaturesButton />
 						<ManageEmailReportsButton />
-						{ pdfGenerationEnabled && <PDFDownloadButton /> }
+						<PDFDownloadButton />
 						{ ! viewOnlyDashboard && (
 							<DashboardSharingSettingsButton />
 						) }
@@ -460,12 +458,8 @@ export default function DashboardMainApp() {
 
 			{ showKeyMetricsSelectionPanel && <MetricsSelectionPanel /> }
 
-			{ pdfGenerationEnabled && (
-				<Fragment>
-					<PDFSectionsSelectionPanel />
-					<PDFExportRoot />
-				</Fragment>
-			) }
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 
 			<UserSettingsSelectionPanel />
 			<PUESurveyTriggers />

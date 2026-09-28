@@ -142,7 +142,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'ad-blocker-detection', {
+	registerFeature( 'ad-blocking-recovery', {
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
 		shortDescription: __(

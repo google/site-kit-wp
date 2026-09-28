@@ -12,7 +12,9 @@ namespace Google\Site_Kit\Tests\Core\Authentication\Clients;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
+use Google\Site_Kit\Core\Authentication\Verification_Evidence;
 use Google\Site_Kit\Core\Authentication\Profile;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Tests\Exception\RedirectException;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -391,6 +393,26 @@ class OAuth_ClientTest extends TestCase {
 
 		// Verify the redirect URL is preserved, including the original notification query parameter.
 		$this->assertEquals( $post_auth_redirect, $user_options->get( OAuth_Client::OPTION_REDIRECT_URL ), 'Auth URL setup should preserve existing redirect notification.' );
+	}
+
+	public function test_get_authentication_url__includes_verification_evidence() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$this->fake_site_connection();
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		$authentication_url = $client->get_authentication_url( '' );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertArrayHasKey( 'verification_evidence', $params, 'Authentication request should include verification evidence.' );
+		$this->assertEquals( Verification_Evidence::NONE, $params['verification_evidence'], 'Authentication request should report no evidence without stored tokens.' );
+
+		$user_options->set( Verification_Meta::OPTION, 'meta-token' );
+
+		$authentication_url = $client->get_authentication_url( '' );
+		wp_parse_str( parse_url( $authentication_url, PHP_URL_QUERY ), $params );
+		$this->assertEquals( Verification_Evidence::META, $params['verification_evidence'], 'Authentication request should report the stored verification token.' );
 	}
 
 	public function test_authorize_user() {

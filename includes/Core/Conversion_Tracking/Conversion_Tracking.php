@@ -170,10 +170,6 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			};
 		';
 
-		if ( function_exists( 'edd_get_currency' ) ) {
-			$gtag_event .= "window._googlesitekit.easyDigitalDownloadsCurrency = '" . edd_get_currency() . "';";
-		}
-
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
 			$gtag_event .= 'window._googlesitekit.gtagUserData = true;';
 		}
