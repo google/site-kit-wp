@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	ADS_CONVERSION_TRACKING_INTENT_SLUG,
 	MODULE_SLUG_ADS,
@@ -102,6 +103,11 @@ describe( 'AdsConversionTrackingIntent', () => {
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ADS, active: true, connected: true },
 		] );
+		// Conversion tracking is on, so placing the tag doesn't save it. The
+		// `modules/ads` data store tests cover enabling it.
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( adsSettings );
 	} );
@@ -180,6 +186,10 @@ describe( 'AdsConversionTrackingIntent', () => {
 	} );
 
 	it( 'should return the user to Google Ads once the tag is placed', async () => {
+		registry.dispatch( MODULES_ADS ).receiveModuleData( {
+			supportedConversionEvents: [ 'submit_lead_form', 'purchase' ],
+		} );
+
 		fetchMock.postOnce( adsSettingsEndpoint, {
 			body: { ...adsSettings, conversionID: payload.tag_id },
 		} );
@@ -197,7 +207,9 @@ describe( 'AdsConversionTrackingIntent', () => {
 		);
 
 		await waitFor( () => {
-			expect( global.location.assign ).toHaveBeenCalledWith( returnURL );
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				`${ returnURL }&sitekit_status=success&tracked_conversion_ids=submit_lead_form%2Cpurchase`
+			);
 		} );
 	} );
 

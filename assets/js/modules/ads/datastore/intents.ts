@@ -22,12 +22,18 @@
 import invariant from 'invariant';
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_INTENTS } from '@/js/googlesitekit/datastore/intents/constants';
 import { CompleteIntentResult } from '@/js/googlesitekit/datastore/intents/intents';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	ADS_CONVERSION_TRACKING_INTENT_SLUG,
@@ -43,7 +49,7 @@ interface ActionResult {
 }
 
 interface CompleteConversionTrackingIntentResult {
-	/** URL to send the user back to Google Ads, or `undefined` when a step fails. */
+	/** URL to send the user back to Google Ads with the setup outcome and the conversion events the site tracks, or `undefined` when a step fails. */
 	returnURL?: string;
 	/** Error from the step that failed, or `undefined` when every step succeeds. */
 	error?: ErrorObject;
@@ -71,14 +77,14 @@ const actions = {
 	 * Places the Google tag of an Ads conversion tracking intent, then completes the intent.
 	 *
 	 * Activates the Ads module if it isn't active yet, saves the tag as the
-	 * conversion ID, and completes the intent on the Site Kit Service. Stops at
-	 * the first step that fails.
+	 * conversion ID, enables conversion tracking, and completes the intent on
+	 * the Site Kit Service. Stops at the first step that fails.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param {string} intentCode Code the Site Kit Service created for the intent.
 	 * @param {string} tagID      Google tag ID to save as the conversion ID, e.g. `AW-123456789`.
-	 * @return {Object} Object with `returnURL`, the URL to send the user back to Google Ads, or with `error` when a step fails.
+	 * @return {Object} Object with `returnURL`, the URL to send the user back to Google Ads with the setup outcome and the conversion events the site tracks, or with `error` when a step fails.
 	 */
 	completeConversionTrackingIntent: createValidatedAction(
 		( intentCode: string, tagID: string ) => {
@@ -96,7 +102,7 @@ const actions = {
 			CompleteConversionTrackingIntentResult,
 			unknown
 		> {
-			const { dispatch, resolveSelect } =
+			const { dispatch, resolveSelect, select } =
 				( yield commonActions.getRegistry() ) as Registry;
 
 			const isAdsModuleActive = yield commonActions.await(
@@ -116,7 +122,16 @@ const actions = {
 				}
 			}
 
+			// Load the conversion tracking settings before changing one: saving
+			// replaces all of them, and nothing is saved if tracking is already on.
+			yield commonActions.await(
+				resolveSelect( CORE_SITE ).getConversionTrackingSettings()
+			);
+
 			dispatch( MODULES_ADS ).setConversionID( tagID );
+			// Site Kit only sends the events listed in `tracked_conversion_ids`
+			// while conversion tracking is on. `submitChanges()` saves this too.
+			dispatch( CORE_SITE ).setConversionTrackingEnabled( true );
 
 			const { error: saveError } = ( yield commonActions.await(
 				dispatch( MODULES_ADS ).submitChanges()
@@ -138,7 +153,22 @@ const actions = {
 				return { error: completeError };
 			}
 
-			return { returnURL: response?.return_url };
+			yield commonActions.await(
+				resolveSelect( MODULES_ADS ).getModuleData()
+			);
+
+			// Google Ads pre-selects the conversion actions for these events.
+			// A site that tracks none still sends the parameter, empty.
+			const trackedConversionEvents: string[] =
+				select( MODULES_ADS ).getSupportedConversionEvents() || [];
+
+			return {
+				returnURL: addQueryArgs( response?.return_url, {
+					// The redirect alone doesn't tell Google Ads the tag was placed.
+					sitekit_status: 'success',
+					tracked_conversion_ids: trackedConversionEvents.join( ',' ),
+				} ),
+			};
 		}
 	),
 
