@@ -224,12 +224,15 @@ jobs:
 
       - name: Save report URL
         if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
+        env:
+          OUTCOME: ${{ steps.run-tests.outcome }}
+          PUBLIC_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
         run: |
           mkdir -p /tmp/artifact-url
-          if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
-            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          if [ "${OUTCOME}" == "success" ]; then
+            echo "- ✅ [WordPress ${WP_VERSION}](${PUBLIC_URL}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           else
-            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+            echo "- ❌ [WordPress ${WP_VERSION}](${PUBLIC_URL}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           fi
 
       - name: Upload report URL

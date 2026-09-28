@@ -34,6 +34,8 @@ import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
 import Notifications from '@/js/components/notifications/Notifications';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -48,6 +50,18 @@ const WhatsNewTab: FC = () => {
 		( select: Select ): Feature[] | undefined =>
 			select( CORE_FEATURE_DISCOVERY ).getWhatsNewFeatures(),
 		[]
+	);
+
+	const visibleFeatures = useSelect(
+		( select: Select ) =>
+			features?.filter( ( feature ) => {
+				const key = getFeatureDismissalKey( feature.slug );
+				return (
+					! select( CORE_USER ).isItemDismissed( key ) &&
+					! select( CORE_USER ).isDismissingItem( key )
+				);
+			} ),
+		[ features ]
 	);
 
 	const { markFeaturesSeen } = useDispatch( CORE_FEATURE_DISCOVERY );
@@ -68,7 +82,7 @@ const WhatsNewTab: FC = () => {
 
 	// Nothing is rendered until the list has resolved, so that the empty state
 	// doesn't show in place of features that are still loading.
-	if ( features === undefined ) {
+	if ( visibleFeatures === undefined ) {
 		return <div className="googlesitekit-whats-new" />;
 	}
 
@@ -82,7 +96,7 @@ const WhatsNewTab: FC = () => {
 					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 				/>
 			</div>
-			{ features.length === 0 ? (
+			{ visibleFeatures.length === 0 ? (
 				// TODO: #13327 -- Replace this placeholder with the empty
 				// tab's icon, copy and CTA.
 				<p className="googlesitekit-whats-new__empty-state">
@@ -90,7 +104,7 @@ const WhatsNewTab: FC = () => {
 					show.
 				</p>
 			) : (
-				features.map( ( feature ) => (
+				visibleFeatures.map( ( feature ) => (
 					<FeatureListItem
 						key={ feature.slug }
 						slug={ feature.slug }
