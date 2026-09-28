@@ -210,6 +210,26 @@ describe( 'core/feature-discovery features', () => {
 				}
 			);
 		} );
+
+		describe( 'setupFeature', () => {
+			it( 'should require a slug', () => {
+				expect( () =>
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).setupFeature()
+				).toThrow( 'slug is required to set up a feature.' );
+			} );
+
+			it( 'should resolve for a registered feature', async () => {
+				registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.registerFeature( 'test-feature', createSettings() );
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+			} );
+		} );
 	} );
 
 	describe( 'selectors', () => {

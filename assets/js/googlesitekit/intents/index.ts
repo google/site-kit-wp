@@ -22,17 +22,36 @@
 import { ComponentType } from 'react';
 
 /**
+ * Internal dependencies
+ */
+import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
+
+/**
+ * Props passed to the component registered for an intent.
+ *
+ * @since n.e.x.t
+ */
+export interface IntentComponentProps {
+	/** Slug the intent is registered under, e.g. `ads-conversion-tracking`. */
+	slug: string;
+	/** Code the Site Kit Service created for the intent. */
+	intentCode: string;
+	/** Payload the Site Kit Service returns for the intent, with different fields for each type of intent. */
+	payload: Intent[ 'payload' ];
+}
+
+/**
  * Intent registration type.
  *
  * @since n.e.x.t
  */
 export interface IntentRegistration {
 	/**
-	 * Component rendered for the intent, given the intent's payload.
+	 * Component rendered after the Site Kit Service returns the intent.
 	 *
 	 * @since n.e.x.t
 	 */
-	Component: ComponentType< { payload: unknown } >;
+	Component: ComponentType< IntentComponentProps >;
 }
 
 /**

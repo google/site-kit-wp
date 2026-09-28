@@ -47,6 +47,32 @@ const storyFiles = flatten(
 		.map( ( absGlob ) => glob.sync( absGlob ) )
 );
 
+/**
+ * Gets the `features` list from the Babel node for a story file's `parameters` object.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} parameters The Babel node for the object assigned to `parameters`.
+ * @return {string[]|undefined} Feature flag names, or `undefined` when the object sets none.
+ */
+function getFeatures( parameters ) {
+	if ( parameters?.type !== 'ObjectExpression' ) {
+		return undefined;
+	}
+
+	const features = parameters.properties.find(
+		( property ) => property.key?.name === 'features'
+	);
+
+	if ( features?.value?.type !== 'ArrayExpression' ) {
+		return undefined;
+	}
+
+	return features.value.elements
+		.filter( ( element ) => element?.type === 'StringLiteral' )
+		.map( ( element ) => element.value );
+}
+
 const csfScenarios = [];
 storyFiles.forEach( ( storyFile ) => {
 	const code = fs.readFileSync( storyFile ).toString();
@@ -58,6 +84,7 @@ storyFiles.forEach( ( storyFile ) => {
 
 	const stories = {};
 	let defaultTitle = '';
+	let defaultFeatures = [];
 
 	traverse( ast, {
 		ExportDefaultDeclaration: ( { node } ) => {
@@ -68,6 +95,12 @@ storyFiles.forEach( ( storyFile ) => {
 			} );
 
 			defaultTitle = ( properties && properties.title ) || '';
+
+			const parameters = node.declaration.properties.find(
+				( property ) => property.key?.name === 'parameters'
+			);
+
+			defaultFeatures = getFeatures( parameters?.value ) || [];
 		},
 		AssignmentExpression: ( { node } ) => {
 			let nodeValue = '';
@@ -83,6 +116,16 @@ storyFiles.forEach( ( storyFile ) => {
 						nodeValue[ property.key.name ] = property.value.value;
 					}
 				} );
+
+				// `nodeValue` keeps only a string, a number, or a boolean, so
+				// `getFeatures()` reads the `features` array.
+				if ( node.left.property?.name === 'parameters' ) {
+					const features = getFeatures( node.right );
+
+					if ( features ) {
+						nodeValue.features = features;
+					}
+				}
 			}
 
 			if ( ! stories[ node.left.object.name ] ) {
@@ -105,10 +148,16 @@ storyFiles.forEach( ( storyFile ) => {
 			value.scenario &&
 			value.scenario.constructor === Object
 		) {
+			// `storybook/preview-head.html` reads `features` from the URL, so
+			// the page loads with the story's flags and never reloads.
+			const features = value.parameters?.features || defaultFeatures;
+
 			const scenario = {
 				label: `${ defaultTitle }/${ value.storyName || key }`,
 				...value.scenario,
-				url: `${ rootURL }${ storyID }`,
+				url: `${ rootURL }${ storyID }&features=${ features.join(
+					','
+				) }`,
 			};
 
 			csfScenarios.push( scenario );
