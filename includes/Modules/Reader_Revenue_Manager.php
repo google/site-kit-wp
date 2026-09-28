@@ -99,6 +99,20 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	const MODULE_SLUG = 'reader-revenue-manager';
 
 	/**
+	 * Web Content Publisher read-only scope.
+	 *
+	 * @since n.e.x.t
+	 */
+	const READONLY_SCOPE = 'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
+
+	/**
+	 * Web Content Publisher manage scope.
+	 *
+	 * @since n.e.x.t
+	 */
+	const MANAGE_SCOPE = 'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';
+
+	/**
 	 * Post_Product_ID instance.
 	 *
 	 * @since 1.148.0
@@ -194,6 +208,13 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
 			$this->user_settings->register();
+
+			add_filter(
+				'googlesitekit_auth_scopes',
+				function ( array $scopes ) {
+					return $this->get_refined_scopes( $scopes );
+				}
+			);
 		}
 
 		$synchronization = new Synchronization(
@@ -399,6 +420,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
 			$datapoints['POST:create-publication'] = new Create_Publication(
 				array(
+					'scopes'             => array( self::MANAGE_SCOPE ),
 					'reference_site_url' => $this->context->get_reference_site_url(),
 					'service'            => fn() => $this->get_service( 'webcontentpublisher' ),
 				)
@@ -421,6 +443,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['POST:publication'] = new Update_Publication(
 				array(
+					'scopes'   => array( self::MANAGE_SCOPE ),
 					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
 					'settings' => $settings,
 				)
@@ -455,6 +478,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 			$datapoints['POST:create-cta'] = new Create_CTA(
 				array(
+					'scopes'   => array( self::MANAGE_SCOPE ),
 					'service'  => fn() => $this->get_service( 'webcontentpublisher' ),
 					'settings' => $settings,
 				)
@@ -462,6 +486,32 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		}
 
 		return $datapoints;
+	}
+
+	/**
+	 * Refines the requested scopes for new setups and previously granted permissions.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string[] $scopes Requested scopes.
+	 * @return string[] Refined scopes.
+	 */
+	private function get_refined_scopes( $scopes ) {
+		$granted_scopes = $this->authentication->get_oauth_client()->get_granted_scopes();
+
+		if (
+			! $this->authentication->is_authenticated() ||
+			! $this->is_connected() ||
+			in_array( self::READONLY_SCOPE, $granted_scopes, true )
+		) {
+			$scopes[] = self::READONLY_SCOPE;
+		}
+
+		if ( in_array( self::MANAGE_SCOPE, $granted_scopes, true ) ) {
+			$scopes[] = self::MANAGE_SCOPE;
+		}
+
+		return $scopes;
 	}
 
 	/**
@@ -895,8 +945,15 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	public function get_feature_metrics() {
 		$settings = $this->get_settings()->get();
 
-		return array(
+		$metrics = array(
 			'rrm_publication_onboarding_state' => $settings['publicationOnboardingState'],
 		);
+
+		if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+			$configured_ctas                            = (array) $settings['configuredCTAs'];
+			$metrics['rrm_publication_configured_ctas'] = array_values( array_unique( $configured_ctas ) );
+		}
+
+		return $metrics;
 	}
 }

@@ -31,7 +31,10 @@ import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import {
+	CTA_STATES,
+	CTA_TYPES,
+} from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -314,6 +317,7 @@ describe( 'StepSignupForm', () => {
 						data: {
 							displayName: 'My newsletter',
 							type: CTA_TYPES.NEWSLETTER_SIGNUP,
+							state: CTA_STATES.ACTIVE,
 							config: {
 								title: 'Subscribe',
 								customMessage: 'Join us',

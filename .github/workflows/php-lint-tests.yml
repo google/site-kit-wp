@@ -86,6 +86,8 @@ jobs:
         run: composer install --no-interaction --no-progress
       - name: PHP Lint
         run: composer lint
+      - name: PSR-4 Autoload Lint
+        run: composer lint:autoload
 
   php-static-analysis:
     name: PHP Static Analysis

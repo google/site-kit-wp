@@ -22,10 +22,17 @@ export const CTA_TYPES = {
 
 export type CallToActionType = typeof CTA_TYPES[ keyof typeof CTA_TYPES ];
 
+export const CTA_STATES = {
+	ACTIVE: 'ACTIVE',
+	DRAFT: 'DRAFT',
+} as const;
+
+export type CallToActionState = typeof CTA_STATES[ keyof typeof CTA_STATES ];
+
 export interface CallToActionBase {
 	name?: string;
 	displayName?: string;
-	state?: string;
+	state?: CallToActionState;
 	type: CallToActionType;
 }
 
