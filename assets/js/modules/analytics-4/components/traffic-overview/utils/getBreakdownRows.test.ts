@@ -118,6 +118,11 @@ describe( 'getBreakdownRows', () => {
 		] );
 		// The last two values, 10 and 5, out of 155.
 		expect( rows[ 4 ].percentage ).toBeCloseTo( 15 / 155, 6 );
+		// Three percents are missing after the whole parts. "Others" has the
+		// third largest remainder, so it gets one of them.
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '32%', '26%', '19%', '13%', '10%' ] );
 	} );
 
 	it( 'drops the "Others" row when the values it would fold have no visitors', () => {
@@ -161,16 +166,163 @@ describe( 'getBreakdownRows', () => {
 		expect( getBreakdownRows( undefined ) ).toEqual( [] );
 	} );
 
-	it( 'gives every row a zero share when nobody visited', () => {
+	it( 'gives an empty array when nobody visited', () => {
+		expect(
+			getBreakdownRows(
+				createReport( [
+					[ 'A', 0 ],
+					[ 'B', 0 ],
+				] )
+			)
+		).toEqual( [] );
+	} );
+
+	it( 'leaves out a value with no visitors, so it does not push the fifth value into "Others"', () => {
 		const rows = getBreakdownRows(
 			createReport( [
-				[ 'A', 0 ],
-				[ 'B', 0 ],
+				[ 'A', 50 ],
+				[ 'B', 40 ],
+				[ 'C', 30 ],
+				[ 'D', 20 ],
+				[ 'E', 10 ],
+				[ 'F', 0 ],
 			] )
 		);
 
-		expect( rows.map( ( { percentage } ) => percentage ) ).toEqual( [
-			0, 0,
+		// Five values have visitors, so each gets its own row.
+		expect( rows.map( ( { label } ) => label ) ).toEqual( [
+			'A',
+			'B',
+			'C',
+			'D',
+			'E',
+		] );
+	} );
+
+	it( 'formats each share as a whole percent', () => {
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'Organic Search', 1200 ],
+				[ 'Direct', 600 ],
+				[ 'Paid Search', 400 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '55%', '27%', '18%' ] );
+	} );
+
+	it( 'gives shares that add up to 100% when rounding each one would give 99%', () => {
+		// 33.4%, 33.3%, and 33.3% each round down to 33%.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'A', 334 ],
+				[ 'B', 333 ],
+				[ 'C', 333 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '34%', '33%', '33%' ] );
+	} );
+
+	it( 'gives shares that add up to 100% when rounding each one would give 101%', () => {
+		// 50.5% and 30.5% each round up, to 51% and 31%.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'desktop', 505 ],
+				[ 'mobile', 305 ],
+				[ 'tablet', 190 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '51%', '30%', '19%' ] );
+	} );
+
+	it( 'shows a value that gets no whole percent as "<1%" rather than "0%"', () => {
+		// 99.6%, 0.3%, and 0.1% leave one percent missing, which goes to the
+		// 0.3% value.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'United States', 996 ],
+				[ 'Germany', 3 ],
+				[ 'France', 1 ],
+			] )
+		);
+
+		expect( rows[ 2 ].percentage ).toBeCloseTo( 0.001, 6 );
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '99%', '1%', '<1%' ] );
+	} );
+
+	it( 'never shows "100%" beside another value, and gives that percent to the next value', () => {
+		// 99.9% would get the missing percent by its remainder.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'desktop', 999 ],
+				[ 'mobile', 1 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '99%', '1%' ] );
+	} );
+
+	it( 'shows a single value as "100%"', () => {
+		const rows = getBreakdownRows( createReport( [ [ 'desktop', 42 ] ] ) );
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '100%' ] );
+	} );
+
+	it( 'shows a value below one percent that gets a missing percent as "1%"', () => {
+		// 99.3% and 0.7% leave one percent missing, and 0.7% has the larger
+		// remainder.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'United States', 993 ],
+				[ 'Germany', 7 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { formattedPercentage } ) => formattedPercentage )
+		).toEqual( [ '99%', '1%' ] );
+	} );
+
+	it( 'shows an "Others" row that gets no whole percent as "<1%" when the shares add up to 100%', () => {
+		// 46.3%, 30.4%, 15.6%, 7.3%, and 0.4% would round to 46%, 30%, 16%,
+		// 7%, and 0%, which adds up to 99%. "Others" ties with "Organic Search"
+		// for the missing percent, and the earlier row gets it.
+		const rows = getBreakdownRows(
+			createReport( [
+				[ 'Direct', 4630 ],
+				[ 'Organic Search', 3040 ],
+				[ 'Organic Social', 1560 ],
+				[ 'Referral', 730 ],
+				[ 'Paid Search', 25 ],
+				[ 'Email', 15 ],
+			] )
+		);
+
+		expect(
+			rows.map( ( { label, formattedPercentage } ) => [
+				label,
+				formattedPercentage,
+			] )
+		).toEqual( [
+			[ 'Direct', '46%' ],
+			[ 'Organic Search', '31%' ],
+			[ 'Organic Social', '16%' ],
+			[ 'Referral', '7%' ],
+			[ 'Others', '<1%' ],
 		] );
 	} );
 } );
