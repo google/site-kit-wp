@@ -417,9 +417,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Splits the page links off the end of a paginated post's content.
 	 *
 	 * A block theme's Post Content block adds the `wp_link_pages()` links to the
-	 * end of the content before `the_content` runs. The author didn't write the
-	 * links, so the word count skips them. The marker goes before them, at the
-	 * end of the author's text.
+	 * end of the content before `the_content` runs. Don't include them in the count.
 	 *
 	 * @since n.e.x.t
 	 *
