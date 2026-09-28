@@ -73,7 +73,7 @@ class Create_PublicationTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'https://webcontentpublisher.googleapis.com/v1/organizations/*/publications',
+			'https://webcontentpublisher.googleapis.com/v1/organizations/-/publications',
 			(string) $request->getUri(),
 			'The request should use the create publication endpoint.'
 		);

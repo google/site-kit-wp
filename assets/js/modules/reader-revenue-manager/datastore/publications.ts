@@ -60,6 +60,7 @@ export interface Publication {
 	organizationId?: string;
 	/* eslint-enable sitekit/acronym-case */
 	onboardingState: string;
+	publicationType?: string;
 	paymentOptions?: Record< string, boolean >;
 	products?: Array< { name: string } >;
 	contentPolicyStatus?: {

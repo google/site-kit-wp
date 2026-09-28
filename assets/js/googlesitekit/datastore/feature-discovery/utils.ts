@@ -16,10 +16,59 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { FEATURE_RELEVANCY_REASONS } from './constants';
+
+/**
+ * Gets the feature dismissal key for a feature.
+ *
+ * @since 1.188.0
+ *
+ * @param {string} slug Feature slug.
+ * @return {string} Feature dismissal key.
+ */
 export function getFeatureDismissalKey( slug: string ) {
 	return `feature-discovery-dismissed-${ slug }`;
 }
 
+/**
+ * Gets the feature newness key for a feature.
+ *
+ * @since 1.188.0
+ *
+ * @param {string} slug Feature slug.
+ * @return {string} Feature newness key.
+ */
 export function getFeatureNewnessKey( slug: string ) {
 	return `feature-discovery-new-${ slug }`;
+}
+
+/**
+ * Gets the survey trigger ID for a feature setup.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Feature slug.
+ * @return {string} Survey trigger ID.
+ */
+export function getFeatureSetupSurveyTriggerID( slug: string ) {
+	return `setup:feature_setup_${ slug }`;
+}
+
+/**
+ * Gets the survey trigger ID for a feature relevancy reason.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug   Feature slug.
+ * @param {string} reason Feature relevancy reason.
+ * @return {string} Survey trigger ID.
+ */
+export function getFeatureRelevancyTriggerID(
+	slug: string,
+	reason: typeof FEATURE_RELEVANCY_REASONS[ keyof typeof FEATURE_RELEVANCY_REASONS ]
+) {
+	return `feedback:feature_relevancy_${ slug }:${ reason }`;
 }
