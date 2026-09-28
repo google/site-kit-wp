@@ -17,16 +17,226 @@
  */
 
 /**
+ * External dependencies
+ */
+import invariant from 'invariant';
+
+/**
+ * WordPress dependencies
+ */
+import apiFetch from '@wordpress/api-fetch';
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
-import { Select, createRegistrySelector } from 'googlesitekit-data';
+import {
+	Registry,
+	Select,
+	combineStores,
+	commonActions,
+	createReducer,
+	createRegistrySelector,
+} from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
+import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { decodeHTMLEntity } from '@/js/util';
 import { MODULES_ANALYTICS_4 } from './constants';
 
-export const selectors = {
+const { clearSelectorError, setErrorForSelector } = errorStoreActions;
+
+export interface RecentContentItem {
+	/** The ID of the post or product. */
+	id: number;
+	/** The title with its HTML entities decoded, e.g. `Don’t miss it` rather than `Don&#8217;t miss it`. */
+	title: string;
+	/** The URL of the post or product. */
+	permalink: string;
+	/** The path of `permalink`, e.g. `/hello-world/`, which matches the `pagePath` dimension of an Analytics report row. */
+	pagePath: string;
+	/** The publish time in UTC, not the site's local time, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
+	publishedAt: string;
+}
+
+interface RecentContentOptions {
+	/** The number of posts and products to return. */
+	count: number;
+}
+
+interface RecentContentParams extends RecentContentOptions {
+	/** Whether to request products too. */
+	includeProducts: boolean;
+}
+
+interface WordPressPost {
+	/** The post ID. */
+	id: number;
+	/** The publish time in UTC, e.g. `2026-09-24T14:05:00`, with no time zone suffix. */
+	// eslint-disable-next-line camelcase -- The WordPress REST API names the `date_gmt` field.
+	date_gmt: string;
+	/** The post URL. */
+	link: string;
+	/** The post title. */
+	title: {
+		/** The title after the `the_title` filters run, e.g. `Don&#8217;t miss it`, not `Don’t miss it`. */
+		rendered: string;
+	};
+}
+
+interface FreshDataState {
+	/** The newest posts and products, saved under the `count` of the request. */
+	recentContent: Record< number, RecentContentItem[] >;
+}
+
+const fetchGetRecentContentStore = createFetchStore( {
+	baseName: 'getRecentContent',
+	async controlCallback( {
+		count,
+		includeProducts,
+	}: RecentContentParams ): Promise< RecentContentItem[] > {
+		// Every user can read a published product from `wp/v2/product`.
+		// `wc/v3/products` needs the `read_private_products` permission, which
+		// a view-only user doesn't have.
+		const paths = includeProducts
+			? [ '/wp/v2/posts', '/wp/v2/product' ]
+			: [ '/wp/v2/posts' ];
+
+		const responses = await Promise.all(
+			paths.map( ( path ) =>
+				apiFetch< WordPressPost[] >( {
+					path: addQueryArgs( path, {
+						status: 'publish',
+						orderby: 'date',
+						order: 'desc',
+						per_page: count,
+						_fields: 'id,date_gmt,link,title',
+					} ),
+					// A post published a moment ago must appear in the list, so the
+					// browser can't use a cached response.
+					cache: 'no-store',
+				} )
+			)
+		);
+
+		return responses
+			.flat()
+			.map( ( post ) => ( {
+				id: post.id,
+				// WordPress runs `wptexturize()` on a title, which turns `&` into
+				// `&#038;` and an apostrophe into `&#8217;`.
+				title: decodeHTMLEntity( post.title.rendered ),
+				permalink: post.link,
+				pagePath: new URL( post.link ).pathname,
+				publishedAt: `${ post.date_gmt }Z`,
+			} ) )
+			.sort(
+				( a, b ) =>
+					Date.parse( b.publishedAt ) - Date.parse( a.publishedAt )
+			)
+			.slice( 0, count );
+	},
+	reducerCallback: createReducer(
+		(
+			state: FreshDataState,
+			recentContent: RecentContentItem[],
+			{ count }: RecentContentParams
+		) => {
+			state.recentContent[ count ] = recentContent;
+		}
+	),
+	argsToParams: ( count: number, includeProducts: boolean ) => ( {
+		count,
+		includeProducts,
+	} ),
+	validateParams: ( { count = 0 }: Partial< RecentContentParams > ) => {
+		invariant(
+			Number.isInteger( count ) && count > 0,
+			'count must be a positive integer.'
+		);
+	},
+} ) as {
+	actions: {
+		fetchGetRecentContent: (
+			count: number,
+			includeProducts: boolean
+		) => unknown;
+	};
+};
+
+const baseInitialState: FreshDataState = {
+	recentContent: {},
+};
+
+const baseResolvers = {
+	*getRecentContent(
+		options: RecentContentOptions
+	): Generator< unknown, void, unknown > {
+		const registry = ( yield commonActions.getRegistry() ) as Registry;
+
+		// `shouldIncludeWooCommerceProducts()` returns `undefined` until the
+		// site info, the Analytics settings, and the module list have loaded.
+		yield commonActions.await(
+			Promise.all( [
+				registry.resolveSelect( CORE_SITE ).getSiteInfo(),
+				registry.resolveSelect( MODULES_ANALYTICS_4 ).getSettings(),
+				registry.resolveSelect( CORE_MODULES ).getModules(),
+			] )
+		);
+
+		// `shouldIncludeWooCommerceProducts()` stays `undefined` when the
+		// Analytics settings request fails, so the list has posts only.
+		const includeProducts = !! registry
+			.select( MODULES_ANALYTICS_4 )
+			.shouldIncludeWooCommerceProducts();
+
+		yield clearSelectorError( 'getRecentContent', [ options ] );
+
+		const { error } =
+			( yield fetchGetRecentContentStore.actions.fetchGetRecentContent(
+				options.count,
+				includeProducts
+			) ) as { error?: object };
+
+		// The fetch store saves the error under `[ count, includeProducts ]`,
+		// but a component reads it under `[ options ]`. The error has to be
+		// saved under `[ options ]` alone, because a retry in `ErrorNotice`
+		// reruns the selector with the arguments saved beside the error.
+		if ( error ) {
+			yield clearSelectorError( 'getRecentContent', [
+				options.count,
+				includeProducts,
+			] );
+			yield setErrorForSelector( error, 'getRecentContent', [ options ] );
+		}
+	},
+};
+
+const baseSelectors = {
+	/**
+	 * Gets the most recently published posts, newest first.
+	 *
+	 * The list includes WooCommerce products when
+	 * `shouldIncludeWooCommerceProducts()` returns `true`. Read a request error
+	 * with `getErrorForSelector( 'getRecentContent', [ options ] )`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state         The data store's state.
+	 * @param {Object} options       The options for the list.
+	 * @param {number} options.count The number of posts and products to return.
+	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` if not loaded.
+	 */
+	getRecentContent(
+		state: FreshDataState,
+		{ count }: RecentContentOptions
+	): RecentContentItem[] | undefined {
+		return state.recentContent[ count ];
+	},
+
 	/**
 	 * Determines whether WooCommerce products should be included alongside
 	 * WordPress posts for "Fresh Data" cards/widgets.
@@ -64,6 +274,26 @@ export const selectors = {
 	),
 };
 
-export default {
-	selectors,
-};
+interface Store {
+	initialState: FreshDataState;
+	actions: Record< string, unknown >;
+	controls: Record< string, unknown >;
+	reducer: Record< string, unknown >;
+	resolvers: Record< string, unknown >;
+	selectors: Record< string, unknown >;
+}
+
+const store = combineStores( fetchGetRecentContentStore, {
+	initialState: baseInitialState,
+	resolvers: baseResolvers,
+	selectors: baseSelectors,
+} ) as Store;
+
+export const initialState = store.initialState;
+export const actions = store.actions;
+export const controls = store.controls;
+export const reducer = store.reducer;
+export const resolvers = store.resolvers;
+export const selectors = store.selectors;
+
+export default store;
