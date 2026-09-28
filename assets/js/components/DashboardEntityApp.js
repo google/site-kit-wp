@@ -31,6 +31,9 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import FeaturesMenu from '@/js/components/FeaturesMenu';
+import { ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH } from '@/js/components/FeaturesMenu/constants';
+import useShouldCollapseFeatureActions from '@/js/components/FeaturesMenu/useShouldCollapseFeatureActions';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_MONETIZATION,
@@ -56,6 +59,7 @@ import DateRangeSelector from './DateRangeSelector';
 import ManageEmailReportsButton from './email-reporting/ManageEmailReportsButton';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
 import EntitySearchInput from './EntitySearchInput';
+import AddFeaturesButton from './feature-discovery/AddFeaturesButton';
 import Header from './Header';
 import HelpMenu from './help/HelpMenu';
 import Layout from './layout/Layout';
@@ -69,6 +73,12 @@ import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
 	const viewOnlyDashboard = useViewOnly();
+	// On mobile and tablet, or when the "Add features" button would otherwise
+	// overlap the logo, the individual feature action icons collapse into the
+	// single three-dots features menu.
+	const shouldCollapseFeatureActions = useShouldCollapseFeatureActions(
+		ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH
+	);
 
 	const viewableModules = useSelect( ( select ) => {
 		if ( ! viewOnlyDashboard ) {
@@ -214,6 +224,7 @@ function DashboardEntityApp() {
 			</div>
 		);
 	}
+
 	return (
 		<Fragment>
 			<CoreDashboardEffects />
@@ -221,9 +232,21 @@ function DashboardEntityApp() {
 			<Header showNavigation>
 				<EntitySearchInput />
 				<DateRangeSelector />
-				<ManageEmailReportsButton />
-				{ ! viewOnlyDashboard && <DashboardSharingSettingsButton /> }
-				<HelpMenu />
+				{ shouldCollapseFeatureActions ? (
+					<Fragment>
+						<HelpMenu />
+						<FeaturesMenu hidePDFItem />
+					</Fragment>
+				) : (
+					<Fragment>
+						<AddFeaturesButton />
+						<ManageEmailReportsButton />
+						{ ! viewOnlyDashboard && (
+							<DashboardSharingSettingsButton />
+						) }
+						<HelpMenu />
+					</Fragment>
+				) }
 			</Header>
 
 			<div className="googlesitekit-page-content">
