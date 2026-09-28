@@ -27,7 +27,7 @@ import modules from './list.json';
  * @since 1.18.0
  *
  * @param {...string} slugs Active module slugs.
- * @return {Object[]} Array of module objects.
+ * @return {Array.<{slug: string, active: boolean, connected: boolean}>} Array of module objects.
  */
 export function withActive( ...slugs ) {
 	return modules.map( ( module ) => ( {
@@ -42,7 +42,7 @@ export function withActive( ...slugs ) {
  * @since 1.28.0
  *
  * @param {...string} slugs Active module slugs.
- * @return {Object[]} Array of module objects.
+ * @return {Array.<{slug: string, active: boolean, connected: boolean}>} Array of module objects.
  */
 export function withConnected( ...slugs ) {
 	return withActive( ...slugs ).map( ( module ) => ( {
