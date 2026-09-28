@@ -170,8 +170,7 @@ describe( 'FeatureCTA', () => {
 		it( 'should render nothing while the service’s requirements are still resolving', () => {
 			provideSetupFlowFeature();
 
-			// No `receiveCheckRequirements*`, so `canActivateModule` is
-			// `undefined`.
+			// No `receiveCheckRequirements*`, so `canActivateModule` is `undefined`.
 			const { queryByRole } = render( <FeatureCTA slug="analytics" />, {
 				registry,
 			} );
