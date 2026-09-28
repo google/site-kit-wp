@@ -26,9 +26,11 @@
 			align-items: center;
 			display: flex;
 			flex-direction: column;
-			margin: 32px auto 48px;
-			max-width: 662px;
+			margin-inline: auto;
+			max-inline-size: 662px;
+			padding-block-start: 8px;
 			text-align: center;
+			text-wrap: balance;
 
 			svg {
 				max-width: 179px;
