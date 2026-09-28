@@ -120,6 +120,38 @@ WithOthers.args = {
 };
 WithOthers.scenario = {};
 
+/**
+ * Shares that would add up to 99% or 101% if each were rounded on its own,
+ * and an "Others" row below one percent.
+ */
+export const LongTail = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+LongTail.storyName = 'Long Tail';
+LongTail.args = {
+	reports: {
+		channels: createBreakdownReport( [
+			[ 'Direct', 4630 ],
+			[ 'Organic Search', 3040 ],
+			[ 'Organic Social', 1560 ],
+			[ 'Referral', 730 ],
+			[ 'Paid Search', 25 ],
+			[ 'Email', 15 ],
+		] ),
+		locations: createBreakdownReport( [
+			[ 'Singapore', 334 ],
+			[ 'Brazil', 333 ],
+			[ 'China', 333 ],
+		] ),
+		devices: createBreakdownReport( [
+			[ 'desktop', 505 ],
+			[ 'mobile', 305 ],
+			[ 'tablet', 190 ],
+		] ),
+	},
+};
+LongTail.scenario = {};
+
 /** The other two columns must keep their widths beside an empty one. */
 export const EmptyColumn = Template.bind(
 	{}
