@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { singleQuestionSurvey } from '@/js/components/surveys/__fixtures__';
 import * as coreFeatureDiscovery from '@/js/googlesitekit/datastore/feature-discovery';
 import * as coreForms from '@/js/googlesitekit/datastore/forms';
+import * as coreIntents from '@/js/googlesitekit/datastore/intents';
 import * as coreLocation from '@/js/googlesitekit/datastore/location';
 import * as corePdf from '@/js/googlesitekit/datastore/pdf';
 import * as coreSite from '@/js/googlesitekit/datastore/site';
@@ -67,6 +68,7 @@ import * as modulesTagManager from '@/js/modules/tagmanager';
 const allCoreStores = [
 	coreFeatureDiscovery,
 	coreForms,
+	coreIntents,
 	coreLocation,
 	coreModules,
 	corePdf,
