@@ -39,7 +39,7 @@ import type { ConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/u
  * @param {Object}            conversionTracking                             The conversion tracking setting, see `useConversionTrackingSetting`.
  * @param {boolean|undefined} conversionTracking.canManageOptions            Whether the user may read and change the setting.
  * @param {boolean|undefined} conversionTracking.isConversionTrackingEnabled Whether plugin conversion tracking is on.
- * @return {boolean|undefined} Whether the breakdown is enabled, or `undefined` while either condition is loading.
+ * @return {boolean|undefined} Whether the breakdown is enabled, or `undefined` while either condition or the capabilities are loading.
  */
 export function isSiteGoalsBreakdownEnabled(
 	hasBreakdownDimensions: boolean | undefined,
@@ -52,6 +52,10 @@ export function isSiteGoalsBreakdownEnabled(
 	// Without the dimensions there is nothing to wait for.
 	if ( ! hasBreakdownDimensions ) {
 		return false;
+	}
+
+	if ( canManageOptions === undefined ) {
+		return undefined;
 	}
 
 	if ( ! canManageOptions ) {

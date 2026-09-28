@@ -87,12 +87,21 @@ describe( 'isSiteGoalsBreakdownEnabled', () => {
 		}
 	);
 
-	it( 'follows the dimensions alone while the capabilities are unknown', () => {
+	it( 'returns undefined while the capabilities are loading', () => {
 		expect(
 			isSiteGoalsBreakdownEnabled( true, {
 				canManageOptions: undefined,
 				isConversionTrackingEnabled: undefined,
 			} )
-		).toBe( true );
+		).toBeUndefined();
+	} );
+
+	it( 'returns false when the dimensions are missing while the capabilities are loading', () => {
+		expect(
+			isSiteGoalsBreakdownEnabled( false, {
+				canManageOptions: undefined,
+				isConversionTrackingEnabled: undefined,
+			} )
+		).toBe( false );
 	} );
 } );
