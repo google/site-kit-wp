@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import * as tracking from '@/js/util/tracking';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
@@ -31,23 +32,6 @@ import { provideSiteInfo } from '@tests/js/utils';
 import TrafficBreakdown from './TrafficBreakdown';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-
-/**
- * Builds a breakdown report from label and visitor pairs, in the order given.
- *
- * @since 1.188.0
- *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
- */
-function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
-	};
-}
 
 const CHANNELS = createBreakdownReport( [
 	[ 'Organic Search', 1200 ],
