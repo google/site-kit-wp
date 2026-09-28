@@ -32,8 +32,8 @@ import { addQueryArgs, hasQueryArg } from '@wordpress/url';
  *
  * A datastore's `base.js` calls `isFeatureEnabled()` at module-evaluation
  * time, so changing `enabledFeatures` later has no effect. A reload runs the
- * bundle again, and `storybook/preview-head.html` sets the flags from session
- * storage first.
+ * bundle again, and `storybook/preview-head.html` sets the flags first, from
+ * the page URL or from session storage.
  *
  * @since n.e.x.t
  *
@@ -65,16 +65,15 @@ export function reloadForFeatures( features: string[] = [] ): boolean {
 		return false;
 	}
 
-	// A story page opened outside the Storybook app can hold a `features` value
-	// in its URL, and `storybook/preview-head.html` reads that value before
-	// session storage. A plain reload would load the old flags forever, so
-	// `reloadForFeatures()` writes the story's flags into the URL instead.
-	if (
-		window.parent === window &&
-		hasQueryArg( window.location.href, 'features' )
-	) {
-		window.location.replace(
-			addQueryArgs( window.location.href, {
+	// `storybook/preview-head.html` reads a `features` value in the story page
+	// URL before session storage, so a plain reload would load the old flags
+	// again and reload forever. Inside the Storybook app, the story page URL
+	// gets its `features` value from the app URL, so the story's flags go into
+	// the URL of `window.parent`. Outside the app, `window.parent` is `window`,
+	// so the flags go into the story page URL.
+	if ( hasQueryArg( window.location.href, 'features' ) ) {
+		window.parent.location.replace(
+			addQueryArgs( window.parent.location.href, {
 				features: features.join( ',' ),
 			} )
 		);

@@ -66,14 +66,14 @@ describe( 'reloadForFeatures', () => {
 		jest.restoreAllMocks();
 	} );
 
-	it( 'does not reload when the page already has the flags the story needs', () => {
+	it( 'should not reload when the page already has the flags the story needs', () => {
 		global._googlesitekitBaseData.enabledFeatures = [ 'rrmExpressSetup' ];
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( false );
 		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'does not reload when the story lists the same flags in a different order', () => {
+	it( 'should not reload when the story lists the same flags in a different order', () => {
 		global._googlesitekitBaseData.enabledFeatures = [
 			'setupFlowRefresh',
 			'rrmExpressSetup',
@@ -85,7 +85,7 @@ describe( 'reloadForFeatures', () => {
 		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'stores the flags and reloads when the story needs different flags', () => {
+	it( 'should store the flags and reload when the story needs different flags', () => {
 		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
@@ -95,7 +95,7 @@ describe( 'reloadForFeatures', () => {
 		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'stores an empty list and reloads when the story needs no flags', () => {
+	it( 'should store an empty list and reload when the story needs no flags', () => {
 		global._googlesitekitBaseData.enabledFeatures = [ 'rrmExpressSetup' ];
 
 		expect( reloadForFeatures() ).toBe( true );
@@ -105,7 +105,7 @@ describe( 'reloadForFeatures', () => {
 		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'stores the flags and reloads when the page loaded with no flags', () => {
+	it( 'should store the flags and reload when the page loaded with no flags', () => {
 		expect( global._googlesitekitBaseData.enabledFeatures ).toBeUndefined();
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
@@ -115,7 +115,7 @@ describe( 'reloadForFeatures', () => {
 		expect( pageReloadMock ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'does not reload when session storage cannot store the flags', () => {
+	it( 'should not reload when session storage cannot store the flags', () => {
 		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
 
 		// `jest-localstorage-mock` already makes `setItem` a mock, so
@@ -132,7 +132,7 @@ describe( 'reloadForFeatures', () => {
 		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
-	it( 'sets the flags in the page URL and loads it when the URL holds a `features` value', () => {
+	it( 'should set the flags in the page URL and load it when the URL has a `features` value', () => {
 		global._googlesitekitBaseData.enabledFeatures = [];
 		global.location.href =
 			'http://localhost/iframe.html?viewMode=story&id=story-id&features=';
@@ -147,6 +147,7 @@ describe( 'reloadForFeatures', () => {
 
 	describe( 'inside the Storybook app', () => {
 		const parentReloadMock = jest.fn();
+		const parentReplaceMock = jest.fn();
 		let oldParent: Window;
 
 		beforeAll( () => {
@@ -157,7 +158,11 @@ describe( 'reloadForFeatures', () => {
 			delete global.parent;
 
 			global.parent = {
-				location: { reload: parentReloadMock },
+				location: {
+					href: '',
+					reload: parentReloadMock,
+					replace: parentReplaceMock,
+				},
 			} as unknown as Window;
 		} );
 
@@ -165,7 +170,13 @@ describe( 'reloadForFeatures', () => {
 			global.parent = oldParent;
 		} );
 
-		it( 'reloads the Storybook app, not only the page', () => {
+		afterEach( () => {
+			global.parent.location.href = '';
+			parentReloadMock.mockClear();
+			parentReplaceMock.mockClear();
+		} );
+
+		it( 'should reload the Storybook app, not only the page', () => {
 			global._googlesitekitBaseData.enabledFeatures = [
 				'setupFlowRefresh',
 			];
@@ -173,6 +184,24 @@ describe( 'reloadForFeatures', () => {
 			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 			expect( parentReloadMock ).toHaveBeenCalledTimes( 1 );
 			expect( pageReloadMock ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should set the flags in the Storybook app URL and load it when the page URL has a `features` value', () => {
+			global._googlesitekitBaseData.enabledFeatures = [
+				'setupFlowRefresh',
+			];
+			global.location.href =
+				'http://localhost/iframe.html?viewMode=story&id=story-id&features=setupFlowRefresh';
+			global.parent.location.href =
+				'http://localhost/?path=/story/story-id&features=setupFlowRefresh';
+
+			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
+			expect( parentReplaceMock ).toHaveBeenCalledWith(
+				'http://localhost/?path=%2Fstory%2Fstory-id&features=rrmExpressSetup'
+			);
+			expect( parentReplaceMock ).toHaveBeenCalledTimes( 1 );
+			expect( parentReloadMock ).not.toHaveBeenCalled();
+			expect( pageReplaceMock ).not.toHaveBeenCalled();
 		} );
 	} );
 } );
