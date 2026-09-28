@@ -79,20 +79,33 @@ const styles = createPDFStyles( {
 } );
 
 /**
+ * Capitalizes the first letter of each word, as CSS `text-transform: capitalize` does.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} label A dimension value, such as `smart tv`.
+ * @return {string} The label with each word capitalized, such as `Smart Tv`.
+ */
+function capitalizeWords( label: string ): string {
+	return label.replace(
+		/(^|\s)([^\s\w]*)(\w)/g,
+		( match, space, punctuation, letter ) =>
+			`${ space }${ punctuation }${ letter.toUpperCase() }`
+	);
+}
+
+/**
  * Maps a breakdown's rows to `PDFMetricTileTable` rows.
  *
  * @since n.e.x.t
  *
- * @param {Array<Object>} rows Ranked `{ label, percentage }` rows.
+ * @param {Array<Object>} rows Ranked `{ label, formattedPercentage }` rows.
  * @return {Array<Object>} Rows of `{ primary, metric }`, with no change badge.
  */
 function toTableRows( rows: TrafficBreakdownRow[] ) {
-	return rows.map( ( { label, percentage } ) => ( {
+	return rows.map( ( { label, formattedPercentage } ) => ( {
 		primary: label,
-		metric: numFmt( percentage, {
-			style: 'percent',
-			maximumFractionDigits: 0,
-		} ),
+		metric: formattedPercentage,
 	} ) );
 }
 
@@ -143,7 +156,14 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 	const breakdownRowsByID: Record< string, TrafficBreakdownRow[] | null > = {
 		channels: channelBreakdown,
 		locations: locationBreakdown,
-		devices: deviceBreakdown,
+		// The dashboard's devices column capitalizes GA4's lowercase device
+		// names, so the PDF prints them the same way.
+		devices:
+			deviceBreakdown &&
+			deviceBreakdown.map( ( row ) => ( {
+				...row,
+				label: capitalizeWords( row.label ),
+			} ) ),
 	};
 
 	return (
