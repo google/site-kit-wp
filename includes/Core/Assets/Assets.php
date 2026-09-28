@@ -122,6 +122,17 @@ final class Assets {
 			}
 		);
 
+		add_action(
+			'admin_enqueue_scripts',
+			function () {
+				foreach ( $this->get_assets() as $asset ) {
+					if ( $asset->has_context( Asset::CONTEXT_ADMIN_GLOBAL ) ) {
+						$this->enqueue_asset( $asset->get_handle() );
+					}
+				}
+			}
+		);
+
 		if ( is_admin() ) {
 			add_action(
 				'enqueue_block_assets',
@@ -331,14 +342,11 @@ final class Assets {
 			'googlesitekit-datastore-ui',
 			'googlesitekit-widgets',
 			'googlesitekit-notifications',
+			'googlesitekit-intents',
 		);
 
-		if ( Feature_Flags::enabled( 'pdfGeneration' ) ) {
-			array_push( $dependencies, 'googlesitekit-datastore-pdf' );
-		}
-
 		if ( 'dashboard' === $context || 'dashboard-sharing' === $context ) {
-			array_push( $dependencies, 'googlesitekit-components' );
+			array_push( $dependencies, 'googlesitekit-components', 'googlesitekit-datastore-pdf' );
 		}
 
 		if ( 'dashboard-sharing' === $context ) {
@@ -603,6 +611,16 @@ final class Assets {
 				)
 			),
 			new Script(
+				'googlesitekit-intents',
+				array(
+					'src'          => $base_url . 'js/googlesitekit-intents.js',
+					'dependencies' => array(
+						'googlesitekit-api',
+						'googlesitekit-data',
+					),
+				)
+			),
+			new Script(
 				'googlesitekit-widgets',
 				array(
 					'src'          => $base_url . 'js/googlesitekit-widgets.js',
@@ -781,6 +799,27 @@ final class Assets {
 				)
 			),
 		);
+
+		if ( current_user_can( Permissions::MANAGE_OPTIONS ) && Feature_Flags::enabled( 'featureDiscoveryHub' ) ) {
+			$assets[] = new Script_Data(
+				'googlesitekit-features-badge-data',
+				array(
+					'global'        => '_googlesitekitFeaturesBadgeData',
+					'data_callback' => function () {
+						return $this->get_inline_features_badge_data();
+					},
+				)
+			);
+
+			$assets[] = new Script(
+				'googlesitekit-features-badge',
+				array(
+					'src'           => $base_url . 'js/googlesitekit-features-badge.js',
+					'dependencies'  => array( 'googlesitekit-i18n', 'googlesitekit-features-badge-data' ),
+					'load_contexts' => array( Asset::CONTEXT_ADMIN_GLOBAL ),
+				)
+			);
+		}
 
 		/**
 		 * Filters the list of assets that Site Kit should register.
@@ -1043,6 +1082,31 @@ final class Assets {
 			 * @param array $data Authentication Data.
 			 */
 			'setup'  => apply_filters( 'googlesitekit_setup_data', array() ),
+		);
+	}
+
+	/**
+	 * Gets the fingerprint used to validate the remembered features count.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Features badge data.
+	 */
+	private function get_inline_features_badge_data() {
+		/**
+		 * Filters the connected modules.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $modules Connected modules as slug => module pairs.
+		 */
+		$connected_modules = apply_filters( 'googlesitekit_connected_modules', array() );
+
+		return array(
+			'connectedModules' => array_keys( $connected_modules ),
+			'pluginVersion'    => GOOGLESITEKIT_VERSION,
+			'resetSession'     => (bool) $this->context->input()->filter( INPUT_GET, 'googlesitekit_reset_session', FILTER_VALIDATE_BOOLEAN ),
+			'userID'           => get_current_user_id(),
 		);
 	}
 

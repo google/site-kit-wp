@@ -638,7 +638,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		featureFlag: 'pdfGeneration',
 		checkRequirements: requireSetupCTAsNotHidden(),
 	},
 	[ sharedKeyMetrics.slug ]: {

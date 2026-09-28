@@ -1,0 +1,161 @@
+/**
+ * TopTrafficSourceDrivingLeadsWidget component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { ElementType, FC } from 'react';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { MetricTileTable } from '@/js/components/KeyMetrics';
+import {
+	CORE_USER,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import {
+	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
+	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildGoalDriverTotalReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/reportOptionsHelpers';
+import {
+	getGoalDriverTotalCount,
+	makeShareOfExplicitTotalMapper,
+	parseMetricValue,
+} from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
+import { buildTopTrafficChannelsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannels';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import whenActive from '@/js/util/when-active';
+import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
+import { goalDriverTileColumns } from './utils/goalDriverTileColumns';
+
+interface TopTrafficSourceDrivingLeadsWidgetProps {
+	Widget: ElementType;
+}
+
+const TopTrafficSourceDrivingLeadsWidget: FC<
+	TopTrafficSourceDrivingLeadsWidgetProps
+> = ( { Widget } ) => {
+	const dates = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+		[]
+	);
+
+	const primaryEvent = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		[]
+	);
+
+	const reportOptions = buildTopTrafficChannelsReportOptions( {
+		dates,
+		primaryEvent,
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+
+	// Each channel's percentage is its share of every matching event site-wide,
+	// not just the ranked channels shown, so that total is fetched separately.
+	const totalReportOptions = buildGoalDriverTotalReportOptions( {
+		dates,
+		primaryEvent,
+		reportIDSuffix: 'top-traffic-channels',
+	} );
+
+	const report = useInViewSelect(
+		( select: Select ) =>
+			reportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport( reportOptions )
+				: undefined,
+		[ reportOptions ]
+	);
+
+	const totalReport = useInViewSelect(
+		( select: Select ) =>
+			totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport( totalReportOptions )
+				: undefined,
+		[ totalReportOptions ]
+	);
+
+	const error = useSelect(
+		( select: Select ) =>
+			reportOptions && totalReportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						reportOptions,
+						totalReportOptions
+				  )
+				: undefined,
+		[ reportOptions, totalReportOptions ]
+	);
+
+	const loading = useSelect(
+		( select: Select ) => {
+			// Undefined means the detected events have not resolved yet; an
+			// empty list means this site has no lead events, and a tile with
+			// nothing to ask for is not loading.
+			if ( primaryEvent === undefined ) {
+				return true;
+			}
+
+			if ( ! reportOptions || ! totalReportOptions ) {
+				return false;
+			}
+
+			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				reportOptions,
+				totalReportOptions
+			);
+		},
+		[ primaryEvent, reportOptions, totalReportOptions ]
+	);
+
+	const sourceRows: ReportRow[] = report?.rows || [];
+	// Falls back to summing the ranked rows when the site-wide total comes back
+	// empty, so the tile shows a sensible percentage rather than 0%.
+	const totalCount =
+		getGoalDriverTotalCount( totalReport ) ||
+		sourceRows.reduce(
+			( sum: number, row: ReportRow ) => sum + parseMetricValue( row ),
+			0
+		);
+	const rows = makeShareOfExplicitTotalMapper( totalCount )( sourceRows );
+
+	return (
+		<MetricTileTable
+			Widget={ Widget }
+			widgetSlug={ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS }
+			loading={ loading }
+			rows={ rows }
+			columns={ goalDriverTileColumns }
+			limit={ GOAL_DRIVER_ROW_LIMIT_COLLAPSED }
+			ZeroState={ ZeroDataMessage }
+			error={ error }
+			moduleSlug="analytics-4"
+		/>
+	);
+};
+
+export default whenActive( {
+	moduleName: MODULE_SLUG_ANALYTICS_4,
+	FallbackComponent: ConnectGA4CTATileWidget,
+} )( TopTrafficSourceDrivingLeadsWidget );
