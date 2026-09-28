@@ -22,14 +22,9 @@
 import invariant from 'invariant';
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
-import { commonActions } from 'googlesitekit-data';
+import { Registry, commonActions, createReducer } from 'googlesitekit-data';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_INTENTS } from '@/js/googlesitekit/datastore/intents/constants';
 import { CompleteIntentResult } from '@/js/googlesitekit/datastore/intents/intents';
@@ -42,10 +37,6 @@ import { isValidConversionID } from '@/js/modules/ads/utils/validation';
 import { ErrorObject } from '@/js/util/errors';
 import { MODULES_ADS } from './constants';
 
-type Registry = WPDataRegistry & {
-	resolveSelect: WPDataRegistry[ 'select' ];
-};
-
 interface ActionResult {
 	/** Error from the request, or `undefined` when the request succeeds. */
 	error?: ErrorObject;
@@ -57,6 +48,23 @@ interface CompleteConversionTrackingIntentResult {
 	/** Error from the step that failed, or `undefined` when every step succeeds. */
 	error?: ErrorObject;
 }
+
+interface IntentsState {
+	/** Whether the user confirmed the tag on the Ads conversion tracking intent screen. */
+	isConversionTrackingIntentTagConfirmed: boolean;
+}
+
+const CONFIRM_CONVERSION_TRACKING_INTENT_TAG =
+	'CONFIRM_CONVERSION_TRACKING_INTENT_TAG' as const;
+
+type Action = {
+	type: typeof CONFIRM_CONVERSION_TRACKING_INTENT_TAG;
+	payload: Record< string, never >;
+};
+
+const initialState: IntentsState = {
+	isConversionTrackingIntentTagConfirmed: false,
+};
 
 const actions = {
 	/**
@@ -133,10 +141,55 @@ const actions = {
 			return { returnURL: response?.return_url };
 		}
 	),
+
+	/**
+	 * Confirms the tag on the Ads conversion tracking intent screen.
+	 *
+	 * Confirming only unlocks placing the tag: nothing is saved until
+	 * `completeConversionTrackingIntent()` places it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {Object} Redux-style action.
+	 */
+	confirmConversionTrackingIntentTag() {
+		return {
+			payload: {},
+			type: CONFIRM_CONVERSION_TRACKING_INTENT_TAG,
+		};
+	},
+};
+
+const reducer = createReducer( ( state: IntentsState, action: Action ) => {
+	switch ( action.type ) {
+		case CONFIRM_CONVERSION_TRACKING_INTENT_TAG:
+			state.isConversionTrackingIntentTagConfirmed = true;
+			break;
+
+		default:
+			break;
+	}
+} );
+
+const selectors = {
+	/**
+	 * Checks whether the user confirmed the tag on the Ads conversion tracking intent screen.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {boolean} `true` if the user confirmed the tag, otherwise `false`.
+	 */
+	isConversionTrackingIntentTagConfirmed( state: IntentsState ): boolean {
+		return state.isConversionTrackingIntentTagConfirmed;
+	},
 };
 
 const store = {
+	initialState,
 	actions,
+	reducer,
+	selectors,
 };
 
 export default store;

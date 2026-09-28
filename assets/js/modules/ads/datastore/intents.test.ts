@@ -92,164 +92,196 @@ describe( 'modules/ads intents', () => {
 		] );
 	}
 
-	describe( 'completeConversionTrackingIntent', () => {
-		it( 'should activate the Ads module, save the tag as the conversion ID, complete the intent, and return the URL to return to Google Ads', async () => {
-			fetchMock.postOnce( activationEndpoint, {
-				body: { success: true },
-			} );
-			fetchMock.getOnce( authenticationEndpoint, {
-				body: { needsReauthentication: false },
-			} );
-			fetchMock.postOnce( settingsEndpoint, {
-				body: { ...settings, conversionID: tagID },
-			} );
-			fetchMock.postOnce( completeIntentEndpoint, {
-				body: { return_url: returnURL },
-			} );
+	describe( 'actions', () => {
+		describe( 'completeConversionTrackingIntent', () => {
+			it( 'should activate the Ads module, save the tag as the conversion ID, complete the intent, and return the URL to return to Google Ads', async () => {
+				fetchMock.postOnce( activationEndpoint, {
+					body: { success: true },
+				} );
+				fetchMock.getOnce( authenticationEndpoint, {
+					body: { needsReauthentication: false },
+				} );
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
 
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( fetchMock ).toHaveFetched( activationEndpoint, {
-				body: { data: { slug: MODULE_SLUG_ADS, active: true } },
-			} );
-			expect( fetchMock ).toHaveFetched( settingsEndpoint, {
-				body: { data: { ...settings, conversionID: tagID } },
-			} );
-			expect( fetchMock ).toHaveFetched( completeIntentEndpoint, {
-				body: {
-					data: {
-						slug: ADS_CONVERSION_TRACKING_INTENT_SLUG,
-						intent_code: intentCode,
-					},
-				},
-			} );
-			expect( result ).toEqual( { returnURL } );
-		} );
-
-		it( 'should not activate the Ads module when it is already active', async () => {
-			provideActiveAdsModule();
-
-			fetchMock.postOnce( settingsEndpoint, {
-				body: { ...settings, conversionID: tagID },
-			} );
-			fetchMock.postOnce( completeIntentEndpoint, {
-				body: { return_url: returnURL },
-			} );
-
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( fetchMock ).not.toHaveFetched( activationEndpoint );
-			expect( result ).toEqual( { returnURL } );
-		} );
-
-		it( 'should not save the tag again when it is called again after completing the intent failed', async () => {
-			provideActiveAdsModule();
-
-			fetchMock.postOnce( settingsEndpoint, {
-				body: { ...settings, conversionID: tagID },
-			} );
-			fetchMock.postOnce( completeIntentEndpoint, {
-				body: error,
-				status: 500,
-			} );
-			fetchMock.postOnce( completeIntentEndpoint, {
-				body: { return_url: returnURL },
-			} );
-
-			await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( console ).toHaveErrored();
-
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1, settingsEndpoint );
-			expect( fetchMock ).toHaveFetchedTimes( 2, completeIntentEndpoint );
-			expect( result ).toEqual( { returnURL } );
-		} );
-
-		it( 'should return the error, and neither save the tag nor complete the intent, when activating the Ads module fails', async () => {
-			fetchMock.postOnce( activationEndpoint, {
-				body: error,
-				status: 500,
-			} );
-
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( console ).toHaveErrored();
-			expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
-			expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
-			expect( result ).toEqual( { error } );
-		} );
-
-		it( 'should return the error, and not complete the intent, when saving the tag fails', async () => {
-			provideActiveAdsModule();
-
-			fetchMock.postOnce( settingsEndpoint, {
-				body: error,
-				status: 500,
-			} );
-
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( console ).toHaveErrored();
-			expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
-			expect( result ).toEqual( { error } );
-		} );
-
-		it( 'should return the error when completing the intent fails', async () => {
-			provideActiveAdsModule();
-
-			fetchMock.postOnce( settingsEndpoint, {
-				body: { ...settings, conversionID: tagID },
-			} );
-			fetchMock.postOnce( completeIntentEndpoint, {
-				body: error,
-				status: 500,
-			} );
-
-			const result = await registry
-				.dispatch( MODULES_ADS )
-				.completeConversionTrackingIntent( intentCode, tagID );
-
-			expect( console ).toHaveErrored();
-			expect( result ).toEqual( { error } );
-		} );
-
-		it( 'should throw an error when the intent code is missing', () => {
-			expect( () =>
-				registry
+				const result = await registry
 					.dispatch( MODULES_ADS )
-					.completeConversionTrackingIntent( undefined, tagID )
-			).toThrow( 'intentCode is required.' );
-		} );
+					.completeConversionTrackingIntent( intentCode, tagID );
 
-		it.each( [
-			[ 'missing', undefined ],
-			[ 'not a conversion ID', 'GT-763597978' ],
-		] )(
-			'should throw an error when the tag ID is %s',
-			( _, invalidTagID ) => {
+				expect( fetchMock ).toHaveFetched( activationEndpoint, {
+					body: { data: { slug: MODULE_SLUG_ADS, active: true } },
+				} );
+				expect( fetchMock ).toHaveFetched( settingsEndpoint, {
+					body: { data: { ...settings, conversionID: tagID } },
+				} );
+				expect( fetchMock ).toHaveFetched( completeIntentEndpoint, {
+					body: {
+						data: {
+							slug: ADS_CONVERSION_TRACKING_INTENT_SLUG,
+							intent_code: intentCode,
+						},
+					},
+				} );
+				expect( result ).toEqual( { returnURL } );
+			} );
+
+			it( 'should not activate the Ads module when it is already active', async () => {
+				provideActiveAdsModule();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).not.toHaveFetched( activationEndpoint );
+				expect( result ).toEqual( { returnURL } );
+			} );
+
+			it( 'should not save the tag again when it is called again after completing the intent failed', async () => {
+				provideActiveAdsModule();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: error,
+					status: 500,
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: { return_url: returnURL },
+				} );
+
+				await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1, settingsEndpoint );
+				expect( fetchMock ).toHaveFetchedTimes(
+					2,
+					completeIntentEndpoint
+				);
+				expect( result ).toEqual( { returnURL } );
+			} );
+
+			it( 'should return the error, and neither save the tag nor complete the intent, when activating the Ads module fails', async () => {
+				fetchMock.postOnce( activationEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+				expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should return the error, and not complete the intent, when saving the tag fails', async () => {
+				provideActiveAdsModule();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( fetchMock ).not.toHaveFetched( completeIntentEndpoint );
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should return the error when completing the intent fails', async () => {
+				provideActiveAdsModule();
+
+				fetchMock.postOnce( settingsEndpoint, {
+					body: { ...settings, conversionID: tagID },
+				} );
+				fetchMock.postOnce( completeIntentEndpoint, {
+					body: error,
+					status: 500,
+				} );
+
+				const result = await registry
+					.dispatch( MODULES_ADS )
+					.completeConversionTrackingIntent( intentCode, tagID );
+
+				expect( console ).toHaveErrored();
+				expect( result ).toEqual( { error } );
+			} );
+
+			it( 'should throw an error when the intent code is missing', () => {
 				expect( () =>
 					registry
 						.dispatch( MODULES_ADS )
-						.completeConversionTrackingIntent(
-							intentCode,
-							invalidTagID
-						)
-				).toThrow( 'a valid tagID is required.' );
-			}
-		);
+						.completeConversionTrackingIntent( undefined, tagID )
+				).toThrow( 'intentCode is required.' );
+			} );
+
+			it.each( [
+				[ 'missing', undefined ],
+				[ 'not a conversion ID', 'GT-763597978' ],
+			] )(
+				'should throw an error when the tag ID is %s',
+				( _, invalidTagID ) => {
+					expect( () =>
+						registry
+							.dispatch( MODULES_ADS )
+							.completeConversionTrackingIntent(
+								intentCode,
+								invalidTagID
+							)
+					).toThrow( 'a valid tagID is required.' );
+				}
+			);
+		} );
+
+		describe( 'confirmConversionTrackingIntentTag', () => {
+			it( 'should confirm the tag without saving anything', () => {
+				registry
+					.dispatch( MODULES_ADS )
+					.confirmConversionTrackingIntentTag();
+
+				expect(
+					registry
+						.select( MODULES_ADS )
+						.isConversionTrackingIntentTagConfirmed()
+				).toBe( true );
+				expect( fetchMock ).not.toHaveFetched();
+			} );
+		} );
+	} );
+
+	describe( 'selectors', () => {
+		describe( 'isConversionTrackingIntentTagConfirmed', () => {
+			it( 'should return false until the tag is confirmed', () => {
+				expect(
+					registry
+						.select( MODULES_ADS )
+						.isConversionTrackingIntentTagConfirmed()
+				).toBe( false );
+			} );
+		} );
 	} );
 } );
