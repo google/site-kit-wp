@@ -281,7 +281,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( [] );
 		} );
 
-		it( 'should merge products into the list by publish time when the setting to include them is on', async () => {
+		it( 'should merge products into the list by publish time when the "Include products in Recent activity" setting is on', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -371,7 +371,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should not request products when the setting to include them is off', async () => {
+		it( 'should not request products when the "Include products in Recent activity" setting is off', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -577,7 +577,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should save the error when the posts request fails', async () => {
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the posts request fails', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -625,7 +625,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'should save the error when the products request fails', async () => {
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the products request fails', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -690,7 +690,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'should remove the saved error when a retry of the list succeeds', async () => {
+		it( 'should remove the error from `getErrorForSelector()` when a retry of the list succeeds', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );

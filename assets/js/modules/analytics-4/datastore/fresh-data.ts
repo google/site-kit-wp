@@ -228,7 +228,7 @@ const baseSelectors = {
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
 	 * @param {number} options.count The number of posts and products to return.
-	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` if not loaded.
+	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` while they load and when the posts or products request fails.
 	 */
 	getRecentContent(
 		state: FreshDataState,
@@ -274,26 +274,10 @@ const baseSelectors = {
 	),
 };
 
-interface Store {
-	initialState: FreshDataState;
-	actions: Record< string, unknown >;
-	controls: Record< string, unknown >;
-	reducer: Record< string, unknown >;
-	resolvers: Record< string, unknown >;
-	selectors: Record< string, unknown >;
-}
-
 const store = combineStores( fetchGetRecentContentStore, {
 	initialState: baseInitialState,
 	resolvers: baseResolvers,
 	selectors: baseSelectors,
-} ) as Store;
-
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const controls = store.controls;
-export const reducer = store.reducer;
-export const resolvers = store.resolvers;
-export const selectors = store.selectors;
+} );
 
 export default store;
