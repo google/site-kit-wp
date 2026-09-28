@@ -33,6 +33,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { get, setUsingCache } from 'googlesitekit-api';
 import { combineStores, commonStore, createReducer } from 'googlesitekit-data';
 import {
+	ReportFetchOptions,
 	ReportRequestOptions,
 	getCacheableReportOptions,
 	getReportCacheKey,
@@ -45,6 +46,17 @@ import {
 import { createErrorStore } from './create-error-store';
 import { createFetchStore } from './create-fetch-store';
 import { createGetReportResolver } from './create-get-report-resolver';
+
+// `cacheTTL` never reaches the network request, only the caching layer
+// around it, so verifying it requires spying on `get()` itself rather than
+// inspecting the request `fetchMock` observes.
+jest.mock( 'googlesitekit-api', () => {
+	const actualModule = jest.requireActual( 'googlesitekit-api' );
+	return {
+		...actualModule,
+		get: jest.fn( actualModule.get ),
+	};
+} );
 
 const TEST_STORE = 'test/report';
 const reportEndpointRegExp = new RegExp(
@@ -72,8 +84,10 @@ interface TestReportState {
 function createReportStore() {
 	const fetchGetReportStore = createFetchStore( {
 		baseName: 'getReport',
-		controlCallback: ( { options }: { options: ReportRequestOptions } ) =>
-			get( 'core', 'test', 'report', options ),
+		controlCallback: (
+			{ options }: { options: ReportRequestOptions },
+			fetchOptions: ReportFetchOptions = {}
+		) => get( 'core', 'test', 'report', options, fetchOptions ),
 		reducerCallback: createReducer(
 			(
 				state: TestReportState,
@@ -122,6 +136,8 @@ describe( 'createGetReportResolver', () => {
 	} );
 
 	beforeEach( () => {
+		jest.mocked( get ).mockClear();
+
 		registry = createTestRegistry();
 		registry.registerStore( TEST_STORE, createReportStore() );
 	} );
@@ -179,6 +195,53 @@ describe( 'createGetReportResolver', () => {
 		const secondReport = registry
 			.select( TEST_STORE )
 			.getReport( secondOptions );
+
+		expect( firstReport ).toEqual( report );
+		// Both calls read the same saved report, so state stores the report
+		// once.
+		expect( firstReport ).toBe( secondReport );
+	} );
+
+	it( 'sends one request, carrying `cacheTTL`, when two getReport calls differ only in `cacheTTL`', async () => {
+		fetchMock.getOnce( reportEndpointRegExp, { body: report } );
+
+		// The first call starts the shared request, so its `cacheTTL` is the
+		// one that reaches `get()`. The second call joins that request
+		// instead of sending its own.
+		registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 300 } );
+		registry.select( TEST_STORE ).getReport( baseOptions );
+
+		// Wait for both resolvers together. `untilResolved` checks only on the
+		// next registry update, so awaiting them one after the other can hang
+		// if the second finishes during the first wait.
+		const firstResolution = untilResolved( registry, TEST_STORE ).getReport(
+			baseOptions,
+			{ cacheTTL: 300 }
+		);
+		const secondResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( baseOptions );
+
+		await Promise.all( [ firstResolution, secondResolution ] );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( get ).toHaveBeenCalledWith(
+			'core',
+			'test',
+			'report',
+			baseOptions,
+			{ cacheTTL: 300 }
+		);
+
+		const firstReport = registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 300 } );
+		const secondReport = registry
+			.select( TEST_STORE )
+			.getReport( baseOptions );
 
 		expect( firstReport ).toEqual( report );
 		// Both calls read the same saved report, so state stores the report
