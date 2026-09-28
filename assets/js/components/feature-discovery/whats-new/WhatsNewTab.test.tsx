@@ -41,7 +41,6 @@ import {
 	fireEvent,
 	freezeFetch,
 	provideModules,
-	provideSiteInfo,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -107,18 +106,7 @@ describe( 'WhatsNewTab', () => {
 		).map( ( heading ) => heading.textContent );
 	}
 
-	function expectElementExists< T extends Element >(
-		element: T | null
-	): asserts element is T {
-		expect( element ).toBeInTheDocument();
-	}
-
 	function provideAutoUpdatesNoticeRequirements() {
-		provideSiteInfo( registry, {
-			changePluginAutoUpdatesCapacity: true,
-			siteKitAutoUpdatesEnabled: false,
-		} );
-
 		registry
 			.dispatch( CORE_NOTIFICATIONS )
 			.registerNotification( FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG, {
@@ -130,10 +118,6 @@ describe( 'WhatsNewTab', () => {
 				checkRequirements: () => true,
 				isDismissible: true,
 			} );
-
-		registry.dispatch( CORE_USER ).receiveGetNonces( {
-			updates: '751b9198d2',
-		} );
 	}
 
 	beforeEach( () => {
@@ -340,13 +324,13 @@ describe( 'WhatsNewTab', () => {
 
 		const noticeContainer = container.querySelector(
 			'.googlesitekit-whats-new__notifications'
-		);
+		) as Element;
 		const featureListItem = container.querySelector(
 			'.googlesitekit-feature-card'
-		);
+		) as Element;
 
-		expectElementExists( noticeContainer );
-		expectElementExists( featureListItem );
+		expect( noticeContainer ).toBeInTheDocument();
+		expect( featureListItem ).toBeInTheDocument();
 
 		expect(
 			noticeContainer.compareDocumentPosition( featureListItem )

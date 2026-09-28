@@ -94,7 +94,6 @@ WithAutoUpdatesNotice.args = {
 		provideNotifications( registry, [] );
 	},
 };
-WithAutoUpdatesNotice.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/WhatsNewTab',
