@@ -109,6 +109,7 @@ const fetchGetIntentStore = createFetchStore( {
 			{ slug, intentCode }: IntentParams
 		) => {
 			if ( ! state.intents[ slug ] ) {
+				// This map has no prototype, so an intent code such as `constructor` isn't read from `Object.prototype`.
 				state.intents[ slug ] = Object.create( null );
 			}
 			state.intents[ slug ][ intentCode ] = intent;
@@ -119,7 +120,11 @@ const fetchGetIntentStore = createFetchStore( {
 		intentCode,
 	} ),
 	validateParams: validateIntentParams,
-} );
+} ) as {
+	actions: {
+		fetchGetIntent: ( slug: string, intentCode: string ) => unknown;
+	};
+};
 
 const fetchCompleteIntentStore = createFetchStore( {
 	baseName: 'completeIntent',
@@ -134,7 +139,11 @@ const fetchCompleteIntentStore = createFetchStore( {
 	} ),
 	validateParams: validateIntentParams,
 	isAction: true,
-} );
+} ) as {
+	actions: {
+		fetchCompleteIntent: ( slug: string, intentCode: string ) => unknown;
+	};
+};
 
 const baseActions = {
 	/**
@@ -153,7 +162,6 @@ const baseActions = {
 			slug: string,
 			intentCode: string
 		): Generator< unknown, CompleteIntentResult, unknown > {
-			// @ts-expect-error `createFetchStore` returns the type `Object`, which has no `actions`.
 			return ( yield fetchCompleteIntentStore.actions.fetchCompleteIntent(
 				slug,
 				intentCode
@@ -177,7 +185,6 @@ const baseResolvers = {
 			return;
 		}
 
-		// @ts-expect-error `createFetchStore` returns the type `Object`, which has no `actions`.
 		yield fetchGetIntentStore.actions.fetchGetIntent( slug, intentCode );
 	},
 };
@@ -205,6 +212,7 @@ const baseSelectors = {
 };
 
 const store = combineStores( fetchGetIntentStore, fetchCompleteIntentStore, {
+	// This map has no prototype, so a slug such as `constructor` isn't read from `Object.prototype`.
 	initialState: { intents: Object.create( null ) },
 	actions: baseActions,
 	resolvers: baseResolvers,

@@ -44,7 +44,7 @@ describe( 'core/intents', () => {
 			'^/google-site-kit/v1/core/intents/data/intent'
 		);
 
-		it( 'returns the intent from the `core/intents/data/intent` route for the slug and the intent code', async () => {
+		it( 'should return the intent from the `core/intents/data/intent` route for the slug and the intent code', async () => {
 			fetchMock.getOnce( intentEndpoint, {
 				body: {
 					intent: 'ads-conversion-tracking',
@@ -86,7 +86,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'returns `undefined` when the intent is still loading', async () => {
+		it( 'should return `undefined` when the intent is still loading', async () => {
 			freezeFetch( intentEndpoint );
 
 			registry
@@ -102,7 +102,7 @@ describe( 'core/intents', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'sends a new request to the `core/intents/data/intent` route when the next page loads', async () => {
+		it( 'should send a new request to the `core/intents/data/intent` route when the next page loads', async () => {
 			fetchMock.getOnce( intentEndpoint, {
 				body: {
 					intent: 'ads-conversion-tracking',
@@ -154,7 +154,7 @@ describe( 'core/intents', () => {
 			expect( console ).toHaveErrored();
 		} );
 
-		it( 'sends a separate request for each intent code of the same slug', async () => {
+		it( 'should send a separate request for each intent code of the same slug', async () => {
 			fetchMock.getOnce( intentEndpoint, {
 				body: {
 					intent: 'ads-conversion-tracking',
@@ -216,7 +216,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'keeps the first intent when a second intent code of the same slug is stored', () => {
+		it( 'should keep the first intent when a second intent code of the same slug is stored', () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
 					intent: 'ads-conversion-tracking',
@@ -271,7 +271,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( "doesn't request the intent when the store already has it", async () => {
+		it( 'should not request the intent when the store already has it', async () => {
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
 				{
 					intent: 'ads-conversion-tracking',
@@ -296,7 +296,7 @@ describe( 'core/intents', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
 
-		it( 'requests the intent for the intent code `constructor`', async () => {
+		it( 'should request the intent for the intent code `constructor`', async () => {
 			freezeFetch( intentEndpoint );
 
 			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
@@ -330,7 +330,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'requests the intent for the slug `constructor`', async () => {
+		it( 'should request the intent for the slug `constructor`', async () => {
 			freezeFetch( intentEndpoint );
 
 			// The intent code is `name`, because the `Object` function has a
@@ -352,7 +352,7 @@ describe( 'core/intents', () => {
 			} );
 		} );
 
-		it( 'returns `undefined` and stores the error for `getErrorForSelector` when loading the intent fails', async () => {
+		it( 'should return `undefined` and store the error for `getErrorForSelector` when loading the intent fails', async () => {
 			fetchMock.getOnce( intentEndpoint, {
 				body: {
 					code: 'intent_not_found',
@@ -392,13 +392,13 @@ describe( 'core/intents', () => {
 			expect( console ).toHaveErrored();
 		} );
 
-		it( 'throws an error when the slug is missing', () => {
+		it( 'should throw an error when the slug is missing', () => {
 			expect( () =>
 				registry.select( CORE_INTENTS ).getIntent( undefined, 'abc123' )
 			).toThrow( 'slug is required.' );
 		} );
 
-		it( 'throws an error when the intent code is missing', () => {
+		it( 'should throw an error when the intent code is missing', () => {
 			expect( () =>
 				registry
 					.select( CORE_INTENTS )
@@ -412,7 +412,7 @@ describe( 'core/intents', () => {
 			'^/google-site-kit/v1/core/intents/data/complete-intent'
 		);
 
-		it( 'returns the URL from the `core/intents/data/complete-intent` route for the slug and the intent code', async () => {
+		it( 'should return the URL from the `core/intents/data/complete-intent` route for the slug and the intent code', async () => {
 			fetchMock.postOnce( completeIntentEndpoint, {
 				body: {
 					return_url: 'https://example.com/ads/conversions',
@@ -437,7 +437,7 @@ describe( 'core/intents', () => {
 			expect( error ).toBeUndefined();
 		} );
 
-		it( 'returns the error when completing the intent fails', async () => {
+		it( 'should return the error when completing the intent fails', async () => {
 			fetchMock.postOnce( completeIntentEndpoint, {
 				body: {
 					code: 'intent_not_found',
@@ -475,7 +475,7 @@ describe( 'core/intents', () => {
 			expect( console ).toHaveErrored();
 		} );
 
-		it( 'throws an error when the slug is missing', () => {
+		it( 'should throw an error when the slug is missing', () => {
 			expect( () =>
 				registry
 					.dispatch( CORE_INTENTS )
@@ -483,7 +483,7 @@ describe( 'core/intents', () => {
 			).toThrow( 'slug is required.' );
 		} );
 
-		it( 'throws an error when the intent code is missing', () => {
+		it( 'should throw an error when the intent code is missing', () => {
 			expect( () =>
 				registry
 					.dispatch( CORE_INTENTS )

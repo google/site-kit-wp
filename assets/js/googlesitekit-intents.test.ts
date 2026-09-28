@@ -23,7 +23,7 @@ import './googlesitekit-intents';
 import Data from 'googlesitekit-data';
 
 describe( 'googlesitekit-intents', () => {
-	it( 'registers the `core/intents` store on `googlesitekit-data`', () => {
+	it( 'should register the `core/intents` store on `googlesitekit-data`', () => {
 		expect( Data.select( 'core/intents' ) ).toEqual(
 			expect.objectContaining( {
 				getIntent: expect.any( Function ),
