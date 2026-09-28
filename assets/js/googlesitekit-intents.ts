@@ -19,7 +19,11 @@
 /**
  * Internal dependencies
  */
+import Data from 'googlesitekit-data';
+import { registerStore } from './googlesitekit/datastore/intents';
 import { createIntents } from './googlesitekit/intents';
+
+registerStore( Data );
 
 const Intents = createIntents();
 
