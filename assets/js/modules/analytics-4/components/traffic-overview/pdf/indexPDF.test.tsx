@@ -26,8 +26,8 @@ import TestRenderer from 'react-test-renderer';
  * Internal dependencies
  */
 import { renderPDFText } from '@/js/components/pdf-export/test-utils';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
 import TrafficOverviewPDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
@@ -73,23 +73,6 @@ function buildReports( {
 			{ label: 'Desktop', percentage: 0.584, formattedPercentage: '58%' },
 			{ label: 'Mobile', percentage: 0.416, formattedPercentage: '42%' },
 		],
-	};
-}
-
-/**
- * Builds a breakdown report from label and visitor pairs, in the order given.
- *
- * @since n.e.x.t
- *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
- */
-function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
 	};
 }
 
