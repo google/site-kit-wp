@@ -31,6 +31,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import FeaturesMenu from '@/js/components/FeaturesMenu';
 import { ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH } from '@/js/components/FeaturesMenu/constants';
 import useShouldCollapseFeatureActions from '@/js/components/FeaturesMenu/useShouldCollapseFeatureActions';
@@ -72,6 +73,8 @@ import P from './Typography/P';
 import VisuallyHidden from './VisuallyHidden';
 
 function DashboardEntityApp() {
+	useFeatureCountCache();
+
 	const viewOnlyDashboard = useViewOnly();
 	// On mobile and tablet, or when the "Add features" button would otherwise
 	// overlap the logo, the individual feature action icons collapse into the
