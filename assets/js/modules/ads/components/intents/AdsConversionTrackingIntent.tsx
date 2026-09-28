@@ -46,7 +46,7 @@ import {
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { IntentComponentProps } from '@/js/googlesitekit/intents';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
-import { formatConsentDate } from '@/js/modules/ads/utils/formatConsentDate';
+import { formatDate } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 import AdsConversionTrackingIntentGraphic from '@/svg/graphics/ads-conversion-tracking-intent.svg';
 import AdsIcon from '@/svg/graphics/ads.svg';
@@ -110,7 +110,7 @@ const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 		navigateTo( returnURL );
 	}, [ completeConversionTrackingIntent, intentCode, navigateTo, tagID ] );
 
-	const formattedConsentDate = formatConsentDate( consentDate );
+	const formattedConsentDate = formatDate( consentDate, { month: 'long' } );
 
 	return (
 		<div className="googlesitekit-ads-conversion-tracking-intent">

@@ -22,6 +22,7 @@ import {
 	INVALID_DATE_INSTANCE_ERROR,
 	INVALID_DATE_STRING_ERROR,
 	dateSub,
+	formatDate,
 	getDateString,
 	getPreviousDate,
 	isValidDateRange,
@@ -193,5 +194,32 @@ describe( 'dateSub', () => {
 		expect( () => dateSub( invalidDate, DAY_IN_SECONDS ) ).toThrow(
 			INVALID_DATE_STRING_ERROR
 		);
+	} );
+} );
+
+describe( 'formatDate', () => {
+	// The test environment runs in American English, the `en-US` locale.
+	it.each( [
+		[ 'a date string (YYYY-MM-DD)', '2026-07-28' ],
+		[ 'a Date instance', stringToDate( '2026-07-28' ) ],
+	] )( 'should format %s as a short date in the site locale', ( _, date ) => {
+		expect( formatDate( date ) ).toBe( 'Jul 28, 2026' );
+	} );
+
+	it( 'should apply the given `Intl.DateTimeFormat` options over the defaults', () => {
+		expect( formatDate( '2026-07-28', { month: 'long' } ) ).toBe(
+			'July 28, 2026'
+		);
+	} );
+
+	it.each( [
+		[ 'a missing value', undefined ],
+		[ 'an empty value', '' ],
+		[ 'a date in the `MM/DD/YYYY` format', '07/28/2026' ],
+		[ 'a date with an out-of-range month and day', '2026-13-45' ],
+		[ 'an invalid Date instance', new Date( '202-201-01' ) ],
+		[ 'a value that is neither a string nor a Date', 20260728 ],
+	] )( 'should return an empty string for %s', ( _, date ) => {
+		expect( formatDate( date ) ).toBe( '' );
 	} );
 } );
