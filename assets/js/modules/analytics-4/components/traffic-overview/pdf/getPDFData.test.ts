@@ -39,6 +39,7 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -126,23 +127,6 @@ const devicesArgs = breakdownArgsFor(
 	DEVICES_BREAKDOWN_REPORT_ID
 );
 
-/**
- * Builds a breakdown report ordered by visitors, matching what GA4 returns.
- *
- * @since n.e.x.t
- *
- * @param {Array} entries Ordered `[ label, users ]` pairs.
- * @return {Object} A GA4 report with rows, no `totals`.
- */
-function buildBreakdownReport( entries: Array< [ string, number ] > ) {
-	return {
-		rows: entries.map( ( [ label, users ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( users ) } ],
-		} ) ),
-	};
-}
-
 function setGoogle( value: unknown ) {
 	( global as unknown as { google?: unknown } ).google = value;
 }
@@ -186,17 +170,17 @@ function seedTotalsAndGraphReports( testRegistry: Registry ) {
 function seedDefaultBreakdownReports( testRegistry: Registry ) {
 	testRegistry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
+		.receiveGetReport( createBreakdownReport( [ [ 'Direct', 1 ] ] ), {
 			options: channelsArgs,
 		} );
 	testRegistry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( buildBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
+		.receiveGetReport( createBreakdownReport( [ [ 'Brazil', 1 ] ] ), {
 			options: locationsArgs,
 		} );
 	testRegistry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetReport( buildBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
+		.receiveGetReport( createBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
 			options: devicesArgs,
 		} );
 }
@@ -355,12 +339,12 @@ describe( 'Traffic Overview getPDFData', () => {
 
 	it( 'shapes each breakdown report with getBreakdownRows()', async () => {
 		seedTotalsAndGraphReports( registry );
-		const channelReport = buildBreakdownReport( [
+		const channelReport = createBreakdownReport( [
 			[ 'Organic Search', 60 ],
 			[ 'Direct', 20 ],
 			[ 'Referral', 20 ],
 		] );
-		const locationReport = buildBreakdownReport( [
+		const locationReport = createBreakdownReport( [
 			[ 'Singapore', 60 ],
 			[ 'Brazil', 50 ],
 			[ 'China', 40 ],
@@ -368,7 +352,7 @@ describe( 'Traffic Overview getPDFData', () => {
 			[ 'India', 20 ],
 			[ 'Canada', 10 ],
 		] );
-		const deviceReport = buildBreakdownReport( [
+		const deviceReport = createBreakdownReport( [
 			[ 'Desktop', 3 ],
 			[ 'Mobile', 1 ],
 		] );
@@ -407,12 +391,12 @@ describe( 'Traffic Overview getPDFData', () => {
 		seedTotalsAndGraphReports( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Direct', 1 ] ] ), {
+			.receiveGetReport( createBreakdownReport( [ [ 'Direct', 1 ] ] ), {
 				options: channelsArgs,
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
+			.receiveGetReport( createBreakdownReport( [ [ 'Mobile', 1 ] ] ), {
 				options: devicesArgs,
 			} );
 
@@ -443,10 +427,10 @@ describe( 'Traffic Overview getPDFData', () => {
 
 		expect( result.data?.locationBreakdown ).toBeNull();
 		expect( result.data?.channelBreakdown ).toEqual( [
-			{ label: 'Direct', percentage: 1 },
+			{ label: 'Direct', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( result.data?.deviceBreakdown ).toEqual( [
-			{ label: 'Mobile', percentage: 1 },
+			{ label: 'Mobile', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( console ).toHaveErrored();
 	} );
@@ -473,17 +457,17 @@ describe( 'Traffic Overview getPDFData', () => {
 		seedTotalsAndGraphReports( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
+			.receiveGetReport( createBreakdownReport( [] ), {
 				options: channelsArgs,
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
+			.receiveGetReport( createBreakdownReport( [] ), {
 				options: locationsArgs,
 			} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetReport( buildBreakdownReport( [] ), {
+			.receiveGetReport( createBreakdownReport( [] ), {
 				options: devicesArgs,
 			} );
 
