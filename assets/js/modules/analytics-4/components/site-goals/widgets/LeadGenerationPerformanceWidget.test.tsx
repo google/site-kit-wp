@@ -916,7 +916,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
@@ -1100,7 +1100,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
