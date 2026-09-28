@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { useCallback, useEffect, useMemo, useRef } from 'react';
+import { useMount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -206,6 +207,45 @@ export function useHasPreExistingCTAs(): boolean | undefined {
 	}
 
 	return ctas.length > 1;
+}
+
+/**
+ * Triggers the express setup surveys for the CTA being set up.
+ *
+ * Fires the started survey when the express setup is opened for a recognised
+ * CTA, and the completed survey once the setup complete step is reached.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ */
+export function useExpressSetupSurveyTriggers(): void {
+	const [ cta ] = useQueryArg< string >( 'cta' );
+	const [ currentStep ] = useStep();
+	const { triggerSurvey } = useDispatch( CORE_USER );
+
+	const isValidCTA = (
+		Object.values( EXPRESS_SETUP_CTAS ) as string[]
+	 ).includes( cta ?? '' );
+
+	useMount( () => {
+		if ( ! isValidCTA ) {
+			return;
+		}
+
+		triggerSurvey( `rrm_${ cta }_express_setup_started` );
+	} );
+
+	useEffect( () => {
+		if (
+			! isValidCTA ||
+			currentStep !== EXPRESS_SETUP_STEPS.SETUP_COMPLETE
+		) {
+			return;
+		}
+
+		triggerSurvey( `rrm_${ cta }_express_setup_completed` );
+	}, [ isValidCTA, currentStep, triggerSurvey, cta ] );
 }
 
 /**
