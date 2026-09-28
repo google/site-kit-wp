@@ -443,10 +443,10 @@ describe( 'Traffic Overview getPDFData', () => {
 
 		expect( result.data?.locationBreakdown ).toBeNull();
 		expect( result.data?.channelBreakdown ).toEqual( [
-			{ label: 'Direct', percentage: 1 },
+			{ label: 'Direct', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( result.data?.deviceBreakdown ).toEqual( [
-			{ label: 'Mobile', percentage: 1 },
+			{ label: 'Mobile', percentage: 1, formattedPercentage: '100%' },
 		] );
 		expect( console ).toHaveErrored();
 	} );
