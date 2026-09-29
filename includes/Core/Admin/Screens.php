@@ -408,27 +408,25 @@ final class Screens {
 			return;
 		}
 
-		$is_view_only = ! $this->authentication->is_authenticated();
+		if ( ! $this->authentication->is_authenticated() ) {
+			return;
+		}
 
-		if ( ! $is_view_only ) {
-			// The intent takes priority over the remaining setup steps.
-			if ( '' !== $this->get_intent_attributes( $this->context )['slug'] ) {
-				return;
-			}
+		if ( '' !== $this->get_intent_attributes( $this->context )['slug'] ) {
+			return;
+		}
 
-			$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
-			$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
-			$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
+		$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
+		$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
+		$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
 
-			if ( false === $is_analytics_setup_complete ) {
-				$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
-				return;
-			}
+		if ( false === $is_analytics_setup_complete ) {
+			$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
+			return;
+		}
 
-			if ( false === $has_site_purpose_answer ) {
-				$this->no_site_purpose_answer_redirect_dashboard_to_setup();
-				return;
-			}
+		if ( false === $has_site_purpose_answer ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
 		}
 	}
 
