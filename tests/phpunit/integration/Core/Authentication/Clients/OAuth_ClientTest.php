@@ -601,7 +601,7 @@ class OAuth_ClientTest extends TestCase {
 			$this->get_authorize_user_redirect_location(
 				admin_url( 'admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true' )
 			),
-			'Authorization with an intent should add the intent to the stored Analytics setup URL and keep its arguments.'
+			'Authorization with an intent should add the intent to the stored Analytics setup URL and keep its `slug`, `reAuth` and `showProgress` arguments.'
 		);
 	}
 
@@ -653,7 +653,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals(
 			add_query_arg( 'notification', 'authentication_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
 			$this->get_authorize_user_redirect_location(),
-			'Authorization without both intent arguments should go to the splash screen with its notification.'
+			'Authorization with one intent argument or none should go to the splash screen with `notification=authentication_success`.'
 		);
 	}
 
@@ -668,7 +668,7 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertEquals(
 			add_query_arg( 'notification', 'authentication_success', admin_url( 'success-redirect' ) ),
 			$this->get_authorize_user_redirect_location( admin_url( 'success-redirect' ) ),
-			'Authorization without both intent arguments should go to the stored redirect URL with its notification.'
+			'Authorization with one intent argument or none should go to the stored redirect URL with `notification=authentication_success`.'
 		);
 	}
 
@@ -912,6 +912,8 @@ class OAuth_ClientTest extends TestCase {
 
 	/**
 	 * Authorizes a new user and returns the URL they are redirected to.
+	 *
+	 * @since n.e.x.t
 	 *
 	 * @param string $stored_redirect_url Optional. Redirect URL stored for the user before authorization. Default empty.
 	 * @return string Redirect location.
