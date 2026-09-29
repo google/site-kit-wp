@@ -31,9 +31,18 @@ import { Fragment } from '@wordpress/element';
  */
 import DashboardMainApp from './DashboardMainApp';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import IntentRenderer from './intents/IntentRenderer';
 import ModuleSetup from './setup/ModuleSetup';
 
-export default function DashboardEntryPoint( { setupModuleSlug } ) {
+export default function DashboardEntryPoint( {
+	setupModuleSlug,
+	intentSlug,
+	intentCode,
+} ) {
+	if ( !! intentSlug ) {
+		return <IntentRenderer slug={ intentSlug } intentCode={ intentCode } />;
+	}
+
 	if ( !! setupModuleSlug ) {
 		return (
 			<Fragment>
@@ -48,4 +57,6 @@ export default function DashboardEntryPoint( { setupModuleSlug } ) {
 
 DashboardEntryPoint.propTypes = {
 	setupModuleSlug: PropTypes.string,
+	intentSlug: PropTypes.string,
+	intentCode: PropTypes.string,
 };
