@@ -28,12 +28,9 @@ describe( 'useIsIntentSetupFlow', () => {
 	// a writable `location`.
 	mockLocation();
 
-	function setQueryString( queryString: string ) {
-		global.location.href = `http://example.com/wp-admin/admin.php?page=googlesitekit-splash${ queryString }`;
-	}
-
 	it( 'should return true when the URL has `purpose=intent`', () => {
-		setQueryString( '&purpose=intent' );
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
 
 		const { result } = renderHook( () => useIsIntentSetupFlow() );
 
@@ -41,7 +38,8 @@ describe( 'useIsIntentSetupFlow', () => {
 	} );
 
 	it( 'should return false when the URL has no `purpose`', () => {
-		setQueryString( '' );
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash';
 
 		const { result } = renderHook( () => useIsIntentSetupFlow() );
 
@@ -49,7 +47,8 @@ describe( 'useIsIntentSetupFlow', () => {
 	} );
 
 	it( 'should return false when the URL has a `purpose` other than `intent`', () => {
-		setQueryString( '&purpose=something-else' );
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=something-else';
 
 		const { result } = renderHook( () => useIsIntentSetupFlow() );
 
