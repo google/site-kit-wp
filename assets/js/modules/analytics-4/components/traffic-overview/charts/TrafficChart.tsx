@@ -84,11 +84,10 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	);
 
 	const { chartData, ticks, hasVisitors } = getTrafficChartData( {
-		// A property still gathering data shows no visitors, so the chart draws
-		// a flat line at zero.
-		report: gatheringData ? undefined : report,
+		report,
 		startDate,
 		endDate,
+		gatheringData,
 	} );
 
 	const [ , ...points ] = chartData;
@@ -101,6 +100,14 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			// A baseline on the last day draws the gray line along the right edge
 			// of the chart area.
 			baseline: points[ points.length - 1 ]?.[ 0 ],
+			// `getChartOptions()` drops the ticks while the property is gathering
+			// data unless the chart sets a horizontal view window of its own.
+			...( gatheringData && {
+				viewWindow: {
+					min: stringToDate( startDate ),
+					max: stringToDate( endDate ),
+				},
+			} ),
 		},
 		vAxis: {
 			...TRAFFIC_CHART_OPTIONS.vAxis,
