@@ -17,16 +17,34 @@
  */
 
 /**
+ * External dependencies
+ */
+import { createMemoryHistory } from 'history';
+
+/**
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import {
+	dismissItemEndpoint,
+	dismissedItemsEndpoint,
+} from '@tests/js/mock-dismiss-item-endpoints';
+import {
+	act,
+	createTestRegistry,
+	freezeFetch,
+	muteFetch,
+	render,
+} from '@tests/js/test-utils';
+import {
+	FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+	HUB_LAUNCH_VERSION,
+} from './constants';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
-
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
 
 describe( 'FeatureDiscoveryContent', () => {
@@ -35,8 +53,11 @@ describe( 'FeatureDiscoveryContent', () => {
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
 
-		// The What’s new? tab reads the user's newness state, which is left
-		// empty here so that no feature is listed.
+		// The What’s new? tab reads the user's newness state; expirable
+		// items are seeded so it resolves without an unrelated fetch, and
+		// the initial version defaults to a value tests override as needed.
+		// Dismissed items are left for each describe/test to seed, since the
+		// routing tests below need to control that state precisely.
 		registry
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.186.0' );
@@ -45,80 +66,265 @@ describe( 'FeatureDiscoveryContent', () => {
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	} );
 
-	it( 'should render only the tab panel content for /all-services', () => {
-		const { container } = render( <FeatureDiscoveryContent />, {
+	function renderContent( route: string, history = createMemoryHistory() ) {
+		return render( <FeatureDiscoveryContent />, {
 			registry,
-			route: '/all-services',
+			route,
+			history,
 			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
+	}
 
-		expect(
-			container.querySelector( ALL_SERVICES_SELECTOR )
-		).toBeInTheDocument();
+	describe( 'explicit tab routes', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
+		} );
 
-		expect(
-			container.querySelector( WHATS_NEW_SELECTOR )
-		).not.toBeInTheDocument();
+		it( 'should render only the tab panel content for /all-services', async () => {
+			const { container, waitForRegistry } =
+				renderContent( '/all-services' );
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render only the tab panel content for /whats-new', async () => {
+			const { container, waitForRegistry } =
+				renderContent( '/whats-new' );
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).not.toBeInTheDocument();
+		} );
+
+		it( 'should render an explicit tab immediately without waiting for the routing state to resolve', async () => {
+			const { container, waitForRegistry } =
+				renderContent( '/all-services' );
+
+			// Asserted before awaiting anything, to prove the tab rendered
+			// without waiting for the default-tab routing state to resolve.
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
+
+			await waitForRegistry();
+		} );
+
+		it( 'should respect direct tab URLs and remain switchable via hash-router navigation', async () => {
+			const history = createMemoryHistory();
+			const { container, waitForRegistry } = renderContent(
+				'/all-services',
+				history
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
+
+			act( () => {
+				history.push( '/whats-new' );
+			} );
+
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).not.toBeInTheDocument();
+			expect( history.action ).toBe( 'PUSH' );
+
+			act( () => {
+				history.goBack();
+			} );
+
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
+			expect( history.action ).toBe( 'POP' );
+
+			await waitForRegistry();
+		} );
 	} );
 
-	it( 'should render only the tab panel content for /whats-new', async () => {
-		const { container, waitForRegistry } = render(
-			<FeatureDiscoveryContent />,
-			{
-				registry,
-				route: '/whats-new',
-				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
-			}
-		);
+	describe( 'default tab routing', () => {
+		it( 'should not render or redirect while the routing state is resolving', async () => {
+			fetchMock.post( dismissItemEndpoint, {
+				body: [ FEATURE_DISCOVERY_VISITED_ITEM_SLUG ],
+			} );
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			muteFetch( dismissedItemsEndpoint, [] );
 
-		await waitForRegistry();
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
 
-		expect(
-			container.querySelector( WHATS_NEW_SELECTOR )
-		).toBeInTheDocument();
+			expect( container ).toBeEmptyDOMElement();
+			expect( history.location.pathname ).toBe( '/' );
 
-		expect(
-			container.querySelector( ALL_SERVICES_SELECTOR )
-		).not.toBeInTheDocument();
+			await waitForRegistry();
+		} );
+
+		it( 'should redirect a first-visit user installed at or after HUB_LAUNCH_VERSION to /all-services', async () => {
+			fetchMock.post( dismissItemEndpoint, {
+				body: [ FEATURE_DISCOVERY_VISITED_ITEM_SLUG ],
+			} );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/all-services' );
+			expect( history.action ).toBe( 'REPLACE' );
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should redirect a first-visit user installed before HUB_LAUNCH_VERSION to /whats-new', async () => {
+			fetchMock.post( dismissItemEndpoint, {
+				body: [ FEATURE_DISCOVERY_VISITED_ITEM_SLUG ],
+			} );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( '1.150.0' );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/whats-new' );
+			expect( history.action ).toBe( 'REPLACE' );
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should redirect a returning user to /whats-new even when their initial version would otherwise qualify as new', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/whats-new' );
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).toBeInTheDocument();
+		} );
+
+		it( 'should fall back to /whats-new when the initial version cannot be determined', async () => {
+			fetchMock.post( dismissItemEndpoint, {
+				body: [ FEATURE_DISCOVERY_VISITED_ITEM_SLUG ],
+			} );
+
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/whats-new' );
+			expect(
+				container.querySelector( WHATS_NEW_SELECTOR )
+			).toBeInTheDocument();
+		} );
 	} );
 
-	it( 'should redirect base path to /whats-new', async () => {
-		const { container, history, waitForRegistry } = render(
-			<FeatureDiscoveryContent />,
-			{
-				registry,
-				route: '/',
-				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
-			}
-		);
+	describe( 'first-visit dismissal', () => {
+		it( 'should write feature-discovery-visited permanently on first hub visit', async () => {
+			fetchMock.post( dismissItemEndpoint, {
+				body: [ FEATURE_DISCOVERY_VISITED_ITEM_SLUG ],
+			} );
 
-		await waitForRegistry();
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
-		expect( history.location.pathname ).toBe( '/whats-new' );
-		expect( history.action ).toBe( 'REPLACE' );
+			const { waitForRegistry } = renderContent( '/' );
 
-		expect(
-			container.querySelector( WHATS_NEW_SELECTOR )
-		).toBeInTheDocument();
-	} );
+			await waitForRegistry();
 
-	it( 'should redirect unknown paths to /whats-new', async () => {
-		const { container, history, waitForRegistry } = render(
-			<FeatureDiscoveryContent />,
-			{
-				registry,
-				route: '/unknown',
-				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
-			}
-		);
+			expect( fetchMock ).toHaveFetched( dismissItemEndpoint, {
+				body: {
+					data: {
+						slug: FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+						expiration: 0,
+					},
+				},
+			} );
+			expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+		} );
 
-		await waitForRegistry();
+		it( 'should not rewrite feature-discovery-visited for a returning user', async () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
 
-		expect( history.location.pathname ).toBe( '/whats-new' );
-		expect( history.action ).toBe( 'REPLACE' );
+			const { waitForRegistry } = renderContent( '/' );
 
-		expect(
-			container.querySelector( WHATS_NEW_SELECTOR )
-		).toBeInTheDocument();
+			await waitForRegistry();
+
+			expect( fetchMock ).not.toHaveFetched( dismissItemEndpoint );
+		} );
+
+		it( 'should not dispatch the dismissal more than once while the first request is in flight', async () => {
+			freezeFetch( dismissItemEndpoint );
+
+			registry
+				.dispatch( CORE_USER )
+				.receiveInitialSiteKitVersion( HUB_LAUNCH_VERSION );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			const { rerender, waitForRegistry } = renderContent( '/' );
+
+			await waitForRegistry();
+
+			rerender( <FeatureDiscoveryContent /> );
+			rerender( <FeatureDiscoveryContent /> );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
+		} );
 	} );
 } );

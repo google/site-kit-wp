@@ -68,7 +68,7 @@ export const GOAL_DRIVER_CATALOG: GoalDriverCatalog = {
 			},
 			[ GOAL_TYPES.LEAD ]: {
 				title: __(
-					'Top traffic channels by total form completions',
+					'Top traffic channels by form completion',
 					'google-site-kit'
 				),
 				description: __(
