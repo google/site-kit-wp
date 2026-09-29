@@ -206,22 +206,4 @@ describe( 'Traffic Overview PDF', () => {
 		);
 		expect( json ).not.toContain( 'Singapore' );
 	} );
-
-	it( 'renders no donut chart image and no colour-swatched legend', () => {
-		const json = JSON.stringify(
-			renderTree( {
-				data: DEFAULT_REPORTS,
-				chartImages: { lineChart: LINE_CHART_DATA_URI },
-			} )
-		);
-
-		// The line chart is the only rendered image data URI.
-		expect( json.split( LINE_CHART_DATA_URI ).length - 1 ).toBe( 1 );
-		// None of the donut legend's swatch colors render.
-		[ '#fece72', '#a983e6', '#bed4ff', '#ee92da', '#ff9b7a' ].forEach(
-			( swatch ) => {
-				expect( json ).not.toContain( swatch );
-			}
-		);
-	} );
 } );

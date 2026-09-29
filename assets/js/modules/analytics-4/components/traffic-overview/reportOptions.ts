@@ -46,10 +46,7 @@ export interface BreakdownReportDescriptor {
 /**
  * Builds the report-options fragment for the All Visitors totals report.
  *
- * Returns only the parts that vary between dashboard and PDF surfaces. The
- * dashboard combines this with start/end dates and entity URL via
- * `useAllTrafficWidgetReport`; the PDF loader combines it inside
- * `getTotalsReportArgs` below.
+ * The fragment has no start or end date, no metrics, and no entity URL.
  *
  * @since 1.181.0
  *
@@ -226,15 +223,7 @@ export function getGraphReportArgs( {
 }
 
 /**
- * Builds the complete GA4 `getReport` args for one All Visitors breakdown pie.
- *
- * Uses the same query as the dashboard's pie chart in `index.js`: one breakdown
- * dimension, sorted by total users from high to low, over the same date range
- * and comparison range as the metric tile and line chart. The comparison range
- * stays in the args, so the rows come back split by date range. The dashboard's
- * `extractAnalyticsDataForPieChart` helper reads that split when it builds the
- * slices. The PDF loader calls this once for each dimension (channels,
- * locations, devices).
+ * Builds the complete GA4 `getReport` args for one All Visitors breakdown dimension.
  *
  * @since 1.183.0
  *

@@ -50,8 +50,7 @@ function getVisitors( row: ReportRow ): number {
  * Shapes a breakdown report into the rows a column renders.
  *
  * The report carries the selected range only and arrives ordered by visitors,
- * so the rows are taken as they come. This applies the same cap, the same
- * "Others" rule and the same `visitors / total` share the donut chart uses.
+ * so the rows are taken as they come.
  *
  * @since 1.188.0
  *
