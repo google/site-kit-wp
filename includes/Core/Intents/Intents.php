@@ -83,7 +83,7 @@ class Intents {
 	/**
 	 * Gets the query arguments that pass an intent on to the next screen of a flow.
 	 *
-	 * An intent is only handled with both its ID and its code, so nothing is returned unless both are non-empty strings.
+	 * An intent is only handled with both its ID and its code, so an empty array is returned unless both are non-empty strings.
 	 *
 	 * @since n.e.x.t
 	 *
