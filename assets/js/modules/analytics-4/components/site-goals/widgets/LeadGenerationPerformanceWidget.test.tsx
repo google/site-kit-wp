@@ -46,6 +46,10 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import {
+	buildSiteGoalsEventCountReportOptions,
+	seedSiteGoalsEventCountReport,
+} from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	DATE_RANGE_OFFSET,
@@ -766,9 +770,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			availableCustomDimensions: SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS,
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setAccountID( '12345' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetSiteGoalsSettings( {} );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSiteGoalsSettings( {
+			activeWidgets: [ 'ecommerce', 'lead' ],
+		} );
 		// Default to the breakdown notice being hidden (intro modal not yet
 		// dismissed); individual tests opt in by dismissing the intro modal.
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
@@ -776,6 +780,9 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		// Default to aggregated mode (no breakdown form values yet); tabbed tests
 		// re-seed with form IDs.
 		seedBreakdown();
+		// Default to lead events in the selected date range, so the removal
+		// notice does not render.
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
 
 		// Add the chart tile's report for all four sets of lead events, so no
 		// test leaves the tile in its loading placeholder.
@@ -916,7 +923,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
@@ -958,6 +965,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			buildEngagementReportOptions( dates )
 		);
 		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '5' );
 		receiveKeyActionChartReport( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
 
 		const { getByText, waitForRegistry } = render(
@@ -1100,7 +1108,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 			getByText( 'What’s helping you reach your goals?' )
 		).toBeInTheDocument();
 		expect(
-			getByText( 'Top traffic channels by total form completions' )
+			getByText( 'Top traffic channels by form completion' )
 		).toBeInTheDocument();
 		expect(
 			getByText( 'Top traffic channels by form completion rate' )
@@ -1564,8 +1572,8 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	// Seeds the Key action, engagement and goal driver reports for a breakdown
-	// tab whose section reports carry the given form filter.
+	// Seeds the Key action, engagement, and goal driver reports for a breakdown
+	// tab whose section reports use the given form filter.
 	function seedTabbedReports( breakdownFilter: Record< string, unknown > ) {
 		const dates = registry
 			.select( CORE_USER )
@@ -2005,6 +2013,165 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				queryByText( 'Form plugin no longer found' )
 			).not.toBeInTheDocument();
 		} );
+	} );
+
+	it( 'replaces the widget without tabs with the removal notice when no form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+
+		const dates = registry
+			.select( CORE_USER )
+			.getDateRangeDates( { compare: true } );
+		provideAnalytics4MockReport(
+			registry,
+			buildLeadEventsReportOptions( dates, [ 'generate_lead' ] )
+		);
+		provideAnalytics4MockReport(
+			registry,
+			buildEngagementReportOptions( dates )
+		);
+
+		const {
+			container,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render( <LeadGenerationPerformanceWidget { ...widgetProps } />, {
+			registry,
+		} );
+		await waitForRegistry();
+
+		expect(
+			getByText( /Lead generation performance was removed/ )
+		).toBeInTheDocument();
+		expect( getByRole( 'button', { name: /Got it/ } ) ).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance'
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'replaces the tabs and the "Form plugin no longer found" notice with the removal notice when no form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+			activeConversionEventProviders: [],
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedBreakdown( {
+			formIDs: [ '5' ],
+			formProviders: { 5: 'wpforms' },
+		} );
+		fetchMock.getOnce( formMetadataEndpoint, {
+			body: { 5: { title: 'Contact' } },
+			status: 200,
+		} );
+		seedTabbedReports( { [ FORM_DIMENSION ]: '5' } );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+
+		const { getByText, queryByRole, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			getByText( /Lead generation performance was removed/ )
+		).toBeInTheDocument();
+		expect( queryByRole( 'tab' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( 'Form plugin no longer found' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when a form plugin is active and the selected date range has no lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: true,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '0' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the widget when no form plugin is active and the selected date range has lead events', async () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+		seedSiteGoalsEventCountReport( registry, 'lead', '4' );
+		seedReadyReports();
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect( getByText( 'Key action' ) ).toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'shows the widget title and a loading block when no form plugin is active and the report of lead events is loading', () => {
+		provideSiteInfo( registry, {
+			hasActiveLeadEventProviders: false,
+		} );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ 'generate_lead' ] );
+
+		seedReadyReports();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				buildSiteGoalsEventCountReportOptions( registry, 'lead' ),
+			] );
+
+		const { container, getByText, queryByText, unmount } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+
+		expect(
+			getByText( 'Lead generation performance' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector(
+				'.googlesitekit-widget--analyticsLeadGenerationPerformance .googlesitekit-preview-block'
+			)
+		).toBeInTheDocument();
+		expect( queryByText( 'Key action' ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( /Lead generation performance was removed/ )
+		).not.toBeInTheDocument();
+		unmount();
 	} );
 
 	it( 'keeps the same widget element across re-renders', async () => {
