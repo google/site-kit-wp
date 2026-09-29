@@ -259,7 +259,12 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                   <div
                     class="googlesitekit-whats-new__empty-state"
                   >
-                    <svg />
+                    <img
+                      alt=""
+                      height="193"
+                      src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9zdmc+"
+                      width="179"
+                    />
                     <h2
                       class="googlesitekit-typography googlesitekit-whats-new__empty-state-heading googlesitekit-typography--headline googlesitekit-typography--small"
                     >

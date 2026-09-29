@@ -25,7 +25,7 @@ import { useHistory } from 'react-router-dom';
 /**
  * WordPress dependencies
  */
-import { Suspense, lazy, useEffect, useState } from '@wordpress/element';
+import { useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,8 +34,6 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
-import MediaErrorHandler from '@/js/components/MediaErrorHandler';
-import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_MEDIUM,
@@ -47,10 +45,7 @@ import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-dis
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-
-const LazyWhatsNewEmptySVG = lazy(
-	() => import( '../../../../svg/graphics/whats-new-empty.svg' )
-);
+import whatsNewEmptyURL from '@/svg/graphics/whats-new-empty.svg?path';
 
 const WhatsNewTab: FC = () => {
 	const history = useHistory();
@@ -107,20 +102,12 @@ const WhatsNewTab: FC = () => {
 		<div className="googlesitekit-whats-new">
 			{ visibleFeatures.length === 0 ? (
 				<div className="googlesitekit-whats-new__empty-state">
-					<Suspense
-						fallback={
-							<PreviewBlock width="179px" height="193px" />
-						}
-					>
-						<MediaErrorHandler
-							errorMessage={ __(
-								'Failed to load graphic',
-								'google-site-kit'
-							) }
-						>
-							<LazyWhatsNewEmptySVG aria-hidden="true" />
-						</MediaErrorHandler>
-					</Suspense>
+					<img
+						src={ whatsNewEmptyURL }
+						alt=""
+						width={ 179 }
+						height={ 193 }
+					/>
 
 					<Typography
 						as="h2"
