@@ -19,10 +19,6 @@
 /**
  * Internal dependencies
  */
-import {
-	SETUP_PURPOSE_INTENT,
-	SETUP_PURPOSE_QUERY_ARG,
-} from '@/js/components/setup/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 
 /**
@@ -35,7 +31,7 @@ import useQueryArg from '@/js/hooks/useQueryArg';
  * @return {boolean} TRUE when the setup flow fulfills an intent, otherwise FALSE.
  */
 export default function useIsIntentSetupFlow(): boolean {
-	const [ purpose ] = useQueryArg( SETUP_PURPOSE_QUERY_ARG );
+	const [ purpose ] = useQueryArg( 'purpose' );
 
-	return purpose === SETUP_PURPOSE_INTENT;
+	return purpose === 'intent';
 }
