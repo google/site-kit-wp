@@ -1078,7 +1078,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			} );
 		} );
 
-		it( 'should save `hasSitePurposeAnswer: false` on CTA click with the `setupFlowRefreshPhase4` feature flag enabled', async () => {
+		it( 'should save `hasSitePurposeAnswer: false` on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled', async () => {
 			const { getByRole, waitForRegistry } = render(
 				<SetupUsingProxyWithSignIn />,
 				{
@@ -1110,7 +1110,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			} );
 		} );
 
-		it( 'should not save a site purpose answer on CTA click with the `setupFlowRefreshPhase4` feature flag enabled when the splash URL has `purpose=intent`', async () => {
+		it( 'should not save a site purpose answer on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled when the splash URL has `purpose=intent`', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
 
