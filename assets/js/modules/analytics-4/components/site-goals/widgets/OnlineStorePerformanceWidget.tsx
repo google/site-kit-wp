@@ -49,6 +49,7 @@ import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/sit
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
+import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
 import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
@@ -68,6 +69,7 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowSiteGoalsRemovalNotice';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
@@ -194,6 +196,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 	HTMLDivElement,
 	OnlineStorePerformanceWidgetProps
 >(
+	// eslint-disable-next-line complexity
 	(
 		{
 			Widget,
@@ -272,6 +275,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 			[]
 		);
 
+		const shouldShowRemovalNotice = useShouldShowSiteGoalsRemovalNotice(
+			GOAL_TYPES.ECOMMERCE
+		);
+
 		const effectiveSelectedDrivers = useSelect(
 			( select: Select ) =>
 				select( MODULES_ANALYTICS_4 ).getSiteGoalsGoalDrivers(),
@@ -347,7 +354,6 @@ const OnlineStorePerformanceWidget = forwardRef<
 			activeTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
-			isBreakdownValueTab,
 			hasOtherSources,
 			otherSourcesCount,
 			otherSourcesPreviousCount,
@@ -459,6 +465,30 @@ const OnlineStorePerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
+		if ( shouldShowRemovalNotice === true ) {
+			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.ECOMMERCE } />;
+		}
+
+		if ( shouldShowRemovalNotice === undefined ) {
+			return (
+				<WidgetComponent
+					onToggleCollapsed={ handleToggleCollapsed }
+					Header={ WidgetHeaderTitle }
+					headerContents={
+						<span>
+							{ __(
+								'Online store performance',
+								'google-site-kit'
+							) }
+						</span>
+					}
+					collapsible
+				>
+					<PreviewBlock width="100%" height="130px" />
+				</WidgetComponent>
+			);
+		}
+
 		if ( error ) {
 			return (
 				<WidgetComponent>
@@ -520,12 +550,10 @@ const OnlineStorePerformanceWidget = forwardRef<
 					/>
 				) }
 
-				{ isBreakdownValueTab && (
-					<EventProviderDeactivatedNotice
-						goalType={ GOAL_TYPES.ECOMMERCE }
-						providerSlug={ activeTabID }
-					/>
-				) }
+				<EventProviderDeactivatedNotice
+					goalType={ GOAL_TYPES.ECOMMERCE }
+					providerSlug={ activeTabID }
+				/>
 
 				{ isOtherSourcesTab && (
 					<OtherSourcesNotice

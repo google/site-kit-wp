@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
 // A special Account ID value used for the "Set up a new account" option.
@@ -124,6 +130,19 @@ export const CONVERSION_REPORTING_ECOMMERCE_EVENTS = [
 	ENUM_CONVERSION_EVENTS.PURCHASE,
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 ];
+
+/**
+ * Conversion events that belong to each Site Goals widget category.
+ *
+ * Mirrors the pairing in
+ * `Conversion_Reporting_Provider::update_active_site_goals_widgets()`, which
+ * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
+ * when it populates the site-wide `activeWidgets` list.
+ */
+export const SITE_GOALS_WIDGET_EVENTS: Record< GoalType, string[] > = {
+	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
+};
 
 // Audience enums.
 export const AUDIENCE_FILTER_CLAUSE_TYPE_ENUM = {
