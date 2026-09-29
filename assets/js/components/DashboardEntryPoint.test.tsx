@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -41,7 +46,7 @@ jest.mock( './intents/IntentRenderer', () =>
 );
 
 describe( 'DashboardEntryPoint', () => {
-	let registry;
+	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
