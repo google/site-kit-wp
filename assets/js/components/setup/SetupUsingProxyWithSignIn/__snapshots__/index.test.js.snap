@@ -1392,7 +1392,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -2052,7 +2052,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -2422,7 +2422,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -2792,7 +2792,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>

@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { ProgressBar, Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
@@ -120,8 +121,8 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					/>
 					<div className="googlesitekit-google-tag-gateway-toggle__switch-badge">
 						<Badge
-							className="googlesitekit-badge--beta"
 							label={ __( 'Beta', 'google-site-kit' ) }
+							variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 							hasLeftSpacing
 						/>
 					</div>
