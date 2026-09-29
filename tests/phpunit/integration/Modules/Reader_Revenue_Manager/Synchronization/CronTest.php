@@ -22,7 +22,7 @@ use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\ListPublicationsResponse;
 use Google\Site_Kit_Dependencies\Google\Service\SubscribewithGoogle\Publication;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication as WCP_Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication as WCP_Publication;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
