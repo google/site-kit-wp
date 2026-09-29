@@ -33,6 +33,7 @@ import {
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -42,6 +43,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  * Returns the welcome tour configuration based on the current user context.
  *
  * @since 1.175.0
+ * @since n.e.x.t Passes `isTrafficOverviewWidgetPresent` to `getWelcomeTour()`, so the traffic step highlights the Traffic Overview card when the `trafficOverview` flag is on.
  *
  * @return The welcome tour configuration object.
  */
@@ -95,6 +97,10 @@ export function useWelcomeTour() {
 		[ isAnalyticsViewable ]
 	);
 
+	// When the `trafficOverview` flag is on, the Analytics module registers the
+	// Traffic Overview widget in place of the All Traffic widget.
+	const isTrafficOverviewWidgetPresent = useFeature( 'trafficOverview' );
+
 	const isAudienceSegmentationWidgetPresent = useSelect(
 		( select: Select ) =>
 			isAnalyticsViewable &&
@@ -111,6 +117,7 @@ export function useWelcomeTour() {
 		isAnalyticsConnected: !! isAnalyticsViewable,
 		isActivateAnalyticsNotificationPresent,
 		isKeyMetricsWidgetPresent,
+		isTrafficOverviewWidgetPresent,
 		isAudienceSegmentationWidgetPresent,
 	} );
 }
