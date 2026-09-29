@@ -18,6 +18,4 @@
 
 export const ANALYTICS_NOTICE_FORM_NAME = 'connect-analytics-setup-splash';
 export const ANALYTICS_NOTICE_CHECKBOX = 'analytics-setup-opt-in';
-export const SETUP_PURPOSE_QUERY_ARG = 'purpose';
-export const SETUP_PURPOSE_INTENT = 'intent';
 export const SHARED_DASHBOARD_SPLASH_ITEM_KEY = 'shared_dashboard_splash';
