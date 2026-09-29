@@ -24,6 +24,14 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import TrafficOverviewWidget from '@/js/modules/analytics-4/components/traffic-overview/widgets/TrafficOverviewWidget';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { createTestRegistry, render } from '@tests/js/test-utils';
+import { provideModules } from '@tests/js/utils';
 import { getWelcomeTour } from './welcome';
 
 const KEY_METRICS_STEP = {
@@ -59,9 +67,9 @@ const AUDIENCE_SEGMENTATION_STEP = {
 };
 
 const TRAFFIC_STEP = {
-	target: '.googlesitekit-widget--analyticsAllTrafficGA4',
+	target: '.googlesitekit-widget--analyticsTrafficOverview',
 	floaterProps: {
-		target: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
+		target: '.googlesitekit-traffic-overview__chart',
 	},
 	title: __( 'Track traffic trends, identify baselines', 'google-site-kit' ),
 	content: __(
@@ -225,7 +233,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -244,7 +251,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -268,7 +274,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -291,7 +296,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -314,7 +318,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: true,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -339,7 +342,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: true,
 			} );
 
@@ -364,7 +366,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: true,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: true,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: true,
 			} );
 
@@ -382,57 +383,49 @@ describe( 'getWelcomeTour', () => {
 			expect( tour ).toBeDefined();
 		} );
 
-		it( 'should highlight the Traffic Overview card in the traffic step when the Traffic Overview widget is present', () => {
-			const tour = getWelcomeTour( {
-				isViewOnly: false,
-				canAuthenticate: true,
-				isAnalyticsConnected: true,
-				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: true,
-				isAudienceSegmentationWidgetPresent: false,
-			} );
+		it( 'should point the traffic step at the card and the chart that the Traffic Overview widget renders', async () => {
+			const registry = createTestRegistry();
 
-			expect( tour.steps[ 0 ] ).toEqual( {
-				target: '.googlesitekit-widget--analyticsTrafficOverview',
-				floaterProps: {
-					target: '.googlesitekit-traffic-overview__chart',
-				},
-				title: 'Track traffic trends, identify baselines',
-				content: expect.stringContaining(
-					'Know what’s normal for your site.'
-				),
-				offset: 35,
-				spotlightPadding: 0,
-				placement: 'top',
-				isResponsive: true,
-			} );
-		} );
-
-		it( 'should keep the traffic step directly after the key metrics step when the Traffic Overview widget is present', () => {
-			const tour = getWelcomeTour( {
-				isViewOnly: false,
-				canAuthenticate: true,
-				isAnalyticsConnected: true,
-				isActivateAnalyticsNotificationPresent: false,
-				isKeyMetricsWidgetPresent: true,
-				isTrafficOverviewWidgetPresent: true,
-				isAudienceSegmentationWidgetPresent: true,
-			} );
-
-			expect( tour.steps ).toMatchObject( [
+			provideModules( registry, [
 				{
-					target: '.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary',
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
 				},
-				{ target: '.googlesitekit-widget--analyticsTrafficOverview' },
-				{
-					target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
-				},
-				{
-					target: '.googlesitekit-widget--analyticsModulePopularPagesGA4',
-				},
-				{ target: '.googlesitekit-header' },
 			] );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
+			fetchMock.get(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/report'
+				),
+				{ body: {}, status: 200 }
+			);
+
+			const { container, waitForRegistry } = render(
+				<TrafficOverviewWidget
+					{ ...getWidgetComponentProps(
+						TRAFFIC_OVERVIEW_WIDGET_SLUG
+					) }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( TRAFFIC_STEP.target )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( TRAFFIC_STEP.floaterProps.target )
+			).toBeInTheDocument();
 		} );
 	} );
 
@@ -444,7 +437,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -461,7 +453,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -483,7 +474,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -505,7 +495,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: false,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -527,7 +516,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
@@ -550,7 +538,6 @@ describe( 'getWelcomeTour', () => {
 				isAnalyticsConnected: false,
 				isActivateAnalyticsNotificationPresent: true,
 				isKeyMetricsWidgetPresent: false,
-				isTrafficOverviewWidgetPresent: false,
 				isAudienceSegmentationWidgetPresent: false,
 			} );
 
