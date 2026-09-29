@@ -40,10 +40,10 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
- * Returns the welcome tour for the current user and what their dashboard shows.
+ * Returns the welcome tour configuration based on the current user context.
  *
  * @since 1.175.0
- * @since n.e.x.t Highlights the Traffic Overview card in the traffic step when the `trafficOverview` flag is on.
+ * @since n.e.x.t Passes `isTrafficOverviewWidgetPresent` to `getWelcomeTour()`, so the traffic step highlights the Traffic Overview card when the `trafficOverview` flag is on.
  *
  * @return The welcome tour configuration object.
  */

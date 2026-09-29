@@ -180,6 +180,42 @@ function getTopSearchQueriesStep() {
 }
 
 /**
+ * Returns the traffic step, which highlights the Traffic Overview card when it
+ * is present and the All Traffic card otherwise.
+ *
+ * @since n.e.x.t
+ *
+ * @param  isTrafficOverviewWidgetPresent Whether the Traffic Overview widget is present.
+ * @return {WelcomeTourStep} The traffic step.
+ */
+function getTrafficStep(
+	isTrafficOverviewWidgetPresent: boolean
+): WelcomeTourStep {
+	return {
+		target: isTrafficOverviewWidgetPresent
+			? '.googlesitekit-widget--analyticsTrafficOverview'
+			: '.googlesitekit-widget--analyticsAllTrafficGA4',
+		floaterProps: {
+			target: isTrafficOverviewWidgetPresent
+				? '.googlesitekit-traffic-overview__chart'
+				: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
+		},
+		title: __(
+			'Track traffic trends, identify baselines',
+			'google-site-kit'
+		),
+		content: __(
+			'Know what’s normal for your site. This is how you spot trends and measure real growth.',
+			'google-site-kit'
+		),
+		offset: 35,
+		spotlightPadding: 0,
+		placement: 'top',
+		isResponsive: true,
+	};
+}
+
+/**
  * Gets the welcome tour configuration based on the current user context.
  *
  * @since 1.173.0
@@ -298,28 +334,7 @@ export function getWelcomeTour( {
 				placement: 'top-end',
 				isResponsive: true,
 			},
-			{
-				target: isTrafficOverviewWidgetPresent
-					? '.googlesitekit-widget--analyticsTrafficOverview'
-					: '.googlesitekit-widget--analyticsAllTrafficGA4',
-				floaterProps: {
-					target: isTrafficOverviewWidgetPresent
-						? '.googlesitekit-traffic-overview__chart'
-						: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
-				},
-				title: __(
-					'Track traffic trends, identify baselines',
-					'google-site-kit'
-				),
-				content: __(
-					'Know what’s normal for your site. This is how you spot trends and measure real growth.',
-					'google-site-kit'
-				),
-				offset: 35,
-				spotlightPadding: 0,
-				placement: 'top',
-				isResponsive: true,
-			},
+			getTrafficStep( isTrafficOverviewWidgetPresent ),
 			isAudienceSegmentationWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
 				floaterProps: {

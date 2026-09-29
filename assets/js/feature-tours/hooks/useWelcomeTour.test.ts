@@ -467,7 +467,7 @@ describe( 'useWelcomeTour', () => {
 	it( 'should highlight the Traffic Overview card in the traffic step when the `trafficOverview` flag is on', async () => {
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 			},
@@ -475,7 +475,7 @@ describe( 'useWelcomeTour', () => {
 
 		const { result } = await renderHook( () => useWelcomeTour(), {
 			registry,
-			viewContext: 'mainDashboard',
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			features: [ 'trafficOverview' ],
 		} );
 
@@ -491,12 +491,15 @@ describe( 'useWelcomeTour', () => {
 		provideUserAuthentication( registry, { authenticated: false } );
 
 		provideUserCapabilities( registry, {
-			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+			[ getMetaCapabilityPropertyName(
+				PERMISSION_READ_SHARED_MODULE_DATA,
+				MODULE_SLUG_ANALYTICS_4
+			) ]: true,
 		} );
 
 		provideModules( registry, [
 			{
-				slug: 'analytics-4',
+				slug: MODULE_SLUG_ANALYTICS_4,
 				active: true,
 				connected: true,
 				shareable: true,
@@ -505,7 +508,7 @@ describe( 'useWelcomeTour', () => {
 
 		const { result } = await renderHook( () => useWelcomeTour(), {
 			registry,
-			viewContext: 'mainDashboardViewOnly',
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			features: [ 'trafficOverview' ],
 		} );
 
