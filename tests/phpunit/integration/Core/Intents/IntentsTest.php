@@ -106,11 +106,11 @@ class IntentsTest extends TestCase {
 	 * @param mixed $intent      Intent ID.
 	 * @param mixed $intent_code One-time code for the intent.
 	 */
-	public function test_get_query_args__returns_nothing_without_both_arguments( $intent, $intent_code ) {
+	public function test_get_query_args__returns_empty_array_without_both_arguments( $intent, $intent_code ) {
 		$this->assertSame(
 			array(),
 			Intents::get_query_args( $intent, $intent_code ),
-			'No intent arguments should be returned unless both are non-empty strings.'
+			'An empty array should be returned unless both intent arguments are non-empty strings.'
 		);
 	}
 }
