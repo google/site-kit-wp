@@ -34,9 +34,7 @@ import {
 import * as fixtures from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from './constants';
 
-// `cacheTTL` never reaches the network request, only the caching layer
-// around it, so verifying it requires spying on `get()` itself rather than
-// inspecting the request `fetchMock` observes.
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
 jest.mock( 'googlesitekit-api', () => {
 	const actualModule = jest.requireActual( 'googlesitekit-api' );
 	return {
@@ -263,9 +261,7 @@ describe( 'modules/search-console report', () => {
 			} );
 
 			it( 'sends one request when two getReport calls differ only in cacheTTL', async () => {
-				// Hold the response open so both calls join one running
-				// request, instead of the first finishing before the second
-				// resolver runs.
+				// Hold the response open so both calls share one running request.
 				const deferredResolvers = [];
 				fetchMock.getOnce(
 					searchAnalyticsRegexp,

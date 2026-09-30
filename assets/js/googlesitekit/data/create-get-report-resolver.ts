@@ -40,12 +40,7 @@ import { actions as errorStoreActions } from './create-error-store';
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 
 /**
- * Fetch options accepted by the `getReport` resolver and selector.
- *
- * These change how the request runs rather than what it asks for, so they
- * stay out of the report options and out of the report cache key. `signal`
- * cancels the request, and `cacheTTL` sets how long the response is cached,
- * in seconds.
+ * Fetch options for the `getReport` resolver and selector.
  *
  * @since n.e.x.t
  */

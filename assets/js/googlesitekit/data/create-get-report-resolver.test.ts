@@ -49,9 +49,7 @@ import {
 	createGetReportResolver,
 } from './create-get-report-resolver';
 
-// `cacheTTL` never reaches the network request, only the caching layer
-// around it, so verifying it requires spying on `get()` itself rather than
-// inspecting the request `fetchMock` observes.
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
 jest.mock( 'googlesitekit-api', () => {
 	const actualModule = jest.requireActual( 'googlesitekit-api' );
 	return {

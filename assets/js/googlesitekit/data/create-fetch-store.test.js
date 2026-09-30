@@ -36,8 +36,7 @@ import { subscribeUntil } from '@tests/js/utils';
 import { createErrorStore } from './create-error-store';
 import { createFetchStore } from './create-fetch-store';
 
-// Wraps the real `get()` so tests can assert on the options it receives,
-// such as `cacheTTL`, while still exercising the real request/cache logic.
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
 jest.mock( 'googlesitekit-api', () => {
 	const actualModule = jest.requireActual( 'googlesitekit-api' );
 	return {
