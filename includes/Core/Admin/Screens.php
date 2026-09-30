@@ -397,6 +397,40 @@ final class Screens {
 	}
 
 	/**
+	 * Redirects the dashboard to the setup step the current user has not finished yet,
+	 * unless the request has an intent, which takes priority.
+	 *
+	 * @since 1.183.0
+	 * @since n.e.x.t Moved from the dashboard screen's `initialize_callback` and skipped for requests with an intent.
+	 */
+	private function redirect_dashboard_to_unfinished_setup_step() {
+		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
+			return;
+		}
+
+		if ( ! $this->authentication->is_authenticated() ) {
+			return;
+		}
+
+		if ( '' !== $this->get_intent_attributes( $this->context )['slug'] ) {
+			return;
+		}
+
+		$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
+		$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
+		$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
+
+		if ( false === $is_analytics_setup_complete ) {
+			$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
+			return;
+		}
+
+		if ( false === $has_site_purpose_answer ) {
+			$this->no_site_purpose_answer_redirect_dashboard_to_setup();
+		}
+	}
+
+	/**
 	 * Redirects dashboard to provide a site purpose answer.
 	 *
 	 * @since 1.183.0
@@ -506,27 +540,7 @@ final class Screens {
 						}
 					},
 					'initialize_callback' => function () {
-						if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-							return;
-						}
-
-						$is_view_only = ! $this->authentication->is_authenticated();
-
-						if ( ! $is_view_only ) {
-							$initial_setup_settings      = ( new Initial_Setup_Settings( $this->user_options ) )->get();
-							$is_analytics_setup_complete = $initial_setup_settings['isAnalyticsSetupComplete'] ?? null;
-							$has_site_purpose_answer     = $initial_setup_settings['hasSitePurposeAnswer'] ?? null;
-
-							if ( false === $is_analytics_setup_complete ) {
-								$this->analytics_setup_incomplete_redirect_dashboard_to_setup();
-								return;
-							}
-
-							if ( false === $has_site_purpose_answer ) {
-								$this->no_site_purpose_answer_redirect_dashboard_to_setup();
-								return;
-							}
-						}
+						$this->redirect_dashboard_to_unfinished_setup_step();
 					},
 					'render_callback'     => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
