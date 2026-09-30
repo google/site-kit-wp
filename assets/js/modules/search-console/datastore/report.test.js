@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import { get, setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createTestRegistry,
@@ -33,6 +33,17 @@ import {
 } from '@tests/js/utils';
 import * as fixtures from './__fixtures__';
 import { MODULES_SEARCH_CONSOLE } from './constants';
+
+// `cacheTTL` never reaches the network request, only the caching layer
+// around it, so verifying it requires spying on `get()` itself rather than
+// inspecting the request `fetchMock` observes.
+jest.mock( 'googlesitekit-api', () => {
+	const actualModule = jest.requireActual( 'googlesitekit-api' );
+	return {
+		...actualModule,
+		get: jest.fn( actualModule.get ),
+	};
+} );
 
 describe( 'modules/search-console report', () => {
 	const searchAnalyticsRegexp = new RegExp(
@@ -67,6 +78,8 @@ describe( 'modules/search-console report', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createTestRegistry();
 		waitForRegistry = createWaitForRegistry( registry );
 	} );
@@ -209,6 +222,101 @@ describe( 'modules/search-console report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the report request', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options, { cacheTTL: 300 } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+					cacheTTL: 300,
+				} );
+			} );
+
+			it( 'sends no cacheTTL to the report request when the call has no fetch options', async () => {
+				fetchMock.getOnce( searchAnalyticsRegexp, {
+					body: fixtures.report,
+				} );
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				await registry
+					.dispatch( MODULES_SEARCH_CONSOLE )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
+			} );
+
+			it( 'sends one request when two getReport calls differ only in cacheTTL', async () => {
+				// Hold the response open so both calls join one running
+				// request, instead of the first finishing before the second
+				// resolver runs.
+				const deferredResolvers = [];
+				fetchMock.getOnce(
+					searchAnalyticsRegexp,
+					() =>
+						new Promise( ( resolve ) => {
+							deferredResolvers.push( () =>
+								resolve( { body: fixtures.report } )
+							);
+						} )
+				);
+
+				const options = {
+					startDate: '2020-01-01',
+					endDate: '2020-04-05',
+				};
+
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { cacheTTL: 300 } );
+				while ( deferredResolvers.length < 1 ) {
+					await waitForDefaultTimeouts();
+				}
+
+				registry
+					.select( MODULES_SEARCH_CONSOLE )
+					.getReport( options, { cacheTTL: 600 } );
+				await waitForDefaultTimeouts();
+
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( options, { cacheTTL: 300 } );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_SEARCH_CONSOLE
+				).getReport( options, { cacheTTL: 600 } );
+
+				deferredResolvers.forEach( ( resolve ) => resolve() );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getReport( options, { cacheTTL: 300 } )
+				).toBe(
+					registry
+						.select( MODULES_SEARCH_CONSOLE )
+						.getReport( options, { cacheTTL: 600 } )
+				);
 			} );
 
 			it( 'forwards the abort signal from a getReport call to the report request', async () => {

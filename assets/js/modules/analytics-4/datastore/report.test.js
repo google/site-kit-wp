@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import { get, setUsingCache } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { DAY_IN_SECONDS } from '@/js/util';
@@ -36,6 +36,17 @@ import {
 import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 
+// `cacheTTL` never reaches the network request, only the caching layer
+// around it, so verifying it requires spying on `get()` itself rather than
+// inspecting the request `fetchMock` observes.
+jest.mock( 'googlesitekit-api', () => {
+	const actualModule = jest.requireActual( 'googlesitekit-api' );
+	return {
+		...actualModule,
+		get: jest.fn( actualModule.get ),
+	};
+} );
+
 describe( 'modules/analytics-4 report', () => {
 	let registry;
 	let waitForRegistry;
@@ -45,6 +56,8 @@ describe( 'modules/analytics-4 report', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createTestRegistry();
 		waitForRegistry = createWaitForRegistry( registry );
 	} );
@@ -183,6 +196,91 @@ describe( 'modules/analytics-4 report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the report request', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options, { cacheTTL: 300 } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+					cacheTTL: 300,
+				} );
+			} );
+
+			it( 'sends no cacheTTL to the report request when the call has no fetch options', async () => {
+				fetchMock.getOnce( analytics4ReportRegexp, {
+					body: fixtures.report,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.fetchGetReport( options );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
+			} );
+
+			it( 'sends one request when two getReport calls differ only in cacheTTL', async () => {
+				// Hold the response open so both calls join one running
+				// request, instead of the first finishing before the second
+				// resolver runs.
+				const deferredResolvers = [];
+				fetchMock.getOnce(
+					analytics4ReportRegexp,
+					() =>
+						new Promise( ( resolve ) => {
+							deferredResolvers.push( () =>
+								resolve( {
+									body: fixtures.report,
+									status: 200,
+								} )
+							);
+						} )
+				);
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options, { cacheTTL: 300 } );
+				while ( deferredResolvers.length < 1 ) {
+					await waitForDefaultTimeouts();
+				}
+
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getReport( options, { cacheTTL: 600 } );
+				await waitForDefaultTimeouts();
+
+				const firstResolution = untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getReport( options, { cacheTTL: 300 } );
+				const secondResolution = untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getReport( options, { cacheTTL: 600 } );
+
+				deferredResolvers.forEach( ( resolve ) => resolve() );
+
+				await Promise.all( [ firstResolution, secondResolution ] );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getReport( options, { cacheTTL: 300 } )
+				).toBe(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getReport( options, { cacheTTL: 600 } )
+				);
 			} );
 
 			it( 'forwards the abort signal from a getReport call to the report request', async () => {
