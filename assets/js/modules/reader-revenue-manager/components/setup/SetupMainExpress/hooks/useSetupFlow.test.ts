@@ -109,8 +109,6 @@ function createStep(
 	{ isComplete }: { isComplete?: boolean } = {}
 ): SetupStep {
 	return {
-		// Fixture flows use made-up slugs, such as a second CTA step, that are
-		// deliberately not part of `EXPRESS_SETUP_STEPS`.
 		slug: slug as EXPRESS_SETUP_STEPS,
 		label: slug,
 		Component: StepContent,
