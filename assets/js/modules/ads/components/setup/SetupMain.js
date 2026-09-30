@@ -194,7 +194,7 @@ export default function SetupMain( { finishSetup } ) {
 		select( MODULES_ADS ).isWooCommerceRedirectModalDismissed()
 	);
 	const isWooCommerceActivated = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceActivated()
+		select( CORE_SITE ).isWooCommerceActivated()
 	);
 
 	const isGoogleForWooCommerceAdsConnected = useSelect( ( select ) => {

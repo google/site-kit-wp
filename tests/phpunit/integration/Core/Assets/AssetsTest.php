@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 
 	/**
 	 * @var Assets
@@ -332,10 +334,23 @@ class AssetsTest extends TestCase {
 	}
 
 	public function test_base_data__woocommerce_not_installed() {
+		$this->set_installed_plugins( array() );
+
 		$data = $this->get_inline_base_data();
 
 		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is not installed.' );
 		$this->assertFalse( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be false when WooCommerce is not installed.' );
+	}
+
+	public function test_base_data__woocommerce_installed_but_not_active() {
+		$this->set_installed_plugins(
+			array( 'woocommerce/woocommerce.php' => array( 'Name' => 'WooCommerce' ) )
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is installed but not active.' );
+		$this->assertTrue( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be true when WooCommerce is installed but not active.' );
 	}
 
 	/**

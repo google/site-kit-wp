@@ -51,6 +51,7 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 		isWooCommerceInstalled,
 		isAnalyticsConnected,
 		hasResolvedSettings,
+		includesWooCommerceProducts,
 	} = useSelect(
 		( select: Select ) => {
 			if ( ! freshDataEnabled ) {
@@ -58,6 +59,7 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 					isWooCommerceInstalled: false,
 					isAnalyticsConnected: false,
 					hasResolvedSettings: false,
+					includesWooCommerceProducts: undefined,
 				};
 			}
 
@@ -69,36 +71,23 @@ const SettingsIncludeWooCommerceProductsSwitch: FC<
 				),
 				hasResolvedSettings:
 					select( MODULES_ANALYTICS_4 ).getSettings() !== undefined,
+				includesWooCommerceProducts:
+					select(
+						MODULES_ANALYTICS_4
+					).getFreshDataIncludesWooCommerceProducts(),
 			};
 		},
-		[ freshDataEnabled ]
-	);
-
-	const includesWooCommerceProducts = useSelect(
-		( select: Select ) =>
-			freshDataEnabled
-				? select(
-						MODULES_ANALYTICS_4
-				  ).getFreshDataIncludesWooCommerceProducts()
-				: undefined,
 		[ freshDataEnabled ]
 	);
 
 	const { setFreshDataIncludesWooCommerceProducts } =
 		useDispatch( MODULES_ANALYTICS_4 );
 
-	if (
-		! freshDataEnabled ||
-		isWooCommerceInstalled === false ||
-		isAnalyticsConnected === false
-	) {
+	if ( isWooCommerceInstalled === false || isAnalyticsConnected === false ) {
 		return null;
 	}
 
-	// `includesWooCommerceProducts` is intentionally excluded here: unlike
-	// the values above, it can be `undefined` even once settings have fully
-	// resolved (e.g. a settings object saved before this setting existed),
-	// so `hasResolvedSettings` is used instead as the reliable signal.
+	// Wait for the settings to resolve so the switch doesn't flash unchecked.
 	const loading =
 		isWooCommerceInstalled === undefined ||
 		isAnalyticsConnected === undefined ||

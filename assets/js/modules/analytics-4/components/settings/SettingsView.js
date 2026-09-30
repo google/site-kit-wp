@@ -103,8 +103,8 @@ export default function SettingsView() {
 		select( CORE_SITE ).isConversionTrackingEnabled()
 	);
 
-	const isWooCommerceActivated = useSelect( ( select ) =>
-		select( CORE_SITE ).isWooCommerceActivated()
+	const isWooCommerceInstalled = useSelect( ( select ) =>
+		select( CORE_SITE ).isWooCommerceInstalled()
 	);
 
 	const includesWooCommerceProducts = useSelect( ( select ) =>
@@ -296,7 +296,7 @@ export default function SettingsView() {
 								},
 						  ]
 						: [] ),
-					...( freshDataEnabled && isWooCommerceActivated
+					...( freshDataEnabled && isWooCommerceInstalled
 						? [
 								{
 									label: __(
