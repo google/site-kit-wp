@@ -16,83 +16,105 @@
  * limitations under the License.
  */
 
+// The `es5` target leaves `Intl.DateTimeFormat.prototype.formatRange` untyped.
+/// <reference lib="es2021.intl" />
+
 /**
- * Sanitizes a free-form string into a lowercase, hyphen-separated slug
- * suitable for use inside a filename.
- *
- * @since 1.181.0
- *
- * @param value Input string. Empty and non-string values become an empty slug.
- * @return The sanitized slug.
+ * WordPress dependencies
  */
-function slugify( value: unknown ): string {
-	if ( typeof value !== 'string' || value.length === 0 ) {
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { getLocale, isValidDateString, stringToDate } from '@/js/util';
+
+// The characters Windows, macOS and Linux reject in filenames.
+// eslint-disable-next-line no-control-regex
+const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|\u0000-\u001f\u007f]/g;
+
+/**
+ * Extracts the host (e.g. "www.example.com") from the reference site URL.
+ *
+ * @since 1.182.0
+ * @since n.e.x.t Moved from `PDFHeader` and added the `fallback` parameter.
+ *
+ * @param siteURL    The reference site URL.
+ * @param [fallback] Value returned when the URL cannot be parsed, defaults to `siteURL`.
+ * @return The host, or the fallback when the URL cannot be parsed.
+ */
+export function getSiteHost(
+	siteURL: string,
+	fallback: string = siteURL
+): string {
+	try {
+		return new URL( siteURL ).host;
+	} catch {
+		return fallback;
+	}
+}
+
+/**
+ * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
+ * "Mar 1 – 7, 2026".
+ *
+ * @since n.e.x.t
+ *
+ * @param startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return The localized range, or an empty string when either date is invalid.
+ */
+function formatDateRange( startDate: string, endDate: string ): string {
+	if ( ! isValidDateString( startDate ) || ! isValidDateString( endDate ) ) {
 		return '';
 	}
 
-	const withoutScheme = value.replace( /^[a-z][a-z0-9+\-.]*:\/\//i, '' );
-
-	return withoutScheme
-		.toLowerCase()
-		.replace( /[^a-z0-9]+/g, '-' )
-		.replace( /^-+|-+$/g, '' );
+	return new Intl.DateTimeFormat( getLocale(), {
+		month: 'short',
+		day: 'numeric',
+		year: 'numeric',
+	} ).formatRange( stringToDate( startDate ), stringToDate( endDate ) );
 }
 
 /**
- * Returns the current date as `YYYY-MM-DD` using the local timezone.
+ * Builds a filesystem-safe PDF filename for the dashboard export, in the form
+ * `Site Kit Dashboard - example.com - Mar 1 – 7, 2026.pdf`.
  *
  * @since 1.181.0
+ * @since n.e.x.t Takes the site URL and the report dates instead of the site name and date range slug.
  *
- * @param [now] Optional date instance, defaults to `new Date()`.
- * @return The formatted date.
- */
-function getISODate(
-	// The filename's date stamp is the actual generation moment, not the
-	// dashboard's analytics reference date.
-	// eslint-disable-next-line sitekit/no-direct-date
-	now: Date = new Date()
-): string {
-	const year = now.getFullYear();
-	const month = String( now.getMonth() + 1 ).padStart( 2, '0' );
-	const day = String( now.getDate() ).padStart( 2, '0' );
-
-	return `${ year }-${ month }-${ day }`;
-}
-
-/**
- * Builds a sanitized PDF filename for the dashboard export.
- *
- * The result is `site-kit-<site>-<dateRange>-<date>.pdf` when a date range
- * is supplied, or `site-kit-<site>-<date>.pdf` otherwise. The site and date
- * range are passed through `slugify` so the filename is filesystem-safe on
- * every supported OS.
- *
- * @since 1.181.0
- *
- * @param siteName    Site name or URL.
- * @param [dateRange] Optional date range slug, e.g. `last-28-days`.
- * @param [now]       Optional date instance, defaults to `new Date()`.
+ * @param siteURL             The reference site URL.
+ * @param dateRange           The report date range.
+ * @param dateRange.startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param dateRange.endDate   The last day of the range, as `YYYY-MM-DD`.
  * @return The composed filename.
  */
 export function getPDFFilename(
-	siteName: string,
-	dateRange?: string,
-	// The filename's date stamp is the actual generation moment, not the
-	// dashboard's analytics reference date.
-	// eslint-disable-next-line sitekit/no-direct-date
-	now: Date = new Date()
+	siteURL: string,
+	{ startDate, endDate }: { startDate: string; endDate: string }
 ): string {
-	const siteSlug = slugify( siteName ) || 'report';
-	const rangeSlug = slugify( dateRange );
-	const date = getISODate( now );
+	const segments = [
+		__( 'Site Kit Dashboard', 'google-site-kit' ),
+		getSiteHost( siteURL, '' ) || 'report',
+	];
 
-	const segments = [ 'site-kit', siteSlug ];
-	if ( rangeSlug ) {
-		segments.push( rangeSlug );
+	const formattedDateRange = formatDateRange( startDate, endDate );
+	if ( formattedDateRange ) {
+		// Some locales separate the date parts with `/`, e.g. `2026/03/01` in
+		// Japanese, so hyphenate them rather than run the numbers together.
+		segments.push(
+			formattedDateRange.replace( RESERVED_FILENAME_CHARACTERS, '-' )
+		);
 	}
-	segments.push( date );
 
-	return `${ segments.join( '-' ) }.pdf`;
+	const name = segments
+		.join( ' - ' )
+		.replace( RESERVED_FILENAME_CHARACTERS, '' )
+		.replace( /\s+/g, ' ' )
+		// Windows drops trailing dots and spaces from filenames.
+		.replace( /[. ]+$/, '' );
+
+	return `${ name }.pdf`;
 }
 
 /**
