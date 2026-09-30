@@ -24,6 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getValueAxisFormat,
+	getValueAxisGutter,
+	pickDateTicks,
+} from '@/js/components/pdf-export/chart-axis';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
@@ -59,6 +64,12 @@ export type { TrafficBreakdownRow };
  */
 const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;
+
+/**
+ * How many times bigger than its display size the line chart renders, so the
+ * line stays sharp in the PDF.
+ */
+const LINE_CHART_SCALE_FACTOR = 2;
 
 export interface GetPDFDataParams {
 	/** WordPress data registry. */
@@ -178,11 +189,13 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's `UserCountGraph`.
-	const [ , ...ticks ] = points.map( ( { date } ) => date );
-
-	const hasData = points.some( ( { value } ) => value > 0 );
+	const fontSize = 14;
+	const chartAreaLeft = 8;
+	const maxValue = points.reduce(
+		( highest, { value } ) => Math.max( highest, value ),
+		0
+	);
+	const valueAxisGutter = getValueAxisGutter( maxValue, fontSize );
 
 	return {
 		curveType: 'function',
@@ -191,8 +204,8 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		// dashboard's line chart draws in.
 		colors: [ PDF_COLORS.VIOLET_V_600 ],
 		chartArea: {
-			left: 8,
-			right: 40,
+			left: chartAreaLeft,
+			right: valueAxisGutter,
 			top: 16,
 			bottom: 28,
 		},
@@ -200,7 +213,6 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},
@@ -208,11 +220,18 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
-			ticks,
+			ticks: pickDateTicks(
+				points.map( ( { date } ) => date ),
+				LINE_CHART_WIDTH * LINE_CHART_SCALE_FACTOR -
+					chartAreaLeft -
+					valueAxisGutter,
+				fontSize
+			),
 		},
 		vAxis: {
+			format: getValueAxisFormat( maxValue ),
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
@@ -225,12 +244,13 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
 			viewWindow: {
 				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
-				...( hasData ? {} : { max: 100 } ),
+				// With no data, stop the axis at 100, so the flat line at zero is
+				// still easy to read.
+				...( maxValue > 0 ? {} : { max: 100 } ),
 			},
 		},
 		series: {
@@ -354,6 +374,7 @@ export default async function getPDFData( {
 		options: getLineChartOptions( points ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
+		scaleFactor: LINE_CHART_SCALE_FACTOR,
 		signal,
 	} );
 
