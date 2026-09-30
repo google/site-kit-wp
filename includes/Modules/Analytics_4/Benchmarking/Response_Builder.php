@@ -83,8 +83,8 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $start_date The start date, as `YYYY-MM-DD`, such as `2026-08-19`, not `20260819`.
-	 * @param string $end_date   The end date, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
+	 * @param string $start_date The start date, as `YYYY-MM-DD`.
+	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
@@ -124,7 +124,7 @@ class Response_Builder {
 	}
 
 	/**
-	 * Scores, filters, ranks and caps every dimension's rows, and orders the dimensions.
+	 * Scores, filters, ranks, and caps every dimension's rows, then orders the dimensions.
 	 *
 	 * A dimension's rows are ranked by score, highest first, and cut to
 	 * `MAX_ROWS_PER_DIMENSION`. The dimensions are ordered by the sum of their
@@ -140,7 +140,7 @@ class Response_Builder {
 	 *     The two response fields the ranking decides.
 	 *
 	 *     @type array $dimensions     Dimension codes, the highest sum of row scores first.
-	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key, in the shape the response gives them.
+	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key, in the shape `get_response_row()` returns.
 	 * }
 	 */
 	public function rank_contextual_data( array $contextual_data, array $visitors ) {
@@ -181,8 +181,6 @@ class Response_Builder {
 			);
 		}
 
-		// Two equal sums are ordered by the dimension's position in
-		// `Wire_Format::DIMENSION_INDEXES`.
 		uksort(
 			$dimension_scores,
 			fn( $a, $b ) => ( $dimension_scores[ $b ] <=> $dimension_scores[ $a ] ) ?: Wire_Format::DIMENSION_INDEXES[ $a ] - Wire_Format::DIMENSION_INDEXES[ $b ]
@@ -196,10 +194,11 @@ class Response_Builder {
 
 	/**
 	 * Gets the options of every report the response needs, keyed by the
-	 * response field or the dimension code each report is for.
+	 * response field or the dimension code each report is for, such as
+	 * `dailyTraffic` or `CHANNELS`.
 	 *
-	 * The `CONTENT` and `CATEGORIES` reports read a custom dimension, so each one
-	 * runs only while its dimension has data.
+	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
+	 * so each one runs only while its dimension has data.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -234,7 +233,7 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $requests The report request options, keyed by what each report is for.
+	 * @param array $requests The report request options, keyed by the response field or the dimension code each report is for.
 	 * @return array|WP_Error Report rows, keyed like the requests, or the error the first failed call returned.
 	 */
 	private function run_reports( array $requests ) {
@@ -268,7 +267,7 @@ class Response_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with `values`, `dateRange` and `visitors`. `values` lists the row's dimension values in the order the report asked for them, and `dateRange` names the period the row counts.
+	 * @return array List of rows, each with `values`, `dateRange`, and `visitors`. `values` lists the row's dimension values in the order the report asked for them, and `dateRange` names the period the row counts.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -303,14 +302,16 @@ class Response_Builder {
 	/**
 	 * Gets the visitors of every day in the daily series, oldest first.
 	 *
-	 * Analytics returns no row for a day with no visitors. That day gets `0`
-	 * visitors rather than no row, so every later day keeps its own date.
+	 * Analytics returns no row for a day with no visitors, so that day is listed
+	 * with `0` visitors. `Response_Encoder` writes the first date and then one
+	 * count per day, so a missing day would move every later count to the day
+	 * before it.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
-	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`, such as `2025-08-17`, not `20250817`.
-	 * @return array List of days, each with `visitors` and a `date` as `YYYY-MM-DD`, such as `2025-08-17`, not `20250817`.
+	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
+	 * @return array List of days, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 */
 	private function get_daily_traffic( array $report_rows, $first_date ) {
 		$visitors_by_date = array();
@@ -339,9 +340,9 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`, such as `2026-08-19`, not `20260819`.
-	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`, such as `2026-08-19`, not `20260819`.
-	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
+	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
+	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
 	 * @return int The visitors of those days.
 	 */
 	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
@@ -362,8 +363,8 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $reports  The report rows, keyed by what each report is for.
-	 * @param string $end_date The end date, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
+	 * @param array  $reports  The report rows, keyed by the response field or the dimension code each report is for.
+	 * @param string $end_date The end date, as `YYYY-MM-DD`.
 	 * @return array Rows, keyed by `contextualData` key. Every row has its `current` and `previous` visitors.
 	 */
 	private function build_contextual_data( array $reports, $end_date ) {
@@ -398,8 +399,8 @@ class Response_Builder {
 	 * Pairs a dimension report's two periods by the value of its first dimension.
 	 *
 	 * A value missing from one period has `0` visitors in that period. The rows
-	 * of the selected period are read first, so a page whose title changed
-	 * between the two periods keeps the title it has now.
+	 * of the selected period are read first, so a page keeps its title from the
+	 * selected period.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -438,15 +439,14 @@ class Response_Builder {
 	/**
 	 * Builds the `CONTENT` rows, one per page.
 	 *
-	 * Analytics returns the post date as `YYYYMMDD`, such as `20260901`. A page
-	 * whose post date isn't a real date in that shape is left out, since it has no
-	 * age to report.
+	 * Analytics returns the post date as `YYYYMMDD`. A page whose post date isn't
+	 * a real day in that format is skipped, since it has no age to report.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $pairs    The pairs from the content report, each with the page path, the page title and the post date as its values.
-	 * @param string $end_date The end date, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
-	 * @return array List of rows, each with `url`, `title`, `publishedDaysAgo`, `current` and `previous`.
+	 * @param array  $pairs    The pairs from the content report, each with the page path, the page title, and the post date as its values.
+	 * @param string $end_date The end date, as `YYYY-MM-DD`.
+	 * @return array List of rows, each with `url`, `title`, `publishedDaysAgo`, `current`, and `previous`.
 	 */
 	private function build_content_rows( array $pairs, $end_date ) {
 		$utc  = new DateTimeZone( 'UTC' );
@@ -456,6 +456,8 @@ class Response_Builder {
 		foreach ( $pairs as $pair ) {
 			list( $url, $title, $post_date ) = $pair['values'];
 
+			// The `!` sets the time to midnight, the same as `$end`, so the two dates
+			// are whole days apart.
 			$published = DateTimeImmutable::createFromFormat( '!Ymd', $post_date, $utc );
 
 			if ( ! $published || $published->format( 'Ymd' ) !== $post_date ) {
@@ -480,7 +482,7 @@ class Response_Builder {
 	 * Gets the shape a row takes in the response.
 	 *
 	 * A `CONTENT` row reports the visitors of the selected period as
-	 * `visitors`, and leaves out the `previous` count its score used.
+	 * `visitors`. It has no `previous` count, which only its score used.
 	 *
 	 * @since n.e.x.t
 	 *

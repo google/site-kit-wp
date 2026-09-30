@@ -13,7 +13,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 /**
  * Scores a dimension row by how much of the site's change in visitors it explains.
  *
- * One formula scores every row in every dimension, so a channel, a device and a
+ * One formula scores every row in every dimension, so a channel, a device, and a
  * search query are ranked on the same scale.
  *
  * @since n.e.x.t
@@ -55,26 +55,26 @@ class Row_Scorer {
 
 	/**
 	 * The smallest change a row needs to stay in the response, as a percentage of
-	 * the site's visitors.
+	 * the larger of the site's two visitor totals.
 	 */
 	const MINIMUM_TRAFFIC_IMPACT_PERCENT = 0.40;
 
 	/**
 	 * A row that moved against the site stays in the response when its change is
-	 * at least this percentage of the site's visitors.
+	 * at least this percentage of the larger of the site's two visitor totals.
 	 */
 	const COUNTER_TREND_TRAFFIC_IMPACT_PERCENT = 1.0;
 
 	/**
 	 * A row that moved against the site also stays in the response when its own
-	 * visitors changed by at least this percentage, and by at least
-	 * `COUNTER_TREND_DELTA` visitors.
+	 * visitors changed by at least this percentage and `COUNTER_TREND_DELTA`
+	 * visitors.
 	 */
 	const COUNTER_TREND_SELF_CHANGE_PERCENT = 10;
 
 	/**
-	 * The smallest change in visitors that goes with
-	 * `COUNTER_TREND_SELF_CHANGE_PERCENT` to keep a row that moved against the site.
+	 * The smallest change in visitors that, together with
+	 * `COUNTER_TREND_SELF_CHANGE_PERCENT`, keeps a row that moved against the site.
 	 */
 	const COUNTER_TREND_DELTA = 25;
 
@@ -132,11 +132,12 @@ class Row_Scorer {
 	/**
 	 * Scores how much of the site's change in visitors a row explains.
 	 *
-	 * The score has two parts, each a percentage of the site's visitors. The first
-	 * is the size of the row's own change, and it counts for 60%. The second is how
-	 * far that change is from the change the row would show at the site's rate, and
-	 * it counts for 40%. The dimension's weight multiplies the sum, and so does the
-	 * boost when the row moved the same way as the site.
+	 * The score has two parts, each a percentage of the larger of the site's two
+	 * visitor totals. The first is the size of the row's own change, and it counts
+	 * for 60%. The second is how far that change is from the change the row would
+	 * show at the site's rate, and it counts for 40%. The dimension's weight
+	 * multiplies the sum, and so does the boost when the row moved the same way as
+	 * the site.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -206,7 +207,7 @@ class Row_Scorer {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string The direction, `UP`, `DOWN` or `STABLE`.
+	 * @return string The direction, `UP`, `DOWN`, or `STABLE`.
 	 */
 	public function get_site_direction() {
 		$site_change = $this->get_site_change_percent();
@@ -229,7 +230,7 @@ class Row_Scorer {
 	 * @since n.e.x.t
 	 *
 	 * @param int|float $change The change in visitors.
-	 * @return int|float The change as a percentage, such as `10` for 10%, not `0.1`, or `0` when the site had no visitors in either period.
+	 * @return int|float The change as a percentage, such as `10` for 10%, or `0` when the site had no visitors in either period.
 	 */
 	private function get_traffic_impact_percent( $change ) {
 		$site_visitors = max( $this->visitors_current, $this->visitors_previous );
@@ -243,7 +244,7 @@ class Row_Scorer {
 	 * @since n.e.x.t
 	 *
 	 * @param array $row The row, with its `current` and `previous` visitors.
-	 * @return int|float The change in percent, such as `50` for a rise of 50%, not `0.5`. A row that had no visitors in the compare period gets `100` when it has visitors now, and `0` when it still has none.
+	 * @return int|float The change in percent, such as `50` for a rise of 50%. It's `100` for a row that had no visitors in the compare period and has some in the selected period. It's `0` for a row with no visitors in either period.
 	 */
 	private function get_self_change_percent( array $row ) {
 		if ( $row['previous'] > 0 ) {
@@ -258,7 +259,7 @@ class Row_Scorer {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return int|float The change in percent, such as `25` for a rise of 25%, not `0.25`. It's `0` when the site had no visitors in the compare period.
+	 * @return int|float The change in percent, such as `25` for a rise of 25%. It's `0` when the site had no visitors in the compare period.
 	 */
 	private function get_site_change_percent() {
 		if ( $this->visitors_previous > 0 ) {

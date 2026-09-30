@@ -17,9 +17,6 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * Builds the options of the Analytics reports the benchmarking response is assembled from.
  *
- * Every period and every dimension the reports ask Analytics for is set here,
- * so a reader finds all of them in one place.
- *
  * @since n.e.x.t
  * @access private
  * @ignore
@@ -27,8 +24,9 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * Days the daily series covers, up to the end date. The 13 months let the
-	 * Typical Traffic chart show the year around the selected period.
+	 * Days the daily series covers, up to the end date. The Typical Traffic chart
+	 * shows these 13 months, so a reader sees the selected period against a year
+	 * of traffic.
 	 */
 	const DAILY_SERIES_DAYS = 395;
 
@@ -38,8 +36,7 @@ class Report_Options {
 	const REPORT_ROW_LIMIT = 50;
 
 	/**
-	 * First day of the selected period, as `YYYY-MM-DD`, such as `2026-08-19`, not
-	 * `20260819`.
+	 * First day of the selected period, as `YYYY-MM-DD`.
 	 *
 	 * @since n.e.x.t
 	 * @var string
@@ -47,8 +44,7 @@ class Report_Options {
 	private $start_date;
 
 	/**
-	 * Last day of the selected period, as `YYYY-MM-DD`, such as `2026-09-15`, not
-	 * `20260915`.
+	 * Last day of the selected period, as `YYYY-MM-DD`.
 	 *
 	 * @since n.e.x.t
 	 * @var string
@@ -60,8 +56,8 @@ class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $start_date The first day of the selected period, as `YYYY-MM-DD`, such as `2026-08-19`, not `20260819`.
-	 * @param string $end_date   The last day of the selected period, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
+	 * @param string $start_date The first day of the selected period, as `YYYY-MM-DD`.
+	 * @param string $end_date   The last day of the selected period, as `YYYY-MM-DD`.
 	 */
 	public function __construct( $start_date, $end_date ) {
 		$this->start_date = $start_date;
@@ -74,7 +70,7 @@ class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Compare period, with `startDate` and `endDate` as `YYYY-MM-DD`, not `YYYYMMDD`. For `2026-08-19` to `2026-09-15`, it's `2026-07-22` to `2026-08-18`.
+	 * @return array Compare period, with `startDate` and `endDate` as `YYYY-MM-DD`.
 	 */
 	public function get_compare_range() {
 		$start_date = $this->create_date( $this->start_date );
@@ -172,8 +168,8 @@ class Report_Options {
 		return $this->get_dimension_options(
 			array( 'pagePath', 'pageTitle', $post_date_dimension ),
 			array(
-				// Analytics reports `(not set)` for a page that isn't a post, and
-				// that page has no publication date to count from.
+				// A page that isn't a post has no publication date, so Analytics
+				// reports `(not set)` for it.
 				$post_date_dimension => array(
 					'filterType'    => 'emptyFilter',
 					'notExpression' => true,
@@ -256,7 +252,7 @@ class Report_Options {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param string $date The date, as `YYYY-MM-DD`, such as `2026-09-15`, not `20260915`.
+	 * @param string $date The date, as `YYYY-MM-DD`.
 	 * @return DateTimeImmutable The date.
 	 */
 	private function create_date( $date ) {

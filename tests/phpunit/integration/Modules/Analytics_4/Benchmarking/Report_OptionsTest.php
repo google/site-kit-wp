@@ -232,7 +232,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_content_options(),
-			'The `get_content_options()` method should ask for up to 50 rows of `totalUsers` by `pagePath`, `pageTitle` and `customEvent:googlesitekit_post_date`, in both periods, leaving out the rows with no post date.'
+			'The `get_content_options()` method should ask for up to 50 rows of `totalUsers` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in both periods, excluding the rows with no post date.'
 		);
 	}
 
@@ -264,7 +264,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_categories_options(),
-			'The `get_categories_options()` method should ask for up to 50 rows of `totalUsers` by `customEvent:googlesitekit_post_categories`, in both periods, leaving out the rows with no category.'
+			'The `get_categories_options()` method should ask for up to 50 rows of `totalUsers` by `customEvent:googlesitekit_post_categories`, in both periods, excluding the rows with no category.'
 		);
 	}
 }
