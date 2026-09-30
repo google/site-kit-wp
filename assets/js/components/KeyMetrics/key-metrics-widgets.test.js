@@ -680,7 +680,7 @@ describe( 'the renamed ACR Key Metric tiles', () => {
 		],
 		[
 			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-			'Top traffic channels by Form completions',
+			'Top traffic channels by form completion',
 			'Where do most of your leads come from?',
 		],
 		[

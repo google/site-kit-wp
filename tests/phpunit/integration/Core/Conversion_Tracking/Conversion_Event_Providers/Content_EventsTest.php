@@ -636,6 +636,29 @@ class Content_EventsTest extends TestCase {
 	}
 
 	/**
+	 * Runs the WordPress loop like a block theme does on a post split into
+	 * pages, and returns what `the_content` rendered.
+	 *
+	 * WordPress 5.2 has no Post Content block to render, so this helper adds
+	 * the `wp_link_pages()` links to the content itself.
+	 *
+	 * @return string The rendered content.
+	 */
+	private function apply_the_content_with_page_links() {
+		$rendered = '';
+
+		while ( have_posts() ) {
+			the_post();
+
+			$rendered = apply_filters( 'the_content', get_the_content() . wp_link_pages( array( 'echo' => 0 ) ) );
+		}
+
+		wp_reset_postdata();
+
+		return $rendered;
+	}
+
+	/**
 	 * Publishes the inline configuration and returns it as an array.
 	 *
 	 * @return array The published content events configuration.
@@ -688,7 +711,7 @@ class Content_EventsTest extends TestCase {
 		$rendered = $this->apply_the_content();
 
 		$this->assertStringContainsString(
-			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span>',
+			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span>',
 			$rendered,
 			'The rendered content should have the marker span.'
 		);
@@ -915,6 +938,21 @@ class Content_EventsTest extends TestCase {
 		);
 	}
 
+	public function test_append_end_of_content_marker__places_the_marker_before_the_page_links_a_block_theme_adds() {
+		$this->go_to_page_of_paginated_post( 3 );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content_with_page_links();
+
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The last page should render the marker.' );
+		$this->assertSame( 1, substr_count( $rendered, 'Pages:' ), 'The last page should render the page links once.' );
+		$this->assertLessThan(
+			strpos( $rendered, 'Pages:' ),
+			strpos( $rendered, 'googlesitekit-end-of-content' ),
+			'The marker should be placed before the page links.'
+		);
+	}
+
 	public function test_measure_content__counts_the_text_alone_without_shortcodes_tags_or_block_delimiters() {
 		$config = $this->measure_as_post_content(
 			"<!-- wp:paragraph -->\n<p>The quick <strong>brown</strong> fox.</p>\n<!-- /wp:paragraph -->\n[gallery ids=\"1,2,3\"]"
@@ -938,6 +976,16 @@ class Content_EventsTest extends TestCase {
 		$config = $this->get_published_config();
 
 		$this->assertSame( 2, $config['wordCount'], "The word count should count the requested page's text alone." );
+	}
+
+	public function test_measure_content__counts_the_page_text_without_the_page_links_a_block_theme_adds() {
+		$this->go_to_page_of_paginated_post( 3 );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content_with_page_links();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count "Page three text." alone, without the "Pages: 1 2 3" links.' );
 	}
 
 	/**
@@ -1038,6 +1086,25 @@ class Content_EventsTest extends TestCase {
 			'a version number'     => array( 'Version 3.14', 2 ),
 			'Japanese punctuation' => array( '「テスト」、。！？', 1 ),
 			'an emoji'             => array( 'Hello 👋 world', 2 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_html_entities
+	 */
+	public function test_measure_content__counts_an_html_entity_as_the_character_it_stands_for( $text, $expected_word_count ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'An HTML entity should count as the character it stands for, never as a word of its own.' );
+	}
+
+	public function data_html_entities() {
+		return array(
+			'an ampersand'         => array( 'Salt &amp; pepper', 2 ),
+			'a non-breaking space' => array( 'one&nbsp;two', 2 ),
+			'a curly apostrophe'   => array( 'it&#8217;s fine', 2 ),
 		);
 	}
 
@@ -1242,6 +1309,17 @@ class Content_EventsTest extends TestCase {
 
 		$this->assertSame( 0, $config['wordCount'], 'Text that is not valid UTF-8 should count no words on a space split.' );
 		$this->assertSame( 0, $config['estimatedReadTimeSeconds'], 'Text that counts no words and no characters should take no time to read.' );
+	}
+
+	/**
+	 * @dataProvider data_html_entities
+	 */
+	public function test_measure_content__counts_an_html_entity_as_the_character_it_stands_for_when_intl_is_missing( $text, $expected_word_count ) {
+		$this->use_provider_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'A space split should count an HTML entity as the character it stands for, never as a word of its own.' );
 	}
 
 	public function test_conversion_event_enumerations__report_no_content_events() {

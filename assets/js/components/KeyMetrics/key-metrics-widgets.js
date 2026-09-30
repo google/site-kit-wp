@@ -422,7 +422,7 @@ const KEY_METRICS_WIDGETS = {
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
 		title: __(
-			'Top traffic channels by Form completions',
+			'Top traffic channels by form completion',
 			'google-site-kit'
 		),
 		description: __(

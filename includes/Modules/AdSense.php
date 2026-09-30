@@ -52,7 +52,7 @@ use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Modules\AdSense\Tag_Matchers;
+use Google\Site_Kit\Modules\AdSense\Tag_Matchers;
 use Google\Site_Kit\Core\Modules\Module_With_Tag;
 use Google\Site_Kit\Core\Modules\Module_With_Tag_Trait;
 use Google\Site_Kit\Core\Modules\Tags\Module_Tag_Matchers;

@@ -25,6 +25,9 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { renderPDFText } from '@/js/components/pdf-export/test-utils';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { getBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import TrafficOverviewPDF from './indexPDF';
 
 const LINE_CHART_DATA_URI = 'data:image/jpeg;base64,TU9DS0NIQVJU';
@@ -51,16 +54,24 @@ function buildReports( {
 			} ) ),
 		},
 		channelBreakdown: [
-			{ label: 'Organic Search', percentage: 0.792 },
-			{ label: 'Direct', percentage: 0.133 },
+			{
+				label: 'Organic Search',
+				percentage: 0.792,
+				formattedPercentage: '79%',
+			},
+			{ label: 'Direct', percentage: 0.133, formattedPercentage: '13%' },
 		],
 		locationBreakdown: [
-			{ label: 'Singapore', percentage: 0.228 },
-			{ label: 'Others', percentage: 0.156 },
+			{
+				label: 'Singapore',
+				percentage: 0.228,
+				formattedPercentage: '23%',
+			},
+			{ label: 'Others', percentage: 0.156, formattedPercentage: '16%' },
 		],
 		deviceBreakdown: [
-			{ label: 'Desktop', percentage: 0.584 },
-			{ label: 'Mobile', percentage: 0.416 },
+			{ label: 'Desktop', percentage: 0.584, formattedPercentage: '58%' },
+			{ label: 'Mobile', percentage: 0.416, formattedPercentage: '42%' },
 		],
 	};
 }
@@ -145,7 +156,7 @@ describe( 'Traffic Overview PDF', () => {
 		expect( locationsIndex ).toBeGreaterThan( channelsIndex );
 		expect( devicesIndex ).toBeGreaterThan( locationsIndex );
 
-		// Each row's label pairs with its share, formatted as a whole percent.
+		// Each row's label and formatted share are printed.
 		expect( json ).toContain( 'Organic Search' );
 		expect( json ).toContain( '79%' );
 		expect( json ).toContain( 'Singapore' );
@@ -153,6 +164,81 @@ describe( 'Traffic Overview PDF', () => {
 		expect( json ).toContain( 'Desktop' );
 		expect( json ).toContain( '58%' );
 		expect( json ).toContain( 'Others' );
+	} );
+
+	it( 'prints each row beside its share from `getBreakdownRows()`, including "<1%"', () => {
+		const data = {
+			...DEFAULT_REPORTS,
+			channelBreakdown: getBreakdownRows(
+				createBreakdownReport( [
+					[ 'Direct', 4630 ],
+					[ 'Organic Search', 3040 ],
+					[ 'Organic Social', 1560 ],
+					[ 'Referral', 730 ],
+					[ 'Paid Search', 25 ],
+					[ 'Email', 15 ],
+				] )
+			),
+		};
+
+		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
+		const channelsIndex = texts.indexOf( 'Visitors by channels' );
+
+		// The rows are shaped by the same `getBreakdownRows()` the dashboard
+		// columns use, and each label is followed by its share.
+		expect( texts.slice( channelsIndex + 1, channelsIndex + 11 ) ).toEqual(
+			[
+				'Direct',
+				'46%',
+				'Organic Search',
+				'31%',
+				'Organic Social',
+				'16%',
+				'Referral',
+				'7%',
+				'Others',
+				'<1%',
+			]
+		);
+		expect( texts ).not.toContain( '0%' );
+	} );
+
+	it( 'prints device names capitalized, as the dashboard shows them, and leaves the other labels as GA4 returned them', () => {
+		const data = {
+			...DEFAULT_REPORTS,
+			channelBreakdown: getBreakdownRows(
+				createBreakdownReport( [
+					[ 'Direct', 90 ],
+					[ '(not set)', 10 ],
+				] )
+			),
+			deviceBreakdown: getBreakdownRows(
+				createBreakdownReport( [
+					[ 'desktop', 60 ],
+					[ 'smart tv', 30 ],
+					[ '(not set)', 10 ],
+				] )
+			),
+		};
+
+		const texts = renderPDFText( <TrafficOverviewPDF data={ data } /> );
+		const channelsIndex = texts.indexOf( 'Visitors by channels' );
+		const devicesIndex = texts.indexOf( 'Visitors by devices' );
+
+		expect( texts.slice( channelsIndex + 1, channelsIndex + 5 ) ).toEqual( [
+			'Direct',
+			'90%',
+			'(not set)',
+			'10%',
+		] );
+		expect( texts.slice( devicesIndex + 1, devicesIndex + 7 ) ).toEqual( [
+			'Desktop',
+			'60%',
+			'Smart Tv',
+			'30%',
+			'(Not Set)',
+			'10%',
+		] );
 	} );
 
 	it( 'renders no change badge on the ranked tiles', () => {
