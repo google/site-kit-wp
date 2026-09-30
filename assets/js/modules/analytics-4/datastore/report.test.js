@@ -37,13 +37,9 @@ import * as fixtures from './__fixtures__';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 // Spy on `get()`, because `cacheTTL` never reaches the network request.
-jest.mock( 'googlesitekit-api', () => {
-	const actualModule = jest.requireActual( 'googlesitekit-api' );
-	return {
-		...actualModule,
-		get: jest.fn( actualModule.get ),
-	};
-} );
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 describe( 'modules/analytics-4 report', () => {
 	let registry;

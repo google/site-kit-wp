@@ -30,13 +30,9 @@ import {
 import { MODULES_ADSENSE } from './constants';
 
 // Spy on `get()`, because `cacheTTL` never reaches the network request.
-jest.mock( 'googlesitekit-api', () => {
-	const actualModule = jest.requireActual( 'googlesitekit-api' );
-	return {
-		...actualModule,
-		get: jest.fn( actualModule.get ),
-	};
-} );
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 describe( 'modules/adsense report', () => {
 	let registry;

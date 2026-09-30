@@ -50,13 +50,9 @@ import {
 } from './create-get-report-resolver';
 
 // Spy on `get()`, because `cacheTTL` never reaches the network request.
-jest.mock( 'googlesitekit-api', () => {
-	const actualModule = jest.requireActual( 'googlesitekit-api' );
-	return {
-		...actualModule,
-		get: jest.fn( actualModule.get ),
-	};
-} );
+jest.mock( 'googlesitekit-api', () =>
+	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 const TEST_STORE = 'test/report';
 const reportEndpointRegExp = new RegExp(
