@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { GetPDFDataParams } from '@/js/googlesitekit/widgets/types';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
@@ -299,7 +300,10 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -384,6 +388,85 @@ describe( 'ModuleOverviewWidget getPDFData', () => {
 					1: { color, lineWidth: 8, lineDashStyle: [ 4, 20 ] },
 				},
 			} );
+		} );
+	} );
+
+	it( 'should write the value labels in short form only when either period has a value of 100 or more', async () => {
+		provideReportsWithData();
+
+		// Only the 7 days of the previous period have 100 impressions or more,
+		// with 300 each. The current period has 60 impressions a day. Earnings
+		// stay under 100 on every day.
+		registry.dispatch( MODULES_ADSENSE ).receiveGetReport(
+			buildChartReport( {
+				days: CURRENT_RANGE_DAYS,
+				dailyValues: [ 1.5, 2.5, 60, 0.05 ],
+				totals: [ 10.5, 2.5, 420, 0.05 ],
+			} ),
+			{ options: getCurrentRangeChartArgs( DATES ) }
+		);
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		const [ earningsCall, , impressionsCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( impressionsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: 'short' },
+		} );
+		expect( earningsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: undefined },
+		} );
+	} );
+
+	it( 'should give the value labels more space on the Page CTR chart, whose ratios need more digits', async () => {
+		provideReportsWithData();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		const [ earningsCall, , , pageCTRCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( earningsCall[ 0 ].options ).toMatchObject( {
+			chartArea: { right: 90 },
+		} );
+		expect( pageCTRCall[ 0 ].options ).toMatchObject( {
+			chartArea: { right: 110 },
+		} );
+	} );
+
+	it( 'should label every day of a 7-day range', async () => {
+		provideReportsWithData();
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+			viewOnly: false,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
 		} );
 	} );
 

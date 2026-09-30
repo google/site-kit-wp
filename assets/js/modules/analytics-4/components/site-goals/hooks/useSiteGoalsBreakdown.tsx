@@ -40,7 +40,6 @@ export interface SiteGoalsBreakdown {
 	activeTabID: string;
 	setSelectedTab: ( tabID: string ) => void;
 	isOtherSourcesTab: boolean;
-	isBreakdownValueTab: boolean;
 	hasOtherSources: boolean;
 	otherSourcesCount: number;
 	otherSourcesPreviousCount: number;
@@ -195,7 +194,6 @@ export function useSiteGoalsBreakdown(
 		activeTabID,
 		setSelectedTab,
 		isOtherSourcesTab,
-		isBreakdownValueTab,
 		hasOtherSources,
 		otherSourcesCount,
 		otherSourcesPreviousCount,
