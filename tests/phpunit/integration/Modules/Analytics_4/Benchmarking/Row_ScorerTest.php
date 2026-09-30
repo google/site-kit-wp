@@ -184,7 +184,7 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_score_row__scores_0_for_a_row_with_no_visitors_when_the_site_had_none_in_either_period() {
-		// Both of the site's totals are 0, so no percentage of them can be taken.
+		// Both site totals are 0, so there's nothing to take a percentage of.
 		$row_scorer = new Row_Scorer( 0, 0 );
 
 		$this->assertEqualsWithDelta(
@@ -491,7 +491,7 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_should_exclude_row__excludes_a_row_with_no_visitors_when_the_site_had_none_in_either_period() {
-		// Both of the site's totals are 0, so no percentage of them can be taken.
+		// Both site totals are 0, so there's nothing to take a percentage of.
 		$row_scorer = new Row_Scorer( 0, 0 );
 
 		$this->assertTrue(

@@ -15,7 +15,7 @@ use DateTimeZone;
 use Google\Site_Kit\Modules\Analytics_4;
 
 /**
- * Builds the options of the Analytics reports the benchmarking response is assembled from.
+ * Builds the options of the Analytics reports for the benchmarking response.
  *
  * @since n.e.x.t
  * @access private
@@ -31,7 +31,8 @@ class Report_Options {
 	const DAILY_SERIES_DAYS = 395;
 
 	/**
-	 * Rows a dimension report asks Analytics for, across both of its periods.
+	 * The most rows a dimension report asks Analytics for, across both of its
+	 * periods.
 	 */
 	const REPORT_ROW_LIMIT = 50;
 

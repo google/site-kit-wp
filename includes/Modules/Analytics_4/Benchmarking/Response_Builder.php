@@ -78,7 +78,7 @@ class Response_Builder {
 	/**
 	 * Builds the response for a pair of dates.
 	 *
-	 * Nothing here is written to the site: the response is assembled inside the
+	 * Nothing is saved to the site, since the response is built inside the
 	 * request that asks for it.
 	 *
 	 * @since n.e.x.t
@@ -90,7 +90,7 @@ class Response_Builder {
 	 *
 	 *     @type array $visitors       Visitor totals for the selected period and the one before it.
 	 *     @type array $dailyTraffic   Daily visitor counts, oldest first.
-	 *     @type array $dimensions     Dimension codes the response has, in the order they are shown.
+	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
 	 */
@@ -300,7 +300,7 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets the visitors of every day in the daily series, oldest first.
+	 * Gets each day's visitors in the daily series, oldest first.
 	 *
 	 * Analytics returns no row for a day with no visitors, so that day is listed
 	 * with `0` visitors. `Response_Encoder` writes the first date and then one
@@ -336,14 +336,14 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets the sum of the visitors of the days from one date to another.
+	 * Adds up each day's visitors from one date to another.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
 	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
-	 * @return int The visitors of those days.
+	 * @return int The total visitors of those days.
 	 */
 	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
 		$visitors = 0;
@@ -482,7 +482,7 @@ class Response_Builder {
 	 * Gets the shape a row takes in the response.
 	 *
 	 * A `CONTENT` row reports the visitors of the selected period as
-	 * `visitors`. It has no `previous` count, which only its score used.
+	 * `visitors`, without the `previous` count that only its score used.
 	 *
 	 * @since n.e.x.t
 	 *

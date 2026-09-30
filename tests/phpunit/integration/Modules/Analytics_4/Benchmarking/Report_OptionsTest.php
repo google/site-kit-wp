@@ -64,7 +64,7 @@ class Report_OptionsTest extends TestCase {
 				'endDate'   => '2026-09-14',
 			),
 			$report_options->get_compare_range(),
-			'The `get_compare_range()` method should return 2026-09-14 alone for a period of 2026-09-15 alone.'
+			'The `get_compare_range()` method should return the day before, 2026-09-14, for a one-day period on 2026-09-15.'
 		);
 	}
 

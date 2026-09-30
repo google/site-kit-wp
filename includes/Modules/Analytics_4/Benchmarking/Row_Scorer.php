@@ -259,7 +259,7 @@ class Row_Scorer {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return int|float The change in percent, such as `25` for a rise of 25%. It's `0` when the site had no visitors in the compare period.
+	 * @return int|float The change in percent, such as `25` for a rise of 25%, or `0` when the site had no visitors in the compare period.
 	 */
 	private function get_site_change_percent() {
 		if ( $this->visitors_previous > 0 ) {

@@ -380,7 +380,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the content report in a second call, and for no category report.'
+			'The `build()` method should ask for the content report in a second call, without a category report.'
 		);
 		$this->assertSame( array( 'channels', 'content' ), array_keys( $response['contextualData'] ), 'The response should have no `categories` rows while the post categories have no data.' );
 	}
@@ -419,7 +419,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$this->get_requested_dimensions(),
-			'The `build()` method should ask for the category report in a second call, and for no content report.'
+			'The `build()` method should ask for the category report in a second call, without a content report.'
 		);
 		$this->assertSame( array( 'channels', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have no `content` rows while the post date has no data.' );
 	}
@@ -959,7 +959,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array( 'REFERRERS', 'CHANNELS', 'CONTENT', 'CATEGORIES' ),
 			$ranked_data['dimensions'],
-			'`dimensions` should put `CHANNELS`, whose two rows score 15.125 together, before `CONTENT`, whose one row scores 15.'
+			'`dimensions` should list `CHANNELS`, whose two rows score 15.125 together, before `CONTENT`, whose one row scores 15.'
 		);
 	}
 
@@ -1022,7 +1022,7 @@ class Response_BuilderTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array( 'REFERRERS', 'CONTENT' ), $ranked_data['dimensions'], '`dimensions` should put `REFERRERS` first, because its sum counts the 2 rows past the cap.' );
+		$this->assertSame( array( 'REFERRERS', 'CONTENT' ), $ranked_data['dimensions'], '`dimensions` should list `REFERRERS` first, because its sum counts the 2 rows past the cap.' );
 		$this->assertCount( 5, $ranked_data['contextualData']['referrers'], '`referrers` should keep 5 rows.' );
 	}
 
@@ -1243,6 +1243,6 @@ class Response_BuilderTest extends TestCase {
 			$ranked_data['contextualData']['searchQueries'],
 			'`searchQueries` should exclude `compost bin`, which changed by 2 clicks, and keep the 5 highest-scoring of the rest, highest first.'
 		);
-		$this->assertSame( array( 'SEARCH_QUERIES', 'CHANNELS' ), $ranked_data['dimensions'], '`dimensions` should place `SEARCH_QUERIES` by the sum of its row scores, 57.75 against 24.75 for `CHANNELS`.' );
+		$this->assertSame( array( 'SEARCH_QUERIES', 'CHANNELS' ), $ranked_data['dimensions'], '`dimensions` should list `SEARCH_QUERIES` first, since its row scores add up to 57.75 against 24.75 for `CHANNELS`.' );
 	}
 }
