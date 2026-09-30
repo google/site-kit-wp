@@ -80,7 +80,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 		parent::__construct( $definition );
 		$this->module           = $definition['module'];
 		$this->context          = $definition['context'];
-		$this->response_builder = new Response_Builder( $this->context, $this->module );
+		$this->response_builder = new Response_Builder( $this->context, $this->module, $definition['custom_dimensions_data_available'] );
 	}
 
 	/**
