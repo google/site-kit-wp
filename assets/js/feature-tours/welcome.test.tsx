@@ -384,6 +384,23 @@ describe( 'getWelcomeTour', () => {
 		} );
 
 		it( 'should point the traffic step at the card and the chart that the Traffic Overview widget renders', async () => {
+			const tour = getWelcomeTour( {
+				isViewOnly: false,
+				canAuthenticate: true,
+				isAnalyticsConnected: true,
+				isActivateAnalyticsNotificationPresent: false,
+				isKeyMetricsWidgetPresent: false,
+				isAudienceSegmentationWidgetPresent: false,
+			} );
+
+			// With no Key Metrics widget, the traffic step is the tour's first step.
+			expect( tour.steps[ 0 ] ).toMatchObject( {
+				target: '.googlesitekit-widget--analyticsTrafficOverview',
+				floaterProps: {
+					target: '.googlesitekit-traffic-overview__chart',
+				},
+			} );
+
 			const registry = createTestRegistry();
 
 			provideModules( registry, [
@@ -421,10 +438,14 @@ describe( 'getWelcomeTour', () => {
 			await waitForRegistry();
 
 			expect(
-				container.querySelector( TRAFFIC_STEP.target )
+				container.querySelector(
+					'.googlesitekit-widget--analyticsTrafficOverview'
+				)
 			).toBeInTheDocument();
 			expect(
-				container.querySelector( TRAFFIC_STEP.floaterProps.target )
+				container.querySelector(
+					'.googlesitekit-traffic-overview__chart'
+				)
 			).toBeInTheDocument();
 		} );
 	} );

@@ -50,10 +50,8 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 export type { TrafficBreakdownRow };
 
 /**
- * `TrafficOverviewPDF` shows the chart image in a box the same size as the
- * chart, so the image never stretches and no empty space appears around it.
- * The chart's width is `PDF_FIGMA_CONTENT_WIDTH` minus `PDFCard`'s 24px
- * padding on each side.
+ * The chart fills `PDFCard`'s content width, and `TrafficOverviewPDF` shows it
+ * in a box of the same size, so the image never stretches.
  */
 const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;
@@ -80,7 +78,7 @@ export interface GetPDFDataParams {
 	signal: AbortSignal;
 }
 
-export interface AllTrafficPDFData {
+export interface TrafficOverviewPDFData {
 	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
 	data: {
 		/** GA4 totals report with the current and comparison range totals. */
@@ -143,8 +141,8 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * Mirrors the dashboard's `UserCountGraph` shape: a date column followed by a
- * total-users column.
+ * The table has the same columns as the dashboard chart's table, which
+ * `getTrafficChartData()` builds.
  *
  * @since n.e.x.t
  *
@@ -176,8 +174,8 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's `UserCountGraph`.
+	// The date labels start on the second day, as on the dashboard chart, because
+	// Google Charts hides the first day's label against the chart's edge.
 	const [ , ...ticks ] = points.map( ( { date } ) => date );
 
 	const hasData = points.some( ( { value } ) => value > 0 );
@@ -265,7 +263,7 @@ export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
-}: GetPDFDataParams ): Promise< AllTrafficPDFData > {
+}: GetPDFDataParams ): Promise< TrafficOverviewPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}

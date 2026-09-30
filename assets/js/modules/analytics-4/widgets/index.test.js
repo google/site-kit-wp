@@ -86,7 +86,7 @@ describe( 'Analytics 4 widget registrations', () => {
 	}
 
 	describe( 'Traffic Overview widget', () => {
-		it( 'should be the only Analytics widget in the main dashboard Traffic section', () => {
+		it( 'should be the only Analytics widget in the primary area of the main dashboard Traffic section', () => {
 			registerWidgets( widgets );
 
 			expect(
@@ -114,7 +114,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			expect( widget.modules ).toEqual( [ 'analytics-4' ] );
 		} );
 
-		it( 'should offer "Site traffic over time" in the PDF export and show the Traffic Overview card in the exported PDF', async () => {
+		it( 'should offer the Traffic Overview section as "Site traffic over time" in the PDF export', async () => {
 			registerWidgets( widgets );
 
 			const widget = registry

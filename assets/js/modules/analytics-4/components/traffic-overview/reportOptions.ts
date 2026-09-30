@@ -46,7 +46,7 @@ export interface BreakdownReportDescriptor {
 /**
  * Builds the report-options fragment for the All Visitors totals report.
  *
- * The fragment has no start or end date, no metrics, and no entity URL.
+ * The fragment has no `startDate`, `endDate`, `metrics`, or `url`.
  *
  * @since 1.181.0
  *

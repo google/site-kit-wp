@@ -130,7 +130,9 @@ function formatWholePercentage( wholePercentage: number ): string {
  *
  * The report covers the selected range only and arrives ordered by visitors,
  * so the rows are taken as they come. Values with no visitors are left out
- * first. The displayed shares add up to exactly 100%, only a lone value shows
+ * first. When more than `TRAFFIC_BREAKDOWN_MAX_ROWS` values have visitors, the
+ * top values fill every row except the last, and an "Others" row adds up the
+ * rest. The displayed shares add up to exactly 100%, only a lone value shows
  * 100%, and a row with visitors that gets no whole percent is displayed as
  * `<1%` rather than `0%`.
  *
