@@ -265,8 +265,10 @@ export function initializeReadArticleEventTracker(
 		if ( global.document.readyState === 'complete' ) {
 			observer.observe( endOfContentElement );
 		} else {
-			global.addEventListener( 'load', () =>
-				observer?.observe( endOfContentElement )
+			global.addEventListener(
+				'load',
+				() => observer?.observe( endOfContentElement ),
+				{ once: true }
 			);
 		}
 	} else {
