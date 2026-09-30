@@ -1,5 +1,5 @@
 /**
- * SalesEngagementRateWidget component tests.
+ * FormCompletionEngagementRateWidget component tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -26,31 +26,35 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import {
 	CORE_USER,
-	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { render, within } from '@tests/js/test-utils';
-import { createTestRegistry, freezeFetch } from '@tests/js/utils';
-import SalesEngagementRateWidget from './SalesEngagementRateWidget';
+import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
+import {
+	createTestRegistry,
+	freezeFetch,
+	provideSiteInfo,
+} from '@tests/js/utils';
+import FormCompletionEngagementRateWidget from './FormCompletionEngagementRateWidget';
 import {
 	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 } from './utils/keyMetricsWidgetTestHelpers';
-import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
+import { provideLeadsWidgetTestRegistry } from './utils/leadsWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-describe( 'SalesEngagementRateWidget', () => {
+describe( 'FormCompletionEngagementRateWidget', () => {
 	let registry: WPDataRegistry;
 	const widgetProps: WidgetComponentProps = getWidgetComponentProps(
-		KM_ANALYTICS_SALES_ENGAGEMENT_RATE
+		KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE
 	);
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		provideSalesWidgetTestRegistry( registry );
+		provideLeadsWidgetTestRegistry( registry );
 	} );
 
 	function getEngagementReportOptions() {
@@ -65,7 +69,7 @@ describe( 'SalesEngagementRateWidget', () => {
 		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
-			<SalesEngagementRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -75,9 +79,45 @@ describe( 'SalesEngagementRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render the site-wide engagement rate when no lead events are detected', async () => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0.65' }, { value: '500' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0.55' }, { value: '400' } ],
+					},
+				],
+			},
+			{ options: getEngagementReportOptions() }
+		);
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
+		).toHaveTextContent( '65%' );
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
+		).toHaveTextContent( 'of 500 total sessions' );
+		expect( fetchMock ).not.toHaveFetched();
+	} );
+
 	testGenericReportError(
 		() => registry,
-		SalesEngagementRateWidget,
+		FormCompletionEngagementRateWidget,
 		widgetProps,
 		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
@@ -93,7 +133,7 @@ describe( 'SalesEngagementRateWidget', () => {
 			);
 
 		const { container, waitForRegistry } = render(
-			<SalesEngagementRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -136,7 +176,7 @@ describe( 'SalesEngagementRateWidget', () => {
 		);
 
 		const { container, getByText, waitForRegistry } = render(
-			<SalesEngagementRateWidget { ...widgetProps } />,
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
@@ -153,5 +193,56 @@ describe( 'SalesEngagementRateWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
 		).toHaveTextContent( '+10%' );
+	} );
+
+	it( 'should append a working "Learn more" link to the info tooltip', async () => {
+		provideSiteInfo( registry );
+
+		const engagementReportOptions = getEngagementReportOptions();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [] },
+				{ options: engagementReportOptions }
+			);
+
+		const { container, waitForRegistry } = render(
+			<FormCompletionEngagementRateWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const infoTooltip = container.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'engaged with your content', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining( 'doc=site-goals-engagement-rate' )
+		);
 	} );
 } );
