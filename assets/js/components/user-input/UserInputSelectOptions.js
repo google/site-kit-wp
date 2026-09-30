@@ -33,9 +33,17 @@ import { ENTER } from '@wordpress/keycodes';
  */
 import { Checkbox, Radio } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	SIZE_LARGE,
+	SIZE_SMALL,
+	TYPE_BODY,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
@@ -55,6 +63,8 @@ export default function UserInputSelectOptions( {
 	alignLeftOptions,
 	gaTrackingEventArgs,
 } ) {
+	const breakpoint = useBreakpoint();
+
 	const viewContext = useViewContext();
 	const values = useSelect(
 		( select ) => select( CORE_USER ).getUserInputSetting( slug ) || []
@@ -210,6 +220,11 @@ export default function UserInputSelectOptions( {
 		);
 	} );
 
+	const instructionsSize =
+		breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_LARGE;
+	const instructionsType =
+		breakpoint === BREAKPOINT_SMALL ? TYPE_BODY : TYPE_TITLE;
+
 	return (
 		<Cell
 			className="googlesitekit-user-input__select-options-wrapper"
@@ -219,7 +234,11 @@ export default function UserInputSelectOptions( {
 			smSize={ 4 }
 		>
 			{ showInstructions && (
-				<p className="googlesitekit-user-input__select-instruction">
+				<P
+					className="googlesitekit-user-input__select-instruction"
+					size={ instructionsSize }
+					type={ instructionsType }
+				>
 					<span>
 						{ sprintf(
 							/* translators: %s: number of answers allowed. */
@@ -232,7 +251,7 @@ export default function UserInputSelectOptions( {
 							max
 						) }
 					</span>
-				</p>
+				</P>
 			) }
 			<div
 				className="googlesitekit-user-input__select-options"

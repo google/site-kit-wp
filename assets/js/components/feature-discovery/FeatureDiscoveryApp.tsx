@@ -85,7 +85,6 @@ const FeatureDiscoveryApp: FC = () => {
 											'google-site-kit'
 										) }
 									</Typography>
-									{ /* @ts-expect-error P is not properly typed yet. */ }
 									<P className="googlesitekit-feature-discovery__description">
 										{ __(
 											'Discover features built to help your site succeed and take control of your site’s growth. Turn on additional features and tools to uncover deeper insights about your audience, simplify your reporting, and reach your goals faster.',
