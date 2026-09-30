@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 
 use DateTimeImmutable;
 use DateTimeZone;
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse as Google_Service_AnalyticsData_RunReportResponse;
@@ -37,14 +36,6 @@ class Response_Builder {
 	const MAX_ROWS_PER_DIMENSION = 5;
 
 	/**
-	 * Context instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Context
-	 */
-	private $context;
-
-	/**
 	 * Analytics 4 module instance.
 	 *
 	 * @since n.e.x.t
@@ -65,12 +56,10 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Context                          $context                          The Context instance.
 	 * @param Analytics_4                      $analytics_4                      The Analytics 4 module instance, which runs the reports.
 	 * @param Custom_Dimensions_Data_Available $custom_dimensions_data_available The Custom_Dimensions_Data_Available instance, which says whether the post date and the post categories have data.
 	 */
-	public function __construct( Context $context, Analytics_4 $analytics_4, Custom_Dimensions_Data_Available $custom_dimensions_data_available ) {
-		$this->context                          = $context;
+	public function __construct( Analytics_4 $analytics_4, Custom_Dimensions_Data_Available $custom_dimensions_data_available ) {
 		$this->analytics_4                      = $analytics_4;
 		$this->custom_dimensions_data_available = $custom_dimensions_data_available;
 	}
@@ -78,8 +67,7 @@ class Response_Builder {
 	/**
 	 * Builds the response for a pair of dates.
 	 *
-	 * Nothing is saved to the site, since the response is built inside the
-	 * request that asks for it.
+	 * Nothing is saved to the site, so every call builds the response again.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -124,13 +112,13 @@ class Response_Builder {
 	}
 
 	/**
-	 * Scores, filters, ranks, and caps every dimension's rows, then orders the dimensions.
+	 * Ranks each dimension's rows, and orders the dimensions.
 	 *
-	 * A dimension's rows are ranked by score, highest first, and cut to
-	 * `MAX_ROWS_PER_DIMENSION`. The dimensions are ordered by the sum of their
-	 * row scores, highest first. The sum counts every row that isn't excluded,
-	 * including the rows past the cut. A dimension with no row left is in neither
-	 * `dimensions` nor `contextualData`.
+	 * The rows `Row_Scorer` doesn't exclude are ranked by score, highest first,
+	 * and cut to `MAX_ROWS_PER_DIMENSION`. The dimensions are ordered by the sum
+	 * of their row scores, highest first. The sum counts the rows past the cut
+	 * too. A dimension with no row left is in neither `dimensions` nor
+	 * `contextualData`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -267,7 +255,7 @@ class Response_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with `values`, `dateRange`, and `visitors`. `values` lists the row's dimension values in the order the report asked for them, and `dateRange` names the period the row counts.
+	 * @return array List of rows, each with `values`, `dateRange`, and `visitors`. `values` lists the row's dimension values in the order the report asked for them, and `dateRange` is the row's period.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -283,9 +271,9 @@ class Response_Builder {
 				array_map( fn( $dimension_value ) => $dimension_value->getValue(), $row->getDimensionValues() )
 			);
 
-			// A report with two periods names each row's period in a `dateRange`
-			// value: `date_range_0` for the selected period, and `date_range_1` for
-			// the compare period.
+			// Each row of a report with two periods has a `dateRange` value:
+			// `date_range_0` for the selected period, and `date_range_1` for the
+			// compare period.
 			$date_range = $values['dateRange'] ?? 'date_range_0';
 			unset( $values['dateRange'] );
 
@@ -303,9 +291,8 @@ class Response_Builder {
 	 * Gets each day's visitors in the daily series, oldest first.
 	 *
 	 * Analytics returns no row for a day with no visitors, so that day is listed
-	 * with `0` visitors. `Response_Encoder` writes the first date and then one
-	 * count per day, so a missing day would move every later count to the day
-	 * before it.
+	 * with `0` visitors. `Response_Encoder` keeps only the first date, so every
+	 * day has to be in the list.
 	 *
 	 * @since n.e.x.t
 	 *

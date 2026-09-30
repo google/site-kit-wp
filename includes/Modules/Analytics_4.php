@@ -1101,7 +1101,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service'                          => function () {
 						return $this->get_service( 'analyticsdata' );
 					},
-					'context'                          => $this->context,
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);

@@ -10,7 +10,6 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
@@ -54,14 +53,6 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	private $module;
 
 	/**
-	 * Context instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Context
-	 */
-	private $context;
-
-	/**
 	 * Response builder instance.
 	 *
 	 * @since n.e.x.t
@@ -79,8 +70,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
 		$this->module           = $definition['module'];
-		$this->context          = $definition['context'];
-		$this->response_builder = new Response_Builder( $this->context, $this->module, $definition['custom_dimensions_data_available'] );
+		$this->response_builder = new Response_Builder( $this->module, $definition['custom_dimensions_data_available'] );
 	}
 
 	/**

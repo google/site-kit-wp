@@ -244,7 +244,7 @@ class Row_Scorer {
 	 * @since n.e.x.t
 	 *
 	 * @param array $row The row, with its `current` and `previous` visitors.
-	 * @return int|float The change in percent, such as `50` for a rise of 50%. It's `100` for a row that had no visitors in the compare period and has some in the selected period. It's `0` for a row with no visitors in either period.
+	 * @return int|float The change in percent, such as `50` for a rise of 50%. It's `100` for a row with visitors only in the selected period, and `0` for a row with none in either period.
 	 */
 	private function get_self_change_percent( array $row ) {
 		if ( $row['previous'] > 0 ) {

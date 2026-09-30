@@ -182,7 +182,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 			private $result;
 
 			public function __construct( Context $context, Analytics_4 $analytics_4, $result ) {
-				parent::__construct( $context, $analytics_4, new Custom_Dimensions_Data_Available( new Transients( $context ) ) );
+				parent::__construct( $analytics_4, new Custom_Dimensions_Data_Available( new Transients( $context ) ) );
 				$this->result = $result;
 			}
 

@@ -121,6 +121,7 @@ class Row_ScorerTest extends TestCase {
 			0.0001,
 			'A channel that went from 200 to 100 visitors while the site fell should score 11.55, with the boost.'
 		);
+
 		// The row's change is 10% of the site's visitors, and 14% more than the
 		// change it would show at the site's rate, so the score is
 		// ( 0.6 * 10 + 0.4 * 14 ) * 1.1, with no boost.
@@ -444,6 +445,17 @@ class Row_ScorerTest extends TestCase {
 				)
 			),
 			'A device category that went up 30% should be kept while the site went up 25%.'
+		);
+		$this->assertFalse(
+			$row_scorer->should_exclude_row(
+				'DEVICES',
+				array(
+					'label'    => 'mobile',
+					'current'  => 110,
+					'previous' => 100,
+				)
+			),
+			'A device category that went up 10% should be kept while the site went up 25%.'
 		);
 	}
 

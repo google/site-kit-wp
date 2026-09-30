@@ -138,7 +138,7 @@ class Response_BuilderTest extends TestCase {
 		);
 
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( new Transients( $context ) );
-		$this->builder                          = new Response_Builder( $context, $analytics, $this->custom_dimensions_data_available );
+		$this->builder                          = new Response_Builder( $analytics, $this->custom_dimensions_data_available );
 	}
 
 	/**
@@ -462,8 +462,8 @@ class Response_BuilderTest extends TestCase {
 	public function test_build__asks_for_the_daily_series_over_the_395_days_ending_on_the_end_date() {
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
-		// The Google API client writes `endDate` before `startDate`, the order its
-		// `DateRange` model declares them in, so this assertion ignores key order.
+		// The Google API client writes `endDate` before `startDate`, so this
+		// assertion ignores key order.
 		$this->assertEquals(
 			array(
 				array(
@@ -490,8 +490,8 @@ class Response_BuilderTest extends TestCase {
 		);
 
 		$this->assertCount( 6, $date_ranges, 'The `build()` method should ask for six dimension reports.' );
-		// The Google API client writes `endDate` before `startDate`, the order its
-		// `DateRange` model declares them in, so this assertion ignores key order.
+		// The Google API client writes `endDate` before `startDate`, so this
+		// assertion ignores key order.
 		$this->assertEquals(
 			array(
 				array(
@@ -768,7 +768,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array( '/how-to-plant-garlic/' ),
 			array_column( $response['contextualData']['content'], 'url' ),
-			'`content` should not list `/spring-planting/`, whose post date `20260231` names 31 February.'
+			'`content` should not list `/spring-planting/`, whose post date `20260231` is 31 February.'
 		);
 	}
 

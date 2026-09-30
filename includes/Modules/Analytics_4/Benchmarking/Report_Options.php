@@ -207,12 +207,12 @@ class Report_Options {
 	 * dimensions, in the selected period and in the compare period.
 	 *
 	 * Both periods go in one request, so Analytics returns a row for each value in
-	 * each period and names the period in a `dateRange` value.
+	 * each period, with the period in a `dateRange` value.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $dimension_names   The dimensions to count visitors by, such as `array( 'deviceCategory' )`.
-	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. Default none.
+	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. Default empty array.
 	 * @return array Report request options array.
 	 */
 	private function get_dimension_options( array $dimension_names, array $dimension_filters = array() ) {
