@@ -50,7 +50,10 @@ describe( 'useFinishSetup', () => {
 		registry = createTestRegistry() as Registry;
 		provideSiteInfo( registry );
 		mockTrackEvent.mockClear();
-		await setItem( 'module_setup', true );
+		await setItem( 'module_setup', {
+			slug: 'test-module',
+			options: {},
+		} );
 	} );
 
 	afterEach( async () => {

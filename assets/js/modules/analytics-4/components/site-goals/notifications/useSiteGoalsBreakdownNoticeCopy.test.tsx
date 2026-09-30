@@ -36,6 +36,36 @@ import {
 } from '@tests/js/utils';
 import { useSiteGoalsBreakdownNoticeCopy } from './useSiteGoalsBreakdownNoticeCopy';
 
+/** The sentence the form notices use to say past data is kept. */
+const FORM_PAST_DATA_SENTENCE =
+	'Your past data won’t be affected, you’ll see individual form results for new submissions starting from the moment you turn this on.';
+
+/** The sentence the plugin (ecommerce) notices use to say past data is kept. */
+const PLUGIN_PAST_DATA_SENTENCE =
+	'Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on.';
+
+/**
+ * Every variant of the notice, as
+ * `[ label, scope, hasMultipleProviders, pastDataSentence ]`.
+ */
+const NOTICE_VARIANTS: Array< [ string, BreakdownScope, boolean, string ] > = [
+	[ 'online store', GOAL_TYPES.ECOMMERCE, false, PLUGIN_PAST_DATA_SENTENCE ],
+	[
+		'online store with multiple ecommerce providers',
+		GOAL_TYPES.ECOMMERCE,
+		true,
+		PLUGIN_PAST_DATA_SENTENCE,
+	],
+	[ 'lead generation', GOAL_TYPES.LEAD, false, FORM_PAST_DATA_SENTENCE ],
+	[ 'side panel', BREAKDOWN_SCOPE_BOTH, false, FORM_PAST_DATA_SENTENCE ],
+	[
+		'side panel with multiple ecommerce providers',
+		BREAKDOWN_SCOPE_BOTH,
+		true,
+		PLUGIN_PAST_DATA_SENTENCE,
+	],
+];
+
 describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 	let registry: WPDataRegistry;
 
@@ -146,6 +176,20 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 		);
 	} );
 
+	it.each( NOTICE_VARIANTS )(
+		'says past data is kept in the %s notice',
+		( _label, scope, hasMultipleProviders, pastDataSentence ) => {
+			provideSiteInfo( registry, {
+				hasMultipleActiveEcommerceEventProviders: hasMultipleProviders,
+			} );
+
+			const text = getDescriptionText( scope );
+
+			expect( text ).toContain( pastDataSentence );
+			expect( text ).not.toContain( 'start fresh' );
+		}
+	);
+
 	describe( 'on a site that does not track conversions yet', () => {
 		beforeEach( () => {
 			registry
@@ -190,6 +234,24 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 				expect( getDescriptionText( BREAKDOWN_SCOPE_BOTH ) ).toContain(
 					'Enabling this breakdown will also enable conversion tracking for your forms and sales.'
 				);
+			}
+		);
+
+		it.each( NOTICE_VARIANTS )(
+			'says past data is kept beside the disclosure in the %s notice',
+			( _label, scope, hasMultipleProviders, pastDataSentence ) => {
+				provideSiteInfo( registry, {
+					hasMultipleActiveEcommerceEventProviders:
+						hasMultipleProviders,
+				} );
+
+				const text = getDescriptionText( scope );
+
+				expect( text ).toContain( pastDataSentence );
+				expect( text ).toContain(
+					'will also enable conversion tracking'
+				);
+				expect( text ).not.toContain( 'start fresh' );
 			}
 		);
 

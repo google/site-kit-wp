@@ -16,6 +16,7 @@
  * limitations under the License.
  */
 
+export { default as useExpressSetupScopes } from './useExpressSetupScopes';
 export { default as useExpressSetupSurveyTriggers } from './useExpressSetupSurveyTriggers';
 export { default as useHasPreExistingCTAs } from './useHasPreExistingCTAs';
 export {

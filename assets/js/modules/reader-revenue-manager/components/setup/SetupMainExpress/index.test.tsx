@@ -33,6 +33,7 @@ import {
 	provideUserAuthentication,
 	render,
 } from '@tests/js/test-utils';
+import { EXPRESS_SETUP_SCOPES } from './constants';
 import SetupMainExpress from './index';
 
 jest.mock( './PoweredBy', () => () => null );
@@ -47,6 +48,10 @@ describe( 'SetupMainExpress', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
 		mockSurveyEndpoints();
+
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
 
 		const moduleData = [
 			{

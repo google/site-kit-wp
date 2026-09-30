@@ -36,6 +36,7 @@ import {
 	setupCompleteStep,
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
@@ -49,6 +50,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
 	provideUserInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -83,6 +85,9 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 	provideModuleRegistrations( registry );
 	provideSiteInfo( registry );
 	provideUserInfo( registry );
+	provideUserAuthentication( registry, {
+		grantedScopes: EXPRESS_SETUP_SCOPES,
+	} );
 	providePublications( registry, publications );
 
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {

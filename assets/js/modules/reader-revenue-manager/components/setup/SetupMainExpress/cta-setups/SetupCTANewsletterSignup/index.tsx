@@ -37,7 +37,10 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
-import { useSetupFlow } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	useExpressSetupScopes,
+	useSetupFlow,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
@@ -52,6 +55,8 @@ const STEPS: SetupStep[] = [
 ];
 
 const SetupCTANewsletterSignup: FC = () => {
+	useExpressSetupScopes();
+
 	const { currentStep, advance } = useSetupFlow( STEPS );
 
 	// Copy this flow overrides on the shared steps, keyed by step slug.

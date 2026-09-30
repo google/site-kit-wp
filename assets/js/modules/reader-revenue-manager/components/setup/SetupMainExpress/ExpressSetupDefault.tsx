@@ -30,7 +30,10 @@ import {
 	setupCompleteStep,
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
-import { useSetupFlow } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	useExpressSetupScopes,
+	useSetupFlow,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
@@ -43,6 +46,8 @@ const STEPS: SetupStep[] = [
 ];
 
 const ExpressSetupDefault: FC = () => {
+	useExpressSetupScopes();
+
 	const { currentStep, advance } = useSetupFlow( STEPS );
 
 	const StepComponent = currentStep?.Component;

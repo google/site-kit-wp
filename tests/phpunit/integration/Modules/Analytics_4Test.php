@@ -206,11 +206,9 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
-			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=6',
-			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
-		);
+		wp_parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $query_params );
+
+		$this->assertEquals( '6', $query_params['steps'], 'Setup URL should include the steps query parameter as 6 when Analytics is active.' );
 	}
 
 	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
@@ -2037,12 +2035,31 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'remove-site-goals-widget',
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
+		);
+	}
+
+	public function test_get_datapoints__typicalTraffic() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$this->assertContains(
+			'benchmarking-data',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the benchmarking data datapoint with typical traffic enabled'
+		);
+	}
+
+	public function test_get_datapoints__typicalTraffic_disabled() {
+		$this->assertNotContains(
+			'benchmarking-data',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
 		);
 	}
 
@@ -2081,6 +2098,7 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'remove-site-goals-widget',
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',

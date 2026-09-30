@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -30,6 +31,7 @@ import {
 	fireEvent,
 	provideModuleRegistrations,
 	provideModules,
+	provideUserAuthentication,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -80,6 +82,10 @@ describe( 'ExpressSetupDefault', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
 
 		const moduleData = [
 			{
