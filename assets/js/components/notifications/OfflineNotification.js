@@ -27,7 +27,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 
 function OfflineNotification() {
@@ -45,16 +48,16 @@ function OfflineNotification() {
 		<div aria-live="polite">
 			{ ! isOnline && ! dismissed && (
 				<Notice
-					className="googlesitekit-notice-snackbar googlesitekit-notice-snackbar--bottom-right"
-					type={ NOTICE_TYPES.WARNING }
-					description={ __(
-						'You are currently offline. Some features may not be available.',
-						'google-site-kit'
-					) }
 					ctaButton={ {
 						label: __( 'OK, Got it!', 'google-site-kit' ),
 						onClick: () => setDismissed( true ),
 					} }
+					description={ __(
+						'You are currently offline. Some features may not be available.',
+						'google-site-kit'
+					) }
+					type={ NOTICE_TYPES.WARNING }
+					variant={ NOTICE_VARIANTS.SNACKBAR }
 				/>
 			) }
 		</div>

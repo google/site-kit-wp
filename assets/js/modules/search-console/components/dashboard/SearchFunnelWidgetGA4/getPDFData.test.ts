@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -207,7 +208,10 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -283,6 +287,61 @@ describe( 'SearchFunnelWidgetGA4 getPDFData', () => {
 					1: { color, lineWidth: 8, lineDashStyle: [ 4, 20 ] },
 				},
 			} );
+		} );
+	} );
+
+	it( 'should write the value labels in short form only when either period has a value of 100 or more', async () => {
+		provideReports( registry );
+
+		// Only the 7 days of the previous period have 100 impressions or more, with
+		// 58,000 each. Clicks stay under 100 on every day.
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			buildSearchConsoleReport().map( ( row, index ) =>
+				index < 7 ? { ...row, impressions: 58000 } : row
+			),
+			{ options: searchConsoleArgs }
+		);
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		const [ impressionsCall, clicksCall ] =
+			mockRenderGoogleChartToDataURI.mock.calls;
+		expect( impressionsCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: 'short' },
+		} );
+		expect( clicksCall[ 0 ].options ).toMatchObject( {
+			vAxis: { format: undefined },
+		} );
+	} );
+
+	it( 'should make the space for the value labels 90 pixels wide, and label every day of a 7-day range', async () => {
+		provideReports( registry );
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 90 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
 		} );
 	} );
 

@@ -31,6 +31,7 @@ import Link from '@/js/components/Link';
 import SettingsStatuses from '@/js/components/settings/SettingsStatuses';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -117,9 +118,12 @@ export default function SettingsView() {
 					>
 						{ __( 'Account', 'google-site-kit' ) }
 					</Typography>
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						<DisplaySetting value={ accountID } />
-					</p>
+					</P>
 				</div>
 
 				{ ( ! isAMP || isSecondaryAMP ) && (
@@ -148,13 +152,19 @@ export default function SettingsView() {
 									</span>
 								) }
 							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<P
+								className="googlesitekit-settings-module__meta-item-data"
+								size={ SIZE_MEDIUM }
+							>
 								<DisplaySetting value={ containerID } />
-							</p>
+							</P>
 						</div>
 						{ editWebContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<P
+									className="googlesitekit-settings-module__meta-item-data"
+									size={ SIZE_SMALL }
+								>
 									<Link href={ editWebContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -180,7 +190,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</P>
 							</div>
 						) }
 					</Fragment>
@@ -212,13 +222,19 @@ export default function SettingsView() {
 									</span>
 								) }
 							</Typography>
-							<p className="googlesitekit-settings-module__meta-item-data">
+							<P
+								className="googlesitekit-settings-module__meta-item-data"
+								size={ SIZE_MEDIUM }
+							>
 								<DisplaySetting value={ ampContainerID } />
-							</p>
+							</P>
 						</div>
 						{ editAMPContainerURL && (
 							<div className="googlesitekit-settings-module__meta-item googlesitekit-settings-module__meta-item--data-only">
-								<p className="googlesitekit-settings-module__meta-item-data googlesitekit-settings-module__meta-item-data--tiny">
+								<P
+									className="googlesitekit-settings-module__meta-item-data"
+									size={ SIZE_SMALL }
+								>
 									<Link href={ editAMPContainerURL } external>
 										{ createInterpolateElement(
 											sprintf(
@@ -244,7 +260,7 @@ export default function SettingsView() {
 											}
 										) }
 									</Link>
-								</p>
+								</P>
 							</div>
 						) }
 					</Fragment>
@@ -262,7 +278,10 @@ export default function SettingsView() {
 						{ __( 'Tag Manager Code Snippet', 'google-site-kit' ) }
 					</Typography>
 
-					<p className="googlesitekit-settings-module__meta-item-data">
+					<P
+						className="googlesitekit-settings-module__meta-item-data"
+						size={ SIZE_MEDIUM }
+					>
 						{ useSnippet && (
 							<span>
 								{ __(
@@ -279,10 +298,13 @@ export default function SettingsView() {
 								) }
 							</span>
 						) }
-					</p>
+					</P>
 
 					{ hasExistingTag && (
-						<P className="googlesitekit-margin-bottom-0">
+						<P
+							className="googlesitekit-margin-bottom-0"
+							size={ SIZE_SMALL }
+						>
 							{ __(
 								'Placing two tags at the same time is not recommended.',
 								'google-site-kit'

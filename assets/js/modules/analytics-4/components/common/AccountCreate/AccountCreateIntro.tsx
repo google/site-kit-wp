@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import { SIZE_LARGE, TYPE_TITLE } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { VIEW_CONTEXT_SETTINGS } from '@/js/googlesitekit/constants';
 import { useFeature } from '@/js/hooks/useFeature';
@@ -66,15 +67,14 @@ const AccountCreateIntro: FC< AccountCreateIntroProps > = ( {
 			{ ! isSettingsContext && errorNotice }
 
 			{ ! isInitialSetupFlow && (
-				/* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */
-				<Typography as="h3" type="title" size="large">
+				<Typography as="h3" size={ SIZE_LARGE } type={ TYPE_TITLE }>
 					{ __( 'Create your Analytics account', 'google-site-kit' ) }
 				</Typography>
 			) }
 
 			{ isSettingsContext && errorNotice }
 
-			<P size={ isInitialSetupFlow ? 'large' : undefined }>
+			<P size={ isInitialSetupFlow ? SIZE_LARGE : undefined }>
 				{ __(
 					'We’ve pre-filled the required information for your new account. Confirm or edit any details:',
 					'google-site-kit'

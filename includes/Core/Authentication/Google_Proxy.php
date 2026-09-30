@@ -241,6 +241,7 @@ class Google_Proxy {
 	 * Sanitizes the given base URL.
 	 *
 	 * @since 1.154.0
+	 * @since n.e.x.t Allows URLs on the `.local` TLD.
 	 *
 	 * @param string $url Base URL to sanitize.
 	 * @return string Sanitized base URL.
@@ -258,6 +259,11 @@ class Google_Proxy {
 
 		// Allow for version-specific URLs to application instances.
 		if ( preg_match( '#^https://(?:\d{8}t\d{6}-dot-)?site-kit(?:-dev|-local)?(?:\.[a-z]{2}\.r)?\.appspot\.com/?$#', $url, $_ ) ) {
+			return $url;
+		}
+
+		// Allow for locally hosted instances, as the `.local` TLD can't resolve to public hosts.
+		if ( preg_match( '#^https?://(?:[a-z0-9-]+\.)+local(?::\d+)?/?$#', $url ) ) {
 			return $url;
 		}
 

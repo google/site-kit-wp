@@ -32,6 +32,7 @@ import conversionReporting from './conversion-reporting';
 import customDimensions from './custom-dimensions';
 import customDimensionsGatheringData from './custom-dimensions-gathering-data';
 import enhancedMeasurement from './enhanced-measurement';
+import freshData from './fresh-data';
 import keyEvents from './key-events';
 import moduleData from './module-data';
 import partialData from './partial-data';
@@ -58,6 +59,7 @@ const store = combineStores(
 	customDimensions,
 	customDimensionsGatheringData,
 	enhancedMeasurement,
+	freshData,
 	partialData,
 	properties,
 	report,

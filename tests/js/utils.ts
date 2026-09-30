@@ -227,6 +227,8 @@ export function provideSiteInfo(
 		hasActiveLeadEventProviders: undefined,
 		hasActiveEcommerceEventProviders: undefined,
 		activeConversionEventProviders: undefined,
+		wooCommerceActive: false,
+		wooCommerceInstalled: false,
 	};
 
 	registry.dispatch( CORE_SITE ).receiveSiteInfo( {
