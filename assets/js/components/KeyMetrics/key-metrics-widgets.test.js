@@ -109,6 +109,30 @@ function registryReturningReports( reports ) {
 }
 
 /**
+ * Builds a registry that detects all three lead events and whose
+ * `fetchGetReport` resolves with the given reports in order, so a "Generating
+ * leads" tile's `getTileData` can be exercised against report fixtures.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object[]} reports The report responses to resolve, in fetch order.
+ * @return {Object} A mock registry.
+ */
+function leadEventsRegistryReturningReports( reports ) {
+	const leadEvents = [ 'contact', 'submit_lead_form', 'generate_lead' ];
+
+	return {
+		...registryReturningReports( reports ),
+		resolveSelect: jest.fn( () => ( {
+			getDetectedEvents: jest.fn( () => Promise.resolve( leadEvents ) ),
+		} ) ),
+		select: jest.fn( () => ( {
+			getDetectedLeadEvents: jest.fn( () => leadEvents ),
+		} ) ),
+	};
+}
+
+/**
  * Loads one tile's data against a single report fixture.
  *
  * @since 1.186.0
@@ -243,7 +267,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.changeType ).toBe( 'negative' );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadNewVisitorsTile( {} );
 
 			expect( data ).toBeNull();
@@ -320,7 +344,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.subtext ).toContain( 'total visitors' );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadTile( KM_ANALYTICS_RETURNING_VISITORS, {} );
 
 			expect( data ).toBeNull();
@@ -426,7 +450,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			] );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadTile( KM_ANALYTICS_TOP_CITIES, {
 				rows: [],
 				totals: [],
@@ -505,13 +529,71 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			] );
 		} );
 
-		it( 'drops the tile when the ranked report has no rows', async () => {
+		it( 'does not render the tile when the ranked report has no rows', async () => {
 			const data = await loadTileWithReports(
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 				[ {}, totalReport ]
 			);
 
 			expect( data ).toBeNull();
+		} );
+	} );
+
+	describe( 'Generating leads headline getTileData', () => {
+		// Each lead event's count per period. The current period sums to 180,
+		// while the first event alone has 100.
+		const leadEventsReport = {
+			rows: [
+				[ 'contact', 'date_range_0', '100' ],
+				[ 'contact', 'date_range_1', '50' ],
+				[ 'submit_lead_form', 'date_range_0', '50' ],
+				[ 'submit_lead_form', 'date_range_1', '30' ],
+				[ 'generate_lead', 'date_range_0', '30' ],
+				[ 'generate_lead', 'date_range_1', '20' ],
+			].map( ( [ eventName, dateRange, count ] ) => ( {
+				dimensionValues: [ { value: eventName }, { value: dateRange } ],
+				metricValues: [ { value: count } ],
+			} ) ),
+		};
+
+		function loadLeadTile( slug, reports ) {
+			return KEY_METRICS_PDF_TILES[ slug ].getTileData( {
+				registry: leadEventsRegistryReturningReports( reports ),
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+		}
+
+		it( 'sums Total form completions across every detected lead event', async () => {
+			const data = await loadLeadTile(
+				KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+				[ leadEventsReport ]
+			);
+
+			expect( data.value ).toBe( '180' );
+		} );
+
+		it( 'sums every detected lead event into the Form completion rate', async () => {
+			const engagementReport = {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0.65' }, { value: '1000' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0.55' }, { value: '1000' } ],
+					},
+				],
+			};
+
+			const data = await loadLeadTile(
+				KM_ANALYTICS_FORM_COMPLETION_RATE,
+				[ leadEventsReport, engagementReport ]
+			);
+
+			// 180 form completions of 1,000 sessions.
+			expect( data.value ).toBe( '18%' );
 		} );
 	} );
 } );

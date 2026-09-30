@@ -97,8 +97,23 @@ describe( 'FormCompletionRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not remain stuck loading when no lead events are detected', async () => {
+	it( 'should render a 0% rate of the site-wide total sessions when no lead events are detected', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0.65' }, { value: '500' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0.55' }, { value: '400' } ],
+					},
+				],
+			},
+			{ options: getEngagementReportOptions() }
+		);
 
 		const { container, waitForRegistry } = render(
 			<FormCompletionRateWidget { ...widgetProps } />,
@@ -109,6 +124,13 @@ describe( 'FormCompletionRateWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
 		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
+		).toHaveTextContent( '0%' );
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
+		).toHaveTextContent( 'of 500 total sessions' );
+		expect( fetchMock ).not.toHaveFetched();
 	} );
 
 	it( 'should append a working "Learn more" link to the info tooltip', async () => {
@@ -155,9 +177,12 @@ describe( 'FormCompletionRateWidget', () => {
 		) as HTMLElement;
 
 		expect(
-			within( tooltipContent ).getByText( 'like submitting a form', {
-				exact: false,
-			} )
+			within( tooltipContent ).getByText(
+				'like making a purchase or filling out a form',
+				{
+					exact: false,
+				}
+			)
 		).toBeInTheDocument();
 
 		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {

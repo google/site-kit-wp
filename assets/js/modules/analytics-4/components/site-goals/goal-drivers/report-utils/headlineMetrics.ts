@@ -35,6 +35,7 @@ import { HeadlineMetricReportDates } from './types';
  * report ID.
  *
  * @since 1.188.0
+ * @since n.e.x.t Added support for an array of event names.
  *
  * @param {Object}          dates             The date range, including the compare dates.
  * @param {string|string[]} [primaryEvent]    The primary conversion event name, or names to match any of.

@@ -731,13 +731,13 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOTAL_FORM_COMPLETIONS ]: {
-		title: __( 'Total Form completions', 'google-site-kit' ),
+		title: __( 'Total form completions', 'google-site-kit' ),
 		description: __(
-			'The number of form completions on your site during the selected date range',
+			'Total visitors who successfully completed a form',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The number of form completions on your site during the selected date range',
+			'Total visitors who successfully completed a form',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -752,11 +752,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_FORM_COMPLETION_RATE ]: {
 		title: __( 'Form completion rate', 'google-site-kit' ),
 		description: __(
-			'The percentage of total visitors who successfully completed a key action (like submitting a form)',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'The percentage of total visitors who successfully completed a key action (like submitting a form)',
+			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
 			'google-site-kit'
 		),
 		documentationLinkSlug: 'site-goals-lead-generation-key-action',
@@ -795,11 +795,11 @@ const KEY_METRICS_WIDGETS = {
 			'google-site-kit'
 		),
 		description: __(
-			'Which channels have the highest percentage of leads?',
+			'Which channels are most efficient at capturing leads?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Which channels have the highest percentage of leads?',
+			'Which channels are most efficient at capturing leads?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -814,11 +814,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE ]: {
 		title: __( 'Leads by visitor type', 'google-site-kit' ),
 		description: __(
-			'Which types of visitors are most likely to become a lead?',
+			'Which types of visitors are most likely to reach out?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Which types of visitors are most likely to become a lead?',
+			'Which types of visitors are most likely to reach out?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -833,11 +833,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEADS_BY_COUNTRIES ]: {
 		title: __( 'Leads by countries', 'google-site-kit' ),
 		description: __(
-			'Which countries bring in the most leads?',
+			'Which countries are people reaching out from?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Which countries bring in the most leads?',
+			'Which countries are people reaching out from?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -852,11 +852,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_LEADS_BY_DEVICE_TYPE ]: {
 		title: __( 'Leads by device type', 'google-site-kit' ),
 		description: __(
-			'Which devices bring in the most leads?',
+			'What devices do people use when they take action?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Which devices bring in the most leads?',
+			'What devices do people use when they take action?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -871,11 +871,11 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]: {
 		title: __( 'Top authors driving leads', 'google-site-kit' ),
 		description: __(
-			'Whose content is best at converting leads?',
+			'Whose content is best at converting readers?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Whose content is best at converting leads?',
+			'Whose content is best at converting readers?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [

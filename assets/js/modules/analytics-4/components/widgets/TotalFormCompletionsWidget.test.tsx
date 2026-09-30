@@ -81,7 +81,7 @@ describe( 'TotalFormCompletionsWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not remain stuck loading when no lead events are detected', async () => {
+	it( 'should render zero form completions without fetching when no lead events are detected', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		const { container, waitForRegistry } = render(
@@ -93,6 +93,10 @@ describe( 'TotalFormCompletionsWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
 		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
+		).toHaveTextContent( '0' );
+		expect( fetchMock ).not.toHaveFetched();
 	} );
 
 	testGenericReportError(

@@ -50,36 +50,25 @@ interface LeadsByVisitorTypeWidgetProps {
 	Widget: ElementType;
 }
 
-/**
- * Gets the report options for the Leads By Visitor Type widget, plus
- * whether no lead events are detected.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options and lead-event detection state.
- */
-function getLeadsByVisitorTypeData( select: Select ) {
-	const detectedLeadEvents =
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-
-	return {
-		reportOptions: buildVisitorTypeReportOptions( {
-			dates: select( CORE_USER ).getDateRangeDates(),
-			primaryEvent: detectedLeadEvents,
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-		} ),
-		hasNoLeadEvents: detectedLeadEvents?.length === 0,
-	};
-}
-
 const LeadsByVisitorTypeWidget: FC< LeadsByVisitorTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const { reportOptions, hasNoLeadEvents } = useSelect(
-		getLeadsByVisitorTypeData,
+	const dates = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
+	const detectedLeadEvents = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		[]
+	);
+
+	const reportOptions = buildVisitorTypeReportOptions( {
+		dates,
+		primaryEvent: detectedLeadEvents,
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

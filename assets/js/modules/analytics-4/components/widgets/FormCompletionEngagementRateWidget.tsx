@@ -38,7 +38,6 @@ import {
 import { buildEngagementReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
 import ConnectGA4CTATileWidget from './ConnectGA4CTATileWidget';
@@ -48,45 +47,23 @@ interface FormCompletionEngagementRateWidgetProps {
 	Widget: ElementType;
 }
 
-/**
- * Gets the engagement report options for the Form Completion Engagement Rate widget.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
- */
-function getFormCompletionEngagementRateReportOptions( select: Select ) {
-	return buildEngagementReportOptions(
-		select( CORE_USER ).getDateRangeDates( { compare: true } )
-	);
-}
-
 const FormCompletionEngagementRateWidget: FC<
 	FormCompletionEngagementRateWidgetProps
 > = ( { Widget } ) => {
-	const detectedLeadEvents = useSelect(
+	const dates = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
 		[]
 	);
 
-	const engagementReportOptions = useSelect(
-		getFormCompletionEngagementRateReportOptions,
-		[]
-	);
-	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
-
-	// `engagementReportOptions` is never `undefined` (it only depends on
-	// `dates`), so readiness is gated on the separately-selected
-	// `detectedLeadEvents` instead of the default "is `primaryOptions` truthy" check.
+	// The engagement rate is site-wide, so it doesn't depend on which lead
+	// events are detected, and still loads when none are.
 	const {
 		report: engagementReport,
 		loading,
 		error,
 	} = useAnalyticsReportsData( {
-		primaryOptions: engagementReportOptions,
-		ready: Boolean( detectedLeadEvents?.length ),
+		primaryOptions: buildEngagementReportOptions( dates ),
 	} );
 
 	const { currentEngagementRate, previousEngagementRate, currentSessions } =
@@ -109,7 +86,7 @@ const FormCompletionEngagementRateWidget: FC<
 			) }
 			previousValue={ previousEngagementRate }
 			currentValue={ currentEngagementRate }
-			loading={ loading && ! hasNoLeadEvents }
+			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>

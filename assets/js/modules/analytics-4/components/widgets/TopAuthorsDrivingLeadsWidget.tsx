@@ -48,6 +48,7 @@ import {
 	makeShareOfExplicitTotalMapper,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/rowMapperHelpers';
 import { buildTopAuthorsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topAuthors';
+import { BuildGoalDriverReportOptionsArgs } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/types';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import withCustomDimensions from '@/js/modules/analytics-4/utils/withCustomDimensions';
@@ -61,7 +62,7 @@ interface TopAuthorsDrivingLeadsWidgetProps {
 }
 
 /**
- * Gets the report options for the Top Authors Driving Leads widget.
+ * Builds the report options for the Top Authors Driving Leads widget.
  *
  * Passes `context: GOAL_TYPES.LEAD` so this reportID stays distinct from
  * the equivalent Selling products tile, which requests the same shape of
@@ -69,63 +70,66 @@ interface TopAuthorsDrivingLeadsWidgetProps {
  *
  * @since n.e.x.t
  *
- * @param {Function} select Data store 'select' function.
+ * @param {Object}   args              Builder args.
+ * @param {Object}   args.dates        The date range.
+ * @param {string[]} args.primaryEvent The detected lead event names.
  * @return {Object|undefined} The report options.
  */
-function getTopAuthorsDrivingLeadsReportOptions( select: Select ) {
+function buildTopAuthorsDrivingLeadsReportOptions( {
+	dates,
+	primaryEvent,
+}: Pick< BuildGoalDriverReportOptionsArgs, 'dates' | 'primaryEvent' > ) {
 	return buildTopAuthorsReportOptions( {
-		dates: select( CORE_USER ).getDateRangeDates(),
-		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		dates,
+		primaryEvent,
 		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 		context: GOAL_TYPES.LEAD,
 	} );
 }
 
 /**
- * Gets the site-wide total report options for the Top Authors Driving
- * Leads widget, plus whether no lead events are detected.
- *
- * The percentage shown is each author's share of every matching event
- * site-wide, not just the ranked authors above - see
- * `buildGoalDriverTotalReportOptions`. Passes `context: GOAL_TYPES.LEAD`
- * for the same reason as the ranked report options above.
- *
- * `hasNoLeadEvents` is derived here, rather than alongside the ranked
- * report options above, because `getTopAuthorsDrivingLeadsReportOptions`
- * is also passed directly to `withCustomDimensions` below, which expects
- * it to keep returning bare report options.
+ * Gets the report options for the Top Authors Driving Leads widget, for
+ * `withCustomDimensions` to check the report for custom dimension errors.
  *
  * @since n.e.x.t
  *
  * @param {Function} select Data store 'select' function.
- * @return {Object} The report options and lead-event detection state.
+ * @return {Object|undefined} The report options.
  */
-function getTopAuthorsDrivingLeadsTotalData( select: Select ) {
-	const detectedLeadEvents =
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-
-	return {
-		totalReportOptions: buildGoalDriverTotalReportOptions( {
-			dates: select( CORE_USER ).getDateRangeDates(),
-			primaryEvent: detectedLeadEvents,
-			context: GOAL_TYPES.LEAD,
-			reportIDSuffix: 'top-authors',
-		} ),
-		hasNoLeadEvents: detectedLeadEvents?.length === 0,
-	};
+function getTopAuthorsDrivingLeadsReportOptions( select: Select ) {
+	return buildTopAuthorsDrivingLeadsReportOptions( {
+		dates: select( CORE_USER ).getDateRangeDates(),
+		primaryEvent: select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+	} );
 }
 
 const TopAuthorsDrivingLeadsWidget: FC<
 	TopAuthorsDrivingLeadsWidgetProps
 > = ( { Widget } ) => {
-	const reportOptions = useSelect(
-		getTopAuthorsDrivingLeadsReportOptions,
+	const dates = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
-	const { totalReportOptions, hasNoLeadEvents } = useSelect(
-		getTopAuthorsDrivingLeadsTotalData,
+	const detectedLeadEvents = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 		[]
 	);
+
+	const reportOptions = buildTopAuthorsDrivingLeadsReportOptions( {
+		dates,
+		primaryEvent: detectedLeadEvents,
+	} );
+	// The percentage shown is each author's share of every matching event
+	// site-wide, not just the ranked authors - see
+	// `buildGoalDriverTotalReportOptions`.
+	const totalReportOptions = buildGoalDriverTotalReportOptions( {
+		dates,
+		primaryEvent: detectedLeadEvents,
+		context: GOAL_TYPES.LEAD,
+		reportIDSuffix: 'top-authors',
+	} );
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
 	const {
 		report,

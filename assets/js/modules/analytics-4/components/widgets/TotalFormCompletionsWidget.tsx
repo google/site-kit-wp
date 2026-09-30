@@ -42,35 +42,25 @@ interface TotalFormCompletionsWidgetProps {
 	Widget: ElementType;
 }
 
-/**
- * Gets the report options for the Total Form Completions widget, plus
- * whether no lead events are detected.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options and lead-event detection state.
- */
-function getTotalFormCompletionsData( select: Select ) {
-	const detectedLeadEvents =
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-
-	return {
-		reportOptions: buildPrimaryEventReportOptions(
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-			detectedLeadEvents
-		),
-		hasNoLeadEvents: detectedLeadEvents?.length === 0,
-	};
-}
-
 const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 	Widget,
 } ) => {
-	const { reportOptions, hasNoLeadEvents } = useSelect(
-		getTotalFormCompletionsData,
+	const dates = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
 		[]
 	);
+	const detectedLeadEvents = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		[]
+	);
+
+	const reportOptions = buildPrimaryEventReportOptions(
+		dates,
+		detectedLeadEvents
+	);
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

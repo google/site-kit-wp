@@ -50,36 +50,25 @@ interface LeadsByDeviceTypeWidgetProps {
 	Widget: ElementType;
 }
 
-/**
- * Gets the report options for the Leads By Device Type widget, plus
- * whether no lead events are detected.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options and lead-event detection state.
- */
-function getLeadsByDeviceTypeData( select: Select ) {
-	const detectedLeadEvents =
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-
-	return {
-		reportOptions: buildDeviceTypeReportOptions( {
-			dates: select( CORE_USER ).getDateRangeDates(),
-			primaryEvent: detectedLeadEvents,
-			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-		} ),
-		hasNoLeadEvents: detectedLeadEvents?.length === 0,
-	};
-}
-
 const LeadsByDeviceTypeWidget: FC< LeadsByDeviceTypeWidgetProps > = ( {
 	Widget,
 } ) => {
-	const { reportOptions, hasNoLeadEvents } = useSelect(
-		getLeadsByDeviceTypeData,
+	const dates = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
+	const detectedLeadEvents = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
+		[]
+	);
+
+	const reportOptions = buildDeviceTypeReportOptions( {
+		dates,
+		primaryEvent: detectedLeadEvents,
+		limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+	} );
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
 
 	const { report, loading, error } = useAnalyticsReportsData( {
 		primaryOptions: reportOptions,

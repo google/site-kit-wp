@@ -549,7 +549,7 @@ function extractTopSourceShareTile( totalReport, sourceReport, buildSubtext ) {
 	const topSource =
 		sourceRowFor( 'date_range_0' )?.dimensionValues?.[ 0 ]?.value;
 
-	// No top source row means the report has no data, so drop the tile.
+	// No top source row means the report has no data, so don't render the tile.
 	if ( ! topSource ) {
 		return null;
 	}
@@ -623,7 +623,7 @@ export const KEY_METRICS_PDF_TILES = {
 				const pagePaths = getPagePaths( report );
 
 				// No ranked pages means the report has no data, so fetch
-				// nothing and let the empty reports drop the tile.
+				// nothing and don't render the tile.
 				if ( pagePaths.length === 0 ) {
 					return [];
 				}
@@ -642,7 +642,7 @@ export const KEY_METRICS_PDF_TILES = {
 			) => {
 				const { rows = [] } = earningsReport || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -712,7 +712,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ pagesReport, titlesReport ], { registry, viewOnly } ) => {
 				const { rows = [] } = pagesReport || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -855,7 +855,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -892,7 +892,7 @@ export const KEY_METRICS_PDF_TILES = {
 					.getProductPostType();
 
 				// No detected product post type means there is no
-				// product data, so fetch nothing and let the tile drop.
+				// product data, so fetch nothing and don't render the tile.
 				if ( ! productPostType ) {
 					return [];
 				}
@@ -914,7 +914,7 @@ export const KEY_METRICS_PDF_TILES = {
 				const pagePaths = getPagePaths( report );
 
 				// No page paths means the products report has no data,
-				// so fetch nothing and let the tile drop.
+				// so fetch nothing and don't render the tile.
 				if ( pagePaths.length === 0 ) {
 					return [];
 				}
@@ -933,7 +933,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -972,7 +972,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report ] ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1020,7 +1020,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report ] ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1066,7 +1066,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report ] ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1154,7 +1154,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1223,8 +1223,8 @@ export const KEY_METRICS_PDF_TILES = {
 				const report = await analytics.getReport( reportOptions );
 				const pagePaths = getPagePaths( report );
 
-				// No pages means no data, so fetch nothing and let the empty
-				// report drop the tile.
+				// No pages means no data, so fetch nothing and don't render the
+				// tile.
 				if ( pagePaths.length === 0 ) {
 					return [];
 				}
@@ -1243,7 +1243,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1312,7 +1312,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report, titlesReport ], { registry, dates, viewOnly } ) => {
 				const { rows = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1350,7 +1350,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report ] ) => {
 				const { rows = [], totals = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1394,7 +1394,7 @@ export const KEY_METRICS_PDF_TILES = {
 			( [ report ] ) => {
 				const { rows = [], totals = [] } = report || {};
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( rows.length === 0 ) {
 					return null;
 				}
@@ -1773,7 +1773,7 @@ export const KEY_METRICS_PDF_TILES = {
 						row?.dimensionValues?.[ 0 ]?.value !== ''
 				);
 
-				// No named country rows means the report has no data, so drop the tile.
+				// No named country rows means the report has no data, so don't render the tile.
 				if ( ! namedRows.length ) {
 					return null;
 				}
@@ -1866,7 +1866,7 @@ export const KEY_METRICS_PDF_TILES = {
 					getTopPagesDrivingLeadsEventNames( detectedEvents );
 
 				// No detected lead events means no data, so fetch nothing and
-				// let the empty reports drop the tile.
+				// don't render the tile.
 				if ( eventNames.length === 0 ) {
 					return [];
 				}
@@ -2249,7 +2249,7 @@ export const KEY_METRICS_PDF_TILES = {
 				const { currentPrimaryCount, previousPrimaryCount } =
 					processReports( report || {}, {}, { aggregate: true } );
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( ! report?.rows?.length ) {
 					return null;
 				}
@@ -2298,7 +2298,7 @@ export const KEY_METRICS_PDF_TILES = {
 						{ aggregate: true }
 					);
 
-				// No rows means the report has no data, so drop the tile.
+				// No rows means the report has no data, so don't render the tile.
 				if ( ! primaryEventReport?.rows?.length ) {
 					return null;
 				}
@@ -2338,7 +2338,7 @@ export const KEY_METRICS_PDF_TILES = {
 					currentSessions,
 				} = processReports( {}, engagementReport || {} );
 
-				// No totals means the report has no data, so drop the tile.
+				// No totals means the report has no data, so don't render the tile.
 				if ( ! engagementReport?.totals?.length ) {
 					return null;
 				}

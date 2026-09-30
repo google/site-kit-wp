@@ -155,7 +155,7 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not remain stuck loading when no lead events are detected', async () => {
+	it( 'should render the zero data state without fetching when no lead events are detected', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
 		const { container, waitForRegistry } = render(
@@ -167,6 +167,10 @@ describe( 'TopAuthorsDrivingLeadsWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-km-widget-tile__loading' )
 		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-table__body-row--no-data' )
+		).toBeInTheDocument();
+		expect( fetchMock ).not.toHaveFetched();
 	} );
 
 	testGenericReportError(

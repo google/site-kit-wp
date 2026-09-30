@@ -51,65 +51,40 @@ interface FormCompletionRateWidgetProps {
 	Widget: ElementType;
 }
 
-/**
- * Gets the primary event report options for the Form Completion Rate
- * widget, plus whether no lead events are detected.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options and lead-event detection state.
- */
-function getFormCompletionRatePrimaryData( select: Select ) {
-	const detectedLeadEvents =
-		select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents();
-
-	return {
-		reportOptions: buildPrimaryEventReportOptions(
-			select( CORE_USER ).getDateRangeDates( { compare: true } ),
-			detectedLeadEvents
-		),
-		hasNoLeadEvents: detectedLeadEvents?.length === 0,
-	};
-}
-
-/**
- * Gets the engagement report options for the Form Completion Rate widget.
- *
- * @since n.e.x.t
- *
- * @param {Function} select Data store 'select' function.
- * @return {Object} The report options.
- */
-function getFormCompletionRateEngagementReportOptions( select: Select ) {
-	return buildEngagementReportOptions(
-		select( CORE_USER ).getDateRangeDates( { compare: true } )
-	);
-}
-
 const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 	Widget,
 } ) => {
-	const { reportOptions: primaryEventReportOptions, hasNoLeadEvents } =
-		useSelect( getFormCompletionRatePrimaryData, [] );
-	const engagementReportOptions = useSelect(
-		getFormCompletionRateEngagementReportOptions,
+	const dates = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).getDateRangeDates( { compare: true } ),
+		[]
+	);
+	const detectedLeadEvents = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getDetectedLeadEvents(),
 		[]
 	);
 
-	const {
-		report: primaryEventReport,
-		secondaryReport: engagementReport,
-		loading,
-		error,
-	} = useAnalyticsReportsData( {
-		primaryOptions: primaryEventReportOptions,
-		secondaryOptions: engagementReportOptions,
-	} );
+	const engagementReportOptions = buildEngagementReportOptions( dates );
+	const hasNoLeadEvents = detectedLeadEvents?.length === 0;
+
+	// With no lead event detected there is nothing to count, so the rate is
+	// 0% and only the engagement report is fetched, for the total sessions.
+	const { report, secondaryReport, loading, error } = useAnalyticsReportsData(
+		hasNoLeadEvents
+			? { primaryOptions: engagementReportOptions }
+			: {
+					primaryOptions: buildPrimaryEventReportOptions(
+						dates,
+						detectedLeadEvents
+					),
+					secondaryOptions: engagementReportOptions,
+			  }
+	);
 
 	const { currentRate, previousRate, currentSessions } = processReports(
-		primaryEventReport,
-		engagementReport,
+		hasNoLeadEvents ? {} : report,
+		hasNoLeadEvents ? report : secondaryReport,
 		{ aggregate: true }
 	);
 
@@ -130,7 +105,7 @@ const FormCompletionRateWidget: FC< FormCompletionRateWidgetProps > = ( {
 			) }
 			previousValue={ previousRate }
 			currentValue={ currentRate }
-			loading={ loading && ! hasNoLeadEvents }
+			loading={ loading }
 			error={ error }
 			moduleSlug="analytics-4"
 		/>
