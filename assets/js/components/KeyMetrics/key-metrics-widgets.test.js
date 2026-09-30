@@ -595,6 +595,34 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			// 180 form completions of 1,000 sessions.
 			expect( data.value ).toBe( '18%' );
 		} );
+
+		it( 'shows the site-wide Form completion engagement rate without needing a lead event', async () => {
+			// `loadTile`'s registry has no detected lead events to resolve.
+			const data = await loadTile(
+				KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+				{
+					totals: [
+						{
+							dimensionValues: [ { value: 'date_range_0' } ],
+							metricValues: [
+								{ value: '0.65' },
+								{ value: '500' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'date_range_1' } ],
+							metricValues: [
+								{ value: '0.55' },
+								{ value: '400' },
+							],
+						},
+					],
+				}
+			);
+
+			expect( data.value ).toBe( '65%' );
+			expect( data.subtext ).toBe( 'of 500 total sessions' );
+		} );
 	} );
 } );
 

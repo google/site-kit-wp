@@ -2322,15 +2322,14 @@ export const KEY_METRICS_PDF_TILES = {
 	[ KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE ]: {
 		TileComponent: PDFNumericMetricTile,
 		getTileData: createKeyMetricTileDataLoader(
-			createLeadEventsPDFTileRequestBuilder(
-				( dates, detectedLeadEvents ) =>
-					detectedLeadEvents?.length && [
-						{
-							moduleStore: MODULES_ANALYTICS_4,
-							options: buildEngagementReportOptions( dates ),
-						},
-					]
-			),
+			// The engagement rate is site-wide, so, as on the dashboard, it
+			// doesn't depend on which lead events are detected.
+			( dates ) => [
+				{
+					moduleStore: MODULES_ANALYTICS_4,
+					options: buildEngagementReportOptions( dates ),
+				},
+			],
 			( [ engagementReport ] ) => {
 				const {
 					currentEngagementRate,
