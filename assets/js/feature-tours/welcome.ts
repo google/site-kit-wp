@@ -180,25 +180,18 @@ function getTopSearchQueriesStep() {
 }
 
 /**
- * Returns the traffic step, which highlights the Traffic Overview card when it
- * is present and the All Traffic card otherwise.
+ * Gets the traffic step, which highlights the Traffic Overview card and points
+ * its tooltip at the card's chart.
  *
  * @since n.e.x.t
  *
- * @param  isTrafficOverviewWidgetPresent Whether the Traffic Overview widget is present.
  * @return {WelcomeTourStep} The traffic step.
  */
-function getTrafficStep(
-	isTrafficOverviewWidgetPresent: boolean
-): WelcomeTourStep {
+function getTrafficStep(): WelcomeTourStep {
 	return {
-		target: isTrafficOverviewWidgetPresent
-			? '.googlesitekit-widget--analyticsTrafficOverview'
-			: '.googlesitekit-widget--analyticsAllTrafficGA4',
+		target: '.googlesitekit-widget--analyticsTrafficOverview',
 		floaterProps: {
-			target: isTrafficOverviewWidgetPresent
-				? '.googlesitekit-traffic-overview__chart'
-				: '.googlesitekit-widget--analyticsAllTraffic__user-count-chart',
+			target: '.googlesitekit-traffic-overview__chart',
 		},
 		title: __(
 			'Track traffic trends, identify baselines',
@@ -219,7 +212,6 @@ function getTrafficStep(
  * Gets the welcome tour configuration based on the current user context.
  *
  * @since 1.173.0
- * @since n.e.x.t Added the `isTrafficOverviewWidgetPresent` parameter.
  *
  * @param {Object}  params                                        Tour parameters.
  * @param {boolean} params.isViewOnly                             Whether the user is in view-only mode.
@@ -227,7 +219,6 @@ function getTrafficStep(
  * @param {boolean} params.isAnalyticsConnected                   Whether Analytics is connected.
  * @param {boolean} params.isActivateAnalyticsNotificationPresent Whether the Activate Analytics notification is present.
  * @param {boolean} params.isKeyMetricsWidgetPresent              Whether the key metrics widget is present.
- * @param {boolean} params.isTrafficOverviewWidgetPresent         Whether the Traffic Overview widget is present.
  * @param {boolean} params.isAudienceSegmentationWidgetPresent    Whether audience segmentation widget is present.
  * @return {Object} The welcome tour configuration object.
  */
@@ -237,7 +228,6 @@ export function getWelcomeTour( {
 	isAnalyticsConnected,
 	isActivateAnalyticsNotificationPresent,
 	isKeyMetricsWidgetPresent,
-	isTrafficOverviewWidgetPresent,
 	isAudienceSegmentationWidgetPresent,
 }: {
 	isViewOnly: boolean;
@@ -245,7 +235,6 @@ export function getWelcomeTour( {
 	isAnalyticsConnected: boolean;
 	isActivateAnalyticsNotificationPresent: boolean;
 	isKeyMetricsWidgetPresent: boolean;
-	isTrafficOverviewWidgetPresent: boolean;
 	isAudienceSegmentationWidgetPresent: boolean;
 } ) {
 	if ( ! isAnalyticsConnected ) {
@@ -334,7 +323,7 @@ export function getWelcomeTour( {
 				placement: 'top-end',
 				isResponsive: true,
 			},
-			getTrafficStep( isTrafficOverviewWidgetPresent ),
+			getTrafficStep(),
 			isAudienceSegmentationWidgetPresent && {
 				target: '.googlesitekit-widget-area--mainDashboardTrafficAudienceSegmentation',
 				floaterProps: {
