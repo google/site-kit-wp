@@ -22,27 +22,14 @@
 import { isErrorReportingEnabled } from '@/js/util/otel';
 
 /**
- * Query parameter that triggers the test error.
- */
-const TRIGGER_PARAM = 'googlesitekit-otel-test';
-
-/**
- * Throws a deliberate error so the reporting pipeline can be exercised.
+ * Throws a test error when `?googlesitekit-otel-test=1` is present.
  *
- * Proof-of-concept affordance. Error reporting is the one feature that cannot
- * be verified by using the product normally — you need a bug to observe it,
- * and waiting for a real one is not a test plan. Sentry ships the same thing
- * as its "send test event" button.
- *
- * Renders nothing unless reporting is enabled *and* the trigger parameter is
- * present, so it is inert during ordinary use. It throws during render, which
- * is what puts it in front of the ErrorHandler boundary above it rather than
- * merely calling the reporter directly — the point is to test the real path,
- * not a shortcut through it.
+ * Proof-of-concept only. Throwing during render exercises the real
+ * `ErrorHandler` path. Renders nothing unless error reporting is enabled.
  *
  * @since n.e.x.t
  *
- * @return {null} Never returns when triggered.
+ * @return {null} Nothing, unless it throws.
  */
 export default function OTLPTestError() {
 	if ( ! isErrorReportingEnabled() ) {
@@ -52,7 +39,7 @@ export default function OTLPTestError() {
 	// eslint-disable-next-line sitekit/acronym-case
 	const params = new URLSearchParams( global.location?.search || '' );
 
-	if ( params.get( TRIGGER_PARAM ) !== '1' ) {
+	if ( params.get( 'googlesitekit-otel-test' ) !== '1' ) {
 		return null;
 	}
 

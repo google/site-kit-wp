@@ -20,61 +20,34 @@
  * Internal dependencies
  */
 import { enabledFeatures } from '@/js/features/index';
-import createLogRecord, {
-	ErrorReportContext,
-	ResourceConfig,
-} from './createLogRecord';
-import { getFingerprint } from './fingerprint';
-import sendLogRecord from './sendLogRecord';
+import createLogRecord, { ErrorContext } from './createLogRecord';
 
-/**
- * Configuration arrives through the same inline-data channel that powers
- * `trackEvent`, so there is one place where Site Kit tells the browser what it
- * is allowed to report. `otlpEndpoint` is only populated by PHP when the site
- * has defined GOOGLESITEKIT_OTLP_ENDPOINT *and* the user has consented, so an
- * empty value here is the single off switch.
- */
+// Added by PHP to the tracking inline data (see `Core\Telemetry\Telemetry`).
+export interface TelemetryConfig {
+	otlpEndpoint: string;
+	otlpResource: { wpVersion?: string; phpVersion?: string };
+}
+
+// PHP only provides an endpoint to users who have consented to tracking, so an
+// empty endpoint means reporting is off.
 const {
 	otlpEndpoint = '',
 	otlpResource = {},
 	referenceSiteURL = '',
 	activeModules = [],
-	isAuthenticated,
 } = global._googlesitekitTrackingData || {};
 
-const resource: ResourceConfig = {
+const resource = {
 	pluginVersion: global.GOOGLESITEKIT_VERSION,
 	siteURL: referenceSiteURL,
 	wpVersion: otlpResource.wpVersion,
 	phpVersion: otlpResource.phpVersion,
-	isMultisite: otlpResource.isMultisite,
 	activeModules,
 	enabledFeatures: Array.from( enabledFeatures || [] ),
-	isAuthenticated,
 };
 
 /**
- * Fingerprints already reported in this page load.
- *
- * A React render loop can throw the same error hundreds of times a second, and
- * the hundredth copy tells us nothing the first did not. Deduplicating here
- * costs nothing and removes the most likely way a single broken install could
- * flood the ingest — client-side volume control to complement the server-side
- * sampling that the collector owns.
- */
-const reportedFingerprints = new Set< string >();
-
-/**
- * Upper bound on distinct errors reported per page load.
- *
- * Guards against a pathological case where errors are unique every time (for
- * instance a message containing a timestamp), which would defeat the
- * deduplication above.
- */
-const MAX_REPORTS_PER_PAGE = 25;
-
-/**
- * Determines whether error reporting is currently active.
+ * Determines whether error reporting is active.
  *
  * @since n.e.x.t
  *
@@ -85,49 +58,36 @@ export function isErrorReportingEnabled(): boolean {
 }
 
 /**
- * Reports an error over OTLP.
+ * Reports an error as an OTLP log record.
  *
- * Fires and forgets: never throws, never blocks rendering, and resolves nothing.
- * Callers should treat it exactly as they treat `trackEvent`.
+ * Fires and forgets: never throws, and never delays rendering.
  *
  * @since n.e.x.t
  *
- * @param {Object} error   The error to report.
- * @param {Object} context Where and how it occurred.
+ * @param {Error}  error   The error to report.
+ * @param {Object} context Where the error occurred.
  * @return {void}
  */
-export function reportError(
-	error: Error | { name?: string; message?: string; stack?: string },
-	context: ErrorReportContext
-): void {
-	if ( ! isErrorReportingEnabled() || ! error ) {
+export function reportError( error: Error, context: ErrorContext ): void {
+	if ( ! otlpEndpoint || ! error ) {
 		return;
 	}
 
 	try {
-		const fingerprint = getFingerprint(
-			error.name || 'Error',
-			error.message || '',
-			context?.componentStack || error.stack || ''
-		);
-
-		if ( reportedFingerprints.has( fingerprint ) ) {
-			return;
-		}
-
-		if ( reportedFingerprints.size >= MAX_REPORTS_PER_PAGE ) {
-			return;
-		}
-
-		reportedFingerprints.add( fingerprint );
-
-		sendLogRecord(
-			otlpEndpoint,
-			createLogRecord( error, context, resource )
-		);
+		global
+			.fetch( `${ otlpEndpoint }/v1/logs`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify(
+					createLogRecord( error, context, resource )
+				),
+				// Lets the request outlive the page, since errors are often
+				// followed by a reload.
+				keepalive: true,
+				credentials: 'omit',
+			} )
+			.catch( () => {} );
 	} catch ( reportingError ) {
-		// Reporting an error must never produce one.
+		// Reporting an error must never cause one.
 	}
 }
-
-export { ERROR_SOURCE } from './constants';

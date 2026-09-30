@@ -16,150 +16,56 @@
  * limitations under the License.
  */
 
-/**
- * Internal dependencies
- */
-import {
-	MAX_MESSAGE_CHARS,
-	MAX_STACK_CHARS,
-	SCOPE_NAME,
-	SCOPE_VERSION,
-	SEVERITY_ERROR,
-} from './constants';
-import { getFingerprint, getFingerprintInput } from './fingerprint';
-
-/**
- * This module builds OTLP by hand rather than through the OpenTelemetry
- * JavaScript SDK. The logs SDK is still marked experimental and browser
- * instrumentation is explicitly unspecified, and the full web SDK would add
- * tens of kilobytes to a bundle that is already a sore point. OTLP itself is
- * a documented JSON shape, so producing it directly costs a few dozen lines
- * and keeps every benefit that matters: the records are standard, and the
- * backend can be changed without touching a single call site.
- */
-
-type AttributeValue = string | number | boolean | undefined | null;
-
-interface OTLPAttribute {
-	key: string;
-	value: Record< string, AttributeValue >;
-}
-
-export interface ErrorReportContext {
-	source: string;
+export interface ErrorContext {
 	viewContext?: string;
 	componentStack?: string;
-	extra?: Record< string, AttributeValue >;
 }
 
-export interface ResourceConfig {
+export interface Resource {
 	pluginVersion?: string;
 	siteURL?: string;
 	wpVersion?: string;
 	phpVersion?: string;
-	isMultisite?: boolean;
 	activeModules?: string[];
 	enabledFeatures?: string[];
-	isAuthenticated?: boolean | number;
 }
 
 /**
- * Wraps a value in the OTLP `AnyValue` shape.
- *
- * @since n.e.x.t
- *
- * @param {*} value Value to wrap.
- * @return {Object|null} OTLP value object, or null when unrepresentable.
- */
-function toAnyValue( value: AttributeValue ) {
-	if ( value === undefined || value === null || value === '' ) {
-		return null;
-	}
-
-	if ( typeof value === 'boolean' ) {
-		return { boolValue: value };
-	}
-
-	if ( typeof value === 'number' ) {
-		return Number.isInteger( value )
-			? { intValue: String( value ) }
-			: { doubleValue: value };
-	}
-
-	return { stringValue: String( value ) };
-}
-
-/**
- * Converts a plain object into an OTLP attribute array, dropping empties.
+ * Converts key/value pairs to OTLP attributes, dropping empty values.
  *
  * @since n.e.x.t
  *
  * @param {Object} source Key/value pairs.
  * @return {Array} OTLP attributes.
  */
-export function toAttributes(
-	source: Record< string, AttributeValue >
-): OTLPAttribute[] {
-	return Object.entries( source ).reduce< OTLPAttribute[] >(
-		( attributes, [ key, value ] ) => {
-			const anyValue = toAnyValue( value );
-
-			if ( anyValue ) {
-				attributes.push( { key, value: anyValue } );
-			}
-
-			return attributes;
-		},
-		[]
-	);
+function toAttributes( source: Record< string, string | undefined > ) {
+	return Object.entries( source )
+		.filter( ( entry ): entry is [ string, string ] => !! entry[ 1 ] )
+		.map( ( [ key, value ] ) => ( {
+			key,
+			value: { stringValue: value },
+		} ) );
 }
 
 /**
- * Truncates a string, marking it so a reader knows the value is incomplete.
+ * Builds an OTLP logs payload for an error.
+ *
+ * The attribute names are the contract with the service, which reads them to
+ * shape records for Google Cloud.
  *
  * @since n.e.x.t
  *
- * @param {string} value Value to truncate.
- * @param {number} max   Maximum length.
- * @return {string} Possibly truncated value.
- */
-function truncate( value: string, max: number ): string {
-	if ( typeof value !== 'string' ) {
-		return '';
-	}
-
-	return value.length > max
-		? `${ value.slice( 0, max ) }… [truncated]`
-		: value;
-}
-
-/**
- * Builds a complete OTLP log record payload for an error.
- *
- * @since n.e.x.t
- *
- * @param {Object} error    The error to report.
- * @param {Object} context  Where and how the error occurred.
- * @param {Object} resource Emitter-level attributes.
- * @return {Object} OTLP `resourceLogs` payload, ready to POST.
+ * @param {Error}  error    The error to report.
+ * @param {Object} context  Where the error occurred.
+ * @param {Object} resource The environment the error occurred in.
+ * @return {Object} OTLP `resourceLogs` payload.
  */
 export default function createLogRecord(
-	error: Error | { name?: string; message?: string; stack?: string },
-	context: ErrorReportContext,
-	resource: ResourceConfig
+	error: Error,
+	context: ErrorContext,
+	resource: Resource
 ) {
-	const type = error?.name || 'Error';
-	const message = truncate( error?.message || '', MAX_MESSAGE_CHARS );
-
-	// React's component stack is more useful than the JS stack for boundary
-	// errors — it survives minification better and names the component tree —
-	// so it is preferred for fingerprinting when present.
-	const stack = truncate( error?.stack || '', MAX_STACK_CHARS );
-	const componentStack = truncate(
-		context.componentStack || '',
-		MAX_STACK_CHARS
-	);
-	const fingerprintStack = componentStack || stack;
+	const message = error?.message || String( error );
 
 	return {
 		resourceLogs: [
@@ -171,57 +77,34 @@ export default function createLogRecord(
 						'sitekit.site_url': resource.siteURL,
 						'sitekit.wp_version': resource.wpVersion,
 						'sitekit.php_version': resource.phpVersion,
-						'sitekit.is_multisite': resource.isMultisite,
-						'sitekit.is_authenticated': !! resource.isAuthenticated,
-						'sitekit.modules_active': (
-							resource.activeModules || []
-						).join( ',' ),
-						'sitekit.features_enabled': (
-							resource.enabledFeatures || []
-						).join( ',' ),
+						'sitekit.modules_active':
+							resource.activeModules?.join( ',' ),
+						'sitekit.features_enabled':
+							resource.enabledFeatures?.join( ',' ),
 					} ),
 				},
 				scopeLogs: [
 					{
-						scope: { name: SCOPE_NAME, version: SCOPE_VERSION },
+						scope: { name: 'sitekit.browser' },
 						logRecords: [
 							{
-								// Telemetry records when an error actually
-								// happened, so this must be wall-clock time
-								// rather than the dashboard's reference date.
+								// The time the error happened, not the
+								// dashboard's reference date.
 								// eslint-disable-next-line sitekit/no-direct-date
 								timeUnixNano: `${ Date.now() }000000`,
-								severityNumber: SEVERITY_ERROR,
+								// 17 is ERROR in the OpenTelemetry log data model.
+								severityNumber: 17,
 								severityText: 'ERROR',
 								body: { stringValue: message },
 								attributes: toAttributes( {
-									// OpenTelemetry semantic conventions, so
-									// any conformant backend understands these
-									// without configuration.
-									'exception.type': type,
+									'exception.type': error?.name,
 									'exception.message': message,
-									'exception.stacktrace': stack,
-
-									'sitekit.error_source': context.source,
+									'exception.stacktrace': error?.stack,
 									'sitekit.view_context': context.viewContext,
-									'sitekit.component_stack': componentStack,
-									'sitekit.fingerprint': getFingerprint(
-										type,
-										message,
-										fingerprintStack
-									),
-									// Carried so grouping rules can be tuned
-									// against real data instead of guesses.
-									'sitekit.fingerprint_input':
-										getFingerprintInput(
-											type,
-											message,
-											fingerprintStack
-										),
+									'sitekit.component_stack':
+										context.componentStack,
 									'sitekit.user_agent':
 										global.navigator?.userAgent,
-
-									...( context.extra || {} ),
 								} ),
 							},
 						],
