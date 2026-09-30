@@ -52,7 +52,6 @@ const mockWelcomeTour = getWelcomeTour( {
 	isActivateAnalyticsNotificationPresent: false,
 	isAudienceSegmentationWidgetPresent: false,
 	isKeyMetricsWidgetPresent: false,
-	isTrafficOverviewWidgetPresent: false,
 } );
 
 function provideFeatureTourMenuItemData(

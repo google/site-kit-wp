@@ -40,7 +40,7 @@ import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-component
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { numFmt } from '@/js/util';
-import { AllTrafficPDFData, TrafficBreakdownRow } from './getPDFData';
+import { TrafficBreakdownRow, TrafficOverviewPDFData } from './getPDFData';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -113,9 +113,9 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 	chartImages,
 } ) => {
-	const trafficData = data as AllTrafficPDFData[ 'data' ] | undefined;
+	const trafficData = data as TrafficOverviewPDFData[ 'data' ] | undefined;
 	const trafficChartImages =
-		chartImages as AllTrafficPDFData[ 'chartImages' ];
+		chartImages as TrafficOverviewPDFData[ 'chartImages' ];
 
 	// Without data the widget returns null, and no placeholder takes its place.
 	if ( ! trafficData ) {

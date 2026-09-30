@@ -50,12 +50,10 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 export type { TrafficBreakdownRow };
 
 /**
- * The chart draws at 1085 by 133, and the tile displays the image in a
- * box of the same size, so the image never stretches and no empty space
- * appears around it. 1085 is the full-width card's content width in the
- * Figma design (1133 minus `PDFCard`'s 24px padding on each side); unlike
- * the old All Traffic widget's narrower, two-up card, this card spans the
- * page on its own.
+ * The chart fills `PDFCard`'s content width, and `TrafficOverviewPDF` shows it
+ * in a box of the same size, so the image never stretches. 1085 is `PDFCard`'s
+ * content width in the Figma design: 1133 minus `PDFCard`'s 24px padding on
+ * each side.
  */
 const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;
@@ -82,7 +80,7 @@ export interface GetPDFDataParams {
 	signal: AbortSignal;
 }
 
-export interface AllTrafficPDFData {
+export interface TrafficOverviewPDFData {
 	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
 	data: {
 		/** GA4 totals report with the current and comparison range totals. */
@@ -145,8 +143,8 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * Mirrors the dashboard's `UserCountGraph` shape: a date column followed by a
- * total-users column.
+ * The table has the same columns as the dashboard chart's table, which
+ * `getTrafficChartData()` builds.
  *
  * @since n.e.x.t
  *
@@ -178,8 +176,8 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
  * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's `UserCountGraph`.
+	// The date labels start on the second day, as on the dashboard chart, because
+	// Google Charts hides the first day's label against the chart's edge.
 	const [ , ...ticks ] = points.map( ( { date } ) => date );
 
 	const hasData = points.some( ( { value } ) => value > 0 );
@@ -267,7 +265,7 @@ export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
-}: GetPDFDataParams ): Promise< AllTrafficPDFData > {
+}: GetPDFDataParams ): Promise< TrafficOverviewPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}
