@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,9 +31,32 @@ import { Fragment } from '@wordpress/element';
  */
 import DashboardMainApp from './DashboardMainApp';
 import UserSettingsSelectionPanel from './email-reporting/UserSettingsSelectionPanel';
+import IntentRenderer from './intents/IntentRenderer';
 import ModuleSetup from './setup/ModuleSetup';
 
-export default function DashboardEntryPoint( { setupModuleSlug } ) {
+interface DashboardEntryPointProps {
+	/** Slug of the module to set up. When set, the module setup flow renders instead of the dashboard. */
+	setupModuleSlug?: string;
+	/** Slug of the intent to render. When set, the intent screen renders and takes precedence over module setup. */
+	intentSlug?: string;
+	/** Code the Site Kit Service created for the intent. */
+	intentCode?: string;
+}
+
+const DashboardEntryPoint: FC< DashboardEntryPointProps > = ( {
+	setupModuleSlug,
+	intentSlug,
+	intentCode,
+} ) => {
+	if ( !! intentSlug ) {
+		return (
+			<IntentRenderer
+				slug={ intentSlug }
+				intentCode={ intentCode || '' }
+			/>
+		);
+	}
+
 	if ( !! setupModuleSlug ) {
 		return (
 			<Fragment>
@@ -44,8 +67,6 @@ export default function DashboardEntryPoint( { setupModuleSlug } ) {
 	}
 
 	return <DashboardMainApp />;
-}
-
-DashboardEntryPoint.propTypes = {
-	setupModuleSlug: PropTypes.string,
 };
+
+export default DashboardEntryPoint;

@@ -36,9 +36,12 @@ jest.mock( './DashboardMainApp', () =>
 jest.mock( './email-reporting/UserSettingsSelectionPanel', () =>
 	mockCreateComponent( 'UserSettingsSelectionPanel' )
 );
+jest.mock( './intents/IntentRenderer', () =>
+	mockCreateComponent( 'IntentRenderer' )
+);
 
 describe( 'DashboardEntryPoint', () => {
-	let registry;
+	let registry: ReturnType< typeof createTestRegistry >;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -72,5 +75,64 @@ describe( 'DashboardEntryPoint', () => {
 
 		expect( getByText( /^ModuleSetup/ ) ).toBeInTheDocument();
 		expect( getByText( /UserSettingsSelectionPanel/ ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the intent renderer with the slug and code when the intentSlug prop is passed', () => {
+		const { getByText, queryByText } = render(
+			<DashboardEntryPoint
+				intentSlug="ads-conversion-tracking"
+				intentCode="abc123"
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByText(
+				`IntentRenderer${ JSON.stringify( {
+					slug: 'ads-conversion-tracking',
+					intentCode: 'abc123',
+				} ) }`
+			)
+		).toBeInTheDocument();
+		expect( queryByText( /^ModuleSetup/ ) ).not.toBeInTheDocument();
+		expect( queryByText( /^DashboardMainApp/ ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the intent renderer when both the intentSlug and setupModuleSlug props are passed', () => {
+		const { getByText, queryByText } = render(
+			<DashboardEntryPoint
+				intentSlug="ads-conversion-tracking"
+				intentCode="abc123"
+				setupModuleSlug="analytics-4"
+			/>,
+			{ registry }
+		);
+
+		expect( getByText( /^IntentRenderer/ ) ).toBeInTheDocument();
+		expect( queryByText( /^ModuleSetup/ ) ).not.toBeInTheDocument();
+		expect(
+			queryByText( /UserSettingsSelectionPanel/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the module setup flow when only the setupModuleSlug prop is passed', () => {
+		const { getByText, queryByText } = render(
+			<DashboardEntryPoint setupModuleSlug="analytics-4" />,
+			{ registry }
+		);
+
+		expect( getByText( /^ModuleSetup/ ) ).toBeInTheDocument();
+		expect( queryByText( /^IntentRenderer/ ) ).not.toBeInTheDocument();
+		expect( queryByText( /^DashboardMainApp/ ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the main dashboard when neither the intentSlug nor the setupModuleSlug prop is passed', () => {
+		const { getByText, queryByText } = render( <DashboardEntryPoint />, {
+			registry,
+		} );
+
+		expect( getByText( /^DashboardMainApp/ ) ).toBeInTheDocument();
+		expect( queryByText( /^IntentRenderer/ ) ).not.toBeInTheDocument();
+		expect( queryByText( /^ModuleSetup/ ) ).not.toBeInTheDocument();
 	} );
 } );
