@@ -31,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import renderGoogleChartToDataURI from '@/js/components/pdf-export/render-google-chart-to-data-uri';
+import { mockChartAxisLabels } from '@/js/components/pdf-export/test-utils';
 import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
@@ -201,7 +202,10 @@ describe( 'Traffic Overview getPDFData', () => {
 		// `getPDFData` builds the chart's data with `new google.visualization.DataTable()`.
 		dataTable = { addColumn: jest.fn(), addRows: jest.fn() };
 		setGoogle( {
-			visualization: { DataTable: jest.fn( () => dataTable ) },
+			visualization: {
+				DataTable: jest.fn( () => dataTable ),
+				...mockChartAxisLabels(),
+			},
 		} );
 	} );
 
@@ -335,6 +339,133 @@ describe( 'Traffic Overview getPDFData', () => {
 		expect(
 			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].chartType
 		).toBe( 'LineChart' );
+	} );
+
+	it( 'should write the value labels in short form, make their space 45 pixels wide, and label every day of a 7-day range', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [ { metricValues: [ { value: '8400' } ] } ] },
+				{ options: getTotalsReportArgs( DATES ) }
+			);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					[ '20250108', '900' ],
+					[ '20250109', '1200' ],
+					[ '20250110', '1500' ],
+					[ '20250111', '1100' ],
+					[ '20250112', '1300' ],
+					[ '20250113', '1000' ],
+					[ '20250114', '1400' ],
+				].map( ( [ date, users ] ) => ( {
+					dimensionValues: [ { value: date } ],
+					metricValues: [ { value: users } ],
+				} ) ),
+			},
+			{
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			}
+		);
+		seedDefaultBreakdownReports( registry );
+
+		await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect(
+			mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ].options
+		).toMatchObject( {
+			chartArea: { right: 45 },
+			hAxis: {
+				ticks: [
+					{ f: 'Jan 8' },
+					{ f: 'Jan 9' },
+					{ f: 'Jan 10' },
+					{ f: 'Jan 11' },
+					{ f: 'Jan 12' },
+					{ f: 'Jan 13' },
+					{ f: 'Jan 14' },
+				],
+			},
+			vAxis: { format: 'short' },
+		} );
+	} );
+
+	it( 'draws the line chart with one point for each day in the graph report', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				{ totals: [ { metricValues: [ { value: '100' } ] } ] },
+				{ options: getTotalsReportArgs( DATES ) }
+			);
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [ { value: '20250108' } ],
+						metricValues: [ { value: '10' } ],
+					},
+					{
+						dimensionValues: [ { value: '20250109' } ],
+						metricValues: [ { value: '20' } ],
+					},
+				],
+			},
+			{
+				options: getGraphReportArgs( {
+					startDate: DATES.startDate,
+					endDate: DATES.endDate,
+				} ),
+			}
+		);
+
+		seedDefaultBreakdownReports( registry );
+
+		const signal = new AbortController().signal;
+		const result = await getPDFData( { registry, dates: DATES, signal } );
+
+		expect( mockEnsureGoogleChartsLoaded ).toHaveBeenCalledTimes( 1 );
+
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			1,
+			'date',
+			'Day'
+		);
+		expect( dataTable.addColumn ).toHaveBeenNthCalledWith(
+			2,
+			'number',
+			'Users'
+		);
+		expect( dataTable.addRows ).toHaveBeenCalledWith( [
+			[ new Date( 2025, 0, 8 ), 10 ],
+			[ new Date( 2025, 0, 9 ), 20 ],
+		] );
+
+		expect( mockRenderGoogleChartToDataURI ).toHaveBeenCalledTimes( 1 );
+
+		const renderArgs = mockRenderGoogleChartToDataURI.mock.calls[ 0 ][ 0 ];
+
+		expect( renderArgs.chartType ).toBe( 'LineChart' );
+		expect( renderArgs.width ).toBe( 1085 );
+		expect( renderArgs.height ).toBe( 133 );
+		expect( renderArgs.signal ).toBe( signal );
+		expect( renderArgs.dataTable ).toBe( dataTable );
+		expect( renderArgs.options ).toMatchObject( {
+			curveType: 'function',
+			colors: [ '#462083' ],
+			legend: { position: 'none' },
+		} );
+
+		expect( result.chartImages?.lineChart ).toBe(
+			'data:image/jpeg;base64,TElORQ=='
+		);
 	} );
 
 	it( 'shapes each breakdown report with getBreakdownRows()', async () => {
@@ -531,5 +662,59 @@ describe( 'Traffic Overview getPDFData', () => {
 		signals.forEach( ( forwardedSignal ) => {
 			expect( forwardedSignal ).toBe( signal );
 		} );
+	} );
+
+	it( 'fetches the reports again when a new run starts after a canceled run', async () => {
+		const firstController = new AbortController();
+		const deferredResolvers: Array< () => void > = [];
+		let requestCount = 0;
+
+		fetchMock.get( reportEndpoint, () => {
+			requestCount++;
+
+			// Keep the first run's five requests waiting, so the abort happens
+			// while they still run. Later requests get a normal response.
+			if ( requestCount <= 5 ) {
+				return new Promise< { body: unknown; status: number } >(
+					( resolve ) => {
+						deferredResolvers.push( () =>
+							resolve( { body: { rows: [] }, status: 200 } )
+						);
+					}
+				);
+			}
+
+			return { body: { rows: [] }, status: 200 };
+		} );
+
+		const firstRun = getPDFData( {
+			registry,
+			dates: DATES,
+			signal: firstController.signal,
+		} );
+
+		// Wait for all five report requests to start before aborting.
+		while ( deferredResolvers.length < 5 ) {
+			await new Promise( ( advance ) => setTimeout( advance, 0 ) );
+		}
+
+		firstController.abort();
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
+		expect( await firstRun ).toEqual( { data: null } );
+		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 5 );
+
+		const secondRun = await getPDFData( {
+			registry,
+			dates: DATES,
+			signal: new AbortController().signal,
+		} );
+
+		expect( fetchMock.calls( reportEndpoint ) ).toHaveLength( 10 );
+		expect( secondRun.data?.totalsReport ).toEqual( { rows: [] } );
+		expect( secondRun.data?.graphReport ).toEqual( { rows: [] } );
+		expect( secondRun.chartImages?.lineChart ).toBe(
+			'data:image/jpeg;base64,TElORQ=='
+		);
 	} );
 } );

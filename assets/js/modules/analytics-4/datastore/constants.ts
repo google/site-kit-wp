@@ -16,6 +16,12 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+
 export const MODULES_ANALYTICS_4 = 'modules/analytics-4';
 
 // A special Account ID value used for the "Set up a new account" option.
@@ -27,6 +33,11 @@ export const PROPERTY_CREATE = 'property_create';
 export const WEBDATASTREAM_CREATE = 'webdatastream_create';
 
 export const FORM_SETUP = 'analyticsSetup';
+
+// Setting key for whether "Fresh Data" cards/widgets should include
+// WooCommerce products.
+export const FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS =
+	'freshDataIncludesWooCommerceProducts';
 
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
@@ -51,13 +62,6 @@ export const FORM_CUSTOM_DIMENSIONS_CREATE = 'analyticsCustomDimensionsCreate';
 export const PROVISIONING_SCOPE =
 	'https://www.googleapis.com/auth/analytics.provision';
 export const EDIT_SCOPE = 'https://www.googleapis.com/auth/analytics.edit';
-
-// Dashboard widget constants.
-export const UI_DIMENSION_NAME = 'dashboardAllTrafficWidgetDimensionName';
-export const UI_DIMENSION_COLOR = 'dashboardAllTrafficWidgetDimensionColor';
-export const UI_DIMENSION_VALUE = 'dashboardAllTrafficWidgetDimensionValue';
-export const UI_ACTIVE_ROW_INDEX = 'dashboardAllTrafficWidgetActiveRowIndex';
-export const UI_ALL_TRAFFIC_LOADED = 'dashboardAllTrafficWidgetLoaded';
 
 // Note: names and descriptions are not translated as these are not surfaced in Site Kit
 // and are also subject to hard limits on the length which would be unpredictable if translated.
@@ -124,6 +128,19 @@ export const CONVERSION_REPORTING_ECOMMERCE_EVENTS = [
 	ENUM_CONVERSION_EVENTS.PURCHASE,
 	ENUM_CONVERSION_EVENTS.ADD_TO_CART,
 ];
+
+/**
+ * Conversion events that belong to each Site Goals widget category.
+ *
+ * Mirrors the pairing in
+ * `Conversion_Reporting_Provider::update_active_site_goals_widgets()`, which
+ * pairs `ECOMMERCE_EVENT_NAMES`/`LEAD_EVENT_NAMES` with the same categories
+ * when it populates the site-wide `activeWidgets` list.
+ */
+export const SITE_GOALS_WIDGET_EVENTS: Record< GoalType, string[] > = {
+	[ GOAL_TYPES.ECOMMERCE ]: CONVERSION_REPORTING_ECOMMERCE_EVENTS,
+	[ GOAL_TYPES.LEAD ]: CONVERSION_REPORTING_LEAD_EVENTS,
+};
 
 // Audience enums.
 export const AUDIENCE_FILTER_CLAUSE_TYPE_ENUM = {

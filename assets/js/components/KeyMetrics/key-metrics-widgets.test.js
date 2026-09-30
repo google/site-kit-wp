@@ -20,12 +20,18 @@
  * Internal dependencies
  */
 import {
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_RETURNING_VISITORS,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
@@ -33,13 +39,16 @@ import {
 	KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	CONVERSION_REPORTING_LEAD_EVENTS,
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -97,6 +106,30 @@ function registryReturningReports( reports ) {
 		Promise.resolve( { response: reports[ call++ ] } )
 	);
 	return { dispatch: jest.fn( () => ( { fetchGetReport } ) ) };
+}
+
+/**
+ * Builds a registry that detects all three lead events and whose
+ * `fetchGetReport` resolves with the given reports in order, so a "Generating
+ * leads" tile's `getTileData` can be exercised against report fixtures.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object[]} reports The report responses to resolve, in fetch order.
+ * @return {Object} A mock registry.
+ */
+function leadEventsRegistryReturningReports( reports ) {
+	const leadEvents = [ 'contact', 'submit_lead_form', 'generate_lead' ];
+
+	return {
+		...registryReturningReports( reports ),
+		resolveSelect: jest.fn( () => ( {
+			getDetectedEvents: jest.fn( () => Promise.resolve( leadEvents ) ),
+		} ) ),
+		select: jest.fn( () => ( {
+			getDetectedLeadEvents: jest.fn( () => leadEvents ),
+		} ) ),
+	};
 }
 
 /**
@@ -234,7 +267,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.changeType ).toBe( 'negative' );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadNewVisitorsTile( {} );
 
 			expect( data ).toBeNull();
@@ -311,7 +344,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			expect( data.subtext ).toContain( 'total visitors' );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadTile( KM_ANALYTICS_RETURNING_VISITORS, {} );
 
 			expect( data ).toBeNull();
@@ -417,7 +450,7 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			] );
 		} );
 
-		it( 'returns null when the report has no rows, so the tile is dropped', async () => {
+		it( 'returns null when the report has no rows, so the tile is not rendered', async () => {
 			const data = await loadTile( KM_ANALYTICS_TOP_CITIES, {
 				rows: [],
 				totals: [],
@@ -496,13 +529,99 @@ describe( 'KEY_METRICS_PDF_TILES', () => {
 			] );
 		} );
 
-		it( 'drops the tile when the ranked report has no rows', async () => {
+		it( 'does not render the tile when the ranked report has no rows', async () => {
 			const data = await loadTileWithReports(
 				KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
 				[ {}, totalReport ]
 			);
 
 			expect( data ).toBeNull();
+		} );
+	} );
+
+	describe( 'Generating leads headline getTileData', () => {
+		// Each lead event's count per period. The current period sums to 180,
+		// while the first event alone has 100.
+		const leadEventsReport = {
+			rows: [
+				[ 'contact', 'date_range_0', '100' ],
+				[ 'contact', 'date_range_1', '50' ],
+				[ 'submit_lead_form', 'date_range_0', '50' ],
+				[ 'submit_lead_form', 'date_range_1', '30' ],
+				[ 'generate_lead', 'date_range_0', '30' ],
+				[ 'generate_lead', 'date_range_1', '20' ],
+			].map( ( [ eventName, dateRange, count ] ) => ( {
+				dimensionValues: [ { value: eventName }, { value: dateRange } ],
+				metricValues: [ { value: count } ],
+			} ) ),
+		};
+
+		function loadLeadTile( slug, reports ) {
+			return KEY_METRICS_PDF_TILES[ slug ].getTileData( {
+				registry: leadEventsRegistryReturningReports( reports ),
+				dates: DATES,
+				signal: new AbortController().signal,
+			} );
+		}
+
+		it( 'sums Total form completions across every detected lead event', async () => {
+			const data = await loadLeadTile(
+				KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+				[ leadEventsReport ]
+			);
+
+			expect( data.value ).toBe( '180' );
+		} );
+
+		it( 'sums every detected lead event into the Form completion rate', async () => {
+			const engagementReport = {
+				totals: [
+					{
+						dimensionValues: [ { value: 'date_range_0' } ],
+						metricValues: [ { value: '0.65' }, { value: '1000' } ],
+					},
+					{
+						dimensionValues: [ { value: 'date_range_1' } ],
+						metricValues: [ { value: '0.55' }, { value: '1000' } ],
+					},
+				],
+			};
+
+			const data = await loadLeadTile(
+				KM_ANALYTICS_FORM_COMPLETION_RATE,
+				[ leadEventsReport, engagementReport ]
+			);
+
+			// 180 form completions of 1,000 sessions.
+			expect( data.value ).toBe( '18%' );
+		} );
+
+		it( 'shows the site-wide Form completion engagement rate without needing a lead event', async () => {
+			// `loadTile`'s registry has no detected lead events to resolve.
+			const data = await loadTile(
+				KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+				{
+					totals: [
+						{
+							dimensionValues: [ { value: 'date_range_0' } ],
+							metricValues: [
+								{ value: '0.65' },
+								{ value: '500' },
+							],
+						},
+						{
+							dimensionValues: [ { value: 'date_range_1' } ],
+							metricValues: [
+								{ value: '0.55' },
+								{ value: '400' },
+							],
+						},
+					],
+				}
+			);
+
+			expect( data.value ).toBe( '65%' );
+			expect( data.subtext ).toBe( 'of 500 total sessions' );
 		} );
 	} );
 } );
@@ -663,6 +782,161 @@ describe( 'Selling products Key Metric tiles', () => {
 	} );
 } );
 
+describe( 'Generating leads Key Metric tiles', () => {
+	let registry;
+
+	beforeEach( () => {
+		registry = createTestRegistry();
+
+		provideUserAuthentication( registry );
+		provideModules( registry );
+		// None of the Generating leads slugs are in the default active Key
+		// Metrics, so `isKeyMetricActive( slug )` resolves to `false` below.
+		provideKeyMetrics( registry );
+		// None of the Generating leads conversion events are in the default
+		// user input settings, so they don't count as active goals below.
+		provideKeyMetricsUserInputSettings( registry );
+	} );
+
+	const GENERATING_LEADS_SLUGS = [
+		KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+		KM_ANALYTICS_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+		KM_ANALYTICS_LEADS_BY_COUNTRIES,
+		KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+	];
+
+	it.each(
+		GENERATING_LEADS_SLUGS.flatMap( ( slug ) =>
+			CONVERSION_REPORTING_LEAD_EVENTS.map( ( event ) => [ slug, event ] )
+		)
+	)( 'should offer %s when only %s is detected', ( slug, event ) => {
+		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [ event ] );
+
+		const widget = KEY_METRICS_WIDGETS[ slug ];
+
+		expect(
+			widget.displayInSelectionPanel( {
+				select: registry.select,
+				slug,
+			} )
+		).toBe( true );
+		expect(
+			widget.displayInList( { select: registry.select, slug } )
+		).toBe( true );
+	} );
+
+	it.each( GENERATING_LEADS_SLUGS )(
+		'should not offer %s when no lead event has been detected',
+		( slug ) => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.PURCHASE ] );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					slug,
+				} )
+			).toBe( false );
+			expect(
+				widget.displayInList( { select: registry.select, slug } )
+			).toBe( false );
+		}
+	);
+
+	describe( 'Top authors driving leads', () => {
+		const slug = KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS;
+
+		beforeEach( () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.CONTACT ] );
+		} );
+
+		it( 'should additionally require the post author custom dimension on a view-only dashboard', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				widget.displayInWidgetArea( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should not be offered on a view-only dashboard when the post author custom dimension is unavailable', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should be offered on a view-only dashboard when both a lead event is detected and the post author custom dimension is available', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			const widget = KEY_METRICS_WIDGETS[ slug ];
+
+			expect(
+				widget.displayInSelectionPanel( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+
+			expect(
+				widget.displayInList( {
+					select: registry.select,
+					isViewOnlyDashboard: true,
+					slug,
+				} )
+			).toBe( true );
+		} );
+	} );
+} );
+
 describe( 'the renamed ACR Key Metric tiles', () => {
 	// The rename changed the copy only. A user who picked one of these tiles
 	// before the rename has its slug saved in their selection, so the slug is
@@ -680,7 +954,7 @@ describe( 'the renamed ACR Key Metric tiles', () => {
 		],
 		[
 			KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
-			'Top traffic channels by Form completions',
+			'Top traffic channels by form completion',
 			'Where do most of your leads come from?',
 		],
 		[
@@ -731,6 +1005,11 @@ describe( 'the renamed ACR PDF tiles', () => {
 		KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 		KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES,
 		KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+		KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+		KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+		KM_ANALYTICS_LEADS_BY_COUNTRIES,
+		KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+		KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	];
 
 	it.each( RENAMED_TABLE_TILES )(

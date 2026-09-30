@@ -68,16 +68,25 @@ interface TrafficChartStoryProps {
 	report: Report;
 	/** Sets the registry state before the story renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
-function Template( { report, setupRegistry }: TrafficChartStoryProps ) {
+function Template( {
+	report,
+	setupRegistry,
+	gatheringData,
+}: TrafficChartStoryProps ) {
 	// The chart's styles are scoped to the widget and the panel, so the story
 	// renders inside both.
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
 			<div className="googlesitekit-widget--analyticsTrafficOverview">
 				<div className="googlesitekit-traffic-overview__panel">
-					<TrafficChart report={ report } />
+					<TrafficChart
+						report={ report }
+						gatheringData={ gatheringData }
+					/>
 				</div>
 			</div>
 		</WithRegistrySetup>
@@ -140,6 +149,28 @@ PropertyCreatedInRange.args = {
 	},
 };
 PropertyCreatedInRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
+};
+
+/**
+ * The Analytics property is still gathering data, on the shortest range the
+ * chart offers. The line runs flat along the bottom, under one date label per
+ * day.
+ */
+export const GatheringData = Template.bind(
+	{}
+) as Story< TrafficChartStoryProps >;
+GatheringData.storyName = 'Gathering Data';
+GatheringData.args = {
+	report: dailyVisitorsReport,
+	gatheringData: true,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+	},
+};
+GatheringData.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 	viewport: 'large',
 };

@@ -69,6 +69,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
@@ -83,6 +84,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams_Batch;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Remove_Site_Goals_Widget;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Advanced_Data_Breakdowns_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Save_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Sync_Audiences;
@@ -1065,6 +1067,13 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service'             => '',
 				)
 			),
+			'POST:remove-site-goals-widget'               => new Remove_Site_Goals_Widget(
+				array(
+					'site_goals_settings'      => $this->site_goals_settings,
+					'site_goals_site_settings' => $this->site_goals_site_settings,
+					'context'                  => $this->context,
+				)
+			),
 			'GET:advanced-data-breakdowns-settings'       => new Get_Advanced_Data_Breakdowns_Settings(
 				array(
 					'advanced_data_breakdowns_settings' => $this->advanced_data_breakdowns_settings,
@@ -1083,6 +1092,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 				)
 			),
 		);
+
+		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
+			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
+				array(
+					'module'  => $this,
+					'service' => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'context' => $this->context,
+				)
+			);
+		}
 
 		return $this->datapoints;
 	}

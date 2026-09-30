@@ -130,10 +130,11 @@ function formatWholePercentage( wholePercentage: number ): string {
  *
  * The report covers the selected range only and arrives ordered by visitors,
  * so the rows are taken as they come. Values with no visitors are left out
- * first. The rest get the same cap, the same "Others" rule, and the same
- * `visitors / total` share the donut chart uses. The displayed shares add up
- * to exactly 100%, only a lone value shows 100%, and a row with visitors that
- * gets no whole percent is displayed as `<1%` rather than `0%`.
+ * first. When more than `TRAFFIC_BREAKDOWN_MAX_ROWS` values have visitors, the
+ * top values fill every row except the last, and an "Others" row adds up the
+ * rest. The displayed shares add up to exactly 100%, only a lone value shows
+ * 100%, and a row with visitors that gets no whole percent is displayed as
+ * `<1%` rather than `0%`.
  *
  * @since 1.188.0
  * @since n.e.x.t Added `formattedPercentage` and left out values with no visitors.

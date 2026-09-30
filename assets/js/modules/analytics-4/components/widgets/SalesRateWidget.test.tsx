@@ -41,10 +41,10 @@ import { render, within } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import SalesRateWidget from './SalesRateWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -81,7 +81,7 @@ describe( 'SalesRateWidget', () => {
 	it( 'should render the loading state while resolving the reports', async () => {
 		// This widget requests two reports (primary event + engagement), so
 		// the frozen fetch mock must cover both GET requests.
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<SalesRateWidget { ...widgetProps } />,
@@ -94,7 +94,12 @@ describe( 'SalesRateWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	testGenericReportError( () => registry, SalesRateWidget, widgetProps );
+	testGenericReportError(
+		() => registry,
+		SalesRateWidget,
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
+	);
 
 	it( 'should render zero values when there are no purchases or sessions in either period', async () => {
 		const primaryEventReportOptions = getPrimaryEventReportOptions();

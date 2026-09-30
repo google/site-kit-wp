@@ -82,7 +82,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 */
 	function renderPostWithMarker(): void {
 		global.document.body.innerHTML =
-			'<article>Post content.<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin-bottom:-1px"></span></article>';
+			'<article>Post content.<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span></article>';
 	}
 
 	/**

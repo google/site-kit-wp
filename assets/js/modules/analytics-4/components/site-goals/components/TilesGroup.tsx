@@ -23,6 +23,8 @@ import { FC, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
+import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export interface TilesGroupProps {
@@ -50,9 +52,13 @@ export const TilesGroup: FC< TilesGroupProps > = ( {
 			) }
 		>
 			<div className="googlesitekit-site-goals-tiles-group__header">
-				<p className="googlesitekit-site-goals-tiles-group__title">
+				<P
+					className="googlesitekit-site-goals-tiles-group__title"
+					size={ SIZE_MEDIUM }
+					type={ TYPE_TITLE }
+				>
 					{ title }
-				</p>
+				</P>
 				{ ! isMobileBreakpoint && headerCTA && (
 					<div className="googlesitekit-site-goals-tiles-group__cta">
 						{ headerCTA }

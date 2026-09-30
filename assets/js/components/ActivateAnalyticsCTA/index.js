@@ -34,6 +34,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorCTAContent from '@/js/components/ActivateAnalyticsCTA/ErrorCTAContent';
 import NormalCTAContent from '@/js/components/ActivateAnalyticsCTA/NormalCTAContent';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -219,12 +221,15 @@ export default function ActivateAnalyticsCTA( {
 					{ children }
 				</div>
 				<div className="googlesitekit-analytics-cta__details">
-					<p className="googlesitekit-analytics-cta--description">
+					<P
+						className="googlesitekit-analytics-cta--description"
+						size={ SIZE_MEDIUM }
+					>
 						{ __(
 							'See how many people visit your site from Search and track how you’re achieving your goals',
 							'google-site-kit'
 						) }
-					</p>
+					</P>
 					<SpinnerButton
 						onClick={ onClickCallback }
 						isSaving={ inProgress }
