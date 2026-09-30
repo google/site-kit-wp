@@ -42,6 +42,18 @@ interface SettingsIncludeWooCommerceProductsSwitchProps {
 	hasModuleAccess?: boolean;
 }
 
+/**
+ * Renders the switch for including WooCommerce products in "Recent activity".
+ *
+ * Only rendered when the `freshData` feature flag is enabled, WooCommerce is
+ * installed and Analytics is connected.
+ *
+ * @since n.e.x.t
+ *
+ * @param props                   Component props.
+ * @param [props.hasModuleAccess] Whether the current user has access to the Analytics module, defaults to `true`.
+ * @return The rendered component, or `null` when it should not be shown.
+ */
 const SettingsIncludeWooCommerceProductsSwitch: FC<
 	SettingsIncludeWooCommerceProductsSwitchProps
 > = ( { hasModuleAccess = true } ) => {
