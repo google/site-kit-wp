@@ -105,7 +105,7 @@ const WhatsNewTab: FC = () => {
 					<img
 						src={ whatsNewEmptyURL }
 						alt=""
-						width={ 179 }
+						width={ 189 }
 						height={ 193 }
 					/>
 
