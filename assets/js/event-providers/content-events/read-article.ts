@@ -22,6 +22,47 @@
 import { ContentEventsConfig } from '@/js/event-providers/content-events';
 
 /**
+ * Finds the last element of the article, whose bottom edge marks the end of
+ * the article text.
+ *
+ * `Content_Events.php` adds the `<!--[googlesitekit-end-of-content]-->`
+ * comment right after the author's content. Of the comment's earlier sibling
+ * elements, the last one that renders a box is the article's last element. A
+ * `<script>`, a `<style>`, and an element with `display: none` render no box,
+ * so they're skipped. The comment's parent is used when no earlier sibling
+ * renders a box, e.g. when the post leaves its last `<p>` open and the browser
+ * then puts the comment inside it.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Element|null} The article's last element, or `null` when the page has no end-of-content marker.
+ */
+function findEndOfContentElement(): Element | null {
+	const walker = global.document.createTreeWalker(
+		global.document.body,
+		global.NodeFilter.SHOW_COMMENT
+	);
+
+	while ( walker.nextNode() ) {
+		const comment = walker.currentNode as Comment;
+
+		if ( comment.data !== '[googlesitekit-end-of-content]' ) {
+			continue;
+		}
+
+		let element = comment.previousElementSibling;
+
+		while ( element && element.getClientRects().length === 0 ) {
+			element = element.previousElementSibling;
+		}
+
+		return element || comment.parentElement;
+	}
+
+	return null;
+}
+
+/**
  * Sends the `read_article` event after the visitor has read the post.
  *
  * Both of these have to happen, in either order:
@@ -39,7 +80,7 @@ export function initializeReadArticleEventTracker(
 ): void {
 	const {
 		postID,
-		isSinglePost,
+		isReadableSinglePost,
 		isLastPageOfMultiPagePost,
 		wordCount,
 		estimatedReadTimeSeconds,
@@ -49,7 +90,7 @@ export function initializeReadArticleEventTracker(
 
 	// We send the event only from the last page of a single blog post, so one
 	// visit sends at most one event.
-	if ( ! isSinglePost || ! isLastPageOfMultiPagePost ) {
+	if ( ! isReadableSinglePost || ! isLastPageOfMultiPagePost ) {
 		return;
 	}
 
@@ -187,22 +228,47 @@ export function initializeReadArticleEventTracker(
 		}
 	}
 
-	/** The invisible marker PHP appends to the end of the post content. */
-	const endOfContentMarker = global.document.querySelector(
-		'.googlesitekit-end-of-content'
-	);
+	const endOfContentElement = findEndOfContentElement();
 
 	if (
-		endOfContentMarker &&
+		endOfContentElement &&
 		typeof global.IntersectionObserver === 'function'
 	) {
-		observer = new global.IntersectionObserver( ( entries ) => {
-			if ( entries.some( ( entry ) => entry.isIntersecting ) ) {
-				markEndReached();
-			}
-		} );
+		// The observer checks the article's last element against an area that
+		// starts at the window's bottom edge (`-100%`) and ends past the end of
+		// any page (`1000000px`). The end of the article counts as reached once
+		// the element stops intersecting that area and is above it, even when
+		// one scroll moves the element past the top of the window.
+		observer = new global.IntersectionObserver(
+			( entries ) => {
+				if (
+					entries.some(
+						( entry ) =>
+							! entry.isIntersecting &&
+							// `rootBounds` is `null` when the page shows in a frame
+							// from another site, so a post there never sends
+							// `read_article`.
+							entry.rootBounds &&
+							entry.boundingClientRect.bottom <=
+								entry.rootBounds.top
+					)
+				) {
+					markEndReached();
+				}
+			},
+			{ rootMargin: '-100% 0px 1000000px 0px' }
+		);
 
-		observer.observe( endOfContentMarker );
+		// An image or an embed that loads late above the article's last element
+		// pushes the element down, so watching it before the page has loaded
+		// could count the end as reached too early.
+		if ( global.document.readyState === 'complete' ) {
+			observer.observe( endOfContentElement );
+		} else {
+			global.addEventListener( 'load', () =>
+				observer?.observe( endOfContentElement )
+			);
+		}
 	} else {
 		// Either a page builder rendered the content without `the_content`, or
 		// the browser has no `IntersectionObserver`.
