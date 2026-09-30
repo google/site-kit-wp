@@ -49,7 +49,7 @@ export interface BreakdownReportDescriptor {
  * The fragment has no `startDate`, `endDate`, `metrics`, or `url`.
  *
  * @since 1.181.0
- * @since n.e.x.t Removed the `dimensionFilters` option.
+ * @since 1.189.0 Removed the `dimensionFilters` option.
  *
  * @param {Object} [options]                  Options.
  * @param {string} [options.compareStartDate] Comparison start date.
@@ -79,7 +79,7 @@ export function getTotalsReportOptions( {
  * Builds the report-options fragment for the All Visitors date-dimension graph report.
  *
  * @since 1.181.0
- * @since n.e.x.t Removed the `dimensionFilters` option.
+ * @since 1.189.0 Removed the `dimensionFilters` option.
  *
  * @return {Object} Report-options fragment.
  */
@@ -133,7 +133,7 @@ export function getBreakdownReportOptions( {
  * Builds the complete GA4 `getReport` args for the All Visitors totals report.
  *
  * @since 1.181.0
- * @since n.e.x.t Removed the `dimensionFilters` option.
+ * @since 1.189.0 Removed the `dimensionFilters` option.
  *
  * @param {Object} options                  Options.
  * @param {string} options.startDate        Report start date.
@@ -172,7 +172,7 @@ export function getTotalsReportArgs( {
  * Builds the complete GA4 `getReport` args for the All Visitors date-dimension graph report.
  *
  * @since 1.181.0
- * @since n.e.x.t Removed the `dimensionFilters` option.
+ * @since 1.189.0 Removed the `dimensionFilters` option.
  *
  * @param {Object} options           Options.
  * @param {string} options.startDate Report start date.
@@ -201,7 +201,7 @@ export function getGraphReportArgs( {
  * Builds the complete GA4 `getReport` args for one All Visitors breakdown dimension.
  *
  * @since 1.183.0
- * @since n.e.x.t Removed the `compareStartDate` and `compareEndDate` options.
+ * @since 1.189.0 Removed the `compareStartDate` and `compareEndDate` options.
  *
  * @param {Object} options               Options.
  * @param {string} options.dimensionName GA4 dimension to break down by.

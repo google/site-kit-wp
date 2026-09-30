@@ -29,7 +29,7 @@ import { ContentEventsConfig } from '@/js/event-providers/content-events';
  * - The visitor reaches the end of the article text.
  * - The visitor stays on the page long enough to read the post.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {ContentEventsConfig} config Content events configuration.
  * @return {void}

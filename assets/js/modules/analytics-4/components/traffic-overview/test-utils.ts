@@ -27,7 +27,7 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
  * The visitors are strings, the way the API returns them.
  *
  * @since 1.188.0
- * @since n.e.x.t Moved to a shared test helper.
+ * @since 1.189.0 Moved to a shared test helper.
  *
  * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.

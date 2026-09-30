@@ -288,7 +288,7 @@ const baseSelectors = {
 	/**
 	 * Returns every error found among the provided report options.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object}   state         Data store's state.
 	 * @param {Object[]} reportOptions Report options to check for errors. Each entry should be an object of options that would be passed to `getReport` selector.

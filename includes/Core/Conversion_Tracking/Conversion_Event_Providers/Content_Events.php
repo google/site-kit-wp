@@ -43,21 +43,21 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Words an average visitor reads in a minute.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const WORDS_PER_MINUTE = 238;
 
 	/**
 	 * Percentage of the estimated reading time a visitor must stay.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const READ_TIME_THRESHOLD_PERCENT = 85;
 
 	/**
 	 * Shortest time a visitor must stay, in seconds, whatever the article's length.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const MINIMUM_READ_TIME_SECONDS = 5;
 
@@ -65,7 +65,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Characters an average visitor reads in a minute in a script written
 	 * without spaces between words.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const FALLBACK_CHARACTERS_PER_MINUTE = 500;
 
@@ -77,7 +77,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * into view, so the marker is `1px` tall. The `-1px` margin keeps that
 	 * pixel out of the layout.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span>';
 
@@ -100,7 +100,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Flag indicating whether the post content has already been measured.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var bool
 	 */
 	protected $content_measured = false;
@@ -108,7 +108,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Number of words in the measured content, or `null` before it is measured.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var int|null
 	 */
 	protected $word_count = null;
@@ -117,7 +117,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Estimated reading time of the measured content in seconds, or `null`
 	 * before it is measured.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var int|null
 	 */
 	protected $estimated_read_time_seconds = null;
@@ -126,7 +126,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Flag indicating whether the request renders the post's last page, or
 	 * `null` before the content is measured.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var bool|null
 	 */
 	protected $is_last_page_of_multi_page_post = null;
@@ -374,7 +374,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Only the last page of a paginated post gets the marker, so a post sends at
 	 * most one `read_article` event per visit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $content Post content.
 	 * @return string The content, with the marker appended on a single post's last page.
@@ -419,7 +419,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * A block theme's Post Content block adds the `wp_link_pages()` links to the
 	 * end of the content before `the_content` runs. Don't include them in the count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $content Post content.
 	 * @return array The content without the page links, and the page links (an empty string when the content doesn't end with them).
@@ -439,7 +439,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Counts the words in a piece of content and estimates how long it takes to read.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $content Post content, before the other `the_content` filters run.
 	 * @return array Array with the `word_count` and `estimated_read_time_seconds` keys.
@@ -487,7 +487,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * same dictionaries for every locale, so the site language doesn't change
 	 * the count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $text Text with the tags and shortcodes already removed.
 	 * @return int|null Word count, or `null` when ICU is missing.
@@ -510,7 +510,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * A word splitter returns a space and a punctuation mark as pieces of their
 	 * own. Counting every piece would count those as words.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param iterable $parts Pieces of text a word splitter returned.
 	 * @return int Word count.
@@ -531,7 +531,7 @@ class Content_Events extends Conversion_Events_Provider {
 	/**
 	 * Counts the words in a piece of text by splitting it on spaces.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $text Text with the tags and shortcodes already removed.
 	 * @return int Word count.
@@ -556,7 +556,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * them too. The class after the lookahead matches only a letter, a digit, or
 	 * a mark, which keeps that punctuation out of the count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $text Text with the tags and shortcodes already removed.
 	 * @return int Character count.
@@ -571,7 +571,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Gets the inline config data for content events.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Added the values the `read_article` event needs.
+	 * @since 1.189.0 Added the values the `read_article` event needs.
 	 *
 	 * @return array Inline config data.
 	 */
