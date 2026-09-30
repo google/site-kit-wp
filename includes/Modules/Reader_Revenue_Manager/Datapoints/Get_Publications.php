@@ -110,7 +110,7 @@ class Get_Publications extends Datapoint implements Executable_Datapoint {
 	 * created in Site Kit or Publisher Center can still match.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Updated to use `canonical_domain` filter.
+	 * @since 1.189.0 Updated to use `canonical_domain` filter.
 	 *
 	 * @return string Filter expression using canonical_domain variants.
 	 */

@@ -190,7 +190,7 @@ export function useStep(): [ Step | undefined, ( newValue: Step ) => void ] {
  * The CTA created during setup is itself part of the configured CTAs, so the
  * publication had pre-existing CTAs when more than one is configured.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {(boolean|undefined)} `true` when there are pre-existing CTAs, `false` when
  *                               there are none, `undefined` while the CTAs are loading.
@@ -215,7 +215,7 @@ export function useHasPreExistingCTAs(): boolean | undefined {
  * Fires the started survey when the express setup is opened for a recognised
  * CTA, and the completed survey once the setup complete step is reached.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {void}
  */
@@ -251,7 +251,7 @@ export function useExpressSetupSurveyTriggers(): void {
 /**
  * Requests missing permissions on entry to an express setup flow.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string[]} [additionalScopes] Scopes required by the specific flow.
  * @return {void}

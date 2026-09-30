@@ -50,7 +50,7 @@ const storyFiles = flatten(
 /**
  * Gets the `features` list from the Babel node for a story file's `parameters` object.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} parameters The Babel node for the object assigned to `parameters`.
  * @return {string[]|undefined} Feature flag names, or `undefined` when the object sets none.

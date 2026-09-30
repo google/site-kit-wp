@@ -38,7 +38,7 @@ export interface FeatureCountCache extends FeatureCountFingerprint {
 /**
  * Posts a message that the feature count has been updated.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {void}
  */
@@ -62,7 +62,7 @@ function postFeatureCountUpdatedMessage(): void {
 /**
  * Validates a cached feature count.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {unknown} value Value to validate.
  * @return {boolean} Whether the value is a feature count cache.
@@ -90,7 +90,7 @@ export function isFeatureCountCache(
 /**
  * Gets the cached feature count from local storage.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {FeatureCountCache | null} The feature cache count.
  */
@@ -114,7 +114,7 @@ function getFeatureCountCache(): FeatureCountCache | null {
 /**
  * Clears the cached count and notifies open admin tabs.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {void}
  */
@@ -134,7 +134,7 @@ export function clearFeatureCountCache(): void {
 /**
  * Stores the count and notifies open admin tabs.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {FeatureCountCache} featureCountCache Count and its fingerprint.
  * @return {void}
@@ -166,7 +166,7 @@ export function setFeatureCountCache(
 /**
  * Renders a count or dot using WordPress menu count styling.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {number}  count             Number of unread features.
  * @param {Object}  options           Badge rendering options.
@@ -221,7 +221,7 @@ export function renderFeaturesBadge(
 /**
  * Renders the remembered count, hiding numbers with an outdated fingerprint.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {FeatureCountFingerprint} fingerprint Cache fingerprint.
  * @return {void}

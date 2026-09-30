@@ -34,7 +34,7 @@ type DataRequirement = ( registry: Registry ) => Promise< boolean >;
  * The plugin status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the WooCommerce plugin is activated or not.
  */
@@ -52,7 +52,7 @@ export function requireWooCommerceActivated(): DataRequirement {
  * The plugin status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the Google for WooCommerce plugin is activated or not.
  */
@@ -70,7 +70,7 @@ export function requireGoogleForWooCommerceActivated(): DataRequirement {
  * The account status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether a Google for WooCommerce Ads account is present or not.
  */
@@ -90,7 +90,7 @@ export function requireGoogleForWooCommerceAdsAccount(): DataRequirement {
  * The account status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the Google for WooCommerce Ads account is absent or not.
  */

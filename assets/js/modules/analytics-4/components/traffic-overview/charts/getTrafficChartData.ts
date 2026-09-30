@@ -65,7 +65,7 @@ export interface TrafficChartData {
 /**
  * Turns the report's rows into the chart's points.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} rows The daily-visitors report rows.
  * @return {Array<Array>} One `[ day, visitors ]` point for each row that has a day.
@@ -94,7 +94,7 @@ function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
  * The date labels skip the first day, so the second day gives the axis a label
  * near its start.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
  * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
@@ -118,7 +118,7 @@ function getZeroVisitorPoints(
  * Lists every day from the day after the range's first day through its last
  * day.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
  * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
@@ -143,7 +143,7 @@ function getDailyTicks( startDate: string, endDate: string ): Date[] {
 /**
  * Builds the chart table from the daily-visitors report.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object}  options                 Options.
  * @param {Object}  [options.report]        Optional. The daily-visitors report.

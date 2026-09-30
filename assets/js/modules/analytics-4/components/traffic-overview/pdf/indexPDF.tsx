@@ -81,7 +81,7 @@ const styles = createPDFStyles( {
 /**
  * Capitalizes the first letter of each word, as CSS `text-transform: capitalize` does.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} label A dimension value, such as `smart tv`.
  * @return {string} The label with each word capitalized, such as `Smart Tv`.
@@ -97,7 +97,7 @@ function capitalizeWords( label: string ): string {
 /**
  * Maps a breakdown's rows to `PDFMetricTileTable` rows.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} rows Ranked `{ label, formattedPercentage }` rows.
  * @return {Array<Object>} Rows of `{ primary, metric }`, with no change badge.

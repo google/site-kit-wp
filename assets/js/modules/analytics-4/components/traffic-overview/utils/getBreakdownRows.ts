@@ -63,7 +63,7 @@ function getVisitors( row: ReportRow ): number {
  * count wins. A count at 99% gets no missing percent, so a column never shows
  * 100% beside another value.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<number>} visitorCounts The visitor count of each row, in display order.
  * @param {number}        total         The sum of `visitorCounts`, above zero.
@@ -106,7 +106,7 @@ function getWholePercentages(
 /**
  * Formats a row's whole percent the way a column displays it.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {number} wholePercentage Whole percent given to a row with visitors, `0` to `100`.
  * @return {string} The formatted share, such as `27%`, or `<1%` for `0`.
@@ -137,7 +137,7 @@ function formatWholePercentage( wholePercentage: number ): string {
  * `<1%` rather than `0%`.
  *
  * @since 1.188.0
- * @since n.e.x.t Added `formattedPercentage` and left out values with no visitors.
+ * @since 1.189.0 Added `formattedPercentage` and left out values with no visitors.
  *
  * @param {Object} [report] A breakdown report.
  * @return {Array<Object>} The rows to render, empty when no value in the report has visitors.

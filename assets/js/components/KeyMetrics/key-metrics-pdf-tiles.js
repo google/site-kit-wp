@@ -313,7 +313,7 @@ function createSellingProductsTableTile( buildReportOptions, mapRows ) {
 /**
  * Resolves the detected lead events a lead tile reports on.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} registry WordPress data registry.
  * @return {Promise<string[]>} The detected lead event names, empty when none are detected.
@@ -332,7 +332,7 @@ async function resolveDetectedLeadEvents( registry ) {
  * request. The ranked report asks for the same row limit the Site Goals tile
  * does, so both surfaces rank the same channels.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object}          dates        The single-period date range.
  * @param {string|string[]} primaryEvent The primary conversion event name(s).
@@ -363,7 +363,7 @@ function buildTopTrafficChannelsRequests( dates, primaryEvent ) {
 /**
  * Reads a traffic channels tile's two reports into its rows.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} [report]      The ranked channels report.
  * @param {Object} [totalReport] The site-wide total report.
