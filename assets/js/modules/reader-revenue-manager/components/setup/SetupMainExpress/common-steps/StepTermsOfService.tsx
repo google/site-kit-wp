@@ -58,6 +58,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_TYPES,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -291,7 +292,7 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 };
 
 export const termsOfServiceStep: SetupStep = {
-	slug: 'terms-of-service',
+	slug: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
 	label: __( 'Accept terms of service', 'google-site-kit' ),
 	Component: StepTermsOfService,
 	isComplete: ( select: Select ) =>

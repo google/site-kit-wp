@@ -25,6 +25,7 @@ import { ComponentType } from 'react';
  * Internal dependencies
  */
 import { Select } from 'googlesitekit-data';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
  * Props passed by a setup flow to the component of its current step.
@@ -46,7 +47,7 @@ export interface SetupStep {
 	/**
 	 * Unique across every flow, and used as the `step` query argument value.
 	 */
-	slug: string;
+	slug: EXPRESS_SETUP_STEPS;
 
 	/**
 	 * The stepper label, or a function returning it for labels that depend on

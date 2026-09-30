@@ -38,6 +38,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
 // Does not extend `SetupStepProps`: this step ends the flow, so it ignores the
@@ -117,7 +118,7 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 };
 
 export const setupCompleteStep: SetupStep = {
-	slug: 'setup-complete',
+	slug: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
 	label: __( 'Setup complete', 'google-site-kit' ),
 	Component: StepSetupComplete,
 };

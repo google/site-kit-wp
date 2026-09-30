@@ -29,7 +29,10 @@ import {
 import { signupFormStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/StepSignupForm';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -106,7 +109,9 @@ function createStep(
 	{ isComplete }: { isComplete?: boolean } = {}
 ): SetupStep {
 	return {
-		slug,
+		// Fixture flows use made-up slugs, such as a second CTA step, that are
+		// deliberately not part of `EXPRESS_SETUP_STEPS`.
+		slug: slug as EXPRESS_SETUP_STEPS,
 		label: slug,
 		Component: StepContent,
 		...( isComplete === undefined ? {} : { isComplete: () => isComplete } ),

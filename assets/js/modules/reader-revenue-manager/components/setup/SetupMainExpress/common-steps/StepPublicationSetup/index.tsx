@@ -42,6 +42,7 @@ import {
 	SetupStepProps,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
@@ -163,7 +164,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 };
 
 export const publicationSetupStep: SetupStep = {
-	slug: 'connect-publication',
+	slug: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
 	label: ( select: Select ) =>
 		select( CORE_FORMS ).getValue(
 			READER_REVENUE_MANAGER_SETUP_FORM,

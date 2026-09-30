@@ -84,6 +84,14 @@ export const EXPRESS_SETUP_CTA_FORMS = {
 	NEWSLETTER_SIGNUP: 'expressSetupCtaForm-newsletter-signup',
 };
 
+export const enum EXPRESS_SETUP_STEPS {
+	CONNECT_PUBLICATION = 'connect-publication',
+	TERMS_OF_SERVICE = 'terms-of-service',
+	PUBLICATION_POLICIES = 'publication-policies',
+	NEWSLETTER_SIGNUP_FORM = 'newsletter-signup-form',
+	SETUP_COMPLETE = 'setup-complete',
+}
+
 export const enum PUBLICATION_POLICIES_FORM {
 	TERMS_OF_SERVICE_URL = 'publicationTosUrl',
 	PRIVACY_POLICY_URL = 'publicationPrivacyPolicyUrl',

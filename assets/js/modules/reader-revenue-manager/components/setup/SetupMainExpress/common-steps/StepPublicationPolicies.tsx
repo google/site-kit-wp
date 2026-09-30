@@ -51,6 +51,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_POLICIES_FORM,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -296,7 +297,7 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 };
 
 export const publicationPoliciesStep: SetupStep = {
-	slug: 'publication-policies',
+	slug: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
 	label: __( 'Add publication policies', 'google-site-kit' ),
 	Component: StepPublicationPolicies,
 	isComplete: ( select: Select ) => {

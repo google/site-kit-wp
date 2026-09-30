@@ -29,6 +29,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import {
+	EXPRESS_SETUP_STEPS,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -40,9 +41,21 @@ function StepContent() {
 }
 
 const STEPS: SetupStep[] = [
-	{ slug: 'first', label: 'First step', Component: StepContent },
-	{ slug: 'second', label: 'Second step', Component: StepContent },
-	{ slug: 'third', label: 'Third step', Component: StepContent },
+	{
+		slug: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+		label: 'First step',
+		Component: StepContent,
+	},
+	{
+		slug: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
+		label: 'Second step',
+		Component: StepContent,
+	},
+	{
+		slug: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
+		label: 'Third step',
+		Component: StepContent,
+	},
 ];
 
 describe( 'ExpressSetupSteps', () => {
@@ -115,7 +128,10 @@ describe( 'ExpressSetupSteps', () => {
 
 	it( 'should mark the step matching the active slug as active', () => {
 		const { container } = render(
-			<ExpressSetupSteps steps={ STEPS } activeSlug="second" />,
+			<ExpressSetupSteps
+				steps={ STEPS }
+				activeSlug={ EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE }
+			/>,
 			{ registry }
 		);
 

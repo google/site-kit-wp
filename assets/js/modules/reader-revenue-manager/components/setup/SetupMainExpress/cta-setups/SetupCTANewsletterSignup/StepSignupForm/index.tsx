@@ -48,6 +48,7 @@ import {
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
@@ -234,7 +235,7 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 // No `isComplete`: the express setup allows setting up more than one CTA of
 // the same type, so this step never counts as complete.
 export const signupFormStep: SetupStep = {
-	slug: 'newsletter-signup-form',
+	slug: EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM,
 	label: __( 'Set up a sign-up form', 'google-site-kit' ),
 	Component: StepSignupForm,
 };
