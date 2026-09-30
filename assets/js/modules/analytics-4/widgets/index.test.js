@@ -114,7 +114,7 @@ describe( 'Analytics 4 widget registrations', () => {
 			expect( widget.modules ).toEqual( [ 'analytics-4' ] );
 		} );
 
-		it( 'should offer the Traffic Overview section as "Site traffic over time" in the PDF export', async () => {
+		it( 'should offer the Traffic Overview widget as "Site traffic over time" in the PDF export', async () => {
 			registerWidgets( widgets );
 
 			const widget = registry

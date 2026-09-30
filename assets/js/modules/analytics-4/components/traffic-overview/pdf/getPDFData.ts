@@ -51,7 +51,9 @@ export type { TrafficBreakdownRow };
 
 /**
  * The chart fills `PDFCard`'s content width, and `TrafficOverviewPDF` shows it
- * in a box of the same size, so the image never stretches.
+ * in a box of the same size, so the image never stretches. 1085 is `PDFCard`'s
+ * content width in the Figma design: 1133 minus `PDFCard`'s 24px padding on
+ * each side.
  */
 const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;

@@ -49,20 +49,19 @@ export interface BreakdownReportDescriptor {
  * The fragment has no `startDate`, `endDate`, `metrics`, or `url`.
  *
  * @since 1.181.0
+ * @since n.e.x.t Removed the `dimensionFilters` option.
  *
  * @param {Object} [options]                  Options.
  * @param {string} [options.compareStartDate] Comparison start date.
  * @param {string} [options.compareEndDate]   Comparison end date.
- * @param {Object} [options.dimensionFilters] Dimension filters keyed by dimension name.
  * @return {Object} Report-options fragment.
  */
 export function getTotalsReportOptions( {
 	compareStartDate,
 	compareEndDate,
-	dimensionFilters,
 }: Pick<
 	ReportOptions,
-	'compareStartDate' | 'compareEndDate' | 'dimensionFilters'
+	'compareStartDate' | 'compareEndDate'
 > = {} ): Partial< ReportOptions > {
 	const args: Partial< ReportOptions > = {
 		reportID: TOTALS_REPORT_ID,
@@ -73,9 +72,6 @@ export function getTotalsReportOptions( {
 	if ( compareEndDate ) {
 		args.compareEndDate = compareEndDate;
 	}
-	if ( dimensionFilters ) {
-		args.dimensionFilters = dimensionFilters;
-	}
 	return args;
 }
 
@@ -83,15 +79,12 @@ export function getTotalsReportOptions( {
  * Builds the report-options fragment for the All Visitors date-dimension graph report.
  *
  * @since 1.181.0
+ * @since n.e.x.t Removed the `dimensionFilters` option.
  *
- * @param {Object} [options]                  Options.
- * @param {Object} [options.dimensionFilters] Dimension filters keyed by dimension name.
  * @return {Object} Report-options fragment.
  */
-export function getGraphReportOptions( {
-	dimensionFilters,
-}: Pick< ReportOptions, 'dimensionFilters' > = {} ): Partial< ReportOptions > {
-	const args: Partial< ReportOptions > = {
+export function getGraphReportOptions(): Partial< ReportOptions > {
+	return {
 		dimensions: [ 'date' ],
 		orderby: [
 			{
@@ -102,10 +95,6 @@ export function getGraphReportOptions( {
 		],
 		reportID: GRAPH_REPORT_ID,
 	};
-	if ( dimensionFilters ) {
-		args.dimensionFilters = dimensionFilters;
-	}
-	return args;
 }
 
 /**
@@ -143,18 +132,15 @@ export function getBreakdownReportOptions( {
 /**
  * Builds the complete GA4 `getReport` args for the All Visitors totals report.
  *
- * Used by the PDF loader, which has the full date range, entity URL, and
- * dimension filters available up-front.
- *
  * @since 1.181.0
+ * @since n.e.x.t Removed the `dimensionFilters` option.
  *
- * @param {Object} options                    Options.
- * @param {string} options.startDate          Report start date.
- * @param {string} options.endDate            Report end date.
- * @param {string} options.compareStartDate   Comparison start date.
- * @param {string} options.compareEndDate     Comparison end date.
- * @param {string} [options.url]              Entity URL filter, if any.
- * @param {Object} [options.dimensionFilters] Dimension filters keyed by dimension name.
+ * @param {Object} options                  Options.
+ * @param {string} options.startDate        Report start date.
+ * @param {string} options.endDate          Report end date.
+ * @param {string} options.compareStartDate Comparison start date.
+ * @param {string} options.compareEndDate   Comparison end date.
+ * @param {string} [options.url]            Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
 export function getTotalsReportArgs( {
@@ -163,15 +149,9 @@ export function getTotalsReportArgs( {
 	compareStartDate,
 	compareEndDate,
 	url,
-	dimensionFilters,
 }: Pick<
 	ReportOptions,
-	| 'startDate'
-	| 'endDate'
-	| 'compareStartDate'
-	| 'compareEndDate'
-	| 'url'
-	| 'dimensionFilters'
+	'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
 > ): ReportOptions {
 	const args: ReportOptions = {
 		startDate,
@@ -180,7 +160,6 @@ export function getTotalsReportArgs( {
 		...getTotalsReportOptions( {
 			compareStartDate,
 			compareEndDate,
-			dimensionFilters,
 		} ),
 	};
 	if ( url ) {
@@ -193,28 +172,24 @@ export function getTotalsReportArgs( {
  * Builds the complete GA4 `getReport` args for the All Visitors date-dimension graph report.
  *
  * @since 1.181.0
+ * @since n.e.x.t Removed the `dimensionFilters` option.
  *
- * @param {Object} options                    Options.
- * @param {string} options.startDate          Report start date.
- * @param {string} options.endDate            Report end date.
- * @param {string} [options.url]              Entity URL filter, if any.
- * @param {Object} [options.dimensionFilters] Dimension filters keyed by dimension name.
+ * @param {Object} options           Options.
+ * @param {string} options.startDate Report start date.
+ * @param {string} options.endDate   Report end date.
+ * @param {string} [options.url]     Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
 export function getGraphReportArgs( {
 	startDate,
 	endDate,
 	url,
-	dimensionFilters,
-}: Pick<
-	ReportOptions,
-	'startDate' | 'endDate' | 'url' | 'dimensionFilters'
-> ): ReportOptions {
+}: Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
 		metrics: TOTAL_USERS_METRIC,
-		...getGraphReportOptions( { dimensionFilters } ),
+		...getGraphReportOptions(),
 	};
 	if ( url ) {
 		args.url = url;
@@ -226,15 +201,14 @@ export function getGraphReportArgs( {
  * Builds the complete GA4 `getReport` args for one All Visitors breakdown dimension.
  *
  * @since 1.183.0
+ * @since n.e.x.t Removed the `compareStartDate` and `compareEndDate` options.
  *
- * @param {Object} options                    Options.
- * @param {string} options.dimensionName      GA4 dimension to break down by.
- * @param {string} options.reportID           Report ID for this breakdown.
- * @param {string} options.startDate          Report start date.
- * @param {string} options.endDate            Report end date.
- * @param {string} [options.compareStartDate] Comparison start date.
- * @param {string} [options.compareEndDate]   Comparison end date.
- * @param {string} [options.url]              Entity URL filter, if any.
+ * @param {Object} options               Options.
+ * @param {string} options.dimensionName GA4 dimension to break down by.
+ * @param {string} options.reportID      Report ID for this breakdown.
+ * @param {string} options.startDate     Report start date.
+ * @param {string} options.endDate       Report end date.
+ * @param {string} [options.url]         Entity URL filter, if any.
  * @return {Object} GA4 getReport args.
  */
 export function getBreakdownReportArgs( {
@@ -242,26 +216,15 @@ export function getBreakdownReportArgs( {
 	reportID,
 	startDate,
 	endDate,
-	compareStartDate,
-	compareEndDate,
 	url,
 }: BreakdownReportDescriptor &
-	Pick<
-		ReportOptions,
-		'startDate' | 'endDate' | 'compareStartDate' | 'compareEndDate' | 'url'
-	> ): ReportOptions {
+	Pick< ReportOptions, 'startDate' | 'endDate' | 'url' > ): ReportOptions {
 	const args: ReportOptions = {
 		startDate,
 		endDate,
 		metrics: TOTAL_USERS_METRIC,
 		...getBreakdownReportOptions( { dimensionName, reportID } ),
 	};
-	if ( compareStartDate ) {
-		args.compareStartDate = compareStartDate;
-	}
-	if ( compareEndDate ) {
-		args.compareEndDate = compareEndDate;
-	}
 	if ( url ) {
 		args.url = url;
 	}
