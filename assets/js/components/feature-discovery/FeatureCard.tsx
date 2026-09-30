@@ -289,7 +289,6 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 				<div className="googlesitekit-feature-card__service">
 					<ModuleIcon aria-hidden="true" height={ 36 } width={ 36 } />
 
-					{ /* @ts-expect-error - The `Typography` component is not typed yet. */ }
 					<Typography size={ SIZE_LARGE } type={ TYPE_BODY }>
 						{ moduleName }
 					</Typography>

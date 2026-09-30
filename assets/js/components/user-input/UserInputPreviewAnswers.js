@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import LoadingWrapper from '@/js/components/LoadingWrapper';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 export default function UserInputPreviewAnswers( {
 	loading,
@@ -32,7 +34,12 @@ export default function UserInputPreviewAnswers( {
 		<div className="googlesitekit-user-input__preview-answers">
 			<LoadingWrapper loading={ loading } width="340px" height="36px">
 				{ errorMessage && ! suppressError && (
-					<p className="googlesitekit-error-text">{ errorMessage }</p>
+					<P
+						className="googlesitekit-error-text"
+						size={ SIZE_MEDIUM }
+					>
+						{ errorMessage }
+					</P>
 				) }
 
 				{ ( ! errorMessage || suppressError ) &&

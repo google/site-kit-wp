@@ -23,7 +23,9 @@ exports[`DashboardAllTrafficWidgetGA4 should render an error state if there is a
           <div
             class="googlesitekit-cta__description"
           >
-            <p>
+            <p
+              class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+            >
               Request parameter is empty: metrics.
             </p>
           </div>
