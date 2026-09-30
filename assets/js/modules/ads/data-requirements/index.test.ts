@@ -21,7 +21,7 @@
  */
 import { Registry } from 'googlesitekit-data';
 import { MODULES_ADS, PLUGINS } from '@/js/modules/ads/datastore/constants';
-import { createTestRegistry } from '@tests/js/test-utils';
+import { createTestRegistry, provideSiteInfo } from '@tests/js/test-utils';
 import {
 	requireGoogleForWooCommerceActivated,
 	requireGoogleForWooCommerceAdsAccount,
@@ -42,7 +42,7 @@ describe( 'ads data requirements', () => {
 
 	describe( 'requireWooCommerceActivated', () => {
 		it( 'should return true when WooCommerce is activated', async () => {
-			providePlugins( { [ PLUGINS.WOOCOMMERCE ]: { active: true } } );
+			provideSiteInfo( registry, { wooCommerceActive: true } );
 
 			await expect(
 				requireWooCommerceActivated()( registry )
@@ -50,7 +50,7 @@ describe( 'ads data requirements', () => {
 		} );
 
 		it( 'should return false when WooCommerce is not activated', async () => {
-			providePlugins( { [ PLUGINS.WOOCOMMERCE ]: { active: false } } );
+			provideSiteInfo( registry, { wooCommerceActive: false } );
 
 			await expect(
 				requireWooCommerceActivated()( registry )
@@ -58,7 +58,7 @@ describe( 'ads data requirements', () => {
 		} );
 
 		it( 'should return false when the plugin status is not available', async () => {
-			providePlugins( {} );
+			provideSiteInfo( registry, { wooCommerceActive: undefined } );
 
 			await expect(
 				requireWooCommerceActivated()( registry )

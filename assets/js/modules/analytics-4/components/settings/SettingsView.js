@@ -51,6 +51,7 @@ import OptionalSettingsView from './OptionalSettingsView';
 export default function SettingsView() {
 	const gtgEnabled = useFeature( 'googleTagGateway' );
 	const gtagUserDataEnabled = useFeature( 'gtagUserData' );
+	const freshDataEnabled = useFeature( 'freshData' );
 
 	const accountID = useSelect( ( select ) =>
 		select( MODULES_ANALYTICS_4 ).getAccountID()
@@ -102,6 +103,14 @@ export default function SettingsView() {
 
 	const isConversionTrackingEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).isConversionTrackingEnabled()
+	);
+
+	const isWooCommerceInstalled = useSelect( ( select ) =>
+		select( CORE_SITE ).isWooCommerceInstalled()
+	);
+
+	const includesWooCommerceProducts = useSelect( ( select ) =>
+		select( MODULES_ANALYTICS_4 ).getFreshDataIncludesWooCommerceProducts()
 	);
 
 	const isGTGEnabled = useSelect( ( select ) => {
@@ -307,6 +316,17 @@ export default function SettingsView() {
 										'google-site-kit'
 									),
 									status: isGTGEnabled,
+								},
+						  ]
+						: [] ),
+					...( freshDataEnabled && isWooCommerceInstalled
+						? [
+								{
+									label: __(
+										'Include products in Recent activity',
+										'google-site-kit'
+									),
+									status: includesWooCommerceProducts,
 								},
 						  ]
 						: [] ),
