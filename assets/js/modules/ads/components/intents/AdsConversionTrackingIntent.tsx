@@ -96,18 +96,23 @@ const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 		setError( undefined );
 		setIsPlacingTag( true );
 
-		const { returnURL, error: placeTagError } =
-			await completeConversionTrackingIntent( intentCode, tagID );
+		try {
+			const { returnURL, error: placeTagError } =
+				await completeConversionTrackingIntent( intentCode, tagID );
 
-		// Every step can be tried again, so a failure leaves the button usable.
-		if ( placeTagError ) {
-			setError( placeTagError );
+			// A returned error is shown the same way as a thrown one.
+			if ( placeTagError ) {
+				throw placeTagError;
+			}
+
+			// The spinner keeps running while the browser leaves for Google Ads.
+			navigateTo( returnURL );
+		} catch ( err ) {
+			// Every step can be tried again, so a failure leaves the button usable.
+			setError( err as ErrorObject );
+		} finally {
 			setIsPlacingTag( false );
-			return;
 		}
-
-		// The spinner keeps running while the browser leaves for Google Ads.
-		navigateTo( returnURL );
 	}, [ completeConversionTrackingIntent, intentCode, navigateTo, tagID ] );
 
 	const formattedConsentDate = formatDate( consentDate, { month: 'long' } );

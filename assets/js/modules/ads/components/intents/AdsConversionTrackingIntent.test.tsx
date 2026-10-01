@@ -258,4 +258,33 @@ describe( 'AdsConversionTrackingIntent', () => {
 			} )
 		).toBeEnabled();
 	} );
+
+	it( 'should show the error and let the user try again when placing the tag throws', async () => {
+		// The action throws for a tag ID that isn't a valid conversion ID.
+		const { findByText, getByRole } = renderIntent( {
+			...payload,
+			tag_id: 'invalid-tag-id',
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Confirm tag' } ) );
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Place tag and return to Google Ads',
+			} )
+		);
+
+		expect(
+			await findByText(
+				'Error: a valid tagID is required. (Please try again.)'
+			)
+		).toBeInTheDocument();
+
+		expect( fetchMock ).not.toHaveFetched();
+		expect( global.location.assign ).not.toHaveBeenCalled();
+		expect(
+			getByRole( 'button', {
+				name: 'Place tag and return to Google Ads',
+			} )
+		).toBeEnabled();
+	} );
 } );
