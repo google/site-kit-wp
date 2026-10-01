@@ -79,7 +79,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * jsdom lays out no element, so every element reports no box until a test
 	 * lays it out.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Element|null} element The element to lay out.
 	 * @return {void}
@@ -98,7 +98,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * from 800px down to 1000800px. `IntersectionObserver` counts an element
 	 * that touches the area as intersecting it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Element|null} element The element the observer watches.
 	 * @param {number}       bottom  The distance from the top of the window to the element's bottom edge, in pixels.
@@ -117,7 +117,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * Gets the last `<p>` inside the `<article>` on the page, or `null` when the
 	 * article has none.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {Element|null} The last paragraph.
 	 */
@@ -186,7 +186,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * Sets whether the page has finished loading, without firing the `load`
 	 * event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} readyState The `document.readyState` value to report, e.g. `'interactive'`.
 	 * @return {void}

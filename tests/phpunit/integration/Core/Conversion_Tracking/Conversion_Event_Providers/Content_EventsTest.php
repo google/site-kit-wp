@@ -621,7 +621,7 @@ class Content_EventsTest extends TestCase {
 	 * `Content_Events` adds the marker only in the main loop, so the tests
 	 * render the post there.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param callable $render A callback that renders the current post and returns the result.
 	 * @return mixed What the callback returned for the last post of the loop.
@@ -644,7 +644,7 @@ class Content_EventsTest extends TestCase {
 	 * Runs the WordPress loop the way a classic theme does, and returns what
 	 * `the_content()` prints for the post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return string The printed content.
 	 */
@@ -673,7 +673,7 @@ class Content_EventsTest extends TestCase {
 	 * `wp_kses()`, which writes `]]>` as `]]&gt;`. `wp_insert_post()` also fails
 	 * to save text that isn't valid UTF-8.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $text The post text.
 	 */

@@ -33,7 +33,7 @@ import { ContentEventsConfig } from '@/js/event-providers/content-events';
  * renders a box, e.g. when the post leaves its last `<p>` open and the browser
  * then puts the comment inside it.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {Element|null} The article's last element, or `null` when the page has no end-of-content marker.
  */

@@ -256,7 +256,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Registers content hooks once tag initialization occurs.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Added the `the_content` filters that mark the end of a single post's text.
+	 * @since 1.189.0 Added the `the_content` filters that mark the end of a single post's text.
 	 */
 	protected function register_content_hooks() {
 		add_filter( 'embed_oembed_html', array( $this, 'filter_embed_html' ) );
@@ -447,7 +447,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Only the start has to match, because a block theme's Post Content block
 	 * adds the page links of a paginated post after the text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $content The content `the_content` received.
 	 * @return bool True when the content starts with the queried post's text.
