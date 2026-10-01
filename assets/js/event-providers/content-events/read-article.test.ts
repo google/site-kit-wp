@@ -42,7 +42,7 @@ const VIEWPORT_HEIGHT = 800;
  * Builds the configuration the initializer reads, for the last page of a single
  * post.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} overrides Fields to write over the default ones.
  * @return {ContentEventsConfig} Content events configuration.
@@ -76,7 +76,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * Renders a post whose content ends with the end-of-content marker
 	 * PHP appends.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -89,7 +89,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	 * Renders a post whose content has no marker, the way a page builder
 	 * does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -100,7 +100,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Sets how far the page has scrolled, without firing the `scroll` event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {number} scrollRatio How much of the page the visitor has seen.
 	 *                             `0.2` is the top and `1` is the bottom.
@@ -116,7 +116,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Sets how far the page has scrolled, then fires the `scroll` event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {number} scrollRatio How much of the page the visitor has seen.
 	 *                             `0.2` is the top and `1` is the bottom.
@@ -130,7 +130,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Marks the page visible, without firing a visibility event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -144,7 +144,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Marks the page hidden, without firing a visibility event.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -158,7 +158,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Hides the page, the way switching to another browser tab does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -170,7 +170,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Shows the page again, the way returning to the browser tab does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -182,7 +182,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Sends the window to the background, the way switching to another window does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -194,7 +194,7 @@ describe( 'initializeReadArticleEventTracker', () => {
 	/**
 	 * Brings the window back to the front, the way switching back to it does.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */

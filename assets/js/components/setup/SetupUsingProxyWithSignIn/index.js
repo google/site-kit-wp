@@ -53,6 +53,7 @@ import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/c
 import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
+import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -68,6 +69,7 @@ export default function SetupUsingProxyWithSignIn() {
 		'setupFlowRefreshPhase4'
 	);
 	const forwardableParams = useForwardableParams();
+	const isIntentSetupFlow = useIsIntentSetupFlow();
 
 	const viewContext = useViewContext();
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -143,7 +145,9 @@ export default function SetupUsingProxyWithSignIn() {
 			}
 		}
 
-		if ( setupFlowRefreshPhase4Enabled ) {
+		// The intent flow skips the Key Metrics questions, so the dashboard
+		// should not redirect the user to them after setup.
+		if ( setupFlowRefreshPhase4Enabled && ! isIntentSetupFlow ) {
 			setHasSitePurposeAnswer( false );
 			shouldSaveInitialSetupSettings = true;
 		}
@@ -160,6 +164,7 @@ export default function SetupUsingProxyWithSignIn() {
 	}, [
 		activateModule,
 		connectAnalytics,
+		isIntentSetupFlow,
 		saveInitialSetupSettings,
 		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,

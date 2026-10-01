@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Matchers;
@@ -285,6 +286,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
+	 * @since n.e.x.t The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -484,15 +486,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 
 		// This hook adds the "Set up Google Analytics" step to the Site Kit
-		// setup flow.
+		// setup flow, unless the mode is already set.
 		//
 		// This filter is documented in
 		// Core\Authentication\Google_Proxy::get_metadata_fields.
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
 			function ( $original_mode ) {
-				return ! $this->is_connected()
-					? 'analytics-step'
+				return empty( $original_mode ) && ! $this->is_connected()
+					? Google_Proxy::SETUP_MODE_ANALYTICS_STEP
 					: $original_mode;
 			}
 		);

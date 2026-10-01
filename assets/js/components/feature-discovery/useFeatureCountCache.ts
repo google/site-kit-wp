@@ -37,7 +37,7 @@ import { setFeatureCountCache } from '@/js/util/features-badge';
 /**
  * Keeps the menu badge cache up to date as feature newness changes.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {void}
  */

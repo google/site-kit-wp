@@ -35,7 +35,7 @@ import { addQueryArgs, hasQueryArg } from '@wordpress/url';
  * bundle again, and `storybook/preview-head.html` sets the flags first, from
  * the page URL or from session storage.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string[]} [features] Optional. The feature flags the story needs.
  * @return {boolean} `true` when Storybook is reloading, and `false` when the
