@@ -508,7 +508,9 @@ class Content_Events extends Conversion_Events_Provider {
 		// player, so the URL doesn't count as words. A site that removes
 		// `autoembed()` from `the_content` shows the URL as text.
 		if ( false !== has_filter( 'the_content', array( $wp_embed, 'autoembed' ) ) ) {
-			$content = $wp_embed->autoembed( $content );
+			// We run `wpautop()` first, so a URL saved right next to a paragraph gets
+			// its own paragraph. `autoembed()` skips a URL that isn't alone on a line.
+			$content = $wp_embed->autoembed( wpautop( $content ) );
 		}
 
 		// The block editor saves a typed `&` as `&amp;`, which would otherwise

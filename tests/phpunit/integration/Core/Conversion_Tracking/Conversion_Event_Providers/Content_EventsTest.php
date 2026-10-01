@@ -1352,6 +1352,22 @@ class Content_EventsTest extends TestCase {
 		$this->assertSame( 4, $config['wordCount'], 'The URL "https://example.com/video/1" should count as the 4 words "https", "example.com", "video", and "1", because the page shows the URL as text.' );
 	}
 
+	public function test_measure_content__counts_no_words_for_an_embed_url_right_after_a_paragraph() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content( '<p>Five words above the video.</p>https://example.com/video/1' );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "Five words above the video." alone, without the embed URL right after the paragraph.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_an_embed_url_right_before_a_paragraph() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/video/1<p>Five words below the video.</p>' );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "Five words below the video." alone, without the embed URL right before the paragraph.' );
+	}
+
 	/**
 	 * @dataProvider data_scripts_without_word_spacing
 	 */
