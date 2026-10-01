@@ -502,6 +502,17 @@ class Content_Events extends Conversion_Events_Provider {
 	 * @return array Array with the `word_count` and `estimated_read_time_seconds` keys.
 	 */
 	protected function measure_content( $content ) {
+		global $wp_embed;
+
+		// `WP_Embed::autoembed()` replaces a URL with its embed, e.g. a Vimeo
+		// player, so the URL doesn't count as words. A site that removes
+		// `autoembed()` from `the_content` shows the URL as text.
+		if ( false !== has_filter( 'the_content', array( $wp_embed, 'autoembed' ) ) ) {
+			// We run `wpautop()` first, so a URL saved right next to a paragraph gets
+			// its own paragraph. `autoembed()` skips a URL that isn't alone on a line.
+			$content = $wp_embed->autoembed( wpautop( $content ) );
+		}
+
 		// The block editor saves a typed `&` as `&amp;`, which would otherwise
 		// count as the word `amp`. The tags are removed first, so a typed `<`
 		// isn't mistaken for a tag.
