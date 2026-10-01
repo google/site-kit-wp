@@ -50,12 +50,14 @@ function isControlCharacter( character: string ): boolean {
 /**
  * Extracts the host (e.g. "www.example.com") from the reference site URL.
  *
+ * Used for the site address in both the PDF header and the PDF filename.
+ *
  * @since 1.182.0
  * @since n.e.x.t Moved from `PDFHeader` and added the `fallback` parameter.
  *
- * @param siteURL    The reference site URL.
- * @param [fallback] Value returned when the URL cannot be parsed, defaults to `siteURL`.
- * @return The host, or the fallback when the URL cannot be parsed.
+ * @param {string} siteURL            The reference site URL.
+ * @param {string} [fallback=siteURL] The value to return when the URL cannot be parsed.
+ * @return {string} The host, or `fallback` when the URL cannot be parsed.
  */
 export function getSiteHost(
 	siteURL: string,
@@ -91,7 +93,7 @@ function formatDateRange( startDate: string, endDate: string ): string {
 }
 
 /**
- * Builds a filesystem-safe PDF filename for the dashboard export, in the form
+ * Builds a filesystem-safe PDF filename for the dashboard export, e.g.
  * `Site Kit Dashboard - example.com - Mar 1 – 7, 2026.pdf`.
  *
  * @since 1.181.0
