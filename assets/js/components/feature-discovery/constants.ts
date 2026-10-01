@@ -16,34 +16,6 @@
  * limitations under the License.
  */
 
-/**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
- * Internal dependencies
- */
-import AllServicesTab from './all-services/AllServicesTab';
-import WhatsNewTab from './whats-new/WhatsNewTab';
-
-export const FEATURE_DISCOVERY_TABS = [
-	{
-		Component: AllServicesTab,
-		label: __( 'All services and features', 'google-site-kit' ),
-		panelID: 'googlesitekit-feature-discovery-all-services-tab-panel',
-		path: '/all-services',
-		tabID: 'googlesitekit-feature-discovery-all-services-tab',
-	},
-	{
-		Component: WhatsNewTab,
-		label: __( 'What’s new?', 'google-site-kit' ),
-		panelID: 'googlesitekit-feature-discovery-whats-new-tab-panel',
-		path: '/whats-new',
-		tabID: 'googlesitekit-feature-discovery-whats-new-tab',
-	},
-];
-
 export const DEFAULT_TAB_PATH = '/whats-new';
 export const FIRST_VISIT_TAB_PATH = '/all-services';
 export const FEATURE_DISCOVERY_VISITED_ITEM_SLUG = 'feature-discovery-visited';
