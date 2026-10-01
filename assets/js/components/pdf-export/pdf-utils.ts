@@ -100,11 +100,7 @@ export function getPDFFilename(
 
 	const formattedDateRange = formatDateRange( startDate, endDate );
 	if ( formattedDateRange ) {
-		// Some locales separate the date parts with `/`, e.g. `2026/03/01` in
-		// Japanese, so hyphenate them rather than run the numbers together.
-		segments.push(
-			formattedDateRange.replace( RESERVED_FILENAME_CHARACTERS, '-' )
-		);
+		segments.push( formattedDateRange );
 	}
 
 	const name = segments
