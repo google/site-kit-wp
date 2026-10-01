@@ -47,10 +47,14 @@ import { MODULES_ADSENSE } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { options }, { signal } = {} ) => {
-		return get( 'modules', MODULE_SLUG_ADSENSE, 'report', options, {
-			signal,
-		} );
+	controlCallback: ( { options }, fetchOptions ) => {
+		return get(
+			'modules',
+			MODULE_SLUG_ADSENSE,
+			'report',
+			options,
+			fetchOptions
+		);
 	},
 	reducerCallback: createReducer( ( state, report, { options } ) => {
 		state.reports[ getReportCacheKey( options ) ] = report;
@@ -115,6 +119,7 @@ const baseSelectors = {
 	 * @since 1.9.0
 	 * @since 1.182.0 Accept optional fetch options as a second argument, such as `{ signal }` to cancel the report request.
 	 * @since 1.183.0 Treat report options that differ only in `reportID` as one report.
+	 * @since n.e.x.t Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
 	 *
 	 * @param {Object}         state                Data store's state.
 	 * @param {Object}         options              Options for generating the report.
@@ -124,7 +129,7 @@ const baseSelectors = {
 	 * @param {Array.<string>} [options.dimensions] Optional. List of {@link https://developers.google.com/adsense/management/metrics-dimensions#dimensions|dimensions} to group results by.
 	 * @param {Array.<Object>} [options.orderby]    Optional. Order definition objects containing 'fieldName' and 'sortOrder'. 'sortOrder' must be either 'ASCENDING' or 'DESCENDING'. Default null.
 	 * @param {number}         [options.limit]      Optional. Maximum number of entries to return. Default 1000.
-	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
+	 * @param {Object}         [fetchOptions]       Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it or `{ cacheTTL }` to change how long the response is cached, in seconds.
 	 * @return {(Array.<Object>|undefined)} An AdSense report; `undefined` if not loaded.
 	 */
 	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
