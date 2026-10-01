@@ -43,10 +43,7 @@ const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
 );
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
-/**
- * The `\\?` stops a request to `/wp/v2/products` from matching, because the
- * products route is `/wp/v2/product`.
- */
+/** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
 
 describe( 'modules/analytics-4 fresh data', () => {
@@ -675,7 +672,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should return the title with its HTML entities decoded and the path of the permalink', async () => {
+		it( 'should return the title with its HTML entities decoded and its HTML tags removed', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -687,7 +684,8 @@ describe( 'modules/analytics-4 fresh data', () => {
 						date_gmt: '2026-09-23T17:45:00',
 						link: 'http://example.com/blog/2026/09/coffee-and-cake/',
 						title: {
-							rendered: 'Coffee &#038; cake we&#8217;ve baked',
+							rendered:
+								'Coffee &#038; <em>cake</em> we&#8217;ve baked&hellip;',
 						},
 					},
 				],
@@ -710,7 +708,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( [
 				{
 					id: 5,
-					title: 'Coffee & cake we’ve baked',
+					title: 'Coffee & cake we’ve baked…',
 					permalink:
 						'http://example.com/blog/2026/09/coffee-and-cake/',
 					pagePath: '/blog/2026/09/coffee-and-cake/',

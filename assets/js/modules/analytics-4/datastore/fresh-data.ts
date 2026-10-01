@@ -44,7 +44,6 @@ import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { decodeHTMLEntity } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 import { MODULES_ANALYTICS_4 } from './constants';
 
@@ -53,18 +52,18 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 export interface RecentContentItem {
 	/** The ID of the post or product. */
 	id: number;
-	/** The title with its HTML entities decoded, e.g. `Don’t miss it`, not `Don&#8217;t miss it`. */
+	/** The title as text, e.g. `Don’t miss it`, not `Don&#8217;t <em>miss</em> it`. */
 	title: string;
 	/** The URL of the post or product. */
 	permalink: string;
 	/** The path of `permalink`, e.g. `/hello-world/`, which matches the `pagePath` dimension of an Analytics report row. */
 	pagePath: string;
-	/** The publish time in UTC, not the site's local time, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
+	/** The publish time in UTC, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
 	publishedAt: string;
 }
 
 interface RecentContentOptions {
-	/** The number of posts and products to return. */
+	/** The total number of posts and products to return. */
 	count: number;
 }
 
@@ -83,7 +82,7 @@ interface WordPressPost {
 	link: string;
 	/** The post title. */
 	title: {
-		/** The title after the `the_title` filters run, e.g. `Don&#8217;t miss it`, not `Don’t miss it`. */
+		/** The title as HTML, e.g. `Don&#8217;t <em>miss</em> it`. */
 		rendered: string;
 	};
 }
@@ -121,13 +120,18 @@ const fetchGetRecentContentStore = createFetchStore( {
 			)
 		);
 
+		const parser = new DOMParser();
+
 		return responses
 			.flat()
 			.map( ( post ) => ( {
 				id: post.id,
-				// WordPress runs `wptexturize()` on a title, which turns `&` into
-				// `&#038;` and an apostrophe into `&#8217;`.
-				title: decodeHTMLEntity( post.title.rendered ),
+				// `wptexturize()` writes an apostrophe as `&#8217;`, and an
+				// author can add HTML tags, so we read the title's text.
+				title: parser.parseFromString(
+					post.title.rendered,
+					'text/html'
+				).body.textContent,
 				permalink: post.link,
 				pagePath: new URL( post.link ).pathname,
 				publishedAt: `${ post.date_gmt }Z`,
@@ -192,18 +196,21 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.shouldIncludeWooCommerceProducts();
 
-		// An earlier failed request can leave its error under `[ options ]`,
-		// where the fetch store doesn't clear it.
+		// An earlier failed request saved its error under the selector's
+		// arguments, `[ options ]`, where the fetch store doesn't clear it.
 		yield clearSelectorError( 'getRecentContent', [ options ] );
 
+		// We request the list even when the state already has one, so that
+		// `invalidateResolution()` refreshes it.
 		const { error } =
 			( yield fetchGetRecentContentStore.actions.fetchGetRecentContent(
 				options.count,
 				includeProducts
 			) ) as { error?: ErrorObject };
 
-		// We move the error from the fetch store's `[ count, includeProducts ]`
-		// to `[ options ]`, so a component can read it and retry the selector.
+		// We move the error from the fetch store's arguments,
+		// `[ count, includeProducts ]`, to the selector's, `[ options ]`, so a
+		// component can read it and retry the request.
 		if ( error ) {
 			yield clearSelectorError( 'getRecentContent', [
 				options.count,
@@ -226,7 +233,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
-	 * @param {number} options.count The number of posts and products to return.
+	 * @param {number} options.count The total number of posts and products to return.
 	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` until a request with the same `count` succeeds.
 	 */
 	getRecentContent(
