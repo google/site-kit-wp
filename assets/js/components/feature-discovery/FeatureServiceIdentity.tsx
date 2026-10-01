@@ -45,20 +45,16 @@ const FeatureServiceIdentity: FC< FeatureServiceIdentityProps > = ( {
 } ) => {
 	const module = useSelect(
 		( select: Select ) =>
-			feature?.moduleSlug
+			feature.moduleSlug
 				? select( CORE_MODULES ).getModule( feature.moduleSlug )
 				: undefined,
-		[ feature?.moduleSlug ]
+		[ feature.moduleSlug ]
 	);
 
 	const ModuleIcon = module?.Icon || SiteKitIcon;
 
 	const moduleName =
 		module?.name || __( 'Site Kit feature', 'google-site-kit' );
-
-	if ( ! feature ) {
-		return null;
-	}
 
 	return (
 		<div className="googlesitekit-feature-service-identity">
