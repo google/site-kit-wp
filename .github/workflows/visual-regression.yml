@@ -9,13 +9,17 @@ on:
     # Only run if CSS/JS related files changed.
     paths:
       - '.github/workflows/visual-regression.yml'
+      - '.github/actions/**'
       - 'assets/**'
       - '!assets/**/__tests__/**/*.js'
       - '!assets/**/test/*.js'
       - '!assets/**/*.test.js'
       - '**.stories.js'
-      - 'tests/backstop/**'
+      - '**.stories.tsx'
+      - 'tests/js/**'
+      - 'tests/vrt/**'
       - 'storybook/**'
+      - 'webpack/**'
       - '**.scss'
       - '.nvmrc'
       - '**/package.json'
@@ -26,6 +30,28 @@ on:
       - synchronize
       - ready_for_review
       - closed
+  # Catch reference images that no longer match after two PRs merge.
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - '.github/workflows/visual-regression.yml'
+      - 'assets/**'
+      - 'tests/js/**'
+      - 'tests/vrt/**'
+      - 'storybook/**'
+      - 'webpack/**'
+      - '**.scss'
+      - '.nvmrc'
+      - '**/package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+    inputs:
+      repeat_each:
+        description: Run each test this many times, to find flaky stories.
+        required: false
+        default: '1'
 
 concurrency:
   group: visual-regression-${{ github.ref }}
@@ -39,46 +65,127 @@ env:
   CAN_UPLOAD_VRT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false ) }}
 
 jobs:
-  visual-regression:
-    name: Run VR Tests
+  build:
+    name: Build Storybook
     runs-on: ubuntu-latest
-    timeout-minutes: 40
-    if: github.event.pull_request.draft == false && github.event.action != 'closed'
-    permissions:
-      contents: read
+    timeout-minutes: 20
+    if: github.event_name != 'pull_request' || ( github.event.pull_request.draft == false && github.event.action != 'closed' )
+    outputs:
+      playwright-version: ${{ steps.playwright.outputs.version }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
       - name: Setup Node.js (.nvmrc)
         uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc
           cache: npm
       - name: npm install
-        run: npm ci -w assets -w tests/backstop -w storybook -w tests/js --include-workspace-root
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # ratchet:docker/login-action@v4
+        run: npm ci -w assets -w storybook -w tests/js -w tests/vrt --include-workspace-root
+      - name: Build Storybook
+        run: VRT=1 npm run build:storybook
+      # Fails early on scenarios whose story isn't in the build, and on
+      # missing or orphaned reference images.
+      - name: Check scenarios and reference images
+        run: node tests/vrt/bin/check-snapshots.js --build
+      - name: Get Playwright version
+        id: playwright
+        working-directory: tests/vrt
+        run: echo "version=$(node -p "require( '@playwright/test/package.json' ).version")" >> "$GITHUB_OUTPUT"
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
-          registry: ghcr.io
-          username: google-site-kit-bot
-          password: ${{ secrets.GH_BOT_TOKEN }}
-      - name: Run Backstopjs
-        id: run-backstopjs
-        run: npm run test:visualtest
-      - name: Upload artifacts
+          name: storybook-vrt
+          path: |
+            dist
+            !dist/**/*.map
+          retention-days: 1
+
+  test:
+    name: Run VR Tests (${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 30
+    # The same image `tests/vrt/bin/vrt` runs locally, so reference images
+    # approved locally match these screenshots.
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright-version }}-noble
+      options: --ipc=host
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [ 1, 2, 3, 4 ]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Download Storybook build
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          name: storybook-vrt
+          path: dist
+      - name: npm install
+        run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
+      - name: Run VR tests
+        working-directory: tests/vrt
+        env:
+          REPEAT_EACH: ${{ github.event.inputs.repeat_each || '1' }}
+        run: npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --repeat-each="$REPEAT_EACH"
+      - name: Upload blob report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         if: always()
         with:
+          name: blob-report-${{ matrix.shard }}
+          path: tests/vrt/blob-report
+          retention-days: 1
+
+  report:
+    name: VRT Report
+    runs-on: ubuntu-latest
+    needs: [ build, test ]
+    if: always() && needs.build.result == 'success'
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
+      - name: Download blob reports
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          pattern: blob-report-*
+          path: tests/vrt/all-blob-reports
+          merge-multiple: true
+      - name: Merge reports
+        id: merge
+        working-directory: tests/vrt
+        env:
+          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report
+          PLAYWRIGHT_JSON_OUTPUT_NAME: results.json
+        run: |
+          npx playwright merge-reports --reporter html,json ./all-blob-reports
+          node -e "
+            const { stats } = require( './results.json' );
+            console.log( 'failed=' + stats.unexpected );
+            console.log( 'flaky=' + stats.flaky );
+            console.log( 'passed=' + stats.expected );
+          " >> "$GITHUB_OUTPUT"
+      - name: Upload HTML report
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
+        with:
           name: vrt-report
-          path: |
-            tests/backstop/ci_report
-            tests/backstop/html_report
-            tests/backstop/json_report
-            tests/backstop/reference
-            tests/backstop/tests
+          path: tests/vrt/playwright-report
 
       - name: Set report target directory
         id: report-target
-        if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
         run: |
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo "dir=pull/${{ github.event.number }}" >> "$GITHUB_OUTPUT"
@@ -88,37 +195,51 @@ jobs:
 
       - uses: ./.github/actions/upload-to-gcs
         id: upload-to-gcs
-        if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
-          path: tests/backstop
+          path: tests/vrt/playwright-report
           destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
 
-      - name: Save report URL
-        if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
+      - name: Save report summary
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
         env:
-          RUN_OUTCOME: ${{ steps.run-backstopjs.outcome }}
+          TEST_RESULT: ${{ needs.test.result }}
           REPORT_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
+          FAILED: ${{ steps.merge.outputs.failed }}
+          FLAKY: ${{ steps.merge.outputs.flaky }}
+          PASSED: ${{ steps.merge.outputs.passed }}
         run: |
           mkdir -p /tmp/artifact-url
-          if [ "${RUN_OUTCOME}" == "success" ]; then
-            echo "- ✅ [VRT Report](${REPORT_URL}/html_report/index.html)" > /tmp/artifact-url/url.md
+          if [ "${TEST_RESULT}" == "success" ]; then
+            ICON="✅"
           else
-            echo "- ❌ [VRT Report](${REPORT_URL}/html_report/index.html)" > /tmp/artifact-url/url.md
+            ICON="❌"
           fi
+          {
+            echo "- ${ICON} [VRT Report](${REPORT_URL}/index.html): ${PASSED:-0} passed, ${FAILED:-0} failed, ${FLAKY:-0} flaky."
+            if [ "${TEST_RESULT}" != "success" ]; then
+              echo "- To accept intended changes, run \`npm run test:visualapprove -- --grep \"<story>\"\` and commit the images, or add the \`VRT: Update reference images\` label."
+            fi
+          } > /tmp/artifact-url/url.md
 
-      - name: Upload report URL
-        if: always() && env.CAN_UPLOAD_VRT_REPORTS == 'true'
+      - name: Upload report summary
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
           name: artifact-url-vrt
           path: /tmp/artifact-url/url.md
 
+      # The report job only summarizes; fail the run when the tests failed.
+      - name: Check test result
+        if: needs.test.result != 'success'
+        run: exit 1
+
   add-comment-to-pr:
     name: Add comment to PR
     runs-on: ubuntu-latest
-    needs: visual-regression
-    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false && github.event.action != 'closed'
+    needs: report
+    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false && github.event.action != 'closed' && needs.report.result != 'skipped'
     permissions:
       contents: read
       pull-requests: write

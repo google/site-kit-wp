@@ -1,0 +1,170 @@
+#!/usr/bin/env bash
+
+# Site Kit by Google, Copyright 2026 Google LLC
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+# Runs the visual regression tests in the same Docker image as CI. Reference
+# images are approved on CI's CPU architecture (linux/amd64), so they match CI's
+# screenshots exactly; comparisons run on the host's architecture, which is
+# faster on Apple Silicon and gives the same results within the comparison's
+# tolerance.
+#
+# Usage: tests/vrt/bin/vrt <command> [Playwright options]
+#
+# Commands:
+#   test     Compare stories against their reference images (the default).
+#   approve  Write reference images for stories that changed or have none.
+#   report   Open the HTML report of the last run.
+#   ui       Open Playwright's UI mode on http://localhost:${VRT_UI_PORT:-8080}.
+#
+# Playwright options are passed through, for example:
+#   tests/vrt/bin/vrt test --grep "Components/Button" --project=small
+#
+# Environment variables:
+#   VRT_BUILD=1      Rebuild Storybook (`VRT=1 npm run build:storybook`) first.
+#   VRT_PLATFORM=P   Docker platform for every command: `linux/amd64` (CI's),
+#                    or `native` for the host's.
+#   VRT_WORKERS=N    Number of parallel workers.
+#   VRT_TRACE=1      Record Playwright traces for failing tests.
+
+set -eo pipefail
+
+BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
+VRT_DIR=$(dirname "$BIN_DIR")
+ROOT_DIR=$(cd -- "$VRT_DIR/../.." &> /dev/null && pwd)
+DIST_DIR="$ROOT_DIR/dist"
+
+usage() {
+	sed -n '/^# Runs the visual/,/^# *VRT_TRACE/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+}
+
+COMMAND=${1:-test}
+if [ $# -gt 0 ]; then
+	shift
+fi
+
+DOCKER_ARGS=( --rm --init --ipc=host --interactive )
+PLAYWRIGHT_ARGS=( "$@" )
+
+case "$COMMAND" in
+	test)
+		;;
+	approve)
+		PLAYWRIGHT_ARGS=( --update-snapshots=changed "$@" )
+		;;
+	report)
+		cd "$VRT_DIR"
+		exec npx playwright show-report playwright-report "$@"
+		;;
+	ui)
+		UI_PORT=${VRT_UI_PORT:-8080}
+		PLAYWRIGHT_ARGS=( --ui --ui-host=0.0.0.0 --ui-port="$UI_PORT" "$@" )
+		DOCKER_ARGS+=( --publish "$UI_PORT:$UI_PORT" )
+		echo "Playwright UI mode: http://localhost:$UI_PORT"
+		;;
+	help | -h | --help)
+		usage
+		exit 0
+		;;
+	*)
+		echo "Unknown command: $COMMAND"
+		echo
+		usage
+		exit 1
+		;;
+esac
+
+if ! docker info > /dev/null 2>&1; then
+	echo "Docker isn't running. Start Docker Desktop (or the Docker daemon) and try again."
+	exit 1
+fi
+
+if [ "$VRT_BUILD" = "1" ] || [ ! -f "$DIST_DIR/iframe.html" ]; then
+	echo "Building Storybook for visual regression tests..."
+	( cd "$ROOT_DIR" && VRT=1 npm run build:storybook )
+fi
+
+if ! grep -q 'dataset.vrt' "$DIST_DIR/iframe.html"; then
+	echo "The Storybook build in dist/ wasn't made for visual regression tests."
+	echo "Rebuild it with: VRT_BUILD=1 $0 $COMMAND"
+	exit 1
+fi
+
+STALE_FILE=$(
+	find "$ROOT_DIR/assets/js" "$ROOT_DIR/assets/blocks" "$ROOT_DIR/assets/sass" "$ROOT_DIR/storybook" \
+		-type f -newer "$DIST_DIR/iframe.html" -not -path '*/node_modules/*' -print -quit 2> /dev/null || true
+)
+if [ -n "$STALE_FILE" ]; then
+	echo "Warning: ${STALE_FILE#"$ROOT_DIR"/} changed after the Storybook build in dist/."
+	echo "Screenshots won't include the change. Set VRT_BUILD=1 to rebuild first."
+	echo
+fi
+
+PLAYWRIGHT_VERSION=$(cd "$VRT_DIR" && node -p "require( '@playwright/test/package.json' ).version")
+IMAGE="mcr.microsoft.com/playwright:v$PLAYWRIGHT_VERSION-noble"
+
+# Approving renders on amd64, like CI (Docker Desktop on Apple Silicon emulates
+# it with Rosetta), so committed reference images match CI's screenshots
+# exactly. On arm64, about a third of the screenshots differ from amd64's by
+# color shifts too small for the comparison to fail, so other commands run
+# natively.
+PLATFORM=${VRT_PLATFORM:-native}
+if [ -z "$VRT_PLATFORM" ] && [ "$COMMAND" = "approve" ]; then
+	PLATFORM=linux/amd64
+fi
+
+# Name the host's platform: an image tag pulled for another platform would
+# otherwise run emulated.
+if [ "$PLATFORM" = "native" ]; then
+	case "$(uname -m)" in
+		arm64 | aarch64) PLATFORM=linux/arm64 ;;
+		*) PLATFORM=linux/amd64 ;;
+	esac
+fi
+
+DOCKER_ARGS+=( --platform "$PLATFORM" )
+echo "Running in $IMAGE ($PLATFORM)."
+
+if [ -t 1 ]; then
+	DOCKER_ARGS+=( --tty )
+fi
+
+if [ "$(uname -s)" = "Linux" ]; then
+	# Write reference images and reports as the current user, not root.
+	DOCKER_ARGS+=( --user "$(id -u):$(id -g)" --env HOME=/tmp )
+fi
+
+set +e
+docker run "${DOCKER_ARGS[@]}" \
+	--volume "$ROOT_DIR:/src" \
+	--workdir /src/tests/vrt \
+	--env VRT_WORKERS \
+	--env VRT_TRACE \
+	--env npm_config_update_notifier=false \
+	"$IMAGE" \
+	npx playwright test "${PLAYWRIGHT_ARGS[@]}"
+EXIT_CODE=$?
+set -e
+
+# A full approval also removes reference images whose stories no longer exist.
+if [ "$COMMAND" = "approve" ] && [ $# -eq 0 ] && [ $EXIT_CODE -eq 0 ]; then
+	node "$BIN_DIR/check-snapshots.js" --prune || EXIT_CODE=$?
+fi
+
+if [ "$COMMAND" != "ui" ]; then
+	echo
+	echo "To view the report, run: tests/vrt/bin/vrt report"
+fi
+
+exit $EXIT_CODE

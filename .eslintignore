@@ -1,6 +1,7 @@
 !/storybook
 /storybook/data/*
 /dist/*
-/tests/backstop/html_report/*
+/tests/vrt/playwright-report/*
+/tests/vrt/test-results/*
 /php-scoper/*
 /vendor/*

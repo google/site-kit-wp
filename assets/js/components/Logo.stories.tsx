@@ -39,8 +39,9 @@ function Template( { className }: LogoStoryProps ) {
 }
 
 /**
- * Backstop's smallest capture is 420px, and the style sheet hides the Site Kit
- * logo under 450px. This one story also catches the Google "G" alone.
+ * The smallest visual regression viewport is 420px, and the style sheet hides
+ * the Site Kit logo under 450px. This one story also catches the Google "G"
+ * alone.
  */
 export const Default = Template.bind( {} ) as Story< LogoStoryProps >;
 Default.storyName = 'Default';

@@ -148,7 +148,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -171,7 +171,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -506,7 +506,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -529,7 +529,7 @@ exports[`SetupUsingProxyWithSignIn should not render the progress indicator when
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -919,7 +919,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -942,7 +942,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -1251,7 +1251,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -1274,7 +1274,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -1623,7 +1623,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -1646,7 +1646,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -1915,7 +1915,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -1938,7 +1938,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -2287,7 +2287,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -2310,7 +2310,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
@@ -2659,7 +2659,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                 <img
                   alt="User Avatar"
                   class="mdc-button__icon--image"
-                  src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                  src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                 />
               </i>
             </button>
@@ -2682,7 +2682,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     <img
                       alt=""
                       class="googlesitekit-user-menu__details-avatar"
-                      src="https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png"
+                      src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' fill='%23c4c7c5'/%3E%3Ccircle cx='50' cy='38' r='18' fill='%23fff'/%3E%3Cpath d='M18 92c4-18 18-28 32-28s28 10 32 28' fill='%23fff'/%3E%3C/svg%3E"
                     />
                     <div
                       class="googlesitekit-user-menu__details-info"
