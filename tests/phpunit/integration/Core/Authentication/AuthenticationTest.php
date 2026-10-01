@@ -1071,6 +1071,49 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Gets the query arguments of the proxy setup URL passed to JS for the current request.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Query arguments of `proxySetupURL`.
+	 */
+	private function get_proxy_setup_url_query_args() {
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		$this->fake_proxy_site_connection();
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$auth->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		wp_parse_str( wp_parse_url( $data['proxySetupURL'], PHP_URL_QUERY ), $query_args );
+
+		return $query_args;
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_with_intent_purpose() {
+		$_GET['purpose'] = 'intent';
+
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertEquals( 'intent', $query_args['purpose'], 'The proxy setup URL should include `purpose=intent` when the request has it.' );
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_without_purpose() {
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertEquals( 'googlesitekit_proxy_setup_start', $query_args['action'], 'The proxy setup URL should point at the setup-start action.' );
+		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has none.' );
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_with_other_purpose() {
+		$_GET['purpose'] = 'something-else';
+
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has a value other than `intent`.' );
+	}
+
 	public function test_googlesitekit_inline_js_wp_version_non_standard_version() {
 		$version = '42';
 

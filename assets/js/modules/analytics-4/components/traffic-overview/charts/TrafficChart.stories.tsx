@@ -43,7 +43,7 @@ const dailyVisitorsReport = getAnalytics4MockResponse(
  * Connects Analytics and sets one date range, so every story shows the same
  * days.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}

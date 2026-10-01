@@ -54,7 +54,7 @@ class Create_CTA extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Added support for the CTA `state` property.
+	 * @since 1.189.0 Added support for the CTA `state` property.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object.

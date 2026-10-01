@@ -257,7 +257,7 @@ const baseActions = {
 	 * Creates a CTA for the given publication.
 	 *
 	 * @since 1.187.0
-	 * @since n.e.x.t Added support for the CTA `state` property. Defaults to `ACTIVE`.
+	 * @since 1.189.0 Added support for the CTA `state` property. Defaults to `ACTIVE`.
 	 *
 	 * @param  params                  Parameters.
 	 * @param  params.organizationID   Optional. Organization ID. Defaults to the configured setting on the server.

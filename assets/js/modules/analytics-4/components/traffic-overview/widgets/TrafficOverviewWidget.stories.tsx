@@ -134,7 +134,7 @@ function getTrafficOverviewReportArgs(
  * Puts the Traffic Overview widget's five reports in the store, so a story
  * renders without sending a report request.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}

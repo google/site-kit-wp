@@ -26,7 +26,7 @@ import { ADS_CONVERSION_TRACKING_INTENT_SLUG } from '@/js/modules/ads/constants'
 /**
  * Registers Ads module intents in the intents registry.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {IntentsAPI} intents Intents registry.
  * @return {void}

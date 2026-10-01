@@ -38,7 +38,7 @@ import type { Feature } from './types';
  * Each entry is registered over a complete default feature so callers only
  * need to provide the fields relevant to their test or story.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @private
  *
  * @param {Object}   registry Data registry object.

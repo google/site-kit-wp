@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Query;
 
 class Content_EventsTest extends TestCase {
 
@@ -36,9 +37,11 @@ class Content_EventsTest extends TestCase {
 	}
 
 	public function tear_down() {
-		// WordPress keeps a registered post type for the rest of the process, so
-		// every test after this one sees it.
+		// WordPress keeps a registered post type, shortcode, and embed handler
+		// for the rest of the process, so every later test sees them.
 		unregister_post_type( self::TEST_POST_TYPE );
+		remove_shortcode( 'sitekit_test_box' );
+		wp_embed_unregister_handler( 'sitekit_test_video' );
 
 		parent::tear_down();
 	}
@@ -146,7 +149,7 @@ class Content_EventsTest extends TestCase {
 		$config = $this->get_published_config();
 
 		$this->assertSame( $post_id, $config['postID'], 'The published configuration should report the post ID on a single post.' );
-		$this->assertTrue( $config['isSinglePost'], '`isSinglePost` should be true on a single post.' );
+		$this->assertTrue( $config['isReadableSinglePost'], '`isReadableSinglePost` should be true on a single post.' );
 	}
 
 	public function test_inline_config__home_page() {
@@ -164,7 +167,7 @@ class Content_EventsTest extends TestCase {
 		$config = $this->get_published_config();
 
 		$this->assertSame( 0, $config['postID'], '`postID` should be 0 on the home page.' );
-		$this->assertFalse( $config['isSinglePost'], '`isSinglePost` should be false on the home page.' );
+		$this->assertFalse( $config['isReadableSinglePost'], '`isReadableSinglePost` should be false on the home page.' );
 	}
 
 	/**
@@ -612,27 +615,41 @@ class Content_EventsTest extends TestCase {
 	}
 
 	/**
-	 * Runs the WordPress loop the way a theme does, and returns what
-	 * `the_content` rendered.
+	 * Runs the WordPress loop the way a theme does, and returns what the
+	 * callback renders inside it.
 	 *
-	 * `Content_Events` reads globals that only the loop fills, so the tests run
-	 * the loop rather than applying the filter on its own.
+	 * `Content_Events` adds the marker only in the main loop, so the tests
+	 * render the post there.
 	 *
-	 * @param string|null $content Content to filter, or `null` for the post's own.
-	 * @return string The rendered content.
+	 * @since 1.189.0
+	 *
+	 * @param callable $render A callback that renders the current post and returns the result.
+	 * @return mixed What the callback returned for the last post of the loop.
 	 */
-	private function apply_the_content( $content = null ) {
+	private function render_in_the_loop( $render ) {
 		$rendered = '';
 
 		while ( have_posts() ) {
 			the_post();
 
-			$rendered = apply_filters( 'the_content', $content ?? get_the_content() );
+			$rendered = $render();
 		}
 
 		wp_reset_postdata();
 
 		return $rendered;
+	}
+
+	/**
+	 * Runs the WordPress loop the way a classic theme does, and returns what
+	 * `the_content()` prints for the post.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @return string The printed content.
+	 */
+	private function apply_the_content() {
+		return $this->render_in_the_loop( fn () => get_echo( 'the_content' ) );
 	}
 
 	/**
@@ -645,17 +662,23 @@ class Content_EventsTest extends TestCase {
 	 * @return string The rendered content.
 	 */
 	private function apply_the_content_with_page_links() {
-		$rendered = '';
+		return $this->render_in_the_loop( fn () => apply_filters( 'the_content', get_the_content() . wp_link_pages( array( 'echo' => 0 ) ) ) );
+	}
 
-		while ( have_posts() ) {
-			the_post();
-
-			$rendered = apply_filters( 'the_content', get_the_content() . wp_link_pages( array( 'echo' => 0 ) ) );
-		}
-
-		wp_reset_postdata();
-
-		return $rendered;
+	/**
+	 * Replaces the text the loop reads for the post being served, without
+	 * saving it.
+	 *
+	 * The tests run with no user signed in, so `wp_insert_post()` runs
+	 * `wp_kses()`, which writes `]]>` as `]]&gt;`. `wp_insert_post()` also fails
+	 * to save text that isn't valid UTF-8.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param string $text The post text.
+	 */
+	private function use_post_text( $text ) {
+		add_filter( 'content_pagination', fn () => array( $text ) );
 	}
 
 	/**
@@ -686,10 +709,10 @@ class Content_EventsTest extends TestCase {
 	 * @return array The published content events configuration.
 	 */
 	private function measure_as_post_content( $content ) {
-		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->go_to_new_post( $content );
 
 		$this->bootstrap_content_hooks();
-		$this->apply_the_content( $content );
+		$this->apply_the_content();
 
 		return $this->get_published_config();
 	}
@@ -711,9 +734,9 @@ class Content_EventsTest extends TestCase {
 		$rendered = $this->apply_the_content();
 
 		$this->assertStringContainsString(
-			'<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span>',
+			'<!--[googlesitekit-end-of-content]-->',
 			$rendered,
-			'The rendered content should have the marker span.'
+			'The rendered content should have the marker comment.'
 		);
 		$this->assertSame(
 			1,
@@ -748,63 +771,217 @@ class Content_EventsTest extends TestCase {
 		);
 	}
 
-	public function test_append_end_of_content_marker__appends_the_marker_only_once_per_request() {
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_printed_post_after_a_render_the_theme_throws_away() {
 		$this->go_to_new_post( 'Some post content.' );
 		$this->bootstrap_content_hooks();
 
-		$first  = $this->apply_the_content();
-		$second = $this->apply_the_content();
+		// Twenty Seventeen renders a video post's content once to find the
+		// video, throws that render away, then prints the post.
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'thrown_away' => apply_filters( 'the_content', get_the_content() ),
+				'printed'     => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
 
-		$this->assertStringContainsString( 'googlesitekit-end-of-content', $first, 'The first run of `the_content` should append the marker.' );
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $second, 'A second run of `the_content` in the same request should append nothing.' );
+		$this->assertStringContainsString( '<!--[googlesitekit-end-of-content]-->', $rendered['thrown_away'], 'The render the theme throws away should have the marker.' );
+		$this->assertStringContainsString( '<!--[googlesitekit-end-of-content]-->', $rendered['printed'], 'The printed post should have the marker too, after an earlier render of the same post.' );
 	}
 
-	public function test_append_end_of_content_marker__appends_no_marker_for_another_post_rendered_on_the_page() {
-		$this->go_to_new_post( 'The post being read.' );
+	public function test_append_end_of_content_marker__appends_no_marker_to_another_post_with_the_same_text_rendered_in_the_loop() {
+		$this->go_to_new_post( 'Some post content.' );
 		$this->bootstrap_content_hooks();
 
-		$other_post = $this->factory()->post->create_and_get( array( 'post_content' => 'Another post shown by a Query Loop.' ) );
+		$other_post = $this->factory()->post->create_and_get( array( 'post_content' => 'Some post content.' ) );
 
-		$GLOBALS['post'] = $other_post;
-		setup_postdata( $other_post );
+		// A Query Loop block in the post sets up each post it lists while the
+		// main loop is still running.
+		$rendered = $this->render_in_the_loop(
+			function () use ( $other_post ) {
+				$GLOBALS['post'] = $other_post;
+				setup_postdata( $other_post );
 
-		$rendered = apply_filters( 'the_content', $other_post->post_content );
-
-		wp_reset_postdata();
+				return apply_filters( 'the_content', get_the_content() );
+			}
+		);
 
 		$this->assertStringNotContainsString(
 			'googlesitekit-end-of-content',
 			$rendered,
-			'A post rendered by a nested loop should not render the marker.'
+			'Another post rendered in the loop should not render the marker, even when its text matches the post being read.'
 		);
 	}
 
-	public function test_append_end_of_content_marker__appends_no_marker_to_an_excerpt_taken_before_the_content() {
-		$post_id = $this->go_to_new_post( 'Some post content the excerpt is built from.' );
+	public function test_append_end_of_content_marker__appends_no_marker_to_an_excerpt_built_from_the_rendered_post() {
+		$this->go_to_new_post( 'Some post content the excerpt is built from.' );
 		$this->bootstrap_content_hooks();
 
-		$excerpt = get_the_excerpt( $post_id );
+		// An excerpt plugin can build the excerpt from the rendered post and
+		// keep its HTML.
+		add_filter( 'get_the_excerpt', fn () => apply_filters( 'the_content', get_the_content() ), 5 );
 
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt should not render the marker.' );
-
-		$rendered = $this->apply_the_content();
-
-		$this->assertStringContainsString(
-			'googlesitekit-end-of-content',
-			$rendered,
-			'An excerpt taken first should not stop the real content from rendering the marker.'
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'excerpt' => get_the_excerpt(),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
 		);
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['excerpt'], 'An excerpt built from the rendered post should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post itself should render the marker.' );
 	}
 
-	public function test_append_end_of_content_marker__appends_no_marker_to_an_excerpt_taken_after_the_content() {
-		$post_id = $this->go_to_new_post( 'Some post content the excerpt is built from.' );
+	public function test_append_end_of_content_marker__appends_no_marker_to_the_password_form_of_a_password_protected_post() {
+		$post_id = $this->factory()->post->create( array( 'post_password' => 'secret' ) );
+
+		$this->go_to( get_permalink( $post_id ) );
+		$this->bootstrap_content_hooks();
+
+		$this->assertTrue( post_password_required( $post_id ), "`post_password_required()` should be true for a visitor who hasn't entered the password." );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString( 'post-password-form', $rendered, 'The content of a password-protected post should be the password form.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'The password form should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_the_post_text_rendered_before_the_loop() {
+		$post_id = $this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		$this->assertFalse( in_the_loop(), '`in_the_loop()` should be false before the theme starts the loop.' );
+
+		// A plugin can render the post's text in the page `<head>`, before the
+		// theme starts the loop.
+		$rendered = apply_filters( 'the_content', get_the_content( null, false, $post_id ) );
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'The post text rendered before the loop should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_in_a_loop_over_a_query_that_replaced_the_main_query() {
+		$post_id = $this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		// A theme can replace the main query with a query of its own, the way
+		// `query_posts()` does.
+		$GLOBALS['wp_query'] = new WP_Query( array( 'p' => $post_id ) );
+
+		$this->assertFalse( is_main_query(), '`is_main_query()` should be false for the query that replaced the main query.' );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'A loop over the query that replaced the main query should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_video_a_theme_renders_above_the_post() {
+		$this->go_to_new_post( 'The post being read has seven words.' );
+		$this->bootstrap_content_hooks();
+
+		// OceanWP renders a video post's video through `the_content` in the
+		// loop, above the post's text.
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'video'   => apply_filters( 'the_content', '<video src="https://example.com/video.mp4"></video>' ),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$config = $this->get_published_config();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['video'], 'The video rendered above the post should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post rendered below the video should render the marker.' );
+		$this->assertSame( 7, $config['wordCount'], 'The word count should count the post text.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_video_a_theme_renders_above_a_post_with_no_text() {
+		$this->go_to_new_post( '' );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'video'   => apply_filters( 'the_content', '<video src="https://example.com/video.mp4"></video>' ),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['video'], 'The video rendered above a post with no text should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post with no text should render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_header_or_a_footer_a_theme_renders_through_the_content() {
+		$this->go_to_new_post( 'The post being read has seven words.' );
+		$this->bootstrap_content_hooks();
+
+		// Avada renders its header and footer layouts through `the_content`,
+		// before and after the loop, without setting up the layout's post.
+		$header        = apply_filters( 'the_content', 'Site header with a menu.' );
+		$rendered_post = $this->apply_the_content();
+		$footer        = apply_filters( 'the_content', 'Site footer with a copyright line.' );
+
+		$config = $this->get_published_config();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $header, 'A header rendered through `the_content` should not render the marker.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $footer, 'A footer rendered through `the_content` should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered_post, 'The post should render the marker.' );
+		$this->assertSame( 7, $config['wordCount'], 'The word count should count the post text alone, not the header or the footer.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_post_text_the_post_content_block_escapes() {
+		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( 'A CDATA section ends with ]]> in this text.' );
+		$this->bootstrap_content_hooks();
+
+		// WordPress 5.2 has no Post Content block to render, so this test writes
+		// `]]>` as `]]&gt;` itself, the way the block does.
+		$rendered = $this->render_in_the_loop( fn () => apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content() ) ) );
+
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The post should render the marker when the Post Content block writes `]]>` as `]]&gt;`.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_post_text_the_content_template_tag_escapes_after_the_filter() {
+		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( 'A CDATA section ends with ]]> in this text.' );
 		$this->bootstrap_content_hooks();
 
 		$rendered = $this->apply_the_content();
-		$excerpt  = get_the_excerpt( $post_id );
 
-		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The real content should render the marker.' );
-		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $excerpt, 'An excerpt taken after the content has rendered should not render the marker.' );
+		$this->assertStringContainsString( ']]&gt;', $rendered, 'The printed post should have `]]>` written as `]]&gt;`.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The post should render the marker when the `the_content` filter receives `]]>` as it is.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_preview_of_changes_to_a_published_post() {
+		// `wp_create_post_autosave()` is defined in an admin file that the front
+		// end never loads.
+		require_once ABSPATH . 'wp-admin/includes/post.php';
+
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$post_id = $this->factory()->post->create( array( 'post_content' => 'The published text of the post.' ) );
+
+		$autosave                 = get_post( $post_id, ARRAY_A );
+		$autosave['post_ID']      = $post_id;
+		$autosave['post_content'] = 'The changed text the author previews.';
+		wp_create_post_autosave( $autosave );
+
+		$preview_link_args = array(
+			'preview_id'    => $post_id,
+			'preview_nonce' => wp_create_nonce( 'post_preview_' . $post_id ),
+		);
+
+		// `_show_post_preview()` reads the preview link's parameters from
+		// `$_GET`, and it has to run before the query that loads the preview.
+		$_GET = $preview_link_args;
+		_show_post_preview();
+
+		$this->go_to( get_preview_post_link( $post_id, $preview_link_args ) );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		unset( $_GET['preview'], $_GET['preview_id'], $_GET['preview_nonce'] );
+
+		$this->assertStringContainsString( 'The changed text the author previews.', $rendered, 'The preview should render the autosaved text.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The preview should render the marker.' );
 	}
 
 	/**
@@ -950,6 +1127,136 @@ class Content_EventsTest extends TestCase {
 			strpos( $rendered, 'Pages:' ),
 			strpos( $rendered, 'googlesitekit-end-of-content' ),
 			'The marker should be placed before the page links.'
+		);
+		$this->assertStringNotContainsString( '<p><!--[googlesitekit-end-of-content]--></p>', $rendered, 'The marker should not render in a paragraph of its own before the page links.' );
+	}
+
+	/**
+	 * @dataProvider data_post_endings
+	 */
+	public function test_append_end_of_content_marker__places_the_marker_right_after_the_last_element_with_no_paragraph_around_it( $content, $last_element, $ending_label ) {
+		$this->go_to_new_post( $content );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#' . preg_quote( $last_element, '#' ) . '\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			"The marker should follow the last element of $ending_label, outside any paragraph."
+		);
+	}
+
+	public function data_post_endings() {
+		return array(
+			'a classic post ending in a closing tag' => array(
+				"<p>First.</p>\n<p>Salt &amp; pepper.</p>",
+				'<p>Salt &amp; pepper.</p>',
+				'a classic post ending in a closing tag',
+			),
+			'a classic post ending in text'          => array(
+				"First.\n\nLast line.",
+				'<p>Last line.</p>',
+				'a classic post ending in text',
+			),
+			'a classic post ending in a list'        => array(
+				"First.\n\n<ul>\n<li>One</li>\n</ul>",
+				'</ul>',
+				'a classic post ending in a list',
+			),
+			'a block post'                           => array(
+				"<!-- wp:paragraph -->\n<p>First.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Last.</p>\n<!-- /wp:paragraph -->",
+				'Last.</p>',
+				'a block post',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_shortcode_endings
+	 */
+	public function test_append_end_of_content_marker__renders_a_shortcode_on_the_last_line_outside_a_paragraph( $content, $ending_label ) {
+		add_shortcode( 'sitekit_test_box', fn ( $atts, $box_content = null ) => '<div class="sitekit-test-box">' . $box_content . '</div>' );
+
+		$this->go_to_new_post( $content );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringNotContainsString( '<p><div class="sitekit-test-box">', $rendered, "The output of $ending_label on the last line should not render inside a paragraph." );
+		$this->assertMatchesRegularExpression(
+			'#<div class="sitekit-test-box">[^<]*</div>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			"The marker should follow $ending_label on the last line, outside any paragraph."
+		);
+	}
+
+	public function data_shortcode_endings() {
+		return array(
+			'a shortcode'        => array( "First.\n\n[sitekit_test_box]", 'a shortcode' ),
+			'a page builder row' => array( '[sitekit_test_box]Row text.[/sitekit_test_box]', 'a page builder row' ),
+		);
+	}
+
+	public function test_append_end_of_content_marker__renders_an_embed_url_on_the_last_line_as_the_embed() {
+		wp_embed_register_handler( 'sitekit_test_video', '#https://example\.com/video/\d+#i', fn () => '<div class="sitekit-test-video">Video</div>' );
+
+		$this->go_to_new_post( "First.\n\nhttps://example.com/video/1" );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString( '<div class="sitekit-test-video">Video</div>', $rendered, 'The URL on the last line should render as the embed.' );
+		$this->assertStringNotContainsString( 'https://example.com/video/1', $rendered, 'The URL on the last line should not render as text.' );
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_when_a_theme_runs_wpautop_at_priority_99() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		remove_filter( 'the_content', 'wpautop' );
+		add_filter( 'the_content', 'wpautop', 99 );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			'The marker should follow the last paragraph, outside any paragraph, when `wpautop()` runs at priority 99.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_when_another_plugin_appends_text_before_wpautop_runs() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		add_filter( 'the_content', fn ( $content ) => $content . 'Share this post.', 5 );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*<p>Share this post\.</p>#',
+			$rendered,
+			'The marker should be placed between the last paragraph and the text another plugin appends before `wpautop()` runs, outside any paragraph.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_after_a_block_post_renders() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		apply_filters( 'the_content', "<!-- wp:paragraph -->\n<p>A block post.</p>\n<!-- /wp:paragraph -->" );
+
+		$priority_ten_callbacks = array_keys( $GLOBALS['wp_filter']['the_content']->callbacks[10] );
+
+		$this->assertSame( 'wpautop', end( $priority_ten_callbacks ), '`do_blocks()` and `_restore_wpautop_hook()` should leave `wpautop()` as the last filter at priority 10 once a block post has rendered.' );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			'The marker should follow the last paragraph, outside any paragraph, after a block post has rendered.'
 		);
 	}
 
@@ -1221,6 +1528,24 @@ class Content_EventsTest extends TestCase {
 		$this->assertFalse( $config['isLastPageOfMultiPagePost'], 'The home page should not report a last page, because it is not a single post.' );
 	}
 
+	public function test_inline_config__reports_no_readable_single_post_while_a_password_protected_post_shows_its_password_form() {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_password' => 'secret',
+				'post_content'  => 'Words behind the password.',
+			)
+		);
+
+		$this->go_to( get_permalink( $post_id ) );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertFalse( $config['isReadableSinglePost'], '`isReadableSinglePost` should be false while the post shows its password form, so the post sends no `read_article` event.' );
+		$this->assertSame( 0, $config['wordCount'], 'A password-protected post should report no word count, neither for its text nor for the password form.' );
+	}
+
 	/**
 	 * Replaces the provider under test with one that counts words without ICU.
 	 */
@@ -1241,11 +1566,12 @@ class Content_EventsTest extends TestCase {
 	 */
 	private function measure_content_alone( $content ) {
 		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( $content );
 
 		remove_all_filters( 'the_content' );
 
 		$this->bootstrap_content_hooks();
-		$this->apply_the_content( $content );
+		$this->apply_the_content();
 
 		return $this->get_published_config();
 	}

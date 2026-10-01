@@ -94,7 +94,7 @@ const DATES = {
 /**
  * Builds one breakdown's report args at the shared `DATES`.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} dimensionName Breakdown dimension name.
  * @param {string} reportID      Report ID for cache isolation.
@@ -136,7 +136,7 @@ function setGoogle( value: unknown ) {
  * Seeds the totals and graph reports so `getPDFData` resolves them from state
  * without a network request.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} testRegistry Registry to seed.
  * @return {void}
@@ -163,7 +163,7 @@ function seedTotalsAndGraphReports( testRegistry: Registry ) {
  * Seeds the channels, locations, and devices breakdown reports with one row
  * each, so none of them resolve to `null`.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} testRegistry Registry to seed.
  * @return {void}

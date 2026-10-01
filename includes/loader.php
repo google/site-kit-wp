@@ -13,7 +13,7 @@ namespace Google\Site_Kit;
 /**
  * Loads Site Kit classes by their PSR-4 path.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  */
 function autoload_classes_psr4() {
@@ -43,7 +43,7 @@ function autoload_classes_psr4() {
  * release build.
  *
  * @since 1.0.0
- * @since n.e.x.t Loads Site Kit classes via PSR-4 in a source checkout.
+ * @since 1.189.0 Loads Site Kit classes via PSR-4 in a source checkout.
  * @access private
  */
 function autoload_classes() {
