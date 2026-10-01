@@ -47,6 +47,7 @@ import {
 import P from '@/js/components/Typography/P';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Cell, Grid, Row } from '@/js/material-components';
+import FeatureDetailPanel from './detail/FeatureDetailPanel';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 const FeatureDiscoveryApp: FC = () => {
@@ -129,6 +130,7 @@ const FeatureDiscoveryApp: FC = () => {
 						</Cell>
 					</Row>
 				</Grid>
+				<FeatureDetailPanel />
 			</div>
 		</Fragment>
 	);
