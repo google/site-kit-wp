@@ -36,6 +36,7 @@ import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import { Cell, Row } from '@/js/material-components';
 import WelcomeAnalyticsSVG from '@/svg/graphics/welcome-analytics.svg';
 import WelcomeSVG from '@/svg/graphics/welcome.svg';
@@ -51,6 +52,8 @@ export default function LegacySplashContent( {
 	showLearnMoreLink,
 	title,
 } ) {
+	const isIntentSetupFlow = useIsIntentSetupFlow();
+
 	useEffect( () => {
 		global.document.body.classList.add( 'googlesitekit-setup-splash' );
 
@@ -125,9 +128,9 @@ export default function LegacySplashContent( {
 				) }
 				<ConnectedURLComparison />
 
-				{ analyticsModuleAvailable && ! analyticsModuleActive && (
-					<ActivateAnalyticsNotice />
-				) }
+				{ analyticsModuleAvailable &&
+					! analyticsModuleActive &&
+					! isIntentSetupFlow && <ActivateAnalyticsNotice /> }
 
 				<CompatibilityChecks>{ children }</CompatibilityChecks>
 			</Cell>
