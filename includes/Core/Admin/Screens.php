@@ -70,7 +70,7 @@ final class Screens {
 	/**
 	 * Intents instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var Intents
 	 */
 	private $intents;
@@ -454,7 +454,7 @@ final class Screens {
 	 * Both are empty unless the request names an intent that is registered and available and the
 	 * current user may set up Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return string[] Intent slug from the `intent` argument under `slug`, and one-time code from

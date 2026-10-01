@@ -286,7 +286,7 @@ function getLineChartOptions( {
 			0: {
 				color,
 				lineWidth: 4 * LINE_CHART_OPTION_SCALE,
-				// Axis index 1 draws the y-axis on the right, like the All Traffic
+				// Axis index 1 draws the y-axis on the right, like the Traffic Overview
 				// chart, so every report chart keeps its y-axis on the same side.
 				targetAxisIndex: 1,
 			},

@@ -48,7 +48,7 @@ export interface ContentEventsConfig {
  * Gets the Content Events configuration.
  *
  * @since 1.186.0
- * @since n.e.x.t Added the keys the `read_article` event needs, and replaced `isSinglePost` with `isReadableSinglePost`.
+ * @since 1.189.0 Added the keys the `read_article` event needs, and replaced `isSinglePost` with `isReadableSinglePost`.
  *
  * @return {ContentEventsConfig} Content events configuration object.
  */
@@ -79,7 +79,7 @@ export function getContentEventsConfig(): ContentEventsConfig {
  * public frontend of any WordPress site, where another plugin can replace a
  * browser global they call, such as `IntersectionObserver` or `performance`.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Function} initialize Initializer to run.
  * @param {string}   [message]  Optional. Message to log before the error.

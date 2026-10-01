@@ -29,7 +29,7 @@ import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
 /**
  * Props passed to the component registered for an intent.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export interface IntentComponentProps {
 	/** Slug the intent is registered under, e.g. `ads-conversion-tracking`. */
@@ -43,13 +43,13 @@ export interface IntentComponentProps {
 /**
  * Intent registration type.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export interface IntentRegistration {
 	/**
 	 * Component rendered after the Site Kit Service returns the intent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	Component: ComponentType< IntentComponentProps >;
 }
@@ -57,13 +57,13 @@ export interface IntentRegistration {
 /**
  * Intents API instance type.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export interface IntentsAPI {
 	/**
 	 * Registers an intent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string}             slug     Intent's slug.
 	 * @param {IntentRegistration} settings Intent's settings.
@@ -74,7 +74,7 @@ export interface IntentsAPI {
 	/**
 	 * Gets the registration for an intent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} slug Intent's slug.
 	 * @return {IntentRegistration|undefined} The registration, or `undefined` when the slug is not registered.
@@ -85,7 +85,7 @@ export interface IntentsAPI {
 /**
  * Creates the intents registry.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {IntentsAPI} Intents registry.
  */

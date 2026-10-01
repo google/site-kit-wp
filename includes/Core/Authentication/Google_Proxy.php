@@ -126,7 +126,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
-	 * @since n.e.x.t Includes the `verification_evidence` query parameter.
+	 * @since 1.189.0 Includes the `verification_evidence` query parameter.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -354,7 +354,7 @@ class Google_Proxy {
 	 * Gets site fields.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Added `intent_uri` to the fields.
+	 * @since 1.189.0 Added `intent_uri` to the fields.
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
@@ -382,7 +382,7 @@ class Google_Proxy {
 	/**
 	 * Gets an intent from the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $intent_id    Intent ID.
@@ -406,7 +406,7 @@ class Google_Proxy {
 	/**
 	 * Completes an intent on the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $intent_id    Intent ID.
@@ -431,7 +431,7 @@ class Google_Proxy {
 	 * Gets metadata fields.
 	 *
 	 * @since 1.68.0
-	 * @since n.e.x.t Added the `verification_evidence` field.
+	 * @since 1.189.0 Added the `verification_evidence` field.
 	 *
 	 * @return array Metadata fields array.
 	 */
