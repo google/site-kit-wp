@@ -27,10 +27,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
+	freezeFetch,
 	provideModules,
 	provideSiteInfo,
 	setEnabledFeatures,
 	untilResolved,
+	waitFor,
 } from '@tests/js/test-utils';
 import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
@@ -184,6 +186,8 @@ describe( 'modules/analytics-4 fresh data', () => {
 	} );
 
 	describe( 'getRecentContent', () => {
+		const baseData = global._googlesitekitBaseData;
+
 		beforeEach( () => {
 			provideModules( registry, [
 				{
@@ -192,6 +196,10 @@ describe( 'modules/analytics-4 fresh data', () => {
 					connected: true,
 				},
 			] );
+		} );
+
+		afterEach( () => {
+			global._googlesitekitBaseData = baseData;
 		} );
 
 		it( 'should return the most recently published posts, newest first', async () => {
@@ -217,11 +225,9 @@ describe( 'modules/analytics-4 fresh data', () => {
 				status: 200,
 			} );
 
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getRecentContent( { count: 2 } )
-			).toBeUndefined();
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getRecentContent( { count: 2 } );
 
 			await untilResolved(
 				registry,
@@ -234,6 +240,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '2',
+					_fields: 'id,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -256,6 +263,28 @@ describe( 'modules/analytics-4 fresh data', () => {
 					publishedAt: '2026-09-21T08:30:00Z',
 				},
 			] );
+		} );
+
+		it( 'should return `undefined` while the posts load', async () => {
+			provideSiteInfo( registry );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			freezeFetch( postsEndpoint );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getRecentContent( { count: 10 } );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( postsEndpoint )
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getRecentContent( { count: 10 } )
+			).toBeUndefined();
 		} );
 
 		it( 'should return an empty list when the site has no published posts', async () => {
@@ -340,6 +369,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '3',
+					_fields: 'id,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -418,15 +448,35 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should include products when the Analytics settings load after the list is requested', async () => {
+		it( 'should include products when the site info, the Analytics settings, and the module list load after the list is requested', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			provideSiteInfo( registry, { wooCommerceActive: true } );
+			// The site info loads from `_googlesitekitBaseData`.
+			global._googlesitekitBaseData = {
+				...baseData,
+				wooCommerceActive: true,
+			};
+
+			// The registry from `beforeEach()` already has the module list.
+			registry = createTestRegistry();
 
 			fetchMock.getOnce( analytics4SettingsEndpoint, {
 				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: true },
 				status: 200,
 			} );
+			fetchMock.getOnce(
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' ),
+				{
+					body: [
+						{
+							slug: MODULE_SLUG_ANALYTICS_4,
+							active: true,
+							connected: true,
+						},
+					],
+					status: 200,
+				}
+			);
 			fetchMock.getOnce( postsEndpoint, {
 				body: [
 					{
@@ -881,7 +931,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			);
 		} );
 
-		it( 'should reject a count of 0', async () => {
+		it( 'should store the "count must be a positive integer." error for `getResolutionError()` and not request posts when `count` is 0', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );

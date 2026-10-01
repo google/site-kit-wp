@@ -92,6 +92,7 @@ declare global {
 		assetsURL: string;
 		wpPrivacyURL?: string;
 		enabledFeatures?: string[];
+		wooCommerceActive?: boolean;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

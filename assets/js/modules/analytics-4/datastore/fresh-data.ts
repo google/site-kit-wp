@@ -45,6 +45,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { decodeHTMLEntity } from '@/js/util';
+import { ErrorObject } from '@/js/util/errors';
 import { MODULES_ANALYTICS_4 } from './constants';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
@@ -52,7 +53,7 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 export interface RecentContentItem {
 	/** The ID of the post or product. */
 	id: number;
-	/** The title with its HTML entities decoded, e.g. `Don’t miss it` rather than `Don&#8217;t miss it`. */
+	/** The title with its HTML entities decoded, e.g. `Don’t miss it`, not `Don&#8217;t miss it`. */
 	title: string;
 	/** The URL of the post or product. */
 	permalink: string;
@@ -98,9 +99,8 @@ const fetchGetRecentContentStore = createFetchStore( {
 		count,
 		includeProducts,
 	}: RecentContentParams ): Promise< RecentContentItem[] > {
-		// Every user can read a published product from `wp/v2/product`.
-		// `wc/v3/products` needs the `read_private_products` permission, which
-		// a view-only user doesn't have.
+		// `wc/v3/products` needs the `read_private_products` capability, which
+		// not every view-only user has. `wp/v2/product` needs no capability.
 		const paths = includeProducts
 			? [ '/wp/v2/posts', '/wp/v2/product' ]
 			: [ '/wp/v2/posts' ];
@@ -115,8 +115,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 						per_page: count,
 						_fields: 'id,date_gmt,link,title',
 					} ),
-					// A post published a moment ago must appear in the list, so the
-					// browser can't use a cached response.
+					// A cached response can miss a post published just now.
 					cache: 'no-store',
 				} )
 			)
@@ -199,12 +198,11 @@ const baseResolvers = {
 			( yield fetchGetRecentContentStore.actions.fetchGetRecentContent(
 				options.count,
 				includeProducts
-			) ) as { error?: object };
+			) ) as { error?: ErrorObject };
 
-		// The fetch store saves the error under `[ count, includeProducts ]`,
-		// but a component reads it under `[ options ]`. The error has to be
-		// saved under `[ options ]` alone, because a retry in `ErrorNotice`
-		// reruns the selector with the arguments saved beside the error.
+		// A component reads the error under `[ options ]`, but the fetch store
+		// saves it under `[ count, includeProducts ]`. We move it, because
+		// `ErrorNotice` retries the selector with the error's saved arguments.
 		if ( error ) {
 			yield clearSelectorError( 'getRecentContent', [
 				options.count,
