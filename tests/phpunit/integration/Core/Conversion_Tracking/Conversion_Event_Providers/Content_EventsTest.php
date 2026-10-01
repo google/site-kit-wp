@@ -1295,6 +1295,63 @@ class Content_EventsTest extends TestCase {
 		$this->assertSame( 3, $config['wordCount'], 'The word count should count "Page three text." alone, without the "Pages: 1 2 3" links.' );
 	}
 
+	public function test_measure_content__counts_no_words_for_a_post_with_only_an_embed_block() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content(
+			"<!-- wp:embed {\"url\":\"https://example.com/video/1\"} -->\n<figure class=\"wp-block-embed\"><div class=\"wp-block-embed__wrapper\">\nhttps://example.com/video/1\n</div></figure>\n<!-- /wp:embed -->"
+		);
+
+		$this->assertSame( 0, $config['wordCount'], 'The URL an Embed block saves should not count as words, because the page shows the embed and never the URL.' );
+	}
+
+	public function test_measure_content__counts_the_caption_of_an_embed_block_without_the_url_the_block_saves() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content(
+			"<!-- wp:embed {\"url\":\"https://example.com/video/1\"} -->\n<figure class=\"wp-block-embed\"><div class=\"wp-block-embed__wrapper\">\nhttps://example.com/video/1\n</div><figcaption class=\"wp-element-caption\">A short video</figcaption></figure>\n<!-- /wp:embed -->"
+		);
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count the caption "A short video" alone, without the URL the Embed block saves.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_an_audio_file_url_alone_on_a_line() {
+		$config = $this->measure_as_post_content( "One two three.\n\nhttps://example.com/song.mp3\n\nFour five." );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "One two three." and "Four five." alone, without the audio file URL that WordPress replaces with an audio player.' );
+	}
+
+	public function test_measure_content__counts_the_text_wordpress_shows_in_place_of_an_embed_url() {
+		add_filter( 'pre_oembed_result', fn () => '<blockquote><p>A quoted note.</p></blockquote>' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/note/1' );
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count "A quoted note.", the text WordPress shows in place of the URL.' );
+	}
+
+	public function test_measure_content__counts_a_url_alone_on_a_line_when_wordpress_has_no_embed_for_it() {
+		$this->skip_without_intl();
+
+		add_filter( 'pre_oembed_result', '__return_empty_string' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/guide' );
+
+		$this->assertSame( 3, $config['wordCount'], 'The URL "https://example.com/guide" should count as the 3 words "https", "example.com", and "guide", because the page shows the URL as text.' );
+	}
+
+	public function test_measure_content__counts_an_embed_url_when_a_site_has_removed_autoembed_from_the_content() {
+		$this->skip_without_intl();
+
+		// WordPress has an embed for the URL, so the URL stays on the page as
+		// text only because `autoembed()` is removed.
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+		remove_filter( 'the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
+
+		$config = $this->measure_as_post_content( 'https://example.com/video/1' );
+
+		$this->assertSame( 4, $config['wordCount'], 'The URL "https://example.com/video/1" should count as the 4 words "https", "example.com", "video", and "1", because the page shows the URL as text.' );
+	}
+
 	/**
 	 * @dataProvider data_scripts_without_word_spacing
 	 */
