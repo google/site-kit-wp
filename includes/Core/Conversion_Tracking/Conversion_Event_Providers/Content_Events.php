@@ -70,16 +70,17 @@ class Content_Events extends Conversion_Events_Provider {
 	const FALLBACK_CHARACTERS_PER_MINUTE = 500;
 
 	/**
-	 * Invisible marker appended to the end of a single post's content.
+	 * Marker appended to the end of a single post's content.
 	 *
-	 * `initializeReadArticleEventTracker()` watches the marker to see when the
-	 * end of the article reaches the screen. A span with no height never comes
-	 * into view, so the marker is `1px` tall. The `-1px` margin keeps that
-	 * pixel out of the layout.
+	 * An HTML comment renders no box, so no theme style can add space around it.
+	 * `initializeReadArticleEventTracker()` finds the comment by its exact text.
+	 * The text starts with `[` because the HTML minifiers in LiteSpeed Cache,
+	 * W3 Total Cache, Autoptimize, and WP-Optimize keep every comment that
+	 * starts with `[`.
 	 *
 	 * @since 1.189.0
 	 */
-	const END_OF_CONTENT_MARKER = '<span class="googlesitekit-end-of-content" aria-hidden="true" style="display:block;height:1px;margin:0 0 -1px"></span>';
+	const END_OF_CONTENT_MARKER = '<!--[googlesitekit-end-of-content]-->';
 
 	/**
 	 * Flag indicating whether content hooks have been bootstrapped.
@@ -255,6 +256,7 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Registers content hooks once tag initialization occurs.
 	 *
 	 * @since 1.186.0
+	 * @since 1.189.0 Added the `the_content` filters that mark the end of a single post's text.
 	 */
 	protected function register_content_hooks() {
 		add_filter( 'embed_oembed_html', array( $this, 'filter_embed_html' ) );
@@ -263,6 +265,19 @@ class Content_Events extends Conversion_Events_Provider {
 		// priority. Priority 1 puts the marker directly after the author's
 		// content, before them.
 		add_filter( 'the_content', fn ( $content ) => $this->append_end_of_content_marker( $content ), 1 );
+
+		// `wpautop()` wraps the marker's own line in a `<p>`, and the theme's
+		// paragraph margin would add space under the post, so this filter removes
+		// that `<p>`. This filter runs at `PHP_INT_MAX` because `wpautop()` can run
+		// later than a filter at priority 10: `do_blocks()` removes `wpautop()`
+		// while it renders a block post, `_restore_wpautop_hook()` then adds
+		// `wpautop()` back after the other filters at priority 10, and a theme can
+		// move `wpautop()` to 99.
+		add_filter(
+			'the_content',
+			fn ( $content ) => str_replace( '<p>' . self::END_OF_CONTENT_MARKER . '</p>', self::END_OF_CONTENT_MARKER, $content ),
+			PHP_INT_MAX
+		);
 
 		add_filter(
 			'render_block',
@@ -367,12 +382,16 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Measures a single post's content, and appends the end-of-content marker
 	 * to it.
 	 *
-	 * `the_content` runs many times in one request. A nested loop and an
-	 * automatic excerpt both run it, and neither renders the post the visitor is
-	 * reading. Both get their content back unchanged.
+	 * `the_content` runs many times in one request, but only a run on the
+	 * post's own text, in the main loop, renders the post the visitor is
+	 * reading. Every other run gets its content back unchanged: a nested
+	 * loop, an automatic excerpt, the password form, and a header or a video
+	 * that a theme renders through `the_content`.
 	 *
-	 * Only the last page of a paginated post gets the marker, so a post sends at
-	 * most one `read_article` event per visit.
+	 * Each run on the post's own text gets the marker, because a theme can
+	 * throw away one run's result before it prints the post. On a paginated
+	 * post, only the last page gets the marker, since only that page can send
+	 * the `read_article` event.
 	 *
 	 * @since 1.189.0
 	 *
@@ -381,20 +400,21 @@ class Content_Events extends Conversion_Events_Provider {
 	 */
 	protected function append_end_of_content_marker( $content ) {
 		if (
-			$this->content_measured
-			|| ! is_singular( 'post' )
+			! is_singular( 'post' )
 			|| is_feed()
 			|| is_embed()
 			|| doing_filter( 'get_the_excerpt' )
+			|| post_password_required()
+			|| ! in_the_loop()
+			|| ! is_main_query()
 			|| get_the_ID() !== get_queried_object_id()
+			|| ! $this->starts_with_queried_post_content( $content )
 		) {
 			return $content;
 		}
 
-		$this->content_measured = true;
-
-		// `setup_postdata()` fills these three globals while the loop runs. A
-		// theme that renders the content outside the loop leaves them empty.
+		// While the loop runs, `setup_postdata()` fills the `page`, `numpages`,
+		// and `multipage` globals.
 		global $page, $numpages, $multipage;
 
 		$this->is_last_page_of_multi_page_post = ! $multipage || $page >= $numpages;
@@ -410,7 +430,44 @@ class Content_Events extends Conversion_Events_Provider {
 			return $content;
 		}
 
-		return $content_without_page_links . self::END_OF_CONTENT_MARKER . $page_links;
+		// The blank line before the marker leaves a shortcode on the author's
+		// last line in a paragraph of its own, which `shortcode_unautop()` needs.
+		// The same blank line leaves an embed URL alone on the author's last
+		// line, which `WP_Embed::autoembed()` needs. The blank line after the
+		// marker keeps the marker in a `<p>` of its own, which the `PHP_INT_MAX`
+		// filter in `register_content_hooks()` removes, even when another plugin
+		// appends text before `wpautop()` runs.
+		return $content_without_page_links . "\n\n" . self::END_OF_CONTENT_MARKER . "\n\n" . $page_links;
+	}
+
+	/**
+	 * Checks whether a piece of content starts with the text of the post the
+	 * visitor is reading.
+	 *
+	 * Only the start has to match, because a block theme's Post Content block
+	 * adds the page links of a paginated post after the text.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param string $content The content `the_content` received.
+	 * @return bool True when the content starts with the queried post's text.
+	 */
+	protected function starts_with_queried_post_content( $content ) {
+		// With no post ID, `get_the_content()` reads the loop's post, as the
+		// Post Content block does, so in a preview it returns the autosaved text
+		// the preview shows.
+		//
+		// The `the_content` filter receives `]]>` unchanged from `the_content()`,
+		// and as `]]&gt;` from the Post Content block.
+		$post_content = str_replace( ']]>', ']]&gt;', get_the_content() );
+
+		// `strncmp()` with a length of 0 matches any string, so a post with no
+		// text would otherwise match any content.
+		if ( '' === $post_content ) {
+			return '' === $content;
+		}
+
+		return 0 === strncmp( str_replace( ']]>', ']]&gt;', $content ), $post_content, strlen( $post_content ) );
 	}
 
 	/**
@@ -571,22 +628,26 @@ class Content_Events extends Conversion_Events_Provider {
 	 * Gets the inline config data for content events.
 	 *
 	 * @since 1.186.0
-	 * @since 1.189.0 Added the values the `read_article` event needs.
+	 * @since 1.189.0 Added the values the `read_article` event needs, and replaced `isSinglePost` with `isReadableSinglePost`, which is `false` while a post shows its password form.
 	 *
 	 * @return array Inline config data.
 	 */
 	protected function get_inline_config() {
-		$post_id                         = get_queried_object_id();
-		$is_single_post                  = is_singular( 'post' );
+		$post_id = get_queried_object_id();
+
+		// Until the visitor enters the password, a password-protected post
+		// shows its password form, so its page sends no `read_article` event.
+		$is_readable_single_post = is_singular( 'post' ) && ! post_password_required( $post_id );
+
 		$word_count                      = 0;
 		$estimated_read_time_seconds     = 0;
 		$is_last_page_of_multi_page_post = false;
 
-		if ( $this->content_measured ) {
+		if ( null !== $this->word_count ) {
 			$word_count                      = $this->word_count;
 			$estimated_read_time_seconds     = $this->estimated_read_time_seconds;
 			$is_last_page_of_multi_page_post = $this->is_last_page_of_multi_page_post;
-		} elseif ( $is_single_post ) {
+		} elseif ( $is_readable_single_post ) {
 			// A page builder can render the post content without ever running
 			// `the_content`, so the queried post supplies the measurements
 			// instead.
@@ -603,7 +664,7 @@ class Content_Events extends Conversion_Events_Provider {
 
 		return array(
 			'postID'                    => (int) $post_id,
-			'isSinglePost'              => $is_single_post,
+			'isReadableSinglePost'      => $is_readable_single_post,
 			'hasVimeoEmbed'             => (bool) $this->has_vimeo_embed,
 			'wordCount'                 => $word_count,
 			'estimatedReadTimeSeconds'  => $estimated_read_time_seconds,

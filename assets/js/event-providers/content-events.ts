@@ -28,8 +28,8 @@ import { initializeVimeo } from './content-events/vimeo';
 export interface ContentEventsConfig {
 	/** ID of the queried post, or `0` when there isn't one. */
 	postID: number;
-	/** Whether the current request is for a single post. */
-	isSinglePost: boolean;
+	/** Whether the request shows a single post's text, rather than its password form. */
+	isReadableSinglePost: boolean;
 	/** Whether the content rendered a Vimeo embed. */
 	hasVimeoEmbed: boolean;
 	/** Number of words in the post content this request rendered. */
@@ -48,14 +48,14 @@ export interface ContentEventsConfig {
  * Gets the Content Events configuration.
  *
  * @since 1.186.0
- * @since 1.189.0 Added the keys the `read_article` event needs.
+ * @since 1.189.0 Added the keys the `read_article` event needs, and replaced `isSinglePost` with `isReadableSinglePost`.
  *
  * @return {ContentEventsConfig} Content events configuration object.
  */
 export function getContentEventsConfig(): ContentEventsConfig {
 	return {
 		postID: 0,
-		isSinglePost: false,
+		isReadableSinglePost: false,
 		hasVimeoEmbed: false,
 		wordCount: 0,
 		estimatedReadTimeSeconds: 0,
