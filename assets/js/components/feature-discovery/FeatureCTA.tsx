@@ -41,11 +41,16 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface FeatureCTAProps {
-	slug: string;
 	isTertiary?: boolean;
+	onSetupComplete?: () => void;
+	slug: string;
 }
 
-const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
+const FeatureCTA: FC< FeatureCTAProps > = ( {
+	isTertiary = false,
+	onSetupComplete,
+	slug,
+} ) => {
 	const [ isBusy, setIsBusy ] = useState( false );
 
 	const feature = useSelect(
@@ -88,10 +93,12 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { slug, isTertiary = false } ) => {
 
 		try {
 			await setupFeature( slug );
-		} finally {
+			setIsBusy( false );
+			onSetupComplete?.();
+		} catch {
 			setIsBusy( false );
 		}
-	}, [ setupFeature, slug, triggerSurvey ] );
+	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
