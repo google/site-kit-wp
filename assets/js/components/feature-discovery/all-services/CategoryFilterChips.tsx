@@ -54,17 +54,17 @@ const CategoryFilterChips: FC< CategoryFilterChipsProps > = ( {
 	onToggleCategory,
 } ) => {
 	const handleToggleChip = useCallback(
-		( ...args: unknown[] ) => {
-			const chipID = args[ 0 ];
+		( chipID?: string ) => {
+			if ( ! chipID ) {
+				return;
+			}
 
 			if ( chipID === ALL_SERVICES_CHIP_ID ) {
 				onToggleCategory( null );
 				return;
 			}
 
-			if ( typeof chipID === 'string' ) {
-				onToggleCategory( chipID as FeatureCategorySlug );
-			}
+			onToggleCategory( chipID as FeatureCategorySlug );
 		},
 		[ onToggleCategory ]
 	);

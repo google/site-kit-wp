@@ -33,4 +33,5 @@ export type Story< PropTypes = Record< string, unknown > > = {
 	};
 	parameters?: Record< string, unknown >;
 	scenario?: Record< string, unknown >;
+	play?: () => Promise< void >;
 };

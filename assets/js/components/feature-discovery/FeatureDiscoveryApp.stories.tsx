@@ -49,6 +49,11 @@ interface StoryArgs {
 	setupRegistry?: ( registry: Registry ) => void;
 }
 
+const AUDIENCE_CHIP_SELECTOR =
+	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"]';
+const ALL_SERVICES_CHIP_SELECTOR =
+	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="all-services"]';
+
 function Template( { setupRegistry = () => {} }: StoryArgs ) {
 	function setupStoryRegistry( registry: Registry ) {
 		provideSiteInfo( registry );
@@ -85,6 +90,36 @@ AllServices.args = {
 	},
 };
 AllServices.scenario = {};
+
+export const AllServicesFiltered = Template.bind( {} ) as Story< StoryArgs >;
+AllServicesFiltered.storyName = 'All services filtered to one category';
+AllServicesFiltered.parameters = { route: '/all-services' };
+AllServicesFiltered.args = AllServices.args;
+AllServicesFiltered.scenario = {
+	onReadyScript: 'feature-discovery-select-audience-chip.js',
+};
+AllServicesFiltered.play = async () => {
+	for ( let attempt = 0; attempt < 20; attempt++ ) {
+		const audienceChip = document.querySelector(
+			AUDIENCE_CHIP_SELECTOR
+		) as Element | null;
+		const allServicesChip = document.querySelector(
+			ALL_SERVICES_CHIP_SELECTOR
+		) as Element | null;
+
+		if ( audienceChip && allServicesChip ) {
+			if ( allServicesChip.classList.contains( 'mdc-chip--selected' ) ) {
+				audienceChip.dispatchEvent(
+					new MouseEvent( 'click', { bubbles: true } )
+				);
+			}
+
+			return;
+		}
+
+		await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
+	}
+};
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
 WhatsNewUnread.storyName = '"What’s new" unread features';

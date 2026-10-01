@@ -265,6 +265,44 @@ describe( 'AllServicesTab', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'should restore All services view when the last selected category is deselected', async () => {
+		provideFeatures( registry, oneFeaturePerCategory );
+
+		const { container, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		expect( getHeadings( container ) ).toEqual( [ AUDIENCE_HEADING ] );
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		expect( getHeadings( container ) ).toEqual( ALL_HEADINGS );
+	} );
+
+	it( 'should clear selected categories when clicking All services', async () => {
+		provideFeatures( registry, oneFeaturePerCategory );
+
+		const { container, getByText, waitForRegistry } = render(
+			<AllServicesTab />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click( getByText( 'Know your audience' ) );
+		fireEvent.click( getByText( 'Monetize' ) );
+		expect( getHeadings( container ) ).toEqual( [
+			AUDIENCE_HEADING,
+			MONETIZATION_HEADING,
+		] );
+
+		fireEvent.click( getByText( 'All services' ) );
+		expect( getHeadings( container ) ).toEqual( ALL_HEADINGS );
+	} );
+
 	it( 'should keep catalog registration order within a group', async () => {
 		provideFeatures( registry, [ secondAudienceFeature, audienceFeature ] );
 
