@@ -412,11 +412,6 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            Unhappy
-          </p>
         </div>
         <div
           class="googlesitekit-survey__choice"
@@ -429,11 +424,6 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            Dissatisfied
-          </p>
         </div>
         <div
           class="googlesitekit-survey__choice"
@@ -446,11 +436,6 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            Neutral
-          </p>
         </div>
         <div
           class="googlesitekit-survey__choice"
@@ -463,11 +448,6 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            Satisfied
-          </p>
         </div>
         <div
           class="googlesitekit-survey__choice"
@@ -480,12 +460,22 @@ exports[`SurveyQuestion should render a rating question correctly 1`] = `
           >
             <svg />
           </button>
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            Delighted
-          </p>
         </div>
+      </div>
+      <div
+        aria-hidden="true"
+        class="googlesitekit-survey__choices-labels"
+      >
+        <p
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+        >
+          Unhappy
+        </p>
+        <p
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+        >
+          Delighted
+        </p>
       </div>
     </div>
   </div>

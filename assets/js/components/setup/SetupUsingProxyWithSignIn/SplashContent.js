@@ -45,6 +45,7 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
+import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
@@ -72,6 +73,7 @@ export default function SplashContent( {
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
+	const isIntentSetupFlow = useIsIntentSetupFlow();
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
@@ -136,9 +138,9 @@ export default function SplashContent( {
 					{ setupFlowRefreshPhase4Enabled &&
 						analyticsModuleActive && <Services /> }
 
-					{ analyticsModuleAvailable && ! analyticsModuleActive && (
-						<AnalyticsOptIn />
-					) }
+					{ analyticsModuleAvailable &&
+						! analyticsModuleActive &&
+						! isIntentSetupFlow && <AnalyticsOptIn /> }
 
 					<CompatibilityChecks>{ children }</CompatibilityChecks>
 				</Cell>

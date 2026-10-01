@@ -79,7 +79,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Gets whether conversion tracking is enabled in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {boolean|undefined} Whether conversion tracking is enabled, or `undefined` while it loads.
 	 */
@@ -90,7 +90,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Sets up a site that does not track conversions yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -103,7 +103,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Mocks the endpoints that create and sync the custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -123,7 +123,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Renders the enable handler for the lead generation widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {Object} The render result.
 	 */

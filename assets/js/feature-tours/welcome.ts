@@ -183,7 +183,7 @@ function getTopSearchQueriesStep() {
  * Gets the traffic step, which highlights the Traffic Overview card and points
  * its tooltip at the card's chart.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {WelcomeTourStep} The traffic step.
  */

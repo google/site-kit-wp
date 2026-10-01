@@ -1092,7 +1092,7 @@ final class Assets {
 	/**
 	 * Gets the fingerprint used to validate the remembered features count.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return array Features badge data.
 	 */
@@ -1100,7 +1100,7 @@ final class Assets {
 		/**
 		 * Filters the connected modules.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.189.0
 		 *
 		 * @param array $modules Connected modules as slug => module pairs.
 		 */

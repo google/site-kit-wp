@@ -242,7 +242,7 @@ export interface AudiencePartialDataFlags {
  * Reads one audience's partial-data flags from the selectors the dashboard tile reads.
  *
  * @since 1.185.0
- * @since n.e.x.t Read both flags from the audience tile selectors.
+ * @since 1.189.0 Read both flags from the audience tile selectors.
  *
  * @param registry             WordPress data registry.
  * @param propertyID           The Analytics 4 property ID, or an empty string when none is set.

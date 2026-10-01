@@ -75,7 +75,7 @@ interface CompleteIntentResult {
 /**
  * Throws an error when the slug or the intent code is missing.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} params            The intent parameters.
  * @param {string} params.slug       The intent slug.
@@ -149,7 +149,7 @@ const baseActions = {
 	/**
 	 * Completes an intent on the Site Kit Service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} slug       The intent slug.
 	 * @param {string} intentCode The intent code.
@@ -193,7 +193,7 @@ const baseSelectors = {
 	/**
 	 * Gets the intent the Site Kit Service has for a slug and an intent code.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object} state      The data store's state.
 	 * @param {string} slug       The intent slug.
