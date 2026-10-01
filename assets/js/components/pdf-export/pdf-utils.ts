@@ -29,9 +29,23 @@ import { __ } from '@wordpress/i18n';
  */
 import { getLocale, isValidDateString, stringToDate } from '@/js/util';
 
-// The characters Windows, macOS and Linux reject in filenames.
-// eslint-disable-next-line no-control-regex
-const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|\u0000-\u001f\u007f]/g;
+// The printable characters Windows, macOS and Linux reject in filenames.
+const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;
+
+/**
+ * Checks whether a character is a control character (U+0000–U+001F or
+ * U+007F), which filesystems also reject in filenames.
+ *
+ * @since n.e.x.t
+ *
+ * @param character A single character.
+ * @return Whether the character is a control character.
+ */
+function isControlCharacter( character: string ): boolean {
+	const code = character.charCodeAt( 0 );
+
+	return code <= 0x1f || code === 0x7f;
+}
 
 /**
  * Extracts the host (e.g. "www.example.com") from the reference site URL.
@@ -106,6 +120,9 @@ export function getPDFFilename(
 	const name = segments
 		.join( ' - ' )
 		.replace( RESERVED_FILENAME_CHARACTERS, '' )
+		.split( '' )
+		.filter( ( character ) => ! isControlCharacter( character ) )
+		.join( '' )
 		.replace( /\s+/g, ' ' )
 		// Windows drops trailing dots and spaces from filenames.
 		.replace( /[. ]+$/, '' );
