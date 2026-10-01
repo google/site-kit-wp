@@ -38,7 +38,7 @@ class Report_OptionsTest extends TestCase {
 				'endDate'   => '2026-08-18',
 			),
 			$this->report_options->get_compare_range(),
-			'The `get_compare_range()` method should return 2026-07-22 to 2026-08-18 for 2026-08-19 to 2026-09-15.'
+			'The `get_compare_range()` method should return `2026-07-22` to `2026-08-18` for `2026-08-19` to `2026-09-15`.'
 		);
 	}
 
@@ -51,7 +51,7 @@ class Report_OptionsTest extends TestCase {
 				'endDate'   => '2026-06-17',
 			),
 			$report_options->get_compare_range(),
-			'The `get_compare_range()` method should return the 90 days from 2026-03-20 to 2026-06-17 for 2026-06-18 to 2026-09-15.'
+			'The `get_compare_range()` method should return the 90 days from `2026-03-20` to `2026-06-17` for `2026-06-18` to `2026-09-15`.'
 		);
 	}
 
@@ -64,7 +64,7 @@ class Report_OptionsTest extends TestCase {
 				'endDate'   => '2026-09-14',
 			),
 			$report_options->get_compare_range(),
-			'The `get_compare_range()` method should return the day before, 2026-09-14, for a one-day period on 2026-09-15.'
+			'The `get_compare_range()` method should return the day before, `2026-09-14`, for a one-day period on `2026-09-15`.'
 		);
 	}
 
@@ -86,7 +86,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_daily_series_options(),
-			'The `get_daily_series_options()` method should ask for `totalUsers` by `date`, oldest first, from 2025-08-17 to 2026-09-15.'
+			'The `get_daily_series_options()` method should ask for `totalUsers` by `date`, oldest first, from `2025-08-17` to `2026-09-15`.'
 		);
 	}
 
@@ -94,8 +94,8 @@ class Report_OptionsTest extends TestCase {
 		$week_options       = ( new Report_Options( '2026-09-09', '2026-09-15' ) )->get_daily_series_options();
 		$ninety_day_options = ( new Report_Options( '2026-06-18', '2026-09-15' ) )->get_daily_series_options();
 
-		$this->assertSame( '2025-08-17', $week_options['startDate'], 'The daily series of a 7-day period ending on 2026-09-15 should start on 2025-08-17.' );
-		$this->assertSame( '2025-08-17', $ninety_day_options['startDate'], 'The daily series of a 90-day period ending on 2026-09-15 should start on 2025-08-17.' );
+		$this->assertSame( '2025-08-17', $week_options['startDate'], 'The daily series of a 7-day period ending on `2026-09-15` should start on `2025-08-17`.' );
+		$this->assertSame( '2025-08-17', $ninety_day_options['startDate'], 'The daily series of a 90-day period ending on `2026-09-15` should start on `2025-08-17`.' );
 	}
 
 	public function test_get_channels_options__counts_visitors_by_channel_in_both_periods() {

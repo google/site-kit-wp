@@ -24,15 +24,13 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * Days the daily series covers, up to the end date. The Typical Traffic chart
-	 * shows these 13 months, so a reader sees the selected period against a year
-	 * of traffic.
+	 * Days in the daily series, which covers the 13 months the Typical Traffic
+	 * chart shows and ends on the end date.
 	 */
 	const DAILY_SERIES_DAYS = 395;
 
 	/**
-	 * The most rows a dimension report asks Analytics for, across both of its
-	 * periods.
+	 * The most rows a dimension report asks Analytics for in each of its periods.
 	 */
 	const REPORT_ROW_LIMIT = 50;
 
@@ -169,8 +167,7 @@ class Report_Options {
 		return $this->get_dimension_options(
 			array( 'pagePath', 'pageTitle', $post_date_dimension ),
 			array(
-				// A page that isn't a post has no publication date, so Analytics
-				// reports `(not set)` for it.
+				// Analytics reports `(not set)` for a page that isn't a post.
 				$post_date_dimension => array(
 					'filterType'    => 'emptyFilter',
 					'notExpression' => true,
@@ -203,11 +200,8 @@ class Report_Options {
 	}
 
 	/**
-	 * Builds the options of a report that counts visitors by one or more
-	 * dimensions, in the selected period and in the compare period.
-	 *
-	 * Both periods go in one request, so Analytics returns a row for each value in
-	 * each period, with the period in a `dateRange` value.
+	 * Gets the options of a report that counts visitors by one or more
+	 * dimensions, for the selected period and the compare period in one request.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -230,8 +224,6 @@ class Report_Options {
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
 				$dimension_names
 			),
-			// The rows are sorted by visitors, so the row limit keeps the values with
-			// the most visitors.
 			'orderby'          => array(
 				array(
 					'metric' => array( 'metricName' => 'totalUsers' ),

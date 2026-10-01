@@ -30,8 +30,7 @@ use WP_Error;
 class Response_Builder {
 
 	/**
-	 * The most rows a dimension keeps. The Typical Traffic tab renders every row
-	 * the response has, so the cap also limits what the browser stores.
+	 * The most rows a dimension keeps in the response.
 	 */
 	const MAX_ROWS_PER_DIMENSION = 5;
 
@@ -57,7 +56,7 @@ class Response_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param Analytics_4                      $analytics_4                      The Analytics 4 module instance, which runs the reports.
-	 * @param Custom_Dimensions_Data_Available $custom_dimensions_data_available The Custom_Dimensions_Data_Available instance, which says whether the post date and the post categories have data.
+	 * @param Custom_Dimensions_Data_Available $custom_dimensions_data_available The Custom_Dimensions_Data_Available instance.
 	 */
 	public function __construct( Analytics_4 $analytics_4, Custom_Dimensions_Data_Available $custom_dimensions_data_available ) {
 		$this->analytics_4                      = $analytics_4;
@@ -94,8 +93,6 @@ class Response_Builder {
 		$daily_traffic = $this->get_daily_traffic( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'] );
 		$compare_range = $report_options->get_compare_range();
 
-		// Both `visitors` totals come from the daily series, so they always match
-		// the chart drawn from `dailyTraffic`.
 		$visitors = array(
 			'current'  => $this->sum_visitors( $daily_traffic, $start_date, $end_date ),
 			'previous' => $this->sum_visitors( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
@@ -116,9 +113,8 @@ class Response_Builder {
 	 *
 	 * The rows `Row_Scorer` doesn't exclude are ranked by score, highest first,
 	 * and cut to `MAX_ROWS_PER_DIMENSION`. The dimensions are ordered by the sum
-	 * of their row scores, highest first. The sum counts the rows past the cut
-	 * too. A dimension with no row left is in neither `dimensions` nor
-	 * `contextualData`.
+	 * of their row scores, which counts the rows past the cut too. A dimension
+	 * with no row left is in neither `dimensions` nor `contextualData`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -128,7 +124,7 @@ class Response_Builder {
 	 *     The two response fields the ranking decides.
 	 *
 	 *     @type array $dimensions     Dimension codes, the highest sum of row scores first.
-	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key, in the shape `get_response_row()` returns.
+	 *     @type array $contextualData Rows each dimension keeps, keyed by `contextualData` key. A `CONTENT` row has `url`, `title`, `visitors`, and `publishedDaysAgo`. Every other row is unchanged.
 	 * }
 	 */
 	public function rank_contextual_data( array $contextual_data, array $visitors ) {
@@ -143,20 +139,22 @@ class Response_Builder {
 			$scored_rows    = array();
 
 			foreach ( $rows as $row ) {
-				if ( ! $row_scorer->should_exclude_row( $dimension_code, $row ) ) {
-					$scored_rows[] = array(
-						'row'   => $row,
-						'score' => $row_scorer->score_row( $dimension_code, $row ),
-					);
+				if ( $row_scorer->is_excluded_row( $dimension_code, $row ) ) {
+					continue;
 				}
+
+				$scored_rows[] = array(
+					'row'   => $row,
+					'score' => $row_scorer->score_row( $dimension_code, $row ),
+				);
 			}
 
 			if ( empty( $scored_rows ) ) {
 				continue;
 			}
 
-			// `usort()` on PHP 7.4 can swap two equal items, so two equal scores are
-			// ordered by the row's label, or by its URL for a `CONTENT` row.
+			// The `strcmp()` sorts two rows with the same score, so their order doesn't
+			// depend on the order of `$rows`.
 			usort(
 				$scored_rows,
 				fn( $a, $b ) => ( $b['score'] <=> $a['score'] ) ?: strcmp( $a['row'][ $label_key ], $b['row'][ $label_key ] )
@@ -181,9 +179,7 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets the options of every report the response needs, keyed by the
-	 * response field or the dimension code each report is for, such as
-	 * `dailyTraffic` or `CHANNELS`.
+	 * Gets the options of every report the response needs.
 	 *
 	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
 	 * so each one runs only while its dimension has data.
@@ -191,7 +187,7 @@ class Response_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param Report_Options $report_options The report options for the two dates.
-	 * @return array Report request options, the daily series first.
+	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
 	 */
 	private function get_report_requests( Report_Options $report_options ) {
 		$data_availability = $this->custom_dimensions_data_available->get_data_availability();
@@ -216,12 +212,12 @@ class Response_Builder {
 	}
 
 	/**
-	 * Runs the reports in batch calls of up to five reports, because one
-	 * `GET:batch-report` call takes at most five.
+	 * Runs the reports in batch calls, because one `GET:batch-report` call takes
+	 * at most five reports.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $requests The report request options, keyed by the response field or the dimension code each report is for.
+	 * @param array $requests The report request options, keyed by `dailyTraffic` or by dimension code.
 	 * @return array|WP_Error Report rows, keyed like the requests, or the error the first failed call returned.
 	 */
 	private function run_reports( array $requests ) {
@@ -255,7 +251,7 @@ class Response_Builder {
 	 * @since n.e.x.t
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
-	 * @return array List of rows, each with `values`, `dateRange`, and `visitors`. `values` lists the row's dimension values in the order the report asked for them, and `dateRange` is the row's period.
+	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `visitors`.
 	 */
 	private function get_report_rows( Google_Service_AnalyticsData_RunReportResponse $report ) {
 		$dimension_names = array_map(
@@ -330,7 +326,7 @@ class Response_Builder {
 	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
 	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
-	 * @return int The total visitors of those days.
+	 * @return int The total visitors from `$start_date` to `$end_date`.
 	 */
 	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
 		$visitors = 0;
@@ -350,7 +346,7 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array  $reports  The report rows, keyed by the response field or the dimension code each report is for.
+	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by dimension code.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
 	 * @return array Rows, keyed by `contextualData` key. Every row has its `current` and `previous` visitors.
 	 */
@@ -426,8 +422,8 @@ class Response_Builder {
 	/**
 	 * Builds the `CONTENT` rows, one per page.
 	 *
-	 * Analytics returns the post date as `YYYYMMDD`. A page whose post date isn't
-	 * a real day in that format is skipped, since it has no age to report.
+	 * Analytics returns the post date as `YYYYMMDD`, and a page whose post date
+	 * isn't a real day is skipped, since it has no age to report.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -447,6 +443,8 @@ class Response_Builder {
 			// are whole days apart.
 			$published = DateTimeImmutable::createFromFormat( '!Ymd', $post_date, $utc );
 
+			// `createFromFormat()` reads `20260231` as 3 March 2026 rather than
+			// refusing it.
 			if ( ! $published || $published->format( 'Ymd' ) !== $post_date ) {
 				continue;
 			}

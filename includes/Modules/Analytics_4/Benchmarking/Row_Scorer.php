@@ -23,9 +23,8 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 class Row_Scorer {
 
 	/**
-	 * What each dimension's scores are multiplied by. A page or a referrer counts
-	 * for more than a device category, because a change in devices or in the
-	 * visitor mix usually follows a channel change the response already shows.
+	 * What each dimension's scores are multiplied by, so a page or a referrer
+	 * counts for more than a device category.
 	 */
 	const DIMENSION_WEIGHTS = array(
 		'CONTENT'        => 1.5,
@@ -43,8 +42,8 @@ class Row_Scorer {
 	const SAME_DIRECTION_BOOST = 1.25;
 
 	/**
-	 * The change in the site's visitors, in percent, from which the site counts
-	 * as going up or down rather than as stable.
+	 * The smallest change in the site's visitors, in percent, that counts as going
+	 * up or down.
 	 */
 	const SITE_DIRECTION_THRESHOLD_PERCENT = 3;
 
@@ -79,9 +78,8 @@ class Row_Scorer {
 	const COUNTER_TREND_DELTA = 25;
 
 	/**
-	 * A device or visitor mix row is excluded from the response when its own
-	 * change is within this many percentage points of the site's change, because
-	 * it only follows the site.
+	 * A device or visitor mix row is excluded when its own change is less than this
+	 * many percentage points from the site's change, because it only follows the site.
 	 */
 	const MACRO_DIVERGENCE_PERCENT = 5;
 
@@ -132,12 +130,10 @@ class Row_Scorer {
 	/**
 	 * Scores how much of the site's change in visitors a row explains.
 	 *
-	 * The score has two parts, each a percentage of the larger of the site's two
-	 * visitor totals. The first is the size of the row's own change, and it counts
-	 * for 60%. The second is how far that change is from the change the row would
-	 * show at the site's rate, and it counts for 40%. The dimension's weight
-	 * multiplies the sum, and so does the boost when the row moved the same way as
-	 * the site.
+	 * The size of the row's change counts for 60% of the score, and how far that
+	 * change is from the change the row would show at the site's rate counts for
+	 * 40%. The dimension's weight multiplies the sum, and so does the boost when
+	 * the row moved the same way as the site.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -164,11 +160,12 @@ class Row_Scorer {
 	 * Checks whether a row is excluded from the response.
 	 *
 	 * A row is excluded when any of these is true:
-	 * - Its change is too small to be more than noise.
-	 * - It moved against the site, and its change is too small to explain
-	 *   anything on its own.
-	 * - It is a `DEVICES` or `VISITOR_MIX` row whose own change stays near the
-	 *   site's change.
+	 * - Its change is under `MINIMUM_ABSOLUTE_DELTA` visitors or under
+	 *   `MINIMUM_TRAFFIC_IMPACT_PERCENT`.
+	 * - It moved against the site, and neither `COUNTER_TREND_TRAFFIC_IMPACT_PERCENT`
+	 *   nor `COUNTER_TREND_SELF_CHANGE_PERCENT` keeps it.
+	 * - It's a `DEVICES` or `VISITOR_MIX` row whose own change is less than
+	 *   `MACRO_DIVERGENCE_PERCENT` percentage points from the site's change.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -176,7 +173,7 @@ class Row_Scorer {
 	 * @param array  $row            The row, with its `current` and `previous` visitors.
 	 * @return bool True when the row is excluded, false when the row is ranked.
 	 */
-	public function should_exclude_row( $dimension_code, array $row ) {
+	public function is_excluded_row( $dimension_code, array $row ) {
 		$delta          = $row['current'] - $row['previous'];
 		$traffic_impact = abs( $this->get_traffic_impact_percent( $delta ) );
 
@@ -241,17 +238,20 @@ class Row_Scorer {
 	/**
 	 * Gets the change in a row's own visitors, in percent.
 	 *
+	 * `is_excluded_row()` excludes a row with no visitors in either period before
+	 * it calls this method.
+	 *
 	 * @since n.e.x.t
 	 *
 	 * @param array $row The row, with its `current` and `previous` visitors.
-	 * @return int|float The change in percent, such as `50` for a rise of 50%. It's `100` for a row with visitors only in the selected period, and `0` for a row with none in either period.
+	 * @return int|float The change in percent, such as `50` for a rise of 50%, or `100` for a row with no visitors in the compare period.
 	 */
 	private function get_self_change_percent( array $row ) {
 		if ( $row['previous'] > 0 ) {
 			return ( $row['current'] - $row['previous'] ) * 100 / $row['previous'];
 		}
 
-		return $row['current'] > 0 ? 100 : 0;
+		return 100;
 	}
 
 	/**
