@@ -77,7 +77,7 @@ interface WordPressPost {
 	/** The post ID. */
 	id: number;
 	/** The publish time in UTC, e.g. `2026-09-24T14:05:00`, with no time zone suffix. */
-	// eslint-disable-next-line camelcase -- The WordPress REST API names the `date_gmt` field.
+	// eslint-disable-next-line camelcase -- The WordPress REST API returns this field as `date_gmt`.
 	date_gmt: string;
 	/** The post URL. */
 	link: string;
@@ -99,8 +99,8 @@ const fetchGetRecentContentStore = createFetchStore( {
 		count,
 		includeProducts,
 	}: RecentContentParams ): Promise< RecentContentItem[] > {
-		// `wc/v3/products` needs the `read_private_products` capability, which
-		// not every view-only user has. `wp/v2/product` needs no capability.
+		// `wp/v2/product` doesn't need a capability, but `wc/v3/products` needs
+		// `read_private_products`, which not every view-only user has.
 		const paths = includeProducts
 			? [ '/wp/v2/posts', '/wp/v2/product' ]
 			: [ '/wp/v2/posts' ];
@@ -192,6 +192,8 @@ const baseResolvers = {
 			.select( MODULES_ANALYTICS_4 )
 			.shouldIncludeWooCommerceProducts();
 
+		// An earlier failed request can leave its error under `[ options ]`,
+		// where the fetch store doesn't clear it.
 		yield clearSelectorError( 'getRecentContent', [ options ] );
 
 		const { error } =
@@ -200,9 +202,8 @@ const baseResolvers = {
 				includeProducts
 			) ) as { error?: ErrorObject };
 
-		// A component reads the error under `[ options ]`, but the fetch store
-		// saves it under `[ count, includeProducts ]`. We move it, because
-		// `ErrorNotice` retries the selector with the error's saved arguments.
+		// We move the error from the fetch store's `[ count, includeProducts ]`
+		// to `[ options ]`, so a component can read it and retry the selector.
 		if ( error ) {
 			yield clearSelectorError( 'getRecentContent', [
 				options.count,
@@ -226,7 +227,7 @@ const baseSelectors = {
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
 	 * @param {number} options.count The number of posts and products to return.
-	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` while they load and when the posts or products request fails.
+	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` until a request with the same `count` succeeds.
 	 */
 	getRecentContent(
 		state: FreshDataState,

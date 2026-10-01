@@ -43,7 +43,11 @@ const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
 );
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
-const productsEndpoint = new RegExp( '^/wp/v2/product' );
+/**
+ * The `\\?` stops a request to `/wp/v2/products` from matching, because the
+ * products route is `/wp/v2/product`.
+ */
+const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
 
 describe( 'modules/analytics-4 fresh data', () => {
 	let registry: WPDataRegistry;
@@ -310,7 +314,95 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( [] );
 		} );
 
-		it( 'should merge products into the list by publish time when the "Include products in Recent activity" setting is on', async () => {
+		it( 'should return a separate list for each `count`', async () => {
+			provideSiteInfo( registry );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			fetchMock.getOnce( postsEndpoint, {
+				body: [
+					{
+						id: 12,
+						date_gmt: '2026-09-24T14:05:00',
+						link: 'http://example.com/autumn-recipes/',
+						title: { rendered: 'Autumn recipes' },
+					},
+				],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getRecentContent( { count: 1 } );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getRecentContent( { count: 1 } );
+
+			fetchMock.getOnce( postsEndpoint, {
+				body: [
+					{
+						id: 12,
+						date_gmt: '2026-09-24T14:05:00',
+						link: 'http://example.com/autumn-recipes/',
+						title: { rendered: 'Autumn recipes' },
+					},
+					{
+						id: 9,
+						date_gmt: '2026-09-21T08:30:00',
+						link: 'http://example.com/summer-recap/',
+						title: { rendered: 'Summer recap' },
+					},
+				],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getRecentContent( { count: 2 } );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getRecentContent( { count: 2 } );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getRecentContent( { count: 1 } )
+			).toEqual( [
+				{
+					id: 12,
+					title: 'Autumn recipes',
+					permalink: 'http://example.com/autumn-recipes/',
+					pagePath: '/autumn-recipes/',
+					publishedAt: '2026-09-24T14:05:00Z',
+				},
+			] );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getRecentContent( { count: 2 } )
+			).toEqual( [
+				{
+					id: 12,
+					title: 'Autumn recipes',
+					permalink: 'http://example.com/autumn-recipes/',
+					pagePath: '/autumn-recipes/',
+					publishedAt: '2026-09-24T14:05:00Z',
+				},
+				{
+					id: 9,
+					title: 'Summer recap',
+					permalink: 'http://example.com/summer-recap/',
+					pagePath: '/summer-recap/',
+					publishedAt: '2026-09-21T08:30:00Z',
+				},
+			] );
+		} );
+
+		it( 'should return posts and products together, newest first, when the "Include products in Recent activity" setting is on', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -448,7 +540,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should include products when the site info, the Analytics settings, and the module list load after the list is requested', async () => {
+		it( 'should include products when the site info, the Analytics settings, and the module list load after `getRecentContent()` is called', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			// The site info loads from `_googlesitekitBaseData`.
@@ -531,7 +623,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should return posts only when the Analytics settings fail to load', async () => {
+		it( 'should return posts and omit products when the Analytics settings fail to load', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -740,7 +832,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'should remove the error from `getErrorForSelector()` when a retry of the list succeeds', async () => {
+		it( 'should remove the error from `getErrorForSelector()` when a retry of the posts request succeeds', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -822,7 +914,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should include a post published after the first request when the list loads again', async () => {
+		it( 'should include a post published after the first request when the posts are requested again', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -902,7 +994,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should ask the browser not to use a cached response', async () => {
+		it( 'should request the posts and the products without the browser cache', async () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideSiteInfo( registry, { wooCommerceActive: true } );
@@ -931,7 +1023,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			);
 		} );
 
-		it( 'should store the "count must be a positive integer." error for `getResolutionError()` and not request posts when `count` is 0', async () => {
+		it( 'should store the "count must be a positive integer." error for `getResolutionError()` and not request posts when `count` is `0`', async () => {
 			provideSiteInfo( registry );
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
@@ -949,6 +1041,30 @@ describe( 'modules/analytics-4 fresh data', () => {
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getResolutionError( 'getRecentContent', [ { count: 0 } ] )
+			).toEqual( new Error( 'count must be a positive integer.' ) );
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+
+		it( 'should store the "count must be a positive integer." error for `getResolutionError()` and not request posts when `count` is `2.5`', async () => {
+			provideSiteInfo( registry );
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getRecentContent( { count: 2.5 } );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getRecentContent( { count: 2.5 } );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResolutionError( 'getRecentContent', [
+						{ count: 2.5 },
+					] )
 			).toEqual( new Error( 'count must be a positive integer.' ) );
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
 		} );
