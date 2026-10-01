@@ -41,13 +41,13 @@ import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
 const fetchGetReportStore = createFetchStore( {
 	baseName: 'getReport',
-	controlCallback: ( { strategy, url }, { signal } = {} ) => {
+	controlCallback: ( { strategy, url }, fetchOptions ) => {
 		return get(
 			'modules',
 			MODULE_SLUG_PAGESPEED_INSIGHTS,
 			'pagespeed',
 			{ strategy, url },
-			{ signal }
+			fetchOptions
 		);
 	},
 	reducerCallback: createReducer( ( state, report, { strategy, url } ) => {
@@ -100,11 +100,12 @@ const baseSelectors = {
 	 *
 	 * @since 1.10.0
 	 * @since 1.182.0 Accept optional fetch options as a third argument, such as `{ signal }` to cancel the report request.
+	 * @since n.e.x.t Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
 	 *
 	 * @param {Object} state          Data store's state.
 	 * @param {string} url            URL used for generating the report.
 	 * @param {string} strategy       Strategy used for generating the report.
-	 * @param {Object} [fetchOptions] Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it.
+	 * @param {Object} [fetchOptions] Optional. Fetch options that change how the request runs, such as `{ signal }` to cancel it or `{ cacheTTL }` to change how long the response is cached, in seconds.
 	 * @return {(Object|undefined)} A PageSpeed Insights report; `undefined` if not loaded.
 	 */
 	// eslint-disable-next-line no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
