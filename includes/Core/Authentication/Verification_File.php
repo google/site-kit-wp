@@ -34,7 +34,7 @@ final class Verification_File extends User_Setting {
 	 * File verification is only possible when the site is served from the
 	 * root of its domain, as the verification file must be served from there.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Context $context Plugin context.
 	 * @return bool True if file verification is supported, false otherwise.

@@ -42,7 +42,7 @@ export interface ConversionTrackingSetting {
  * The REST route behind the setting requires `MANAGE_OPTIONS`, so asking for it
  * without the capability only logs a 403.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {ConversionTrackingSetting} The capability, and the setting for a user who holds it.
  */

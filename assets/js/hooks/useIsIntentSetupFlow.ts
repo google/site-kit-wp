@@ -1,5 +1,5 @@
 /**
- * Traffic Overview test helpers.
+ * `useIsIntentSetupFlow` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,26 +19,19 @@
 /**
  * Internal dependencies
  */
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import useQueryArg from '@/js/hooks/useQueryArg';
 
 /**
- * Builds a breakdown report from label and visitor pairs, in the order given.
+ * Determines whether the setup flow is running to fulfill an intent.
  *
- * The visitors are strings, the way the API returns them.
+ * The Site Kit service marks such a flow by sending the user to the splash screen with `purpose=intent`.
  *
- * @since 1.188.0
- * @since 1.189.0 Moved to a shared test helper.
+ * @since n.e.x.t
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
+ * @return {boolean} TRUE when the setup flow fulfills an intent, otherwise FALSE.
  */
-export function createBreakdownReport(
-	pairs: Array< [ string, number ] >
-): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
-	};
+export default function useIsIntentSetupFlow(): boolean {
+	const [ purpose ] = useQueryArg( 'purpose' );
+
+	return purpose === 'intent';
 }

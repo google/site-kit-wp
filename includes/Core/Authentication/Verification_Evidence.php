@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * for, which the service uses to re-register the verification rather than
  * relying on the Site Verification API alone.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */
@@ -33,7 +33,7 @@ final class Verification_Evidence {
 	/**
 	 * Plugin context.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var Context
 	 */
 	private $context;
@@ -41,7 +41,7 @@ final class Verification_Evidence {
 	/**
 	 * User_Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var User_Options
 	 */
 	private $user_options;
@@ -49,7 +49,7 @@ final class Verification_Evidence {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Context           $context      Plugin context.
 	 * @param User_Options|null $user_options Optional. User_Options instance. Default is a new instance for the current user.
@@ -66,7 +66,7 @@ final class Verification_Evidence {
 	 * supports file verification, then a meta token. The value is read on every
 	 * call so that it always reflects the most recently stored token.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return string One of `FILE`, `META` or `none`.
 	 */

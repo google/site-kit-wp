@@ -581,6 +581,97 @@ class OAuth_ClientTest extends TestCase {
 		}
 	}
 
+	public function test_authorize_user__intent_without_redirect_url() {
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertEquals(
+			admin_url( 'admin.php?page=googlesitekit-dashboard&intent=ads-conversion-tracking&intent_code=abc123' ),
+			$this->get_authorize_user_redirect_location(),
+			'Authorization with an intent and no stored redirect URL should go to the dashboard with the intent and no notification.'
+		);
+	}
+
+	public function test_authorize_user__intent_with_analytics_setup_redirect_url() {
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertEquals(
+			admin_url( 'admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&intent=ads-conversion-tracking&intent_code=abc123' ),
+			$this->get_authorize_user_redirect_location(
+				admin_url( 'admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true' )
+			),
+			'Authorization with an intent should add the intent to the stored Analytics setup URL and keep its `slug`, `reAuth` and `showProgress` arguments.'
+		);
+	}
+
+	public function test_authorize_user__intent_with_redirect_url_notification_and_search_console() {
+		$_GET['intent']                    = 'ads-conversion-tracking';
+		$_GET['intent_code']               = 'abc123';
+		$_GET['searchConsoleSetupSuccess'] = '1';
+
+		$this->assertEquals(
+			admin_url( 'success-redirect?notification=authentication_success&searchConsoleSetupSuccess=true&intent=ads-conversion-tracking&intent_code=abc123' ),
+			$this->get_authorize_user_redirect_location( admin_url( 'success-redirect' ) ),
+			'Authorization with an intent should add the `notification` and `searchConsoleSetupSuccess` arguments to a stored redirect URL.'
+		);
+	}
+
+	public function test_authorize_user__intent_code_is_encoded() {
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'ab+c/d=';
+
+		$this->assertEquals(
+			admin_url( 'admin.php?page=googlesitekit-dashboard&intent=ads-conversion-tracking&intent_code=ab%2Bc%2Fd%3D' ),
+			$this->get_authorize_user_redirect_location(),
+			'Authorization should encode the intent code so that it reaches the dashboard unchanged.'
+		);
+	}
+
+	public function data_missing_intent_args() {
+		return array(
+			'only intent'      => array(
+				array( 'intent' => 'ads-conversion-tracking' ),
+			),
+			'only intent_code' => array(
+				array( 'intent_code' => 'abc123' ),
+			),
+			'neither'          => array(
+				array(),
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_missing_intent_args
+	 *
+	 * @param array $query_args Query arguments of the `oauth2callback` request.
+	 */
+	public function test_authorize_user__missing_intent_args_without_redirect_url( $query_args ) {
+		$_GET = $query_args;
+
+		$this->assertEquals(
+			add_query_arg( 'notification', 'authentication_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
+			$this->get_authorize_user_redirect_location(),
+			'Authorization with one intent argument or none should go to the splash screen with `notification=authentication_success`.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_missing_intent_args
+	 *
+	 * @param array $query_args Query arguments of the `oauth2callback` request.
+	 */
+	public function test_authorize_user__missing_intent_args_with_redirect_url( $query_args ) {
+		$_GET = $query_args;
+
+		$this->assertEquals(
+			add_query_arg( 'notification', 'authentication_success', admin_url( 'success-redirect' ) ),
+			$this->get_authorize_user_redirect_location( admin_url( 'success-redirect' ) ),
+			'Authorization with one intent argument or none should go to the stored redirect URL with `notification=authentication_success`.'
+		);
+	}
+
 	public function test_authorize_user__transient_storage_prevents_duplicate_setups() {
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
@@ -817,6 +908,36 @@ class OAuth_ClientTest extends TestCase {
 		$this->assertStringContainsString( 'site_id=' . $site_id, $url, 'Proxy permissions URL should pass connected site ID.' );
 		$this->assertStringContainsString( 'application_name=', $url, 'Proxy permissions URL with site should identify app.' );
 		$this->assertStringContainsString( 'hl=', $url, 'Proxy permissions URL with site should include locale.' );
+	}
+
+	/**
+	 * Authorizes a new user and returns the URL they are redirected to.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $stored_redirect_url Optional. Redirect URL stored for the user before authorization. Default empty.
+	 * @return string Redirect location.
+	 */
+	private function get_authorize_user_redirect_location( $stored_redirect_url = '' ) {
+		$user_id = $this->factory()->user->create();
+		wp_set_current_user( $user_id );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
+		$user_options = new User_Options( $context );
+		$client       = new OAuth_Client( $context, null, $user_options );
+
+		$this->fake_site_connection();
+		$this->mock_google_client( $client );
+
+		if ( $stored_redirect_url ) {
+			$user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $stored_redirect_url );
+		}
+
+		try {
+			$client->authorize_user();
+			$this->fail( 'Expected a `RedirectException` to be thrown.' );
+		} catch ( RedirectException $redirect ) {
+			return $redirect->get_location();
+		}
 	}
 
 	private function mock_google_client( $client ) {

@@ -101,14 +101,14 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Web Content Publisher read-only scope.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const READONLY_SCOPE = 'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
 
 	/**
 	 * Web Content Publisher manage scope.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	const MANAGE_SCOPE = 'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';
 
@@ -491,7 +491,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 	/**
 	 * Refines the requested scopes for new setups and previously granted permissions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string[] $scopes Requested scopes.
 	 * @return string[] Refined scopes.
