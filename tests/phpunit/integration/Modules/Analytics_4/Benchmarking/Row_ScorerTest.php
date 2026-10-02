@@ -18,7 +18,7 @@ use Google\Site_Kit\Tests\TestCase;
  */
 class Row_ScorerTest extends TestCase {
 
-	public function test_score_row__scores_a_row_that_moved_with_the_site() {
+	public function test_score_row__boosts_a_row_that_moved_with_the_site() {
 		// The site went from 800 to 1000 visitors, up 25%.
 		$row_scorer = new Row_Scorer( 1000, 800 );
 
@@ -90,8 +90,7 @@ class Row_ScorerTest extends TestCase {
 			'previous' => 200,
 		);
 
-		// The same row scores ( 0.6 * 10 + 0.4 * 5 ) * 1.25 = 10 before its
-		// dimension's weight.
+		// `$row` scores ( 0.6 * 10 + 0.4 * 5 ) * 1.25 = 10 before the weight.
 		$this->assertEqualsWithDelta( 15.0, $row_scorer->score_row( 'CONTENT', $row ), 0.0001, 'A `CONTENT` row should be weighted by 1.5.' );
 		$this->assertEqualsWithDelta( 14.0, $row_scorer->score_row( 'SEARCH_QUERIES', $row ), 0.0001, 'A `SEARCH_QUERIES` row should be weighted by 1.4.' );
 		$this->assertEqualsWithDelta( 13.0, $row_scorer->score_row( 'REFERRERS', $row ), 0.0001, 'A `REFERRERS` row should be weighted by 1.3.' );
@@ -105,9 +104,8 @@ class Row_ScorerTest extends TestCase {
 		// The site went from 1000 to 800 visitors, down 20%.
 		$row_scorer = new Row_Scorer( 800, 1000 );
 
-		// The row's change is -10% of the site's visitors, and its distance from the
-		// site's rate is 6% of them, so the score is
-		// ( 0.6 * 10 + 0.4 * 6 ) * 1.1 * 1.25.
+		// The row's change is -10% of 1000 visitors, and its distance from the site's
+		// rate is 6% of them, so the score is ( 0.6 * 10 + 0.4 * 6 ) * 1.1 * 1.25.
 		$this->assertEqualsWithDelta(
 			11.55,
 			$row_scorer->score_row(
@@ -122,7 +120,7 @@ class Row_ScorerTest extends TestCase {
 			'A channel that went from 200 to 100 visitors while the site fell should score 11.55, with the boost.'
 		);
 
-		// The row's change is 10% of the site's visitors, and its distance from the
+		// The row's change is 10% of 1000 visitors, and its distance from the
 		// site's rate is 14% of them, so the score is
 		// ( 0.6 * 10 + 0.4 * 14 ) * 1.1, with no boost.
 		$this->assertEqualsWithDelta(
@@ -141,7 +139,6 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_score_row__does_not_boost_a_row_when_the_site_is_stable() {
-		// The site had 1000 visitors in both periods.
 		$row_scorer = new Row_Scorer( 1000, 1000 );
 
 		// The site didn't grow, so the row's change and its distance from the site's
@@ -163,7 +160,6 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_score_row__scores_a_row_when_the_site_had_no_visitors_in_the_compare_period() {
-		// The site went from 0 to 500 visitors.
 		$row_scorer = new Row_Scorer( 500, 0 );
 
 		// The row had no visitors to grow from, so its change and its distance from
@@ -185,7 +181,6 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_score_row__scores_0_for_a_row_with_no_visitors_when_the_site_had_none_in_either_period() {
-		// Both site totals are 0, so there's nothing to take a percentage of.
 		$row_scorer = new Row_Scorer( 0, 0 );
 
 		$this->assertEqualsWithDelta(
@@ -275,8 +270,7 @@ class Row_ScorerTest extends TestCase {
 		);
 	}
 
-	public function test_is_excluded_row__excludes_a_row_with_a_small_change_against_the_site() {
-		// The site went from 800 to 1000 visitors, up 25%.
+	public function test_is_excluded_row__excludes_a_row_that_lost_under_1_percent_of_the_site_when_the_site_went_up() {
 		$row_scorer = new Row_Scorer( 1000, 800 );
 
 		$this->assertTrue(
@@ -314,8 +308,7 @@ class Row_ScorerTest extends TestCase {
 		);
 	}
 
-	public function test_is_excluded_row__excludes_a_row_with_a_small_gain_when_the_site_lost_visitors() {
-		// The site went from 1000 to 800 visitors, down 20%.
+	public function test_is_excluded_row__excludes_a_row_that_went_up_by_under_1_percent_of_the_site_when_the_site_went_down() {
 		$row_scorer = new Row_Scorer( 800, 1000 );
 
 		$this->assertTrue(
@@ -327,7 +320,7 @@ class Row_ScorerTest extends TestCase {
 					'previous' => 100,
 				)
 			),
-			'A channel that went up by 9 visitors, 0.9% of the site and 9% of its own, should be excluded while the site went down.'
+			"A channel that went up by 9 visitors, 0.9% of the larger of the site's two totals and 9% of its own, should be excluded while the site went down."
 		);
 		$this->assertFalse(
 			$row_scorer->is_excluded_row(
@@ -338,7 +331,7 @@ class Row_ScorerTest extends TestCase {
 					'previous' => 100,
 				)
 			),
-			'A channel that went up by 10 visitors, 1% of the site, should be kept while the site went down.'
+			"A channel that went up by 10 visitors, 1% of the larger of the site's two totals, should be kept while the site went down."
 		);
 		$this->assertFalse(
 			$row_scorer->is_excluded_row(
@@ -353,9 +346,9 @@ class Row_ScorerTest extends TestCase {
 		);
 	}
 
-	public function test_is_excluded_row__keeps_a_row_against_the_site_that_changed_by_10_percent_and_25_visitors() {
-		// The larger of the site's two totals is 4000 visitors, so a change of 25
-		// visitors is 0.625% of the site, under the 1% that keeps a row on its own.
+	public function test_is_excluded_row__keeps_a_row_that_lost_25_visitors_and_10_percent_of_its_own_when_the_site_went_up() {
+		// `COUNTER_TREND_TRAFFIC_IMPACT_PERCENT` doesn't keep a row that changed by
+		// fewer than 40 visitors, 1% of 4000.
 		$row_scorer = new Row_Scorer( 4000, 3200 );
 
 		$this->assertFalse(
@@ -374,28 +367,28 @@ class Row_ScorerTest extends TestCase {
 				'CHANNELS',
 				array(
 					'label'    => 'Direct',
-					'current'  => 80,
-					'previous' => 100,
+					'current'  => 176,
+					'previous' => 200,
 				)
 			),
-			'A channel that lost 20% of its own visitors, but only 20 visitors, should be excluded while the site went up.'
+			'A channel that lost 12% of its own visitors, but only 24 visitors, should be excluded while the site went up.'
 		);
 		$this->assertTrue(
 			$row_scorer->is_excluded_row(
 				'CHANNELS',
 				array(
 					'label'    => 'Direct',
-					'current'  => 474,
-					'previous' => 500,
+					'current'  => 273,
+					'previous' => 300,
 				)
 			),
-			'A channel that lost 26 visitors, but only 5.2% of its own, should be excluded while the site went up.'
+			'A channel that lost 27 visitors, but only 9% of its own, should be excluded while the site went up.'
 		);
 	}
 
-	public function test_is_excluded_row__keeps_a_row_against_the_site_that_went_from_0_to_30_visitors() {
-		// The larger of the site's two totals is 4000 visitors, so a change of 30
-		// visitors is 0.75% of the site, under the 1% that keeps a row on its own.
+	public function test_is_excluded_row__keeps_a_row_that_went_from_0_to_30_visitors_when_the_site_went_down() {
+		// `COUNTER_TREND_TRAFFIC_IMPACT_PERCENT` doesn't keep a row that changed by
+		// 30 visitors, 0.75% of 4000.
 		$row_scorer = new Row_Scorer( 3200, 4000 );
 
 		$this->assertFalse(
@@ -423,7 +416,7 @@ class Row_ScorerTest extends TestCase {
 		$this->assertFalse( ( new Row_Scorer( 2050, 1000 ) )->is_excluded_row( 'DEVICES', $row ), 'A device category that went from 0 to 50 visitors should be kept while the site went up 105%.' );
 	}
 
-	public function test_is_excluded_row__keeps_a_row_with_a_small_loss_when_the_site_is_stable() {
+	public function test_is_excluded_row__keeps_a_row_that_lost_under_1_percent_of_the_site_when_the_site_is_stable() {
 		$row_scorer = new Row_Scorer( 1000, 1000 );
 
 		$this->assertFalse(
@@ -439,8 +432,7 @@ class Row_ScorerTest extends TestCase {
 		);
 	}
 
-	public function test_is_excluded_row__excludes_a_device_or_visitor_mix_row_that_only_follows_the_site() {
-		// The site went from 800 to 1000 visitors, up 25%.
+	public function test_is_excluded_row__excludes_a_device_or_visitor_mix_row_whose_change_is_under_5_percentage_points_from_the_site_change() {
 		$row_scorer = new Row_Scorer( 1000, 800 );
 
 		$this->assertTrue(
@@ -448,22 +440,22 @@ class Row_ScorerTest extends TestCase {
 				'DEVICES',
 				array(
 					'label'    => 'mobile',
-					'current'  => 128,
+					'current'  => 129,
 					'previous' => 100,
 				)
 			),
-			'A device category that went up 28% should be excluded while the site went up 25%.'
+			'A device category that went up 29% should be excluded while the site went up 25%.'
 		);
 		$this->assertTrue(
 			$row_scorer->is_excluded_row(
 				'VISITOR_MIX',
 				array(
 					'label'    => 'returning',
-					'current'  => 128,
+					'current'  => 129,
 					'previous' => 100,
 				)
 			),
-			'Returning visitors that went up 28% should be excluded while the site went up 25%.'
+			'Returning visitors that went up 29% should be excluded while the site went up 25%.'
 		);
 		$this->assertFalse(
 			$row_scorer->is_excluded_row(
@@ -489,7 +481,7 @@ class Row_ScorerTest extends TestCase {
 		);
 	}
 
-	public function test_is_excluded_row__keeps_a_channel_row_that_only_follows_the_site() {
+	public function test_is_excluded_row__keeps_a_channel_row_whose_change_is_under_5_percentage_points_from_the_site_change() {
 		$row_scorer = new Row_Scorer( 1000, 800 );
 
 		$this->assertFalse(
@@ -497,11 +489,11 @@ class Row_ScorerTest extends TestCase {
 				'CHANNELS',
 				array(
 					'label'    => 'Organic Search',
-					'current'  => 128,
+					'current'  => 129,
 					'previous' => 100,
 				)
 			),
-			"A channel that went up 28% should be kept while the site went up 25%, because channels aren't compared with the site."
+			"A channel that went up 29% should be kept while the site went up 25%, because only a `DEVICES` or `VISITOR_MIX` row is excluded for a change under 5 percentage points from the site's change."
 		);
 	}
 
@@ -533,7 +525,6 @@ class Row_ScorerTest extends TestCase {
 	}
 
 	public function test_is_excluded_row__excludes_a_row_with_no_visitors_when_the_site_had_none_in_either_period() {
-		// Both site totals are 0, so there's nothing to take a percentage of.
 		$row_scorer = new Row_Scorer( 0, 0 );
 
 		$this->assertTrue(

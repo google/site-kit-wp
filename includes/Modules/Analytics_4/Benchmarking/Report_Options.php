@@ -24,8 +24,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 class Report_Options {
 
 	/**
-	 * Days in the daily series, which covers the 13 months the Typical Traffic
-	 * chart shows and ends on the end date.
+	 * Days in the daily series, the 13 months the Typical Traffic chart shows.
 	 */
 	const DAILY_SERIES_DAYS = 395;
 
@@ -83,7 +82,7 @@ class Report_Options {
 
 	/**
 	 * Gets the options of the report that counts visitors by day, over the
-	 * `DAILY_SERIES_DAYS` days that end on the end date.
+	 * `DAILY_SERIES_DAYS` days that end on the last day of the selected period.
 	 *
 	 * @since n.e.x.t
 	 *

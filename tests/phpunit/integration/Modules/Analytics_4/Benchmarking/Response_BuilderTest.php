@@ -45,7 +45,9 @@ class Response_BuilderTest extends TestCase {
 
 	/**
 	 * Rows the fake Analytics API returns, keyed by the first dimension a report
-	 * asks for. Each row lists its dimension values, then its visitors.
+	 * asks for.
+	 *
+	 * Each row lists its dimension values, then its visitors.
 	 *
 	 * @var array
 	 */
@@ -147,7 +149,7 @@ class Response_BuilderTest extends TestCase {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $report_request One report request, as the batch call sent it.
+	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
 	 */
 	private function build_report( array $report_request ) {
@@ -158,7 +160,7 @@ class Response_BuilderTest extends TestCase {
 			$dimension_names[] = 'dateRange';
 		}
 
-		return array(
+		$report = array(
 			'dimensionHeaders' => array_map(
 				fn( $dimension_name ) => array( 'name' => $dimension_name ),
 				$dimension_names
@@ -169,19 +171,27 @@ class Response_BuilderTest extends TestCase {
 					'type' => 'TYPE_INTEGER',
 				),
 			),
-			'rows'             => array_map(
-				fn( $row ) => array(
-					'dimensionValues' => array_map(
-						fn( $value ) => array( 'value' => $value ),
-						array_slice( $row, 0, -1 )
-					),
-					'metricValues'    => array(
-						array( 'value' => (string) $row[ count( $row ) - 1 ] ),
-					),
-				),
-				$this->report_rows[ $dimension_names[0] ] ?? array()
-			),
 		);
+
+		$rows = array_map(
+			fn( $row ) => array(
+				'dimensionValues' => array_map(
+					fn( $dimension_value ) => array( 'value' => $dimension_value ),
+					array_slice( $row, 0, -1 )
+				),
+				'metricValues'    => array(
+					array( 'value' => (string) $row[ count( $row ) - 1 ] ),
+				),
+			),
+			$this->report_rows[ $dimension_names[0] ] ?? array()
+		);
+
+		// Analytics omits the `rows` key from a report with no rows.
+		if ( ! empty( $rows ) ) {
+			$report['rows'] = $rows;
+		}
+
+		return $report;
 	}
 
 	/**
@@ -204,8 +214,10 @@ class Response_BuilderTest extends TestCase {
 
 	/**
 	 * Makes the fake Analytics API return rows for all seven reports, so each of
-	 * the six dimensions keeps at least one row. Two channels score the same, two
-	 * pages score the same, and the `DEVICES` and `VISITOR_MIX` sums are equal.
+	 * the six dimensions keeps at least one row.
+	 *
+	 * Two channels score the same, two pages score the same, and the `DEVICES`
+	 * and `VISITOR_MIX` sums are equal.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -307,7 +319,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertCount( 2, $this->batch_requests, 'The `build()` method should make the second batch call after the first one succeeds.' );
 	}
 
-	public function test_build__asks_for_seven_reports_in_two_calls_when_both_custom_dimensions_have_data() {
+	public function test_build__asks_for_seven_reports_in_two_calls_when_the_post_date_and_the_post_categories_have_data() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_categories' );
 
@@ -429,7 +441,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( array( 'channels', 'categories' ), array_keys( $response['contextualData'] ), 'The response should have no `content` rows while the post date has no data.' );
 	}
 
-	public function test_build__asks_for_five_reports_in_one_call_when_neither_custom_dimension_has_data() {
+	public function test_build__asks_for_five_reports_in_one_call_when_neither_the_post_date_nor_the_post_categories_have_data() {
 		$this->report_rows = array(
 			'date'                                      => array(
 				array( '20260818', 388 ),
@@ -461,14 +473,14 @@ class Response_BuilderTest extends TestCase {
 			$this->get_requested_dimensions(),
 			'The `build()` method should ask for five reports in one call.'
 		);
-		$this->assertSame( array( 'channels' ), array_keys( $response['contextualData'] ), 'The response should have no `content` and no `categories` rows while neither custom dimension has data.' );
+		$this->assertSame( array( 'channels' ), array_keys( $response['contextualData'] ), 'The response should have no `content` and no `categories` rows while neither the post date nor the post categories have data.' );
 	}
 
 	public function test_build__asks_for_the_daily_series_over_the_395_days_ending_on_the_end_date() {
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
-		// The Google API client writes `endDate` before `startDate`, so this
-		// assertion ignores key order.
+		// `assertEquals()` ignores that the Google API client writes `endDate`
+		// before `startDate`.
 		$this->assertEquals(
 			array(
 				array(
@@ -477,7 +489,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$this->batch_requests[0]['requests'][0]['dateRanges'],
-			'The daily series should cover the 395 days from `2025-08-17` to `2026-09-15`.'
+			'The `build()` method should ask for the daily series over the 395 days from `2025-08-17` to `2026-09-15`.'
 		);
 	}
 
@@ -487,15 +499,13 @@ class Response_BuilderTest extends TestCase {
 
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
-		// The first report request is the daily series, and the six after it are
-		// the dimension reports.
 		$date_ranges = array_map(
 			fn( $report_request ) => $report_request['dateRanges'],
 			array_slice( array_merge( $this->batch_requests[0]['requests'], $this->batch_requests[1]['requests'] ), 1 )
 		);
 
-		// The Google API client writes `endDate` before `startDate`, so this
-		// assertion ignores key order.
+		// `assertEquals()` ignores that the Google API client writes `endDate`
+		// before `startDate`.
 		$this->assertEquals(
 			array_fill(
 				0,
@@ -512,12 +522,11 @@ class Response_BuilderTest extends TestCase {
 				)
 			),
 			$date_ranges,
-			'Each of the six dimension reports should cover `2026-08-19` to `2026-09-15`, then `2026-07-22` to `2026-08-18`, in one request.'
+			'The `build()` method should ask for each of the six dimension reports over `2026-08-19` to `2026-09-15`, then `2026-07-22` to `2026-08-18`, in one request.'
 		);
 	}
 
 	public function test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for() {
-		// Analytics returns no row for `2025-08-18`, a day with no visitors.
 		$this->report_rows = array(
 			'date' => array(
 				array( '20250817', 121 ),
@@ -560,8 +569,6 @@ class Response_BuilderTest extends TestCase {
 		$sorted_dates  = $dates;
 		sort( $sorted_dates );
 
-		// With 395 different dates in order, from `2025-08-17` to `2026-09-15`, no
-		// day is missing.
 		$this->assertSame( '2025-08-17', $dates[0], '`dailyTraffic` should start on `2025-08-17`.' );
 		$this->assertSame( '2026-09-15', $dates[394], '`dailyTraffic` should end on `2026-09-15`.' );
 		$this->assertCount( 395, array_unique( $dates ), '`dailyTraffic` should have 395 different dates.' );
@@ -598,9 +605,6 @@ class Response_BuilderTest extends TestCase {
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			// `Organic Search` comes first in the selected period and second in
-			// the compare period. `Email` changed by 2 visitors, too few to stay
-			// in the response.
 			'sessionDefaultChannelGrouping' => array(
 				array( 'Organic Search', 'date_range_0', 210 ),
 				array( 'Direct', 'date_range_0', 118 ),
@@ -701,7 +705,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( array( 'CONTENT' ), $response['dimensions'], '`dimensions` should list `CONTENT` alone.' );
 	}
 
-	public function test_build__keeps_the_title_a_post_has_in_the_selected_period() {
+	public function test_build__lists_a_post_once_with_the_title_of_its_first_row_in_the_selected_period() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );
 
 		$this->report_rows = array(
@@ -709,7 +713,6 @@ class Response_BuilderTest extends TestCase {
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
-			// The post's title changed during the selected period.
 			'pagePath' => array(
 				array( '/growing-tomatoes/', 'Growing tomatoes in pots', '20260801', 'date_range_1', 20 ),
 				array( '/growing-tomatoes/', 'Growing tomatoes', '20260801', 'date_range_0', 30 ),
@@ -729,7 +732,7 @@ class Response_BuilderTest extends TestCase {
 				),
 			),
 			$response['contextualData']['content'],
-			'`content` should list the post once, with its first title in the selected period and the visitors of both rows there.'
+			'`content` should list the post once, with the title of its first row in the selected period, `Growing tomatoes`, and the visitors of its two rows in the selected period added together.'
 		);
 	}
 
@@ -812,7 +815,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( $first_response, $second_response, 'The `build()` method should return the same response when every report returns its rows in the reverse order.' );
 	}
 
-	public function test_build__returns_no_number_with_decimals() {
+	public function test_build__does_not_return_a_number_with_decimals() {
 		$this->provide_reports_for_every_dimension();
 
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
@@ -830,7 +833,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( array(), $decimals, 'The response should have no number with decimals.' );
 	}
 
-	public function test_build__saves_nothing_to_the_site() {
+	public function test_build__does_not_save_anything_to_the_site() {
 		global $wpdb;
 
 		$this->provide_reports_for_every_dimension();
@@ -931,8 +934,8 @@ class Response_BuilderTest extends TestCase {
 						'previous' => 200,
 					),
 				),
-				// `desktop` changed by 2 visitors, and `mobile` went up 28% while the
-				// site went up 25%, so both are excluded.
+				// `Row_Scorer` excludes `desktop` for a change under 5 visitors, and
+				// `mobile` for a change under 5 percentage points from the site's 25%.
 				'devices'  => array(
 					array(
 						'label'    => 'desktop',
@@ -959,7 +962,6 @@ class Response_BuilderTest extends TestCase {
 	public function test_rank_contextual_data__orders_the_dimensions_by_the_sum_of_their_row_scores() {
 		$ranked_data = $this->builder->rank_contextual_data(
 			array(
-				// The two channel rows score 11 and 4.125, 15.125 together.
 				'channels'   => array(
 					array(
 						'label'    => 'Organic Search',
@@ -972,7 +974,6 @@ class Response_BuilderTest extends TestCase {
 						'previous' => 200,
 					),
 				),
-				// The content row scores 15, more than either channel row alone.
 				'content'    => array(
 					array(
 						'url'              => '/how-to-plant-garlic/',
@@ -1007,6 +1008,39 @@ class Response_BuilderTest extends TestCase {
 			array( 'REFERRERS', 'CHANNELS', 'CONTENT', 'CATEGORIES' ),
 			$ranked_data['dimensions'],
 			'`dimensions` should list `CHANNELS`, whose two rows score 15.125 together, before `CONTENT`, whose one row scores 15.'
+		);
+	}
+
+	public function test_rank_contextual_data__lists_the_dimension_with_the_higher_weight_first_when_the_rows_of_two_dimensions_have_the_same_visitors() {
+		$ranked_data = $this->builder->rank_contextual_data(
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+				'content'  => array(
+					array(
+						'url'              => '/how-to-plant-garlic/',
+						'title'            => 'How to plant garlic',
+						'publishedDaysAgo' => 14,
+						'current'          => 300,
+						'previous'         => 200,
+					),
+				),
+			),
+			array(
+				'current'  => 1000,
+				'previous' => 800,
+			)
+		);
+
+		$this->assertSame(
+			array( 'CONTENT', 'CHANNELS' ),
+			$ranked_data['dimensions'],
+			'`dimensions` should list `CONTENT` before `CHANNELS`, since a `CONTENT` row is weighted by 1.5 and a `CHANNELS` row with the same visitors by 1.1.'
 		);
 	}
 
@@ -1097,19 +1131,20 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	public function test_rank_contextual_data__orders_two_content_rows_with_the_same_score_by_url() {
+		// By title, `/b-post/` is first, so only the URLs can put `/a-post/` first.
 		$ranked_data = $this->builder->rank_contextual_data(
 			array(
 				'content' => array(
 					array(
 						'url'              => '/b-post/',
-						'title'            => 'B post',
+						'title'            => 'Autumn mulching',
 						'publishedDaysAgo' => 14,
 						'current'          => 300,
 						'previous'         => 200,
 					),
 					array(
 						'url'              => '/a-post/',
-						'title'            => 'A post',
+						'title'            => 'Winter pruning',
 						'publishedDaysAgo' => 14,
 						'current'          => 300,
 						'previous'         => 200,
@@ -1126,13 +1161,13 @@ class Response_BuilderTest extends TestCase {
 			array(
 				array(
 					'url'              => '/a-post/',
-					'title'            => 'A post',
+					'title'            => 'Winter pruning',
 					'visitors'         => 300,
 					'publishedDaysAgo' => 14,
 				),
 				array(
 					'url'              => '/b-post/',
-					'title'            => 'B post',
+					'title'            => 'Autumn mulching',
 					'visitors'         => 300,
 					'publishedDaysAgo' => 14,
 				),
@@ -1143,7 +1178,8 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	public function test_rank_contextual_data__lists_two_dimensions_with_the_same_sum_in_a_fixed_order() {
-		// `Wire_Format::DIMENSION_INDEXES` lists `DEVICES` before `VISITOR_MIX`.
+		// Dimensions with the same sum are ordered by
+		// `Wire_Format::DIMENSION_INDEXES`, which has `DEVICES` before `VISITOR_MIX`.
 		$visitors    = array(
 			'current'  => 1000,
 			'previous' => 800,

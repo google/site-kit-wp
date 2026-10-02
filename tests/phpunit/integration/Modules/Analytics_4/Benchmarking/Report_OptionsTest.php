@@ -90,7 +90,7 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_daily_series_options__covers_the_same_395_days_for_any_period_length() {
+	public function test_get_daily_series_options__asks_for_the_same_395_days_for_any_period_length() {
 		$week_options       = ( new Report_Options( '2026-09-09', '2026-09-15' ) )->get_daily_series_options();
 		$ninety_day_options = ( new Report_Options( '2026-06-18', '2026-09-15' ) )->get_daily_series_options();
 
@@ -98,7 +98,7 @@ class Report_OptionsTest extends TestCase {
 		$this->assertSame( '2025-08-17', $ninety_day_options['startDate'], 'The daily series of a 90-day period ending on `2026-09-15` should start on `2025-08-17`.' );
 	}
 
-	public function test_get_channels_options__counts_visitors_by_channel_in_both_periods() {
+	public function test_get_channels_options__counts_visitors_by_channel_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -124,7 +124,7 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_devices_options__counts_visitors_by_device_category_in_both_periods() {
+	public function test_get_devices_options__counts_visitors_by_device_category_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -150,7 +150,7 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_visitor_mix_options__counts_new_and_returning_visitors_in_both_periods() {
+	public function test_get_visitor_mix_options__counts_new_and_returning_visitors_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -176,7 +176,7 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_referrers_options__counts_visitors_by_referring_source_in_both_periods() {
+	public function test_get_referrers_options__counts_visitors_by_referring_source_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -202,7 +202,7 @@ class Report_OptionsTest extends TestCase {
 		);
 	}
 
-	public function test_get_content_options__counts_visitors_by_post_with_a_post_date_in_both_periods() {
+	public function test_get_content_options__counts_visitors_by_post_with_a_post_date_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -232,11 +232,11 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_content_options(),
-			'The `get_content_options()` method should ask for up to 50 rows of `totalUsers` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in both periods, excluding the rows with no post date.'
+			'The `get_content_options()` method should ask for up to 50 rows of `totalUsers` by `pagePath`, `pageTitle`, and `customEvent:googlesitekit_post_date`, in the selected period and the compare period, excluding the rows with no post date.'
 		);
 	}
 
-	public function test_get_categories_options__counts_visitors_by_post_category_in_both_periods() {
+	public function test_get_categories_options__counts_visitors_by_post_category_in_the_selected_period_and_the_compare_period() {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -264,7 +264,7 @@ class Report_OptionsTest extends TestCase {
 				),
 			),
 			$this->report_options->get_categories_options(),
-			'The `get_categories_options()` method should ask for up to 50 rows of `totalUsers` by `customEvent:googlesitekit_post_categories`, in both periods, excluding the rows with no category.'
+			'The `get_categories_options()` method should ask for up to 50 rows of `totalUsers` by `customEvent:googlesitekit_post_categories`, in the selected period and the compare period, excluding the rows with no category.'
 		);
 	}
 }

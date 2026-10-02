@@ -37,7 +37,8 @@ class Row_Scorer {
 	);
 
 	/**
-	 * What a row's score is multiplied by when the row moved the same way as the site.
+	 * A row's score is multiplied by this number when the row's visitors and the
+	 * site's visitors both went up, or both went down.
 	 */
 	const SAME_DIRECTION_BOOST = 1.25;
 
@@ -130,10 +131,10 @@ class Row_Scorer {
 	/**
 	 * Scores how much of the site's change in visitors a row explains.
 	 *
-	 * The size of the row's change counts for 60% of the score, and how far that
-	 * change is from the change the row would show at the site's rate counts for
-	 * 40%. The dimension's weight multiplies the sum, and so does the boost when
-	 * the row moved the same way as the site.
+	 * The size of the row's change counts for 60% of the score. The other 40% is
+	 * how far that change is from the change the row would show if it changed by
+	 * the same percentage as the site. The dimension's weight multiplies the sum,
+	 * and so does the boost when the row moved the same way as the site.
 	 *
 	 * @since n.e.x.t
 	 *

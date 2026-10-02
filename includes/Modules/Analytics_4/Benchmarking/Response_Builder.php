@@ -153,8 +153,6 @@ class Response_Builder {
 				continue;
 			}
 
-			// The `strcmp()` sorts two rows with the same score, so their order doesn't
-			// depend on the order of `$rows`.
 			usort(
 				$scored_rows,
 				fn( $a, $b ) => ( $b['score'] <=> $a['score'] ) ?: strcmp( $a['row'][ $label_key ], $b['row'][ $label_key ] )
@@ -186,7 +184,7 @@ class Response_Builder {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param Report_Options $report_options The report options for the two dates.
+	 * @param Report_Options $report_options The report options for the selected period.
 	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
 	 */
 	private function get_report_requests( Report_Options $report_options ) {
@@ -332,7 +330,6 @@ class Response_Builder {
 		$visitors = 0;
 
 		foreach ( $daily_traffic as $day ) {
-			// Dates written as `YYYY-MM-DD` compare in date order as strings.
 			if ( $day['date'] >= $start_date && $day['date'] <= $end_date ) {
 				$visitors += $day['visitors'];
 			}
@@ -381,9 +378,9 @@ class Response_Builder {
 	/**
 	 * Pairs a dimension report's two periods by the value of its first dimension.
 	 *
-	 * A value missing from one period has `0` visitors in that period. The rows
-	 * of the selected period are read first, so a page keeps its title from the
-	 * selected period.
+	 * A value missing from one period has `0` visitors in that period. A pair
+	 * keeps the `values` of its first row in the selected period, such as a
+	 * page's title.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -439,8 +436,8 @@ class Response_Builder {
 		foreach ( $pairs as $pair ) {
 			list( $url, $title, $post_date ) = $pair['values'];
 
-			// The `!` sets the time to midnight, the same as `$end`, so the two dates
-			// are whole days apart.
+			// The `!` sets the time to midnight, so `$published` and `$end` are
+			// whole days apart.
 			$published = DateTimeImmutable::createFromFormat( '!Ymd', $post_date, $utc );
 
 			// `createFromFormat()` reads `20260231` as 3 March 2026 rather than
