@@ -35,7 +35,6 @@ import {
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -50,7 +49,10 @@ import {
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { requireAdSenseLinked } from '@/js/modules/analytics-4/data-requirements';
+import {
+	requireAdSenseLinked,
+	requireAdSenseNotLinked,
+} from '@/js/modules/analytics-4/data-requirements';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { asyncRequireAll } from '@/js/util/async';
@@ -135,32 +137,11 @@ export const ADSENSE_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
-				return false;
-			}
-
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			return isAdSenseLinked === false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireAdSenseNotLinked()
+		),
 	},
 };
 
