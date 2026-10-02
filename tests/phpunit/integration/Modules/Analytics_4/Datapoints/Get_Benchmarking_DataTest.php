@@ -19,10 +19,12 @@ use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Wire_Format;
+use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -180,7 +182,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 			private $result;
 
 			public function __construct( Context $context, Analytics_4 $analytics_4, $result ) {
-				parent::__construct( $context, $analytics_4 );
+				parent::__construct( $analytics_4, new Custom_Dimensions_Data_Available( new Transients( $context ) ) );
 				$this->result = $result;
 			}
 
@@ -188,7 +190,12 @@ class Get_Benchmarking_DataTest extends TestCase {
 				$this->calls[] = array( $start_date, $end_date );
 
 				if ( null === $this->result ) {
-					return parent::build( $start_date, $end_date );
+					return array(
+						'visitors'       => array(),
+						'dailyTraffic'   => array(),
+						'dimensions'     => array(),
+						'contextualData' => array(),
+					);
 				}
 
 				return $this->result;
