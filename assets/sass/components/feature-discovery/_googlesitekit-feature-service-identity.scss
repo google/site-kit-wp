@@ -1,5 +1,5 @@
 /**
- * Feature Discovery constants.
+ * Feature service identity styles.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -16,10 +16,18 @@
  * limitations under the License.
  */
 
-export const DEFAULT_TAB_PATH = '/whats-new';
-export const FIRST_VISIT_TAB_PATH = '/all-services';
-export const FEATURE_DISCOVERY_VISITED_ITEM_SLUG = 'feature-discovery-visited';
-export const HUB_LAUNCH_VERSION = '1.188.0'; // Will be updated in issue #13422
+.googlesitekit-plugin {
 
-export const FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY =
-	'feature-detail-panel-feature-slug';
+	.googlesitekit-feature-service-identity {
+		align-items: center;
+		display: flex;
+		gap: 10px;
+	}
+
+	.googlesitekit-feature-service-identity__icon {
+		background: $c-neutral-n-10;
+		border-radius: 10px;
+		display: block;
+		padding: 6px;
+	}
+}
