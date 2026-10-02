@@ -263,18 +263,36 @@ class Batch_Error_NotifierTest extends TestCase {
 	}
 
 	public function test_does_not_send_duplicate_to_same_email() {
-		self::factory()->user->create(
+		global $wpdb;
+
+		$first_user_id = self::factory()->user->create(
 			array(
 				'role'       => 'administrator',
 				'user_email' => 'shared@example.com',
 			)
 		);
-		self::factory()->user->create(
+
+		$second_user_id = self::factory()->user->create(
 			array(
 				'role'       => 'administrator',
-				'user_email' => 'shared@example.com',
+				'user_email' => 'second@example.com',
 			)
 		);
+
+		$wpdb->update(
+			$wpdb->users,
+			array( 'user_email' => 'shared@example.com' ),
+			array( 'ID' => $second_user_id )
+		);
+
+		clean_user_cache( $second_user_id );
+
+		$this->assertSame(
+			get_userdata( $first_user_id )->user_email,
+			get_userdata( $second_user_id )->user_email,
+			'Both users should exist and have the same email address.'
+		);
+
 		$this->set_up_batch_with_category( 'permissions_error' );
 
 		$sent_to = array();
