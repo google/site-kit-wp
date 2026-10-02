@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
@@ -34,6 +29,10 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import {
+	requireModuleConnected,
+	requireQueryArg,
+} from '@/js/googlesitekit/data-requirements';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
@@ -44,6 +43,7 @@ import {
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import AdBlockingRecoverySetupSuccessNotification from '@/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { requireAdBlockingRecoverySetupStatus } from '@/js/modules/adsense/data-requirements';
 import {
 	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
 	MODULES_ADSENSE,
@@ -51,6 +51,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import { asyncRequireAll } from '@/js/util/async';
 
 export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
@@ -58,31 +59,17 @@ export const ADSENSE_NOTIFICATIONS = {
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: asyncRequireAll(
 			// Check the query arg first as the simplest condition using global location.
-			const notification = getQueryArg( location.href, 'notification' );
-			if ( notification !== 'ad_blocking_recovery_setup_success' ) {
-				return false;
-			}
-
-			const { isModuleConnected } = resolveSelect( CORE_MODULES );
-			if ( ! ( await isModuleConnected( MODULE_SLUG_ADSENSE ) ) ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adBlockingRecoverySetupStatus =
-				select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
-
-			if (
-				adBlockingRecoverySetupStatus ===
+			requireQueryArg(
+				'notification',
+				'ad_blocking_recovery_setup_success'
+			),
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireAdBlockingRecoverySetupStatus(
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
-			) {
-				return true;
-			}
-
-			return false;
-		},
+			)
+		),
 	},
 	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
 		Component:
