@@ -159,7 +159,29 @@
 		},
 		"react-dom": {
 			".": "^17.0.0"
-		}
+		},
+		"@typescript-eslint/typescript-estree@^6": {
+			"minimatch": "^9.0.7"
+		},
+		"@typescript-eslint/typescript-estree@^1": {
+			"semver": "^7.5.4"
+		},
+		"@storybook/builder-webpack5": {
+			"webpack-dev-middleware": "^7.4.6"
+		},
+		"fetch-mock": {
+			"path-to-regexp": "^3.3.0"
+		},
+		"jest-dev-server": {
+			"wait-on": "^8.0.5"
+		},
+		"prismjs": "^1.30.0",
+		"puppeteer": {
+			"node-fetch": "^2.7.0",
+			"tar-fs": "^2.1.4",
+			"ws": "^7.5.13"
+		},
+		"telejson": "^6.0.0"
 	},
 	"workspaces": [
 		"assets",
