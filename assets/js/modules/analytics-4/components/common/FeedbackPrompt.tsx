@@ -48,6 +48,17 @@ interface FeedbackPromptProps {
 		Pick< GATrackingEventArgs, 'label' >;
 }
 
+/**
+ * Renders the "Is this section helpful?" prompt with thumbs feedback.
+ *
+ * @since 1.182.0
+ * @since n.e.x.t Replaced the `goalType` prop with `gaTrackingEventArgs`.
+ *
+ * @param props                     Component props.
+ * @param props.voteID              Identifier used to build the survey trigger string.
+ * @param props.gaTrackingEventArgs Category and label used to track the vote event.
+ * @return React element.
+ */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	voteID,
 	gaTrackingEventArgs,

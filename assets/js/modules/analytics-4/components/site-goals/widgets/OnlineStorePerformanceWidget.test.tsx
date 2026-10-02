@@ -1640,7 +1640,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'tracks and dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1691,7 +1691,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 	} );
 
-	it( 'tracks and dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry

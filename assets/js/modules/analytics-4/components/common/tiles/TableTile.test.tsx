@@ -43,7 +43,7 @@ describe( 'TableTile', () => {
 		expect( getByText( '25' ) ).toBeInTheDocument();
 	} );
 
-	it( "renders a row's secondary value after its value", () => {
+	it( "should render a row's secondary value after its value", () => {
 		const { container } = render(
 			<TableTile
 				title="Top pages driving leads"
@@ -65,7 +65,7 @@ describe( 'TableTile', () => {
 		).toHaveTextContent( '34%' );
 	} );
 
-	it( 'renders a secondary value of 0', () => {
+	it( 'should render a secondary value of 0', () => {
 		const { container } = render(
 			<TableTile
 				title="Top pages driving leads"
@@ -80,7 +80,7 @@ describe( 'TableTile', () => {
 		).toHaveTextContent( '0' );
 	} );
 
-	it( 'renders only the value for a row without a secondary value', () => {
+	it( 'should render only the value for a row without a secondary value', () => {
 		const { container } = render(
 			<TableTile
 				title="Top pages driving leads"
