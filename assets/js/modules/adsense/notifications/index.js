@@ -30,6 +30,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import {
+	requireAccessToShareableModule,
 	requireModuleConnected,
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
@@ -49,6 +50,7 @@ import {
 	MODULES_ADSENSE,
 } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { requireAdSenseLinked } from '@/js/modules/analytics-4/data-requirements';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { asyncRequireAll } from '@/js/util/async';
@@ -82,83 +84,49 @@ export const ADSENSE_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The hasAccessToShareableModule() selector relies on
-				// the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-				// The isModuleConnected() and hasAccessToShareableModule() selectors
-				// rely on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireAccessToShareableModule( MODULE_SLUG_ADSENSE ),
+			requireAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 ),
+			requireAdSenseLinked(),
+			// Require AdSense revenue in the linked Analytics property.
+			async ( { select, resolveSelect } ) => {
+				// The getAccountID() selector relies on the resolution
+				// of the getSettings() resolver.
+				await resolveSelect( MODULES_ADSENSE ).getSettings();
+				const adSenseAccountID =
+					select( MODULES_ADSENSE ).getAccountID();
 
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
+				const { startDate, endDate } =
+					select( CORE_USER ).getDateRangeDates();
 
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
+				const reportArgs = {
+					startDate,
+					endDate,
+					dimensions: [ 'pagePath', 'adSourceName' ],
+					metrics: [ { name: 'totalAdRevenue' } ],
+					dimensionFilters: {
+						adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+					},
+					orderby: [
+						{
+							metric: { metricName: 'totalAdRevenue' },
+							desc: true,
+						},
+					],
+					limit: 1,
+					reportID:
+						'notifications_analytics-adsense-linked-overlay_reportArgs',
+				};
 
-			const canViewSharedAdsense =
-				select( CORE_USER ).hasAccessToShareableModule(
-					MODULE_SLUG_ADSENSE
-				);
+				const reportData = await resolveSelect(
+					MODULES_ANALYTICS_4
+				).getReport( reportArgs );
 
-			const canViewSharedAnalytics = select(
-				CORE_USER
-			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
-
-			if (
-				! (
-					adSenseModuleConnected &&
-					analyticsModuleConnected &&
-					canViewSharedAdsense &&
-					canViewSharedAnalytics
-				)
-			) {
-				return false;
+				return isZeroReport( reportData ) === false;
 			}
-
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			if ( ! isAdSenseLinked ) {
-				return false;
-			}
-
-			// The getAccountID() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
-
-			const { startDate, endDate } =
-				select( CORE_USER ).getDateRangeDates();
-
-			const reportArgs = {
-				startDate,
-				endDate,
-				dimensions: [ 'pagePath', 'adSourceName' ],
-				metrics: [ { name: 'totalAdRevenue' } ],
-				dimensionFilters: {
-					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-				},
-				orderby: [
-					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
-				],
-				limit: 1,
-				reportID:
-					'notifications_analytics-adsense-linked-overlay_reportArgs',
-			};
-
-			const reportData = await resolveSelect(
-				MODULES_ANALYTICS_4
-			).getReport( reportArgs );
-
-			return isZeroReport( reportData ) === false;
-		},
+		),
 	},
 	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
 		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
