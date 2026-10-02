@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { GOAL_DRIVER_IDS } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import useGoalDriverReport from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useGoalDriverReport';
 import {

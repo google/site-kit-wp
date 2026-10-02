@@ -26,6 +26,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import { Tile, TileProps } from './Tile';
+import TileStoryCard from './TileStoryCard';
 
 function Template( {
 	setupRegistry = () => {},
@@ -35,16 +36,9 @@ function Template( {
 } & TileProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<div
-				style={ {
-					backgroundColor: 'white',
-					padding: '20px',
-					display: 'inline-block',
-					minWidth: '330px',
-				} }
-			>
+			<TileStoryCard>
 				<Tile { ...props } />
-			</div>
+			</TileStoryCard>
 		</WithRegistrySetup>
 	);
 }
@@ -173,6 +167,6 @@ CustomDateRange.args = {
 };
 
 export default {
-	title: 'Modules/Analytics4/Components/Site Goals/Components/Tile',
+	title: 'Modules/Analytics4/Components/Tiles/Tile',
 	component: Tile,
 };

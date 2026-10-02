@@ -1,5 +1,5 @@
 /**
- * Site Goals TilesGroup tests.
+ * TilesGroup tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
