@@ -44,7 +44,15 @@ import {
 } from '@tests/js/utils';
 import { createErrorStore } from './create-error-store';
 import { createFetchStore } from './create-fetch-store';
-import { createGetReportResolver } from './create-get-report-resolver';
+import {
+	ReportFetchOptions,
+	createGetReportResolver,
+} from './create-get-report-resolver';
+
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 const TEST_STORE = 'test/report';
 const reportEndpointRegExp = new RegExp(
@@ -72,8 +80,10 @@ interface TestReportState {
 function createReportStore() {
 	const fetchGetReportStore = createFetchStore( {
 		baseName: 'getReport',
-		controlCallback: ( { options }: { options: ReportRequestOptions } ) =>
-			get( 'core', 'test', 'report', options ),
+		controlCallback: (
+			{ options }: { options: ReportRequestOptions },
+			fetchOptions?: ReportFetchOptions
+		) => get( 'core', 'test', 'report', options, fetchOptions ),
 		reducerCallback: createReducer(
 			(
 				state: TestReportState,
@@ -122,6 +132,8 @@ describe( 'createGetReportResolver', () => {
 	} );
 
 	beforeEach( () => {
+		jest.mocked( get ).mockClear();
+
 		registry = createTestRegistry();
 		registry.registerStore( TEST_STORE, createReportStore() );
 	} );
@@ -179,6 +191,68 @@ describe( 'createGetReportResolver', () => {
 		const secondReport = registry
 			.select( TEST_STORE )
 			.getReport( secondOptions );
+
+		expect( firstReport ).toEqual( report );
+		// Both calls read the same saved report, so state stores the report
+		// once.
+		expect( firstReport ).toBe( secondReport );
+	} );
+
+	it( 'sends one request, carrying `cacheTTL`, when two getReport calls differ only in `cacheTTL`', async () => {
+		// Hold the response open so both calls join one running request,
+		// instead of the first finishing before the second resolver runs.
+		const deferredResolvers: Array< () => void > = [];
+		fetchMock.getOnce(
+			reportEndpointRegExp,
+			() =>
+				new Promise( ( resolve ) => {
+					deferredResolvers.push( () => resolve( { body: report } ) );
+				} )
+		);
+
+		// Start the first call and wait until it sends the shared request.
+		// Its `cacheTTL` is the one that reaches `get()`.
+		registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 300 } );
+		while ( deferredResolvers.length < 1 ) {
+			await waitForDefaultTimeouts();
+		}
+
+		// The request is running now. Start the second call so it joins
+		// that request instead of sending another.
+		registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 600 } );
+		await waitForDefaultTimeouts();
+
+		// Create both waiters before releasing the request, so each
+		// subscribes while its resolver still runs.
+		const firstResolution = untilResolved( registry, TEST_STORE ).getReport(
+			baseOptions,
+			{ cacheTTL: 300 }
+		);
+		const secondResolution = untilResolved(
+			registry,
+			TEST_STORE
+		).getReport( baseOptions, { cacheTTL: 600 } );
+
+		deferredResolvers.forEach( ( resolve ) => resolve() );
+
+		await Promise.all( [ firstResolution, secondResolution ] );
+
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( get ).toHaveBeenCalledTimes( 1 );
+		expect( jest.mocked( get ).mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+			cacheTTL: 300,
+		} );
+
+		const firstReport = registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 300 } );
+		const secondReport = registry
+			.select( TEST_STORE )
+			.getReport( baseOptions, { cacheTTL: 600 } );
 
 		expect( firstReport ).toEqual( report );
 		// Both calls read the same saved report, so state stores the report
