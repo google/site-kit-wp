@@ -80,6 +80,29 @@ export function requireCanViewSharedModule( slug ) {
 }
 
 /**
+ * Returns a function that checks if the current user has access to the given shareable module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the given shareable module or not.
+ */
+export function requireAccessToShareableModule( slug ) {
+	return async ( { select, resolveSelect } ) => {
+		await Promise.all( [
+			// The hasAccessToShareableModule() selector relies on
+			// the resolution of getAuthentication().
+			resolveSelect( CORE_USER ).getAuthentication(),
+			// The hasAccessToShareableModule() selector relies on
+			// the resolution of the getModules() resolver.
+			resolveSelect( CORE_MODULES ).getModules(),
+		] );
+
+		return true === select( CORE_USER ).hasAccessToShareableModule( slug );
+	};
+}
+
+/**
  * Returns a function that checks if the given module is active.
  *
  * @since 1.170.0
