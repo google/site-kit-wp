@@ -23,4 +23,20 @@
 		display: block;
 		padding-block: 10px;
 	}
+
+	.googlesitekit-whats-new__notifications {
+		&:not(:empty) {
+			margin-top: 20px;
+		}
+
+		.mdc-layout-grid,
+		.mdc-layout-grid__inner,
+		.mdc-layout-grid__cell {
+			padding: 0;
+		}
+
+		.mdc-layout-grid {
+			margin: 0;
+		}
+	}
 }

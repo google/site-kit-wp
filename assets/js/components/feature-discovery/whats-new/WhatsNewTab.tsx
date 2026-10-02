@@ -31,10 +31,15 @@ import { useEffect, useState } from '@wordpress/element';
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
+import Notifications from '@/js/components/notifications/Notifications';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 
 const WhatsNewTab: FC = () => {
 	// The list is held in state so that marking its features seen, which
@@ -83,6 +88,14 @@ const WhatsNewTab: FC = () => {
 
 	return (
 		<div className="googlesitekit-whats-new">
+			<div className="googlesitekit-whats-new__notifications">
+				<Notifications
+					areaSlug={
+						NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP
+					}
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
+			</div>
 			{ visibleFeatures.length === 0 ? (
 				// TODO: #13327 -- Replace this placeholder with the empty
 				// tab's icon, copy and CTA.
