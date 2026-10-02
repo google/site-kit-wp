@@ -33,6 +33,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { AREA_MAIN_DASHBOARD_TRAFFIC_AUDIENCE_SEGMENTATION } from '@/js/googlesitekit/widgets/default-areas';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	CUSTOM_DIMENSION_DEFINITIONS,
 	EDIT_SCOPE,
@@ -132,10 +133,14 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 
 		setSetupErrorCode( null );
 		clearPermissionScopeError();
-		clearActionError( 'createCustomDimension', [
-			propertyID,
-			CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type,
-		] );
+		// The CTA creates every custom dimension, so any of them may have
+		// failed.
+		ALL_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			clearActionError( 'createCustomDimension', [
+				propertyID,
+				CUSTOM_DIMENSION_DEFINITIONS[ customDimension ],
+			] );
+		} );
 		setShowErrorModal( false );
 	}, [
 		clearActionError,
@@ -152,15 +157,14 @@ export default function useCreateCustomDimension(): UseCreateCustomDimensionRetu
 		'isAutoCreatingCustomDimensionsForAudience'
 	);
 
-	const postTypeDimension =
-		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
-
 	const isCreatingCustomDimension = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
-				postTypeDimension
+			ALL_CUSTOM_DIMENSIONS.some( ( customDimension ) =>
+				select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
+					customDimension
+				)
 			),
-		[ postTypeDimension ]
+		[]
 	);
 
 	const isSyncingAvailableCustomDimensions = useSelect(
