@@ -17,6 +17,10 @@
  */
 
 /**
+ * Adding a non-functional change to trigger the VRT run.
+ */
+
+/**
  * WordPress dependencies
  */
 import { Fragment, useCallback } from '@wordpress/element';
