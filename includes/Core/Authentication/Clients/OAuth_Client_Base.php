@@ -277,6 +277,7 @@ abstract class OAuth_Client_Base {
 	 * Converts the given error code to a user-facing message.
 	 *
 	 * @since 1.39.0
+	 * @since n.e.x.t Added the `invalid_state` error code.
 	 *
 	 * @param string $error_code Error code.
 	 * @return string Error message.
@@ -297,6 +298,8 @@ abstract class OAuth_Client_Base {
 				return __( 'Unable to receive access token because of an invalid authorization code or refresh token.', 'google-site-kit' );
 			case 'invalid_request':
 				return __( 'Unable to receive access token because of an invalid OAuth request.', 'google-site-kit' );
+			case 'invalid_state':
+				return __( 'Unable to receive access token because the request could not be verified.', 'google-site-kit' );
 			case 'missing_delegation_consent':
 				return __( 'Looks like your site is not allowed access to Google account data and can’t display stats in the dashboard.', 'google-site-kit' );
 			case 'missing_search_console_property':
