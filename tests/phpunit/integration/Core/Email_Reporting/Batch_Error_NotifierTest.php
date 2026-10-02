@@ -290,6 +290,15 @@ class Batch_Error_NotifierTest extends TestCase {
 
 		clean_user_cache( $user_id );
 
+		$shared_admins = get_users(
+			array(
+				'role'           => 'administrator',
+				'search'         => 'shared@example.com',
+				'search_columns' => array( 'user_email' ),
+			)
+		);
+		$this->assertCount( 2, $shared_admins, 'Two administrators should share the same email.' );
+
 		$this->set_up_batch_with_category( 'permissions_error' );
 
 		$sent_to = array();
