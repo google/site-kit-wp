@@ -33,6 +33,9 @@ When asked to review a pull request by number, follow **`docs/context/workflow/r
 grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
 comments, approve, or change the PR state unless explicitly asked.
 
+### Writing any text a person reads
+When asked to write any text a person reads, open **`docs/context/voice/README.md`**, then the page it lists for that type, and follow that page. That folder has a page for an issue, an implementation brief, a review and a pull request comment. It has one for a code comment, a commit subject, a file or folder name and a chat reply too. The `write-in-the-voice` skill opens the same pages, for a session that calls the skill by name.
+
 ## Architecture Essentials
 
 ### PHP Structure
