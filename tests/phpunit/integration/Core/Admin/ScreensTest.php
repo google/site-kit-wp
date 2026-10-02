@@ -777,4 +777,76 @@ class ScreensTest extends TestCase {
 			$this->assertStringContainsString( 'has not been activated', $e->getMessage(), 'The 403 message should say the module is not activated.' );
 		}
 	}
+
+	/**
+	 * Makes a new administrator who has not signed in with Google the current user.
+	 */
+	private function switch_to_signed_out_admin() {
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'A signed-out admin should not reach the dashboard.' );
+		$this->assertTrue( current_user_can( Permissions::VIEW_SPLASH ), 'A signed-out admin should reach the splash screen.' );
+	}
+
+	/**
+	 * Denies access to the dashboard screen and captures the redirect.
+	 *
+	 * @return \Google\Site_Kit\Tests\Exception\RedirectException|null
+	 */
+	private function deny_dashboard_access() {
+		global $plugin_page;
+
+		// The plugin registered its own Screens at plugin load, and that one would redirect first.
+		remove_all_actions( 'admin_page_access_denied' );
+
+		$this->screens->register();
+
+		$previous_plugin_page = $plugin_page;
+		$plugin_page          = 'googlesitekit-dashboard';
+
+		try {
+			do_action( 'admin_page_access_denied' );
+		} catch ( \Google\Site_Kit\Tests\Exception\RedirectException $e ) {
+			return $e;
+		} finally {
+			$plugin_page = $previous_plugin_page;
+		}
+
+		return null;
+	}
+
+	public function test_dashboard_access_denied__redirect_to_splash_with_the_intent_purpose() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->switch_to_signed_out_admin();
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'abc123';
+
+		$redirect = $this->deny_dashboard_access();
+
+		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
+		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
+		$this->assertStringContainsString( 'purpose=intent', $redirect->get_location(), 'Redirect should keep the sign-in for the intent.' );
+		$this->assertStringNotContainsString( 'intent_code=', $redirect->get_location(), 'The service adds the intent arguments back, so the redirect should not carry them.' );
+	}
+
+	/**
+	 * @dataProvider data_requests_without_a_usable_intent
+	 */
+	public function test_dashboard_access_denied__redirect_to_splash_without_the_intent_purpose( $query_args ) {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->switch_to_signed_out_admin();
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		foreach ( $query_args as $key => $value ) {
+			$_GET[ $key ] = $value;
+		}
+
+		$redirect = $this->deny_dashboard_access();
+
+		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
+		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
+		$this->assertStringNotContainsString( 'purpose=', $redirect->get_location(), 'A request without a usable intent should not get the intent purpose.' );
+	}
 }

@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
@@ -291,6 +292,7 @@ final class Screens {
 	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
 	 *
 	 * @since 1.12.0
+	 * @since n.e.x.t Added the `purpose=intent` argument when the request has an intent.
 	 */
 	private function no_access_redirect_dashboard_to_splash() {
 		global $plugin_page;
@@ -305,13 +307,18 @@ final class Screens {
 			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
 			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
 
+			// The splash only needs the purpose to sign the user in for the intent:
+			// the service adds the intent arguments back when it returns the user.
+			$purpose = '' !== $this->get_intent_attributes( $this->context )['slug'] ? Google_Proxy::PURPOSE_INTENT : null;
+
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'splash',
 					array_filter(
 						array(
-							'notification' => $notification,
-							'panel'        => $panel,
+							'notification'              => $notification,
+							'panel'                     => $panel,
+							Google_Proxy::PARAM_PURPOSE => $purpose,
 						),
 						function ( $value ) {
 							return null !== $value && '' !== $value;
