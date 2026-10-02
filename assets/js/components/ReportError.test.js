@@ -463,6 +463,47 @@ describe( 'ReportError', () => {
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 	} );
 
+	// Reasons written out rather than imported, so a typo in a constant fails here
+	// instead of being fed back into its own assertion.
+	it.each( [
+		[ 'rateLimitExceeded' ],
+		[ 'userRateLimitExceeded' ],
+		[ 'quotaExceeded' ],
+	] )(
+		'should not render the `Retry` button if the error reason is `%s`',
+		async ( reason ) => {
+			await registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+				{
+					code: 'test-error-code',
+					message: 'Test error message',
+					data: { reason },
+				},
+				'getReport',
+				[
+					{
+						dimensions: [ 'ga:date' ],
+						metrics: [ { expression: 'ga:users' } ],
+						startDate: '2020-08-11',
+						endDate: '2020-09-07',
+					},
+				]
+			);
+
+			const errors = registry.select( MODULES_ANALYTICS_4 ).getErrors();
+
+			const { queryByText, getByText, waitForRegistry } = render(
+				<ReportError moduleSlug={ moduleName } error={ errors } />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+			// The message the reader sees is unchanged.
+			expect( getByText( /Test error message/ ) ).toBeInTheDocument();
+		}
+	);
+
 	it( 'should dispatch the `invalidateResolution` action for each retry-able error', async () => {
 		for ( const { error, baseName, args } of newErrors ) {
 			await registry

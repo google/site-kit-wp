@@ -30,6 +30,7 @@ import {
 	isErrorRetryable,
 	isInsufficientPermissionsError,
 	isPermissionScopeError,
+	isRateLimitError,
 	isWPError,
 } from './errors';
 
@@ -171,6 +172,49 @@ describe( 'Error Utilities', () => {
 		} );
 	} );
 
+	describe( 'isRateLimitError', () => {
+		// Written out rather than imported from the constants, so a typo in a
+		// constant fails here instead of being fed back into its own assertion.
+		it.each( [
+			[ 'rateLimitExceeded' ],
+			[ 'userRateLimitExceeded' ],
+			[ 'quotaExceeded' ],
+		] )( 'should return TRUE for the %s reason', ( reason ) => {
+			expect( isRateLimitError( { data: { reason } } ) ).toBe( true );
+		} );
+
+		it( 'should return TRUE for a 429 status with no reason', () => {
+			// What the Analytics Data API sends: the status is all there is.
+			expect( isRateLimitError( { data: { status: 429 } } ) ).toBe(
+				true
+			);
+		} );
+
+		it( 'should return TRUE for a rate limit reason on another status', () => {
+			expect(
+				isRateLimitError( {
+					data: { status: 403, reason: 'rateLimitExceeded' },
+				} )
+			).toBe( true );
+		} );
+
+		it( 'should return FALSE for another reason', () => {
+			expect(
+				isRateLimitError( { data: { reason: 'backendError' } } )
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE for another status', () => {
+			expect( isRateLimitError( { data: { status: 500 } } ) ).toBe(
+				false
+			);
+		} );
+
+		it( 'should return FALSE when there is no error', () => {
+			expect( isRateLimitError( undefined ) ).toBe( false );
+		} );
+	} );
+
 	describe( 'isErrorRetryable', () => {
 		it( 'should return FALSE when there is no selectorData', () => {
 			expect( isErrorRetryable( { code: 'some-error' } ) ).toBe( false );
@@ -217,6 +261,28 @@ describe( 'Error Utilities', () => {
 							reconnectURL: 'example.com',
 						},
 					},
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it.each( [
+			[ 'rateLimitExceeded' ],
+			[ 'userRateLimitExceeded' ],
+			[ 'quotaExceeded' ],
+		] )( 'should return FALSE when passed a %s error', ( reason ) => {
+			expect(
+				isErrorRetryable(
+					{ data: { reason } },
+					{ name: 'some-selector', storeName: 'some-store' }
+				)
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE when passed a 429 with no reason', () => {
+			expect(
+				isErrorRetryable(
+					{ data: { status: 429 } },
 					{ name: 'some-selector', storeName: 'some-store' }
 				)
 			).toBe( false );
