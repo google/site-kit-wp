@@ -1,0 +1,20 @@
+# Site Kit OpenTelemetry PoC: a collector standing in for the Site Kit Service.
+#
+# Credentials are your Application Default Credentials, mounted read-only. The
+# project comes from GOOGLE_CLOUD_PROJECT in `.env` (see `.env.example`).
+
+name: sitekit-otel-poc
+
+services:
+  collector:
+    image: otel/opentelemetry-collector-contrib:latest
+    container_name: sitekit-otel-collector
+    command: [ '--config=/etc/otelcol/config.yaml' ]
+    environment:
+      - GOOGLE_CLOUD_PROJECT=${GOOGLE_CLOUD_PROJECT:?Set GOOGLE_CLOUD_PROJECT in otel/service/.env}
+      - GOOGLE_APPLICATION_CREDENTIALS=/etc/gcloud/adc.json
+    volumes:
+      - ./collector-config.yaml:/etc/otelcol/config.yaml:ro
+      - ${HOME}/.config/gcloud/application_default_credentials.json:/etc/gcloud/adc.json:ro
+    ports:
+      - '4318:4318'
