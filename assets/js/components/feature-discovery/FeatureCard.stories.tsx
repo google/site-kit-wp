@@ -143,7 +143,6 @@ Dismissing.args = NewDismissible.args;
 Dismissing.scenario = {
 	clickSelector: '.googlesitekit-feature-card__dismiss',
 	postInteractionWait: 300,
-	onReadyScript: 'mouse.js',
 };
 
 export const MultipleCards = Template.bind( {} ) as Story< StoryArgs >;

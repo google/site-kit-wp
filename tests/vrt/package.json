@@ -1,0 +1,17 @@
+{
+	"name": "@google/site-kit-vrt",
+	"private": true,
+	"scripts": {
+		"test": "playwright test",
+		"approve": "playwright test --update-snapshots=changed",
+		"report": "playwright show-report playwright-report"
+	},
+	"devDependencies": {
+		"@babel/parser": "^7.11.5",
+		"@babel/traverse": "^7.23.2",
+		"@componentdriven/csf": "^0.0.2-alpha.0",
+		"@playwright/test": "1.61.1",
+		"glob": "^7.2.3",
+		"lodash": "^4.17.21"
+	}
+}
