@@ -181,7 +181,8 @@
 			"tar-fs": "^2.1.4",
 			"ws": "^7.5.13"
 		},
-		"telejson": "^6.0.0"
+		"telejson": "^6.0.0",
+		"uuid": "^11.1.1"
 	},
 	"workspaces": [
 		"assets",
