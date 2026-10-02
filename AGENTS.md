@@ -33,6 +33,14 @@ When asked to review a pull request by number, follow **`docs/context/workflow/r
 grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
 comments, approve, or change the PR state unless explicitly asked.
 
+### Checking a pull request's CI failures
+When asked why CI is failing on a pull request, or to work through its failing checks, follow
+**`docs/context/workflow/check-pr-failures.md`**. Classify every failure — flaky, pre-existing,
+environmental, or caused by the PR — **before** changing anything. **Never mask a failure** to
+turn a check green: no suppressing console errors, loosening assertions, deleting tests, or
+regenerating another scenario's reference images. Fix only what this PR caused, and **ask before
+pushing, re-running jobs, or editing the PR.**
+
 ## Architecture Essentials
 
 ### PHP Structure
