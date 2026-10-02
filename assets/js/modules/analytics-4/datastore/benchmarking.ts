@@ -100,9 +100,9 @@ const fetchGetBenchmarkingDataStore = createFetchStore( {
 			'benchmarking-data',
 			params
 		);
-		const response = decodeBenchmarkingResponse( encodedResponse );
+		const decodedResponse = decodeBenchmarkingResponse( encodedResponse );
 
-		if ( ! response ) {
+		if ( ! decodedResponse ) {
 			throw {
 				code: 'benchmarking_decode_failed',
 				message: __(
@@ -112,7 +112,7 @@ const fetchGetBenchmarkingDataStore = createFetchStore( {
 			};
 		}
 
-		return response;
+		return decodedResponse;
 	},
 	reducerCallback: createReducer(
 		(
@@ -240,7 +240,7 @@ const baseSelectors = {
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
-	 * @return {(Object|undefined)} The response with `visitors`, `dailyTraffic`, `dimensions`, and `contextualData`, or `undefined` if the response hasn't loaded.
+	 * @return {(Object|undefined)} The decoded response with `visitors`, `dailyTraffic`, `dimensions`, and `contextualData`, or `undefined` while the store has none, like during the request or after it fails.
 	 */
 	getBenchmarkingData(
 		state: BenchmarkingState,

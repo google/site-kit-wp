@@ -31,8 +31,8 @@ import { decodeBenchmarkingResponse } from '@/js/modules/analytics-4/utils/bench
 import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/types';
 
 /**
- * The decoded `benchmarking-data.json` fixture. The fixture is a valid format
- * version `1` response, so the decoder never returns `null` for it.
+ * The decoded `benchmarking-data.json` fixture, which is never `null` because the
+ * fixture is a valid response in format version `1`.
  */
 export const decodedBenchmarkingResponse = decodeBenchmarkingResponse(
 	benchmarkingData

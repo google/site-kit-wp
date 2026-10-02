@@ -118,7 +118,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			} );
 		} );
 
-		it( 'should send one request and return the same object when the same start date and end date are selected three times before the response arrives', async () => {
+		it( 'should send one request and return the same object when the same start date and end date are selected three times before the request finishes', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
 			} );
@@ -158,7 +158,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			expect( thirdResponse ).toBe( firstResponse );
 		} );
 
-		it( 'should not send another request when the same start date and end date are selected again after the response arrives', async () => {
+		it( 'should not send another request when the same start date and end date are selected again after the first request finishes', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
 			} );
@@ -179,7 +179,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 		} );
 
-		it( 'should not send a request when the next page loads 59 minutes after the response arrives', async () => {
+		it( 'should not send a request when the next page loads 59 minutes after the first request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
 			} );
@@ -193,9 +193,6 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				MODULES_ANALYTICS_4
 			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
 
-			// A new registry starts with an empty store, as a page load does, so the
-			// benchmarking data can only come from the cache `googlesitekit-api`
-			// keeps in session storage, or from a new request.
 			const nextPageRegistry = createTestRegistry();
 
 			dateNowSpy.mockReturnValue( Date.parse( '2026-09-16T09:59:00Z' ) );
@@ -220,7 +217,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			} );
 		} );
 
-		it( 'should send a new request when the next page loads 61 minutes after the response arrives', async () => {
+		it( 'should send a new request when the next page loads 61 minutes after the first request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
 			} );
@@ -498,7 +495,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			).toBe( true );
 		} );
 
-		it( 'should return `false` after the response arrives', async () => {
+		it( 'should return `false` after the request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
 			} );
@@ -573,8 +570,6 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				MODULES_ANALYTICS_4
 			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
 
-			// `@wordpress/data` updates the store when the resolver starts and when
-			// it finishes, and the resolver sends no request in between.
 			expect( loadingValues ).toEqual( [ false, false ] );
 		} );
 	} );
@@ -627,7 +622,6 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				MODULES_ANALYTICS_4
 			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
 
-			// `googlesitekit-api` keeps each cached response as one entry in session storage.
 			expect( sessionStorage ).toHaveLength( 1 );
 
 			await registry
@@ -742,9 +736,6 @@ describe( 'modules/analytics-4 benchmarking', () => {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.clearBenchmarkingData( '2026-08-19', '2026-09-15' );
 
-			// A new registry starts with an empty store, so only the cache
-			// `googlesitekit-api` keeps in session storage can return the response
-			// for the other pair of dates.
 			const nextPageRegistry = createTestRegistry();
 
 			nextPageRegistry

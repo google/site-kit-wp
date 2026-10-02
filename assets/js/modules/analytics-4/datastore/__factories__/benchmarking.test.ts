@@ -49,7 +49,7 @@ describe( 'provideBenchmarkingData', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should make `getBenchmarkingData()` return `decodedBenchmarkingResponse` for the start date and the end date', () => {
+	it( 'should make `getBenchmarkingData()` return `decodedBenchmarkingResponse` for the start date and the end date when no `response` argument is passed', () => {
 		provideBenchmarkingData( registry, {
 			startDate: '2026-08-19',
 			endDate: '2026-09-15',
