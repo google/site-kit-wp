@@ -269,12 +269,27 @@ class Batch_Error_NotifierTest extends TestCase {
 				'user_email' => 'shared@example.com',
 			)
 		);
-		self::factory()->user->create(
+		$user_id = self::factory()->user->create(
 			array(
 				'role'       => 'administrator',
-				'user_email' => 'shared@example.com',
+				'user_email' => 'shared-duplicate@example.com',
 			)
 		);
+
+		// WordPress only blocks duplicate emails in `wp_insert_user()`; the `user_email`
+		// column has no unique index. Two users can share an email in practice, e.g. after
+		// an import that defines `WP_IMPORTING`, or after a plugin or migration writes to
+		// the users table directly.
+		global $wpdb;
+
+		$wpdb->update(
+			$wpdb->users,
+			array( 'user_email' => 'shared@example.com' ),
+			array( 'ID' => $user_id )
+		);
+
+		clean_user_cache( $user_id );
+
 		$this->set_up_batch_with_category( 'permissions_error' );
 
 		$sent_to = array();
