@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { WPDataRegistry } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { isZeroReport } from '@/js/modules/analytics-4/utils';
 
 /**
  * Returns a function that checks if the ad blocking recovery setup status matches the given status.
@@ -38,5 +41,44 @@ export function requireAdBlockingRecoverySetupStatus( status ) {
 			status ===
 			select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus()
 		);
+	};
+}
+
+/**
+ * Returns a function that checks if the linked Analytics property has revenue for the connected AdSense account.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the linked Analytics property has AdSense revenue or not.
+ */
+export function requireAdSenseRevenueInAnalytics() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_ADSENSE ).getSettings();
+
+		const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
+		const { startDate, endDate } = select( CORE_USER ).getDateRangeDates();
+
+		const reportData = await resolveSelect( MODULES_ANALYTICS_4 ).getReport(
+			{
+				startDate,
+				endDate,
+				dimensions: [ 'pagePath', 'adSourceName' ],
+				metrics: [ { name: 'totalAdRevenue' } ],
+				dimensionFilters: {
+					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
+				},
+				orderby: [
+					{
+						metric: { metricName: 'totalAdRevenue' },
+						desc: true,
+					},
+				],
+				limit: 1,
+				reportID:
+					'notifications_analytics-adsense-linked-overlay_reportArgs',
+			}
+		);
+
+		return false === isZeroReport( reportData );
 	};
 }

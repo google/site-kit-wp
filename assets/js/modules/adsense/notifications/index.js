@@ -34,7 +34,6 @@ import {
 	requireModuleConnected,
 	requireQueryArg,
 } from '@/js/googlesitekit/data-requirements';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -43,18 +42,16 @@ import {
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
 import AdBlockingRecoverySetupSuccessNotification from '@/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
-import { requireAdBlockingRecoverySetupStatus } from '@/js/modules/adsense/data-requirements';
 import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+	requireAdBlockingRecoverySetupStatus,
+	requireAdSenseRevenueInAnalytics,
+} from '@/js/modules/adsense/data-requirements';
+import { ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	requireAdSenseLinked,
 	requireAdSenseNotLinked,
 } from '@/js/modules/analytics-4/data-requirements';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { isZeroReport } from '@/js/modules/analytics-4/utils';
 import { asyncRequireAll } from '@/js/util/async';
 
 export const ADSENSE_NOTIFICATIONS = {
@@ -92,42 +89,7 @@ export const ADSENSE_NOTIFICATIONS = {
 			requireAccessToShareableModule( MODULE_SLUG_ADSENSE ),
 			requireAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 ),
 			requireAdSenseLinked(),
-			// Require AdSense revenue in the linked Analytics property.
-			async ( { select, resolveSelect } ) => {
-				// The getAccountID() selector relies on the resolution
-				// of the getSettings() resolver.
-				await resolveSelect( MODULES_ADSENSE ).getSettings();
-				const adSenseAccountID =
-					select( MODULES_ADSENSE ).getAccountID();
-
-				const { startDate, endDate } =
-					select( CORE_USER ).getDateRangeDates();
-
-				const reportArgs = {
-					startDate,
-					endDate,
-					dimensions: [ 'pagePath', 'adSourceName' ],
-					metrics: [ { name: 'totalAdRevenue' } ],
-					dimensionFilters: {
-						adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-					},
-					orderby: [
-						{
-							metric: { metricName: 'totalAdRevenue' },
-							desc: true,
-						},
-					],
-					limit: 1,
-					reportID:
-						'notifications_analytics-adsense-linked-overlay_reportArgs',
-				};
-
-				const reportData = await resolveSelect(
-					MODULES_ANALYTICS_4
-				).getReport( reportArgs );
-
-				return isZeroReport( reportData ) === false;
-			}
+			requireAdSenseRevenueInAnalytics()
 		),
 	},
 	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
