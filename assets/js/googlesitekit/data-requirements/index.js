@@ -90,11 +90,7 @@ export function requireCanViewSharedModule( slug ) {
 export function requireAccessToShareableModule( slug ) {
 	return async ( { select, resolveSelect } ) => {
 		await Promise.all( [
-			// The hasAccessToShareableModule() selector relies on
-			// the resolution of getAuthentication().
 			resolveSelect( CORE_USER ).getAuthentication(),
-			// The hasAccessToShareableModule() selector relies on
-			// the resolution of the getModules() resolver.
 			resolveSelect( CORE_MODULES ).getModules(),
 		] );
 
