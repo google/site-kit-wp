@@ -710,7 +710,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                         class="googlesitekit-analytics-setup__form"
                       >
                         <p
-                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--medium"
+                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
                         >
                           Please select the account information below. You can change this later in your settings.
                         </p>
@@ -805,7 +805,9 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                             <div
                               class="googlesitekit-setup__step-hint"
                             >
-                              <p>
+                              <p
+                                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                              >
                                 What is an Analytics property?
                               </p>
                               <span
@@ -862,7 +864,9 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                             <div
                               class="googlesitekit-setup__step-hint"
                             >
-                              <p>
+                              <p
+                                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                              >
                                 What is a web data stream?
                               </p>
                               <span

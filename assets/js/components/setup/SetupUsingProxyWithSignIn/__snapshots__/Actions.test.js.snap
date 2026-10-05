@@ -91,7 +91,9 @@ exports[`Actions should render correctly 1`] = `
   <div
     class="googlesitekit-setup__step-hint"
   >
-    <p>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+    >
       Why is this required?
     </p>
     <span
@@ -205,7 +207,9 @@ exports[`Actions should render the reset button when the site is resettable 1`] 
   <div
     class="googlesitekit-setup__step-hint"
   >
-    <p>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+    >
       Why is this required?
     </p>
     <span
@@ -320,7 +324,9 @@ exports[`Actions view-only button should render the button for a second admin wh
   <div
     class="googlesitekit-setup__step-hint"
   >
-    <p>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+    >
       Why is this required?
     </p>
     <span
