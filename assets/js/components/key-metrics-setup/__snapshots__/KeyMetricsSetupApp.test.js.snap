@@ -12,7 +12,7 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -37,7 +37,7 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <div
             class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -461,7 +461,7 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
                       class="googlesitekit-notice-container"
                     >
                       <div
-                        class="googlesitekit-notice googlesitekit-notice--error"
+                        class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default"
                         role="status"
                       >
                         <div
@@ -470,10 +470,10 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
                           <svg />
                         </div>
                         <div
-                          class="googlesitekit-notice__content"
+                          class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
                         >
                           <p
-                            class="googlesitekit-notice__description"
+                            class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                           >
                             Something went wrong, please try again
                           </p>
@@ -517,7 +517,7 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default googlesitekit-toast-notice"
       role="status"
     >
       <div
@@ -526,10 +526,10 @@ exports[`KeyMetricsSetupApp error handling when saving the initial setup setting
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Google Analytics was successfully set up
         </p>
@@ -551,7 +551,7 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -576,7 +576,7 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <div
             class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -1000,7 +1000,7 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
                       class="googlesitekit-notice-container"
                     >
                       <div
-                        class="googlesitekit-notice googlesitekit-notice--error"
+                        class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default"
                         role="status"
                       >
                         <div
@@ -1009,15 +1009,15 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
                           <svg />
                         </div>
                         <div
-                          class="googlesitekit-notice__content"
+                          class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
                         >
                           <p
-                            class="googlesitekit-notice__title"
+                            class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
                           >
                             Saving your answer failed
                           </p>
                           <p
-                            class="googlesitekit-notice__description"
+                            class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                           >
                             Retry to save your answer, or continue without saving. You can always edit your answer in Settings later.
                           </p>
@@ -1061,7 +1061,7 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default googlesitekit-toast-notice"
       role="status"
     >
       <div
@@ -1070,10 +1070,10 @@ exports[`KeyMetricsSetupApp error handling when saving the user input fails shou
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Google Analytics was successfully set up
         </p>
@@ -1095,7 +1095,7 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -1120,7 +1120,7 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -1593,7 +1593,7 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default googlesitekit-toast-notice"
       role="status"
     >
       <div
@@ -1602,10 +1602,10 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Google Analytics was successfully set up
         </p>
@@ -1627,7 +1627,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -1652,7 +1652,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <div
             class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -2096,7 +2096,7 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default googlesitekit-toast-notice"
       role="status"
     >
       <div
@@ -2105,10 +2105,10 @@ exports[`KeyMetricsSetupApp should render correctly 1`] = `
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Google Analytics was successfully set up
         </p>
@@ -2130,7 +2130,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -2155,7 +2155,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <div
             class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -2599,7 +2599,7 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-toast-notice"
+      class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default googlesitekit-toast-notice"
       role="status"
     >
       <div
@@ -2608,10 +2608,10 @@ exports[`KeyMetricsSetupApp should show the analytics setup success toast notice
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Google Analytics was successfully set up
         </p>

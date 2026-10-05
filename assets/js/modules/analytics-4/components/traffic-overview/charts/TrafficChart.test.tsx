@@ -24,8 +24,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { getChartOptions } from '@/js/components/GoogleChart/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -63,7 +65,7 @@ describe( 'TrafficChart', () => {
 	 * The time is midday, because a time zone can move midnight to the day
 	 * before or the day after.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} date The day the property was created, as `YYYY-MM-DD`.
 	 * @return {void}
@@ -98,7 +100,7 @@ describe( 'TrafficChart', () => {
 	/**
 	 * Waits for the chart to render, then reads the props it received.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {Object} The props the chart last received.
 	 */
@@ -417,6 +419,72 @@ describe( 'TrafficChart', () => {
 			[ new Date( 2025, 0, 16 ), 0 ],
 		] );
 		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
+	} );
+
+	it( 'should label every day of the range while the property is gathering data', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		const { options } = await getLastChartProps();
+
+		expect( options.hAxis.viewWindow ).toEqual( {
+			min: new Date( 2025, 0, 10 ),
+			max: new Date( 2025, 0, 16 ),
+		} );
+		expect( options.hAxis.ticks ).toEqual( [
+			new Date( 2025, 0, 11 ),
+			new Date( 2025, 0, 12 ),
+			new Date( 2025, 0, 13 ),
+			new Date( 2025, 0, 14 ),
+			new Date( 2025, 0, 15 ),
+			new Date( 2025, 0, 16 ),
+		] );
+	} );
+
+	it( 'should keep the date labels once the chart has extended the options for the gathering-data state', async () => {
+		registry.dispatch( CORE_USER ).setDateRange( 'last-7-days' );
+
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+				gatheringData
+			/>,
+			{ registry }
+		);
+
+		const { options } = await getLastChartProps();
+
+		// `getChartOptions()` lives in a JavaScript module, so its return type
+		// is `Object`.
+		const { hAxis } = getChartOptions( options, {
+			gatheringData: true,
+			chartType: 'LineChart',
+			startDate: '2025-01-10',
+			endDate: '2025-01-16',
+			breakpoint: BREAKPOINT_DESKTOP,
+		} ) as { hAxis: { ticks?: Date[] } };
+
+		expect( hAxis.ticks ).toEqual( options.hAxis.ticks );
+	} );
+
+	it( 'should set no horizontal view window once the property has data', async () => {
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		const { options } = await getLastChartProps();
+
+		expect( options.hAxis.viewWindow ).toBeUndefined();
 	} );
 
 	it( 'reads no day to a screen reader while the property is gathering data', async () => {

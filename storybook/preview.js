@@ -43,6 +43,7 @@ import InViewProvider from '../assets/js/components/InViewProvider';
 import { enabledFeatures } from '../assets/js/features';
 import { Cell, Grid, Row } from '../assets/js/material-components';
 import { bootstrapFetchMocks } from './fetch-mocks';
+import { reloadForFeatures } from './utils/reloadForFeatures';
 import { resetGlobals } from './utils/resetGlobals';
 
 setUsingCache( false );
@@ -124,6 +125,17 @@ export const decorators = [
 	},
 	( Story ) => {
 		resetGlobals();
+
+		return <Story />;
+	},
+	// Storybook runs the last decorator first, so a story that reloads the page
+	// never reaches `resetGlobals()`.
+	( Story, { parameters } ) => {
+		const { features = [] } = parameters;
+
+		if ( reloadForFeatures( features ) ) {
+			return null;
+		}
 
 		return <Story />;
 	},

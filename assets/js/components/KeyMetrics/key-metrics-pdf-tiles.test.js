@@ -193,7 +193,7 @@ describe( 'KEY_METRICS_PDF_TILES smoke test', () => {
 				signal: new AbortController().signal,
 			} );
 
-			// A tile with no data is dropped before it ever renders.
+			// A tile with no data is never rendered, so it needs data to render.
 			expect( data ).not.toBeNull();
 
 			// The tile components are lazy so the dashboard bundle stays free of

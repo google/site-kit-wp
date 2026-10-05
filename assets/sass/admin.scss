@@ -79,6 +79,7 @@
 
 // Global
 @import "components/global/googlesitekit-accordion";
+@import "components/global/googlesitekit-add-features-button";
 @import "components/global/googlesitekit-analytics-cta";
 @import "components/global/googlesitekit-autocomplete";
 @import "components/global/googlesitekit-badge";
@@ -145,7 +146,6 @@
 @import "components/global/googlesitekit-table-overflow";
 @import "components/global/googlesitekit-text-field-icon";
 @import "components/global/googlesitekit-tooltip";
-@import "components/global/googlesitekit-use-snippet-switch";
 @import "components/global/googlesitekit-user-menu";
 @import "components/global/googlesitekit-view-only-menu";
 @import "components/global/googlesitekit-typography";
@@ -276,7 +276,6 @@
 @import "widgets/widget-context";
 @import "widgets/widgets";
 @import "widgets/googlesitekit-widget-adsense-performance";
-@import "widgets/googlesitekit-widget-analyticsAllTraffic";
 @import "widgets/googlesitekit-widget-analyticsTrafficOverview";
 @import "widgets/googlesitekit-widget-adBlockerWarning";
 @import "widgets/googlesitekit-widget-analyticsPopularPages";

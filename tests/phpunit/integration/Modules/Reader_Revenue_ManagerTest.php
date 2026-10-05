@@ -111,6 +111,65 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
+	/**
+	 * @dataProvider data_auth_scopes
+	 */
+	public function test_auth_scopes( $enabled, $authenticated, $connected, $granted_scopes, $expected_scopes ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+		remove_all_filters( 'googlesitekit_auth_scopes' );
+		$this->reader_revenue_manager->register();
+		if ( $authenticated ) {
+			$this->authentication->token()->set( array( 'access_token' => 'test-access-token' ) );
+		}
+		if ( $connected ) {
+			$this->reader_revenue_manager->get_settings()->merge( array( 'publicationID' => 'test-publication' ) );
+		}
+		$base_scopes = array( 'https://www.googleapis.com/auth/subscribewithgoogle.publications.readonly' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( array_merge( $base_scopes, $granted_scopes ) );
+		$this->assertEqualSets(
+			array_merge( $base_scopes, $expected_scopes ),
+			apply_filters( 'googlesitekit_auth_scopes', array() ),
+			'Only new setups and previously granted scopes should require the new RRM scopes.'
+		);
+	}
+
+	public function data_auth_scopes() {
+		$readonly = Reader_Revenue_Manager::READONLY_SCOPE;
+		$manage   = Reader_Revenue_Manager::MANAGE_SCOPE;
+		return array(
+			'unauthenticated'       => array( true, false, false, array(), array( $readonly ) ),
+			'new setup'             => array( true, true, false, array(), array( $readonly ) ),
+			'legacy connected user' => array( true, true, true, array(), array() ),
+			'readonly granted'      => array( true, true, true, array( $readonly ), array( $readonly ) ),
+			'manage granted'        => array( true, true, true, array( $manage ), array( $manage ) ),
+			'both granted'          => array( true, true, true, array( $readonly, $manage ), array( $readonly, $manage ) ),
+			'flag off during setup' => array( false, false, false, array(), array() ),
+			'flag off with grants'  => array( false, true, true, array( $readonly, $manage ), array() ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_express_write_datapoints
+	 */
+	public function test_express_write_datapoints_require_manage_scope( $datapoint ) {
+		$this->enable_feature( 'rrmExpressSetup' );
+		$this->authentication->get_oauth_client()->set_granted_scopes( $this->reader_revenue_manager->get_scopes() );
+		$result = $this->reader_revenue_manager->set_data( $datapoint, array() );
+		$this->assertWPError( $result, 'Write requests without the manage scope should fail.' );
+		$this->assertSame( 'missing_required_scopes', $result->get_error_code(), 'The error should identify insufficient scopes.' );
+		$this->assertSame( array( Reader_Revenue_Manager::MANAGE_SCOPE ), $result->get_error_data()['scopes'], 'The error should request the manage scope.' );
+	}
+
+	public function data_express_write_datapoints() {
+		return array(
+			'create publication' => array( 'create-publication' ),
+			'update publication' => array( 'publication' ),
+			'create CTA'         => array( 'create-cta' ),
+		);
+	}
+
 	public function test_register__reset_product_id_dismissals_on_publication_change() {
 		$this->reader_revenue_manager->register();
 		$this->reader_revenue_manager->get_settings()->register();
@@ -988,13 +1047,18 @@ class Reader_Revenue_ManagerTest extends TestCase {
 	 * @param array $settings               Settings to set.
 	 * @param array $expected_feature_metrics Expected feature metrics.
 	 * @param string $message                Message for the assertion.
+	 * @param bool $enable_feature_flag      Optional. Whether to enable the rrmExpressSetup feature flag. Default false.
 	 */
-	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message ) {
+	public function test_get_feature_metrics( $settings, $expected_feature_metrics, $message, $enable_feature_flag = false ) {
+		if ( $enable_feature_flag ) {
+			$this->enable_feature( 'rrmExpressSetup' );
+		}
+
 		$this->reader_revenue_manager->get_settings()->set( $settings );
 
 		$feature_metrics = $this->reader_revenue_manager->get_feature_metrics();
 
-		$this->assertEqualSets( $expected_feature_metrics, $feature_metrics, $message );
+		$this->assertEquals( $expected_feature_metrics, $feature_metrics, $message );
 	}
 
 	public function data_feature_metrics_settings() {
@@ -1014,6 +1078,70 @@ class Reader_Revenue_ManagerTest extends TestCase {
 					'rrm_publication_onboarding_state' => 'PENDING_VERIFICATION',
 				),
 				'When publication onboarding state is set to PENDING_VERIFICATION or some state, the feature metric should reflect that.',
+			),
+			'when feature flag is off, configured CTAs metric is not reported'                          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+				),
+				'When rrmExpressSetup feature flag is off, the `rrm_publication_configured_ctas` metric should not be reported.',
+			),
+			'when configuredCTAs is empty, the metric is an empty array'                                => array(
+				array(
+					'configuredCTAs' => array(),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array(),
+				),
+				'When configuredCTAs is empty, the metric should be an empty array.',
+				true,
+			),
+			'when configuredCTAs contains one CTA type, the metric is an array with that type'          => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup' ),
+				),
+				'When configuredCTAs contains one CTA type, the metric should be an array with that single type.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains multiple distinct CTA types, the metric is an array of those types' => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains multiple distinct types, the metric should be an array of those distinct types.',
+				true, // Enable feature flag.
+			),
+			'when configuredCTAs contains duplicates, the metric contains each type only once'         => array(
+				array(
+					'configuredCTAs' => array(
+						'cta-1' => 'newsletter-signup',
+						'cta-2' => 'newsletter-signup',
+						'cta-3' => 'survey',
+					),
+				),
+				array(
+					'rrm_publication_onboarding_state' => '',
+					'rrm_publication_configured_ctas'  => array( 'newsletter-signup', 'survey' ),
+				),
+				'When configuredCTAs contains duplicate types, each type should appear only once in the metric.',
+				true, // Enable feature flag.
 			),
 		);
 	}

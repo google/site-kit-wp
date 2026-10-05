@@ -216,13 +216,12 @@ describe( 'useSiteGoalsBreakdown', () => {
 		);
 
 		expect( result.current.activeTabID ).toBe( '5' );
-		expect( result.current.isBreakdownValueTab ).toBe( true );
 		expect( result.current.breakdownFilter ).toEqual( {
 			[ FORM_DIMENSION ]: '5',
 		} );
 	} );
 
-	it( 'reports no breakdown tabs and no value tab when the discovery report finds no values', () => {
+	it( 'returns no breakdown tabs and no section filter when the discovery report finds no values', () => {
 		seedDiscoveryReport( [] );
 
 		const { result } = renderHook(
@@ -231,7 +230,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 		);
 
 		expect( result.current.hasBreakdownTabs ).toBe( false );
-		expect( result.current.isBreakdownValueTab ).toBe( false );
+		expect( result.current.breakdownFilter ).toBeUndefined();
 	} );
 
 	it( 'exposes the unattributed count and no section filter for the Other sources tab', () => {
@@ -257,7 +256,6 @@ describe( 'useSiteGoalsBreakdown', () => {
 		} );
 
 		expect( result.current.isOtherSourcesTab ).toBe( true );
-		expect( result.current.isBreakdownValueTab ).toBe( false );
 		// The Other sources tab drives its single metric from the count, so it
 		// produces no section filter.
 		expect( result.current.breakdownFilter ).toBeUndefined();
