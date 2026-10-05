@@ -105,11 +105,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 				description: createInterpolateElement(
 					showConversionTrackingDisclosure
 						? __(
-								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
 								'google-site-kit'
 						  )
 						: __(
-								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. <a>Learn more</a>',
 								'google-site-kit'
 						  ),
 					{ a: learnMoreLink }
@@ -128,11 +128,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 			description: createInterpolateElement(
 				showConversionTrackingDisclosure
 					? __(
-							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
+							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. Enabling this breakdown will also enable conversion tracking for your sales. <a>Learn more</a>',
 							'google-site-kit'
 					  )
 					: __(
-							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+							'Currently, your sales and leads are combined into one total. Enable this breakdown to separate results by plugin and track specific flows. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. <a>Learn more</a>',
 							'google-site-kit'
 					  ),
 				{ a: learnMoreLink }
@@ -154,11 +154,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 				description: createInterpolateElement(
 					showConversionTrackingDisclosure
 						? __(
-								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
 								'google-site-kit'
 						  )
 						: __(
-								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+								'If you use both WooCommerce and Easy Digital Downloads, your events data might be grouped together. Enable this breakdown to see results for each plugin separately and track how each store is performing. Your past data won’t be affected, you’ll see results for each plugin for new submissions starting from the moment you turn this on. <a>Learn more</a>',
 								'google-site-kit'
 						  ),
 					{ a: learnMoreLink }
@@ -177,11 +177,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 			description: createInterpolateElement(
 				showConversionTrackingDisclosure
 					? __(
-							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
+							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Your past data won’t be affected, you’ll see individual form results for new submissions starting from the moment you turn this on. Enabling this breakdown will also enable conversion tracking for your forms and sales. <a>Learn more</a>',
 							'google-site-kit'
 					  )
 					: __(
-							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Because this uses a new, more precise tracking method, your data will start fresh from the moment you turn it on. <a>Learn more</a>',
+							'If you use multiple forms or sell products, your events data might be grouped together. Enable this breakdown to see results for each form and product source separately and track how each one is performing. Your past data won’t be affected, you’ll see individual form results for new submissions starting from the moment you turn this on. <a>Learn more</a>',
 							'google-site-kit'
 					  ),
 				{ a: learnMoreLink }
@@ -195,11 +195,11 @@ export function useSiteGoalsBreakdownNoticeCopy(
 		description: createInterpolateElement(
 			showConversionTrackingDisclosure
 				? __(
-						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. Enabling this breakdown will also enable conversion tracking for your forms. <a>Learn more</a>',
+						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Your past data won’t be affected, you’ll see individual form results for new submissions starting from the moment you turn this on. Enabling this breakdown will also enable conversion tracking for your forms. <a>Learn more</a>',
 						'google-site-kit'
 				  )
 				: __(
-						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Because this uses a new, more precise tracking method, data collection will start fresh from the moment you turn it on. <a>Learn more</a>',
+						'If you use multiple forms, your events data may be grouped together. Enable this breakdown to see results for each form and track how each one is performing. Your past data won’t be affected, you’ll see individual form results for new submissions starting from the moment you turn this on. <a>Learn more</a>',
 						'google-site-kit'
 				  ),
 			{ a: learnMoreLink }

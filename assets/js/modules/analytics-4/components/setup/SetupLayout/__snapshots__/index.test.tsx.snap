@@ -12,7 +12,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -37,7 +37,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -219,7 +219,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                   class="googlesitekit-analytics-setup__form"
                 >
                   <p
-                    class="googlesitekit-setup-module__select_account"
+                    class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
                   >
                     Please select the account information below. You can change this later in your settings.
                   </p>
@@ -316,7 +316,9 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       <div
                         class="googlesitekit-setup__step-hint"
                       >
-                        <p>
+                        <p
+                          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                        >
                           What is an Analytics property?
                         </p>
                         <span
@@ -374,7 +376,9 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       <div
                         class="googlesitekit-setup__step-hint"
                       >
-                        <p>
+                        <p
+                          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                        >
                           What is a web data stream?
                         </p>
                         <span
@@ -425,7 +429,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                       Enable enhanced measurement
                     </label>
                     <p
-                      class="googlesitekit-module-settings-group__helper-text"
+                      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
                     >
                       This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
                       <a
@@ -510,7 +514,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -535,7 +539,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <div
             class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -678,7 +682,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                   class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
                 >
                   <p
-                    class="googlesitekit-setup__intro-title"
+                    class="googlesitekit-typography googlesitekit-setup__intro-title googlesitekit-typography--title googlesitekit-typography--small"
                   >
                     Connect Service
                   </p>
@@ -706,7 +710,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                         class="googlesitekit-analytics-setup__form"
                       >
                         <p
-                          class="googlesitekit-setup-module__select_account"
+                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--medium"
                         >
                           Please select the account information below. You can change this later in your settings.
                         </p>
@@ -909,7 +913,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                             Enable enhanced measurement
                           </label>
                           <p
-                            class="googlesitekit-module-settings-group__helper-text"
+                            class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
                           >
                             This allows you to measure interactions with your content (e.g. file downloads, form completions, video views). 
                             <a

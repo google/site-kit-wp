@@ -167,6 +167,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 						'googlesitekit-feature-discovery',
 						'googlesitekit-modules',
 						'googlesitekit-notifications',
+						'googlesitekit-intents',
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
@@ -240,6 +241,7 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 * Populates module data needed independent of Ads module activation.
 	 *
 	 * @since 1.148.0
+	 * @since n.e.x.t Removed the WooCommerce plugin status, now provided via the base inline data.
 	 *
 	 * @param array $modules_data Inline modules data.
 	 * @return array Inline modules data.
@@ -249,16 +251,11 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			$modules_data[ self::MODULE_SLUG ] = array();
 		}
 
-		$active_wc  = class_exists( 'WooCommerce' );
 		$active_gla = defined( 'WC_GLA_VERSION' );
 
 		$gla_ads_conversion_action = get_option( 'gla_ads_conversion_action' );
 
 		$modules_data[ self::MODULE_SLUG ]['plugins'] = array(
-			'woocommerce'             => array(
-				'active'    => $active_wc,
-				'installed' => $active_wc || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
-			),
 			'google-listings-and-ads' => array(
 				'active'       => $active_gla,
 				'installed'    => $active_gla || Plugin_Status::is_plugin_installed( 'google-listings-and-ads/google-listings-and-ads.php' ),

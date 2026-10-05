@@ -25,11 +25,15 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import InfoTooltip from '@/js/components/InfoTooltip';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 export default function StepHint( { leadingText, tooltipText } ) {
 	return (
 		<div className="googlesitekit-setup__step-hint">
-			<p>{ leadingText }</p>
+			<P size={ SIZE_SMALL } type={ TYPE_BODY }>
+				{ leadingText }
+			</P>
 			<InfoTooltip
 				tooltipClassName="googlesitekit-setup__step-hint-tooltip"
 				title={ tooltipText }

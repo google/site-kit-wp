@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import { FEATURE_DISCOVERY_TABS } from '@/js/components/feature-discovery/constants';
+import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
@@ -49,6 +50,8 @@ import { Cell, Grid, Row } from '@/js/material-components';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 const FeatureDiscoveryApp: FC = () => {
+	useFeatureCountCache();
+
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
 
@@ -82,7 +85,6 @@ const FeatureDiscoveryApp: FC = () => {
 											'google-site-kit'
 										) }
 									</Typography>
-									{ /* @ts-expect-error P is not properly typed yet. */ }
 									<P className="googlesitekit-feature-discovery__description">
 										{ __(
 											'Discover features built to help your site succeed and take control of your site’s growth. Turn on additional features and tools to uncover deeper insights about your audience, simplify your reporting, and reach your goals faster.',

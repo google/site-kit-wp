@@ -18,6 +18,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Profile;
 use Google\Site_Kit\Core\Authentication\Token;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
@@ -618,9 +619,14 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * Return the URL to redirect the user to after authorization, including important query params.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Added the `intent` and `intent_code` arguments, with a dashboard redirect when no redirect URL is stored.
 	 */
 	private function get_authorize_user_redirect_url() {
 		$redirect_url = $this->user_options->get( self::OPTION_REDIRECT_URL );
+		$intent_args  = Intents::get_query_args(
+			$this->context->input()->filter( INPUT_GET, 'intent' ),
+			$this->context->input()->filter( INPUT_GET, 'intent_code' )
+		);
 
 		if ( $redirect_url ) {
 			$url_query = URL::parse( $redirect_url, PHP_URL_QUERY );
@@ -639,8 +645,16 @@ final class OAuth_Client extends OAuth_Client_Base {
 				$redirect_url = add_query_arg( array( 'searchConsoleSetupSuccess' => 'true' ), $redirect_url );
 			}
 
+			if ( $intent_args ) {
+				$redirect_url = add_query_arg( $intent_args, $redirect_url );
+			}
+
 			$this->user_options->delete( self::OPTION_REDIRECT_URL );
 			$this->user_options->delete( self::OPTION_ERROR_REDIRECT_URL );
+		} elseif ( $intent_args ) {
+			// The user has just authorized Site Kit, so they can view the dashboard,
+			// where the intent replaces the welcome notification.
+			$redirect_url = $this->context->admin_url( 'dashboard', $intent_args );
 		} else {
 			// No redirect_url is set, use default page.
 			$redirect_url = $this->context->admin_url( 'splash', array( 'notification' => $this->get_notification_for_default_redirect_url() ) );

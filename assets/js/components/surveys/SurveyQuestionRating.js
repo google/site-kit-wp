@@ -24,6 +24,8 @@ import PropTypes from 'prop-types';
 /**
  * Internal dependencies
  */
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import SurveyHeader from './SurveyHeader';
 import SurveyQuestionRatingChoice from './SurveyQuestionRatingChoice';
 
@@ -47,6 +49,18 @@ function SurveyQuestionRating( {
 						/>
 					) ) }
 				</div>
+
+				{ choices.length >= 2 && (
+					<div
+						className="googlesitekit-survey__choices-labels"
+						aria-hidden="true"
+					>
+						<P size={ SIZE_SMALL }>{ choices[ 0 ].text }</P>
+						<P size={ SIZE_SMALL }>
+							{ choices[ choices.length - 1 ].text }
+						</P>
+					</div>
+				) }
 			</div>
 		</div>
 	);

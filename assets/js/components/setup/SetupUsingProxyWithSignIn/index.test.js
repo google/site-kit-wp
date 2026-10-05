@@ -277,6 +277,48 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should not render the Analytics checkbox when the splash URL has `purpose=intent`', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
+
+		const { queryByText, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			queryByText(
+				/Get visitor insights by connecting Google Analytics as part of setup/
+			)
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render the Analytics checkbox when the splash URL has a `purpose` other than `intent`', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=something-else';
+
+		const { getByText, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getByText(
+				/Get visitor insights by connecting Google Analytics as part of setup/
+			)
+		).toBeInTheDocument();
+	} );
+
 	it( 'should track the `click_learn_more_link` event when the Analytics opt-in "Learn more" link is clicked', async () => {
 		const { getByRole, waitForRegistry } = render(
 			<SetupUsingProxyWithSignIn />,
@@ -812,6 +854,67 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				expectedURL
 			);
 		} );
+	} );
+
+	it( 'should save `hasSitePurposeAnswer: false` on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled', async () => {
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				proxySetupURL
+			);
+		} );
+
+		expect( fetchMock ).toHaveFetched( initialSetupSettingsEndpoint, {
+			body: { data: { settings: { hasSitePurposeAnswer: false } } },
+		} );
+	} );
+
+	it( 'should not save a site purpose answer on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled when the splash URL has `purpose=intent`', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
+
+		const { getByRole, waitForRegistry } = render(
+			<SetupUsingProxyWithSignIn />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+				features: [ 'setupFlowRefreshPhase4' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			getByRole( 'button', { name: /sign in with google/i } )
+		);
+
+		const proxySetupURL = registry.select( CORE_SITE ).getProxySetupURL();
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				proxySetupURL
+			);
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( initialSetupSettingsEndpoint );
 	} );
 
 	it( 'should allow exiting the setup', async () => {

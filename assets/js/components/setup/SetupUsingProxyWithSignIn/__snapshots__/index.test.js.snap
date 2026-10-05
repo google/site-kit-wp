@@ -12,7 +12,7 @@ exports[`SetupUsingProxyWithSignIn should have only the initial stub segment in 
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -37,7 +37,7 @@ exports[`SetupUsingProxyWithSignIn should have only the initial stub segment in 
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -96,13 +96,13 @@ exports[`SetupUsingProxyWithSignIn should have only the initial stub segment in 
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -340,7 +340,9 @@ exports[`SetupUsingProxyWithSignIn should have only the initial stub segment in 
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -382,7 +384,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -407,7 +409,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -466,13 +468,13 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -630,7 +632,9 @@ exports[`SetupUsingProxyWithSignIn should not render the Activate Analytics noti
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -672,7 +676,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Analytics checkbox when
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -697,7 +701,7 @@ exports[`SetupUsingProxyWithSignIn should not render the Analytics checkbox when
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -756,13 +760,13 @@ exports[`SetupUsingProxyWithSignIn should not render the Analytics checkbox when
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -920,7 +924,9 @@ exports[`SetupUsingProxyWithSignIn should not render the Analytics checkbox when
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -962,7 +968,7 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -987,7 +993,7 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -1046,13 +1052,13 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -1290,7 +1296,9 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -1332,7 +1340,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -1357,7 +1365,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -1416,13 +1424,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -1660,7 +1668,9 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -1702,7 +1712,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -1727,7 +1737,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -1786,13 +1796,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -2030,7 +2040,9 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span
@@ -2072,7 +2084,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
         class="mdc-layout-grid__inner"
       >
         <div
-          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-4-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
+          class="googlesitekit-header__logo mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-2-desktop mdc-layout-grid__cell--span-2-tablet mdc-layout-grid__cell--span-1-phone"
         >
           <a
             aria-label="Go to dashboard"
@@ -2097,7 +2109,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
           </a>
         </div>
         <div
-          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-8-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
+          class="googlesitekit-header__children mdc-layout-grid__cell mdc-layout-grid__cell--align-middle mdc-layout-grid__cell--span-10-desktop mdc-layout-grid__cell--span-6-tablet mdc-layout-grid__cell--span-3-phone"
         >
           <button
             class="mdc-button mdc-button--tertiary"
@@ -2156,13 +2168,13 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                       class="googlesitekit-user-menu__details-info"
                     >
                       <p
-                        class="googlesitekit-user-menu__details-info__name"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__name googlesitekit-typography--label googlesitekit-typography--medium"
                       >
                         Wapuu WordPress PhD
                       </p>
                       <p
                         aria-label="Email"
-                        class="googlesitekit-user-menu__details-info__email"
+                        class="googlesitekit-typography googlesitekit-user-menu__details-info__email googlesitekit-typography--body googlesitekit-typography--small"
                       >
                         wapuu.wordpress@gmail.com
                       </p>
@@ -2400,7 +2412,9 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
               <div
                 class="googlesitekit-setup__step-hint"
               >
-                <p>
+                <p
+                  class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                >
                   Why is this required?
                 </p>
                 <span

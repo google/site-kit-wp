@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import AddFeaturesButton from '@/js/components/feature-discovery/AddFeaturesButton';
 import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -105,6 +106,19 @@ HeaderWithHelpMenu.scenario = {
 	clickSelector: '.googlesitekit-help-menu__button',
 	postInteractionWait: 3000,
 	onReadyScript: 'mouse.js',
+};
+
+export const HeaderWithAddFeaturesButton = Template.bind( {} );
+HeaderWithAddFeaturesButton.storyName =
+	'Plugin Header with Add Features Button';
+HeaderWithAddFeaturesButton.args = {
+	children: <AddFeaturesButton />,
+	setupRegistry: ( registry ) => {
+		provideUserAuthentication( registry );
+	},
+};
+HeaderWithAddFeaturesButton.parameters = {
+	features: [ 'featureDiscoveryHub' ],
 };
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );

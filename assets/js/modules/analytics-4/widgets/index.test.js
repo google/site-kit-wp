@@ -17,10 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * Internal dependencies
  */
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
-import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createWidgets,
@@ -37,7 +41,8 @@ import getLeadGenerationPerformancePDFData from '@/js/modules/analytics-4/compon
 import getOnlineStorePerformancePDFData from '@/js/modules/analytics-4/components/site-goals/widgets/getOnlineStorePerformancePDFData';
 import LeadGenerationPerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/LeadGenerationPerformanceWidgetPDF';
 import OnlineStorePerformanceWidgetPDF from '@/js/modules/analytics-4/components/site-goals/widgets/OnlineStorePerformanceWidgetPDF';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traffic-overview/pdf/getPDFData';
+import TrafficOverviewPDF from '@/js/modules/analytics-4/components/traffic-overview/pdf/indexPDF';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
@@ -65,15 +70,6 @@ describe( 'Analytics 4 widget registrations', () => {
 		registerDefaultWidgets( widgets );
 	} );
 
-	afterEach( () => {
-		enabledFeatures.delete( 'trafficOverview' );
-	} );
-
-	const TRAFFIC_AREAS = [
-		AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-		AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-	];
-
 	/**
 	 * Lists the slugs of the widgets registered in one widget area.
 	 *
@@ -89,89 +85,49 @@ describe( 'Analytics 4 widget registrations', () => {
 			.map( ( widget ) => widget.slug );
 	}
 
-	describe( 'All Traffic widget', () => {
-		const ALL_TRAFFIC_WIDGET_SLUG = 'analyticsAllTrafficGA4';
-
-		it( 'should register the All Traffic widget when the "trafficOverview" feature flag is disabled', () => {
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
-			).not.toBeNull();
-
-			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getWidgetSlugsInArea( areaSlug ) ).toContain(
-					ALL_TRAFFIC_WIDGET_SLUG
-				);
-			} );
-		} );
-
-		it( 'should not register the All Traffic widget when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
-
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( ALL_TRAFFIC_WIDGET_SLUG )
-			).toBeNull();
-
-			TRAFFIC_AREAS.forEach( ( areaSlug ) => {
-				expect( getWidgetSlugsInArea( areaSlug ) ).not.toContain(
-					ALL_TRAFFIC_WIDGET_SLUG
-				);
-			} );
-		} );
-	} );
-
 	describe( 'Traffic Overview widget', () => {
-		it( 'should not register the Traffic Overview widget when the "trafficOverview" feature flag is disabled', () => {
+		it( 'should be the only Analytics widget in the primary area of the main dashboard Traffic section', () => {
 			registerWidgets( widgets );
 
 			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG )
-			).toBeNull();
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY )
+			).toEqual( [ 'analyticsTrafficOverview' ] );
 		} );
 
-		it( 'should register the Traffic Overview widget as the first widget in both traffic areas when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
+		it( 'should be the only Analytics widget in the entity dashboard Traffic section', () => {
+			registerWidgets( widgets );
 
+			expect(
+				getWidgetSlugsInArea( AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY )
+			).toEqual( [ 'analyticsTrafficOverview' ] );
+		} );
+
+		it( 'should span the full width, with priority 1, as an Analytics widget', () => {
 			registerWidgets( widgets );
 
 			const widget = registry
 				.select( CORE_WIDGETS )
-				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+				.getWidget( 'analyticsTrafficOverview' );
 
-			expect( widget.priority ).toEqual( 1 );
-			expect( widget.width ).toEqual( 'full' );
+			expect( widget.width ).toBe( 'full' );
+			expect( widget.priority ).toBe( 1 );
 			expect( widget.modules ).toEqual( [ 'analytics-4' ] );
-
-			const firstSlugs = TRAFFIC_AREAS.map(
-				( areaSlug ) => getWidgetSlugsInArea( areaSlug )[ 0 ]
-			);
-
-			expect( firstSlugs ).toEqual( [
-				'analyticsTrafficOverview',
-				'analyticsTrafficOverview',
-			] );
 		} );
 
-		it( 'should carry a "Site traffic over time" PDF entry and be eligible for the PDF report when the "trafficOverview" feature flag is enabled', () => {
-			enabledFeatures.add( 'trafficOverview' );
-
+		it( 'should offer the Traffic Overview widget as "Site traffic over time" in the PDF export', async () => {
 			registerWidgets( widgets );
 
 			const widget = registry
 				.select( CORE_WIDGETS )
-				.getWidget( TRAFFIC_OVERVIEW_WIDGET_SLUG );
+				.getWidget( 'analyticsTrafficOverview' );
 
-			expect( widget.pdf?.label ).toBe( 'Site traffic over time' );
+			expect( widget.pdf.label ).toBe( 'Site traffic over time' );
 			expect( isActivePDFWidget( widget, registry.select ) ).toBe( true );
+			expect( widget.pdf.getData ).toBe( getTrafficOverviewPDFData );
+
+			const loadedModule = await widget.pdf.Component.preload();
+
+			expect( loadedModule.default ).toBe( TrafficOverviewPDF );
 		} );
 	} );
 
@@ -227,6 +183,10 @@ describe( 'Analytics 4 widget registrations', () => {
 			'analyticsOnlineStorePerformance',
 			'analyticsLeadGenerationPerformance',
 		];
+
+		const removeSiteGoalsWidgetEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/remove-site-goals-widget'
+		);
 
 		it.each( [
 			[
@@ -301,6 +261,67 @@ describe( 'Analytics 4 widget registrations', () => {
 				} );
 			}
 		);
+
+		it( 'should keep only the lead generation widget in the Site Goals area after the online store widget is removed', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSiteGoalsSettings( {
+					activeWidgets: [ 'ecommerce', 'lead' ],
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				detectedEvents: [ 'purchase', 'contact' ],
+			} );
+
+			fetchMock.postOnce( removeSiteGoalsWidgetEndpoint, {
+				body: { activeWidgets: [ 'lead' ] },
+				status: 200,
+			} );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'ecommerce' );
+
+			registerWidgets( widgets );
+
+			expect(
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY )
+			).toEqual( [ 'analyticsLeadGenerationPerformance' ] );
+		} );
+
+		it( 'should leave the Site Goals area empty after the online store and lead generation widgets are removed', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSiteGoalsSettings( {
+					activeWidgets: [ 'ecommerce', 'lead' ],
+				} );
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				detectedEvents: [ 'purchase', 'contact' ],
+			} );
+
+			fetchMock.post( removeSiteGoalsWidgetEndpoint, ( _url, opts ) => {
+				const { widget } = JSON.parse( opts.body ).data;
+
+				return {
+					body: {
+						activeWidgets: widget === 'ecommerce' ? [ 'lead' ] : [],
+					},
+					status: 200,
+				};
+			} );
+
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'ecommerce' );
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.removeSiteGoalsWidget( 'lead' );
+
+			registerWidgets( widgets );
+
+			expect(
+				getWidgetSlugsInArea( AREA_MAIN_DASHBOARD_SITE_GOALS_PRIMARY )
+			).toEqual( [] );
+		} );
 
 		it.each( [
 			[

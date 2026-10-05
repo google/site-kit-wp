@@ -94,10 +94,6 @@ $site-goals-tile-connector-offset: 3.5px;
 
 		.googlesitekit-site-goals-tiles-group__title {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-title-md;
-			font-weight: $fw-medium;
-			letter-spacing: $ls-xxs;
-			line-height: $lh-title-md;
 			margin: 0;
 		}
 
@@ -144,6 +140,10 @@ $site-goals-tile-connector-offset: 3.5px;
 	.googlesitekit-site-goals-breakdown-notice .googlesitekit-notice__content {
 		font-size: $fs-label-md;
 		line-height: $lh-label-md;
+	}
+
+	.googlesitekit-site-goals-removal-error-notice {
+		margin-top: $grid-gap-phone;
 	}
 
 	.googlesitekit-site-goals-other-sources-notice {
@@ -351,10 +351,6 @@ $site-goals-tile-connector-offset: 3.5px;
 
 		.googlesitekit-site-goals-tile__subtext {
 			color: $c-surfaces-on-background-variant;
-			font-size: $fs-label-sm;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-xs;
-			line-height: 16px;
 			margin: 1px 0 0;
 		}
 
@@ -365,6 +361,7 @@ $site-goals-tile-connector-offset: 3.5px;
 			justify-content: center;
 
 			.googlesitekit-change-badge {
+				border-radius: 4px;
 				margin: 0;
 
 				&.googlesitekit-change-badge--zero {
@@ -375,10 +372,6 @@ $site-goals-tile-connector-offset: 3.5px;
 
 		.googlesitekit-site-goals-tile__comparison-label {
 			color: $c-surfaces-on-background-variant;
-			font-size: $fs-label-sm;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-xs;
-			line-height: 16px;
 			margin: 2px 0 0;
 			text-align: right;
 		}
@@ -600,17 +593,21 @@ $site-goals-tile-connector-offset: 3.5px;
 			line-height: $lh-body-sm;
 		}
 
+		.googlesitekit-table-tile__custom-dimensions-missing-title,
+		.googlesitekit-table-tile__custom-dimensions-missing-description {
+
+			&.googlesitekit-typography {
+				font-weight: $fw-normal;
+			}
+		}
+
 		.googlesitekit-table-tile__custom-dimensions-missing-title {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-title-md;
-			line-height: $lh-title-md;
 			margin: 0 0 8px;
 		}
 
 		.googlesitekit-table-tile__custom-dimensions-missing-description {
 			color: $c-surfaces-on-surface;
-			font-size: $fs-title-sm;
-			line-height: $lh-title-sm;
 			margin: 0 0 16px;
 		}
 

@@ -25,10 +25,14 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import lazyWithPreload from '@/js/components/pdf-export/lazy-with-preload';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -41,6 +45,7 @@ import {
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
@@ -54,11 +59,13 @@ import {
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -84,11 +91,7 @@ import {
 import { AUDIENCE_SEGMENTATION_BACK_NOTICE_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSegmentationBackNotice';
 import { AUDIENCE_SEGMENTATION_SETUP_DISMISSED_SLUG } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import getAudienceTilesPDFData from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
-import {
-	DashboardAllTrafficWidgetGA4,
-	DashboardOverallPageMetricsWidgetGA4,
-} from '@/js/modules/analytics-4/components/dashboard';
-import getAllTrafficPDFData from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/getPDFData';
+import { DashboardOverallPageMetricsWidgetGA4 } from '@/js/modules/analytics-4/components/dashboard';
 import { ModulePopularPagesWidgetGA4 } from '@/js/modules/analytics-4/components/module';
 import getModulePopularPagesPDFData from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/getPDFData';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
@@ -103,6 +106,11 @@ import getTrafficOverviewPDFData from '@/js/modules/analytics-4/components/traff
 import { TrafficOverviewWidget } from '@/js/modules/analytics-4/components/traffic-overview/widgets';
 import {
 	EngagedTrafficSourceWidget,
+	FormCompletionEngagementRateWidget,
+	FormCompletionRateWidget,
+	LeadsByCountriesWidget,
+	LeadsByDeviceTypeWidget,
+	LeadsByVisitorTypeWidget,
 	LeastEngagingPagesWidget,
 	MostEngagingPagesWidget,
 	NewVisitorsWidget,
@@ -115,6 +123,7 @@ import {
 	SalesByVisitorTypeWidget,
 	SalesEngagementRateWidget,
 	SalesRateWidget,
+	TopAuthorsDrivingLeadsWidget,
 	TopAuthorsDrivingSalesWidget,
 	TopCategoriesWidget,
 	TopCitiesDrivingAddToCartWidget,
@@ -128,11 +137,13 @@ import {
 	TopPagesDrivingSalesWidget,
 	TopRecentTrendingPagesWidget,
 	TopReturningVisitorPages,
+	TopTrafficChannelsDrivingFormCompletionRateWidget,
 	TopTrafficChannelsDrivingSalesRateWidget,
 	TopTrafficSourceDrivingAddToCartWidget,
 	TopTrafficSourceDrivingLeadsWidget,
 	TopTrafficSourceDrivingPurchasesWidget,
 	TopTrafficSourceWidget,
+	TotalFormCompletionsWidget,
 	TotalSalesWidget,
 	VisitLengthWidget,
 	VisitsPerVisitorWidget,
@@ -148,13 +159,6 @@ const PDFYourVisitorGroups = lazyWithPreload( () =>
 	import(
 		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
 		'@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/PDFYourVisitorGroups'
-	)
-);
-
-const DashboardAllTrafficWidgetGA4PDF = lazyWithPreload( () =>
-	import(
-		/* webpackChunkName: "googlesitekit-vendor-lazy-pdf" */
-		'@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/indexPDF'
 	)
 );
 
@@ -225,52 +229,25 @@ function isSiteGoalsWidgetActive( goalType ) {
 
 export function registerWidgets( widgets ) {
 	// Register Analytics 4 Widgets.
-
-	// Only register the ("old") All Traffic widget when the new, "Traffic"
-	// widget feature is disabled.
-	if ( ! isFeatureEnabled( 'trafficOverview' ) ) {
-		widgets.registerWidget(
-			'analyticsAllTrafficGA4',
-			{
-				Component: DashboardAllTrafficWidgetGA4,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				pdf: {
-					Component: DashboardAllTrafficWidgetGA4PDF,
-					getData: getAllTrafficPDFData,
-					label: __( 'Site traffic over time', 'google-site-kit' ),
-				},
+	widgets.registerWidget(
+		TRAFFIC_OVERVIEW_WIDGET_SLUG,
+		{
+			Component: TrafficOverviewWidget,
+			width: widgets.WIDGET_WIDTHS.FULL,
+			priority: 1,
+			wrapWidget: false,
+			modules: [ MODULE_SLUG_ANALYTICS_4 ],
+			pdf: {
+				Component: TrafficOverviewPDF,
+				getData: getTrafficOverviewPDFData,
+				label: __( 'Site traffic over time', 'google-site-kit' ),
 			},
-			[
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			]
-		);
-	}
-
-	if ( isFeatureEnabled( 'trafficOverview' ) ) {
-		widgets.registerWidget(
-			TRAFFIC_OVERVIEW_WIDGET_SLUG,
-			{
-				Component: TrafficOverviewWidget,
-				width: widgets.WIDGET_WIDTHS.FULL,
-				priority: 1,
-				wrapWidget: false,
-				modules: [ MODULE_SLUG_ANALYTICS_4 ],
-				pdf: {
-					Component: TrafficOverviewPDF,
-					getData: getTrafficOverviewPDFData,
-					label: __( 'Site traffic over time', 'google-site-kit' ),
-				},
-			},
-			[
-				AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
-				AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
-			]
-		);
-	}
+		},
+		[
+			AREA_MAIN_DASHBOARD_TRAFFIC_PRIMARY,
+			AREA_ENTITY_DASHBOARD_TRAFFIC_PRIMARY,
+		]
+	);
 
 	widgets.registerWidget(
 		'analyticsAudienceSegmentationBackNotice',
@@ -946,6 +923,38 @@ export function registerWidgets( widgets ) {
 		{
 			slug: KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 			Component: TopPagesDrivingSalesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+			Component: TotalFormCompletionsWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_RATE,
+			Component: FormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+			Component: FormCompletionEngagementRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+			Component: TopTrafficChannelsDrivingFormCompletionRateWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+			Component: LeadsByVisitorTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_COUNTRIES,
+			Component: LeadsByCountriesWidget,
+		},
+		{
+			slug: KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+			Component: LeadsByDeviceTypeWidget,
+		},
+		{
+			slug: KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+			Component: TopAuthorsDrivingLeadsWidget,
 		},
 	].forEach( ( { slug, Component } ) => {
 		widgets.registerWidget(

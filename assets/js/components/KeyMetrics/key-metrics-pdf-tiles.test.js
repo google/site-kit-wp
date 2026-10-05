@@ -126,6 +126,11 @@ function smokeRegistry() {
 		getReferenceDate: jest.fn( () => '2025-02-04' ),
 		getServiceReportURL: jest.fn( () => 'https://example.com/report' ),
 		getPrimaryEcommerceEvent: jest.fn( () => 'purchase' ),
+		getDetectedLeadEvents: jest.fn( () => [
+			'contact',
+			'generate_lead',
+			'submit_lead_form',
+		] ),
 	};
 
 	return {
@@ -188,7 +193,7 @@ describe( 'KEY_METRICS_PDF_TILES smoke test', () => {
 				signal: new AbortController().signal,
 			} );
 
-			// A tile with no data is dropped before it ever renders.
+			// A tile with no data is never rendered, so it needs data to render.
 			expect( data ).not.toBeNull();
 
 			// The tile components are lazy so the dashboard bundle stays free of

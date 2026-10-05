@@ -13,7 +13,10 @@ namespace Google\Site_Kit\Tests\Core\Authentication;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Credentials;
 use Google\Site_Kit\Core\Authentication\Google_Proxy;
+use Google\Site_Kit\Core\Authentication\Verification_Evidence;
+use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
@@ -58,7 +61,7 @@ class Google_ProxyTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$this->google_proxy = new Google_Proxy( $this->context );
 	}
 
@@ -119,7 +122,7 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5',
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5&verification_evidence=none',
 			'Setup URL should include the service_version and steps query parameters.'
 		);
 	}
@@ -144,7 +147,7 @@ class Google_ProxyTest extends TestCase {
 
 		$this->assertEquals(
 			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=5&foo=foo-789',
+			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=5&verification_evidence=none&foo=foo-789',
 			'Setup URL should include filtered query parameters.'
 		);
 	}
@@ -174,6 +177,34 @@ class Google_ProxyTest extends TestCase {
 			),
 			'Existing params should be retained when adding step parameter.'
 		);
+	}
+
+	public function test_get_metadata_fields__intent_purpose() {
+		$_GET['purpose'] = 'intent';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( 'intent-step', $metadata['mode'], 'The mode should be `intent-step` when the request has `purpose=intent`.' );
+	}
+
+	public function test_get_metadata_fields__no_purpose() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has no `purpose`.' );
+	}
+
+	public function test_get_metadata_fields__other_purpose() {
+		$_GET['purpose'] = 'something-else';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has a `purpose` other than `intent`.' );
 	}
 
 	public function test_get_site_fields() {
@@ -449,6 +480,27 @@ class Google_ProxyTest extends TestCase {
 		$this->assertWPErrorWithMessage( $expected_error_response['error'], $error_response_data, 'Error response should match expected response shape.' );
 	}
 
+	public function test_verification_evidence__included_in_setup_url_and_metadata_fields() {
+		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		( new User_Options( $this->context, $user_id ) )->set( Verification_Meta::OPTION, 'meta-token' );
+
+		$this->enable_feature( 'setupFlowRefresh' );
+		$this->enable_feature( 'setupFlowRefreshPhase4' );
+
+		$url = $this->google_proxy->setup_url(
+			array(
+				'code'    => 'code-123',
+				'site_id' => 'site_id-456',
+			)
+		);
+		wp_parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $query_params );
+		$this->assertEquals( Verification_Evidence::META, $query_params['verification_evidence'], 'Setup URL should include the current verification evidence.' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+		$this->assertEquals( Verification_Evidence::META, $metadata['verification_evidence'], 'Metadata fields should include the current verification evidence.' );
+	}
+
 	public function test_register_site() {
 		$expected_url              = $this->google_proxy->url( Google_Proxy::OAUTH2_SITE_URI );
 		$expected_success_response = array();
@@ -476,6 +528,7 @@ class Google_ProxyTest extends TestCase {
 				'supports',
 				'url',
 				'user_roles',
+				'verification_evidence',
 			),
 			array_keys( $this->request_args['body'] ),
 			'Register site request body should contain all required parameters.'
@@ -513,6 +566,7 @@ class Google_ProxyTest extends TestCase {
 				'supports',
 				'url',
 				'user_roles',
+				'verification_evidence',
 			),
 			array_keys( $this->request_args['body'] ),
 			'Sync site fields request body should contain all required parameters.'

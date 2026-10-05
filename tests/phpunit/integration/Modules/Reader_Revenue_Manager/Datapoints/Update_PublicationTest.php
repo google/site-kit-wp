@@ -74,9 +74,11 @@ class Update_PublicationTest extends TestCase {
 					'organizationID' => 'organization-1',
 					'publicationID'  => 'publication-1',
 					'data'           => array(
-						'rrmProduct' => array(
+						'publicationType' => Publication::PUBLICATION_TYPE_FOR_PROFIT,
+						'rrmProduct'      => array(
 							'tosAcceptance' => array(
 								'userAccepted' => true,
+								'emailOptIn'   => true,
 							),
 						),
 					),
@@ -92,19 +94,63 @@ class Update_PublicationTest extends TestCase {
 		);
 
 		parse_str( $request->getUri()->getQuery(), $query );
-		$this->assertSame( 'rrmProduct.tosAcceptance.userAccepted', $query['updateMask'], 'The request should update the ToS acceptance.' );
+		$this->assertSame(
+			'publicationType,rrmProduct.tosAcceptance.userAccepted,rrmProduct.tosAcceptance.emailOptIn',
+			$query['updateMask'],
+			'The request should update the publication type and ToS acceptance fields.'
+		);
 		$this->assertJsonStringEqualsJsonString(
 			wp_json_encode(
 				array(
-					'rrmProduct' => array(
+					'publicationType' => Publication::PUBLICATION_TYPE_FOR_PROFIT,
+					'rrmProduct'      => array(
 						'tosAcceptance' => array(
 							'userAccepted' => true,
+							'emailOptIn'   => true,
 						),
 					),
 				)
 			),
 			(string) $request->getBody(),
 			'The request should include the ToS acceptance fields.'
+		);
+	}
+
+	public function test_create_request__terms_acceptance_with_partial_fields() {
+		$request = $this->datapoint->create_request(
+			$this->get_data_request(
+				array(
+					'organizationID' => 'organization-1',
+					'publicationID'  => 'publication-1',
+					'data'           => array(
+						'rrmProduct' => array(
+							'tosAcceptance' => array(
+								'emailOptIn' => false,
+							),
+						),
+					),
+				)
+			)
+		);
+
+		parse_str( $request->getUri()->getQuery(), $query );
+		$this->assertSame(
+			'rrmProduct.tosAcceptance.emailOptIn',
+			$query['updateMask'],
+			'The request should only update the fields provided in the payload.'
+		);
+		$this->assertJsonStringEqualsJsonString(
+			wp_json_encode(
+				array(
+					'rrmProduct' => array(
+						'tosAcceptance' => array(
+							'emailOptIn' => false,
+						),
+					),
+				)
+			),
+			(string) $request->getBody(),
+			'The request should include only the provided ToS acceptance fields.'
 		);
 	}
 
