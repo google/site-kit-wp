@@ -236,7 +236,7 @@ const CustomDimensionsNotice: FC = () => {
 		} );
 
 		syncedCustomDimensionsKeyRef.current = requiredCustomDimensionsKey;
-		createCustomDimensions( requiredCustomDimensions );
+		createCustomDimensions();
 	}, [
 		createCustomDimensions,
 		hasAnalytics4EditScope,
