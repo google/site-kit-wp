@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { VoteDirection } from '@/js/components/surveys/ThumbsSurveyTrigger';
 import { FEATURE_RELEVANCY_REASONS } from './constants';
 
 /**
@@ -71,4 +72,20 @@ export function getFeatureRelevancyTriggerID(
 	reason: typeof FEATURE_RELEVANCY_REASONS[ keyof typeof FEATURE_RELEVANCY_REASONS ]
 ) {
 	return `feedback:feature_relevancy_${ slug }:${ reason }`;
+}
+
+/**
+ * Gets the dismissed item slug for a feature relevancy vote.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}        slug      Feature slug.
+ * @param {VoteDirection} direction Vote direction.
+ * @return {string} Relevancy vote slug.
+ */
+export function getFeatureRelevancyVoteSlug(
+	slug: string,
+	direction: VoteDirection
+) {
+	return `feature-discovery-relevancy-${ slug }-${ direction }`;
 }

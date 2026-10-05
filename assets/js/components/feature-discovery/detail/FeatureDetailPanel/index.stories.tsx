@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -28,8 +33,14 @@ import { sampleFeatures } from '@/js/components/feature-discovery/__fixtures__/a
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { Story } from '@/js/types/Story';
-import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
+import {
+	provideModuleRegistrations,
+	provideModules,
+	provideSiteInfo,
+	provideUserAuthentication,
+} from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureDetailPanel, { type FeatureDetailPanelProps } from './';
 
@@ -58,6 +69,24 @@ Screenshots.storyName = 'Screenshots';
 Screenshots.args = { initialActiveIndex: 2 };
 // TODO: #13331 -- Screenshots.scenario = {};
 
+export const RelevancyFeedback = Template.bind( {} ) as PanelStory;
+RelevancyFeedback.storyName = 'Relevancy Feedback';
+// TODO: #13331 -- Enable scenario and commit references.
+// RelevancyFeedback.scenario = {
+// 	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--down',
+// 	postInteractionWait: 200,
+// 	onReadyScript: 'mouse.js',
+// };
+
+export const RelevancyConfirmation = Template.bind( {} ) as PanelStory;
+RelevancyConfirmation.storyName = 'Relevancy Confirmation';
+// TODO: #13331 -- Enable scenario and commit references.
+// RelevancyConfirmation.scenario = {
+// 	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
+// 	postInteractionWait: 200,
+// 	onReadyScript: 'mouse.js',
+// };
+
 // VRT scenarios and references arrive with the sub-tab content in #13331.
 export default {
 	title: 'Components/Feature Discovery/FeatureDetailPanel',
@@ -65,9 +94,44 @@ export default {
 	decorators: [
 		( StoryComponent: Story ) => {
 			function setupRegistry( registry: WPDataRegistry ) {
+				const dismissedItems = new Set< string >();
+
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/dismissed-items/,
+					( _url, { body } ) => {
+						const { slugs } = JSON.parse( body as string ).data;
+						slugs.forEach( ( slug: string ) =>
+							dismissedItems.delete( slug )
+						);
+						return { body: Array.from( dismissedItems ) };
+					},
+					{ overwriteRoutes: true }
+				);
+
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/dismiss-item\?/,
+					( _url, { body } ) => {
+						const { slug } = JSON.parse( body as string ).data;
+						dismissedItems.add( slug );
+						return { body: Array.from( dismissedItems ) };
+					},
+					{ overwriteRoutes: true }
+				);
+
+				fetchMock.post(
+					/^\/google-site-kit\/v1\/core\/user\/data\/survey-trigger/,
+					{ body: {} },
+					{ overwriteRoutes: true }
+				);
+
 				provideModuleRegistrations( registry );
 				provideModules( registry );
 				provideFeatures( registry, sampleFeatures );
+				provideSiteInfo( registry );
+				provideUserAuthentication( registry );
+
+				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+				registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
 				registry
 					.dispatch( CORE_UI )

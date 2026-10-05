@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC, ReactNode, RefObject } from 'react';
 import { useClickAway } from 'react-use';
 
@@ -50,6 +51,7 @@ export interface FeedbackMenuProps {
 	onClose: () => void;
 	onSelect?: ( value: string | undefined ) => void;
 	options: FeedbackMenuOption[];
+	placement?: 'top-start' | 'top-end'; // TODO: Flesh out with more options.
 	sourceRef?: RefObject< HTMLButtonElement | HTMLAnchorElement >;
 	// eslint-disable-next-line sitekit/acronym-case -- Native DOM type.
 	wrapperRef?: RefObject< HTMLElement >;
@@ -61,6 +63,7 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 	onClose,
 	onSelect,
 	options,
+	placement,
 	sourceRef,
 	wrapperRef,
 } ) => {
@@ -93,7 +96,10 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 		// @ts-expect-error - The `Menu` component is not typed yet.
 		<Menu
 			aria-labelledby={ headingID }
-			className="googlesitekit-feedback-menu"
+			className={ classnames(
+				'googlesitekit-feedback-menu',
+				placement && `googlesitekit-feedback-menu--${ placement }`
+			) }
 			heading={
 				<Typography
 					as="h3"
