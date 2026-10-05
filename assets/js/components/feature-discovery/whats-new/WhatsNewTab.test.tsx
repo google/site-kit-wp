@@ -308,7 +308,7 @@ describe( 'WhatsNewTab', () => {
 
 		provideFeatures( registry, TEST_FEATURES );
 
-		const { container, findByText, waitForRegistry } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<WhatsNewTab />,
 			{
 				registry,
@@ -319,7 +319,7 @@ describe( 'WhatsNewTab', () => {
 		await waitForRegistry();
 
 		expect(
-			await findByText( 'Unlock the latest Site Kit features!' )
+			getByText( 'Unlock the latest Site Kit features!' )
 		).toBeInTheDocument();
 
 		const noticeContainer = container.querySelector(
@@ -340,7 +340,7 @@ describe( 'WhatsNewTab', () => {
 	it( 'should render the auto-updates notice above the empty state', async () => {
 		provideAutoUpdatesNoticeRequirements();
 
-		const { container, findByText, waitForRegistry } = render(
+		const { container, getByText, waitForRegistry } = render(
 			<WhatsNewTab />,
 			{
 				registry,
@@ -351,11 +351,22 @@ describe( 'WhatsNewTab', () => {
 		await waitForRegistry();
 
 		expect(
-			await findByText( 'Unlock the latest Site Kit features!' )
+			getByText( 'Unlock the latest Site Kit features!' )
 		).toBeInTheDocument();
-		expect(
-			container.querySelector( EMPTY_STATE_SELECTOR )
-		).toBeInTheDocument();
+
+		const noticeContainer = container.querySelector(
+			'.googlesitekit-whats-new__notifications'
+		) as Element;
+		const emptyState = container.querySelector(
+			EMPTY_STATE_SELECTOR
+		) as Element;
+
+		expect( noticeContainer ).toBeInTheDocument();
+		expect( emptyState ).toBeInTheDocument();
+
+		expect( noticeContainer.compareDocumentPosition( emptyState ) ).toBe(
+			Node.DOCUMENT_POSITION_FOLLOWING
+		);
 	} );
 
 	it( 'should immediately hide a dismissed card while feedback is pending and preserve the remaining order', async () => {
