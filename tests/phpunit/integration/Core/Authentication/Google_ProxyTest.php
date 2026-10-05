@@ -485,7 +485,6 @@ class Google_ProxyTest extends TestCase {
 		wp_set_current_user( $user_id );
 		( new User_Options( $this->context, $user_id ) )->set( Verification_Meta::OPTION, 'meta-token' );
 
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(
