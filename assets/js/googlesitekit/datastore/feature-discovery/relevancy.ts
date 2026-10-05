@@ -67,21 +67,23 @@ export const actions = {
 
 		const pendingVote = (
 			pendingVotes.get( registry ) || Promise.resolve()
-		).then( async () => {
-			// Finish the initial read before writing so it cannot overwrite the saved vote.
-			await registry.resolveSelect( CORE_USER ).getDismissedItems();
+		)
+			.catch( () => {} )
+			.then( async () => {
+				// Finish the initial read before writing so it cannot overwrite the saved vote.
+				await registry.resolveSelect( CORE_USER ).getDismissedItems();
 
-			const { dismissItem, removeDismissedItems } =
-				registry.dispatch( CORE_USER );
+				const { dismissItem, removeDismissedItems } =
+					registry.dispatch( CORE_USER );
 
-			const { error } = await removeDismissedItems( oppositeVoteSlug );
+				const { error } = await removeDismissedItems( oppositeVoteSlug );
 
-			if ( error ) {
-				return { error };
-			}
+				if ( error ) {
+					return { error };
+				}
 
-			return dismissItem( voteSlug );
-		} );
+				return dismissItem( voteSlug );
+			} );
 
 		pendingVotes.set( registry, pendingVote );
 
