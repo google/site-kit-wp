@@ -15,8 +15,9 @@ the file + section when flagging a violation.
 - Every **Implementation Brief** checkbox is implemented.
 - Every **Test Coverage** item exists as a real, passing test.
 - Edge cases named in the issue are handled. No required behavior is missing.
-- A brief bullet that migrates or replaces something leaves no old copy behind: every place
-  that used the old code uses the new code, and the old code is removed.
+- An Implementation Brief bullet that migrates or replaces something leaves no old copy
+  behind: every place that used the old code uses the new code, and the old code is
+  removed.
 - A removal leaves nothing behind: no reference to a removed symbol, class, flag or
   component (comments included), no parameter or branch that only the removed code used,
   and no deleted test whose code still exists elsewhere (those tests move instead).
@@ -66,8 +67,8 @@ the file + section when flagging a violation.
 - **Security** — XSS, capability checks, nonce verification, no direct SQL, input sanitization.
 - **Performance** — no needless re-renders, missing memoization, expensive selectors, N+1 queries, or large asset bloat.
 - **Documentation** — complex logic and all exports documented. Every added or touched
-  comment and docblock is true of the code under it (numbers, limits, claims about other
-  code), and docblocks made out of date by the change are updated.
+  comment and docblock describes the code under it correctly (numbers, limits, claims
+  about other code), and docblocks made out of date by the change are updated.
 - **Disabled lint rules** — no new `eslint-disable` / `phpcs:ignore` to make lint pass;
   `complexity` is fixed by extracting a helper.
 - **Scope** — every change outside the issue's scope is explained in the PR's "Relevant

@@ -132,9 +132,10 @@ Follow the conventions you loaded in Step 3. In addition:
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
   (see `docs/context/js/feature-flags.md`).
 - Cover every Implementation Brief checkbox and Acceptance criterion. Implement the
-  **Test Coverage** items as real tests. A brief bullet that says to migrate or replace
-  something is done only when the old version is gone: every place that used the old code
-  uses the new code, and the old selectors and the PHP code behind them are removed.
+  **Test Coverage** items as real tests. An Implementation Brief bullet that says to
+  migrate or replace something is done only when the old version is gone: every place that
+  used the old code uses the new code, and the old selectors and the PHP code behind them
+  are removed.
 - **Reuse before you write.** Before adding a helper, a test helper, a mock or a
   `jest.mock()` factory, search `assets/js` and `tests/js` for a line of its
   code. If it already exists, use it (add an option to it when you need one). If you
@@ -173,8 +174,8 @@ written and passing.
 
 Read every comment and docblock that your diff adds or touches against the code under it.
 Each one must be true of that code: numbers and limits match the code, a claim about another
-part of the codebase is checked in that code, and a hard-coded number keeps the comment that
-says where it comes from. Fix docblocks that your change made out of date, including ones
+part of the codebase is checked in that code, and a hard-coded number has a comment that says
+where it comes from. Fix docblocks that your change made out of date, including ones
 outside the diff.
 
 ## Step 6 — Verify

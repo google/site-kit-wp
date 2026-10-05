@@ -272,12 +272,26 @@ describe( 'Complex Component', () => {
 
 Before writing a test helper, a mock or a `jest.mock()` factory, search `assets/js` and
 `tests/js` for a line of its code; many already exist (for example `mockLocation()`
-in `tests/js/mock-browser-utils.js`). Use the existing one, and add an option to it when you need one. When the same function is needed in a second test file, move it into a shared module
-(`tests/js/*-utils`, or the feature's `test-utils`) rather than copying it.
+in `tests/js/mock-browser-utils.js`). Use the existing one, and add an option to it when
+you need one. When the same function is needed in a second test file, move it into a shared
+module (`tests/js/*-utils`, or the feature's `test-utils`) rather than copying it.
 
-A test helper that builds report options or similar values calls the production function
-that builds them, so a change in production code doesn't have to be copied into the
-tests by hand.
+When a test gives the code under test a report with `receiveGetReport()`, get the report
+options from the same function that the code uses to request the report, instead of writing
+the options out again in the test. For example, the Traffic Overview PDF tests use
+`getTotalsReportArgs()` from `traffic-overview/reportOptions.ts`:
+
+```javascript
+registry
+    .dispatch( MODULES_ANALYTICS_4 )
+    .receiveGetReport(
+        { totals: [ { metricValues: [ { value: '100' } ] } ] },
+        { options: getTotalsReportArgs( DATES ) }
+    );
+```
+
+If the options change later, the test still gives the code the report it asks for. Tests of
+the options function itself still compare its result with values written in the test.
 
 A `jest.mock()` factory runs before the test file's imports are initialised, so a shared
 factory is loaded inside the factory with `require()` (or `jest.requireActual()` in `.ts`
