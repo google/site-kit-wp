@@ -76,7 +76,9 @@ export const actions = {
 				const { dismissItem, removeDismissedItems } =
 					registry.dispatch( CORE_USER );
 
-				const { error } = await removeDismissedItems( oppositeVoteSlug );
+				const { error } = await removeDismissedItems(
+					oppositeVoteSlug
+				);
 
 				if ( error ) {
 					return { error };
