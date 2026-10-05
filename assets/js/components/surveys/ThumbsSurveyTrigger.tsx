@@ -25,7 +25,8 @@ import { FC, MouseEvent } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, useState } from '@wordpress/element';
+import { useInstanceId } from '@wordpress/compose';
+import { Fragment, useCallback, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -41,6 +42,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import CloseIcon from '@/svg/icons/close.svg';
 import ThumbDownIcon from '@/svg/icons/thumb-down.svg';
 import ThumbUpIcon from '@/svg/icons/thumb-up.svg';
+import FeedbackMenu, { FeedbackMenuOption } from './FeedbackMenu';
 
 export const VOTE_DIRECTION_UP = 'up';
 export const VOTE_DIRECTION_DOWN = 'down';
@@ -55,9 +57,11 @@ const BOTTOM_POPPER_OFFSET = 4;
 interface ThumbsSurveyTriggerProps {
 	voteID: string;
 	onVote?: ( direction: VoteDirection ) => void;
-	downvoteFormURL?: string;
 	ariaLabel?: string;
 	popperPlacement?: PopperPlacement;
+	voteDirection?: VoteDirection | null;
+	feedbackOptions?: Partial< Record< VoteDirection, FeedbackMenuOption[] > >;
+	onSelectFeedback?: ( value: string | undefined ) => void;
 }
 
 /**
@@ -66,39 +70,87 @@ interface ThumbsSurveyTriggerProps {
  *
  * @since 1.182.0
  *
- * @param props                   Component props.
- * @param props.voteID            Identifier used to build the survey trigger string.
- * @param [props.onVote]          Optional callback run after the user votes.
- * @param [props.downvoteFormURL] Optional URL for the "Tell us more" link.
- * @param [props.ariaLabel]       Accessible label for the button group.
- * @param [props.popperPlacement] Popper position, defaults to `top-end`.
+ * @param props                  Component props.
+ * @param props.voteID           Identifier used to build the survey trigger string.
+ * @param props.onVote           Optional callback run after the user votes.
+ * @param props.ariaLabel        Accessible label for the button group.
+ * @param props.popperPlacement  Popper position, defaults to `top-end`.
+ * @param props.voteDirection    Controlled vote; null selects neither thumb. Omit to manage selection internally.
+ * @param props.feedbackOptions  Feedback options for each vote direction.
+ * @param props.onSelectFeedback Callback run when feedback is selected.
  * @return React element.
  */
 const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	voteID,
 	onVote,
-	downvoteFormURL,
 	ariaLabel,
 	popperPlacement = 'top-end',
+	voteDirection,
+	feedbackOptions,
+	onSelectFeedback,
 } ) => {
 	const { triggerSurvey } = useDispatch( CORE_USER );
-	const [ selectedDirection, setSelectedDirection ] =
+
+	const [ feedbackDirection, setFeedbackDirection ] =
 		useState< VoteDirection | null >( null );
+
+	const [ internalDirection, setInternalDirection ] =
+		useState< VoteDirection | null >( null );
+
+	const selectedDirection =
+		voteDirection === undefined ? internalDirection : voteDirection;
+
 	// eslint-disable-next-line sitekit/acronym-case
 	const [ anchorElement, setAnchorElement ] = useState< HTMLElement | null >(
 		null
 	);
 	const [ voteCount, setVoteCount ] = useState( 0 );
 
+	const wrapperRef = useRef< HTMLDivElement >( null );
+	const sourceRef = useRef< HTMLButtonElement | null >( null );
+
+	const menuID = useInstanceId(
+		ThumbsSurveyTrigger,
+		'thumbs-feedback-menu'
+	) as string;
+
+	const isFeedbackMenuOpen = feedbackDirection !== null;
+
+	const selectedFeedbackOptions = feedbackDirection
+		? feedbackOptions?.[ feedbackDirection ]
+		: undefined;
+
+	const closeFeedbackMenu = useCallback( () => {
+		setFeedbackDirection( null );
+	}, [] );
+
+	const selectFeedback = useCallback(
+		( value: string | undefined ) => {
+			closeFeedbackMenu();
+
+			setAnchorElement( wrapperRef.current );
+			setVoteCount( ( count ) => count + 1 );
+
+			onSelectFeedback?.( value );
+		},
+		[ closeFeedbackMenu, onSelectFeedback ]
+	);
+
 	function handleVote( direction: VoteDirection ) {
 		return ( event: MouseEvent< HTMLButtonElement > ) => {
 			triggerSurvey( `vote:${ voteID }:${ direction }` );
 
-			setSelectedDirection( direction );
-			setAnchorElement(
-				// eslint-disable-next-line sitekit/acronym-case
-				event.currentTarget.parentElement as HTMLElement
-			);
+			if ( voteDirection === undefined ) {
+				setInternalDirection( direction );
+			}
+
+			const hasFeedbackOptions =
+				!! feedbackOptions?.[ direction ]?.length;
+
+			sourceRef.current = event.currentTarget;
+
+			setAnchorElement( hasFeedbackOptions ? null : wrapperRef.current );
+			setFeedbackDirection( hasFeedbackOptions ? direction : null );
 			setVoteCount( ( count ) => count + 1 );
 
 			onVote?.( direction );
@@ -111,6 +163,16 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 
 	const isUpvote = selectedDirection === VOTE_DIRECTION_UP;
 	const isDownvote = selectedDirection === VOTE_DIRECTION_DOWN;
+
+	const hasUpvoteFeedbackOptions = !! feedbackOptions?.up?.length;
+	const hasDownvoteFeedbackOptions = !! feedbackOptions?.down?.length;
+
+	const isUpvoteFeedbackMenuOpen =
+		hasUpvoteFeedbackOptions && feedbackDirection === VOTE_DIRECTION_UP;
+
+	const isDownvoteFeedbackMenuOpen =
+		hasDownvoteFeedbackOptions && feedbackDirection === VOTE_DIRECTION_DOWN;
+
 	const popperOffset = popperPlacement.startsWith( 'bottom' )
 		? BOTTOM_POPPER_OFFSET
 		: undefined;
@@ -119,6 +181,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 		<Fragment>
 			<div
 				className={ classnames( 'googlesitekit-thumbs-survey-trigger', {
+					'mdc-menu-surface--anchor': !! feedbackOptions,
 					'googlesitekit-thumbs-survey-trigger--voted':
 						selectedDirection !== null,
 				} ) }
@@ -127,6 +190,7 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					ariaLabel ??
 					__( 'Is this section helpful?', 'google-site-kit' )
 				}
+				ref={ wrapperRef }
 			>
 				<Button
 					// @ts-expect-error - The `Button` component is not typed yet.
@@ -135,6 +199,13 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 						'Yes, this was helpful',
 						'google-site-kit'
 					) }
+					aria-controls={
+						hasUpvoteFeedbackOptions ? menuID : undefined
+					}
+					aria-expanded={ isUpvoteFeedbackMenuOpen }
+					aria-haspopup={
+						hasUpvoteFeedbackOptions ? 'menu' : undefined
+					}
 					aria-pressed={ isUpvote }
 					className={ classnames(
 						'googlesitekit-thumbs-survey-trigger__button',
@@ -151,6 +222,13 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 						'No, this was not helpful',
 						'google-site-kit'
 					) }
+					aria-controls={
+						hasDownvoteFeedbackOptions ? menuID : undefined
+					}
+					aria-expanded={ isDownvoteFeedbackMenuOpen }
+					aria-haspopup={
+						hasDownvoteFeedbackOptions ? 'menu' : undefined
+					}
 					aria-pressed={ isDownvote }
 					className={ classnames(
 						'googlesitekit-thumbs-survey-trigger__button',
@@ -160,6 +238,18 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					tertiary
 					hideTooltipTitle
 				/>
+				{ !! selectedFeedbackOptions?.length && (
+					<FeedbackMenu
+						id={ menuID }
+						isOpen={ isFeedbackMenuOpen }
+						onClose={ closeFeedbackMenu }
+						onSelect={ selectFeedback }
+						placement="top-start"
+						options={ selectedFeedbackOptions }
+						sourceRef={ sourceRef }
+						wrapperRef={ wrapperRef }
+					/>
+				) }
 			</div>
 			<Popper
 				anchorElement={ anchorElement }
@@ -176,15 +266,6 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					className="googlesitekit-thumbs-survey-trigger__popper-text"
 				>
 					{ __( 'Thanks for the feedback!', 'google-site-kit' ) }
-					{ isDownvote && !! downvoteFormURL && (
-						<a
-							href={ downvoteFormURL }
-							target="_blank"
-							rel="noreferrer noopener"
-						>
-							{ __( 'Tell us more', 'google-site-kit' ) }
-						</a>
-					) }
 				</Typography>
 				<Button
 					// @ts-expect-error - The `Button` component is not typed yet.
