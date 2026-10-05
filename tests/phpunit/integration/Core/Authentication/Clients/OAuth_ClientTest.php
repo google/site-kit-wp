@@ -649,9 +649,9 @@ class OAuth_ClientTest extends TestCase {
 		$_GET = $query_args;
 
 		$this->assertEquals(
-			add_query_arg( 'notification', 'authentication_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
+			add_query_arg( 'notification', 'initial_setup_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
 			$this->get_authorize_user_redirect_location(),
-			'Authorization with one intent argument or none should go to the splash screen with `notification=authentication_success`.'
+			'Authorization with one intent argument or none should go to the splash screen with `notification=initial_setup_success`.'
 		);
 	}
 
