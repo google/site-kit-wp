@@ -18,6 +18,8 @@ The chart is drawn entirely from the values its panel hands it and reads nothing
 
 Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
 
+<img width="1348" height="359" alt="Image" src="https://github.com/user-attachments/assets/814309a2-d883-451f-bcd5-46d2b0cf4eaa" />
+
 ---------------
 
 _Do not alter or remove anything below. The following sections will be managed by moderators only._
@@ -34,74 +36,112 @@ _Do not alter or remove anything below. The following sections will be managed b
 * Selecting a different date range moves the shaded region to the new range and moves the end of the window to the new last day.
 * Where the day the Analytics property was created falls inside the thirteen-month window, the chart marks that day and names it `Google Analytics property created`.
 * On a property created fourteen months ago, the chart's earliest weeks plot `0` visitors up to the property's creation day, and the marker sits on that day.
-* The chart shows no legend.
-* A support link beside the chart opens documentation explaining that the chart covers thirteen months rather than the selected date range, that the shaded region is the selected period, and that the earliest months of a recently created property are the property's own first weeks rather than a quiet season.
-* A screen reader reaches, in reading order, each plotted day with its date and its visitor count, the first and last day of the shaded region as the selected period, and the day the property was created where that marker is drawn.
+* The expected range, published posts, and the feedback element are out-of-scope for this issue.
 
 ## Implementation Brief
 
 * [ ] In `assets/js/components/GoogleChart/index.js`:
-  * Add two optional props, `plottedStartDate` and `plottedEndDate`, and use them in place of the selected date range when deciding `dateMarkersInRange`. Default each to the matching value from `select( CORE_USER ).getDateRangeDates()`, so every existing caller behaves as it does today.
-  * Without this, a date marker outside the selected date range is filtered out, and the Typical Traffic chart's property-creation marker almost always falls outside it.
+  * Add two optional props, `plottedStartDate` and `plottedEndDate`, each a day as `YYYY-MM-DD`. Use them in place of the selected date range in `isDateWithinRange()`, which decides `dateMarkersInRange`. When a prop is not passed, use the matching value from `select( CORE_USER ).getDateRangeDates()`, so every existing chart keeps the markers it draws today.
+  * The Typical Traffic chart plots days outside the selected date range, and without these props a marker on one of those days is filtered out.
   * Add both to `GoogleChart.propTypes` as optional strings.
 
 * [ ] In `assets/js/modules/analytics-4/components/traffic-overview/constants.ts`:
-  * Add `TYPICAL_TRAFFIC_CHART_DAYS`, set to `395`.
+  * Add `TYPICAL_TRAFFIC_CHART_DAYS`, set to `395`, the number of days the Typical Traffic chart plots.
 
 * [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/getTypicalTrafficChartData.ts` (new file), following `getTrafficChartData.ts`:
-  * Export `getTypicalTrafficChartData( { dailyTraffic } )`, returning the two-column `GoogleChart` table — a `date` column labelled `Day` and a `number` column labelled `Users` — with one `[ Date, number ]` point per row of `dailyTraffic`, in the order the response gave them. A day with `visitors: 0` is a point with `0`, never a skipped row.
-  * Also return `ticks`, one `Date` per month: the first plotted day's month, then the first day of every later month inside the window.
-  * Also return `maximumVisitors`, the highest `visitors` in `dailyTraffic`, and `windowStartDate` and `windowEndDate`, the first and last plotted day as `YYYY-MM-DD`.
-  * The function derives the window from the rows it is given and never reads the selected date range, so a shorter series on a young property plots what it has.
+  * Export `getTypicalTrafficChartData( { dailyTraffic }: { dailyTraffic: BenchmarkingDailyTrafficRow[] } ): TypicalTrafficChartData`, with the row type from `assets/js/modules/analytics-4/utils/benchmarking/types.ts`.
+  * Return `chartData`, a `TrafficChartTable`: a `date` column labelled `Day` and a `number` column labelled `Users`, as `getTrafficChartData()` builds them, then one `[ stringToDate( row.date ), row.visitors ]` point per row, in the order of the rows. A row with `visitors: 0` becomes a point at `0`. Never skip a row.
+  * Return `ticks`: one `Date` for the first day of each month inside the window.
+  * Return `maximumVisitors`, the highest `visitors` value in the rows, and `windowStartDate` and `windowEndDate`, the `date` of the first row and of the last row.
+  * Take the window only from the rows. Do not read the selected date range here.
 
-* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/typicalTrafficChartOptions.ts` (new file), following `trafficChartOptions.ts`:
-  * Export `TYPICAL_TRAFFIC_CHART_OPTIONS` with `curveType: 'function'`, `legend: { position: 'none' }`, `backgroundColor: 'transparent'`, `hAxis.format` set to `MMM`, `hAxis.gridlines.color` set to `transparent`, and `vAxis.viewWindow.min` set to `0`.
-  * Set `hAxis.minTextSpacing` explicitly to a value that lets thirteen month labels render at the widget's width, per the design. `getChartOptions()` only fills that option in when it is absent, so setting it here is what stops the default of `100` dropping labels.
-  * Reuse the line colour and the axis label colour from `trafficChartOptions.ts` rather than repeating the hex values.
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/typicalTrafficChartOptions.ts` (new file):
+  * Export `TYPICAL_TRAFFIC_CHART_OPTIONS`, built by spreading `TRAFFIC_CHART_OPTIONS` from `trafficChartOptions.ts`, so the line color, the value axis on the right, the gridlines and the crosshair are the same as on the Traffic Overview chart, as the design shows. Spread `hAxis` as well, so its other options stay.
+  * Change three options:
+    * `backgroundColor` to `'transparent'`, so the selected-range region behind the chart can be seen.
+    * `hAxis.format` to `'MMM'`.
+    * `hAxis.minTextSpacing` to a value at which all thirteen month labels fit at the chart's width in the design. `getChartOptions()` sets it to `100` only when it is missing, and at `100` Google Charts hides some of the month labels.
 
 * [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/SelectedRangeRegion.tsx` (new file):
-  * Render one `div` with the class `googlesitekit-traffic-overview__selected-range-region` and an `id` built from the instance ID it is given, following how `DateMarker` renders the element `GoogleChart` then positions.
-  * It takes the element's `id` as a prop and renders nothing else. Its position is set by the chart's `ready` handler.
+  * Take one prop, `id: string`, and render one empty `div` with that `id` and the class `googlesitekit-traffic-overview__selected-range-region`, the way `DateMarker` renders the line that `GoogleChart` positions. The chart's `onReady` handler sets its position.
+
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChartHeader.tsx` (new file), following `MetricTileHeader`:
+  * Render a `div` with the class `googlesitekit-traffic-overview__typical-traffic-chart-header`. Inside it, render the title and then an `InfoTooltip`, per the design: https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32707&m=dev
+  * Render the title as a `Typography` with `as="h3"`, `type={ TYPE_TITLE }` and `size={ SIZE_MEDIUM }`. Its text is `Your traffic compared to your expected range`.
+  * Give `InfoTooltip` a `title` made with `createInterpolateElement()` from one translatable string, following the `rateInfoTooltip` in `LeadGenerationPerformanceWidget`:
+    * The string is `Site Kit analyzes the last 18 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>`.
+    * Map `a` to a `Link` with `href="#"`, `external` and `hideExternalIndicator`, like the `Learn more` link in `MetricTileHeader`. The `href` stays `#` until the support page for this chart exists.
+  * Pass `tooltipClassName="googlesitekit-info-tooltip__content--typical-traffic"`, so the popup can be given the width in the design: https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-35810&m=dev
+  * `InfoTooltip` already opens the popup when the icon is hovered, focused or tapped, and keeps it open while the pointer is over the popup, so the link can be clicked. Add no other open or close handling.
 
 * [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart.tsx` (new file):
-  * Props: `dailyTraffic`, the decoded rows; `selectedStartDate` and `selectedEndDate`, the selected range's two days; and `propertyCreateTime`, the raw setting value or `undefined`. The component reads nothing from the data store, so a story or a test can render it from a fixture.
-  * Render `GoogleChart` with `chartType="LineChart"`, the table from `getTypicalTrafficChartData()`, the ticks it returned, and `vAxis.viewWindow.max` set to its `maximumVisitors`, so a peak eleven months back sets the scale.
-  * Pass `plottedStartDate` and `plottedEndDate` from the same function's `windowStartDate` and `windowEndDate`, and pass `dateMarkers` holding the property's creation day with the text `Google Analytics property created`, built the way `TrafficChart` builds it. Drop the marker when the creation day falls outside the plotted window.
-  * Do not pass `gatheringData`. `getChartOptions()` clamps `hAxis.viewWindow` to the selected date range in that state, which would crop thirteen months down to the selected range.
-  * Render `SelectedRangeRegion` as a child of `GoogleChart`, and position it in an `onReady` handler from the chart wrapper's `getChartLayoutInterface()`: `getChartAreaBoundingBox()` for the plot box's `top` and `height`, and `getXLocation()` for the left and right edges, called with `stringToDate( selectedStartDate )` and `stringToDate( selectedEndDate )`. Mirror `addKeyDateLinesToChart` in `GoogleChart`, including reading the day back through `getDateString` so the region and the plotted points use the same value. `ready` fires again on every redraw, so the region re-positions when the browser window is resized and when the date range changes.
-  * Add the `VisuallyHidden` equivalents the way `TrafficChart` does: one sentence per plotted day with its date and visitor count; one sentence naming the first and last day of the shaded region as the selected period; and the property-creation sentence when the marker is drawn.
-  * Show no legend and render no `ChartLegend`.
+  * Props:
+    * `dailyTraffic: BenchmarkingDailyTrafficRow[]`, the decoded rows.
+    * `selectedStartDate: string` and `selectedEndDate: string`, the first and last day of the selected date range.
+    * `daysInSelectedRange: number`, the number of days in the selected date range.
+    * `propertyCreateTime?: string`, the raw setting value.
+  * Read nothing from the data store, so a story or a test can render the chart from a fixture.
+  * Render a `div` with the classes `googlesitekit-traffic-overview__chart` and `googlesitekit-traffic-overview__chart--typical-traffic`. Inside it, render `TypicalTrafficChartHeader`, then `GoogleChart`, then `ChartLegend`, per the design: https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev
+  * Render `GoogleChart` with `chartType="LineChart"`, `height="256px"` and `width="100%"`, as `TrafficChart` does, and `data` set to the `chartData` from `getTypicalTrafficChartData()`. Build `options` from `TYPICAL_TRAFFIC_CHART_OPTIONS` and add:
+    * `hAxis.ticks`: the returned `ticks`.
+    * `hAxis.baseline`: the last plotted day, as `TrafficChart` does, so the gray line runs along the right edge of the chart area.
+    * `vAxis.viewWindow.max`: `maximumVisitors`, or `100` when `maximumVisitors` is `0`, as `TrafficChart` does for a range with no visitors.
+  * Pass `plottedStartDate` and `plottedEndDate`, set to the returned `windowStartDate` and `windowEndDate`.
+  * Pass `dateMarkers` with the property's creation day and the text `Google Analytics property created`, built the way `TrafficChart` builds them, but compare the day with `windowStartDate` and `windowEndDate` instead of the selected range. Pass no marker when `propertyCreateTime` is `undefined` or the day is outside the window.
+  * Do not pass `gatheringData`. In that state `getChartOptions()` sets `hAxis.viewWindow` to the selected date range, which cuts the thirteen months down to the selected range.
+  * Render `SelectedRangeRegion` as the child of `GoogleChart`, with an `id` built from `useInstanceId()`, as `TrafficBreakdownColumn` builds its heading `id`. Pass `GoogleChart` an `onReady` handler that positions the region, following `addKeyDateLinesToChart()` in `GoogleChart`:
+    * Read `chartWrapper` from the handler's argument, and get the layout from `chartWrapper.getChart().getChartLayoutInterface()`.
+    * Set the region's `top` and `height` from `getChartAreaBoundingBox()`.
+    * Set its `left` from `getXLocation( stringToDate( selectedStartDate ) )`, and its `width` from the distance between that and `getXLocation( stringToDate( selectedEndDate ) )`. The points are built with `stringToDate()` as well, so both edges are at the same x positions as the plotted days.
+    * `ready` fires again after every redraw, including the redraw after a browser resize and after a date range change, so the region moves with the chart without any other listener.
+  * Render `ChartLegend` with one item, built the way `TrafficChart` builds `legendItems`:
+    * The label uses the same two strings, `Last %d day traffic` and `Last %d days traffic`, chosen with `_n()` from `daysInSelectedRange`, so no new string is added. For a 28-day range it reads `Last 28 days traffic`, as in the design.
+    * The color is `TRAFFIC_CHART_LINE_COLOR`.
+  * Add no legend item for the expected range or for published posts.
 
-* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChartSupportLink.tsx` (new file):
-  * Render a `Link` to `select( CORE_SITE ).getDocumentationLinkURL( 'typical-traffic' )`, following `EngagementRateTile`. The support team drafts the copy and the slug before rollout; use `typical-traffic` until then.
-  * This is a separate file from the chart because the chart touches no store.
-
-* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel.tsx`:
-  * Render `TypicalTrafficChart` with the decoded `dailyTraffic`, the selected range's two days and the property's creation time, and render `TypicalTrafficChartSupportLink` beside it.
+* [ ] In `assets/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel.tsx` (added in #13599):
+  * When `response` from `useBenchmarkingData()` is defined, render `TypicalTrafficChart` with:
+    * `dailyTraffic` set to `response.dailyTraffic`.
+    * `selectedStartDate` and `selectedEndDate` set to the `startDate` and `endDate` the hook returns.
+    * `daysInSelectedRange` set to `select( CORE_USER ).getDateRangeNumberOfDays()`.
+    * `propertyCreateTime` set to `select( MODULES_ANALYTICS_4 ).getPropertyCreateTime()`.
+  * The loading and error states are #13602.
 
 * [ ] In `assets/sass/widgets/_googlesitekit-widget-analyticsTrafficOverview.scss`:
-  * Add a wrapper class for the Typical Traffic chart that gives it `position: relative` and `z-index: 0`. The region paints behind the plotted line with a negative `z-index`, which only works inside a stacking context.
-  * Style `.googlesitekit-traffic-overview__selected-range-region` per the design: absolutely positioned, `z-index: -1`, and the background tint the design gives it.
+  * Inside the `.googlesitekit-traffic-overview__panel` block:
+    * Add `.googlesitekit-traffic-overview__chart--typical-traffic` with `position: relative`, `z-index: 0`, and the top margin from the design in place of the `70px` that `.googlesitekit-traffic-overview__chart` sets. The `z-index: 0` creates a stacking context, which is what makes the region's `z-index: -1` put it behind the line rather than behind the whole widget.
+    * Style `.googlesitekit-traffic-overview__typical-traffic-chart-header` per the design: the title and the icon on one row, centered vertically, in the colors the design gives them. Set the icon color on `.googlesitekit-info-tooltip`, as `_googlesitekit-km-widget-tile.scss` does.
+    * Style `.googlesitekit-traffic-overview__selected-range-region` with `position: absolute`, `z-index: -1`, and a background tint. The current design does not show this region, so get the tint from the designer.
+    * Add no legend rules. The existing `.googlesitekit-traffic-overview__chart-legend` rules already apply, because `TypicalTrafficPanel` has the `googlesitekit-traffic-overview__panel` class.
+  * At the top level of the file, outside `.googlesitekit-plugin`, add `.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content--typical-traffic` with the popup width from the design, in place of the `160px` `max-width` that the `InfoTooltip` styles set. Follow `.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-new-badge__tooltip`. The popup renders outside the widget, so a rule nested under the widget does not reach it.
 
-The values the chart draws come from the slice in #13598, and the panel that passes them down is #13599.
+The values the chart draws come from the slice in #13598, and the panel that passes them down is #13599. The expected range band, the published-post markers and the feedback control in the design are not part of this issue.
 
 ### Test Coverage
 
 * Add `assets/js/modules/analytics-4/components/traffic-overview/charts/getTypicalTrafficChartData.test.ts` covering:
-  * 395 rows give 395 points in ascending date order, and a row with `0` visitors is a point rather than a gap.
-  * `ticks` holds one date per month across the window, and the first tick is in the first plotted month.
-  * `maximumVisitors` is the highest value anywhere in the window, including a peak eleven months before the end.
-  * A series shorter than 395 rows, as a property between thirteen and fourteen months old produces, returns a window matching the rows it was given.
-* Add `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart.test.tsx` covering:
-  * The chart plots 395 days whether the selected range is 28 or 90 days, and only the window's last day moves with the range.
-  * The screen reader reaches each day with its date and count, the selected period's first and last day, and the property-creation day when the marker is drawn.
-  * The marker is drawn for a creation day inside the plotted window and not for one before it, including a creation day outside the selected range but inside the window.
-  * No legend is rendered.
-* Add `assets/js/components/GoogleChart/index.test.js` covering:
+  * 395 rows give 395 points in ascending date order, and a row with `0` visitors is a point at `0` rather than a gap.
+  * Rows whose first weeks are all `0` keep a point for each of those days.
+  * `ticks` holds the first day of each month inside the window, and no other day.
+  * `maximumVisitors` is the highest value anywhere in the window, including a peak eleven months before the last day, and is `0` when every row is `0`.
+  * `windowStartDate` and `windowEndDate` are the dates of the first and last rows.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart.test.tsx`, mocking `GoogleChart` the way `TrafficChart.test.tsx` does, with the mock also rendering its `children`, covering:
+  * The chart gets 395 points whether the selected range is 28 or 90 days, and only the window's last day moves when the range's last day moves.
+  * The horizontal axis is labelled with the short month name, and its gridlines are transparent.
+  * The value axis runs to the highest daily value, and to `100` when every day is `0`.
+  * The marker is passed for a creation day inside the window, including one outside the selected range, and not for a creation day before the window. `plottedStartDate` and `plottedEndDate` are the window's first and last day.
+  * `gatheringData` is not passed.
+  * Calling the `onReady` handler with a chart layout that puts the selected range's first and last day at known positions sets the region's `left`, `width`, `top` and `height` to match, and calling it again with new positions moves the region.
+  * The legend shows one item, `Last 28 days traffic` for a 28-day range and `Last 90 days traffic` for a 90-day range, beside a line in `#462083`.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChartHeader.test.tsx` covering:
+  * The title is a heading with the text `Your traffic compared to your expected range`.
+  * Hovering the info icon shows the tooltip text and a `Learn more` link whose `href` is `#`.
+* Add `assets/js/components/GoogleChart/index.test.tsx` covering:
   * A marker outside the selected date range but inside `plottedStartDate` and `plottedEndDate` is drawn.
-  * A caller that passes neither prop keeps filtering its markers against the selected date range.
-* Add `TypicalTrafficChart.stories.tsx` with stories for a full thirteen-month series, a series whose earliest weeks are zeros on a property between thirteen and fourteen months old, and a series that is flat at zero. Give each a `scenario` with `readySelector: '[id^="googlesitekit-chart-"] svg'`, as `TrafficChart.stories.tsx` does.
-* Each new story adds a Backstop scenario and needs a new reference image. Existing references do not move, because no existing chart's options change.
+  * A chart that passes neither prop draws only the markers inside the selected date range, as it does today.
+* Add `createDailyTrafficRows()` to `assets/js/modules/analytics-4/components/traffic-overview/test-utils.ts` for the tests and the stories. It returns `TYPICAL_TRAFFIC_CHART_DAYS` rows ending on a given day, with each day's visitors from a given function. The checked-in `benchmarking-data.json` fixture has only four days.
+* Add `assets/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart.stories.tsx` with stories for a full thirteen-month series; a series whose first weeks are `0`, with the property-creation marker on the first day that has visitors; and a series that is `0` on every day. Give each a `scenario` with `readySelector: '[id^="googlesitekit-chart-"] svg'`, as `TrafficChart.stories.tsx` does.
+* Each new story adds a Backstop scenario and needs a new reference image. The `Typical Traffic` scenario added in #13599 now shows the chart, so its reference image changes too. No other reference image moves, because no existing chart's options change.
 
 ## QA Brief
 
