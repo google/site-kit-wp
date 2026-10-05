@@ -211,6 +211,40 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals( '6', $query_params['steps'], 'Setup URL should include the steps query parameter as 6 when Analytics is active.' );
 	}
 
+	public function test_register__proxy_setup_mode_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
+		$this->assertEquals(
+			'analytics-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should be `analytics-step` when the original mode is empty and Analytics is not connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_when_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+		$this->connect_analytics_module( $this->analytics );
+
+		$this->assertSame(
+			'',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should stay empty when Analytics is connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_with_intent_step_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
+		$this->assertEquals(
+			'intent-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', 'intent-step' ),
+			'The setup mode should stay `intent-step` when Analytics is not connected.'
+		);
+	}
+
 	public function test_register__sets_key_metrics_setup_is_widget_area_hidden_to_false_when_connected() {
 		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $this->options );
 		$key_metrics_setup_is_widget_area_hidden->register();

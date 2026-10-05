@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import { isFunction } from 'lodash';
+import { isEqual, isFunction } from 'lodash';
 
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { useMemo, useRef } from '@wordpress/element';
 import { addQueryArgs } from '@wordpress/url';
 
 /**
@@ -178,14 +178,24 @@ export default function useCustomDimensionsData( {
 		return select( CORE_LOCATION ).isNavigatingTo( OAuthURL );
 	} );
 
+	const lastReportOptions = useRef( null );
 	const reportOptions = useSelect( ( select ) => {
 		if ( ! wrappedReportOptions ) {
 			return null;
 		}
 
-		return isFunction( wrappedReportOptions )
+		const nextReportOptions = isFunction( wrappedReportOptions )
 			? wrappedReportOptions( select )
 			: wrappedReportOptions;
+
+		// A `reportOptions` selector builds a new object on every call, which
+		// would re-render the wrapped tile on every store update, so keep the
+		// previous object while the options are unchanged.
+		if ( ! isEqual( nextReportOptions, lastReportOptions.current ) ) {
+			lastReportOptions.current = nextReportOptions;
+		}
+
+		return lastReportOptions.current;
 	} );
 
 	const reportError = useSelect( ( select ) => {

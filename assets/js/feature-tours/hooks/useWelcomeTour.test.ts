@@ -131,7 +131,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -148,7 +147,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -188,7 +186,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -221,7 +218,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -242,7 +238,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: true,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -264,7 +259,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -281,7 +275,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -302,7 +295,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: false,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -331,7 +323,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: true,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -364,7 +355,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -393,7 +383,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: true,
 		} );
 	} );
@@ -426,7 +415,6 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
@@ -459,64 +447,7 @@ describe( 'useWelcomeTour', () => {
 			isAnalyticsConnected: true,
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: true,
-			isTrafficOverviewWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: true,
-		} );
-	} );
-
-	it( 'should highlight the Traffic Overview card in the traffic step when the `trafficOverview` flag is on', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		const { result } = await renderHook( () => useWelcomeTour(), {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			features: [ 'trafficOverview' ],
-		} );
-
-		expect( result.current.steps[ 0 ] ).toMatchObject( {
-			target: '.googlesitekit-widget--analyticsTrafficOverview',
-			floaterProps: {
-				target: '.googlesitekit-traffic-overview__chart',
-			},
-		} );
-	} );
-
-	it( 'should highlight the Traffic Overview card in the traffic step for a view-only user with Analytics shared when the `trafficOverview` flag is on', async () => {
-		provideUserAuthentication( registry, { authenticated: false } );
-
-		provideUserCapabilities( registry, {
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				MODULE_SLUG_ANALYTICS_4
-			) ]: true,
-		} );
-
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-				shareable: true,
-			},
-		] );
-
-		const { result } = await renderHook( () => useWelcomeTour(), {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-			features: [ 'trafficOverview' ],
-		} );
-
-		expect( result.current.steps[ 0 ] ).toMatchObject( {
-			target: '.googlesitekit-widget--analyticsTrafficOverview',
-			floaterProps: {
-				target: '.googlesitekit-traffic-overview__chart',
-			},
 		} );
 	} );
 } );

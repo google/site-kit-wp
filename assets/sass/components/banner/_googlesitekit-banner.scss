@@ -59,25 +59,11 @@
 	}
 
 	p.googlesitekit-banner__title {
-		font-family: $f-primary;
-		font-size: $fs-title-md;
-		font-weight: $fw-medium;
-		letter-spacing: $ls-xxs;
-		line-height: $lh-title-md;
 		margin: 0 0 10px;
 
 		@media (min-width: $bp-nonMobile) {
-			font-family: $f-secondary;
-			font-size: $fs-headline-sm;
-			font-weight: $fw-normal;
 			letter-spacing: 0;
-			line-height: $lh-headline-sm;
 			margin: 0 0 8px;
-		}
-
-		@media (min-width: $bp-nonTablet) {
-			font-size: $fs-headline-md;
-			line-height: $lh-headline-md;
 		}
 	}
 
@@ -117,10 +103,6 @@
 
 	p.googlesitekit-banner__help-text {
 		color: $c-surfaces-on-surface-variant;
-		font-family: $f-primary;
-		font-size: $fs-body-sm;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
 		margin-bottom: 0;
 	}
 

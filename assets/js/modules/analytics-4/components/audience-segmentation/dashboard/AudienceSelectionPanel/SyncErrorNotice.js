@@ -31,9 +31,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { useDispatch, useInViewSelect, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import ReportErrorActions from '@/js/components/ReportErrorActions';
+import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -118,9 +118,21 @@ export default function SyncErrorNotice() {
 	].some( ( error ) => !! error );
 
 	return (
-		<Notice
-			className="googlesitekit-audience-selection-panel__error-notice googlesitekit-notice--error googlesitekit-notice--small googlesitekit-notice--square"
-			type={ NOTICE_TYPES.ERROR }
+		<SelectionPanelNotice
+			actionContent={
+				hasInsufficientPermissionsError || userCountError ? (
+					<ReportErrorActions
+						moduleSlug="analytics-4"
+						error={ errors }
+						buttonVariant="danger"
+						RequestAccessButton={ RequestAccessButton }
+						RetryButton={ RetryButton }
+						hideGetHelpLink
+					/>
+				) : (
+					<RetryButton handleRetry={ retrySyncAvailableAudiences } />
+				)
+			}
 			description={
 				hasInsufficientPermissionsError
 					? createInterpolateElement(
@@ -142,20 +154,7 @@ export default function SyncErrorNotice() {
 					  )
 					: __( 'Data loading failed', 'google-site-kit' )
 			}
-			actionContent={
-				hasInsufficientPermissionsError || userCountError ? (
-					<ReportErrorActions
-						moduleSlug="analytics-4"
-						error={ errors }
-						buttonVariant="danger"
-						RequestAccessButton={ RequestAccessButton }
-						RetryButton={ RetryButton }
-						hideGetHelpLink
-					/>
-				) : (
-					<RetryButton handleRetry={ retrySyncAvailableAudiences } />
-				)
-			}
+			type={ NOTICE_TYPES.ERROR }
 			hideIcon
 		/>
 	);

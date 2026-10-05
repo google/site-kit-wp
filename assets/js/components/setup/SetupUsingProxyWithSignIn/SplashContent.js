@@ -36,6 +36,8 @@ import Notifications from '@/js/components/notifications/Notifications';
 import CompatibilityChecks from '@/js/components/setup/CompatibilityChecks';
 import Services from '@/js/components/setup/Services';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import {
 	BREAKPOINT_SMALL,
@@ -43,6 +45,7 @@ import {
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
 import { useFeature } from '@/js/hooks/useFeature';
+import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
 import AnalyticsOptIn from './AnalyticsOptIn';
@@ -70,6 +73,7 @@ export default function SplashContent( {
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
+	const isIntentSetupFlow = useIsIntentSetupFlow();
 
 	const cellDetailsProp = analyticsModuleActive
 		? { smSize: 4, mdSize: 6, lgSize: 6 }
@@ -92,7 +96,10 @@ export default function SplashContent( {
 					</Typography>
 
 					{ ( showLearnMoreLink || description ) && (
-						<p className="googlesitekit-setup__description">
+						<P
+							className="googlesitekit-setup__description"
+							size={ SIZE_MEDIUM }
+						>
 							{ ! showLearnMoreLink && description }
 
 							{ showLearnMoreLink &&
@@ -117,7 +124,7 @@ export default function SplashContent( {
 										),
 									}
 								) }
-						</p>
+						</P>
 					) }
 
 					{ getHelpURL && (
@@ -131,9 +138,9 @@ export default function SplashContent( {
 					{ setupFlowRefreshPhase4Enabled &&
 						analyticsModuleActive && <Services /> }
 
-					{ analyticsModuleAvailable && ! analyticsModuleActive && (
-						<AnalyticsOptIn />
-					) }
+					{ analyticsModuleAvailable &&
+						! analyticsModuleActive &&
+						! isIntentSetupFlow && <AnalyticsOptIn /> }
 
 					<CompatibilityChecks>{ children }</CompatibilityChecks>
 				</Cell>

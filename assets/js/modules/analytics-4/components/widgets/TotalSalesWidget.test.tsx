@@ -38,10 +38,10 @@ import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import TotalSalesWidget from './TotalSalesWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -68,7 +68,7 @@ describe( 'TotalSalesWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the report', async () => {
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<TotalSalesWidget { ...widgetProps } />,
@@ -81,7 +81,12 @@ describe( 'TotalSalesWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	testGenericReportError( () => registry, TotalSalesWidget, widgetProps );
+	testGenericReportError(
+		() => registry,
+		TotalSalesWidget,
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
+	);
 
 	it( 'should render zero values when there are no purchases in either period', async () => {
 		const reportOptions = getReportOptions();

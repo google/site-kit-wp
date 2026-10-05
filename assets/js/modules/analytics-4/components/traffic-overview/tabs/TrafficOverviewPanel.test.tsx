@@ -110,7 +110,7 @@ describe( 'TrafficOverviewPanel', () => {
 	 * 4. locations
 	 * 5. devices.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} [url] Optional. The entity URL the reports cover.
 	 * @return {Array<Object>} The five argument sets.
@@ -142,7 +142,7 @@ describe( 'TrafficOverviewPanel', () => {
 	 * `googlesitekit-chart-loading__forced` only when `loaded` is false, so the
 	 * chart count reads that class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Element} container The element the panel rendered into.
 	 * @return {Object} The placeholder count for each of the three sections.

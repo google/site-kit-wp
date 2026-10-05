@@ -52,7 +52,7 @@ describe( 'SettingsView', () => {
 	 * Gives the registry the connected module, its publications, and the user
 	 * every test starts from.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	function setupRegistry() {
 		const moduleData = [

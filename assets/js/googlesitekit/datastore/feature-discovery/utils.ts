@@ -48,7 +48,7 @@ export function getFeatureNewnessKey( slug: string ) {
 /**
  * Gets the survey trigger ID for a feature setup.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug Feature slug.
  * @return {string} Survey trigger ID.
@@ -60,7 +60,7 @@ export function getFeatureSetupSurveyTriggerID( slug: string ) {
 /**
  * Gets the survey trigger ID for a feature relevancy reason.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug   Feature slug.
  * @param {string} reason Feature relevancy reason.
