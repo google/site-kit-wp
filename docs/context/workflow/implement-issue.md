@@ -132,7 +132,37 @@ Follow the conventions you loaded in Step 3. In addition:
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
   (see `docs/context/js/feature-flags.md`).
 - Cover every Implementation Brief checkbox and Acceptance criterion. Implement the
-  **Test Coverage** items as real tests.
+  **Test Coverage** items as real tests. A brief bullet that says to migrate or replace
+  something is done only when the old version is gone: every place that used the old code
+  uses the new code, and the old selectors and the PHP code behind them are removed.
+- **Reuse before you write.** Before adding a helper, a test helper, a mock or a
+  `jest.mock()` factory, search `assets/js` and `tests/js` for a line of its
+  code. If it already exists, use it (add an option to it when you need one). If you
+  are about to write the same function in a second file, move it into a shared module
+  instead (`tests/js/*-utils`, or the feature's `test-utils`). A test helper calls the
+  production function that builds the same values instead of building them by hand. Test
+  data (fixtures, expected values, URLs) is written directly in each test, even when it
+  repeats.
+- **One rule, one check.** When a criterion applies in more than one place (for example
+  view and edit mode), every place uses the same selector or helper.
+- **Fix lint errors instead of disabling the rule.** Don't add `eslint-disable` (or
+  `phpcs:ignore`) to make lint pass. For `complexity`, move part of the logic into a helper function.
+
+### Removing or replacing code
+
+When the brief removes a component, flag, feature or caller, the removal also covers what it
+leaves behind:
+
+- Grep every removed symbol, CSS class, flag name, event label and component name across
+  `assets/`, `includes/`, `tests/` and `storybook/`, including comments and
+  docblocks. Update or remove each result.
+- For every function that loses a caller, check whether its parameters, options or branches
+  are still used by anyone else. Remove the ones that only the deleted code used, with their
+  test cases.
+- **Before deleting a test file, check whether the code it covers still exists somewhere
+  else** (for example a similar file, or the component that replaces it). If it does, move the
+  relevant tests next to that code instead of deleting them.
+- Remove styles, VRT references and fixtures that only the deleted code used.
 
 ## Step 5 — Self-review
 
@@ -140,6 +170,12 @@ Before verifying, review your own diff against `review-checklist.md` (in this di
 Fix every requirements gap and convention violation you find; address critical/high quality
 issues. The bar is: all acceptance criteria met, all relevant conventions followed, tests
 written and passing.
+
+Read every comment and docblock that your diff adds or touches against the code under it.
+Each one must be true of that code: numbers and limits match the code, a claim about another
+part of the codebase is checked in that code, and a hard-coded number keeps the comment that
+says where it comes from. Fix docblocks that your change made out of date, including ones
+outside the diff.
 
 ## Step 6 — Verify
 
@@ -170,11 +206,27 @@ Run, and fix anything that fails:
   the full suite (`npm run test:visualtest` wraps nested `npm run` calls and won't forward
   extra CLI args, so call the script directly):
   `./tests/backstop/bin/backstop test --filter="<scenario label>"`.
+  - A story sets every value the component reads for the state it shows (settings,
+    including a new setting with a default, module data, user data). A value that isn't set
+    usually shows a loading or empty state instead of the intended one.
+  - After `approve`, **open every new or changed reference image** and confirm it shows the
+    state the story names. An approved image of the wrong state keeps passing VRT.
+  - If `develop` changed shared components, typography or global styles after you made the
+    references, generate them again before the merge. Otherwise the out-of-date references
+    fail VRT on every other branch once yours is merged.
 
 ## Step 7 — Wrap up
 
 Summarize what changed: files created/modified/deleted, how acceptance criteria are met,
-and verification results.
+and verification results. Also list:
+
+- each Implementation Brief bullet with the `file:line` that implements it;
+- every place where the code differs from the brief, and why;
+- every change outside the issue's scope (a refactor, a fix to shared code, a config
+  change), and why it is needed here.
+
+These lists are the PR's "Relevant technical choices"; a change that you cannot explain there
+belongs in a separate issue.
 
 ---
 

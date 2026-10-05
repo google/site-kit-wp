@@ -268,6 +268,36 @@ describe( 'Complex Component', () => {
 > `console.error` must assert it or the test fails. There is no `muteConsole`
 > helper.
 
+### Reusing Test Helpers
+
+Before writing a test helper, a mock or a `jest.mock()` factory, search `assets/js` and
+`tests/js` for a line of its code; many already exist (for example `mockLocation()`
+in `tests/js/mock-browser-utils.js`). Use the existing one, and add an option to it when you need one. When the same function is needed in a second test file, move it into a shared module
+(`tests/js/*-utils`, or the feature's `test-utils`) rather than copying it.
+
+A test helper that builds report options or similar values calls the production function
+that builds them, so a change in production code doesn't have to be copied into the
+tests by hand.
+
+A `jest.mock()` factory runs before the test file's imports are initialised, so a shared
+factory is loaded inside the factory with `require()` (or `jest.requireActual()` in `.ts`
+files):
+
+```javascript
+jest.mock( 'googlesitekit-api', () =>
+    require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+```
+
+Test data (fixtures, expected values, URLs, error bodies) is written directly in each test,
+even when it repeats.
+
+### Test Setup and Assertions
+
+- A test for a loading or empty state also asserts that the normal content is **not**
+  rendered.
+- Only set up the reports and settings that the code under test reads.
+
 ### Mock Data Patterns
 
 Mock data follows consistent patterns:
