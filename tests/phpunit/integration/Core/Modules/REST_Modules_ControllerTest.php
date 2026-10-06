@@ -935,11 +935,13 @@ class REST_Modules_ControllerTest extends TestCase {
 		$request->set_query_params( array( 'propertyID' => '123456789' ) );
 		$response = rest_get_server()->dispatch( $request );
 
-		$registered_routes = array_keys( rest_get_server()->get_routes() );
+		$registered_routes  = array_keys( rest_get_server()->get_routes() );
+		$schema_route_index = array_search( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $registered_routes, true );
 
+		$this->assertIsInt( $schema_route_index, 'The schema-aware datapoint route should be registered.' );
 		$this->assertLessThan(
 			array_search( '/google-site-kit/v1/modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)', $registered_routes, true ),
-			array_search( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $registered_routes, true ),
+			$schema_route_index,
 			'The schema-aware datapoint route should be registered before the catch-all data route.'
 		);
 		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $response->get_matched_route(), 'The schema-aware datapoint route should be matched instead of the catch-all data route.' );
