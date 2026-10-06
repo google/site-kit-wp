@@ -196,19 +196,15 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
-			// A disconnected Analytics module counts as "not gathering data".
-			// Without this guard, `requireModuleGatheringData()` resolves a
-			// report for an inactive module, which fails with "Module must be
-			// active to request data."
-			asyncRequireAny(
-				asyncRequire(
-					false,
-					requireModuleConnected( MODULE_SLUG_ANALYTICS_4 )
-				),
-				asyncRequire(
-					false,
-					requireModuleGatheringData( MODULES_ANALYTICS_4 )
-				)
+			// The notification is only for sites with Analytics connected.
+			// Checking the connection first also keeps
+			// `requireModuleGatheringData()` from requesting a report for an
+			// inactive module, which fails with "Module must be active to
+			// request data."
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			asyncRequire(
+				false,
+				requireModuleGatheringData( MODULES_ANALYTICS_4 )
 			),
 			asyncRequire(
 				false,

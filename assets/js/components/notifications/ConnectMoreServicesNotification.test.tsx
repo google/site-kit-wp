@@ -195,8 +195,7 @@ describe( 'ConnectMoreServicesNotification', () => {
 
 	describe( 'checkRequirements', () => {
 		beforeEach( () => {
-			// A module can only be gathering data if it is connected, so the
-			// requirement check short-circuits for a disconnected module.
+			// The notification is only for sites with Analytics connected.
 			provideModules( registry, [
 				{
 					slug: MODULE_SLUG_ANALYTICS_4,
@@ -295,6 +294,38 @@ describe( 'ConnectMoreServicesNotification', () => {
 			const isActive = await notification.checkRequirements( registry );
 			expect( isActive ).toBe( false );
 		} );
+
+		it.each( [
+			[ 'active but not connected', { active: true, connected: false } ],
+			[ 'not active', { active: false, connected: false } ],
+		] )(
+			'is not active when the Analytics module is %s, without requesting an Analytics report',
+			async ( _, analyticsState ) => {
+				provideModules( registry, [
+					{ slug: MODULE_SLUG_ANALYTICS_4, ...analyticsState },
+					{
+						slug: MODULE_SLUG_SEARCH_CONSOLE,
+						active: true,
+						connected: true,
+					},
+				] );
+				provideGatheringDataState( registry, {
+					[ MODULE_SLUG_SEARCH_CONSOLE ]: false,
+				} );
+				provideUserAuthentication( registry );
+
+				const isActive = await notification.checkRequirements(
+					registry
+				);
+
+				expect( isActive ).toBe( false );
+				expect( fetchMock ).not.toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					)
+				);
+			}
+		);
 	} );
 
 	describe( 'GA event tracking', () => {
