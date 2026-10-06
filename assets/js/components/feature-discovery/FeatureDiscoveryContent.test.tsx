@@ -25,6 +25,7 @@ import { createMemoryHistory } from 'history';
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	dismissItemEndpoint,
@@ -81,6 +82,8 @@ describe( 'FeatureDiscoveryContent', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.186.0' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	} );
 
@@ -92,7 +95,12 @@ describe( 'FeatureDiscoveryContent', () => {
 					( { path } ) => path === route
 				) }
 			/>,
-			{ registry, route, history }
+			{
+				registry,
+				route,
+				history,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
 		);
 	}
 
