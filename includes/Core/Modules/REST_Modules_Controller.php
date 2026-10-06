@@ -181,20 +181,28 @@ class REST_Modules_Controller {
 	 * Gets related REST routes.
 	 *
 	 * @since 1.92.0
+	 * @since n.e.x.t Added the routes of schema-aware datapoints.
 	 *
 	 * @return array List of REST_Route objects.
 	 */
 	private function get_rest_routes() {
-		return array(
-			$this->get_modules_list_route(),
-			$this->get_modules_activation_route(),
-			$this->get_modules_info_route(),
-			$this->get_modules_check_access_route(),
-			$this->get_modules_notifications_route(),
-			$this->get_modules_settings_route(),
-			$this->get_modules_data_available_route(),
-			$this->get_modules_data_route(),
-			$this->get_modules_recover_route(),
+		return array_merge(
+			array(
+				$this->get_modules_list_route(),
+				$this->get_modules_activation_route(),
+				$this->get_modules_info_route(),
+				$this->get_modules_check_access_route(),
+				$this->get_modules_notifications_route(),
+				$this->get_modules_settings_route(),
+				$this->get_modules_data_available_route(),
+			),
+			// WordPress matches routes in the order they are registered, so the
+			// individual datapoint routes have to come before the catch-all data route.
+			$this->get_datapoint_routes(),
+			array(
+				$this->get_modules_data_route(),
+				$this->get_modules_recover_route(),
+			)
 		);
 	}
 
@@ -607,79 +615,23 @@ class REST_Modules_Controller {
 	 * Builds the modules data route (GET/POST for datapoints).
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Checks the permission of the `POST:` definition for every editable request.
 	 *
 	 * @return REST_Route The modules data REST route.
 	 */
 	private function get_modules_data_route() {
-		$can_view_insights = function () {
-			// This accounts for routes that need to be called before user has completed setup flow.
-			if ( current_user_can( Permissions::SETUP ) ) {
-				return true;
-			}
-
-			return current_user_can( Permissions::VIEW_POSTS_INSIGHTS );
-		};
-
-		$can_manage_options = function () {
-			// This accounts for routes that need to be called before user has completed setup flow.
-			if ( current_user_can( Permissions::SETUP ) ) {
-				return true;
-			}
-
-			return current_user_can( Permissions::MANAGE_OPTIONS );
-		};
-
 		return new REST_Route(
 			'modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)',
 			array(
 				array(
 					'methods'             => WP_REST_Server::READABLE,
-					'callback'            => function ( WP_REST_Request $request ) {
-						$slug = $request['slug'];
-						try {
-							$module = $this->modules->get_module( $slug );
-						} catch ( Exception $e ) {
-							return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-
-						if ( ! $this->modules->is_module_active( $slug ) ) {
-							return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
-						}
-
-						$data = $module->get_data( $request['datapoint'], $request->get_params() );
-						if ( is_wp_error( $data ) ) {
-							return $data;
-						}
-						return new WP_REST_Response( $data );
-					},
-					'permission_callback' => function ( WP_REST_Request $request ) use ( $can_view_insights ) {
-						return $this->resolve_datapoint_permission( $request, $can_view_insights );
-					},
+					'callback'            => fn ( WP_REST_Request $request ) => $this->handle_get_data_request( $request, $request['slug'], $request['datapoint'] ),
+					'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'GET', $request['slug'], $request['datapoint'], Permissions::VIEW_POSTS_INSIGHTS ),
 				),
 				array(
 					'methods'             => WP_REST_Server::EDITABLE,
-					'callback'            => function ( WP_REST_Request $request ) {
-						$slug = $request['slug'];
-						try {
-							$module = $this->modules->get_module( $slug );
-						} catch ( Exception $e ) {
-							return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
-						}
-
-						if ( ! $this->modules->is_module_active( $slug ) ) {
-							return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
-						}
-
-						$data = isset( $request['data'] ) ? (array) $request['data'] : array();
-						$data = $module->set_data( $request['datapoint'], $data );
-						if ( is_wp_error( $data ) ) {
-							return $data;
-						}
-						return new WP_REST_Response( $data );
-					},
-					'permission_callback' => function ( WP_REST_Request $request ) use ( $can_manage_options ) {
-						return $this->resolve_datapoint_permission( $request, $can_manage_options );
-					},
+					'callback'            => fn ( WP_REST_Request $request ) => $this->handle_set_data_request( $request, $request['slug'], $request['datapoint'] ),
+					'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'POST', $request['slug'], $request['datapoint'], Permissions::MANAGE_OPTIONS ),
 					'args'                => array(
 						'data' => array(
 							'type'              => 'object',
@@ -704,6 +656,79 @@ class REST_Modules_Controller {
 						'sanitize_callback' => 'sanitize_key',
 					),
 				),
+			)
+		);
+	}
+
+	/**
+	 * Builds a route for each module datapoint that describes its REST arguments and response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return REST_Route[] List of datapoint REST routes.
+	 */
+	private function get_datapoint_routes() {
+		$routes = array();
+
+		foreach ( $this->modules->get_available_modules() as $slug => $module ) {
+			$definitions_by_datapoint = array();
+
+			foreach ( $module->get_schema_aware_datapoints() as $datapoint_id => $definition ) {
+				list( $method, $datapoint )                        = explode( ':', $datapoint_id, 2 );
+				$definitions_by_datapoint[ $datapoint ][ $method ] = $definition;
+			}
+
+			foreach ( $definitions_by_datapoint as $datapoint => $definitions ) {
+				$routes[] = $this->get_datapoint_route( $slug, $datapoint, $definitions );
+			}
+		}
+
+		return $routes;
+	}
+
+	/**
+	 * Builds the route of a module datapoint that describes its REST arguments and response.
+	 *
+	 * A request method whose definition does not implement `Schema_Aware_Datapoint`
+	 * has no endpoint on this route, so WordPress passes the request on to the
+	 * catch-all data route.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string                   $slug        Module slug.
+	 * @param string                   $datapoint   Datapoint name.
+	 * @param Schema_Aware_Datapoint[] $definitions Datapoint definitions, keyed by `GET` and/or `POST`.
+	 * @return REST_Route The datapoint REST route.
+	 */
+	private function get_datapoint_route( $slug, $datapoint, array $definitions ) {
+		$endpoints = array();
+
+		if ( isset( $definitions['GET'] ) ) {
+			$endpoints[] = array(
+				'methods'             => WP_REST_Server::READABLE,
+				'callback'            => fn ( WP_REST_Request $request ) => $this->handle_get_data_request( $request, $slug, $datapoint ),
+				'permission_callback' => fn () => $this->resolve_datapoint_permission( 'GET', $slug, $datapoint, Permissions::VIEW_POSTS_INSIGHTS ),
+				'args'                => $definitions['GET']->get_args(),
+			);
+		}
+
+		if ( isset( $definitions['POST'] ) ) {
+			$endpoints[] = array(
+				'methods'             => WP_REST_Server::EDITABLE,
+				'callback'            => fn ( WP_REST_Request $request ) => $this->handle_set_data_request( $request, $slug, $datapoint ),
+				'permission_callback' => fn () => $this->resolve_datapoint_permission( 'POST', $slug, $datapoint, Permissions::MANAGE_OPTIONS ),
+				'args'                => $definitions['POST']->get_args(),
+			);
+		}
+
+		// A route has a single resource schema, so the GET definition's schema is used when both methods declare one.
+		$schema_definition = $definitions['GET'] ?? $definitions['POST'];
+
+		return new REST_Route(
+			"modules/{$slug}/data/{$datapoint}",
+			$endpoints,
+			array(
+				'schema' => fn () => $schema_definition->get_schema(),
 			)
 		);
 	}
@@ -1019,25 +1044,28 @@ class REST_Modules_Controller {
 	 * Resolves datapoint permission callback.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Takes the method, module slug, datapoint name and default capability.
 	 *
-	 * @param WP_REST_Request $request The request.
-	 * @param callable        $default_callback Default permission callback.
+	 * @param string $method             Method of the datapoint definition the endpoint executes, `GET` or `POST`.
+	 * @param string $slug               Module slug.
+	 * @param string $datapoint          Datapoint name.
+	 * @param string $default_capability Capability required when the datapoint has no permission check of its own.
 	 * @return bool Whether permission is granted.
 	 */
-	private function resolve_datapoint_permission( WP_REST_Request $request, callable $default_callback ) {
+	private function resolve_datapoint_permission( $method, $slug, $datapoint, $default_capability ) {
 		try {
-			$method    = $request->get_method();
-			$module    = $this->modules->get_module( $request['slug'] );
-			$datapoint = $module->get_datapoint_definition( "{$method}:{$request['datapoint']}" );
+			$module     = $this->modules->get_module( $slug );
+			$definition = $module->get_datapoint_definition( "{$method}:{$datapoint}" );
 		} catch ( Exception $e ) {
 			// The module or datapoint could not be resolved; defer to the
 			// default permission check (the request callback then surfaces
 			// the actual invalid-module/datapoint error).
-			return $default_callback( $request );
+			$definition = null;
 		}
 
-		if ( ! $datapoint instanceof Permission_Aware_Datapoint ) {
-			return $default_callback( $request );
+		if ( ! $definition instanceof Permission_Aware_Datapoint ) {
+			// This accounts for routes that need to be called before user has completed setup flow.
+			return current_user_can( Permissions::SETUP ) || current_user_can( $default_capability );
 		}
 
 		// A datapoint that defines its own permission check must never
@@ -1046,9 +1074,78 @@ class REST_Modules_Controller {
 		// `\Exception`, so a `\Error`/`\TypeError` is also fail-closed)
 		// rather than reverting to the default permission.
 		try {
-			return $datapoint->permission_callback();
+			return $definition->permission_callback();
 		} catch ( \Throwable $e ) { // phpcs:ignore Generic.CodeAnalysis.EmptyStatement.DetectedCatch
 			return false;
 		}
+	}
+
+	/**
+	 * Gets an active module to request datapoint data from.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $slug Module slug.
+	 * @return Module|WP_Error Module instance, or error if the slug is invalid or the module is not active.
+	 */
+	private function get_active_module( $slug ) {
+		try {
+			$module = $this->modules->get_module( $slug );
+		} catch ( Exception $e ) {
+			return new WP_Error( 'invalid_module_slug', __( 'Invalid module slug.', 'google-site-kit' ), array( 'status' => 404 ) );
+		}
+
+		if ( ! $this->modules->is_module_active( $slug ) ) {
+			return new WP_Error( 'module_not_active', __( 'Module must be active to request data.', 'google-site-kit' ), array( 'status' => 403 ) );
+		}
+
+		return $module;
+	}
+
+	/**
+	 * Handles a request to get data from a module datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_REST_Request $request   The request.
+	 * @param string          $slug      Module slug.
+	 * @param string          $datapoint Datapoint name.
+	 * @return WP_Error|WP_REST_Response Error or success response.
+	 */
+	private function handle_get_data_request( WP_REST_Request $request, $slug, $datapoint ) {
+		$module = $this->get_active_module( $slug );
+		if ( is_wp_error( $module ) ) {
+			return $module;
+		}
+
+		$data = $module->get_data( $datapoint, $request->get_params() );
+		if ( is_wp_error( $data ) ) {
+			return $data;
+		}
+		return new WP_REST_Response( $data );
+	}
+
+	/**
+	 * Handles a request to set data on a module datapoint.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_REST_Request $request   The request.
+	 * @param string          $slug      Module slug.
+	 * @param string          $datapoint Datapoint name.
+	 * @return WP_Error|WP_REST_Response Error or success response.
+	 */
+	private function handle_set_data_request( WP_REST_Request $request, $slug, $datapoint ) {
+		$module = $this->get_active_module( $slug );
+		if ( is_wp_error( $module ) ) {
+			return $module;
+		}
+
+		$data = isset( $request['data'] ) ? (array) $request['data'] : array();
+		$data = $module->set_data( $datapoint, $data );
+		if ( is_wp_error( $data ) ) {
+			return $data;
+		}
+		return new WP_REST_Response( $data );
 	}
 }
