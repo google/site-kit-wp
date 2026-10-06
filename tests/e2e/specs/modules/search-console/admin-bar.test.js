@@ -110,9 +110,9 @@ describe( 'Site Kit admin bar component display', () => {
 		);
 		// Ensure Analytics CTA is displayed
 		await expect( adminBarApp ).toMatchElement(
-			'.googlesitekit-analytics-cta button',
+			'.googlesitekit-activate-analytics-cta button',
 			{
-				text: /Set up google analytics/i,
+				text: /Set up analytics/i,
 			}
 		);
 		// More details link
@@ -171,9 +171,9 @@ describe( 'Site Kit admin bar component display', () => {
 		);
 		// Ensure Analytics CTA is displayed
 		await expect( adminBarApp ).toMatchElement(
-			'.googlesitekit-analytics-cta button',
+			'.googlesitekit-activate-analytics-cta button',
 			{
-				text: /Set up google analytics/i,
+				text: /Set up analytics/i,
 			}
 		);
 		// More details link

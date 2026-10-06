@@ -63,7 +63,7 @@ function getVisitors( row: ReportRow ): number {
  * count wins. A count at 99% gets no missing percent, so a column never shows
  * 100% beside another value.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<number>} visitorCounts The visitor count of each row, in display order.
  * @param {number}        total         The sum of `visitorCounts`, above zero.
@@ -106,7 +106,7 @@ function getWholePercentages(
 /**
  * Formats a row's whole percent the way a column displays it.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {number} wholePercentage Whole percent given to a row with visitors, `0` to `100`.
  * @return {string} The formatted share, such as `27%`, or `<1%` for `0`.
@@ -130,13 +130,14 @@ function formatWholePercentage( wholePercentage: number ): string {
  *
  * The report covers the selected range only and arrives ordered by visitors,
  * so the rows are taken as they come. Values with no visitors are left out
- * first. The rest get the same cap, the same "Others" rule, and the same
- * `visitors / total` share the donut chart uses. The displayed shares add up
- * to exactly 100%, only a lone value shows 100%, and a row with visitors that
- * gets no whole percent is displayed as `<1%` rather than `0%`.
+ * first. When more than `TRAFFIC_BREAKDOWN_MAX_ROWS` values have visitors, the
+ * top values fill every row except the last, and an "Others" row adds up the
+ * rest. The displayed shares add up to exactly 100%, only a lone value shows
+ * 100%, and a row with visitors that gets no whole percent is displayed as
+ * `<1%` rather than `0%`.
  *
  * @since 1.188.0
- * @since n.e.x.t Added `formattedPercentage` and left out values with no visitors.
+ * @since 1.189.0 Added `formattedPercentage` and left out values with no visitors.
  *
  * @param {Object} [report] A breakdown report.
  * @return {Array<Object>} The rows to render, empty when no value in the report has visitors.

@@ -46,11 +46,9 @@ describe( 'SetupMain', () => {
 		googleForWooCommerceActive = false,
 		adsConnected = false,
 	} = {} ) {
+		provideSiteInfo( registry, { usingProxy: false, wooCommerceActive } );
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				[ PLUGINS.WOOCOMMERCE ]: {
-					active: wooCommerceActive,
-				},
 				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: googleForWooCommerceActive,
 					adsConnected,

@@ -40,6 +40,8 @@ import NewBadge from '@/js/components/NewBadge.js';
 import ModuleSettingsWarning from '@/js/components/notifications/ModuleSettingsWarning.js';
 import Spinner from '@/js/components/Spinner';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { setItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
@@ -138,11 +140,17 @@ export default function SetupModule( { slug, name, description } ) {
 					) }
 				</div>
 			</div>
-			<p className="googlesitekit-settings-connect-module__text">
+			<P
+				className="googlesitekit-settings-connect-module__text"
+				size={ SIZE_MEDIUM }
+			>
 				{ description }
-			</p>
+			</P>
 
-			<p className="googlesitekit-settings-connect-module__cta">
+			<P
+				className="googlesitekit-settings-connect-module__cta"
+				size={ SIZE_MEDIUM }
+			>
 				<Link
 					onClick={ onSetup }
 					href=""
@@ -155,7 +163,7 @@ export default function SetupModule( { slug, name, description } ) {
 						name
 					) }
 				</Link>
-			</p>
+			</P>
 
 			<ModuleSettingsWarning slug={ slug } />
 		</div>

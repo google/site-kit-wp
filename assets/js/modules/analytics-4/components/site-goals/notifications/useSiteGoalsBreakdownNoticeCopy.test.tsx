@@ -84,7 +84,7 @@ describe( 'useSiteGoalsBreakdownNoticeCopy', () => {
 	/**
 	 * Renders the notice description for a scope and gets its text.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} scope The goal scope/type the notice is shown for.
 	 * @return {string} The description text, including the "Learn more" link.

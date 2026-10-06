@@ -38,6 +38,8 @@ import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
@@ -128,7 +130,10 @@ export default function GoogleTagGatewayToggle( { className } ) {
 					</div>
 				</div>
 			) }
-			<p className="googlesitekit-module-settings-group__helper-text">
+			<P
+				className="googlesitekit-module-settings-group__helper-text"
+				size={ SIZE_SMALL }
+			>
 				{ createInterpolateElement(
 					__(
 						'Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. <a>Learn more</a>',
@@ -153,7 +158,7 @@ export default function GoogleTagGatewayToggle( { className } ) {
 						),
 					}
 				) }
-			</p>
+			</P>
 			{ ! isLoading && ! hasMetServerRequirements && (
 				<SubtleNotificationWithIntersectionObserver
 					type={ NOTICE_TYPES.WARNING }

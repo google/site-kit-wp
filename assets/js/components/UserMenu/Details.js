@@ -25,6 +25,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export default function Details() {
@@ -49,15 +55,20 @@ export default function Details() {
 				/>
 			) }
 			<div className="googlesitekit-user-menu__details-info">
-				<p className="googlesitekit-user-menu__details-info__name">
+				<P
+					className="googlesitekit-user-menu__details-info__name"
+					size={ SIZE_MEDIUM }
+					type={ TYPE_LABEL }
+				>
 					{ userFullName }
-				</p>
-				<p
-					className="googlesitekit-user-menu__details-info__email"
+				</P>
+				<P
 					aria-label={ __( 'Email', 'google-site-kit' ) }
+					className="googlesitekit-user-menu__details-info__email"
+					size={ SIZE_SMALL }
 				>
 					{ userEmail }
-				</p>
+				</P>
 			</div>
 		</div>
 	);
