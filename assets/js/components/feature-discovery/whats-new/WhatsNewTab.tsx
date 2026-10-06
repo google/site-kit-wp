@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
+import Notifications from '@/js/components/notifications/Notifications';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_MEDIUM,
@@ -45,6 +46,10 @@ import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-dis
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from '@/js/googlesitekit/notifications/constants';
 import whatsNewEmptyURL from '@/svg/graphics/whats-new-empty.svg?path';
 
 const WhatsNewTab: FC = () => {
@@ -100,6 +105,14 @@ const WhatsNewTab: FC = () => {
 
 	return (
 		<div className="googlesitekit-whats-new">
+			<div className="googlesitekit-whats-new__notifications">
+				<Notifications
+					areaSlug={
+						NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP
+					}
+					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+				/>
+			</div>
 			{ visibleFeatures.length === 0 ? (
 				<div className="googlesitekit-whats-new__empty-state">
 					<img

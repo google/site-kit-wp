@@ -92,8 +92,19 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		);
 
 		expect(
-			await findByText( 'Keep Site Kit up-to-date' )
+			await findByText( 'Unlock the latest Site Kit features!' )
 		).toBeInTheDocument();
+
+		expect(
+			getByText(
+				"We regularly release new features and improvements to help you track your site's success. Enable auto-updates for Site Kit so you never miss the latest enhancements."
+			)
+		).toBeInTheDocument();
+
+		expect( getByText( 'Learn more' ).closest( 'a' ) ).toHaveAttribute(
+			'href',
+			expect.stringContaining( 'doc=auto-updates' )
+		);
 
 		fireEvent.click( getByText( 'Enable auto-updates' ) );
 

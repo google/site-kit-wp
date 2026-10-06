@@ -275,6 +275,9 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                   class="googlesitekit-whats-new"
                 >
                   <div
+                    class="googlesitekit-whats-new__notifications"
+                  />
+                  <div
                     class="googlesitekit-whats-new__empty-state"
                   >
                     <img
