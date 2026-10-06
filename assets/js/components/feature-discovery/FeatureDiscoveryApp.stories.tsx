@@ -51,8 +51,6 @@ interface StoryArgs {
 
 const AUDIENCE_CHIP_SELECTOR =
 	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"]';
-const ALL_SERVICES_CHIP_SELECTOR =
-	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="all-services"]';
 
 function Template( { setupRegistry = () => {} }: StoryArgs ) {
 	function setupStoryRegistry( registry: Registry ) {
@@ -96,29 +94,14 @@ AllServicesFiltered.storyName = 'All services filtered to one category';
 AllServicesFiltered.parameters = { route: '/all-services' };
 AllServicesFiltered.args = AllServices.args;
 AllServicesFiltered.scenario = {
-	onReadyScript: 'feature-discovery-select-audience-chip.js',
+	readySelector: `${ AUDIENCE_CHIP_SELECTOR }.mdc-chip--selected`,
 };
 AllServicesFiltered.play = async () => {
-	for ( let attempt = 0; attempt < 20; attempt++ ) {
-		const audienceChip = document.querySelector(
-			AUDIENCE_CHIP_SELECTOR
-		) as Element | null;
-		const allServicesChip = document.querySelector(
-			ALL_SERVICES_CHIP_SELECTOR
-		) as Element | null;
+	await Promise.resolve();
 
-		if ( audienceChip && allServicesChip ) {
-			if ( allServicesChip.classList.contains( 'mdc-chip--selected' ) ) {
-				audienceChip.dispatchEvent(
-					new MouseEvent( 'click', { bubbles: true } )
-				);
-			}
+	const chip = document.querySelector( AUDIENCE_CHIP_SELECTOR );
 
-			return;
-		}
-
-		await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
-	}
+	chip?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
 };
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
