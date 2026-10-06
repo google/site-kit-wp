@@ -52,12 +52,11 @@ use WP_Error;
 abstract class Module {
 
 	/**
-	 * HTTP status a Google API answers with when the request was turned away for
-	 * asking too often.
+	 * HTTP status a Google API uses when a request was rate-limit rejected.
 	 *
-	 * The newer APIs report nothing but this: an Analytics Data API error body carries
-	 * `code`, `message` and `status`, with no `error.errors` for the client to read a
-	 * reason out of, so a reason alone would miss every Analytics report.
+	 * Newer APIs return nothing but this: an Analytics Data API error body
+	 * returns `code`, `message`, and `status`, with no `error.errors` for the
+	 * client to read, so a reason alone would miss every Analytics report.
 	 *
 	 * @since n.e.x.t
 	 * @var int
