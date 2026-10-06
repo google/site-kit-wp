@@ -19,9 +19,14 @@
 /**
  * Internal dependencies
  */
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import { type Registry } from '@/js/googlesitekit-data';
 import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import {
+	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -209,5 +214,92 @@ describe( 'useFinishSetup', () => {
 		expect( redirectURL.searchParams.get( 'notification' ) ).toEqual(
 			'ads_success'
 		);
+	} );
+
+	describe( 'returning to the feature discovery hub', () => {
+		const HUB_URL =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-features';
+
+		afterEach( async () => {
+			await deleteItem( FEATURE_DISCOVERY_SETUP_CACHE_KEY );
+		} );
+
+		async function finish( moduleSlug: string, redirectURL?: string ) {
+			const { result } = renderHook( () => useFinishSetup( moduleSlug ), {
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			await act( async () => {
+				await result.current( redirectURL );
+			} );
+		}
+
+		it.each( Object.entries( MODULE_SLUG_TO_FEATURE_SLUG ) )(
+			'should return to the hub from %s when a matching record exists',
+			async ( moduleSlug, featureSlug ) => {
+				await setPendingSetup( featureSlug, '/whats-new' );
+
+				await finish( moduleSlug );
+
+				expect( global.location.assign ).toHaveBeenCalledTimes( 1 );
+				expect( getLocationAssignURL() ).toBe( HUB_URL );
+			}
+		);
+
+		it( 'should complete to the dashboard for a module that is not mapped', async () => {
+			await setPendingSetup( 'adsense', '/whats-new' );
+
+			await finish( 'test-module' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should complete to the dashboard when the record belongs to a different feature', async () => {
+			await setPendingSetup( 'ads', '/whats-new' );
+
+			await finish( 'adsense' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should complete to the dashboard when there is no record', async () => {
+			await finish( 'adsense' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should complete to the dashboard when the record has expired', async () => {
+			await setItem(
+				FEATURE_DISCOVERY_SETUP_CACHE_KEY,
+				{ featureSlug: 'adsense', returnTab: '/whats-new' },
+				{ ttl: 60, timestamp: 1 }
+			);
+
+			await finish( 'adsense' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should not affect an explicit redirect URL', async () => {
+			await setPendingSetup( 'adsense', '/whats-new' );
+
+			await finish(
+				'adsense',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=adsense'
+			);
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
 	} );
 } );

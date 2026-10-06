@@ -32,6 +32,7 @@ import { useEffect, useRef } from '@wordpress/element';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DEFAULT_TAB_PATH,
@@ -66,6 +67,12 @@ const FeatureDiscoveryContent: FC = () => {
 		[]
 	);
 
+	const pendingSetup = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).getPendingSetup(),
+		[]
+	);
+
 	const { dismissItem } = useDispatch( CORE_USER );
 	const hasMarkedVisitedRef = useRef( false );
 
@@ -94,9 +101,16 @@ const FeatureDiscoveryContent: FC = () => {
 		!! initialVersion &&
 		compareVersions.compare( initialVersion, HUB_LAUNCH_VERSION, '>=' );
 
-	const defaultPath = isFirstVisitByNewUser
-		? FIRST_VISIT_TAB_PATH
-		: DEFAULT_TAB_PATH;
+	// A user returning from a setup they started on the hub goes back to the
+	// tab they set out from, in place of the usual default.
+	const returnTab =
+		pendingSetup && TAB_PATHS.includes( pendingSetup.returnTab )
+			? pendingSetup.returnTab
+			: undefined;
+
+	const defaultPath =
+		returnTab ||
+		( isFirstVisitByNewUser ? FIRST_VISIT_TAB_PATH : DEFAULT_TAB_PATH );
 
 	return (
 		<Switch>

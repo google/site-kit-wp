@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tab, TabBar } from 'googlesitekit-components';
 import { FEATURE_DISCOVERY_TABS } from '@/js/components/feature-discovery/constants';
+import useConsumePendingSetup from '@/js/components/feature-discovery/useConsumePendingSetup';
 import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
@@ -51,6 +52,7 @@ import FeatureDiscoveryContent from './FeatureDiscoveryContent';
 
 const FeatureDiscoveryApp: FC = () => {
 	useFeatureCountCache();
+	const hasConsumedPendingSetup = useConsumePendingSetup();
 
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
@@ -123,7 +125,9 @@ const FeatureDiscoveryApp: FC = () => {
 									) }
 								</TabBar>
 								<div className="googlesitekit-feature-discovery__content">
-									<FeatureDiscoveryContent />
+									{ hasConsumedPendingSetup && (
+										<FeatureDiscoveryContent />
+									) }
 								</div>
 							</Layout>
 						</Cell>
