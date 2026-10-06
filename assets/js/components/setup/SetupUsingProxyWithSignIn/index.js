@@ -45,7 +45,6 @@ import {
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
@@ -58,9 +57,6 @@ import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const forwardableParams = useForwardableParams();
 	const isIntentSetupFlow = useIsIntentSetupFlow();
 
@@ -134,7 +130,7 @@ export default function SetupUsingProxyWithSignIn() {
 
 		// The intent flow skips the Key Metrics questions, so the dashboard
 		// should not redirect the user to them after setup.
-		if ( setupFlowRefreshPhase4Enabled && ! isIntentSetupFlow ) {
+		if ( ! isIntentSetupFlow ) {
 			setHasSitePurposeAnswer( false );
 			shouldSaveInitialSetupSettings = true;
 		}
@@ -155,7 +151,6 @@ export default function SetupUsingProxyWithSignIn() {
 		saveInitialSetupSettings,
 		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,
-		setupFlowRefreshPhase4Enabled,
 		viewContext,
 	] );
 
@@ -168,10 +163,6 @@ export default function SetupUsingProxyWithSignIn() {
 			try {
 				moduleReauthURL = await setup();
 			} catch {
-				if ( ! setupFlowRefreshPhase4Enabled ) {
-					return;
-				}
-
 				registerNotification( ANALYTICS_ACTIVATION_ERROR_NOTIFICATION, {
 					Component: () => (
 						<AnalyticsActivationErrorNotification
@@ -182,7 +173,6 @@ export default function SetupUsingProxyWithSignIn() {
 					areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
 					viewContexts: [ viewContext ],
 					isDismissible: false,
-					featureFlag: 'setupFlowRefreshPhase4',
 				} );
 
 				return;
@@ -243,7 +233,6 @@ export default function SetupUsingProxyWithSignIn() {
 			proxySetupURL,
 			registerNotification,
 			setup,
-			setupFlowRefreshPhase4Enabled,
 			viewContext,
 		]
 	);

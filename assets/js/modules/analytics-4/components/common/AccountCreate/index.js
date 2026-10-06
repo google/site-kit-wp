@@ -47,7 +47,6 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -74,10 +73,6 @@ import WebDataStreamField from './WebDataStreamField';
 export default function AccountCreate( { className } ) {
 	const { accountCreationErrorCode, showProgress } = getQueryArgs(
 		location.href
-	);
-
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
 	);
 
 	const [ isNavigating, setIsNavigating ] = useState( false );
@@ -129,9 +124,6 @@ export default function AccountCreate( { className } ) {
 			'plugin-conversion-tracking'
 		);
 	} );
-	const dashboardURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )
-	);
 	const sitePurposeSetupURL = useSelect( ( select ) => {
 		const url = select( CORE_SITE ).getAdminURL(
 			'googlesitekit-key-metrics-setup'
@@ -279,21 +271,15 @@ export default function AccountCreate( { className } ) {
 	// initial-setup-flow redirect (in `Screens.php`) doesn't bounce the user
 	// back to the Analytics setup screen.
 	const handleContinueWithoutAnalytics = useCallback( async () => {
-		const nextURL = setupFlowRefreshPhase4Enabled
-			? sitePurposeSetupURL
-			: dashboardURL;
-
 		setIsAnalyticsSetupComplete( true );
 		setIsNavigating( true );
 		await saveInitialSetupSettings();
-		navigateTo( nextURL );
+		navigateTo( sitePurposeSetupURL );
 	}, [
 		navigateTo,
-		dashboardURL,
 		sitePurposeSetupURL,
 		saveInitialSetupSettings,
 		setIsAnalyticsSetupComplete,
-		setupFlowRefreshPhase4Enabled,
 	] );
 
 	if (
