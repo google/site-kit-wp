@@ -26,6 +26,10 @@
 		}
 
 		.googlesitekit-chip-multi-select__item {
+			&.googlesitekit-chip {
+				padding: 6px 14px;
+			}
+
 			&.mdc-chip--selected {
 				gap: 0;
 			}
