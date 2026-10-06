@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useEffect } from '@wordpress/element';
@@ -37,20 +32,14 @@ import PreviewBlock from '@/js/components/PreviewBlock';
 import SurveyViewTrigger from '@/js/components/surveys/SurveyViewTrigger';
 import UserInputPreview from '@/js/components/user-input/UserInputPreview';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { useInView } from '@/js/hooks/useInView';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
-import SettingsKeyMetrics from './SettingsKeyMetrics';
 
 export default function SettingsCardKeyMetrics() {
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const inView = useInView();
-	const isUserInputCompleted = useSelect( ( select ) =>
-		select( CORE_USER ).isUserInputCompleted()
-	);
 	const purposeAnswers = useSelect(
 		( select ) =>
 			select( CORE_USER ).getUserInputSettings()?.purpose?.values || []
@@ -64,27 +53,15 @@ export default function SettingsCardKeyMetrics() {
 		return select( CORE_USER ).isResolving( 'getUserInputSettings', [] );
 	} );
 
-	const isUserInputCompletedLoading = useSelect(
-		( select ) =>
-			! select( CORE_USER ).hasFinishedResolution(
-				'isUserInputCompleted'
-			)
-	);
-
 	const gaEventCategory = `${ viewContext }_kmw`;
 	const isPurposeAnswered = purposeAnswers.length > 0;
 
-	const shouldShowSummary = setupFlowRefreshEnabled
-		? isPurposeAnswered
-		: isUserInputCompleted;
+	const shouldShowSummary = isPurposeAnswered;
 
-	const shouldShowSetupCTA = setupFlowRefreshEnabled
-		? ! isPurposeAnswered && ! isGetUserInputSettingsLoading
-		: isUserInputCompleted === false;
+	const shouldShowSetupCTA =
+		! isPurposeAnswered && ! isGetUserInputSettingsLoading;
 
-	const shouldShowLoading = setupFlowRefreshEnabled
-		? isGetUserInputSettingsLoading
-		: isUserInputCompletedLoading;
+	const shouldShowLoading = isGetUserInputSettingsLoading;
 
 	useEffect( () => {
 		if ( shouldShowSummary ) {
@@ -94,23 +71,11 @@ export default function SettingsCardKeyMetrics() {
 
 	return (
 		<Layout
-			title={
-				setupFlowRefreshEnabled
-					? __( 'Personalized metrics', 'google-site-kit' )
-					: __( 'Key metrics', 'google-site-kit' )
-			}
+			title={ __( 'Personalized metrics', 'google-site-kit' ) }
 			header
 			rounded
 		>
-			<div
-				className={ classnames(
-					'googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input',
-					{
-						'googlesitekit-settings-user-input--setupFlowRefresh':
-							setupFlowRefreshEnabled,
-					}
-				) }
-			>
+			<div className="googlesitekit-settings-module googlesitekit-settings-module--active googlesitekit-settings-user-input googlesitekit-settings-user-input--setupFlowRefresh">
 				{ shouldShowLoading && (
 					<PreviewBlock
 						width="100%"
@@ -120,40 +85,27 @@ export default function SettingsCardKeyMetrics() {
 					/>
 				) }
 				{ shouldShowSummary && (
-					<Fragment>
-						{ ! setupFlowRefreshEnabled && (
-							<SettingsKeyMetrics
-								loading={ isGetUserInputSettingsLoading }
-							/>
-						) }
-
-						<Grid>
-							<Row>
-								<Cell size={ 12 }>
-									<UserInputPreview
-										loading={
-											isGetUserInputSettingsLoading
-										}
-										settingsView
-									/>
-								</Cell>
-							</Row>
-						</Grid>
-					</Fragment>
+					<Grid>
+						<Row>
+							<Cell size={ 12 }>
+								<UserInputPreview
+									loading={ isGetUserInputSettingsLoading }
+									settingsView
+								/>
+							</Cell>
+						</Row>
+					</Grid>
 				) }
 
 				{ shouldShowSetupCTA && (
 					<Fragment>
-						{ ! setupFlowRefreshEnabled && <SettingsKeyMetrics /> }
-						<Fragment>
-							<ConversionReportingSettingsSubtleNotification />
-							{ inView && (
-								<SurveyViewTrigger
-									triggerID="view_kmw_setup_cta"
-									ttl={ WEEK_IN_SECONDS }
-								/>
-							) }
-						</Fragment>
+						<ConversionReportingSettingsSubtleNotification />
+						{ inView && (
+							<SurveyViewTrigger
+								triggerID="view_kmw_setup_cta"
+								ttl={ WEEK_IN_SECONDS }
+							/>
+						) }
 					</Fragment>
 				) }
 			</div>

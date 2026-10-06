@@ -3,7 +3,7 @@
 exports[`AdminMenuTooltip should render when isTooltipVisible is true and track view event 1`] = `
 <div
   aria-modal="true"
-  class="googlesitekit-tour-tooltip googlesitekit-tour-tooltip__fixed-settings-tooltip"
+  class="googlesitekit-tour-tooltip googlesitekit-tour-tooltip--setupFlowRefresh googlesitekit-tour-tooltip__fixed-settings-tooltip"
   role="alertdialog"
 >
   <div
@@ -26,15 +26,15 @@ exports[`AdminMenuTooltip should render when isTooltipVisible is true and track 
     <div
       class="mdc-card__actions googlesitekit-tooltip-actions"
     >
-      <ul
-        class="googlesitekit-tooltip-indicators"
+      <p
+        class="googlesitekit-tooltip-steps"
       />
       <div
         class="googlesitekit-tooltip-buttons"
       >
         <button
           aria-label="Got it"
-          class="mdc-button googlesitekit-tooltip-button"
+          class="mdc-button googlesitekit-tooltip-button googlesitekit-tooltip-button--primary mdc-button--raised"
           data-action="primary"
           role="button"
           target="_self"

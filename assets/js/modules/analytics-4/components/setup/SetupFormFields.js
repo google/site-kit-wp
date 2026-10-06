@@ -26,10 +26,9 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
-import { SIZE_LARGE, SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import { SIZE_LARGE } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import {
 	AccountSelect,
 	PropertyHint,
@@ -73,8 +72,6 @@ export default function SetupFormFields() {
 
 	const { setUseSnippet } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	useEffect( () => {
 		if ( hasExistingTag ) {
 			setUseSnippet( existingTag !== measurementID );
@@ -92,7 +89,7 @@ export default function SetupFormFields() {
 			{ !! accounts.length && (
 				<P
 					className="googlesitekit-setup-module__select_account"
-					size={ setupFlowRefreshEnabled ? SIZE_LARGE : SIZE_MEDIUM }
+					size={ SIZE_LARGE }
 				>
 					{ __(
 						'Please select the account information below. You can change this later in your settings.',
@@ -112,16 +109,14 @@ export default function SetupFormFields() {
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled &&
-						isValidAccountID( accountID ) && <PropertyHint /> }
+					{ isValidAccountID( accountID ) && <PropertyHint /> }
 				</div>
 				<div className="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream">
 					<WebDataStreamSelect
 						onChange={ resetEnhancedMeasurementSetting }
 						hasModuleAccess
 					/>
-					{ setupFlowRefreshEnabled &&
-						isValidAccountID( accountID ) && <WebDataStreamHint /> }
+					{ isValidAccountID( accountID ) && <WebDataStreamHint /> }
 				</div>
 			</div>
 
