@@ -173,8 +173,6 @@ describe( 'Error Utilities', () => {
 	} );
 
 	describe( 'isRateLimitError', () => {
-		// Written out rather than imported from the constants, so a typo in a
-		// constant fails here instead of being fed back into its own assertion.
 		it.each( [
 			[ 'rateLimitExceeded' ],
 			[ 'userRateLimitExceeded' ],
