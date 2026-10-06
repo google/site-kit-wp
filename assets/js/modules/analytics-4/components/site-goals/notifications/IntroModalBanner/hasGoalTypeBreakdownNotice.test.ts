@@ -249,7 +249,7 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		).getAvailableCustomDimensions();
 	} );
 
-	it( 'returns false while the site goals settings have not loaded', () => {
+	it( 'returns false while the site goals settings have not loaded', async () => {
 		muteFetch( siteGoalsSettingsEndpoint );
 		provideCustomDimensions();
 		provideDismissedItems();
@@ -265,6 +265,14 @@ describe( 'hasGoalTypeBreakdownNotice', () => {
 		expect(
 			hasGoalTypeBreakdownNotice( select, GOAL_TYPES.ECOMMERCE )
 		).toBe( false );
+
+		// Wait for the resolver to finish its settings request. The resolver
+		// awaits the module connection check before it fetches, so without this
+		// wait the request can run after fetch-mock resets for the next test.
+		await untilResolved(
+			registry,
+			MODULES_ANALYTICS_4
+		).getSiteGoalsSettings();
 	} );
 
 	it( 'returns false while the dismissed items have not loaded', () => {

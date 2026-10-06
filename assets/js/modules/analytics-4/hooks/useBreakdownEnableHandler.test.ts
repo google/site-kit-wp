@@ -42,6 +42,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -55,10 +56,7 @@ import {
 	provideUserCapabilities,
 	renderHook,
 } from '@tests/js/test-utils';
-import {
-	ALL_CUSTOM_DIMENSIONS,
-	useBreakdownEnableHandler,
-} from './useBreakdownEnableHandler';
+import { useBreakdownEnableHandler } from './useBreakdownEnableHandler';
 
 describe( 'useBreakdownEnableHandler', () => {
 	let registry: WPDataRegistry;
@@ -79,7 +77,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Gets whether conversion tracking is enabled in the store.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {boolean|undefined} Whether conversion tracking is enabled, or `undefined` while it loads.
 	 */
@@ -90,7 +88,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Sets up a site that does not track conversions yet.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -103,7 +101,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Mocks the endpoints that create and sync the custom dimensions.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {void}
 	 */
@@ -123,7 +121,7 @@ describe( 'useBreakdownEnableHandler', () => {
 	/**
 	 * Renders the enable handler for the lead generation widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {Object} The render result.
 	 */
@@ -160,16 +158,6 @@ describe( 'useBreakdownEnableHandler', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
-		// createCustomDimensions reads the key-metric settings to find required
-		// dimensions, so set them here to avoid extra network requests.
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( {} );
 	} );
 
 	it( 'triggers the OAuth flow and records the form state when the edit scope is missing', async () => {

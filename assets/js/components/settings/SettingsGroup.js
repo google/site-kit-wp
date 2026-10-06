@@ -26,6 +26,7 @@ import PropTypes from 'prop-types';
  * Internal dependencies
  */
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 
 export default function SettingsGroup( { title, children, className } ) {
 	return (
@@ -35,7 +36,12 @@ export default function SettingsGroup( { title, children, className } ) {
 				className
 			) }
 		>
-			<Typography as="h4" size="medium" type="title">
+			<Typography
+				as="h4"
+				className="googlesitekit-module-settings-group__title"
+				size={ SIZE_MEDIUM }
+				type={ TYPE_TITLE }
+			>
 				{ title }
 			</Typography>
 			{ children }

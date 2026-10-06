@@ -198,6 +198,12 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			// The notification is only for sites with Analytics connected.
+			// Checking the connection first also keeps
+			// `requireModuleGatheringData()` from requesting a report for an
+			// inactive module, which fails with "Module must be active to
+			// request data."
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequire(
 				false,
 				requireModuleGatheringData( MODULES_ANALYTICS_4 )
@@ -208,7 +214,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			),
 			requireIsAuthenticated()
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	[ ACTIVATE_ANALYTICS_NOTIFICATION ]: {
 		Component: ActivateAnalyticsNotification,
@@ -229,7 +234,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			requireIsAuthenticated(),
 			requireCanActivateModule( MODULE_SLUG_ANALYTICS_4 )
 		),
-		featureFlag: 'setupFlowRefresh',
 	},
 	'authentication-error': {
 		Component: UnsatisfiedScopesAlert,
@@ -712,7 +716,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
-		featureFlag: 'setupFlowRefresh',
 		checkRequirements: asyncRequireAll(
 			requireAccessToFeatureTour(),
 			asyncRequireAny( requireDataGatheringCompleteModalActive(), () =>

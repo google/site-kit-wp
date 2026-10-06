@@ -19,6 +19,7 @@ use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Assets\Script;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Modules\Analytics_4\Tag_Matchers;
@@ -69,6 +70,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Ads_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Adsense_Links;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Benchmarking_Data;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Lookup;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Container_Destinations;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
@@ -284,6 +286,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 *
 	 * @since 1.30.0
 	 * @since 1.101.0 Added a filter hook to add the required `https://www.googleapis.com/auth/tagmanager.readonly` scope for GTE support.
+	 * @since n.e.x.t The `googlesitekit_proxy_setup_mode` callback no longer overrides a mode that is already set.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -483,15 +486,15 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		add_filter( 'googlesitekit_allow_tracking_disabled', $this->get_method_proxy( 'filter_analytics_allow_tracking_disabled' ) );
 
 		// This hook adds the "Set up Google Analytics" step to the Site Kit
-		// setup flow.
+		// setup flow, unless the mode is already set.
 		//
 		// This filter is documented in
 		// Core\Authentication\Google_Proxy::get_metadata_fields.
 		add_filter(
 			'googlesitekit_proxy_setup_mode',
 			function ( $original_mode ) {
-				return ! $this->is_connected()
-					? 'analytics-step'
+				return empty( $original_mode ) && ! $this->is_connected()
+					? Google_Proxy::SETUP_MODE_ANALYTICS_STEP
 					: $original_mode;
 			}
 		);
@@ -1092,6 +1095,18 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			),
 		);
 
+		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
+			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
+				array(
+					'module'  => $this,
+					'service' => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'context' => $this->context,
+				)
+			);
+		}
+
 		return $this->datapoints;
 	}
 
@@ -1266,8 +1281,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		}
 
 		// `show_progress` is set on the provisioning redirect URI by `Create_Account_Ticket`
-		// when the user is in the initial setup flow with the `setupFlowRefresh` feature
-		// flag enabled, and is therefore present on the callback URL when applicable.
+		// when the user is in the initial setup flow, and is therefore present on the callback
+		// URL when applicable.
 		$show_progress = (bool) $input->filter( INPUT_GET, 'show_progress' );
 
 		// Verify the nonce added to the provisioning redirect URI by
@@ -1338,24 +1353,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		$this->provision_property_webdatastream( $account_id, $account_ticket );
 
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			wp_safe_redirect(
-				$this->context->admin_url(
-					'key-metrics-setup',
-					array(
-						'showProgress' => $show_progress ? 'true' : null,
-					)
-				)
-			);
-			exit;
-		}
-
 		wp_safe_redirect(
 			$this->context->admin_url(
-				'dashboard',
+				'key-metrics-setup',
 				array(
-					'notification' => 'authentication_success',
-					'slug'         => 'analytics-4',
+					'showProgress' => $show_progress ? 'true' : null,
 				)
 			)
 		);
@@ -1366,10 +1368,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Builds the redirect URL for an error encountered during the Analytics
 	 * account provisioning callback.
 	 *
-	 * When the `setupFlowRefresh` feature flag is enabled, the user is
-	 * redirected back to the Analytics setup screen so the error can be
-	 * surfaced inline. Otherwise, the legacy dashboard redirect with the
-	 * `error_code` query parameter is used.
+	 * The user is redirected back to the Analytics setup screen so the error can
+	 * be surfaced inline.
 	 *
 	 * @since 1.180.0
 	 *
@@ -1379,32 +1379,28 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return string The URL to redirect to.
 	 */
 	private function get_provisioning_callback_error_redirect_url( $error_code, $show_progress ) {
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			// If the account creation was triggered from the settings edit screen,
-			// redirect back to the settings edit screen with the error code.
-			if ( $this->is_connected() ) {
-				return add_query_arg(
-					array(
-						'accountCreationErrorCode' => $error_code,
-					),
-					$this->context->admin_url( 'settings' )
-				) . '#connected-services/analytics-4/edit';
-			}
-
-			$args = array(
-				'slug'                     => 'analytics-4',
-				'reAuth'                   => 'true',
-				'accountCreationErrorCode' => $error_code,
-			);
-
-			if ( $show_progress ) {
-				$args['showProgress'] = 'true';
-			}
-
-			return $this->context->admin_url( 'dashboard', $args );
+		// If the account creation was triggered from the settings edit screen,
+		// redirect back to the settings edit screen with the error code.
+		if ( $this->is_connected() ) {
+			return add_query_arg(
+				array(
+					'accountCreationErrorCode' => $error_code,
+				),
+				$this->context->admin_url( 'settings' )
+			) . '#connected-services/analytics-4/edit';
 		}
 
-		return $this->context->admin_url( 'dashboard', array( 'error_code' => $error_code ) );
+		$args = array(
+			'slug'                     => 'analytics-4',
+			'reAuth'                   => 'true',
+			'accountCreationErrorCode' => $error_code,
+		);
+
+		if ( $show_progress ) {
+			$args['showProgress'] = 'true';
+		}
+
+		return $this->context->admin_url( 'dashboard', $args );
 	}
 
 	/**
@@ -2080,10 +2076,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return string[] Refined array of requested scopes.
 	 */
 	private function get_refined_scopes( $scopes = array() ) {
-		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			return $scopes;
-		}
-
 		if ( ! $this->authentication->is_authenticated() ) {
 			$scopes[] = self::EDIT_SCOPE;
 			return $scopes;

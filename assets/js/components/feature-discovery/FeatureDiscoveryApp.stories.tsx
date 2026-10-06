@@ -140,7 +140,7 @@ WhatsNewEmpty.args = {
 		provideWhatsNewState( registry );
 	},
 };
-// TODO: #13327 -- Enable the VRT scenario once the empty tab's CTA lands.
+WhatsNewEmpty.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureDiscoveryApp',

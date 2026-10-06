@@ -134,11 +134,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 					connected: false,
 				},
 			] );
+			provideSiteInfo( registry, { wooCommerceActive: false } );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: false,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
@@ -162,11 +160,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 					connected: false,
 				},
 			] );
+			provideSiteInfo( registry, { wooCommerceActive: true } );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
@@ -186,11 +182,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 			// With the `ads` module absent from the module list,
 			// isModuleConnected() resolves to `null` rather than `false`.
 			registry.dispatch( CORE_MODULES ).receiveGetModules( [] );
+			provideSiteInfo( registry, { wooCommerceActive: true } );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,
@@ -214,11 +208,9 @@ describe( 'AccountLinkedViaGoogleForWooCommerceSubtleNotification.test', () => {
 					connected: true,
 				},
 			] );
+			provideSiteInfo( registry, { wooCommerceActive: true } );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,

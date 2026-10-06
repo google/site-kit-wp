@@ -350,7 +350,7 @@ const baseSelectors = {
 	 * dimension's — are each looked up on demand, so badges would otherwise appear one by
 	 * one as the answers land.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object}   state                 Data store's state.
 	 * @param {string[]} audienceResourceNames Resource names of the audiences on show.
@@ -427,7 +427,7 @@ const baseSelectors = {
 	 * A tile shows one badge at most. The property's own partial data covers the whole
 	 * tile, so it clears this one, and a Site Kit audience never shows it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {string} audienceResourceName Audience resource name.
@@ -474,7 +474,7 @@ const baseSelectors = {
 	 * The badge beside the audience name takes precedence, so this one only shows once
 	 * both the property and the audience have finished collecting.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object} state                Data store's state.
 	 * @param {string} audienceResourceName Audience resource name.

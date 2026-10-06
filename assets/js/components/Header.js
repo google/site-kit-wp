@@ -37,7 +37,6 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import useDashboardType from '@/js/hooks/useDashboardType';
-import { useGlobalTrackingEffect } from '@/js/hooks/useGlobalTrackingEffect';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
 import DashboardNavigation from './DashboardNavigation';
@@ -52,7 +51,6 @@ import ViewOnlyMenu from './ViewOnlyMenu';
 function Header( { children, subHeader, showNavigation } ) {
 	const isDashboard = !! useDashboardType();
 	const isViewOnly = useViewOnly();
-	useGlobalTrackingEffect();
 
 	const dashboardURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' )

@@ -26,7 +26,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDimensionStringToDate';
-import { stringToDate } from '@/js/util';
+import { DAY_IN_SECONDS, stringToDate } from '@/js/util';
 
 export interface TrafficChartColumn {
 	/** The column type: `date` for the day, `number` for the visitors. */
@@ -49,6 +49,8 @@ export interface TrafficChartDataOptions {
 	startDate: string;
 	/** The last day of the selected range, as `YYYY-MM-DD`. */
 	endDate: string;
+	/** Whether the Analytics property is still gathering data. */
+	gatheringData?: boolean;
 }
 
 export interface TrafficChartData {
@@ -63,7 +65,7 @@ export interface TrafficChartData {
 /**
  * Turns the report's rows into the chart's points.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} rows The daily-visitors report rows.
  * @return {Array<Array>} One `[ day, visitors ]` point for each row that has a day.
@@ -92,7 +94,7 @@ function getReportPoints( rows: ReportRow[] ): TrafficChartPoint[] {
  * The date labels skip the first day, so the second day gives the axis a label
  * near its start.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
  * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
@@ -113,24 +115,55 @@ function getZeroVisitorPoints(
 }
 
 /**
+ * Lists every day from the day after the range's first day through its last
+ * day.
+ *
+ * @since 1.189.0
+ *
+ * @param {string} startDate The range's first day, as `YYYY-MM-DD`.
+ * @param {string} endDate   The range's last day, as `YYYY-MM-DD`.
+ * @return {Array<Date>} One `Date` for each of those days.
+ */
+function getDailyTicks( startDate: string, endDate: string ): Date[] {
+	// Rounding absorbs the hour a daylight-saving change adds or removes.
+	const days = Math.round(
+		( stringToDate( endDate ).getTime() -
+			stringToDate( startDate ).getTime() ) /
+			( DAY_IN_SECONDS * 1000 )
+	);
+
+	return Array.from( { length: days }, ( _value, index ) => {
+		const day = stringToDate( startDate );
+		day.setDate( day.getDate() + index + 1 );
+
+		return day;
+	} );
+}
+
+/**
  * Builds the chart table from the daily-visitors report.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
- * @param {Object} options           Options.
- * @param {Object} [options.report]  Optional. The daily-visitors report.
- * @param {string} options.startDate The range's first day, as `YYYY-MM-DD`.
- * @param {string} options.endDate   The range's last day, as `YYYY-MM-DD`.
+ * @param {Object}  options                 Options.
+ * @param {Object}  [options.report]        Optional. The daily-visitors report.
+ * @param {string}  options.startDate       The range's first day, as `YYYY-MM-DD`.
+ * @param {string}  options.endDate         The range's last day, as `YYYY-MM-DD`.
+ * @param {boolean} [options.gatheringData] Optional. Whether the property is still gathering data.
  * @return {Object} The chart table, the days the axis shows a date label under, and whether the range has visitors.
  */
 export function getTrafficChartData( {
 	report,
 	startDate,
 	endDate,
+	gatheringData = false,
 }: TrafficChartDataOptions ): TrafficChartData {
-	const points = report?.rows?.length
-		? getReportPoints( report.rows )
-		: getZeroVisitorPoints( startDate, endDate );
+	// A property still gathering data shows no visitors, so the chart draws a
+	// flat line at zero whatever the report holds.
+	const points =
+		! gatheringData && report?.rows?.length
+			? getReportPoints( report.rows )
+			: getZeroVisitorPoints( startDate, endDate );
 
 	const totalUsers = parseInt(
 		report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? '',
@@ -147,7 +180,9 @@ export function getTrafficChartData( {
 		],
 		// Google Charts hides the first day's label against the edge of the
 		// chart area, so the labels start on the second day.
-		ticks: points.slice( 1 ).map( ( [ date ] ) => date ),
-		hasVisitors: totalUsers > 0,
+		ticks: gatheringData
+			? getDailyTicks( startDate, endDate )
+			: points.slice( 1 ).map( ( [ date ] ) => date ),
+		hasVisitors: ! gatheringData && totalUsers > 0,
 	};
 }

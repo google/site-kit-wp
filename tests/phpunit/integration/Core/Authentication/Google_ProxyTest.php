@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Authentication\Verification_Evidence;
 use Google\Site_Kit\Core\Authentication\Verification_Meta;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Tests\MutableInput;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use WP_Error;
@@ -27,7 +28,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
  * @group Authentication
  */
 class Google_ProxyTest extends TestCase {
-
 	use Fake_Site_Connection_Trait;
 
 	/**
@@ -61,7 +61,7 @@ class Google_ProxyTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
-		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$this->context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
 		$this->google_proxy = new Google_Proxy( $this->context );
 	}
 
@@ -82,7 +82,7 @@ class Google_ProxyTest extends TestCase {
 				'foo'     => 'foo-789',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
 
 		$url = $this->google_proxy->setup_url(
 			array(
@@ -90,7 +90,7 @@ class Google_ProxyTest extends TestCase {
 				'site_code' => 'site_code-456',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v2/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
 
 		// Check an exception is thrown when `code` query param is not passed.
 		try {
@@ -109,22 +109,7 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
-	public function test_setup_url__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
-
-		$url = $this->google_proxy->setup_url(
-			array(
-				'code'    => 'code-123',
-				'site_id' => 'site_id-456',
-				'foo'     => 'foo-789',
-			)
-		);
-
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should use the v3 route and  match the expected format with query parameters.' );
-	}
-
 	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(
@@ -143,7 +128,6 @@ class Google_ProxyTest extends TestCase {
 	}
 
 	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		add_filter(
@@ -195,25 +179,35 @@ class Google_ProxyTest extends TestCase {
 		);
 	}
 
-	public function test_get_site_fields() {
-		$this->assertEqualSetsWithIndex(
-			array(
-				'url'                    => home_url(),
-				'action_uri'             => admin_url( 'index.php' ),
-				'name'                   => get_bloginfo( 'name' ),
-				'return_uri'             => $this->context->admin_url( 'splash' ),
-				'redirect_uri'           => add_query_arg( 'oauth2callback', 1, admin_url( 'index.php' ) ),
-				'analytics_redirect_uri' => add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) ),
-				'intent_uri'             => $this->context->admin_url( 'dashboard' ),
-			),
-			$this->google_proxy->get_site_fields(),
-			'Site fields should contain all required site information.'
-		);
+	public function test_get_metadata_fields__intent_purpose() {
+		$_GET['purpose'] = 'intent';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( 'intent-step', $metadata['mode'], 'The mode should be `intent-step` when the request has `purpose=intent`.' );
 	}
 
-	public function test_get_site_fields__with_setup_flow_refresh_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_get_metadata_fields__no_purpose() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
 
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has no `purpose`.' );
+	}
+
+	public function test_get_metadata_fields__other_purpose() {
+		$_GET['purpose'] = 'something-else';
+
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+
+		$metadata = $this->google_proxy->get_metadata_fields();
+
+		$this->assertSame( '', $metadata['mode'], 'The mode should be empty when the request has a `purpose` other than `intent`.' );
+	}
+
+	public function test_get_site_fields() {
 		$this->assertEqualSetsWithIndex(
 			array(
 				'url'                    => home_url(),
@@ -491,7 +485,6 @@ class Google_ProxyTest extends TestCase {
 		wp_set_current_user( $user_id );
 		( new User_Options( $this->context, $user_id ) )->set( Verification_Meta::OPTION, 'meta-token' );
 
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(

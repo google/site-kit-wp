@@ -24,6 +24,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import {
+	getValueAxisFormat,
+	getValueAxisGutter,
+	pickDateTicks,
+} from '@/js/components/pdf-export/chart-axis';
 import ensureGoogleChartsLoaded from '@/js/components/pdf-export/ensure-google-charts-loaded';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import renderGoogleChartToDataURI, {
@@ -50,15 +55,19 @@ import parseDimensionStringToDate from '@/js/modules/analytics-4/utils/parseDime
 export type { TrafficBreakdownRow };
 
 /**
- * The chart draws at 1085 by 133, and the tile displays the image in a
- * box of the same size, so the image never stretches and no empty space
- * appears around it. 1085 is the full-width card's content width in the
- * Figma design (1133 minus `PDFCard`'s 24px padding on each side); unlike
- * the old All Traffic widget's narrower, two-up card, this card spans the
- * page on its own.
+ * The chart fills `PDFCard`'s content width, and `TrafficOverviewPDF` shows it
+ * in a box of the same size, so the image never stretches. 1085 is `PDFCard`'s
+ * content width in the Figma design: 1133 minus `PDFCard`'s 24px padding on
+ * each side.
  */
 const LINE_CHART_WIDTH = 1085;
 const LINE_CHART_HEIGHT = 133;
+
+/**
+ * How many times bigger than its display size the line chart renders, so the
+ * line stays sharp in the PDF.
+ */
+const LINE_CHART_SCALE_FACTOR = 2;
 
 export interface GetPDFDataParams {
 	/** WordPress data registry. */
@@ -82,7 +91,7 @@ export interface GetPDFDataParams {
 	signal: AbortSignal;
 }
 
-export interface AllTrafficPDFData {
+export interface TrafficOverviewPDFData {
 	/** Loaded reports and breakdown rows, or `null` when the export is canceled. */
 	data: {
 		/** GA4 totals report with the current and comparison range totals. */
@@ -116,7 +125,7 @@ interface LineChartPoint {
  * Rows whose date fails to parse are dropped, matching the dashboard's
  * tolerance for malformed dimension values.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} graphReport Date-dimension GA4 report.
  * @return {Array<Object>} Points of `{ date, value }`, ordered as returned.
@@ -145,10 +154,10 @@ function getLineChartPoints( graphReport: Report ): LineChartPoint[] {
 /**
  * Builds the Google Charts `DataTable` for the All Visitors line chart.
  *
- * Mirrors the dashboard's `UserCountGraph` shape: a date column followed by a
- * total-users column.
+ * The table has the same columns as the dashboard chart's table, which
+ * `getTrafficChartData()` builds.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} A `google.visualization.DataTable` instance.
@@ -172,17 +181,19 @@ function buildLineChartDataTable( points: LineChartPoint[] ): object {
 /**
  * Builds Google Charts options matching the Traffic Overview card's line chart.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} points Parsed chart points.
  * @return {Object} Google Charts options object.
  */
 function getLineChartOptions( points: LineChartPoint[] ): object {
-	// A tick per day, dropping the first so a tick sits at the range start,
-	// matching the dashboard's `UserCountGraph`.
-	const [ , ...ticks ] = points.map( ( { date } ) => date );
-
-	const hasData = points.some( ( { value } ) => value > 0 );
+	const fontSize = 14;
+	const chartAreaLeft = 8;
+	const maxValue = points.reduce(
+		( highest, { value } ) => Math.max( highest, value ),
+		0
+	);
+	const valueAxisGutter = getValueAxisGutter( maxValue, fontSize );
 
 	return {
 		curveType: 'function',
@@ -191,8 +202,8 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 		// dashboard's line chart draws in.
 		colors: [ PDF_COLORS.VIOLET_V_600 ],
 		chartArea: {
-			left: 8,
-			right: 40,
+			left: chartAreaLeft,
+			right: valueAxisGutter,
 			top: 16,
 			bottom: 28,
 		},
@@ -200,7 +211,6 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			position: 'none',
 		},
 		hAxis: {
-			format: 'MMM d',
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE,
 			},
@@ -208,11 +218,18 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
-			ticks,
+			ticks: pickDateTicks(
+				points.map( ( { date } ) => date ),
+				LINE_CHART_WIDTH * LINE_CHART_SCALE_FACTOR -
+					chartAreaLeft -
+					valueAxisGutter,
+				fontSize
+			),
 		},
 		vAxis: {
+			format: getValueAxisFormat( maxValue ),
 			gridlines: {
 				color: PDF_COLORS.SURFACES_SURFACE_1,
 			},
@@ -225,12 +242,13 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
 			textStyle: {
 				color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 				fontName: 'Google Sans Text',
-				fontSize: 14,
+				fontSize,
 			},
 			viewWindow: {
 				min: 0,
-				// Cap the empty-data axis so a flat zero line still reads well.
-				...( hasData ? {} : { max: 100 } ),
+				// With no data, stop the axis at 100, so the flat line at zero is
+				// still easy to read.
+				...( maxValue > 0 ? {} : { max: 100 } ),
 			},
 		},
 		series: {
@@ -255,7 +273,7 @@ function getLineChartOptions( points: LineChartPoint[] ): object {
  * use, so the printed rows always match. A breakdown whose report failed gives
  * `null` rows, and the other breakdowns still render.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object}      params          Loader parameters.
  * @param {Object}      params.registry WordPress data registry.
@@ -267,7 +285,7 @@ export default async function getPDFData( {
 	registry,
 	dates,
 	signal,
-}: GetPDFDataParams ): Promise< AllTrafficPDFData > {
+}: GetPDFDataParams ): Promise< TrafficOverviewPDFData > {
 	if ( signal.aborted ) {
 		return { data: null };
 	}
@@ -354,6 +372,7 @@ export default async function getPDFData( {
 		options: getLineChartOptions( points ),
 		width: LINE_CHART_WIDTH,
 		height: LINE_CHART_HEIGHT,
+		scaleFactor: LINE_CHART_SCALE_FACTOR,
 		signal,
 	} );
 

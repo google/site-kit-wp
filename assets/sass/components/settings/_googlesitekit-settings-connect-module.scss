@@ -58,10 +58,7 @@
 		}
 
 		.googlesitekit-settings-connect-module__text {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
-			margin: 0;
+			margin-block-start: 0;
 		}
 
 		.googlesitekit-settings-connect-module__switch {
@@ -70,11 +67,6 @@
 			.spinner {
 				margin-top: -5px;
 			}
-		}
-
-		.googlesitekit-settings-connect-module__cta {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
 		}
 	}
 }

@@ -16,12 +16,35 @@
  * limitations under the License.
  */
 
-// TODO: #13327 -- Add the empty tab's styles here.
 .googlesitekit-plugin {
 
 	.googlesitekit-whats-new {
 		display: block;
 		padding-block: 10px;
+
+		.googlesitekit-whats-new__empty-state {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			margin-inline: auto;
+			max-inline-size: 662px;
+			padding-block-start: 8px;
+			text-align: center;
+			text-wrap: balance;
+
+			img {
+				display: block;
+				max-width: 179px;
+			}
+		}
+
+		.googlesitekit-whats-new__empty-state-heading {
+			margin: 18px 0 8px;
+		}
+
+		.googlesitekit-whats-new__empty-state-description {
+			margin: 0 0 24px;
+		}
 	}
 
 	.googlesitekit-whats-new__notifications {

@@ -38,7 +38,7 @@ const store = combineStores(
 /**
  * Registers the `core/intents` data store on a registry.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} registry The registry to register the data store on.
  * @return {void}

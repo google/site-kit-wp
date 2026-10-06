@@ -148,7 +148,7 @@ export const actions = {
 	/**
 	 * Starts the setup for the feature registered under a given slug.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Object} Empty object.

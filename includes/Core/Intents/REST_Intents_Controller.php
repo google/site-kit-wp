@@ -21,7 +21,7 @@ use WP_REST_Server;
 /**
  * Class for the REST routes that get and complete an intent.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */
@@ -30,7 +30,7 @@ class REST_Intents_Controller {
 	/**
 	 * Intents instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var Intents
 	 */
 	private $intents;
@@ -38,7 +38,7 @@ class REST_Intents_Controller {
 	/**
 	 * Authentication instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var Authentication
 	 */
 	private $authentication;
@@ -46,7 +46,7 @@ class REST_Intents_Controller {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Intents        $intents        Intents instance.
 	 * @param Authentication $authentication Authentication instance.
@@ -59,7 +59,7 @@ class REST_Intents_Controller {
 	/**
 	 * Registers the intent REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	public function register() {
 		add_filter(
@@ -71,7 +71,7 @@ class REST_Intents_Controller {
 	/**
 	 * Gets the intent REST routes.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return REST_Route[] List of `REST_Route` objects for the `core/intents/data/intent` and `core/intents/data/complete-intent` routes.
 	 */
@@ -140,7 +140,7 @@ class REST_Intents_Controller {
 	/**
 	 * Sends an intent request to the Site Kit Service for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $proxy_method `Google_Proxy` method to call, either `get_intent` or `complete_intent`.
 	 * @param string $slug         Intent slug.
@@ -175,7 +175,7 @@ class REST_Intents_Controller {
 	/**
 	 * Creates an intent error.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $error_code Error code, either `intent_not_found` or `intent_user_not_connected`.
 	 * @return WP_Error Error with a translated message and an HTTP status.

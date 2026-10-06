@@ -17,7 +17,7 @@
  */
 
 .googlesitekit-pdf-report-progress-snackbar {
-	&.googlesitekit-notice-snackbar {
+	&.googlesitekit-notice--snackbar {
 		// Override the snackbar's base `padding-top` so content stays aligned with the progress bar pinned on top.
 		// = 2 × snackbar's base `padding-top` + bar height (8px)
 		padding-top: 36px;
@@ -28,12 +28,6 @@
 
 		.mdc-button--tertiary:not(:disabled) {
 			color: $c-surfaces-inverse-on-surface;
-		}
-
-		.googlesitekit-notice__content p {
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
 		}
 	}
 

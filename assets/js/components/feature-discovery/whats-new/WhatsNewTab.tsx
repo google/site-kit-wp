@@ -20,18 +20,28 @@
  * External dependencies
  */
 import { FC } from 'react';
+import { useHistory } from 'react-router-dom';
 
 /**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import { Button } from 'googlesitekit-components';
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import FeatureListItem from '@/js/components/feature-discovery/FeatureListItem';
 import Notifications from '@/js/components/notifications/Notifications';
+import Typography from '@/js/components/Typography';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_HEADLINE,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
@@ -40,8 +50,15 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
+import whatsNewEmptyURL from '@/svg/graphics/whats-new-empty.svg?path';
 
 const WhatsNewTab: FC = () => {
+	const history = useHistory();
+
+	function onClickEmpty() {
+		history.push( '/all-services' );
+	}
+
 	// The list is held in state so that marking its features seen, which
 	// changes how they sort, doesn't reorder the list under the user.
 	const [ features, setFeatures ] = useState< Feature[] | undefined >();
@@ -97,12 +114,41 @@ const WhatsNewTab: FC = () => {
 				/>
 			</div>
 			{ visibleFeatures.length === 0 ? (
-				// TODO: #13327 -- Replace this placeholder with the empty
-				// tab's icon, copy and CTA.
-				<p className="googlesitekit-whats-new__empty-state">
-					Feature Discovery Hub tab panel placeholder: nothing new to
-					show.
-				</p>
+				<div className="googlesitekit-whats-new__empty-state">
+					<img
+						src={ whatsNewEmptyURL }
+						alt=""
+						width={ 189 }
+						height={ 193 }
+					/>
+
+					<Typography
+						as="h2"
+						className="googlesitekit-whats-new__empty-state-heading"
+						size={ SIZE_SMALL }
+						type={ TYPE_HEADLINE }
+					>
+						{ __( 'You’re up to date!', 'google-site-kit' ) }
+					</Typography>
+
+					<P
+						className="googlesitekit-whats-new__empty-state-description"
+						size={ SIZE_MEDIUM }
+					>
+						{ __(
+							'There are no new feature announcements right now, but you can explore other features that will help you grow your site',
+							'google-site-kit'
+						) }
+					</P>
+
+					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
+					<Button
+						className="googlesitekit-whats-new__empty-state-button"
+						onClick={ onClickEmpty }
+					>
+						{ __( 'Explore features', 'google-site-kit' ) }
+					</Button>
+				</div>
 			) : (
 				visibleFeatures.map( ( feature ) => (
 					<FeatureListItem

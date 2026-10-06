@@ -43,12 +43,9 @@ export default {
 	decorators: [
 		( Story ) => {
 			function setupRegistry( registry ) {
-				provideSiteInfo( registry );
+				provideSiteInfo( registry, { wooCommerceActive: true } );
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
 					plugins: {
-						[ PLUGINS.WOOCOMMERCE ]: {
-							active: true,
-						},
 						[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 							active: true,
 							adsConnected: true,

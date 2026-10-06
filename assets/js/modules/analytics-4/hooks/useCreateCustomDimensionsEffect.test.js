@@ -26,9 +26,9 @@ import fetchMock from 'fetch-mock';
  */
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -64,18 +64,6 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 			},
 		] );
 		registry.dispatch( CORE_SITE ).setKeyMetricsSetupCompletedBy( 0 );
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
-			purpose: { values: [], scope: 'site' },
-			postFrequency: { values: [], scope: 'user' },
-			goals: { values: [], scope: 'user' },
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( {} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
 			availableCustomDimensions: [],
@@ -88,7 +76,7 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
 	} );
 
-	it( 'creates explicit custom dimensions after OAuth even when key metrics setup is not completed', async () => {
+	it( 'creates every custom dimension after OAuth for an explicit request, even when key metrics setup is not completed', async () => {
 		registry
 			.dispatch( CORE_FORMS )
 			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
@@ -96,27 +84,20 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 				customDimensions: [ 'googlesitekit_post_author' ],
 			} );
 
-		fetchMock.postOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			),
-			{
-				body: {
-					parameterName: 'googlesitekit_post_author',
-					displayName: 'WordPress Post Author',
-					description:
-						'Created by Site Kit: WordPress name of the post author',
-					scope: 'EVENT',
-				},
-				status: 200,
-			}
+		const createEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 		);
+		// Respond to each create request with the dimension it was sent.
+		fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+			body: JSON.parse( body ).data.customDimension,
+			status: 200,
+		} ) );
 		fetchMock.postOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 			),
 			{
-				body: [ 'googlesitekit_post_author' ],
+				body: ALL_CUSTOM_DIMENSIONS,
 				status: 200,
 			}
 		);
@@ -124,8 +105,15 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 		render( <TestComponent />, { registry } );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes(
+				ALL_CUSTOM_DIMENSIONS.length + 1
+			);
 		} );
+
+		expect( fetchMock ).toHaveFetchedTimes(
+			ALL_CUSTOM_DIMENSIONS.length,
+			createEndpoint
+		);
 
 		expect(
 			registry
@@ -144,6 +132,6 @@ describe( 'useCreateCustomDimensionsEffect', () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )
 				.getAvailableCustomDimensions()
-		).toEqual( [ 'googlesitekit_post_author' ] );
+		).toEqual( ALL_CUSTOM_DIMENSIONS );
 	} );
 } );

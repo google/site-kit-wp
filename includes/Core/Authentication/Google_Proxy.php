@@ -34,7 +34,6 @@ class Google_Proxy {
 	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
 	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
 	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
-	const SETUP_URI                 = '/v2/site-management/setup/';
 	const SETUP_V3_URI              = '/v3/site-management/setup/';
 	const PERMISSIONS_URI           = '/site-management/permissions/';
 	const FEATURES_URI              = '/site-management/features/';
@@ -50,6 +49,10 @@ class Google_Proxy {
 	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
 	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
 	const HEADER_REDIRECT_TO        = 'Redirect-To';
+	const PARAM_PURPOSE             = 'purpose';
+	const PURPOSE_INTENT            = 'intent';
+	const SETUP_MODE_ANALYTICS_STEP = 'analytics-step';
+	const SETUP_MODE_INTENT_STEP    = 'intent-step';
 
 	/**
 	 * Plugin context.
@@ -126,7 +129,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
-	 * @since n.e.x.t Includes the `verification_evidence` query parameter.
+	 * @since 1.189.0 Includes the `verification_evidence` query parameter.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -161,9 +164,7 @@ class Google_Proxy {
 
 		return add_query_arg(
 			$query_params,
-			$this->url(
-				Feature_Flags::enabled( 'setupFlowRefresh' ) ? self::SETUP_V3_URI : self::SETUP_URI
-			)
+			$this->url( self::SETUP_V3_URI )
 		);
 	}
 
@@ -241,6 +242,7 @@ class Google_Proxy {
 	 * Sanitizes the given base URL.
 	 *
 	 * @since 1.154.0
+	 * @since n.e.x.t Allows URLs on the `.local` TLD.
 	 *
 	 * @param string $url Base URL to sanitize.
 	 * @return string Sanitized base URL.
@@ -258,6 +260,11 @@ class Google_Proxy {
 
 		// Allow for version-specific URLs to application instances.
 		if ( preg_match( '#^https://(?:\d{8}t\d{6}-dot-)?site-kit(?:-dev|-local)?(?:\.[a-z]{2}\.r)?\.appspot\.com/?$#', $url, $_ ) ) {
+			return $url;
+		}
+
+		// Allow for locally hosted instances, as the `.local` TLD can't resolve to public hosts.
+		if ( preg_match( '#^https?://(?:[a-z0-9-]+\.)+local(?::\d+)?/?$#', $url ) ) {
 			return $url;
 		}
 
@@ -354,19 +361,19 @@ class Google_Proxy {
 	 * Gets site fields.
 	 *
 	 * @since 1.5.0
-	 * @since n.e.x.t Added `intent_uri` to the fields.
+	 * @since 1.189.0 Added `intent_uri` to the fields.
 	 *
 	 * @return array Associative array of $query_arg => $value pairs.
 	 */
 	public function get_site_fields() {
-		$return_uri             = Feature_Flags::enabled( 'setupFlowRefresh' )
-			? admin_url( 'index.php' )
-			: $this->context->admin_url( 'splash' );
-		$analytics_redirect_uri = add_query_arg( 'gatoscallback', 1, admin_url( 'index.php' ) );
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$analytics_redirect_uri = add_query_arg( 'service_version', 'v3', $analytics_redirect_uri );
-		}
+		$return_uri             = admin_url( 'index.php' );
+		$analytics_redirect_uri = add_query_arg(
+			array(
+				'gatoscallback'   => 1,
+				'service_version' => 'v3',
+			),
+			admin_url( 'index.php' )
+		);
 
 		return array(
 			'name'                   => wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES ),
@@ -382,7 +389,7 @@ class Google_Proxy {
 	/**
 	 * Gets an intent from the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $intent_id    Intent ID.
@@ -406,7 +413,7 @@ class Google_Proxy {
 	/**
 	 * Completes an intent on the proxy.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Credentials $credentials  Credentials instance.
 	 * @param string      $intent_id    Intent ID.
@@ -431,29 +438,29 @@ class Google_Proxy {
 	 * Gets metadata fields.
 	 *
 	 * @since 1.68.0
-	 * @since n.e.x.t Added the `verification_evidence` field.
+	 * @since 1.189.0 Added the `verification_evidence` field.
+	 * @since n.e.x.t Added the `intent-step` mode for requests with `purpose=intent`.
 	 *
 	 * @return array Metadata fields array.
 	 */
 	public function get_metadata_fields() {
+		$is_intent_setup_flow = self::PURPOSE_INTENT === $this->context->input()->filter( INPUT_GET, self::PARAM_PURPOSE );
+
 		$metadata = array(
 			'supports'              => implode( ' ', $this->get_supports() ),
 			'nonce'                 => wp_create_nonce( self::NONCE_ACTION ),
-			'mode'                  => '',
+			'mode'                  => $is_intent_setup_flow ? self::SETUP_MODE_INTENT_STEP : '',
 			'hl'                    => $this->context->get_locale( 'user' ),
 			'application_name'      => self::get_application_name(),
-			'service_version'       => 'v2',
+			'service_version'       => 'v3',
 			'verification_evidence' => ( new Verification_Evidence( $this->context ) )->get(),
 		);
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$metadata['service_version'] = 'v3';
-		}
 
 		/**
 		 * Filters the setup mode.
 		 *
 		 * @since 1.68.0
+		 * @since n.e.x.t The initial mode is `intent-step` when the setup flow fulfills an intent.
 		 *
 		 * @param string $mode An initial setup mode.
 		 */
