@@ -109,10 +109,21 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
 
 		$this->register_permissions_for_user( $this->admin_id );
+	}
 
+	/**
+	 * Registers the module REST routes.
+	 *
+	 * Registering the routes builds the module's datapoint definitions, which
+	 * the module then keeps, so a test registers them only once the feature
+	 * flag is in the state it tests.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function register_routes() {
 		// A REST server left behind by an earlier test class still holds that
 		// class's routes, and the request would reach its module rather than
-		// the one built above.
+		// the one built in `set_up()`.
 		unset( $GLOBALS['wp_rest_server'] );
 
 		remove_all_filters( 'googlesitekit_rest_routes' );
@@ -197,8 +208,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
-	 * Enables the feature flag and puts a recording builder behind the
-	 * datapoint.
+	 * Enables the feature flag, puts a recording builder behind the
+	 * datapoint and registers the REST routes.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -212,6 +223,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$datapoint = $this->analytics->get_datapoint_definition( 'GET:benchmarking-data' );
 
 		$this->force_set_property( $datapoint, 'response_builder', $builder );
+
+		$this->register_routes();
 
 		return $builder;
 	}
@@ -288,6 +301,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
+		$this->register_routes();
+
 		// The module never defines the datapoint, so no report can run.
 		$this->assertNotContains( 'benchmarking-data', $this->analytics->get_datapoints(), 'The datapoint should not be defined with the feature flag off.' );
 
