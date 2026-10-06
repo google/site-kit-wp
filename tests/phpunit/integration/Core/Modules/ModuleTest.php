@@ -19,6 +19,9 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Permission_Aware_Schema_Request;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Request;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Set_Request;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -274,10 +277,25 @@ class ModuleTest extends TestCase {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
-			array( 'test-request', 'permission-aware-request', 'throwing-permission-aware-request' ),
+			array( 'test-request', 'permission-aware-request', 'throwing-permission-aware-request', 'schema-aware-request', 'permission-aware-schema-request' ),
 			$module->get_datapoints(),
 			'Get datapoints should contain expected values.'
 		);
+	}
+
+	public function test_get_schema_aware_datapoints() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$datapoints = $module->get_schema_aware_datapoints();
+
+		$this->assertSame(
+			array( 'GET:schema-aware-request', 'POST:schema-aware-request', 'POST:permission-aware-schema-request' ),
+			array_keys( $datapoints ),
+			'Schema-aware datapoints should only include the definitions implementing `Schema_Aware_Datapoint`, keyed by their `METHOD:datapoint` ID.'
+		);
+		$this->assertInstanceOf( FakeModule_Schema_Aware_Request::class, $datapoints['GET:schema-aware-request'], 'The `GET:schema-aware-request` entry should be its registered definition.' );
+		$this->assertInstanceOf( FakeModule_Schema_Aware_Set_Request::class, $datapoints['POST:schema-aware-request'], 'The `POST:schema-aware-request` entry should be its registered definition.' );
+		$this->assertInstanceOf( FakeModule_Permission_Aware_Schema_Request::class, $datapoints['POST:permission-aware-schema-request'], 'The `POST:permission-aware-schema-request` entry should be its registered definition.' );
 	}
 
 	public function test_exception_to_error() {
