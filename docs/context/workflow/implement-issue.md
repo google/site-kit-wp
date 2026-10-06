@@ -132,7 +132,7 @@ Follow the conventions you loaded in Step 3. In addition:
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
   (see `docs/context/js/feature-flags.md`).
 - Cover every Implementation Brief checkbox and Acceptance criterion. Implement the
-  **Test Coverage** items as real tests. An Implementation Brief bullet that says to
+  **Test Coverage** items as real tests. An Implementation Brief bullet point that says to
   migrate or replace something is done only when the old version is gone: every place that
   used the old code uses the new code, and the old selectors and the PHP code behind them
   are removed.
@@ -140,14 +140,17 @@ Follow the conventions you loaded in Step 3. In addition:
   `jest.mock()` factory, search `assets/js` and `tests/js` for a line of its
   code. If it already exists, use it (add an option to it when you need one). If you
   are about to write the same function in a second file, move it into a shared module
-  instead (`tests/js/*-utils`, or the feature's `test-utils`). A test helper calls the
-  production function that builds the same values instead of building them by hand. Test
-  data (fixtures, expected values, URLs) is written directly in each test, even when it
-  repeats.
+  instead (`tests/js/*-utils`, or the feature's `test-utils`). When a test needs values that
+  production code builds (for example report options), call the production function that
+  builds them instead of writing the values out by hand; see `docs/context/js/tests.md`.
+  Sharing applies to functions, not to data: write test data (fixtures, expected values,
+  URLs) directly in each test, even when it repeats.
 - **One rule, one check.** When a criterion applies in more than one place (for example
   view and edit mode), every place uses the same selector or helper.
-- **Fix lint errors instead of disabling the rule.** Don't add `eslint-disable` (or
-  `phpcs:ignore`) to make lint pass. For `complexity`, move part of the logic into a helper function.
+- **Never disable a lint rule to make a check pass.** Fix the code instead of adding
+  `eslint-disable` or `phpcs:ignore`. For `complexity`, move part of the logic into a helper
+  function. If a rule really has to be disabled (for example temporarily), ask for explicit
+  approval first and explain why in the PR.
 
 ### Removing or replacing code
 
@@ -173,9 +176,10 @@ issues. The bar is: all acceptance criteria met, all relevant conventions follow
 written and passing.
 
 Read every comment and docblock that your diff adds or touches against the code under it.
-Each one must be true of that code: numbers and limits match the code, a claim about another
-part of the codebase is checked in that code, and a hard-coded number has a comment that says
-where it comes from. Fix docblocks that your change made out of date, including ones
+A comment should explain why the code is the way it is, not repeat what the code does, and
+should avoid details that go out of date when the code changes, such as specific counts.
+Where a comment does state a fact (a limit, or how another part of the codebase behaves),
+check that it is true. Fix docblocks that your change made out of date, including ones
 outside the diff.
 
 ## Step 6 — Verify
@@ -204,9 +208,10 @@ Run, and fix anything that fails:
   not exercise it. Re-check the exact state described in the issue (e.g. the badge *next to
   the title*, not just the component in isolation).
 - **VRT** — if you added/changed a Storybook story, check just that scenario rather than
-  the full suite (`npm run test:visualtest` wraps nested `npm run` calls and won't forward
-  extra CLI args, so call the script directly):
-  `./tests/backstop/bin/backstop test --filter="<scenario label>"`.
+  the full suite. `npm run test:visualtest` calls `npm run` twice more, so the filter needs
+  two `--` to reach BackstopJS:
+  `npm run test:visualtest -- -- --filter="<scenario label>"` (the same works with
+  `npm run test:visualapprove` to accept the new references).
   - A story sets every value the component reads for the state it shows (settings,
     including a new setting with a default, module data, user data). A value that isn't set
     usually shows a loading or empty state instead of the intended one.
@@ -221,13 +226,13 @@ Run, and fix anything that fails:
 Summarize what changed: files created/modified/deleted, how acceptance criteria are met,
 and verification results. Also list:
 
-- each Implementation Brief bullet with the `file:line` that implements it;
-- every place where the code differs from the brief, and why;
+- each Implementation Brief bullet point with the `file:line` that implements it;
+- every place where the code differs from the Implementation Brief, and why;
 - every change outside the issue's scope (a refactor, a fix to shared code, a config
   change), and why it is needed here.
 
-These lists are the PR's "Relevant technical choices"; a change that you cannot explain there
-belongs in a separate issue.
+These lists go into the PR's "Relevant technical choices", so the reviewer knows why each
+change is there.
 
 ---
 

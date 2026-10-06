@@ -276,7 +276,7 @@ in `tests/js/mock-browser-utils.js`). Use the existing one, and add an option to
 you need one. When the same function is needed in a second test file, move it into a shared
 module (`tests/js/*-utils`, or the feature's `test-utils`) rather than copying it.
 
-When a test gives the code under test a report with `receiveGetReport()`, get the report
+When a test creates and loads a report with `receiveGetReport()`, get the report
 options from the same function that the code uses to request the report, instead of writing
 the options out again in the test. For example, the Traffic Overview PDF tests use
 `getTotalsReportArgs()` from `traffic-overview/reportOptions.ts`:
@@ -290,12 +290,16 @@ registry
     );
 ```
 
-If the options change later, the test still gives the code the report it asks for. Tests of
-the options function itself still compare its result with values written in the test.
+This keeps the test working when someone changes the options in the production code: the
+test loads the report under the same options that the code asks for, so the test doesn't need
+to be updated. The exception is a test of the options function itself, such as a test of
+`getTotalsReportArgs()`. That test compares the result with options written out in the test,
+because comparing the function with its own output would not test anything.
 
-A `jest.mock()` factory runs before the test file's imports are initialised, so a shared
-factory is loaded inside the factory with `require()` (or `jest.requireActual()` in `.ts`
-files):
+Sharing a `jest.mock()` factory between test files needs one extra step. Jest runs
+`jest.mock()` calls before the imports at the top of the test file, so the factory can't use a
+function imported there. Load the shared function inside the factory with `require()` instead
+(or `jest.requireActual()` in `.ts` files):
 
 ```javascript
 jest.mock( 'googlesitekit-api', () =>
@@ -303,14 +307,15 @@ jest.mock( 'googlesitekit-api', () =>
 );
 ```
 
-Test data (fixtures, expected values, URLs, error bodies) is written directly in each test,
-even when it repeats.
+Sharing applies to functions, not to data. Write test data (fixtures, expected values, URLs,
+error responses) directly in each test, even when the same values appear in other tests, so
+each test can be read on its own.
 
 ### Test Setup and Assertions
 
 - A test for a loading or empty state also asserts that the normal content is **not**
   rendered.
-- Only set up the reports and settings that the code under test reads.
+- Only set up the reports and settings that the code being tested requires.
 
 ### Mock Data Patterns
 
@@ -437,13 +442,13 @@ against reference images and `npm run test:visualapprove` to accept new
 screenshots as the reference.
 
 To scope a run to a single scenario (preferred over the full suite while iterating),
-call the backstop binary directly with `--filter` — the `npm run test:visualtest` /
-`test:visualapprove` scripts wrap nested `npm run` calls and do not forward extra CLI
-args:
+pass `--filter`. The npm scripts call `npm run` twice more, so the filter needs two `--` to
+reach BackstopJS. Calling the backstop binary directly works as well:
 
 ```bash
+npm run test:visualtest -- -- --filter="<scenario label>"
+npm run test:visualapprove -- -- --filter="<scenario label>"
 ./tests/backstop/bin/backstop test --filter="<scenario label>"
-./tests/backstop/bin/backstop approve --filter="<scenario label>"
 ```
 
 Scenario labels are generated from the Storybook story's title/name — check

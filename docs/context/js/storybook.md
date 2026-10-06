@@ -383,10 +383,6 @@ Two things follow from that chain:
 7. **Full State**: Set every value the component reads for the state the story shows,
    including a new setting that has a default. A value that isn't set usually shows a loading
    or empty state instead, and the VRT reference image then shows that state.
-8. **Check References**: After `backstop approve`, open every new or changed reference
-   image and confirm it shows the state the story names. If `develop` changes shared
-   components, typography or global styles after the references were made, generate them
-   again before merging, or they fail VRT on every other branch.
 
 ### TypeScript Stories
 
