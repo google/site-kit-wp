@@ -401,7 +401,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -447,7 +446,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 

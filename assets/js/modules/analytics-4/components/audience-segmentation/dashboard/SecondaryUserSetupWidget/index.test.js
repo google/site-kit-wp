@@ -85,7 +85,7 @@ describe( 'SecondaryUserSetupWidget', () => {
 		jest.clearAllMocks();
 	} );
 
-	it( 'should render the setup error widget when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should render the setup error widget when audience setup fails', async () => {
 		fetchMock.post( syncAvailableAudiencesEndpoint, {
 			body: {
 				code: 'test_error',
@@ -102,7 +102,6 @@ describe( 'SecondaryUserSetupWidget', () => {
 
 		const { getByRole, getByText } = render( <WidgetWithComponentProps />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitFor( () => {

@@ -194,9 +194,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
-	public function test_register__sets_setup_url_steps_param_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
+	public function test_register__sets_setup_url_steps_param() {
 		$this->analytics->register();
 
 		$url = $this->authentication->get_google_proxy()->setup_url(
