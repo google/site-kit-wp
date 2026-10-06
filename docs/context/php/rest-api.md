@@ -672,12 +672,12 @@ new REST_Route(
         array(
             'methods'             => WP_REST_Server::READABLE,
             'callback'            => fn ( WP_REST_Request $request ) => $this->handle_get_data_request( $request, $request['slug'], $request['datapoint'] ),
-            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( $request, $request['slug'], $request['datapoint'], Permissions::VIEW_POSTS_INSIGHTS ),
+            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'GET', $request['slug'], $request['datapoint'], Permissions::VIEW_POSTS_INSIGHTS ),
         ),
         array(
             'methods'             => WP_REST_Server::EDITABLE,
             'callback'            => fn ( WP_REST_Request $request ) => $this->handle_set_data_request( $request, $request['slug'], $request['datapoint'] ),
-            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( $request, $request['slug'], $request['datapoint'], Permissions::MANAGE_OPTIONS ),
+            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'POST', $request['slug'], $request['datapoint'], Permissions::MANAGE_OPTIONS ),
             'args'                => array(
                 'data' => array(
                     'type'              => 'object',
