@@ -290,11 +290,16 @@ registry
     );
 ```
 
-This keeps the test working when someone changes the options in the production code: the
-test loads the report under the same options that the code asks for, so the test doesn't need
-to be updated. The exception is a test of the options function itself, such as a test of
-`getTotalsReportArgs()`. That test compares the result with options written out in the test,
-because comparing the function with its own output would not test anything.
+The datastore keeps each report under the options it was requested with, and the code only
+finds a report stored under exactly the options it asks for. If the test writes the options
+out by hand and someone later changes them in the production code (for example by adding a
+metric), the code asks for the report under the new options, doesn't find the one the test
+loaded, and the test fails even though nothing is broken. Taking the options from the same
+function keeps the two in step, so the test doesn't need updating.
+
+The exception is a test of the options function itself, such as a test of
+`getTotalsReportArgs()`. That test writes the expected options out by hand, because comparing
+the function with its own output would always pass and check nothing.
 
 Sharing a `jest.mock()` factory between test files needs one extra step. Jest runs
 `jest.mock()` calls before the imports at the top of the test file, so the factory can't use a
