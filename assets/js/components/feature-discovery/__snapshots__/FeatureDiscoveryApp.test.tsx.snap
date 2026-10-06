@@ -54,7 +54,7 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
               <svg />
             </button>
             <div
-              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto googlesitekit-help-menu"
             >
               <ul
                 aria-hidden="true"
@@ -70,28 +70,7 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                   tabindex="-1"
                 >
                   <a
-                    aria-label="Fix common issues (opens in a new tab)"
-                    class="googlesitekit-cta-link mdc-list-item__text"
-                    href="undefined?doc=fix-common-issues"
-                    rel="noopener noreferrer"
-                    role="menuitem"
-                    tabindex="-1"
-                    target="_blank"
-                  >
-                    <span
-                      class="googlesitekit-cta-link__contents"
-                    >
-                      Fix common issues
-                    </span>
-                  </a>
-                </li>
-                <li
-                  class="googlesitekit-help-menu-link mdc-list-item"
-                  role="none"
-                  tabindex="-1"
-                >
-                  <a
-                    aria-label="Read help docs (opens in a new tab)"
+                    aria-label="Browse documentation (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
                     href="https://sitekit.withgoogle.com/documentation/"
                     rel="noopener noreferrer"
@@ -100,9 +79,15 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                     target="_blank"
                   >
                     <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
                       class="googlesitekit-cta-link__contents"
                     >
-                      Read help docs
+                      Browse documentation
                     </span>
                   </a>
                 </li>
@@ -112,7 +97,7 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                   tabindex="-1"
                 >
                   <a
-                    aria-label="Get support (opens in a new tab)"
+                    aria-label="Get free support (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
                     href="https://wordpress.org/support/plugin/google-site-kit/"
                     rel="noopener noreferrer"
@@ -121,9 +106,42 @@ exports[`FeatureDiscoveryApp should render the shell including header 1`] = `
                     target="_blank"
                   >
                     <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
                       class="googlesitekit-cta-link__contents"
                     >
-                      Get support
+                      Get free support
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Send feedback (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/reviews/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Send feedback
                     </span>
                   </a>
                 </li>
