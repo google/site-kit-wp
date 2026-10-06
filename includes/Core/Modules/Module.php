@@ -758,8 +758,8 @@ abstract class Module {
 			'reason' => $reason,
 		);
 
-		// The browser caches an error carrying a `cacheTTL`, so a rate-limited request is
-		// not sent again until the quota has had time to recover.
+		// The browser caches errors with a `cacheTTL`, so a rate-limited
+		// request is not sent again until the quota has had time to reset.
 		if ( static::RATE_LIMIT_STATUS === $status || in_array( $reason, static::RATE_LIMIT_REASONS, true ) ) {
 			$data['cacheTTL'] = static::RATE_LIMIT_CACHE_TTL;
 		}
