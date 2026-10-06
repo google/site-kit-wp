@@ -35,10 +35,12 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 import {
 	actHook,
@@ -256,6 +258,46 @@ describe( 'useCreateCustomDimension', () => {
 			expect( result.current.isSaving ).toBe( false );
 		} );
 
+		it.each( ALL_CUSTOM_DIMENSIONS )(
+			'returns true while %s is being created',
+			async ( customDimension ) => {
+				// The property has every other dimension, so only this one is
+				// created, and its request never resolves.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetCustomDimensions(
+						ALL_CUSTOM_DIMENSIONS.filter(
+							( dimension ) => dimension !== customDimension
+						),
+						{ propertyID }
+					);
+				fetchMock.postOnce(
+					new RegExp( 'analytics-4/data/create-custom-dimension' ),
+					new Promise( () => {} )
+				);
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.createCustomDimensions();
+
+				const { result, waitForValueToChange } = await renderHook(
+					() => useCreateCustomDimension(),
+					{ registry }
+				);
+
+				if ( ! result.current.isSaving ) {
+					await waitForValueToChange( () => result.current.isSaving );
+				}
+
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.isCreatingCustomDimension( customDimension )
+				).toBe( true );
+				expect( result.current.isSaving ).toBe( true );
+			}
+		);
+
 		it( 'returns true when syncing available custom dimensions is in progress', async () => {
 			fetchMock.postOnce(
 				new RegExp( 'analytics-4/data/sync-custom-dimensions' ),
@@ -345,6 +387,36 @@ describe( 'useCreateCustomDimension', () => {
 			expect(
 				registry.select( CORE_SITE ).getSetupErrorCode()
 			).toBeNull();
+		} );
+
+		it( 'clears the creation error of every custom dimension', async () => {
+			ALL_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+				provideCustomDimensionError( registry, {
+					customDimension,
+					error: {
+						code: 'test-error-code',
+						message: 'Test error message',
+						data: {},
+					},
+				} );
+			} );
+
+			const { result } = await renderHook(
+				() => useCreateCustomDimension(),
+				{ registry }
+			);
+
+			actHook( () => {
+				result.current.onCancel();
+			} );
+
+			ALL_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getCreateCustomDimensionError( customDimension )
+				).toBeUndefined();
+			} );
 		} );
 
 		it( 'hides the error modal', async () => {

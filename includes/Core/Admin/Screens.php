@@ -404,10 +404,6 @@ final class Screens {
 	 * @since n.e.x.t Moved from the dashboard screen's `initialize_callback` and skipped for requests with an intent.
 	 */
 	private function redirect_dashboard_to_unfinished_setup_step() {
-		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			return;
-		}
-
 		if ( ! $this->authentication->is_authenticated() ) {
 			return;
 		}

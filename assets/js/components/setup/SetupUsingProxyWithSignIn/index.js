@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import classnames from 'classnames';
-
-/**
  * WordPress dependencies
  */
 import { Fragment, useCallback, useEffect } from '@wordpress/element';
@@ -55,7 +50,6 @@ import useFormValue from '@/js/hooks/useFormValue';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import useViewContext from '@/js/hooks/useViewContext';
-import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
 import Actions from './Actions';
@@ -64,7 +58,6 @@ import ResetNotice, { RESET_SUCCESS_NOTIFICATION } from './ResetNotice';
 import Splash from './Splash';
 
 export default function SetupUsingProxyWithSignIn() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -128,21 +121,15 @@ export default function SetupUsingProxyWithSignIn() {
 
 			await trackEvent(
 				`${ viewContext }_setup`,
-				setupFlowRefreshEnabled
-					? 'setup_flow_v3_start_with_analytics'
-					: 'start_setup_with_analytics'
+				'setup_flow_v3_start_with_analytics'
 			);
 
-			moduleReauthURL = response.moduleReauthURL;
+			moduleReauthURL = addQueryArgs( response.moduleReauthURL, {
+				showProgress: true,
+			} );
 
-			if ( setupFlowRefreshEnabled ) {
-				moduleReauthURL = addQueryArgs( moduleReauthURL, {
-					showProgress: true,
-				} );
-
-				setIsAnalyticsSetupComplete( false );
-				shouldSaveInitialSetupSettings = true;
-			}
+			setIsAnalyticsSetupComplete( false );
+			shouldSaveInitialSetupSettings = true;
 		}
 
 		// The intent flow skips the Key Metrics questions, so the dashboard
@@ -168,7 +155,6 @@ export default function SetupUsingProxyWithSignIn() {
 		saveInitialSetupSettings,
 		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,
-		setupFlowRefreshEnabled,
 		setupFlowRefreshPhase4Enabled,
 		viewContext,
 	] );
@@ -207,9 +193,7 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_user_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						setupFlowRefreshEnabled
-							? 'setup_flow_v3_start_user_setup'
-							: 'start_user_setup',
+						'setup_flow_v3_start_user_setup',
 						'proxy'
 					),
 				] );
@@ -220,9 +204,7 @@ export default function SetupUsingProxyWithSignIn() {
 					setItem( 'start_site_setup', true ),
 					trackEvent(
 						`${ viewContext }_setup`,
-						setupFlowRefreshEnabled
-							? 'setup_flow_v3_start_site_setup'
-							: 'start_site_setup',
+						'setup_flow_v3_start_site_setup',
 						'proxy'
 					),
 				] );
@@ -261,14 +243,13 @@ export default function SetupUsingProxyWithSignIn() {
 			proxySetupURL,
 			registerNotification,
 			setup,
-			setupFlowRefreshEnabled,
 			setupFlowRefreshPhase4Enabled,
 			viewContext,
 		]
 	);
 
 	const splashSetupContent = (
-		<Layout rounded={ ! setupFlowRefreshEnabled }>
+		<Layout>
 			<Splash>
 				{ ( { complete, inProgressFeedback, ctaFeedback } ) => (
 					<Actions
@@ -287,27 +268,9 @@ export default function SetupUsingProxyWithSignIn() {
 	return (
 		<Fragment>
 			<Header />
-			<div
-				className={ classnames( 'googlesitekit-setup', {
-					'googlesitekit-initial-setup': setupFlowRefreshEnabled,
-				} ) }
-			>
-				{ setupFlowRefreshEnabled ? (
-					<Fragment>
-						<ProgressIndicator />
-						{ splashSetupContent }
-					</Fragment>
-				) : (
-					<Grid>
-						<Row>
-							<Cell size={ 12 }>
-								{ showResetNotice && <ResetNotice /> }
-								{ showResetNotice && <br /> }
-								{ splashSetupContent }
-							</Cell>
-						</Row>
-					</Grid>
-				) }
+			<div className="googlesitekit-setup googlesitekit-initial-setup">
+				<ProgressIndicator />
+				{ splashSetupContent }
 			</div>
 		</Fragment>
 	);

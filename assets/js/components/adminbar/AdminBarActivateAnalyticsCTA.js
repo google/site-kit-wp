@@ -17,42 +17,15 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
-import PreviewGraph from '@/js/components/PreviewGraph';
-import { useFeature } from '@/js/hooks/useFeature';
-import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
-import VisitorsGraph from '@/svg/graphics/cta-graph-visitors.svg';
 
 export default function AdminBarActivateAnalyticsCTA() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
-	if ( setupFlowRefreshEnabled ) {
-		return (
-			<AnalyticsCTA
-				analyticsEventLabel="admin_bar"
-				dismissedItemSlug="analytics-setup-cta-admin-bar"
-			/>
-		);
-	}
-
 	return (
-		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-admin-bar">
-			<PreviewGraph
-				title={ __( 'Traffic', 'google-site-kit' ) }
-				GraphSVG={ TrafficGraph }
-				showIcons={ false }
-			/>
-			<PreviewGraph
-				title={ __( 'Unique visitors from Search', 'google-site-kit' ) }
-				GraphSVG={ VisitorsGraph }
-			/>
-		</AnalyticsCTA>
+		<AnalyticsCTA
+			analyticsEventLabel="admin_bar"
+			dismissedItemSlug="analytics-setup-cta-admin-bar"
+		/>
 	);
 }

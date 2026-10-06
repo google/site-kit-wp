@@ -35,6 +35,7 @@ import Typography from '@/js/components/Typography';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	PolicyViolationSettingsNotice,
 	PostTypesSelect,
@@ -48,9 +49,11 @@ import {
 	getConfiguredCTAList,
 	getProductIDLabel,
 } from '@/js/modules/reader-revenue-manager/utils/settings';
+import { trackEvent } from '@/js/util';
 import ProductIDSettings from './ProductIDSettings';
 
 export default function SettingsForm( { hasModuleAccess } ) {
+	const viewContext = useViewContext();
 	const rrmExpressSetupEnabled = useFeature( 'rrmExpressSetup' );
 
 	const publicationID = useSelect( ( select ) =>
@@ -227,7 +230,7 @@ export default function SettingsForm( { hasModuleAccess } ) {
 					</Typography>
 					<ul className="googlesitekit-rrm-settings-edit__ctas">
 						{ configuredCTAs.map(
-							( { ctaID, label, editLinkURL } ) => (
+							( { ctaID, ctaType, label, editLinkURL } ) => (
 								<li
 									key={ ctaID }
 									className="googlesitekit-rrm-settings-edit__cta"
@@ -244,7 +247,17 @@ export default function SettingsForm( { hasModuleAccess } ) {
 										size="small"
 										type="body"
 									>
-										<Link href={ editLinkURL } external>
+										<Link
+											href={ editLinkURL }
+											onClick={ () =>
+												trackEvent(
+													`${ viewContext }_rrm`,
+													'click_cta_manage_settings_link',
+													ctaType
+												)
+											}
+											external
+										>
 											{ __(
 												'Manage settings',
 												'google-site-kit'
