@@ -272,6 +272,7 @@ const test = base.extend( {
 	openStory: async ( { browser, vrtContext, vrtPage }, use, testInfo ) => {
 		const contexts = [];
 		const trackers = [];
+		let openedPage;
 
 		await vrtContext.clearCookies();
 
@@ -293,10 +294,32 @@ const test = base.extend( {
 			const network = trackPage( page, testInfo );
 
 			trackers.push( network );
+			openedPage = page;
 			await page.goto( scenario.url );
 
 			return { page, network };
 		} );
+
+		// When a test fails before comparing its screenshot (the story errored,
+		// or the test timed out), show what rendered in the report. Done here
+		// because a timed-out test's own code never resumes.
+		const failed = testInfo.status !== testInfo.expectedStatus;
+		const hasScreenshot = testInfo.attachments.some( ( { name } ) =>
+			name.endsWith( '-actual.png' )
+		);
+
+		if ( openedPage && failed && ! hasScreenshot ) {
+			const body = await openedPage
+				.screenshot( { fullPage: true, timeout: 5000 } )
+				.catch( () => null );
+
+			if ( body ) {
+				await testInfo.attach( 'failure.png', {
+					body,
+					contentType: 'image/png',
+				} );
+			}
+		}
 
 		trackers.forEach( ( tracker ) => tracker.dispose() );
 		await Promise.all( contexts.map( ( context ) => context.close() ) );

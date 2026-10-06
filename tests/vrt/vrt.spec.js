@@ -39,21 +39,37 @@ for ( const scenario of scenarios ) {
 			? scenario.viewports.map( ( label ) => `@only-${ label }` )
 			: [];
 
-	test( scenario.label, { tag }, async ( { openStory }, testInfo ) => {
-		const { page, network } = await openStory( scenario );
+	// Where the reference image is, for `reporter.js`. Declared with the test, so
+	// the report has it even for tests that didn't run.
+	const annotation = {
+		type: 'reference image',
+		description: scenario.slug.join( '/' ),
+	};
 
-		await waitForStoryReady( page, scenario, network );
-		await runInteractions( page, scenario, network );
-		await runStoryHooks( page, scenario, network, testInfo.project.name );
+	test(
+		scenario.label,
+		{ tag, annotation },
+		async ( { openStory }, testInfo ) => {
+			const { page, network } = await openStory( scenario );
 
-		network.assertHealthy();
+			await waitForStoryReady( page, scenario, network );
+			await runInteractions( page, scenario, network );
+			await runStoryHooks(
+				page,
+				scenario,
+				network,
+				testInfo.project.name
+			);
 
-		// Saved as `__screenshots__/<story path>/<viewport>.png`.
-		const directories = scenario.slug.slice( 0, -1 );
-		const name = `${ scenario.slug[ scenario.slug.length - 1 ] }.png`;
+			network.assertHealthy();
 
-		await expect( page ).toHaveScreenshot( [ ...directories, name ], {
-			fullPage: true,
-		} );
-	} );
+			// Saved as `__screenshots__/<story path>/<viewport>.png`.
+			const directories = scenario.slug.slice( 0, -1 );
+			const name = `${ scenario.slug[ scenario.slug.length - 1 ] }.png`;
+
+			await expect( page ).toHaveScreenshot( [ ...directories, name ], {
+				fullPage: true,
+			} );
+		}
+	);
 }

@@ -4,7 +4,7 @@
 	"scripts": {
 		"test": "playwright test",
 		"approve": "playwright test --update-snapshots=changed",
-		"report": "playwright show-report playwright-report"
+		"report": "./bin/vrt report"
 	},
 	"devDependencies": {
 		"@babel/parser": "^7.11.5",

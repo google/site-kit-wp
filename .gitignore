@@ -79,10 +79,9 @@ tests/backstop/tests/
 
 # Visual regression tests
 tests/vrt/test-results/
-tests/vrt/playwright-report/
+tests/vrt/report/
 tests/vrt/blob-report/
 tests/vrt/all-blob-reports/
-tests/vrt/results.json
 
 # Jest
 coverage/

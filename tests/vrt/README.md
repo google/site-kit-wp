@@ -27,7 +27,8 @@ what CI renders.
 | Run some stories, at one viewport | `npm run test:visualtest -- --grep "SettingsEdit" --project=small` |
 | Run again without rebuilding Storybook | `tests/vrt/bin/vrt test --grep "SettingsEdit"` |
 | **Create or update reference images** | `npm run test:visualapprove -- --grep "<story label>"` |
-| See the differences (expected, actual, diff and a slider) | `tests/vrt/bin/vrt report` |
+| See the [report](#the-report) of the last run | `tests/vrt/bin/vrt report` |
+| See Playwright's report (full errors, notes and traces) | `tests/vrt/bin/vrt report --playwright` |
 | Debug in Playwright's UI mode | `tests/vrt/bin/vrt ui`, then open http://localhost:8080 |
 | Check for orphaned or missing reference images | `node tests/vrt/bin/check-snapshots.js [--prune]` |
 | Check a story is stable | `tests/vrt/bin/vrt test --grep "<story label>" --repeat-each=10` |
@@ -40,16 +41,37 @@ what CI renders.
 since it was built. Set `VRT_BUILD=1` to rebuild first. Other variables:
 
 - `VRT_WORKERS=<n>`: parallel browsers (default: half your CPU cores).
-- `VRT_TRACE=1`: record a Playwright trace for failing tests, viewable from the report.
+- `VRT_TRACE=1`: record a Playwright trace for failing tests, viewable in Playwright's report.
 - `VRT_PLATFORM=linux/amd64` or `VRT_PLATFORM=native`: run every command on that platform,
   instead of the defaults described under [Prerequisites](#prerequisites).
+
+## The report
+
+Each run writes a report to `tests/vrt/report/`. Open the last one with `tests/vrt/bin/vrt report`;
+CI's is linked on the pull request.
+
+- **Every screenshot** is listed by story and viewport, with its reference image. Filter by
+  status (failed, new, flaky, not run or passed), by story or by viewport. The report opens on the
+  problems, if there are any.
+- **A failed story** shows its reference image, the new screenshot, and a diff that highlights the
+  pixels that differ, with how many there are. A new story shows its first screenshot. A story
+  that failed before its screenshot was taken (an error, or a `readySelector` that never matched)
+  shows the page when it failed, and the error.
+- **Click an image to compare.** Switch between the reference image, the screenshot and the
+  diff, drag a slider across the two images, or show them side by side, fitted or at actual size.
+  The number keys switch views, `←` and `→` move between screenshots, and `Esc` closes.
+- **A changed or new screenshot** comes with the command that approves it, ready to copy (see
+  below). Every problem links to its test in Playwright's report, which has the full error, notes
+  such as blocked requests, and traces. Open that report on its own with
+  `tests/vrt/bin/vrt report --playwright`.
 
 ## Updating reference images
 
 When a change is meant to alter how a story looks:
 
-1. Run `npm run test:visualapprove -- --grep "<story label>"`, or leave out `--grep` to update
-   everything. Only images that changed, or didn't exist, are written.
+1. Run `npm run test:visualapprove -- --grep "<story label>"` (the report shows this command for
+   each changed screenshot), or leave out `--grep` to update everything. Only images that
+   changed, or didn't exist, are written.
 2. Review the new images: `git diff --stat tests/vrt/__screenshots__`, and the images
    themselves in your Git client or on GitHub.
 3. Commit them with your change.
@@ -110,7 +132,7 @@ Scenario options (any other key fails the run):
 
 The date is fixed at 15 June 2026, noon UTC, for stories that don't set their own reference
 date. Pages can only reach the local Storybook server, Google Fonts and the Google Charts loader;
-requests to other hosts fail and are listed as notes on the test in the report.
+requests to other hosts fail and are listed as notes on the test in Playwright's report.
 
 ## Making a story deterministic
 
@@ -139,8 +161,8 @@ requests to other hosts fail and are listed as notes on the test in the report.
 ## In CI
 
 [`visual-regression.yml`](../../.github/workflows/visual-regression.yml) builds Storybook once,
-runs the tests in four shards, and merges the results into one HTML report. The report link is
-posted on the pull request. It also runs on pushes to `develop` and `main`, so reference images
+runs the tests in four shards, and merges the results into one [report](#the-report), linked on
+the pull request and kept with the run as the `vrt-report` artifact for 14 days. It also runs on pushes to `develop` and `main`, so reference images
 broken by two pull requests merging show up on the commit that broke them. A test that only
 passes on its retry is reported as flaky rather than failing the check. Run the workflow manually
 with `repeat_each` to look for flaky stories.

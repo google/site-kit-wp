@@ -25,7 +25,9 @@
 # Commands:
 #   test     Compare stories against their reference images (the default).
 #   approve  Write reference images for stories that changed or have none.
-#   report   Open the HTML report of the last run.
+#   report   Open the report of the last run: every reference image, and the
+#            screenshot and diff of each failure. With --playwright, open
+#            Playwright's own report instead (logs and traces).
 #   ui       Open Playwright's UI mode on http://localhost:${VRT_UI_PORT:-8080}.
 #
 # Playwright options are passed through, for example:
@@ -64,8 +66,26 @@ case "$COMMAND" in
 		PLAYWRIGHT_ARGS=( --update-snapshots=changed "$@" )
 		;;
 	report)
-		cd "$VRT_DIR"
-		exec npx playwright show-report playwright-report "$@"
+		if [ "$1" = "--playwright" ]; then
+			shift
+			cd "$VRT_DIR"
+			exec npx playwright show-report report/playwright "$@"
+		fi
+
+		REPORT="$VRT_DIR/report/index.html"
+		if [ ! -f "$REPORT" ]; then
+			echo "There's no report yet. Run tests/vrt/bin/vrt test first."
+			exit 1
+		fi
+
+		if command -v open > /dev/null; then
+			exec open "$REPORT"
+		elif command -v xdg-open > /dev/null; then
+			exec xdg-open "$REPORT"
+		fi
+
+		echo "Open $REPORT in a browser."
+		exit 0
 		;;
 	ui)
 		UI_PORT=${VRT_UI_PORT:-8080}

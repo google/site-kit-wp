@@ -85,10 +85,11 @@ jobs:
         run: npm ci -w assets -w storybook -w tests/js -w tests/vrt --include-workspace-root
       - name: Build Storybook
         run: VRT=1 npm run build:storybook
-      # Fails early on scenarios whose story isn't in the build, and on
-      # missing or orphaned reference images.
-      - name: Check scenarios and reference images
-        run: node tests/vrt/bin/check-snapshots.js --build
+      # Fails early on scenarios whose story isn't in the build. Missing and
+      # orphaned reference images are checked after the report, so new and
+      # renamed stories still render and appear in it.
+      - name: Check scenarios against the Storybook build
+        run: node tests/vrt/bin/check-snapshots.js --build-only
       - name: Get Playwright version
         id: playwright
         working-directory: tests/vrt
@@ -163,25 +164,32 @@ jobs:
           pattern: blob-report-*
           path: tests/vrt/all-blob-reports
           merge-multiple: true
+      # Writes the report (`report/`, with every reference image) and
+      # Playwright's report (`report/playwright/`), as configured in
+      # `merge.config.js`.
       - name: Merge reports
-        id: merge
         working-directory: tests/vrt
-        env:
-          PLAYWRIGHT_HTML_OUTPUT_DIR: playwright-report
-          PLAYWRIGHT_JSON_OUTPUT_NAME: results.json
+        run: npx playwright merge-reports --config merge.config.js ./all-blob-reports
+      # A reporter's errors are only logged, so check the report was written.
+      - name: Check the report
+        id: summary
+        working-directory: tests/vrt
         run: |
-          npx playwright merge-reports --reporter html,json ./all-blob-reports
+          test -f report/index.html
+          test -f report/data.js
+          test -f report/playwright/index.html
           node -e "
-            const { stats } = require( './results.json' );
-            console.log( 'failed=' + stats.unexpected );
-            console.log( 'flaky=' + stats.flaky );
-            console.log( 'passed=' + stats.expected );
+            const summary = require( './report/summary.json' );
+            for ( const [ key, value ] of Object.entries( summary ) ) {
+              console.log( key + '=' + value );
+            }
           " >> "$GITHUB_OUTPUT"
-      - name: Upload HTML report
+      - name: Upload report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
           name: vrt-report
-          path: tests/vrt/playwright-report
+          path: tests/vrt/report
+          retention-days: 14
 
       - name: Set report target directory
         id: report-target
@@ -193,12 +201,21 @@ jobs:
             echo "dir=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           fi
 
+      # Clear the PR's previous report, so files from earlier runs don't pile
+      # up. It fails when there's nothing to remove yet, e.g. on the first run.
+      - uses: ./.github/actions/remove-gcs-path
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true' && github.event_name == 'pull_request'
+        continue-on-error: true
+        with:
+          credentials-json: ${{ secrets.GCP_CREDENTIALS }}
+          path: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
+
       - uses: ./.github/actions/upload-to-gcs
         id: upload-to-gcs
         if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
         with:
           credentials-json: ${{ secrets.GCP_CREDENTIALS }}
-          path: tests/vrt/playwright-report
+          path: tests/vrt/report
           destination: ${{ env.GCS_ROOT_PATH }}/${{ steps.report-target.outputs.dir }}
 
       - name: Save report summary
@@ -206,9 +223,11 @@ jobs:
         env:
           TEST_RESULT: ${{ needs.test.result }}
           REPORT_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
-          FAILED: ${{ steps.merge.outputs.failed }}
-          FLAKY: ${{ steps.merge.outputs.flaky }}
-          PASSED: ${{ steps.merge.outputs.passed }}
+          FAILED: ${{ steps.summary.outputs.failed }}
+          NEW: ${{ steps.summary.outputs.new }}
+          FLAKY: ${{ steps.summary.outputs.flaky }}
+          NOT_RUN: ${{ steps.summary.outputs.notRun }}
+          PASSED: ${{ steps.summary.outputs.passed }}
         run: |
           mkdir -p /tmp/artifact-url
           if [ "${TEST_RESULT}" == "success" ]; then
@@ -216,10 +235,14 @@ jobs:
           else
             ICON="❌"
           fi
+          COUNTS="${FAILED:-0} failed, ${NEW:-0} new, ${FLAKY:-0} flaky, ${PASSED:-0} passed"
+          if [ "${NOT_RUN:-0}" != "0" ]; then
+            COUNTS="${COUNTS}, ${NOT_RUN} not run"
+          fi
           {
-            echo "- ${ICON} [VRT Report](${REPORT_URL}/index.html): ${PASSED:-0} passed, ${FAILED:-0} failed, ${FLAKY:-0} flaky."
+            echo "- ${ICON} [VRT report](${REPORT_URL}/index.html): ${COUNTS}. ([Playwright details](${REPORT_URL}/playwright/index.html))"
             if [ "${TEST_RESULT}" != "success" ]; then
-              echo "- To accept intended changes, run \`npm run test:visualapprove -- --grep \"<story>\"\` and commit the images, or add the \`VRT: Update reference images\` label."
+              echo "- To accept intended changes, copy the command shown for each story in the report and commit the images, or add the \`VRT: Update reference images\` label."
             fi
           } > /tmp/artifact-url/url.md
 
@@ -230,7 +253,11 @@ jobs:
           name: artifact-url-vrt
           path: /tmp/artifact-url/url.md
 
-      # The report job only summarizes; fail the run when the tests failed.
+      # The report job only summarizes; fail the run when the tests failed, or
+      # when reference images are missing or orphaned (e.g. a renamed story).
+      - name: Check reference images
+        run: node tests/vrt/bin/check-snapshots.js
+
       - name: Check test result
         if: needs.test.result != 'success'
         run: exit 1

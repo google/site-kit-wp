@@ -85,13 +85,17 @@ module.exports = defineConfig( {
 		  ]
 		: [
 				[ 'list' ],
+				// The report, with every reference image (`tests/vrt/bin/vrt report`).
+				// Listed before `html`: it empties `report/` when the run starts.
+				[ './reporter.js', { outputDir: 'report' } ],
 				[
 					'html',
 					{
 						open: 'never',
 						outputFolder: path.join(
 							__dirname,
-							'playwright-report'
+							'report',
+							'playwright'
 						),
 					},
 				],

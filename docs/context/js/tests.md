@@ -406,5 +406,5 @@ npm run test:visualapprove -- --grep "<story label>"
 
 `tests/vrt/bin/vrt test --grep "<story label>"` does the same without rebuilding
 Storybook first. The label is the story's title and name, e.g.
-`Components/Button/All Buttons VRT`; it is also the test title in the HTML report
-(`tests/vrt/bin/vrt report`).
+`Components/Button/All Buttons VRT`; it is also how the report
+(`tests/vrt/bin/vrt report`) names the story.

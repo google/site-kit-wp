@@ -6,9 +6,10 @@
  * Reports reference images without a scenario (orphans, e.g. from a renamed
  * story) and scenarios without a reference image. With `--prune`, deletes the
  * orphans. With `--build`, also checks that every scenario's story is in the
- * Storybook build.
+ * Storybook build; with `--build-only`, checks only that (CI does this before
+ * running the tests, so new and renamed stories still appear in the report).
  *
- * Usage: node tests/vrt/bin/check-snapshots.js [--prune] [--build]
+ * Usage: node tests/vrt/bin/check-snapshots.js [--prune] [--build | --build-only]
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -40,7 +41,8 @@ const { ROOT_DIR, SCREENSHOTS_DIR } = require( '../constants' );
 const { getScenarios, validateAgainstBuild } = require( '../scenarios' );
 
 const prune = process.argv.includes( '--prune' );
-const checkBuild = process.argv.includes( '--build' );
+const buildOnly = process.argv.includes( '--build-only' );
+const checkBuild = buildOnly || process.argv.includes( '--build' );
 
 /**
  * Lists the PNG files in a directory and its subdirectories.
@@ -92,56 +94,87 @@ function removeEmptyDirectories( directory ) {
 	}
 }
 
-const expected = new Set(
-	getScenarios().flatMap( ( scenario ) =>
-		scenario.viewports.map( ( viewport ) =>
-			path.join( ...scenario.slug, `${ viewport }.png` )
+/**
+ * Checks the reference image files against the scenarios.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} Whether the check passed. When pruning, missing reference
+ *                   images are about to be created, so they don't fail it.
+ */
+function checkReferenceImages() {
+	const expected = new Set(
+		getScenarios().flatMap( ( scenario ) =>
+			scenario.viewports.map( ( viewport ) =>
+				path.join( ...scenario.slug, `${ viewport }.png` )
+			)
 		)
-	)
-);
-const actual = new Set( listPNGs( SCREENSHOTS_DIR ) );
-
-const orphans = [ ...actual ].filter( ( file ) => ! expected.has( file ) );
-const missing = [ ...expected ].filter( ( file ) => ! actual.has( file ) );
-const relativeDir = path.relative( ROOT_DIR, SCREENSHOTS_DIR );
-
-if ( orphans.length ) {
-	console.log(
-		`${ orphans.length } reference image(s) without a scenario${
-			prune ? ', deleted' : ''
-		}:`
 	);
-	orphans.sort().forEach( ( file ) => console.log( `  ${ file }` ) );
+	const actual = new Set( listPNGs( SCREENSHOTS_DIR ) );
 
-	if ( prune ) {
-		orphans.forEach( ( file ) =>
-			fs.unlinkSync( path.join( SCREENSHOTS_DIR, file ) )
+	const orphans = [ ...actual ].filter( ( file ) => ! expected.has( file ) );
+	const missing = [ ...expected ].filter( ( file ) => ! actual.has( file ) );
+	const relativeDir = path.relative( ROOT_DIR, SCREENSHOTS_DIR );
+
+	if ( orphans.length ) {
+		console.log(
+			`${ orphans.length } reference image(s) without a scenario${
+				prune ? ', deleted' : ''
+			}:`
 		);
-		removeEmptyDirectories( SCREENSHOTS_DIR );
+		orphans.sort().forEach( ( file ) => console.log( `  ${ file }` ) );
+
+		if ( prune ) {
+			orphans.forEach( ( file ) =>
+				fs.unlinkSync( path.join( SCREENSHOTS_DIR, file ) )
+			);
+			removeEmptyDirectories( SCREENSHOTS_DIR );
+		}
 	}
+
+	if ( missing.length ) {
+		console.log(
+			`${ missing.length } scenario(s) without a reference image:`
+		);
+		missing.sort().forEach( ( file ) => console.log( `  ${ file }` ) );
+		console.log(
+			'Create them with `npm run test:visualapprove -- --grep "<story label>"`.'
+		);
+	}
+
+	if ( ! orphans.length && ! missing.length ) {
+		console.log(
+			`All ${ expected.size } reference images in ${ relativeDir } match the scenarios.`
+		);
+	}
+
+	return prune || ( ! missing.length && ! orphans.length );
 }
 
-if ( missing.length ) {
-	console.log( `${ missing.length } scenario(s) without a reference image:` );
-	missing.sort().forEach( ( file ) => console.log( `  ${ file }` ) );
-	console.log(
-		'Create them with `npm run test:visualapprove -- --grep "<story label>"`.'
-	);
+/**
+ * Checks that every scenario's story is in the Storybook build.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} Whether the check passed.
+ */
+function checkStorybookBuild() {
+	const problems = validateAgainstBuild( getScenarios() );
+
+	problems.forEach( ( problem ) => console.log( problem ) );
+
+	if ( ! problems.length ) {
+		console.log(
+			`All ${
+				getScenarios().length
+			} scenarios' stories are in the Storybook build.`
+		);
+	}
+
+	return ! problems.length;
 }
 
-if ( ! orphans.length && ! missing.length ) {
-	console.log(
-		`All ${ expected.size } reference images in ${ relativeDir } match the scenarios.`
-	);
-}
+const referenceImagesPassed = buildOnly || checkReferenceImages();
+const buildPassed = ! checkBuild || checkStorybookBuild();
 
-const buildProblems = checkBuild ? validateAgainstBuild( getScenarios() ) : [];
-
-buildProblems.forEach( ( problem ) => console.log( problem ) );
-
-// When pruning, missing reference images are about to be created, so they don't
-// fail the check.
-process.exitCode =
-	buildProblems.length || ( ! prune && ( missing.length || orphans.length ) )
-		? 1
-		: 0;
+process.exitCode = referenceImagesPassed && buildPassed ? 0 : 1;
