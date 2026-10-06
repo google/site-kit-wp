@@ -178,12 +178,7 @@ jobs:
           test -f report/index.html
           test -f report/data.js
           test -f report/playwright/index.html
-          node -e "
-            const summary = require( './report/summary.json' );
-            for ( const [ key, value ] of Object.entries( summary ) ) {
-              console.log( key + '=' + value );
-            }
-          " >> "$GITHUB_OUTPUT"
+          jq -r '.counts | to_entries[] | "\(.key)=\(.value)"' report/summary.json >> "$GITHUB_OUTPUT"
       - name: Upload report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         with:
@@ -241,6 +236,19 @@ jobs:
           fi
           {
             echo "- ${ICON} [VRT report](${REPORT_URL}/index.html): ${COUNTS}. ([Playwright details](${REPORT_URL}/playwright/index.html))"
+            # Flaky screenshots don't fail the check, so list their stories.
+            if [ "${FLAKY:-0}" != "0" ]; then
+              NOUN="screenshots"
+              if [ "${FLAKY}" == "1" ]; then
+                NOUN="screenshot"
+              fi
+              echo "- ⚠️ ${FLAKY} flaky ${NOUN} failed, then passed on retry ([see the report](${REPORT_URL}/index.html#status=flaky)):"
+              jq -r '.flaky[:10][] | "  - `\(.label)` (\(.viewports | join(", ")))"' tests/vrt/report/summary.json
+              STORIES=$(jq '.flaky | length' tests/vrt/report/summary.json)
+              if [ "${STORIES}" -gt 10 ]; then
+                echo "  - and $(( STORIES - 10 )) more"
+              fi
+            fi
             if [ "${TEST_RESULT}" != "success" ]; then
               echo "- To accept intended changes, copy the command shown for each story in the report and commit the images, or add the \`VRT: Update reference images\` label."
             fi

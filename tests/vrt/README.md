@@ -162,10 +162,11 @@ requests to other hosts fail and are listed as notes on the test in Playwright's
 
 [`visual-regression.yml`](../../.github/workflows/visual-regression.yml) builds Storybook once,
 runs the tests in four shards, and merges the results into one [report](#the-report), linked on
-the pull request and kept with the run as the `vrt-report` artifact for 14 days. It also runs on pushes to `develop` and `main`, so reference images
-broken by two pull requests merging show up on the commit that broke them. A test that only
-passes on its retry is reported as flaky rather than failing the check. Run the workflow manually
-with `repeat_each` to look for flaky stories.
+the pull request and kept with the run as the `vrt-report` artifact for 14 days. It also runs on
+pushes to `develop` and `main`, so reference images broken by two pull requests merging show up
+on the commit that broke them. A test that only passes on its retry is reported as flaky rather
+than failing the check, and its story is listed in the pull request comment. Run the workflow
+manually with `repeat_each` to look for flaky stories.
 
 [`vrt-update-reference-images.yml`](../../.github/workflows/vrt-update-reference-images.yml)
 runs when the `VRT: Update reference images` label is added to a pull request. Run it manually on

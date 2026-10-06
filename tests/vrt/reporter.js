@@ -209,6 +209,34 @@ function getSummary( status, error, actual ) {
 }
 
 /**
+ * Lists the stories with a flaky screenshot, for the pull request comment.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object[]} entries The report's entries.
+ * @return {Object[]} Each story's `label`, and the `viewports` it was flaky in.
+ */
+function getFlakyStories( entries ) {
+	const stories = new Map();
+
+	for ( const { label, status, viewport } of entries ) {
+		if ( status === 'flaky' ) {
+			stories.set(
+				label,
+				new Set( stories.get( label ) ).add( viewport )
+			);
+		}
+	}
+
+	return [ ...stories ]
+		.map( ( [ label, viewports ] ) => ( {
+			label,
+			viewports: [ ...viewports ],
+		} ) )
+		.sort( ( a, b ) => a.label.localeCompare( b.label ) );
+}
+
+/**
  * Builds the command that writes a new reference image for one test.
  *
  * `--grep` matches the test's title path (`<project> vrt.spec.js <label>`)
@@ -378,9 +406,14 @@ class VRTReporter {
 				'\\u003c'
 			) };\n`
 		);
+		// For the pull request comment.
 		fs.writeFileSync(
 			path.join( this.outputDir, 'summary.json' ),
-			`${ JSON.stringify( summary, null, '\t' ) }\n`
+			`${ JSON.stringify(
+				{ counts: summary, flaky: getFlakyStories( entries ) },
+				null,
+				'\t'
+			) }\n`
 		);
 
 		for ( const file of APP_FILES ) {
