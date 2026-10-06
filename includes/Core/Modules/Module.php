@@ -299,14 +299,7 @@ abstract class Module {
 	 * @throws Invalid_Datapoint_Exception Thrown if no datapoint exists by the given ID.
 	 */
 	public function get_datapoint_definition( $datapoint_id ) {
-		// Memoize the definitions map: a single module data request resolves the
-		// same datapoint twice (once for the permission check, once to execute),
-		// and rebuilding the full map instantiates every datapoint object.
-		if ( null === $this->datapoint_definitions ) {
-			$this->datapoint_definitions = $this->get_datapoint_definitions();
-		}
-
-		$definitions = $this->datapoint_definitions;
+		$definitions = $this->get_memoized_datapoint_definitions();
 
 		// All datapoints must be defined.
 		if ( empty( $definitions[ $datapoint_id ] ) ) {
@@ -320,6 +313,38 @@ abstract class Module {
 		}
 
 		return new Datapoint( $datapoint );
+	}
+
+	/**
+	 * Gets the datapoint definitions that describe their REST arguments and response.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Schema_Aware_Datapoint[] Map of datapoint IDs, in the `METHOD:datapoint` form, to their definitions.
+	 */
+	final public function get_schema_aware_datapoints() {
+		return array_filter(
+			$this->get_memoized_datapoint_definitions(),
+			fn ( $definition ) => $definition instanceof Schema_Aware_Datapoint
+		);
+	}
+
+	/**
+	 * Gets the map of datapoint definitions, building it on first use.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of datapoints to their definitions.
+	 */
+	private function get_memoized_datapoint_definitions() {
+		// Memoize the definitions map: a single module data request resolves the
+		// same datapoint twice (once for the permission check, once to execute),
+		// and rebuilding the full map instantiates every datapoint object.
+		if ( null === $this->datapoint_definitions ) {
+			$this->datapoint_definitions = $this->get_datapoint_definitions();
+		}
+
+		return $this->datapoint_definitions;
 	}
 
 	/**
