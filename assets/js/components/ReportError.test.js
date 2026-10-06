@@ -463,8 +463,6 @@ describe( 'ReportError', () => {
 		expect( getByRole( 'button', { name: /retry/i } ) ).toBeInTheDocument();
 	} );
 
-	// Reasons written out rather than imported, so a typo in a constant fails here
-	// instead of being fed back into its own assertion.
 	it.each( [
 		[ 'rateLimitExceeded' ],
 		[ 'userRateLimitExceeded' ],
