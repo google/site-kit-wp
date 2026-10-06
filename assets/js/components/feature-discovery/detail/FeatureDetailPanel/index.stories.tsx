@@ -31,38 +31,31 @@ import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { Story } from '@/js/types/Story';
 import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import FeatureDetailPanel from './';
+import FeatureDetailPanel, { type FeatureDetailPanelProps } from './';
 
-interface PanelStory extends Story {
-	play?: () => void;
+function Template( args: FeatureDetailPanelProps ) {
+	return <FeatureDetailPanel { ...args } />;
 }
 
-function Template() {
-	return <FeatureDetailPanel />;
-}
-
-export const Description = Template.bind( {} ) as PanelStory;
+export const Description = Template.bind(
+	{}
+) as Story< FeatureDetailPanelProps >;
 Description.storyName = 'Description';
+Description.args = { initialActiveIndex: 0 };
 // TODO: #13331 -- Description.scenario = {};
 
-export const Requirements = Template.bind( {} ) as PanelStory;
+export const Requirements = Template.bind(
+	{}
+) as Story< FeatureDetailPanelProps >;
 Requirements.storyName = 'Requirements';
-Requirements.play = () => {
-	document
-		.querySelector< HTMLButtonElement >(
-			'#feature-detail-tab-requirements'
-		)
-		?.click();
-};
+Requirements.args = { initialActiveIndex: 1 };
 // TODO: #13331 -- Requirements.scenario = {};
 
-export const Screenshots = Template.bind( {} ) as PanelStory;
+export const Screenshots = Template.bind(
+	{}
+) as Story< FeatureDetailPanelProps >;
 Screenshots.storyName = 'Screenshots';
-Screenshots.play = () => {
-	document
-		.querySelector< HTMLButtonElement >( '#feature-detail-tab-screenshots' )
-		?.click();
-};
+Screenshots.args = { initialActiveIndex: 2 };
 // TODO: #13331 -- Screenshots.scenario = {};
 
 // VRT scenarios and references arrive with the sub-tab content in #13331.

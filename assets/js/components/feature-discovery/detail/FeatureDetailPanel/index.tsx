@@ -37,20 +37,22 @@ import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import PanelContent from './PanelContent';
 
-const FeatureDetailPanel: FC = () => {
-	const featureSlug = useSelect(
-		( select: Select ) =>
-			select( CORE_UI ).getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY ),
-		[]
-	);
+export interface FeatureDetailPanelProps {
+	initialActiveIndex?: number;
+}
 
-	const feature = useSelect(
-		( select: Select ): Feature | null =>
-			typeof featureSlug === 'string'
-				? select( CORE_FEATURE_DISCOVERY ).getFeature( featureSlug )
-				: null,
-		[ featureSlug ]
-	);
+const FeatureDetailPanel: FC< FeatureDetailPanelProps > = ( {
+	initialActiveIndex,
+} ) => {
+	const feature = useSelect( ( select: Select ): Feature | null => {
+		const featureSlug = select( CORE_UI ).getValue(
+			FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+		);
+
+		return typeof featureSlug === 'string'
+			? select( CORE_FEATURE_DISCOVERY ).getFeature( featureSlug )
+			: null;
+	}, [] );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -65,7 +67,11 @@ const FeatureDetailPanel: FC = () => {
 			isOpen={ !! feature }
 		>
 			{ feature && (
-				<PanelContent feature={ feature } onClose={ onClose } />
+				<PanelContent
+					feature={ feature }
+					initialActiveIndex={ initialActiveIndex }
+					onClose={ onClose }
+				/>
 			) }
 		</SideSheet>
 	);

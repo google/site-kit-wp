@@ -154,6 +154,34 @@ describe( 'FeatureDetailPanel', () => {
 		).toBe( false );
 	} );
 
+	it( 'should clear the feature slug when clicking outside the panel', () => {
+		setFeature( 'first' );
+
+		render( <FeatureDetailPanel />, { registry } );
+
+		fireEvent.mouseDown( document.body );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+		).toBe( false );
+	} );
+
+	it( 'should clear the feature slug when the close button is clicked', () => {
+		setFeature( 'first' );
+
+		const { getByRole } = render( <FeatureDetailPanel />, { registry } );
+
+		fireEvent.click( getByRole( 'button', { name: 'Close' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+		).toBe( false );
+	} );
+
 	it( 'should clear the feature slug when Cancel is clicked', async () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );

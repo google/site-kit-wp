@@ -45,6 +45,7 @@ import PanelHeader from './PanelHeader';
 
 interface PanelContentProps {
 	feature: Feature;
+	initialActiveIndex?: number;
 	onClose: () => void;
 }
 
@@ -55,10 +56,14 @@ interface FeatureDetailPanelTab {
 	label: string;
 }
 
-const PanelContent: FC< PanelContentProps > = ( { feature, onClose } ) => {
+const PanelContent: FC< PanelContentProps > = ( {
+	feature,
+	initialActiveIndex = 0,
+	onClose,
+} ) => {
 	const breakpoint = useBreakpoint();
 
-	const [ activeIndex, setActiveIndex ] = useState( 0 );
+	const [ activeIndex, setActiveIndex ] = useState( initialActiveIndex );
 
 	const baseID = useInstanceID(
 		PanelContent,
