@@ -124,28 +124,6 @@
 	text-align: right;
 }
 
-.googlesitekit-tooltip-indicators {
-	display: flex;
-	margin: 0;
-	margin-right: 16px;
-	padding: 0;
-}
-
-.googlesitekit-tooltip-indicator {
-	background: $c-content-on-primary;
-	border-radius: 50%;
-	height: 8px;
-	list-style: none;
-	margin-bottom: 0;
-	margin-right: 8px;
-	opacity: 0.5;
-	width: 8px;
-}
-
-.googlesitekit-tooltip-indicator.active {
-	opacity: 1;
-}
-
 // Style the tooltip to appear in a modal style on mobile and tablet designs.
 // This class is set within the Joyride component based on the breakpoint.
 .googlesitekit-tour-tooltip__modal_step {
