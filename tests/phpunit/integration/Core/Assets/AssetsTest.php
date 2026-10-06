@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 
 	/**
 	 * @var Assets
@@ -247,6 +249,114 @@ class AssetsTest extends TestCase {
 		$this->assertStringContainsString( 'var _googlesitekitLegacyData = ', $localized_script, 'Legacy data should be localized in commons script.' );
 	}
 
+	/**
+	 * @dataProvider features_badge_data_provider
+	 */
+	public function test_get_inline_features_badge_data( $reset_session ) {
+		$this->enable_feature( 'featureDiscoveryHub' );
+
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+
+		wp_set_current_user( $admin_id );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		$input = new \Google\Site_Kit\Tests\MutableInput();
+
+		$_GET['googlesitekit_reset_session'] = $reset_session;
+
+		$this->assets = new Assets( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, $input ) );
+
+		add_filter(
+			'googlesitekit_connected_modules',
+			function () {
+				return array(
+					'search-console' => new \stdClass(),
+					'analytics-4'    => new \stdClass(),
+				);
+			}
+		);
+		$this->assets->register();
+		$this->assets->enqueue_asset( 'googlesitekit-features-badge-data' );
+
+		do_action( 'wp_print_scripts' );
+
+		$script = wp_scripts()->get_data( 'googlesitekit-features-badge-data', 'data' );
+		$data   = json_decode( substr( $script, strlen( 'var _googlesitekitFeaturesBadgeData = ' ), -1 ), true );
+
+		unset( $_GET['googlesitekit_reset_session'] );
+
+		$this->assertSame(
+			array(
+				'connectedModules' => array( 'search-console', 'analytics-4' ),
+				'pluginVersion'    => GOOGLESITEKIT_VERSION,
+				'resetSession'     => (bool) $reset_session,
+				'userID'           => $admin_id,
+			),
+			$data,
+			'Badge data should contain the current fingerprint and session reset state.'
+		);
+	}
+
+	public function features_badge_data_provider() {
+		return array(
+			'normal session' => array( null ),
+			'reset session'  => array( '1' ),
+		);
+	}
+
+	/**
+	 * @dataProvider features_badge_assets_provider
+	 */
+	public function test_features_badge_assets( $role, $enabled, $expected ) {
+		if ( $enabled ) {
+			$this->enable_feature( 'featureDiscoveryHub' );
+		}
+
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => $role ) ) );
+
+		$this->fake_proxy_site_connection();
+
+		remove_all_filters( 'googlesitekit_setup_complete' );
+
+		$authentication = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$authentication->verification()->set( true );
+		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'test-access-token' ) );
+
+		set_current_screen( 'edit.php' );
+		remove_all_actions( 'admin_enqueue_scripts' );
+
+		$this->assets->register();
+
+		do_action( 'admin_enqueue_scripts' );
+
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge', 'enqueued' ), 'Badge should only load for administrators with the feature enabled.' );
+		$this->assertSame( $expected, wp_script_is( 'googlesitekit-features-badge-data', 'registered' ), 'Badge data should only be registered for eligible users.' );
+
+		if ( $expected ) {
+			$this->assertSame(
+				array( 'googlesitekit-i18n', 'googlesitekit-features-badge-data' ),
+				wp_scripts()->registered['googlesitekit-features-badge']->deps,
+				'Global badge must not depend on React or Site Kit data stores.'
+			);
+		}
+	}
+
+	public function features_badge_assets_provider() {
+		return array(
+			'admin enabled'  => array( 'administrator', true, true ),
+			'admin disabled' => array( 'administrator', false, false ),
+			'editor enabled' => array( 'editor', true, false ),
+		);
+	}
+
 	private function get_inline_base_data() {
 		remove_all_actions( 'wp_print_scripts' );
 		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -329,5 +439,42 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
+	}
+
+	public function test_base_data__woocommerce_not_installed() {
+		$this->set_installed_plugins( array() );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is not installed.' );
+		$this->assertFalse( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be false when WooCommerce is not installed.' );
+	}
+
+	public function test_base_data__woocommerce_installed_but_not_active() {
+		$this->set_installed_plugins(
+			array( 'woocommerce/woocommerce.php' => array( 'Name' => 'WooCommerce' ) )
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is installed but not active.' );
+		$this->assertTrue( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be true when WooCommerce is installed but not active.' );
+	}
+
+	/**
+	 * `class_alias()` cannot be undone within a process, so this must run in isolation
+	 * to avoid making `WooCommerce` exist for every other test in the suite.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_base_data__woocommerce_active() {
+		// Fake the existence of the `WooCommerce` class.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['wooCommerceActive'], 'wooCommerceActive should be true when the WooCommerce class exists.' );
 	}
 }

@@ -53,3 +53,11 @@ export { default as SalesByVisitorTypeWidget } from './SalesByVisitorTypeWidget'
 export { default as SalesByCountriesWidget } from './SalesByCountriesWidget';
 export { default as TopAuthorsDrivingSalesWidget } from './TopAuthorsDrivingSalesWidget';
 export { default as TopPagesDrivingSalesWidget } from './TopPagesDrivingSalesWidget';
+export { default as TotalFormCompletionsWidget } from './TotalFormCompletionsWidget';
+export { default as FormCompletionRateWidget } from './FormCompletionRateWidget';
+export { default as FormCompletionEngagementRateWidget } from './FormCompletionEngagementRateWidget';
+export { default as TopTrafficChannelsDrivingFormCompletionRateWidget } from './TopTrafficChannelsDrivingFormCompletionRateWidget';
+export { default as LeadsByVisitorTypeWidget } from './LeadsByVisitorTypeWidget';
+export { default as LeadsByCountriesWidget } from './LeadsByCountriesWidget';
+export { default as LeadsByDeviceTypeWidget } from './LeadsByDeviceTypeWidget';
+export { default as TopAuthorsDrivingLeadsWidget } from './TopAuthorsDrivingLeadsWidget';

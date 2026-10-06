@@ -38,7 +38,7 @@ import type { Feature } from './types';
  * Each entry is registered over a complete default feature so callers only
  * need to provide the fields relevant to their test or story.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @private
  *
  * @param {Object}   registry Data registry object.
@@ -60,11 +60,16 @@ export function provideFeatures(
 		badges: [],
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+			ctaLabel: 'Set up now',
 		},
 	};
 
 	features.forEach( ( feature ) => {
-		const { slug, ...settings } = { ...defaultFeature, ...feature };
+		const { slug, ...settings } = {
+			...defaultFeature,
+			...feature,
+			setup: { ...defaultFeature.setup, ...feature.setup },
+		};
 
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )

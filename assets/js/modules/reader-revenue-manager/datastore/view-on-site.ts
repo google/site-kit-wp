@@ -57,7 +57,7 @@ interface ViewOnSiteState {
 /**
  * Builds a stable cache key for a list of post types.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array.<string>} postTypes Post types to key by.
  * @return {string} The cache key.
@@ -140,7 +140,7 @@ const baseSelectors = {
 	/**
 	 * Gets the URL of the first public post matching one of the given post types.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object}         state       Data store's state.
 	 * @param {Array.<string>} [postTypes] Post types to search for.
@@ -166,7 +166,7 @@ const baseSelectors = {
 	 * selected post types. Any other placement, or an unresolvable post URL,
 	 * yields `undefined` so the calling component can omit the CTA.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(string|undefined)} The URL, or `undefined` if there is none.

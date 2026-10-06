@@ -20,7 +20,6 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
-import classnames from 'classnames';
 
 /**
  * Internal dependencies
@@ -47,21 +46,11 @@ import AccountCreate from '.';
 
 const { accountSummaries } = fixtures;
 
-function Template( args, { parameters } ) {
+function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-setup">
-				<div
-					className={ classnames(
-						'googlesitekit-setup-module googlesitekit-setup-module--analytics',
-						{
-							'googlesitekit-feature--setupFlowRefresh':
-								parameters?.features?.includes(
-									'setupFlowRefresh'
-								),
-						}
-					) }
-				>
+				<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
 							<Row>
@@ -84,7 +73,6 @@ Default.scenario = {};
 export const InitialSetupFlow = Template.bind( {} );
 InitialSetupFlow.storyName = 'Initial setup flow';
 InitialSetupFlow.parameters = {
-	features: [ 'setupFlowRefresh' ],
 	query: {
 		showProgress: 'true',
 	},
@@ -107,7 +95,6 @@ export const InitialSetupFlowWithUserCancelError = Template.bind( {} );
 InitialSetupFlowWithUserCancelError.storyName =
 	'Initial setup flow with terms of service not accepted error';
 InitialSetupFlowWithUserCancelError.parameters = {
-	features: [ 'setupFlowRefresh' ],
 	query: {
 		showProgress: 'true',
 		accountCreationErrorCode: 'user_cancel',
@@ -131,7 +118,6 @@ export const InitialSetupFlowWithGenericError = Template.bind( {} );
 InitialSetupFlowWithGenericError.storyName =
 	'Initial setup flow with generic error';
 InitialSetupFlowWithGenericError.parameters = {
-	features: [ 'setupFlowRefresh' ],
 	query: {
 		showProgress: 'true',
 		accountCreationErrorCode: 'backend_error',
@@ -155,7 +141,6 @@ export const SettingsWithUserCancelError = Template.bind( {} );
 SettingsWithUserCancelError.storyName =
 	'Settings with terms of service not accepted error';
 SettingsWithUserCancelError.parameters = {
-	features: [ 'setupFlowRefresh' ],
 	query: {
 		accountCreationErrorCode: 'user_cancel',
 	},

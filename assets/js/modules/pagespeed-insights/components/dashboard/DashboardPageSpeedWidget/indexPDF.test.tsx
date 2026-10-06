@@ -119,7 +119,7 @@ function renderJSON( data: SpeedPDFData[ 'data' ] | null ): string {
  * Removes field metrics from a fixture report, like a report whose CrUX data
  * lacks them.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param report  A PageSpeed Insights report fixture.
  * @param metrics The `loadingExperience.metrics` keys to remove.
@@ -135,7 +135,7 @@ function omitFieldMetrics( report: object, metrics: string[] ): object {
 /**
  * Renders the widget and finds one of its metric sections.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param data  The widget data to render.
  * @param title The section's title, like "Real user data".
@@ -155,7 +155,7 @@ function findSection(
 /**
  * Collects the text a value cell renders.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param cell A rendered value cell.
  * @return The cell's text, empty when the cell renders no value.
@@ -169,7 +169,7 @@ function getCellText( cell: TestRenderer.ReactTestInstance ): unknown[] {
 /**
  * Flattens the style of a row's outer view into one object.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param row A rendered metric row.
  * @return The row's flattened style.

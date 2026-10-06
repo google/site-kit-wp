@@ -77,7 +77,6 @@ use ReflectionMethod;
  * @group Modules
  */
 class Analytics_4Test extends TestCase {
-
 	use Module_With_Data_Available_State_ContractTests;
 	use Module_With_Owner_ContractTests;
 	use Module_With_Scopes_ContractTests;
@@ -181,7 +180,10 @@ class Analytics_4Test extends TestCase {
 		$this->assertEquals(
 			array_merge(
 				$this->analytics->get_scopes(),
-				array( 'https://www.googleapis.com/auth/tagmanager.readonly' )
+				array(
+					Analytics_4::EDIT_SCOPE,
+					'https://www.googleapis.com/auth/tagmanager.readonly',
+				)
 			),
 			apply_filters( 'googlesitekit_auth_scopes', array() ),
 			'Analytics 4 should add required scopes to authentication'
@@ -194,7 +196,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__sets_setup_url_steps_param_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$this->analytics->register();
@@ -206,10 +207,42 @@ class Analytics_4Test extends TestCase {
 			)
 		);
 
+		wp_parse_str( wp_parse_url( $url, PHP_URL_QUERY ), $query_params );
+
+		$this->assertEquals( '6', $query_params['steps'], 'Setup URL should include the steps query parameter as 6 when Analytics is active.' );
+	}
+
+	public function test_register__proxy_setup_mode_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
 		$this->assertEquals(
-			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&service_version=v3&steps=6',
-			'Setup URL should include the steps query parameter as 6 when Analytics is active.'
+			'analytics-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should be `analytics-step` when the original mode is empty and Analytics is not connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_when_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+		$this->connect_analytics_module( $this->analytics );
+
+		$this->assertSame(
+			'',
+			apply_filters( 'googlesitekit_proxy_setup_mode', '' ),
+			'The setup mode should stay empty when Analytics is connected.'
+		);
+	}
+
+	public function test_register__proxy_setup_mode_with_intent_step_when_not_connected() {
+		remove_all_filters( 'googlesitekit_proxy_setup_mode' );
+		$this->analytics->register();
+
+		$this->assertEquals(
+			'intent-step',
+			apply_filters( 'googlesitekit_proxy_setup_mode', 'intent-step' ),
+			'The setup mode should stay `intent-step` when Analytics is not connected.'
 		);
 	}
 
@@ -271,7 +304,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_property_id_change() {
-
 		list(,
 			,
 			,
@@ -296,7 +328,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_measurement_id_change() {
-
 		list(,
 			,
 			,
@@ -321,7 +352,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_available_audiences_change() {
-
 		list(
 			$test_resource_slug_audience,
 			,
@@ -371,7 +401,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_register__reset_resource_data_availability_date__on_deactivation() {
-
 		list(,
 			,
 			,
@@ -480,7 +509,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'account_ticket_id_mismatch',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect to dashboard with account ticket ID mismatch error.'
 			);
@@ -505,7 +541,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'account_ticket_id_mismatch',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect with a mismatch error when no account ticket is stored.'
 			);
@@ -538,7 +581,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "account_ticket_id_mismatch" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'account_ticket_id_mismatch', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'account_ticket_id_mismatch',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect with a mismatch error when the stored ticket is empty.'
 			);
@@ -570,7 +620,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'invalid_nonce',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect with an invalid nonce error when the nonce is missing.'
 			);
@@ -606,7 +663,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'invalid_nonce',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect with an invalid nonce error when the nonce does not verify.'
 			);
@@ -641,7 +705,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "invalid_nonce" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'invalid_nonce', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'invalid_nonce',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect with an invalid nonce error for another user\'s nonce.'
 			);
@@ -663,7 +734,14 @@ class Analytics_4Test extends TestCase {
 			$this->fail( 'Expected redirect to module page with "user_cancel" error' );
 		} catch ( RedirectException $redirect ) {
 			$this->assertEquals(
-				add_query_arg( 'error_code', 'user_cancel', $dashboard_url ),
+				add_query_arg(
+					array(
+						'slug'                     => 'analytics-4',
+						'reAuth'                   => 'true',
+						'accountCreationErrorCode' => 'user_cancel',
+					),
+					$dashboard_url
+				),
 				$redirect->get_location(),
 				'Should redirect to dashboard with user cancel error.'
 			);
@@ -673,55 +751,10 @@ class Analytics_4Test extends TestCase {
 		unset( $_GET['error'] );
 	}
 
-	public function test_handle_provisioning_callback__success() {
-		$test_variables              = $this->set_up_handle_provisioning_callback_test();
-		$method                      = $test_variables['method'];
-		$analytics                   = $test_variables['analytics'];
-		$admin_id                    = $test_variables['admin_id'];
-		$account_ticked_id_transient = $test_variables['account_ticked_id_transient'];
-
-		// Intercept Google API requests to avoid failures.
-		FakeHttp::fake_google_http_handler(
-			$analytics->get_client()
-		);
-
-		// Results in an dashboard redirect on success, with new data being stored.
-		set_transient( $account_ticked_id_transient, $_GET['accountTicketId'] );
-		$_GET['accountId'] = '12345678';
-
-		try {
-			$method->invokeArgs( $analytics, array() );
-			$this->fail( 'Expected redirect to module page with "authentication_success" notification' );
-		} catch ( RedirectException $redirect ) {
-			$this->assertEquals(
-				add_query_arg(
-					array(
-						'page'         => 'googlesitekit-dashboard',
-						'notification' => 'authentication_success',
-						'slug'         => 'analytics-4',
-					),
-					admin_url( 'admin.php' )
-				),
-				$redirect->get_location(),
-				'Should redirect to dashboard with authentication success notification.'
-			);
-
-			// Ensure transient was deleted by the method.
-			$this->assertFalse( get_transient( $account_ticked_id_transient ), 'Account ticket transient should be deleted on successful provisioning.' );
-			// Ensure settings were set correctly.
-			$settings = $analytics->get_settings()->get();
-
-			$this->assertEquals( $_GET['accountId'], $settings['accountID'], 'Account ID should be set from GET parameter.' );
-			$this->assertEquals( $admin_id, $settings['ownerID'], 'Owner ID should be set to admin user ID.' );
-		}
-	}
-
 	/**
 	 * @dataProvider data_handle_provisioning_callback_show_progress
 	 */
-	public function test_handle_provisioning_callback__with_setup_flow_refresh_feature_flag_enabled( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
+	public function test_handle_provisioning_callback__success( $params ) {
 		$test_variables              = $this->set_up_handle_provisioning_callback_test();
 		$method                      = $test_variables['method'];
 		$analytics                   = $test_variables['analytics'];
@@ -786,9 +819,7 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
 	 */
-	public function test_handle_provisioning_callback__account_ticket_id_mismatch_with_setup_flow_refresh_feature_flag_enabled( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
+	public function test_handle_provisioning_callback__account_ticket_id_mismatch_with_show_progress( $params ) {
 		$test_variables = $this->set_up_handle_provisioning_callback_test();
 		$method         = $test_variables['method'];
 		$analytics      = $test_variables['analytics'];
@@ -822,9 +853,7 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
 	 */
-	public function test_handle_provisioning_callback__user_cancel_with_setup_flow_refresh_feature_flag_enabled( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
+	public function test_handle_provisioning_callback__user_cancel_with_show_progress( $params ) {
 		$test_variables              = $this->set_up_handle_provisioning_callback_test();
 		$method                      = $test_variables['method'];
 		$analytics                   = $test_variables['analytics'];
@@ -865,9 +894,7 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_handle_provisioning_callback_error_redirect_show_progress
 	 */
-	public function test_handle_provisioning_callback__callback_missing_parameter_with_setup_flow_refresh_feature_flag_enabled( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
+	public function test_handle_provisioning_callback__callback_missing_parameter_with_show_progress( $params ) {
 		$test_variables              = $this->set_up_handle_provisioning_callback_test();
 		$method                      = $test_variables['method'];
 		$analytics                   = $test_variables['analytics'];
@@ -906,8 +933,6 @@ class Analytics_4Test extends TestCase {
 	 * @dataProvider data_handle_provisioning_callback_connected_error_redirect
 	 */
 	public function test_handle_provisioning_callback__error_redirect_to_settings_when_connected( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
 		$test_variables              = $this->set_up_handle_provisioning_callback_test();
 		$method                      = $test_variables['method'];
 		$analytics                   = $test_variables['analytics'];
@@ -1585,9 +1610,7 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_create_account_ticket_show_progress
 	 */
-	public function test_create_account_ticket__with_setup_flow_refresh_feature_flag_enabled( $params ) {
-		$this->enable_feature( 'setupFlowRefresh' );
-
+	public function test_create_account_ticket__with_show_progress( $params ) {
 		$account_ticket_id     = 'test-account-ticket-id';
 		$account_display_name  = 'test account name';
 		$region_code           = 'US';
@@ -1670,7 +1693,7 @@ class Analytics_4Test extends TestCase {
 			strtok( $redirect_uri, '?' ),
 			'Redirect URI should point at the admin callback URL.'
 		);
-		$this->assertEquals( $expected_query_args, $actual_query_args, 'Redirect URI should include the nonce, service_version=v3 and optionally show_progress when setupFlowRefresh is enabled.' );
+		$this->assertEquals( $expected_query_args, $actual_query_args, 'Redirect URI should include the nonce, service_version=v3 and optionally show_progress.' );
 
 		// Assert transient is set with params.
 		$account_ticket_params = get_transient( Analytics_4::PROVISION_ACCOUNT_TICKET_ID . '::' . $this->user->ID );
@@ -1717,54 +1740,7 @@ class Analytics_4Test extends TestCase {
 	/**
 	 * @dataProvider data_scopes
 	 */
-	public function test_auth_scopes_( array $granted_scopes, array $expected_scopes ) {
-		remove_all_filters( 'googlesitekit_auth_scopes' );
-		$this->analytics->register();
-
-		$this->authentication->get_oauth_client()->set_granted_scopes( $granted_scopes );
-
-		$this->assertEqualSets(
-			$expected_scopes,
-			apply_filters( 'googlesitekit_auth_scopes', array() ),
-			'Auth scopes should match expected scopes based on granted scopes.'
-		);
-	}
-
-	public function data_scopes() {
-		return array(
-			'with analytics and tag manager scopes granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-			),
-			'with analytics scope granted' => array(
-				array(
-					Analytics_4::READONLY_SCOPE,
-				),
-				array(
-					Analytics_4::READONLY_SCOPE,
-				),
-			),
-			'with no scopes granted'       => array(
-				array(),
-				array(
-					Analytics_4::READONLY_SCOPE,
-					'https://www.googleapis.com/auth/tagmanager.readonly',
-				),
-			),
-		);
-	}
-
-	/**
-	 * @dataProvider data_scope_with_setupRefreshFlow_enabled
-	 */
-	public function test_auth_scopes_with_setupRefreshFlow( array $granted_scopes, $is_authenticated, $is_connected, array $expected_scopes ) {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_auth_scopes( array $granted_scopes, $is_authenticated, $is_connected, array $expected_scopes ) {
 		remove_all_filters( 'googlesitekit_auth_scopes' );
 
 		$this->analytics->register();
@@ -1793,11 +1769,11 @@ class Analytics_4Test extends TestCase {
 		$this->assertEqualSets(
 			$expected_scopes,
 			apply_filters( 'googlesitekit_auth_scopes', array() ),
-			'Auth scopes should match expected scopes based on granted scopes, authentication and connection state when setupFlowRefresh feature is enabled.'
+			'Auth scopes should match expected scopes based on granted scopes, authentication and connection state.'
 		);
 	}
 
-	public function data_scope_with_setupRefreshFlow_enabled() {
+	public function data_scopes() {
 		return array(
 			'unauthenticated: analytics + tag manager granted' => array(
 				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/tagmanager.readonly' ),
@@ -2037,12 +2013,31 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'remove-site-goals-widget',
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
+		);
+	}
+
+	public function test_get_datapoints__typicalTraffic() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$this->assertContains(
+			'benchmarking-data',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the benchmarking data datapoint with typical traffic enabled'
+		);
+	}
+
+	public function test_get_datapoints__typicalTraffic_disabled() {
+		$this->assertNotContains(
+			'benchmarking-data',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
 		);
 	}
 
@@ -2081,6 +2076,7 @@ class Analytics_4Test extends TestCase {
 				'sync-audiences',
 				'site-goals-settings',
 				'save-site-goals-settings',
+				'remove-site-goals-widget',
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
@@ -4054,7 +4050,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_inline_module_data__audience_segmentation() {
-
 		// Ensure the module is connected.
 		$this->analytics->get_settings()->merge(
 			array(
@@ -4413,7 +4408,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_set_data__save_resource_data_availability_date() {
-
 		list(
 			$test_resource_slug_audience,
 			,
@@ -4492,7 +4486,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__required_scope() {
-
 		$property_id = '123456789';
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
@@ -4519,7 +4512,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__required_params() {
-
 		$property_id = '123456789';
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
@@ -4546,7 +4538,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_create_audience__valid_audience_keys() {
-
 		$property_id = '123456789';
 
 		$this->fake_handler_and_invoke_register_method( $property_id );
@@ -4756,7 +4747,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	public function test_sync_audiences_unauthenticated() {
-
 		$property_id = '12345';
 
 		$this->analytics->get_settings()->merge(
@@ -5294,7 +5284,6 @@ class Analytics_4Test extends TestCase {
 	}
 
 	protected function set_test_resource_data_availability_dates() {
-
 		$test_resource_slug_audience         = 'properties/12345678/audiences/12345';
 		$test_resource_slug_custom_dimension = 'googlesitekit_post_type';
 		$test_resource_slug_property         = '12345678';

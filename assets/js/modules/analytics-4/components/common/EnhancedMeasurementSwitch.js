@@ -34,6 +34,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button, ProgressBar, Switch } from 'googlesitekit-components';
 import SupportLink from '@/js/components/SupportLink';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -165,7 +168,11 @@ export default function EnhancedMeasurementSwitch( {
 				/>
 			) }
 			{ ! loading && isEnhancedMeasurementAlreadyEnabled && (
-				<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label">
+				<Typography
+					as="div"
+					className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-label"
+					size={ SIZE_MEDIUM }
+				>
 					{ showTick && (
 						<div className="googlesitekit-analytics-enable-enhanced-measurement__already-enabled-tick">
 							<Tick />
@@ -175,7 +182,7 @@ export default function EnhancedMeasurementSwitch( {
 						'Enhanced measurement is enabled for this web data stream',
 						'google-site-kit'
 					) }
-				</div>
+				</Typography>
 			) }
 			{ ! loading && ! isEnhancedMeasurementAlreadyEnabled && (
 				<Switch
@@ -189,9 +196,12 @@ export default function EnhancedMeasurementSwitch( {
 					hideLabel={ false }
 				/>
 			) }
-			<p className="googlesitekit-module-settings-group__helper-text">
+			<P
+				className="googlesitekit-module-settings-group__helper-text"
+				size={ SIZE_SMALL }
+			>
 				{ description }
-			</p>
+			</P>
 		</div>
 	);
 }

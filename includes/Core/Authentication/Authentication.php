@@ -1142,7 +1142,7 @@ final class Authentication implements Provides_Feature_Metrics {
 						?>
 						<a
 							href="#"
-							onclick="reauthenticateAndContinueSetup()"
+							onclick="event.preventDefault(); reauthenticateAndContinueSetup();"
 						><?php esc_html_e( 'Click here', 'google-site-kit' ); ?></a>
 					</p>
 					<?php
@@ -1150,11 +1150,32 @@ final class Authentication implements Provides_Feature_Metrics {
 						sprintf(
 							"
 							function reauthenticateAndContinueSetup() {
-								const moduleSlug = getAbandonedModuleSlug();
+								const moduleSetup = getAbandonedModuleSetup();
 
-								if ( moduleSlug ) {
-									const redirect = '%3\$s&slug=' + moduleSlug;
-									document.location = '%2\$s&redirect=' + encodeURIComponent( redirect );
+								if ( moduleSetup?.slug ) {
+									const {
+										additionalScopes = [],
+										redirectQueryArgs = {},
+									} = moduleSetup.options || {};
+
+									const redirect = new URL( '%3\$s' );
+									redirect.searchParams.set( 'slug', moduleSetup.slug );
+									Object.entries( redirectQueryArgs ).forEach( ( [ key, value ] ) =>
+										redirect.searchParams.set( key, value )
+									);
+
+									const connect = new URL( '%2\$s' );
+									connect.searchParams.set( 'redirect', redirect.toString() );
+									// Rewrite the scheme as getConnectURL does, to avoid host security
+									// filters that block query parameters beginning with a URL.
+									additionalScopes.forEach( ( scope ) =>
+										connect.searchParams.append(
+											'additional_scopes[]',
+											scope.replace( /^http(s)?:/, 'gttp\$1:' )
+										)
+									);
+
+									document.location = connect.toString();
 								} else {
 									if ( localStorage ) {
 										localStorage.clear();
@@ -1166,7 +1187,7 @@ final class Authentication implements Provides_Feature_Metrics {
 								}
 							}
 
-							function getAbandonedModuleSlug() {
+							function getAbandonedModuleSetup() {
 								for ( const storage of [ localStorage, sessionStorage ] ) {
 									if ( ! storage ) {
 										continue;
@@ -1267,17 +1288,23 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
 	 *
 	 * @since 1.17.0
+	 * @since n.e.x.t Added the `purpose=intent` argument when the current request has it.
 	 *
 	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */
 	private function get_proxy_setup_url() {
-		return add_query_arg(
-			array(
-				'action' => Google_Proxy::ACTION_SETUP_START,
-				'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP_START ),
-			),
-			admin_url( 'index.php' )
+		$query_args = array(
+			'action' => Google_Proxy::ACTION_SETUP_START,
+			'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP_START ),
 		);
+
+		// The setup mode is resolved on the setup-start request, which does not have
+		// the splash screen's query arguments.
+		if ( Google_Proxy::PURPOSE_INTENT === $this->context->input()->filter( INPUT_GET, Google_Proxy::PARAM_PURPOSE ) ) {
+			$query_args[ Google_Proxy::PARAM_PURPOSE ] = Google_Proxy::PURPOSE_INTENT;
+		}
+
+		return add_query_arg( $query_args, admin_url( 'index.php' ) );
 	}
 
 	/**

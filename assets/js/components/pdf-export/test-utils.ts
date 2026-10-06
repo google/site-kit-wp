@@ -207,3 +207,49 @@ export function renderPDFChildStyles(
 		)
 	);
 }
+
+/**
+ * Mocks what `chart-axis.ts` reads: a canvas that measures each character as
+ * half the font size wide, and the Google Charts `DateFormat` and
+ * `NumberFormat`, which write English labels, such as `Sep 23` and `58K`.
+ *
+ * Call `mockChartAxisLabels()` before each test, and add its result to the
+ * `google.visualization` mock.
+ *
+ * @since n.e.x.t
+ *
+ * @return {Object} The `DateFormat` and `NumberFormat` mocks.
+ */
+export function mockChartAxisLabels() {
+	jest.spyOn(
+		global.HTMLCanvasElement.prototype,
+		'getContext'
+	).mockImplementation( () => {
+		const context = {
+			font: '',
+			measureText: ( text: string ) => ( {
+				width: ( text.length * parseFloat( context.font ) ) / 2,
+			} ),
+		};
+
+		return context as unknown as CanvasRenderingContext2D;
+	} );
+
+	const dateFormat = new Intl.DateTimeFormat( 'en-US', {
+		month: 'short',
+		day: 'numeric',
+	} );
+	const shortFormat = new Intl.NumberFormat( 'en-US', {
+		notation: 'compact',
+		maximumFractionDigits: 1,
+	} );
+
+	return {
+		DateFormat: jest.fn( () => ( {
+			formatValue: ( date: Date ) => dateFormat.format( date ),
+		} ) ),
+		NumberFormat: jest.fn( () => ( {
+			formatValue: ( value: number ) => shortFormat.format( value ),
+		} ) ),
+	};
+}

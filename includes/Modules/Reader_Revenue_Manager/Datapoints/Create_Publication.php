@@ -86,7 +86,7 @@ class Create_Publication extends Datapoint implements Executable_Datapoint {
 		$publication->setRrmProduct( $rrm_product );
 
 		return $this->get_service()->organizations_publications->create(
-			'organizations/*',
+			'organizations/-',
 			$publication
 		);
 	}
