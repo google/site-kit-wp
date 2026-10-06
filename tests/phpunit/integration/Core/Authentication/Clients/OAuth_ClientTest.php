@@ -534,7 +534,6 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_authorize_user__default_redirect_url_notification_initial_setup() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -557,7 +556,6 @@ class OAuth_ClientTest extends TestCase {
 	}
 
 	public function test_authorize_user__default_redirect_url_notification_existing_user() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$user_id = $this->factory()->user->create();
 		wp_set_current_user( $user_id );
 		$context         = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() );
@@ -651,9 +649,9 @@ class OAuth_ClientTest extends TestCase {
 		$_GET = $query_args;
 
 		$this->assertEquals(
-			add_query_arg( 'notification', 'authentication_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
+			add_query_arg( 'notification', 'initial_setup_success', admin_url( 'admin.php?page=googlesitekit-splash' ) ),
 			$this->get_authorize_user_redirect_location(),
-			'Authorization with one intent argument or none should go to the splash screen with `notification=authentication_success`.'
+			'Authorization with one intent argument or none should go to the splash screen with `notification=initial_setup_success`.'
 		);
 	}
 

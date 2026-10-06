@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { setUsingCache } from 'googlesitekit-api';
-import { enabledFeatures } from '@/js/features';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
@@ -86,10 +85,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 		setUsingCache( true );
 	} );
 
-	afterEach( () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
-	} );
-
 	describe( 'actions', () => {
 		describe( 'setConfiguredAudiences', () => {
 			it( 'should throw an error if the provided audiences are not an array', () => {
@@ -132,7 +127,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				expect(
 					registry
 						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
+						.getRawAudienceSegmentationWidgetHidden()
 				).toEqual( true );
 			} );
 		} );
@@ -367,46 +362,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 		} );
 
 		describe( 'isAudienceSegmentationWidgetHidden', () => {
-			it( 'should return undefined while audience settings are loading', async () => {
-				freezeFetch( audienceSettingsEndpoint );
-
-				expect(
-					registry
-						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
-				).toBeUndefined();
-
-				await waitForDefaultTimeouts();
-			} );
-
-			it( 'should use a resolver to make a network request if data is not available', async () => {
-				fetchMock.getOnce( audienceSettingsEndpoint, {
-					body: audienceSettingsResponse,
-					status: 200,
-				} );
-
-				expect(
-					registry
-						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
-				).toBeUndefined();
-
-				await untilResolved(
-					registry,
-					CORE_USER
-				).getUserAudienceSettings();
-
-				expect(
-					registry
-						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual(
-					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
-				);
-
-				expect( fetchMock ).toHaveFetchedTimes( 1 );
-			} );
-
 			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
 				registry
 					.dispatch( CORE_USER )
@@ -421,9 +376,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				);
 			} );
 
-			it( 'should return false when setupFlowRefresh is enabled regardless of stored value', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should return false regardless of the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					...audienceSettingsResponse,
 					isAudienceSegmentationWidgetHidden: true,
@@ -492,9 +445,7 @@ describe( 'modules/analytics-4 audience settings', () => {
 				);
 			} );
 
-			it( 'should always return the stored value when setupFlowRefresh is enabled', () => {
-				enabledFeatures.add( 'setupFlowRefresh' );
-
+			it( 'should always return the stored value', () => {
 				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
 					...audienceSettingsResponse,
 					isAudienceSegmentationWidgetHidden: true,

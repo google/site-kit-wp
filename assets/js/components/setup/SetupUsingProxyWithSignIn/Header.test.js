@@ -55,11 +55,10 @@ describe( 'Header', () => {
 		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
-	it( 'should track an event when the user clicks the "Exit setup" component with setupFlowRefresh enabled', async () => {
+	it( 'should track an event when the user clicks the "Exit setup" component', async () => {
 		const { getByRole, waitForRegistry } = render( <Header />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		await waitForRegistry();

@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\User;
 
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 
 /**
  * Class for handling user settings rest routes.
@@ -67,10 +66,7 @@ class User {
 		$this->audience_segmentation = new Audience_Segmentation( $user_options );
 		$this->conversion_reporting  = new Conversion_Reporting( $user_options );
 		$this->email_reporting       = new Email_Reporting( $user_options );
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$this->initial_setup = new Initial_Setup( $user_options );
-		}
+		$this->initial_setup         = new Initial_Setup( $user_options );
 	}
 
 	/**
@@ -84,9 +80,6 @@ class User {
 		$this->audience_segmentation->register();
 		$this->conversion_reporting->register();
 		$this->email_reporting->register();
-
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$this->initial_setup->register();
-		}
+		$this->initial_setup->register();
 	}
 }
