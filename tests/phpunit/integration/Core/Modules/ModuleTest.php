@@ -333,8 +333,8 @@ class ModuleTest extends TestCase {
 	}
 
 	/**
-	 * The reasons are written out rather than read from the constant, so a typo in the
-	 * constant fails here instead of being fed back into its own assertion.
+	 * The reasons are written out rather than read from the constant,
+	 * otherwise we're just comparing a variable with itself.
 	 */
 	public function data_rate_limit_reasons() {
 		return array(
