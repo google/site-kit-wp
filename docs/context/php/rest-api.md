@@ -728,7 +728,7 @@ is not allowed to make it.
   on the route, so WordPress passes the request on to the catch-all route.
 - An argument declared without a `type` is treated as a `string` (`REST_Route::parse_param_arg()`),
   so a parameter that also accepts an array or object needs its type spelled out.
-- The `notifications` (`GET`), `settings` (`GET`/`POST`) and `data-available` (`POST`)
+- The `notifications` (`GET`), `settings` (`GET`, `POST`/`PUT`/`PATCH`) and `data-available` (`POST`)
   routes are registered before the datapoint routes, so a schema-aware datapoint with one
   of those names (for example AdSense's `GET:notifications`) is never reached through its
   own route for those methods.
