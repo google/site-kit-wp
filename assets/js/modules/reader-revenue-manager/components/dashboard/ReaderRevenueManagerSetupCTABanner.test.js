@@ -37,7 +37,7 @@ import {
 	LEGACY_RRM_SETUP_BANNER_DISMISSED_KEY,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { NOTIFICATIONS } from '@/js/modules/reader-revenue-manager/notifications';
-import { WEEK_IN_SECONDS } from '@/js/util';
+import { WEEK_IN_SECONDS, trackEvent } from '@/js/util';
 import { dismissPromptEndpoint } from '@tests/js/mock-dismiss-prompt-endpoints';
 import {
 	mockSurveyEndpoints,
@@ -56,6 +56,10 @@ import {
 import ReaderRevenueManagerSetupCTABanner from './ReaderRevenueManagerSetupCTABanner';
 
 jest.mock( '../../../../hooks/useActivateModuleCallback' );
+jest.mock( '@/js/util', () => ( {
+	...jest.requireActual( '@/js/util' ),
+	trackEvent: jest.fn(),
+} ) );
 
 describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 	let registry;
@@ -95,6 +99,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 			.registerNotification( 'rrm-setup-notification', notification );
 
 		useActivateModuleCallback.mockImplementation( activateModuleMock );
+		trackEvent.mockReset();
 	} );
 
 	it( 'should render the Reader Revenue Manager setup CTA banner', async () => {
@@ -234,6 +239,132 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 		} );
 
 		expect( activateModuleCallbackMock ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should track the "click_explore_other_features_link" event with category and label when "Explore other features" is clicked', async () => {
+		mockSurveyEndpoints();
+
+		const { getByText, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click( getByText( /Explore other features/i ) );
+		} );
+
+		expect( trackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_rrm-setup-notification',
+			'click_explore_other_features_link',
+			'newsletter-signup'
+		);
+	} );
+
+	it( 'should add tracking label only when rrmExpressSetup is enabled', async () => {
+		mockSurveyEndpoints();
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
+		} );
+
+		const { getByRole, unmount, waitForRegistry } = render(
+			<ReaderRevenueManagerSetupCTABannerComponent />,
+			{
+				registry,
+				features: [ 'rrmExpressSetup' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRole( 'button', {
+					name: /Set up a sign-up form/i,
+				} )
+			);
+		} );
+
+		expect( trackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_rrm-setup-notification',
+			'confirm_notification',
+			'newsletter-signup',
+			undefined
+		);
+
+		trackEvent.mockClear();
+		unmount();
+
+		mockSurveyEndpoints();
+
+		const registryWithoutFlag = createTestRegistry();
+
+		provideUserAuthentication( registryWithoutFlag );
+		provideSiteInfo( registryWithoutFlag );
+
+		registryWithoutFlag
+			.dispatch( CORE_USER )
+			.receiveGetDismissedPrompts( [] );
+
+		registryWithoutFlag
+			.dispatch( CORE_USER )
+			.finishResolution( 'getDismissedPrompts', [] );
+
+		provideModules( registryWithoutFlag, [
+			{
+				slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				active: false,
+			},
+		] );
+
+		registryWithoutFlag
+			.dispatch( CORE_NOTIFICATIONS )
+			.registerNotification( 'rrm-setup-notification', notification );
+
+		useActivateModuleCallback.mockImplementation( activateModuleMock );
+
+		fetchMock.postOnce( dismissPromptEndpoint, {
+			body: {
+				'rrm-setup-notification': { expires: 0, count: 1 },
+			},
+		} );
+
+		const {
+			getByRole: getByRoleWithoutFlag,
+			waitForRegistry: waitForRegistryWithoutFlag,
+		} = render( <ReaderRevenueManagerSetupCTABannerComponent />, {
+			registry: registryWithoutFlag,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistryWithoutFlag();
+
+		// eslint-disable-next-line require-await
+		await act( async () => {
+			fireEvent.click(
+				getByRoleWithoutFlag( 'button', {
+					name: /Set up Reader Revenue Manager/i,
+				} )
+			);
+		} );
+
+		expect( trackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_rrm-setup-notification',
+			'confirm_notification',
+			undefined,
+			undefined
+		);
 	} );
 
 	it( 'should call the dismiss item endpoint when the banner is dismissed', async () => {

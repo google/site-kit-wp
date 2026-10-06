@@ -17,9 +17,14 @@
  */
 
 /**
+ * External dependencies
+ */
+import { ComponentType, Fragment, type MouseEvent } from 'react';
+
+/**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -32,19 +37,59 @@ import PoweredByModule from '@/js/components/PoweredByModule';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import BannerSVGMobile from '@/svg/graphics/banner-rrm-setup-cta-widget-mobile.svg?url';
 import BannerSVGDesktop from '@/svg/graphics/banner-rrm-setup-cta-widget.svg?url';
 
-export default function ExpressSetupBanner( props: BannerProps ) {
+const BannerWithObserver = withIntersectionObserver< BannerProps >(
+	Banner as unknown as ComponentType< BannerProps >
+);
+
+interface ExpressSetupBannerProps extends BannerProps {
+	onInView?: () => void;
+}
+
+export default function ExpressSetupBanner( props: ExpressSetupBannerProps ) {
 	const documentationLinkURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getDocumentationLinkURL( 'rrm-newsletter' ),
 		[]
 	);
+	const viewContext = useViewContext();
+	const eventCategory = `${ viewContext }_rrm-express-setup-widget`;
+	const eventLabel = 'newsletter-signup';
+
+	function handleInView() {
+		trackEvent( eventCategory, 'view_notification', eventLabel );
+		props.onInView?.();
+	}
+
+	async function handleCTAClick(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
+		await trackEvent( eventCategory, 'confirm_notification', eventLabel );
+		await props.ctaButton?.onClick?.( event );
+	}
+
+	async function handleDismissClick(
+		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
+	) {
+		await trackEvent( eventCategory, 'dismiss_notification', eventLabel );
+		await props.dismissButton?.onClick?.( event );
+	}
+
+	async function handleLearnMoreClick() {
+		await trackEvent( eventCategory, 'click_learn_more_link', eventLabel );
+		await props.learnMoreLink?.onClick?.();
+	}
 
 	return (
-		<Banner
+		<BannerWithObserver
+			{ ...props }
+			onInView={ handleInView }
 			className="googlesitekit-rrm-express-setup-banner"
 			title={ __(
 				'Collect reader emails directly on your site',
@@ -62,6 +107,7 @@ export default function ExpressSetupBanner( props: BannerProps ) {
 								a: (
 									<Link
 										href={ documentationLinkURL }
+										onClick={ handleLearnMoreClick }
 										external
 										hideExternalIndicator
 									/>
@@ -79,7 +125,14 @@ export default function ExpressSetupBanner( props: BannerProps ) {
 				mobile: BannerSVGMobile as unknown as string,
 				verticalPosition: 'center',
 			} }
-			{ ...props }
+			ctaButton={ {
+				...props.ctaButton,
+				onClick: handleCTAClick,
+			} }
+			dismissButton={ {
+				...props.dismissButton,
+				onClick: handleDismissClick,
+			} }
 		/>
 	);
 }
