@@ -77,6 +77,7 @@ export const PDF_COLORS = {
 	YELLOW_Y_50: '#ffe4b1', // $c-yellow-y-50
 	YELLOW_Y_500: '#895a00', // $c-yellow-y-500
 	YELLOW_Y_600: '#684500', // $c-yellow-y-600
+	YELLOW_Y_700: '#4e3300', // $c-yellow-y-700
 	UTILITY_WARNING_CONTAINER: '#ffe4b1', // $c-utility-warning-container
 	BLUE_B_400: '#6380b8', // $c-blue-b-400
 	TEAL_T_300: '#4bbbbb', // $c-teal-t-300

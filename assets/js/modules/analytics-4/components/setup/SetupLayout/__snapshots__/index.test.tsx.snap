@@ -556,7 +556,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
               <svg />
             </button>
             <div
-              class="mdc-menu mdc-menu-surface googlesitekit-width-auto"
+              class="mdc-menu mdc-menu-surface googlesitekit-width-auto googlesitekit-help-menu"
             >
               <ul
                 aria-hidden="true"
@@ -572,28 +572,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                   tabindex="-1"
                 >
                   <a
-                    aria-label="Fix common issues (opens in a new tab)"
-                    class="googlesitekit-cta-link mdc-list-item__text"
-                    href="https://sitekit.withgoogle.com/support/?doc=fix-common-issues"
-                    rel="noopener noreferrer"
-                    role="menuitem"
-                    tabindex="-1"
-                    target="_blank"
-                  >
-                    <span
-                      class="googlesitekit-cta-link__contents"
-                    >
-                      Fix common issues
-                    </span>
-                  </a>
-                </li>
-                <li
-                  class="googlesitekit-help-menu-link mdc-list-item"
-                  role="none"
-                  tabindex="-1"
-                >
-                  <a
-                    aria-label="Read help docs (opens in a new tab)"
+                    aria-label="Browse documentation (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
                     href="https://sitekit.withgoogle.com/documentation/"
                     rel="noopener noreferrer"
@@ -602,9 +581,15 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                     target="_blank"
                   >
                     <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
                       class="googlesitekit-cta-link__contents"
                     >
-                      Read help docs
+                      Browse documentation
                     </span>
                   </a>
                 </li>
@@ -614,7 +599,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                   tabindex="-1"
                 >
                   <a
-                    aria-label="Get support (opens in a new tab)"
+                    aria-label="Get free support (opens in a new tab)"
                     class="googlesitekit-cta-link mdc-list-item__text"
                     href="https://wordpress.org/support/plugin/google-site-kit/"
                     rel="noopener noreferrer"
@@ -623,9 +608,42 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                     target="_blank"
                   >
                     <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
                       class="googlesitekit-cta-link__contents"
                     >
-                      Get support
+                      Get free support
+                    </span>
+                  </a>
+                </li>
+                <li
+                  class="googlesitekit-help-menu-link mdc-list-item"
+                  role="none"
+                  tabindex="-1"
+                >
+                  <a
+                    aria-label="Send feedback (opens in a new tab)"
+                    class="googlesitekit-cta-link mdc-list-item__text"
+                    href="https://wordpress.org/support/plugin/google-site-kit/reviews/"
+                    rel="noopener noreferrer"
+                    role="menuitem"
+                    tabindex="-1"
+                    target="_blank"
+                  >
+                    <span
+                      class="googlesitekit-icon-wrapper"
+                      style="margin-right: 5px;"
+                    >
+                      <svg />
+                    </span>
+                    <span
+                      class="googlesitekit-cta-link__contents"
+                    >
+                      Send feedback
                     </span>
                   </a>
                 </li>
@@ -669,7 +687,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                     Connect Service
                   </p>
                   <div
-                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics"
+                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh"
                   >
                     <div
                       class="googlesitekit-setup-module__step"
@@ -692,7 +710,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                         class="googlesitekit-analytics-setup__form"
                       >
                         <p
-                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--medium"
+                          class="googlesitekit-typography googlesitekit-setup-module__select_account googlesitekit-typography--body googlesitekit-typography--large"
                         >
                           Please select the account information below. You can change this later in your settings.
                         </p>
@@ -784,6 +802,22 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                                 />
                               </div>
                             </div>
+                            <div
+                              class="googlesitekit-setup__step-hint"
+                            >
+                              <p
+                                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                              >
+                                What is an Analytics property?
+                              </p>
+                              <span
+                                class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
+                              >
+                                <svg />
+                              </span>
+                            </div>
                           </div>
                           <div
                             class="googlesitekit-setup-module__input-wrapper googlesitekit-setup-module__input-wrapper--webdatastream"
@@ -826,6 +860,22 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                                   class="mdc-notched-outline__trailing"
                                 />
                               </div>
+                            </div>
+                            <div
+                              class="googlesitekit-setup__step-hint"
+                            >
+                              <p
+                                class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--small"
+                              >
+                                What is a web data stream?
+                              </p>
+                              <span
+                                class="googlesitekit-info-tooltip"
+                                role="tooltip"
+                                tabindex="0"
+                              >
+                                <svg />
+                              </span>
                             </div>
                           </div>
                         </div>
@@ -895,6 +945,25 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                           class="googlesitekit-color--surfaces-on-background-variant googlesitekit-plugin-conversion-tracking-notice"
                         >
                           To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. 
+                          <a
+                            aria-label="Learn more (opens in a new tab)"
+                            class="googlesitekit-cta-link"
+                            href="https://sitekit.withgoogle.com/support/?doc=plugin-conversion-tracking"
+                            rel="noopener noreferrer"
+                            target="_blank"
+                          >
+                            <span
+                              class="googlesitekit-cta-link__contents"
+                            >
+                              Learn more
+                            </span>
+                            <span
+                              class="googlesitekit-icon-wrapper"
+                              style="margin-left: 5px;"
+                            >
+                              <svg />
+                            </span>
+                          </a>
                         </p>
                         <div
                           class="googlesitekit-setup-module__action"
@@ -906,7 +975,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                             <span
                               class="mdc-button__label"
                             >
-                              Complete setup
+                              Set up
                             </span>
                           </button>
                         </div>

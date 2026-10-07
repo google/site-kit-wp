@@ -25,17 +25,13 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorCTAContent from '@/js/components/ActivateAnalyticsCTA/ErrorCTAContent';
 import NormalCTAContent from '@/js/components/ActivateAnalyticsCTA/NormalCTAContent';
-import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
-import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -57,11 +53,9 @@ const ErrorCTAWithObserver = withIntersectionObserver( ErrorCTAContent );
 const NormalCTAWithObserver = withIntersectionObserver( NormalCTAContent );
 
 export default function ActivateAnalyticsCTA( {
-	children,
 	dismissedItemSlug,
 	analyticsEventLabel,
 } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -89,9 +83,6 @@ export default function ActivateAnalyticsCTA( {
 	);
 
 	const isDismissed = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return false;
-		}
 		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
 	} );
 
@@ -113,14 +104,11 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	const documentationURL = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled ) {
-			return null;
-		}
 		return select( CORE_SITE ).getDocumentationLinkURL( 'ga4' );
 	} );
 
 	const hasActivationError = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshEnabled || ! setupFlowRefreshPhase4Enabled ) {
+		if ( ! setupFlowRefreshPhase4Enabled ) {
 			return false;
 		}
 
@@ -210,41 +198,8 @@ export default function ActivateAnalyticsCTA( {
 		return null;
 	}
 
-	if ( setupFlowRefreshEnabled && isDismissed ) {
+	if ( isDismissed ) {
 		return null;
-	}
-
-	if ( ! setupFlowRefreshEnabled ) {
-		return (
-			<div className="googlesitekit-analytics-cta">
-				<div className="googlesitekit-analytics-cta__preview-graphs">
-					{ children }
-				</div>
-				<div className="googlesitekit-analytics-cta__details">
-					<P
-						className="googlesitekit-analytics-cta--description"
-						size={ SIZE_MEDIUM }
-					>
-						{ __(
-							'See how many people visit your site from Search and track how you’re achieving your goals',
-							'google-site-kit'
-						) }
-					</P>
-					<SpinnerButton
-						onClick={ onClickCallback }
-						isSaving={ inProgress }
-						disabled={ inProgress }
-					>
-						{ analyticsModuleActive
-							? __( 'Complete setup', 'google-site-kit' )
-							: __(
-									'Set up Google Analytics',
-									'google-site-kit'
-							  ) }
-					</SpinnerButton>
-				</div>
-			</div>
-		);
 	}
 
 	if ( hasActivationError ) {
@@ -273,7 +228,6 @@ export default function ActivateAnalyticsCTA( {
 }
 
 ActivateAnalyticsCTA.propTypes = {
-	children: PropTypes.node,
 	dismissedItemSlug: PropTypes.string.isRequired,
 	analyticsEventLabel: PropTypes.string,
 };

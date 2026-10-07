@@ -43,10 +43,10 @@ import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import MeasurementSettingRow from '@/js/modules/analytics-4/components/common/MeasurementSettingRow';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 	PROPERTY_CREATE,
-	SITE_GOALS_CUSTOM_DIMENSIONS,
 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	isValidPropertyID,
@@ -99,7 +99,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 
 			return select( MODULES_ANALYTICS_4 ).hasCustomDimensionsForProperty(
 				propertyID,
-				SITE_GOALS_CUSTOM_DIMENSIONS
+				ALL_CUSTOM_DIMENSIONS
 			);
 		},
 		[ propertyID ]
@@ -161,7 +161,7 @@ const SettingsAdvancedDataBreakdowns: FC<
 	);
 
 	const isCreatingDimensions = useSelect( ( select: Select ) => {
-		const customDimensionsBeingCreated = SITE_GOALS_CUSTOM_DIMENSIONS.some(
+		const customDimensionsBeingCreated = ALL_CUSTOM_DIMENSIONS.some(
 			( dimension ) =>
 				select( MODULES_ANALYTICS_4 ).isCreatingCustomDimension(
 					dimension

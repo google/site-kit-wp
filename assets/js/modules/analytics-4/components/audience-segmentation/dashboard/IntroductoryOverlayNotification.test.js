@@ -45,7 +45,6 @@ import {
 	provideUserCapabilities,
 	provideUserInfo,
 	render,
-	setEnabledFeatures,
 } from '@tests/js/test-utils';
 import { getViewportWidth, setViewportWidth } from '@tests/js/viewport-utils';
 import IntroductoryOverlayNotification, {
@@ -280,18 +279,6 @@ describe( 'IntroductoryOverlayNotification', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is not active when the audiences widget area is hidden', async () => {
-			registry
-				.dispatch( CORE_USER )
-				.setAudienceSegmentationWidgetHidden( true );
-
-			const isActive = await notification.checkRequirements(
-				registry,
-				VIEW_CONTEXT_MAIN_DASHBOARD
-			);
-			expect( isActive ).toBe( false );
-		} );
-
 		it( 'is not active when the current user is the one who completed the audience segmentation setup', async () => {
 			const userID = registry.select( CORE_USER ).getID();
 
@@ -309,8 +296,6 @@ describe( 'IntroductoryOverlayNotification', () => {
 		it( 'is not active and dismisses itself when the welcome modal is present', async () => {
 			global.location.href =
 				'https://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
-
-			setEnabledFeatures( [ 'setupFlowRefresh' ] );
 
 			fetchMock.postOnce( dismissItemEndpoint, {
 				body: JSON.stringify( [

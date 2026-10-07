@@ -38,7 +38,7 @@ exports[`IntroModal renders ecommerce-and-lead variant when both conversion even
               class="googlesitekit-banner-modal__text"
             >
               <span
-                class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+                class="googlesitekit-badge googlesitekit-badge--announcement googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
               >
                 New
               </span>
@@ -147,7 +147,7 @@ exports[`IntroModal renders ecommerce-only variant when only ecommerce conversio
               class="googlesitekit-banner-modal__text"
             >
               <span
-                class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+                class="googlesitekit-badge googlesitekit-badge--announcement googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
               >
                 New
               </span>
@@ -248,7 +248,7 @@ exports[`IntroModal renders lead-only variant when only lead conversion events e
               class="googlesitekit-banner-modal__text"
             >
               <span
-                class="googlesitekit-badge googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
+                class="googlesitekit-badge googlesitekit-badge--announcement googlesitekit-new-badge googlesitekit-new-badge--has-no-spacing"
               >
                 New
               </span>

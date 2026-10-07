@@ -20,7 +20,6 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import queryString from 'query-string';
 
 /**
  * WordPress dependencies
@@ -465,7 +464,7 @@ export const selectors = {
 				// If page argument is full format (i.e. 'admin.php?page=google-site-kit'), extract php file and pageArg, returning early with adminURL if no 'page' param found.
 				if ( page.indexOf( '.php?' ) !== -1 ) {
 					const splitPage = page.split( '?' );
-					pageArg = queryString.parse( splitPage.pop() ).page;
+					pageArg = getQueryArg( page, 'page' );
 
 					if ( ! pageArg ) {
 						return adminURL;
