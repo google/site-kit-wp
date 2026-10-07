@@ -14,9 +14,9 @@ This issue adds a thumbs up and a thumbs down button to the chart and to each ke
 
 **What a vote sends.** A vote is sent the same way the Site Goals prompt sends it: as a survey trigger, which the Site Kit Service records for the user, and as a GA4 event. An answer from the popup is sent as one more survey trigger, the same way the feature card's dismiss menu sends the reason a reader chose. This lets the team count the reasons behind the thumbs down for each part of the tab.
 
-**Not on the view-only dashboard.** A reader on the view-only dashboard sees no feedback buttons. Survey triggers are sent only for a user who has connected their own Google account to Site Kit, so a vote from a view-only reader would never reach the Site Kit Service. This rule is part of the shared `FeedbackPrompt`, not of the Typical Traffic tab, so it applies to every widget that shows the prompt. The Site Goals widgets stop showing their `Is this section helpful?` prompt on the view-only dashboard too.
+**Not on the view-only dashboard.** #13597 makes the Typical Traffic tab available on the view-only dashboard, but a reader there sees no feedback buttons. Survey triggers are sent only for a user who has connected their own Google account to Site Kit, so a vote from a view-only reader would never reach the Site Kit Service. This rule is part of the shared `FeedbackPrompt`, not of the Typical Traffic tab, so it applies to every widget that shows the prompt. The Site Goals widgets stop showing their `Is this section helpful?` prompt on the view-only dashboard too.
 
-The chart's first answer, `The expected range feels too high or too low`, is about an expected range that the chart does not draw yet. The chart's title and tooltip in #13600 have the same gap.
+The chart's first answer, `The expected range feels too high or too low`, is about the expected range band, which #13800 adds to the chart from #13600. The answer is shown from the start, as the chart's title and tooltip in #13600 already name the expected range.
 
 This issue needs the shared `FeedbackPrompt` from #13679, the chart from #13600 and the key factor columns from #13601.
 
