@@ -35,6 +35,6 @@ describe( 'PDFPartialDataBadge', () => {
 
 		expect( badgeJSON ).toContain( 'Partial data' );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_WARNING_CONTAINER );
-		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_600 );
+		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_700 );
 	} );
 } );

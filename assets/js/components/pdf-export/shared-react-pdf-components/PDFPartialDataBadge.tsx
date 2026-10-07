@@ -45,7 +45,7 @@ const PDFPartialDataBadge: FC = () => {
 		<PDFBadge
 			label={ __( 'Partial data', 'google-site-kit' ) }
 			backgroundColor={ PDF_COLORS.UTILITY_WARNING_CONTAINER }
-			color={ PDF_COLORS.YELLOW_Y_600 }
+			color={ PDF_COLORS.YELLOW_Y_700 }
 			style={ styles.badge }
 		/>
 	);
