@@ -655,8 +655,9 @@ Modules use a datapoint pattern for REST endpoints. A single route — registere
 captures both the module `slug` and the `datapoint` from the URI and dispatches to
 the resolved module's `get_data()` / `set_data()` methods. The shared `slug` and
 `datapoint` parameters are declared once at the route level (third constructor
-argument). Per-datapoint permission checks are delegated through a
-`$datapoint_permission_callback` closure, which honors a datapoint that implements
+argument). Per-datapoint permission checks go through `resolve_datapoint_permission()`,
+which looks up the definition the endpoint executes (`GET:` for `GET`/`HEAD` reads,
+`POST:` for `POST`/`PUT`/`PATCH` writes) and honors a datapoint that implements
 `Permission_Aware_Datapoint` (otherwise falling back to the method default —
 `$can_view_insights` for reads, `$can_manage_options` for writes).
 
@@ -677,8 +678,8 @@ new REST_Route(
                 }
                 return new WP_REST_Response( $data );
             },
-            'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_view_insights ) {
-                return $datapoint_permission_callback( $request, $can_view_insights );
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $can_view_insights ) {
+                return $this->resolve_datapoint_permission( $request, $can_view_insights );
             },
         ),
         array(
@@ -692,8 +693,8 @@ new REST_Route(
                 }
                 return new WP_REST_Response( $data );
             },
-            'permission_callback' => function ( WP_REST_Request $request ) use ( $datapoint_permission_callback, $can_manage_options ) {
-                return $datapoint_permission_callback( $request, $can_manage_options );
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $can_manage_options ) {
+                return $this->resolve_datapoint_permission( $request, $can_manage_options );
             },
             'args'                => array(
                 'data' => array(
@@ -721,6 +722,48 @@ new REST_Route(
         ),
     )
 ),
+```
+
+### Validating Datapoint Parameters
+
+A datapoint class that implements `Schema_Aware_Datapoint`
+(`includes/Core/Modules/Schema_Aware_Datapoint.php`) describes the parameters it accepts
+in `get_args_schema()`, in the same shape as the `args` of a REST route.
+`Module::execute_data_request()` checks every request made through `get_data()` or
+`set_data()` against the schema before the datapoint runs, using the REST API's own
+parameter handling (`WP_REST_Request::has_valid_params()` and `sanitize_params()`). This
+covers REST requests and calls from PHP alike. Code that calls the datapoint's
+`create_request()` directly skips the check.
+
+- A missing required parameter or a value of the wrong type returns the same
+  `rest_missing_callback_param` or `rest_invalid_param` error, with status 400, that a
+  REST route would return, and the datapoint does not run.
+- The datapoint receives the sanitized values, for example `limit` as an integer when
+  the request sent the string `'10'`, and the schema's `default` for a parameter that
+  wasn't sent. Parameters outside the schema are passed on unchanged.
+- As with REST arguments, a `null` value counts as missing for a required parameter and
+  fails the type check of an optional one, so leave a parameter out rather than passing
+  `null` for it.
+- For a `POST` datapoint the schema describes the keys of the data to set, the same as
+  for a `GET` datapoint: the controller passes only the request's `data` argument on.
+
+```php
+class Get_Example extends Datapoint implements Executable_Datapoint, Schema_Aware_Datapoint {
+
+    public function get_args_schema() {
+        return array(
+            'propertyID' => array(
+                'type'     => 'string',
+                'required' => true,
+            ),
+            'limit'      => array(
+                'type' => 'integer',
+            ),
+        );
+    }
+
+    // create_request() and parse_response() as for any executable datapoint.
+}
 ```
 
 ## Route Namespacing

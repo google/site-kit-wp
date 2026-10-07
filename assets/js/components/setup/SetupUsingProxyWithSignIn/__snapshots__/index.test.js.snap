@@ -1392,7 +1392,7 @@ exports[`SetupUsingProxyWithSignIn with the \`setupFlowRefresh\` feature flag en
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -2348,7 +2348,7 @@ exports[`SetupUsingProxyWithSignIn should render the progress indicator 1`] = `
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -2720,7 +2720,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page correctly 1`] = 
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -3092,7 +3092,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page with the Analyti
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>
@@ -3464,7 +3464,7 @@ exports[`SetupUsingProxyWithSignIn should render the setup page, including the A
                     Analytics
                   </span>
                   <span
-                    class="googlesitekit-badge googlesitekit-splash__analytics-recommended-badge"
+                    class="googlesitekit-badge googlesitekit-badge--recommendation googlesitekit-splash__analytics-recommended-badge"
                   >
                     Recommended
                   </span>

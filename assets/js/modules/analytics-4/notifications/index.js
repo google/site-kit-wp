@@ -24,7 +24,6 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import {
-	requireAudienceSegmentationWidgetHidden,
 	requireCanViewSharedModule,
 	requireIsAuthenticated,
 	requireItemDismissed,
@@ -197,7 +196,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 				requireCanViewSharedModule( MODULE_SLUG_ANALYTICS_4 )
 			),
 			requireAudienceSegmentationSetupCompleted(),
-			asyncRequire( false, requireAudienceSegmentationWidgetHidden() ),
 			asyncRequire(
 				false,
 				requireAudienceSegmentationSetupCompletedByUser()

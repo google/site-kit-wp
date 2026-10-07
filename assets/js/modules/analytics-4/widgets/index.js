@@ -434,13 +434,9 @@ export function registerWidgets( widgets ) {
 				).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
 				const configuredAudiences =
 					select( CORE_USER ).getConfiguredAudiences();
-				const isAudienceSegmentationWidgetHidden =
-					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
 
 				return (
-					configuredAudiences?.length > 0 &&
-					isAudienceSegmentationWidgetHidden === false &&
-					! isAnalyticsConnected
+					configuredAudiences?.length > 0 && ! isAnalyticsConnected
 				);
 			},
 		},

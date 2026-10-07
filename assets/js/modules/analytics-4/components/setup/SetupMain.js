@@ -136,7 +136,7 @@ export default function SetupMain( { finishSetup } ) {
 
 	return (
 		<Fragment>
-			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
+			<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 				<div className="googlesitekit-setup-module__step">
 					{ isInitialSetupFlow ? (
 						<Typography

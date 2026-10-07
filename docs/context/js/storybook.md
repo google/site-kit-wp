@@ -346,7 +346,7 @@ Stories can accept configuration through parameters:
 // Story with custom parameters
 export const FeatureStory = Template.bind( {} );
 FeatureStory.parameters = {
-    features: [ 'setupFlowRefresh' ], // Enable feature flags (see feature-flags.json)
+    features: [ 'rrmExpressSetup' ], // Enable feature flags (see feature-flags.json)
     route: '/dashboard',           // Set router history location
     padding: '20px',               // Custom padding applied by the layout decorator
 };

@@ -361,35 +361,6 @@ describe( 'modules/analytics-4 audience settings', () => {
 			} );
 		} );
 
-		describe( 'isAudienceSegmentationWidgetHidden', () => {
-			it( 'should return the audience segmentation widget visibility from the audience settings', () => {
-				registry
-					.dispatch( CORE_USER )
-					.receiveGetUserAudienceSettings( audienceSettingsResponse );
-
-				expect(
-					registry
-						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual(
-					audienceSettingsResponse.isAudienceSegmentationWidgetHidden
-				);
-			} );
-
-			it( 'should return false regardless of the stored value', () => {
-				registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-					...audienceSettingsResponse,
-					isAudienceSegmentationWidgetHidden: true,
-				} );
-
-				expect(
-					registry
-						.select( CORE_USER )
-						.isAudienceSegmentationWidgetHidden()
-				).toEqual( false );
-			} );
-		} );
-
 		describe( 'getRawAudienceSegmentationWidgetHidden', () => {
 			it( 'should return undefined while audience settings are loading', async () => {
 				freezeFetch( audienceSettingsEndpoint );

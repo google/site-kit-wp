@@ -24,66 +24,19 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
-import Link from '@/js/components/Link';
 import { SelectionPanelHeader } from '@/js/components/SelectionPanel';
-import P from '@/js/components/Typography/P';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function Header( { closePanel } ) {
-	const isViewOnly = useViewOnly();
-
-	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
-			scrollTo: 'visitor-groups',
-		} )
-	);
-	const isSavingSettings = useSelect( ( select ) =>
-		select( CORE_USER ).isSavingUserAudienceSettings()
-	);
-
-	const { navigateTo } = useDispatch( CORE_LOCATION );
-
-	const onSettingsClick = useCallback(
-		() => navigateTo( adminSettingsURL ),
-		[ adminSettingsURL, navigateTo ]
-	);
-
 	return (
 		<SelectionPanelHeader
 			title={ __( 'Select visitor groups', 'google-site-kit' ) }
 			onCloseClick={ closePanel }
-		>
-			{ ! isViewOnly && (
-				<P>
-					{ createInterpolateElement(
-						__(
-							'You can deactivate this widget in <link><strong>Settings</strong></link>',
-							'google-site-kit'
-						),
-						{
-							link: (
-								<Link
-									onClick={ onSettingsClick }
-									disabled={ isSavingSettings }
-									secondary
-								/>
-							),
-							strong: <strong />,
-						}
-					) }
-				</P>
-			) }
-		</SelectionPanelHeader>
+		/>
 	);
 }
 
