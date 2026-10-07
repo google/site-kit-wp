@@ -51,6 +51,7 @@ import { ErrorObject } from '@/js/util/errors';
 import AdsConversionTrackingIntentGraphic from '@/svg/graphics/ads-conversion-tracking-intent.svg';
 import AdsIcon from '@/svg/graphics/ads.svg';
 import CheckFillIcon from '@/svg/icons/check-fill.svg';
+import AdsConversionTrackingIntentError from './AdsConversionTrackingIntentError';
 import AdsConversionTrackingIntentStep from './AdsConversionTrackingIntentStep';
 
 /* eslint-disable camelcase -- The Site Kit Service names the payload fields in snake case. */
@@ -67,12 +68,14 @@ interface AdsConversionTrackingIntentPayload {
 const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 	intentCode,
 	payload,
+	error: intentError,
 } ) => {
+	// There's no payload when the intent can't be loaded.
 	const {
 		tag_id: tagID,
 		customer_name: customerName,
 		consent_date: consentDate,
-	} = payload as unknown as AdsConversionTrackingIntentPayload;
+	} = ( payload || {} ) as unknown as AdsConversionTrackingIntentPayload;
 
 	const isTagConfirmed = useSelect(
 		( select: Select ) =>
@@ -114,6 +117,10 @@ const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 			setIsPlacingTag( false );
 		}
 	}, [ completeConversionTrackingIntent, intentCode, navigateTo, tagID ] );
+
+	if ( intentError ) {
+		return <AdsConversionTrackingIntentError />;
+	}
 
 	const formattedConsentDate = formatDate( consentDate, { month: 'long' } );
 

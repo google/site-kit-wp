@@ -42,7 +42,6 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
-	within,
 } from '@tests/js/test-utils';
 import IntentRenderer from './IntentRenderer';
 
@@ -54,10 +53,13 @@ const TestIntent: FC< IntentComponentProps > = ( {
 	slug,
 	intentCode,
 	payload,
+	error,
 } ) => (
 	<p>
-		Test intent { slug } with code { intentCode } and payload{ ' ' }
-		{ JSON.stringify( payload ) }
+		Test intent { slug } with code { intentCode } and{ ' ' }
+		{ error
+			? `error ${ error.code }`
+			: `payload ${ JSON.stringify( payload ) }` }
 	</p>
 );
 
@@ -163,7 +165,7 @@ describe( 'IntentRenderer', () => {
 		expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'shows the "We couldn’t load your request" error notice with a "Go to dashboard" button when the intent request returns `intent_not_found`', async () => {
+	it( 'should pass the error to the intent component, and show no error of its own, when the intent request fails', async () => {
 		fetchMock.getOnce( intentEndpoint, {
 			body: {
 				code: 'intent_not_found',
@@ -174,113 +176,18 @@ describe( 'IntentRenderer', () => {
 			status: 404,
 		} );
 
-		const { findByRole, queryByRole, queryByText } = render(
+		const { findByText, queryByRole } = render(
 			<IntentRenderer slug="test-intent" intentCode="abc123" />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 
-		const notice = await findByRole( 'status' );
-
-		expect( notice ).toHaveClass( 'googlesitekit-notice--error' );
 		expect(
-			within( notice ).getByText( 'We couldn’t load your request' )
-		).toBeInTheDocument();
-		expect(
-			within( notice ).getByText(
-				'The link may already have been used, or it may have expired. You can start again from the Google Ads console.'
+			await findByText(
+				'Test intent test-intent with code abc123 and error intent_not_found'
 			)
 		).toBeInTheDocument();
-		expect(
-			within( notice ).getByRole( 'button', { name: 'Go to dashboard' } )
-		).toHaveAttribute(
-			'href',
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
-		);
-		expect( within( notice ).getAllByRole( 'button' ) ).toHaveLength( 1 );
-		expect(
-			queryByText(
-				'This link can’t be used. Go back to where you started and try again.'
-			)
-		).not.toBeInTheDocument();
 		expect( queryByRole( 'progressbar' ) ).not.toBeInTheDocument();
-		expect(
-			queryByText( 'Test intent', { exact: false } )
-		).not.toBeInTheDocument();
-		expect( console ).toHaveErrored();
-	} );
-
-	it( 'shows the "We couldn’t load your request" error notice when the intent request returns `intent_user_not_connected`', async () => {
-		fetchMock.getOnce( intentEndpoint, {
-			body: {
-				code: 'intent_user_not_connected',
-				message:
-					'Your Google account isn’t connected to Site Kit. Connect Site Kit with your Google account, then try again.',
-				data: { status: 403 },
-			},
-			status: 403,
-		} );
-
-		const { findByRole, queryByText } = render(
-			<IntentRenderer slug="test-intent" intentCode="abc123" />,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-		);
-
-		const notice = await findByRole( 'status' );
-
-		expect( notice ).toHaveClass( 'googlesitekit-notice--error' );
-		expect(
-			within( notice ).getByText( 'We couldn’t load your request' )
-		).toBeInTheDocument();
-		expect(
-			within( notice ).getByText(
-				'The link may already have been used, or it may have expired. You can start again from the Google Ads console.'
-			)
-		).toBeInTheDocument();
-		expect(
-			within( notice ).getByRole( 'button', { name: 'Go to dashboard' } )
-		).toBeInTheDocument();
-		expect( within( notice ).getAllByRole( 'button' ) ).toHaveLength( 1 );
-		expect(
-			queryByText(
-				'Your Google account isn’t connected to Site Kit. Connect Site Kit with your Google account, then try again.'
-			)
-		).not.toBeInTheDocument();
-		expect( console ).toHaveErrored();
-	} );
-
-	it( 'shows the "We couldn’t load your request" error notice when the intent request fails with a server error', async () => {
-		fetchMock.getOnce( intentEndpoint, {
-			body: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { findByRole, queryByText } = render(
-			<IntentRenderer slug="test-intent" intentCode="abc123" />,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-		);
-
-		const notice = await findByRole( 'status' );
-
-		expect( notice ).toHaveClass( 'googlesitekit-notice--error' );
-		expect(
-			within( notice ).getByText( 'We couldn’t load your request' )
-		).toBeInTheDocument();
-		expect(
-			within( notice ).getByText(
-				'The link may already have been used, or it may have expired. You can start again from the Google Ads console.'
-			)
-		).toBeInTheDocument();
-		expect(
-			within( notice ).getByRole( 'button', { name: 'Go to dashboard' } )
-		).toBeInTheDocument();
-		expect( within( notice ).getAllByRole( 'button' ) ).toHaveLength( 1 );
-		expect(
-			queryByText( 'Internal server error' )
-		).not.toBeInTheDocument();
+		expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
 		expect( console ).toHaveErrored();
 	} );
 } );

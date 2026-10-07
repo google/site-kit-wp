@@ -40,6 +40,7 @@ import {
 	provideSiteInfo,
 	render,
 	waitFor,
+	within,
 } from '@tests/js/test-utils';
 import AdsConversionTrackingIntent from './AdsConversionTrackingIntent';
 
@@ -287,4 +288,67 @@ describe( 'AdsConversionTrackingIntent', () => {
 			} )
 		).toBeEnabled();
 	} );
+
+	it.each( [
+		[
+			'`intent_not_found`',
+			{
+				code: 'intent_not_found',
+				message:
+					'This link can’t be used. Go back to where you started and try again.',
+				data: { status: 404 },
+			},
+		],
+		[
+			'`intent_user_not_connected`',
+			{
+				code: 'intent_user_not_connected',
+				message:
+					'Your Google account isn’t connected to Site Kit. Connect Site Kit with your Google account, then try again.',
+				data: { status: 403 },
+			},
+		],
+		[ 'a server error', error ],
+	] )(
+		'should show the "We couldn’t load your request" error notice with a "Go to dashboard" button, and no steps, when loading the intent fails with %s',
+		( _, intentError ) => {
+			const { getByRole, queryByRole, queryByText } = render(
+				<AdsConversionTrackingIntent
+					slug={ ADS_CONVERSION_TRACKING_INTENT_SLUG }
+					intentCode={ intentCode }
+					error={ intentError }
+				/>,
+				{ registry }
+			);
+
+			const notice = getByRole( 'status' );
+
+			expect( notice ).toHaveClass( 'googlesitekit-notice--error' );
+			expect(
+				within( notice ).getByText( 'We couldn’t load your request' )
+			).toBeInTheDocument();
+			expect(
+				within( notice ).getByText(
+					'The link may already have been used, or it may have expired. You can start again from the Google Ads console.'
+				)
+			).toBeInTheDocument();
+			expect(
+				within( notice ).getByRole( 'button', {
+					name: 'Go to dashboard',
+				} )
+			).toHaveAttribute(
+				'href',
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+			);
+			expect( within( notice ).getAllByRole( 'button' ) ).toHaveLength(
+				1
+			);
+			expect(
+				queryByText( intentError.message )
+			).not.toBeInTheDocument();
+			expect(
+				queryByRole( 'button', { name: 'Confirm tag' } )
+			).not.toBeInTheDocument();
+		}
+	);
 } );

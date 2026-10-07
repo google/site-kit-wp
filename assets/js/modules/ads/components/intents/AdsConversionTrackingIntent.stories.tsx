@@ -43,6 +43,7 @@ import {
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 import { registerIntents } from '@/js/modules/ads/intents';
 import { Story } from '@/js/types/Story';
+import { ErrorObject } from '@/js/util/errors';
 import {
 	provideModules,
 	provideSiteInfo,
@@ -62,12 +63,14 @@ const INTENT_CODE = 'abc123';
 
 interface TemplateProps {
 	/** Payload the Site Kit Service returns for the intent. */
-	payload: Intent[ 'payload' ];
+	payload?: Intent[ 'payload' ];
+	/** Error the intent request fails with, in place of the payload. */
+	error?: ErrorObject;
 	/** Sets up any additional state the story shows. */
 	setupRegistry?: ( registry: WPDataRegistry ) => void;
 }
 
-const Template: FC< TemplateProps > = ( { payload, setupRegistry } ) => (
+const Template: FC< TemplateProps > = ( { payload, error, setupRegistry } ) => (
 	<WithRegistrySetup
 		func={ ( registry: WPDataRegistry ) => {
 			provideSiteInfo( registry );
@@ -82,17 +85,26 @@ const Template: FC< TemplateProps > = ( { payload, setupRegistry } ) => (
 			registry.dispatch( CORE_USER ).receiveGetSurvey( { survey: null } );
 			registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
 
-			registry.dispatch( CORE_INTENTS ).receiveGetIntent(
-				{
-					intent: ADS_CONVERSION_TRACKING_INTENT_SLUG,
-					created: '2026-07-30T10:15:00Z',
-					payload,
-				},
-				{
-					slug: ADS_CONVERSION_TRACKING_INTENT_SLUG,
-					intentCode: INTENT_CODE,
-				}
-			);
+			if ( error ) {
+				registry
+					.dispatch( CORE_INTENTS )
+					.setErrorForSelector( error, 'getIntent', [
+						ADS_CONVERSION_TRACKING_INTENT_SLUG,
+						INTENT_CODE,
+					] );
+			} else {
+				registry.dispatch( CORE_INTENTS ).receiveGetIntent(
+					{
+						intent: ADS_CONVERSION_TRACKING_INTENT_SLUG,
+						created: '2026-07-30T10:15:00Z',
+						payload,
+					},
+					{
+						slug: ADS_CONVERSION_TRACKING_INTENT_SLUG,
+						intentCode: INTENT_CODE,
+					}
+				);
+			}
 			registry
 				.dispatch( CORE_INTENTS )
 				.finishResolution( 'getIntent', [
@@ -144,6 +156,17 @@ NoConsentDate.args = {
 	},
 };
 NoConsentDate.scenario = {};
+
+export const Error = Template.bind( {} ) as Story< TemplateProps >;
+Error.storyName = 'Error';
+Error.args = {
+	error: {
+		code: 'intent_not_found',
+		message:
+			'This link can’t be used. Go back to where you started and try again.',
+		data: { status: 404 },
+	},
+};
 
 export default {
 	title: 'Modules/Ads/Intents/AdsConversionTrackingIntent',
