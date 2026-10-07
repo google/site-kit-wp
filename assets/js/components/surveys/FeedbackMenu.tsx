@@ -91,8 +91,9 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 		( index: number ) => {
 			onSelect?.( options[ index ].value );
 			onClose();
+			sourceRef?.current?.focus();
 		},
-		[ onClose, onSelect, options ]
+		[ onClose, onSelect, options, sourceRef ]
 	);
 
 	useClickAway( containerRef, onClickAway );
