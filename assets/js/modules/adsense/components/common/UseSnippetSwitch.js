@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
 import { Switch } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -88,8 +89,8 @@ export default function UseSnippetSwitch( props ) {
 					hideLabel={ false }
 				/>{ ' ' }
 				<Badge
-					className="googlesitekit-badge--primary"
 					label={ __( 'Recommended', 'google-site-kit' ) }
+					variant={ BADGE_VARIANTS.RECOMMENDATION }
 				/>
 			</div>
 			{ useSnippet && checkedMessage && (

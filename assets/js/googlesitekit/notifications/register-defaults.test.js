@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import { FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { WELCOME_MODAL_NOTIFICATION } from '@/js/components/WelcomeModal';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import {
@@ -33,6 +34,7 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 	PERMISSION_READ_SHARED_MODULE_DATA,
+	PERMISSION_UPDATE_PLUGINS,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
@@ -118,6 +120,8 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 		global.location.href = 'http://example.com/wp-admin/admin.php';
 
 		provideSiteInfo( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 	} );
 
 	describe( 'auth-error', () => {
@@ -462,6 +466,59 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 		it( 'should not be active when the `slug` query arg is missing', async () => {
 			global.location.href =
 				'http://example.com/wp-admin/admin.php?notification=authentication_success';
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'feature-discovery-auto-update-cta', () => {
+		const { checkRequirements } =
+			DEFAULT_NOTIFICATIONS[ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG ];
+
+		it( 'should be active when user can update plugins and auto-updates can be enabled', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+			provideUserCapabilities( registry, {
+				[ PERMISSION_UPDATE_PLUGINS ]: true,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active when auto-updates are already enabled', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: true,
+			} );
+			provideUserCapabilities( registry, {
+				[ PERMISSION_UPDATE_PLUGINS ]: true,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when user cannot update plugins', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: true,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+			provideUserCapabilities( registry, {
+				[ PERMISSION_UPDATE_PLUGINS ]: false,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when plugin auto-updates cannot be changed', async () => {
+			provideSiteInfo( registry, {
+				changePluginAutoUpdatesCapacity: false,
+				siteKitAutoUpdatesEnabled: false,
+			} );
+			provideUserCapabilities( registry, {
+				[ PERMISSION_UPDATE_PLUGINS ]: true,
+			} );
 
 			expect( await checkRequirements( registry ) ).toBe( false );
 		} );

@@ -40,7 +40,9 @@ import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
+	provideNotifications,
 	provideSiteInfo,
+	provideUserCapabilities,
 } from '@tests/js/test-utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FeatureDiscoveryApp from './FeatureDiscoveryApp';
@@ -108,6 +110,28 @@ WhatsNewSeen.args = {
 };
 WhatsNewSeen.scenario = {};
 
+export const WhatsNewWithAutoUpdatesNotice = Template.bind(
+	{}
+) as Story< StoryArgs >;
+WhatsNewWithAutoUpdatesNotice.storyName =
+	'"What’s new" with auto-updates notice';
+WhatsNewWithAutoUpdatesNotice.parameters = { route: '/whats-new' };
+WhatsNewWithAutoUpdatesNotice.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideFeatures( registry, WHATS_NEW_FEATURES );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			siteKitAutoUpdatesEnabled: false,
+		} );
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+		provideNotifications( registry, [] );
+	},
+};
+WhatsNewWithAutoUpdatesNotice.scenario = {};
+
 export const WhatsNewEmpty = Template.bind( {} ) as Story< StoryArgs >;
 WhatsNewEmpty.storyName = '"What’s new" no features';
 WhatsNewEmpty.parameters = { route: '/whats-new' };
@@ -116,7 +140,7 @@ WhatsNewEmpty.args = {
 		provideWhatsNewState( registry );
 	},
 };
-// TODO: #13327 -- Enable the VRT scenario once the empty tab's CTA lands.
+WhatsNewEmpty.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureDiscoveryApp',
