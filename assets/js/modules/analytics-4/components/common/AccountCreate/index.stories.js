@@ -50,7 +50,7 @@ function Template( args ) {
 	return (
 		<div className="googlesitekit-layout">
 			<div className="googlesitekit-setup">
-				<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
+				<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 					<div className="googlesitekit-settings-module__content googlesitekit-settings-module__content--open">
 						<Grid>
 							<Row>
