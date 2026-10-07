@@ -24,6 +24,7 @@ import { waitFor } from '@testing-library/react';
 /**
  * Internal dependencies
  */
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import Notifications from '@/js/components/notifications/Notifications';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import {
@@ -80,7 +81,9 @@ describe( 'FeatureDiscoveryCallout', () => {
 	afterEach( () => {
 		fetchMock.reset();
 		document
-			.querySelectorAll( '.googlesitekit-add-features-button' )
+			.querySelectorAll(
+				`.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }`
+			)
 			.forEach( ( element ) => element.remove() );
 	} );
 
@@ -140,6 +143,27 @@ describe( 'FeatureDiscoveryCallout', () => {
 		).toBeInTheDocument();
 
 		addFeaturesButton.remove();
+	} );
+
+	it( 'anchors the callout to the features menu button when only the collapsed header trigger is present', async () => {
+		mockSurveyEndpoints();
+
+		const featuresMenuButton = document.createElement( 'button' );
+		featuresMenuButton.className = FEATURES_MENU_BUTTON_CLASS;
+		document.body.appendChild( featuresMenuButton );
+
+		const { container, waitForRegistry } = renderNotifications();
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-popper-root' )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-overlay-card--anchored' )
+		).toBeInTheDocument();
+
+		featuresMenuButton.remove();
 	} );
 
 	it( 'dismisses the notification when the Got it button is clicked', async () => {

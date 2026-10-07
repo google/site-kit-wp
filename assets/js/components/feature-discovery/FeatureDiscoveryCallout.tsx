@@ -29,6 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { FEATURES_MENU_BUTTON_CLASS } from '@/js/components/FeaturesMenu/constants';
 import OverlayNotification from '@/js/googlesitekit/notifications/components/layout/OverlayNotification';
 import FeatureDiscoveryCalloutGraphic from '@/svg/graphics/feature-discovery-callout.svg';
 
@@ -50,7 +51,7 @@ const FeatureDiscoveryCallout: FC< FeatureDiscoveryCalloutProps > = ( {
 				notificationID={ id }
 				className="googlesitekit-feature-discovery-callout"
 				anchoredOffset={ 28 }
-				anchorID=".googlesitekit-add-features-button"
+				anchorID={ `.googlesitekit-add-features-button, .${ FEATURES_MENU_BUTTON_CLASS }` }
 				title={ __(
 					'Unlock more Site Kit features',
 					'google-site-kit'
