@@ -33,11 +33,16 @@ export const ERROR_REASON_FORBIDDEN = 'forbidden';
 export const ERROR_INTERNAL_SERVER_ERROR = 'internal_server_error';
 export const ERROR_INVALID_JSON = 'invalid_json';
 export const ERROR_REASON_BAD_REQUEST = 'bad_request';
+export const ERROR_REASON_RATE_LIMIT_EXCEEDED = 'rateLimitExceeded';
+export const ERROR_REASON_USER_RATE_LIMIT_EXCEEDED = 'userRateLimitExceeded';
+export const ERROR_REASON_QUOTA_EXCEEDED = 'quotaExceeded';
+export const ERROR_STATUS_RATE_LIMIT = 429;
 
 export interface ErrorObject {
 	code?: string | number;
 	message?: string;
 	data?: {
+		status?: number;
 		reason?: string;
 		reconnectURL?: string;
 		[ key: string ]: unknown;
@@ -113,9 +118,35 @@ export function isAuthError( error: unknown ): boolean {
 }
 
 /**
+ * Checks if the given error is a rate limit error.
+ *
+ * Matches `Module::RATE_LIMIT_STATUS` and `Module::RATE_LIMIT_REASONS`, which are what
+ * send the `cacheTTL` that holds the request back until the quota has recovered. The
+ * newer Google APIs report a rate limit through the status alone, with no reason.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if it's a rate limit error, otherwise FALSE.
+ */
+export function isRateLimitError( error: unknown ): boolean {
+	const data = ( error as ErrorObject )?.data;
+
+	return (
+		data?.status === ERROR_STATUS_RATE_LIMIT ||
+		[
+			ERROR_REASON_RATE_LIMIT_EXCEEDED,
+			ERROR_REASON_USER_RATE_LIMIT_EXCEEDED,
+			ERROR_REASON_QUOTA_EXCEEDED,
+		].includes( data?.reason as string )
+	);
+}
+
+/**
  * Checks if the given error can be retried.
  *
  * @since 1.86.0
+ * @since n.e.x.t Rate limit errors are no longer retryable.
  *
  * @param {Object} error          The error object to check.
  * @param {Object} [selectorData] The error's associated selector data object.
@@ -129,7 +160,8 @@ export function isErrorRetryable(
 		!! selectorData?.storeName &&
 		! isInsufficientPermissionsError( error ) &&
 		! isPermissionScopeError( error ) &&
-		! isAuthError( error )
+		! isAuthError( error ) &&
+		! isRateLimitError( error )
 	);
 }
 
