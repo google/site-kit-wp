@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { VoteDirection } from '@/js/components/surveys/ThumbsSurveyTrigger';
+import { VoteDirection } from '@/js/components/surveys/constants';
 import { FEATURE_RELEVANCY_REASONS } from './constants';
 
 /**

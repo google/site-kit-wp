@@ -31,11 +31,12 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useDispatch, useSelect } from 'googlesitekit-data';
-import { FeedbackMenuOption } from '@/js/components/surveys/FeedbackMenu';
-import ThumbsSurveyTrigger, {
+import {
 	VOTE_DIRECTION_DOWN,
 	VoteDirection,
-} from '@/js/components/surveys/ThumbsSurveyTrigger';
+} from '@/js/components/surveys/constants';
+import { FeedbackMenuOption } from '@/js/components/surveys/FeedbackMenu';
+import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_RELEVANCY_REASONS,

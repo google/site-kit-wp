@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
-import { VoteDirection } from '@/js/components/surveys/ThumbsSurveyTrigger';
+import { VoteDirection } from '@/js/components/surveys/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {

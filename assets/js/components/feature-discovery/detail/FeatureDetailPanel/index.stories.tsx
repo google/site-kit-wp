@@ -69,7 +69,9 @@ Screenshots.storyName = 'Screenshots';
 Screenshots.args = { initialActiveIndex: 2 };
 // TODO: #13331 -- Screenshots.scenario = {};
 
-export const RelevancyFeedback = Template.bind( {} ) as PanelStory;
+export const RelevancyFeedback = Template.bind(
+	{}
+) as Story< FeatureDetailPanelProps >;
 RelevancyFeedback.storyName = 'Relevancy Feedback';
 // TODO: #13331 -- Enable scenario and commit references.
 // RelevancyFeedback.scenario = {
@@ -78,7 +80,9 @@ RelevancyFeedback.storyName = 'Relevancy Feedback';
 // 	onReadyScript: 'mouse.js',
 // };
 
-export const RelevancyConfirmation = Template.bind( {} ) as PanelStory;
+export const RelevancyConfirmation = Template.bind(
+	{}
+) as Story< FeatureDetailPanelProps >;
 RelevancyConfirmation.storyName = 'Relevancy Confirmation';
 // TODO: #13331 -- Enable scenario and commit references.
 // RelevancyConfirmation.scenario = {

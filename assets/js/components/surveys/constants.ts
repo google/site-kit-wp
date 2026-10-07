@@ -17,3 +17,10 @@
  */
 
 export const SURVEY_INPUT_MAX_CHARACTER_LIMIT = 200;
+
+export const VOTE_DIRECTION_UP = 'up';
+export const VOTE_DIRECTION_DOWN = 'down';
+
+export type VoteDirection =
+	| typeof VOTE_DIRECTION_UP
+	| typeof VOTE_DIRECTION_DOWN;

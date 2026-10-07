@@ -24,7 +24,7 @@ import {
 	VOTE_DIRECTION_DOWN,
 	VOTE_DIRECTION_UP,
 	VoteDirection,
-} from '@/js/components/surveys/ThumbsSurveyTrigger';
+} from '@/js/components/surveys/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createTestRegistry, untilResolved } from '@tests/js/utils';
 import { CORE_FEATURE_DISCOVERY } from './constants';

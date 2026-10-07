@@ -42,14 +42,12 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import CloseIcon from '@/svg/icons/close.svg';
 import ThumbDownIcon from '@/svg/icons/thumb-down.svg';
 import ThumbUpIcon from '@/svg/icons/thumb-up.svg';
+import {
+	VOTE_DIRECTION_DOWN,
+	VOTE_DIRECTION_UP,
+	VoteDirection,
+} from './constants';
 import FeedbackMenu, { FeedbackMenuOption } from './FeedbackMenu';
-
-export const VOTE_DIRECTION_UP = 'up';
-export const VOTE_DIRECTION_DOWN = 'down';
-
-export type VoteDirection =
-	| typeof VOTE_DIRECTION_UP
-	| typeof VOTE_DIRECTION_DOWN;
 
 // Use a tighter gap for bottom-placed poppers. Top placement keeps the default (9px).
 const BOTTOM_POPPER_OFFSET = 4;

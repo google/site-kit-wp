@@ -29,7 +29,8 @@ import {
 	render,
 	waitFor,
 } from '../../../../tests/js/test-utils';
-import ThumbsSurveyTrigger, { VoteDirection } from './ThumbsSurveyTrigger';
+import { VoteDirection } from './constants';
+import ThumbsSurveyTrigger from './ThumbsSurveyTrigger';
 
 function mockSurveyTrigger() {
 	fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
