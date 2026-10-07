@@ -21,14 +21,13 @@
  */
 import classnames from 'classnames';
 import { FC, ReactNode, RefObject } from 'react';
-import { useClickAway } from 'react-use';
+import { useClickAway, useKey } from 'react-use';
 
 /**
  * WordPress dependencies
  */
 import { useCallback, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
-import { ESCAPE, TAB } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -37,7 +36,7 @@ import { Menu } from 'googlesitekit-components';
 import { MenuItem } from '@/js/components/HeaderMenu';
 import Typography from '@/js/components/Typography';
 import { SIZE_LARGE, TYPE_LABEL } from '@/js/components/Typography/constants';
-import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
+import { useKeyInside } from '@/js/hooks/useKeyInside';
 
 export interface FeedbackMenuOption {
 	id: string;
@@ -71,18 +70,22 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 	const containerRef = wrapperRef || menuRef;
 	const headingID = `${ id }-heading`;
 
-	useClickAway( containerRef, () => {
+	const onClickAway = useCallback( () => {
 		if ( isOpen ) {
 			onClose();
 		}
-	} );
+	}, [ isOpen, onClose ] );
 
-	useKeyCodesInside( [ ESCAPE, TAB ], containerRef, () => {
-		if ( isOpen ) {
-			onClose();
-			sourceRef?.current?.focus();
-		}
-	} );
+	const onKeyDown = useCallback(
+		( event: KeyboardEvent ) => {
+			if ( isOpen ) {
+				event.stopPropagation();
+				onClose();
+				sourceRef?.current?.focus();
+			}
+		},
+		[ isOpen, onClose, sourceRef ]
+	);
 
 	const onSelected = useCallback(
 		( index: number ) => {
@@ -91,6 +94,14 @@ const FeedbackMenu: FC< FeedbackMenuProps > = ( {
 		},
 		[ onClose, onSelect, options ]
 	);
+
+	useClickAway( containerRef, onClickAway );
+
+	useKey( 'Escape', onKeyDown );
+	useKey( 'Tab', onKeyDown );
+
+	useKeyInside( 'Escape', containerRef, onKeyDown );
+	useKeyInside( 'Tab', containerRef, onKeyDown );
 
 	return (
 		// @ts-expect-error - The `Menu` component is not typed yet.

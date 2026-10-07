@@ -212,6 +212,46 @@ describe( 'ThumbsSurveyTrigger', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should intercept Escape inside the thumb controls only while the Popper is open', () => {
+		jest.spyOn(
+			registry.dispatch( CORE_USER ),
+			'triggerSurvey'
+		).mockResolvedValue( {} );
+
+		const { getByRole, queryByRole } = render(
+			<ThumbsSurveyTrigger voteID="escape" />,
+			{ registry }
+		);
+
+		const thumb = getByRole( 'button', { name: 'Yes, this was helpful' } );
+
+		const onWindowKeyDown = jest.fn();
+
+		global.window.addEventListener( 'keydown', onWindowKeyDown );
+
+		fireEvent.click( thumb );
+
+		expect( getByRole( 'status' ) ).toBeInTheDocument();
+
+		fireEvent.keyDown( thumb, { key: 'Tab' } );
+
+		expect( getByRole( 'status' ) ).toBeInTheDocument();
+		expect( onWindowKeyDown ).toHaveBeenCalledTimes( 1 );
+
+		onWindowKeyDown.mockClear();
+
+		fireEvent.keyDown( thumb, { key: 'Escape' } );
+
+		expect( queryByRole( 'status' ) ).not.toBeInTheDocument();
+		expect( onWindowKeyDown ).not.toHaveBeenCalled();
+
+		fireEvent.keyDown( thumb, { key: 'Escape' } );
+
+		expect( onWindowKeyDown ).toHaveBeenCalledTimes( 1 );
+
+		global.window.removeEventListener( 'keydown', onWindowKeyDown );
+	} );
+
 	it.each< VoteDirection >( [ 'up', 'down' ] )(
 		'should select the controlled %s vote without showing feedback',
 		( voteDirection ) => {

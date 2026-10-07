@@ -39,6 +39,7 @@ import Popper, {
 	PopperPlacement,
 } from '@/js/googlesitekit/components-gm2/Popper';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { useKeyInside } from '@/js/hooks/useKeyInside';
 import CloseIcon from '@/svg/icons/close.svg';
 import ThumbDownIcon from '@/svg/icons/thumb-down.svg';
 import ThumbUpIcon from '@/svg/icons/thumb-up.svg';
@@ -158,6 +159,15 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 	function handleClose() {
 		setAnchorElement( null );
 	}
+
+	function handleEscape( event: KeyboardEvent ) {
+		if ( anchorElement ) {
+			event.stopPropagation();
+			handleClose();
+		}
+	}
+
+	useKeyInside( 'Escape', wrapperRef, handleEscape );
 
 	const isUpvote = selectedDirection === VOTE_DIRECTION_UP;
 	const isDownvote = selectedDirection === VOTE_DIRECTION_DOWN;
