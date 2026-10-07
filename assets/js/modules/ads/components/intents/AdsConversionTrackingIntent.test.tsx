@@ -147,9 +147,7 @@ describe( 'AdsConversionTrackingIntent', () => {
 			} );
 
 			expect(
-				getByText(
-					'You can change this later in the Site Kit settings.'
-				)
+				getByText( 'You can change this later in settings.' )
 			).toBeInTheDocument();
 			expect(
 				queryByText( /This account is shown because/ )

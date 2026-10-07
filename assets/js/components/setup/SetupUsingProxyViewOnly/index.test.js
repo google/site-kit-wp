@@ -216,7 +216,7 @@ describe( 'SetupUsingProxyViewOnly', () => {
 
 			expect( notice ).toHaveClass( 'googlesitekit-notice--warning' );
 			expect( notice ).toHaveTextContent(
-				'Only administrators of this site can sign in to Site Kit and finish this setup. Ask one of them to give you administrator access, then go back to where you started and try again.'
+				'Only administrators of this site can sign in to Site Kit and finish this setup. To complete setup, you can ask a site administrator to give you administrator access, then go back to where you started and try again.'
 			);
 			expect(
 				getByRole( 'button', { name: 'Go to dashboard' } )
