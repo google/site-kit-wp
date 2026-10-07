@@ -1,5 +1,5 @@
 /**
- * Site Goals ZeroDataMessage component.
+ * TileZeroDataMessage component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,7 +34,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 
 export type MetricLabel = 'sales' | 'leads' | 'visitors';
 
-interface ZeroDataMessageProps {
+interface TileZeroDataMessageProps {
 	metricLabel: MetricLabel;
 }
 
@@ -71,7 +71,9 @@ const METRIC_LABELS = {
 	},
 };
 
-const ZeroDataMessage: FC< ZeroDataMessageProps > = ( { metricLabel } ) => {
+const TileZeroDataMessage: FC< TileZeroDataMessageProps > = ( {
+	metricLabel,
+} ) => {
 	const url = useSelect(
 		( select: Select ) => select( CORE_SITE ).getCurrentEntityURL(),
 		[]
@@ -82,4 +84,4 @@ const ZeroDataMessage: FC< ZeroDataMessageProps > = ( { metricLabel } ) => {
 	return <span>{ url ? labels.page : labels.site }</span>;
 };
 
-export default ZeroDataMessage;
+export default TileZeroDataMessage;
