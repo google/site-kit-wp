@@ -63,12 +63,12 @@ export interface RecentContentItem {
 }
 
 interface RecentContentOptions {
-	/** The total number of posts and products to return. */
+	/** The maximum number of posts and products to return. */
 	count: number;
 }
 
 interface RecentContentParams extends RecentContentOptions {
-	/** Whether to request products too. */
+	/** Whether to request products as well as posts. */
 	includeProducts: boolean;
 }
 
@@ -114,8 +114,6 @@ const fetchGetRecentContentStore = createFetchStore( {
 						per_page: count,
 						_fields: 'id,date_gmt,link,title',
 					} ),
-					// A cached response can miss a post published just now.
-					cache: 'no-store',
 				} )
 			)
 		);
@@ -233,7 +231,7 @@ const baseSelectors = {
 	 *
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
-	 * @param {number} options.count The total number of posts and products to return.
+	 * @param {number} options.count The maximum number of posts and products to return.
 	 * @return {(Array.<Object>|undefined)} The posts and products, newest first, or `undefined` until a request with the same `count` succeeds.
 	 */
 	getRecentContent(

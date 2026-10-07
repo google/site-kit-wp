@@ -992,35 +992,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 			] );
 		} );
 
-		it( 'should request the posts and the products without the browser cache', async () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
-			provideSiteInfo( registry, { wooCommerceActive: true } );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: true,
-			} );
-
-			fetchMock.getOnce( postsEndpoint, { body: [], status: 200 } );
-			fetchMock.getOnce( productsEndpoint, { body: [], status: 200 } );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getRecentContent( { count: 10 } );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getRecentContent( { count: 10 } );
-
-			expect( fetchMock.lastCall( postsEndpoint )?.[ 1 ]?.cache ).toBe(
-				'no-store'
-			);
-			expect( fetchMock.lastCall( productsEndpoint )?.[ 1 ]?.cache ).toBe(
-				'no-store'
-			);
-		} );
-
 		it( 'should store the "count must be a positive integer." error for `getResolutionError()` and not request posts when `count` is `0`', async () => {
 			provideSiteInfo( registry );
 
