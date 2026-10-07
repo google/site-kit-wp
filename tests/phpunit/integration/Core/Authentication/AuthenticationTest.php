@@ -716,9 +716,7 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_get_proxy_setup_url() {
-		$class  = new \ReflectionClass( Authentication::class );
-		$method = $class->getMethod( 'get_proxy_setup_url' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Authentication::class, 'get_proxy_setup_url' );
 
 		$url = $method->invokeArgs(
 			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
@@ -1117,9 +1115,7 @@ class AuthenticationTest extends TestCase {
 	public function test_googlesitekit_inline_js_wp_version_non_standard_version() {
 		$version = '42';
 
-		$class  = new \ReflectionClass( Authentication::class );
-		$method = $class->getMethod( 'inline_js_wp_version' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Authentication::class, 'inline_js_wp_version' );
 
 		$js_inline_wp_version = $method->invokeArgs(
 			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),

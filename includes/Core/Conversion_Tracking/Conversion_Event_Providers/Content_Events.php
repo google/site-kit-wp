@@ -360,7 +360,7 @@ class Content_Events extends Conversion_Events_Provider {
 
 		$src_attribute = $src_matches[0];
 		$src           = $src_matches[1] ?? $src_matches[2] ?? $src_matches[3];
-		$src           = html_entity_decode( $src );
+		$src           = html_entity_decode( $src, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 		$host          = strtolower( (string) URL::parse( $src, PHP_URL_HOST ) );
 
 		if ( in_array( $host, self::YOUTUBE_EMBED_HOSTS, true ) ) {
