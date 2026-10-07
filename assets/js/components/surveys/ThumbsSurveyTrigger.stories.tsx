@@ -43,9 +43,6 @@ function Template( args: ComponentProps< typeof ThumbsSurveyTrigger > ) {
 export const Default = Template.bind( {} ) as Story;
 Default.storyName = 'Default';
 
-export const Confirmation = Template.bind( {} ) as Story;
-Confirmation.storyName = 'Confirmation';
-
 export const Feedback = Template.bind( {} ) as Story;
 Feedback.storyName = 'Feedback';
 Feedback.args = {
