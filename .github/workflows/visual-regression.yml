@@ -147,6 +147,10 @@ jobs:
     needs: [ build, test ]
     if: always() && needs.build.result == 'success'
     timeout-minutes: 15
+    permissions:
+      contents: read
+      # For the flaky screenshots check.
+      checks: write
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
@@ -253,6 +257,44 @@ jobs:
               echo "- To accept intended changes, copy the command shown for each story in the report and commit the images, or add the \`VRT: Update reference images\` label."
             fi
           } > /tmp/artifact-url/url.md
+
+      # A job can't end as "neutral", but a check run can: flaky screenshots
+      # don't fail the run, yet leave a neutral check for the developer to
+      # look into, instead of an all-green pull request.
+      - name: Report flaky screenshots
+        if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          REPORT_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
+          SUMMARY_FILE: tests/vrt/report/summary.json
+        run: |
+          FLAKY=$(jq '.counts.flaky' "$SUMMARY_FILE")
+          if [ "${FLAKY}" -gt 0 ]; then
+            CONCLUSION="neutral"
+            NOUN="screenshots"
+            if [ "${FLAKY}" == "1" ]; then
+              NOUN="screenshot"
+            fi
+            TITLE="${FLAKY} flaky ${NOUN}: check before merging"
+            SUMMARY=$(
+              echo "These stories' screenshots failed, then passed on retry. Check them in the [report](${REPORT_URL}/index.html#status=flaky), and make the stories stable (see \`tests/vrt/README.md\`)."
+              echo
+              jq -r '.flaky[] | "- `\(.label)` (\(.viewports | join(", ")))"' "$SUMMARY_FILE"
+            )
+          else
+            CONCLUSION="success"
+            TITLE="No flaky screenshots"
+            SUMMARY="No screenshot needed a retry to pass."
+          fi
+          jq -n \
+            --arg head_sha "$HEAD_SHA" \
+            --arg conclusion "$CONCLUSION" \
+            --arg details_url "${REPORT_URL}/index.html" \
+            --arg title "$TITLE" \
+            --arg summary "$SUMMARY" \
+            '{ name: "VRT: flaky screenshots", head_sha: $head_sha, status: "completed", conclusion: $conclusion, details_url: $details_url, output: { title: $title, summary: $summary } }' \
+            | gh api "repos/${GITHUB_REPOSITORY}/check-runs" --input - > /dev/null
 
       - name: Upload report summary
         if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
