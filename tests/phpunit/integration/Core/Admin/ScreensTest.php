@@ -28,6 +28,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
+use stdClass;
 use WPDieException;
 
 /**
@@ -809,6 +810,30 @@ class ScreensTest extends TestCase {
 		return null;
 	}
 
+	/**
+	 * Wraps the wp_die() handler to record the arguments it is called with.
+	 *
+	 * Before WordPress 5.9 the test suite leaves the response code out of WPDieException, so tests read it from these arguments.
+	 *
+	 * @return stdClass Spy whose `args` property holds the message, title and arguments of the last wp_die() call.
+	 */
+	private function spy_on_wp_die_handler() {
+		$spy = new stdClass();
+
+		add_filter(
+			'wp_die_handler',
+			function ( $handler ) use ( $spy ) {
+				return function ( ...$args ) use ( $handler, $spy ) {
+					$spy->args = $args;
+
+					return $handler( ...$args );
+				};
+			}
+		);
+
+		return $spy;
+	}
+
 	public function test_dashboard_access_denied__redirect_to_splash_with_the_intent_purpose() {
 		$this->enable_feature( 'adsConversionTrackingIntent' );
 		$this->switch_to_signed_out_admin();
@@ -854,6 +879,8 @@ class ScreensTest extends TestCase {
 
 		$_GET['purpose'] = 'intent';
 
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
+
 		try {
 			$this->deny_access( 'googlesitekit-splash' );
 			$this->fail( 'The request should end with the message.' );
@@ -861,7 +888,9 @@ class ScreensTest extends TestCase {
 			$this->assertStringContainsString( 'You need administrator access to continue', $e->getMessage(), 'The message should say administrator access is needed.' );
 			$this->assertStringContainsString( 'Only administrators of this site can sign in to Site Kit and finish this setup.', $e->getMessage(), 'The message should say why.' );
 			$this->assertStringNotContainsString( 'page=googlesitekit-dashboard', $e->getMessage(), 'An editor who cannot use the dashboard should not get a link to it.' );
-			$this->assertSame( 403, $e->getCode(), 'The response should be a 403.' );
+
+			list( , , $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 403, $args['response'], 'The response should be a 403.' );
 		}
 	}
 
