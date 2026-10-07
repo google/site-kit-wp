@@ -200,7 +200,11 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					aria-controls={
 						hasUpvoteFeedbackOptions ? menuID : undefined
 					}
-					aria-expanded={ isUpvoteFeedbackMenuOpen }
+					aria-expanded={
+						hasUpvoteFeedbackOptions
+							? isUpvoteFeedbackMenuOpen
+							: undefined
+					}
 					aria-haspopup={
 						hasUpvoteFeedbackOptions ? 'menu' : undefined
 					}
@@ -223,7 +227,11 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					aria-controls={
 						hasDownvoteFeedbackOptions ? menuID : undefined
 					}
-					aria-expanded={ isDownvoteFeedbackMenuOpen }
+					aria-expanded={
+						hasDownvoteFeedbackOptions
+							? isDownvoteFeedbackMenuOpen
+							: undefined
+					}
 					aria-haspopup={
 						hasDownvoteFeedbackOptions ? 'menu' : undefined
 					}
