@@ -650,17 +650,16 @@ if ( ! $this->validate( $data ) ) {
 
 ## Module Data Endpoints
 
-Modules use a datapoint pattern for REST endpoints, registered in
-`REST_Modules_Controller` (`includes/Core/Modules/REST_Modules_Controller.php`).
-A catch-all route captures both the module `slug` and the `datapoint` from the URI
-and dispatches to the resolved module's `get_data()` / `set_data()` methods through
-`handle_get_data_request()` / `handle_set_data_request()`. The shared `slug` and
+Modules use a datapoint pattern for REST endpoints. A single route — registered in
+`REST_Modules_Controller` (`includes/Core/Modules/REST_Modules_Controller.php`) —
+captures both the module `slug` and the `datapoint` from the URI and dispatches to
+the resolved module's `get_data()` / `set_data()` methods. The shared `slug` and
 `datapoint` parameters are declared once at the route level (third constructor
-argument). Permission checks go through `resolve_datapoint_permission()` for the
-definition the endpoint executes (`GET:` for reads, `POST:` for `POST`/`PUT`/`PATCH`
-writes). It honors a datapoint that implements `Permission_Aware_Datapoint` and
-otherwise requires `Permissions::VIEW_POSTS_INSIGHTS` for reads and
-`Permissions::MANAGE_OPTIONS` for writes (or `Permissions::SETUP` for either).
+argument). Per-datapoint permission checks go through `resolve_datapoint_permission()`,
+which looks up the definition the endpoint executes (`GET:` for `GET`/`HEAD` reads,
+`POST:` for `POST`/`PUT`/`PATCH` writes) and honors a datapoint that implements
+`Permission_Aware_Datapoint` (otherwise falling back to the method default —
+`$can_view_insights` for reads, `$can_manage_options` for writes).
 
 ```php
 // Route pattern: modules/{slug}/data/{datapoint}
@@ -671,13 +670,32 @@ new REST_Route(
     array(
         array(
             'methods'             => WP_REST_Server::READABLE,
-            'callback'            => fn ( WP_REST_Request $request ) => $this->handle_get_data_request( $request, $request['slug'], $request['datapoint'] ),
-            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'GET', $request['slug'], $request['datapoint'], Permissions::VIEW_POSTS_INSIGHTS ),
+            'callback'            => function ( WP_REST_Request $request ) {
+                $module = $this->modules->get_module( $request['slug'] );
+                $data   = $module->get_data( $request['datapoint'], $request->get_params() );
+                if ( is_wp_error( $data ) ) {
+                    return $data;
+                }
+                return new WP_REST_Response( $data );
+            },
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $can_view_insights ) {
+                return $this->resolve_datapoint_permission( $request, $can_view_insights );
+            },
         ),
         array(
             'methods'             => WP_REST_Server::EDITABLE,
-            'callback'            => fn ( WP_REST_Request $request ) => $this->handle_set_data_request( $request, $request['slug'], $request['datapoint'] ),
-            'permission_callback' => fn ( WP_REST_Request $request ) => $this->resolve_datapoint_permission( 'POST', $request['slug'], $request['datapoint'], Permissions::MANAGE_OPTIONS ),
+            'callback'            => function ( WP_REST_Request $request ) {
+                $module = $this->modules->get_module( $request['slug'] );
+                $data   = isset( $request['data'] ) ? (array) $request['data'] : array();
+                $data   = $module->set_data( $request['datapoint'], $data );
+                if ( is_wp_error( $data ) ) {
+                    return $data;
+                }
+                return new WP_REST_Response( $data );
+            },
+            'permission_callback' => function ( WP_REST_Request $request ) use ( $can_manage_options ) {
+                return $this->resolve_datapoint_permission( $request, $can_manage_options );
+            },
             'args'                => array(
                 'data' => array(
                     'type'              => 'object',
@@ -706,55 +724,40 @@ new REST_Route(
 ),
 ```
 
-### Schema-Aware Datapoints
+### Validating Datapoint Parameters
 
 A datapoint class that implements `Schema_Aware_Datapoint`
-(`includes/Core/Modules/Schema_Aware_Datapoint.php`) is served by its own route,
-`modules/{slug}/data/{datapoint}`, registered before the catch-all route because
-WordPress matches routes in registration order. `get_args()` becomes the endpoint's
-argument schema, so WordPress rejects a missing or mistyped argument with a `400`
-before the datapoint runs, and `get_schema()` becomes the route's resource schema
-(listed in the REST index with `?context=help`). The handlers, errors and permission
-checks are the same as on the catch-all route, but WordPress validates the arguments
-before the permission check, so an invalid request gets a `400` even from a user who
-is not allowed to make it.
+(`includes/Core/Modules/Schema_Aware_Datapoint.php`) describes the parameters it accepts
+in `get_args_schema()`, in the same shape as the `args` of a REST route.
+`Module::execute_data_request()` checks every request made through `get_data()` or
+`set_data()` against the schema before the datapoint runs, using the REST API's own
+parameter handling (`WP_REST_Request::has_valid_params()` and `sanitize_params()`). This
+covers REST requests and calls from PHP alike. Code that calls the datapoint's
+`create_request()` directly skips the check.
 
-- A `POST` datapoint only receives the request's `data` argument, so its `get_args()`
-  describes `data` as an object with the datapoint's parameters as its properties.
-  WordPress checks the `required` flag of those properties from version 5.5.
-- A route has one resource schema: the `GET` definition's, when both the `GET:` and
-  `POST:` definitions of a datapoint are schema-aware.
-- A request method whose definition does not implement the interface has no endpoint
-  on the route, so WordPress passes the request on to the catch-all route.
-- An argument declared without a `type` is treated as a `string` (`REST_Route::parse_param_arg()`),
-  so a parameter that also accepts an array or object needs its type spelled out.
-- The `notifications` (`GET`), `settings` (`GET`, `POST`/`PUT`/`PATCH`) and `data-available` (`POST`)
-  routes are registered before the datapoint routes, so a schema-aware datapoint with one
-  of those names (for example AdSense's `GET:notifications`) is never reached through its
-  own route for those methods.
-- Keep the `Missing_Required_Param_Exception` guards in the datapoint:
-  `Module::get_data()` is also called directly from PHP, where REST validation does not run.
+- A missing required parameter or a value of the wrong type returns the same
+  `rest_missing_callback_param` or `rest_invalid_param` error, with status 400, that a
+  REST route would return, and the datapoint does not run.
+- The datapoint receives the sanitized values, for example `limit` as an integer when
+  the request sent the string `'10'`, and the schema's `default` for a parameter that
+  wasn't sent. Parameters outside the schema are passed on unchanged.
+- As with REST arguments, a `null` value counts as missing for a required parameter and
+  fails the type check of an optional one, so leave a parameter out rather than passing
+  `null` for it.
+- For a `POST` datapoint the schema describes the keys of the data to set, the same as
+  for a `GET` datapoint: the controller passes only the request's `data` argument on.
 
 ```php
 class Get_Example extends Datapoint implements Executable_Datapoint, Schema_Aware_Datapoint {
 
-    public function get_args() {
+    public function get_args_schema() {
         return array(
             'propertyID' => array(
-                'type'        => 'string',
-                'description' => __( 'Property to request data for.', 'google-site-kit' ),
-                'required'    => true,
+                'type'     => 'string',
+                'required' => true,
             ),
-        );
-    }
-
-    public function get_schema() {
-        return array(
-            '$schema'    => 'http://json-schema.org/draft-04/schema#',
-            'title'      => 'example',
-            'type'       => 'object',
-            'properties' => array(
-                'name' => array( 'type' => 'string' ),
+            'limit'      => array(
+                'type' => 'integer',
             ),
         );
     }

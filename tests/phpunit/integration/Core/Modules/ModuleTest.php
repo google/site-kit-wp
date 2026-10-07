@@ -19,9 +19,6 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Permission_Aware_Schema_Request;
-use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Request;
-use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Set_Request;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
@@ -118,6 +115,102 @@ class ModuleTest extends TestCase {
 			$response['data'],
 			'get_data array response should include request data.'
 		);
+	}
+
+	public function test_get_data__schema_aware_datapoint_requires_param() {
+		$module               = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
+
+		$response = $module->get_data( 'schema-aware-request', array( 'limit' => 10 ) );
+
+		$this->assertWPError( $response, 'A request without the required `propertyID` parameter should return an error.' );
+		$this->assertEquals( 'rest_missing_callback_param', $response->get_error_code(), 'The error code should be the one WordPress uses for a missing parameter.' );
+		$this->assertEquals(
+			array(
+				'status' => 400,
+				'params' => array( 'propertyID' ),
+			),
+			$response->get_error_data(),
+			'The error data should have status 400 and name the missing `propertyID` parameter.'
+		);
+		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The datapoint should not run when a required parameter is missing.' );
+	}
+
+	public function test_get_data__schema_aware_datapoint_rejects_invalid_param_type() {
+		$module               = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
+
+		$response = $module->get_data(
+			'schema-aware-request',
+			array(
+				'propertyID' => '123456789',
+				'limit'      => 'all',
+			)
+		);
+
+		$this->assertWPError( $response, 'A request with a `limit` that is not an integer should return an error.' );
+		$this->assertEquals( 'rest_invalid_param', $response->get_error_code(), 'The error code should be the one WordPress uses for an invalid parameter.' );
+		$this->assertEquals( 400, $response->get_error_data()['status'], 'The error should have status 400.' );
+		$this->assertEquals( array( 'limit' ), array_keys( $response->get_error_data()['params'] ), 'The error should name the invalid `limit` parameter.' );
+		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The datapoint should not run when a parameter has the wrong type.' );
+	}
+
+	public function test_get_data__schema_aware_datapoint_receives_sanitized_params() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response = $module->get_data(
+			'schema-aware-request',
+			array(
+				'propertyID' => '123456789',
+				'limit'      => '10',
+				'asArray'    => true,
+			)
+		);
+
+		$this->assertSame( 10, $response['data']['limit'], 'The datapoint should receive `limit` converted to an integer.' );
+		$this->assertSame( '123456789', $response['data']['propertyID'], 'The datapoint should receive `propertyID` unchanged.' );
+		$this->assertSame( 'totalUsers', $response['data']['metric'], 'The datapoint should receive the schema default for the `metric` parameter that was not passed.' );
+		$this->assertSame( true, $response['data']['asArray'], 'The datapoint should receive the `asArray` parameter, which is not in the schema, unchanged.' );
+	}
+
+	public function test_set_data__schema_aware_datapoint_rejects_invalid_data() {
+		$module               = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
+
+		$missing_response = $module->set_data( 'schema-aware-request', array( 'limit' => 10 ) );
+
+		$this->assertWPError( $missing_response, 'Setting data without the required `propertyID` should return an error.' );
+		$this->assertEquals( 'rest_missing_callback_param', $missing_response->get_error_code(), 'Setting data without `propertyID` should return the error WordPress uses for a missing parameter.' );
+
+		$invalid_response = $module->set_data(
+			'schema-aware-request',
+			array(
+				'propertyID' => '123456789',
+				'limit'      => 'all',
+			)
+		);
+
+		$this->assertWPError( $invalid_response, 'Setting data with a `limit` that is not an integer should return an error.' );
+		$this->assertEquals( 'rest_invalid_param', $invalid_response->get_error_code(), 'Setting data with an invalid `limit` should return the error WordPress uses for an invalid parameter.' );
+		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The datapoint should not run when the data to set is invalid.' );
+	}
+
+	public function test_set_data__schema_aware_datapoint_receives_sanitized_data() {
+		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+
+		$response = $module->set_data(
+			'schema-aware-request',
+			array(
+				'propertyID' => '123456789',
+				'limit'      => '10',
+				'metric'     => 'sessions',
+				'asArray'    => true,
+			)
+		);
+
+		$this->assertSame( 'POST', $response['method'], 'Valid data should run the `POST:schema-aware-request` definition.' );
+		$this->assertSame( 10, $response['data']['limit'], 'The `POST` datapoint should receive `limit` from the data converted to an integer.' );
+		$this->assertSame( 'sessions', $response['data']['metric'], 'A passed `metric` should be used instead of the schema default.' );
 	}
 
 	public function test_get_data__current_module_owner_without_shared_role() {
@@ -277,25 +370,10 @@ class ModuleTest extends TestCase {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
 		$this->assertEqualSets(
-			array( 'test-request', 'permission-aware-request', 'throwing-permission-aware-request', 'schema-aware-request', 'permission-aware-schema-request' ),
+			array( 'test-request', 'permission-aware-request', 'throwing-permission-aware-request', 'schema-aware-request' ),
 			$module->get_datapoints(),
 			'Get datapoints should contain expected values.'
 		);
-	}
-
-	public function test_get_schema_aware_datapoints() {
-		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-
-		$datapoints = $module->get_schema_aware_datapoints();
-
-		$this->assertSame(
-			array( 'GET:schema-aware-request', 'POST:schema-aware-request', 'POST:permission-aware-schema-request' ),
-			array_keys( $datapoints ),
-			'Schema-aware datapoints should only include the definitions implementing `Schema_Aware_Datapoint`, keyed by their `METHOD:datapoint` ID.'
-		);
-		$this->assertInstanceOf( FakeModule_Schema_Aware_Request::class, $datapoints['GET:schema-aware-request'], 'The `GET:schema-aware-request` entry should be its registered definition.' );
-		$this->assertInstanceOf( FakeModule_Schema_Aware_Set_Request::class, $datapoints['POST:schema-aware-request'], 'The `POST:schema-aware-request` entry should be its registered definition.' );
-		$this->assertInstanceOf( FakeModule_Permission_Aware_Schema_Request::class, $datapoints['POST:permission-aware-schema-request'], 'The `POST:permission-aware-schema-request` entry should be its registered definition.' );
 	}
 
 	public function test_exception_to_error() {

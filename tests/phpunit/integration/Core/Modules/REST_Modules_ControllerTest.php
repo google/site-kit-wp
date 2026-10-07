@@ -150,28 +150,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		wp_set_current_user( $user->ID );
 	}
 
-	/**
-	 * Sets the current user to an author who can view post insights, but cannot manage options.
-	 *
-	 * @since n.e.x.t
-	 */
-	private function set_current_author_who_can_view_posts_insights() {
-		$this->set_current_active_user_role( 'author' );
-
-		add_filter(
-			'map_meta_cap',
-			function ( $caps, $cap ) {
-				if ( Permissions::VIEW_POSTS_INSIGHTS === $cap ) {
-					return array();
-				}
-
-				return $caps;
-			},
-			20,
-			2
-		);
-	}
-
 	private function request_get_module_setings( $module = 'fake-module' ) {
 		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/' . $module . '/data/settings' );
 		$response = rest_get_server()->dispatch( $request );
@@ -768,26 +746,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->assertEquals( 'test-request', $response->get_data()->datapoint, 'POST datapoint should echo datapoint name.' );
 	}
 
-	public function test_datapoint_rest_endpoint__uses_default_permission_for_request_method() {
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-		$this->setup_fake_module();
-
-		$this->set_current_author_who_can_view_posts_insights();
-
-		$get_response = rest_get_server()->dispatch(
-			new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' )
-		);
-		$this->assertEquals( 200, $get_response->get_status(), 'A user who can view post insights should be allowed to get data from a default datapoint.' );
-
-		$post_response = rest_get_server()->dispatch(
-			new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' )
-		);
-		$this->assertEquals( 403, $post_response->get_status(), 'A user who cannot manage options should be forbidden from setting data on a default datapoint.' );
-		$this->assertEquals( 'rest_forbidden', $post_response->get_data()['code'], 'Setting data on a default datapoint should fail the permission check for a user who cannot manage options.' );
-	}
-
 	public function test_datapoint_rest_endpoint__permission_aware_datapoint_overrides_default() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -848,7 +806,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->assertEquals( 403, $response->get_status(), 'A permission-aware datapoint whose permission check throws should deny access instead of reverting to the default permission.' );
 	}
 
-	public function test_datapoint_rest_endpoint__permission_aware_datapoint_checks_put_request_with_post_definition() {
+	public function test_datapoint_rest_endpoint__permission_aware_datapoint_checks_definition_the_endpoint_runs() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
 		$this->register_rest_routes();
@@ -859,7 +817,7 @@ class REST_Modules_ControllerTest extends TestCase {
 		$throwing_response = rest_get_server()->dispatch(
 			new WP_REST_Request( 'PUT', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/throwing-permission-aware-request' )
 		);
-		$this->assertEquals( 403, $throwing_response->get_status(), 'A PUT request should be checked by the own permission check of the `POST` definition it executes.' );
+		$this->assertEquals( 403, $throwing_response->get_status(), 'A PUT request should be checked with the own permission check of the `POST` definition it runs.' );
 
 		// An author has `edit_posts` but not `manage_options`.
 		$this->set_current_active_user_role( 'author' );
@@ -867,8 +825,61 @@ class REST_Modules_ControllerTest extends TestCase {
 		$aware_response = rest_get_server()->dispatch(
 			new WP_REST_Request( 'PUT', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
 		);
-		$this->assertEquals( 200, $aware_response->get_status(), 'A PUT request should be allowed by the own permission check of the `POST` definition it executes.' );
-		$this->assertEquals( 'POST', $aware_response->get_data()->method, 'A PUT request should execute the `POST:permission-aware-request` definition.' );
+		$this->assertEquals( 200, $aware_response->get_status(), 'A PUT request from an author should be allowed by the `edit_posts` check of the `POST:permission-aware-request` definition.' );
+		$this->assertEquals( 'POST', $aware_response->get_data()->method, 'A PUT request should run the `POST:permission-aware-request` definition.' );
+
+		// The default for reads also denies an author, so only the `GET:` definition's own check allows this.
+		$head_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'HEAD', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
+		);
+		$this->assertEquals( 200, $head_response->get_status(), 'A HEAD request from an author should be allowed by the `edit_posts` check of the `GET:permission-aware-request` definition.' );
+	}
+
+	public function test_datapoint_rest_endpoint__schema_aware_datapoint_returns_validation_error() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'A request missing the required `propertyID` parameter should return HTTP 400.' );
+		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'], 'The REST response should have the error code WordPress uses for a missing parameter.' );
+		$this->assertEquals( array( 'propertyID' ), $response->get_data()['data']['params'], 'The error should name the missing `propertyID` parameter.' );
+	}
+
+	public function test_datapoint_rest_endpoint__schema_aware_datapoint_receives_sanitized_params() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$get_request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$get_request->set_query_params(
+			array(
+				'propertyID' => '123456789',
+				'limit'      => '10',
+			)
+		);
+		$get_response = rest_get_server()->dispatch( $get_request );
+
+		$this->assertEquals( 200, $get_response->get_status(), 'A valid GET request to a schema-aware datapoint should return HTTP 200.' );
+		$this->assertSame( 10, $get_response->get_data()->data->limit, 'The GET datapoint should receive `limit` converted to an integer.' );
+
+		$post_request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$post_request->set_body_params(
+			array(
+				'data' => array(
+					'propertyID' => '123456789',
+					'limit'      => '10',
+				),
+			)
+		);
+		$post_response = rest_get_server()->dispatch( $post_request );
+
+		$this->assertEquals( 200, $post_response->get_status(), 'A valid POST request to a schema-aware datapoint should return HTTP 200.' );
+		$this->assertSame( 10, $post_response->get_data()->data->limit, 'The POST datapoint should receive `limit` from the `data` argument converted to an integer.' );
 	}
 
 	public function test_datapoint_rest_endpoint__post_invalid_slug() {
@@ -892,330 +903,6 @@ class REST_Modules_ControllerTest extends TestCase {
 		$response = rest_get_server()->dispatch( $request );
 
 		$this->assertEquals( 'invalid_datapoint', $response->get_data()['code'], 'POST datapoint should report invalid datapoint.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_served_by_own_route() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$request->set_query_params(
-			array(
-				'propertyID' => '123456789',
-				'limit'      => '10',
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 200, $response->get_status(), 'A valid request to a schema-aware datapoint should return HTTP 200.' );
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $response->get_matched_route(), 'A schema-aware datapoint should be served by its own route.' );
-		$this->assertEquals(
-			(object) array(
-				'method'    => 'GET',
-				'datapoint' => 'schema-aware-request',
-				'data'      => (object) array(
-					'propertyID' => '123456789',
-					'limit'      => 10,
-				),
-			),
-			$response->get_data(),
-			'A schema-aware datapoint should return its data, with the arguments sanitized according to its argument schema.'
-		);
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_route_takes_precedence_over_catch_all_route() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$request->set_query_params( array( 'propertyID' => '123456789' ) );
-		$response = rest_get_server()->dispatch( $request );
-
-		$registered_routes  = array_keys( rest_get_server()->get_routes() );
-		$schema_route_index = array_search( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $registered_routes, true );
-
-		$this->assertIsInt( $schema_route_index, 'The schema-aware datapoint route should be registered.' );
-		$this->assertLessThan(
-			array_search( '/google-site-kit/v1/modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)', $registered_routes, true ),
-			$schema_route_index,
-			'The schema-aware datapoint route should be registered before the catch-all data route.'
-		);
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $response->get_matched_route(), 'The schema-aware datapoint route should be matched instead of the catch-all data route.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_requires_param() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 400, $response->get_status(), 'A request missing a required argument of a schema-aware datapoint should return HTTP 400.' );
-		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'], 'The error code should indicate the missing required argument.' );
-		$this->assertEquals( array( 'propertyID' ), $response->get_data()['data']['params'], 'The error should name the missing `propertyID` argument.' );
-		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The schema-aware datapoint should not be executed when a required argument is missing.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_rejects_invalid_param_type() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
-
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$request->set_query_params(
-			array(
-				'propertyID' => '123456789',
-				'limit'      => 'all',
-			)
-		);
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( 400, $response->get_status(), 'A request with an argument of the wrong type should return HTTP 400.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'The error code should indicate the invalid argument.' );
-		$this->assertEquals( array( 'limit' ), array_keys( $response->get_data()['data']['params'] ), 'The error should name the invalid `limit` argument.' );
-		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The schema-aware datapoint should not be executed when an argument has the wrong type.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_editable_datapoint_requires_data_property() {
-		if ( version_compare( $GLOBALS['wp_version'], '5.5', '<' ) ) {
-			$this->markTestSkipped( 'This test requires WordPress 5.5 or higher, which validates the required properties of an object argument.' );
-		}
-
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$data_requests_before = did_action( 'googlesitekit_fake_module_data_request' );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$request->set_body_params( array( 'data' => array( 'limit' => 10 ) ) );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $response->get_matched_route(), 'A POST request with an invalid `data` argument should be served by the schema-aware datapoint route.' );
-		$this->assertEquals( 400, $response->get_status(), 'A POST request whose `data` misses a required property should return HTTP 400.' );
-		$this->assertEquals( 'rest_invalid_param', $response->get_data()['code'], 'The error code should indicate the invalid `data` argument.' );
-		$this->assertEquals( array( 'data' ), array_keys( $response->get_data()['data']['params'] ), 'The error should name the `data` argument.' );
-		$this->assertEquals( $data_requests_before, did_action( 'googlesitekit_fake_module_data_request' ), 'The schema-aware editable datapoint should not be executed when its `data` argument is invalid.' );
-	}
-
-	public function test_datapoint_rest_endpoint__non_schema_aware_datapoint_served_by_catch_all_route() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/test-request' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)', $response->get_matched_route(), 'A datapoint that does not implement `Schema_Aware_Datapoint` should be served by the catch-all data route.' );
-		$this->assertEquals( 'test-request', $response->get_data()->datapoint, 'The catch-all data route should return the data of the `test-request` datapoint.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_without_schema_aware_get_definition_falls_back_to_catch_all_route() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		// Only the `POST` definition of `permission-aware-schema-request` implements `Schema_Aware_Datapoint`.
-		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-schema-request' );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/(?P<slug>[a-z0-9\-]+)/data/(?P<datapoint>[a-z\-]+)', $response->get_matched_route(), 'A GET request should be served by the catch-all data route when only the POST definition of the datapoint is schema-aware.' );
-		$this->assertEquals( 'GET', $response->get_data()->method, 'The catch-all data route should execute the `GET:permission-aware-schema-request` definition.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_requires_active_module() {
-		$this->setup_fake_module( false );
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		delete_option( Modules::OPTION_ACTIVE_MODULES );
-		$this->assertFalse( $this->modules->is_module_active( 'fake-module' ), 'The fake module should be inactive before its schema-aware datapoint is requested.' );
-
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$request->set_query_params( array( 'propertyID' => '123456789' ) );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $response->get_matched_route(), 'A schema-aware datapoint of an inactive module should be served by its own route.' );
-		$this->assertEquals( 403, $response->get_status(), 'A schema-aware datapoint should return HTTP 403 when its module is inactive.' );
-		$this->assertEquals( 'module_not_active', $response->get_data()['code'], 'The error code should indicate the module is not active.' );
-		$this->assertEquals( 'Module must be active to request data.', $response->get_data()['message'], 'The error message should indicate an active module is required.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_uses_default_permission() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
-		wp_set_current_user( $subscriber_id );
-
-		$subscriber_request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$subscriber_request->set_query_params( array( 'propertyID' => '123456789' ) );
-		$subscriber_response = rest_get_server()->dispatch( $subscriber_request );
-
-		$this->assertEquals( 403, $subscriber_response->get_status(), 'A user who cannot view post insights should be forbidden from the readable schema-aware datapoint.' );
-		$this->assertEquals( 'rest_forbidden', $subscriber_response->get_data()['code'], 'Getting data from the readable schema-aware datapoint should fail the permission check for a user who cannot view post insights.' );
-
-		$this->set_current_author_who_can_view_posts_insights();
-
-		$get_request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$get_request->set_query_params( array( 'propertyID' => '123456789' ) );
-		$get_response = rest_get_server()->dispatch( $get_request );
-
-		$this->assertEquals( 200, $get_response->get_status(), 'A user who can view post insights should be allowed to get data from the readable schema-aware datapoint.' );
-
-		$post_request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$post_request->set_body_params( array( 'data' => array( 'propertyID' => '123456789' ) ) );
-		$post_response = rest_get_server()->dispatch( $post_request );
-
-		$this->assertEquals( 403, $post_response->get_status(), 'A user who cannot manage options should be forbidden from the editable schema-aware datapoint.' );
-		$this->assertEquals( 'rest_forbidden', $post_response->get_data()['code'], 'Setting data on the editable schema-aware datapoint should fail the permission check for a user who cannot manage options.' );
-	}
-
-	public function test_datapoint_rest_endpoint__permission_aware_schema_aware_datapoint_overrides_default() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		// An author has `edit_posts` but not `manage_options`.
-		$author_id = $this->factory()->user->create( array( 'role' => 'author' ) );
-		wp_set_current_user( $author_id );
-
-		// A schema-aware editable datapoint without its own permission check still requires `manage_options`.
-		$default_request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
-		$default_request->set_body_params( array( 'data' => array( 'propertyID' => '123456789' ) ) );
-		$default_response = rest_get_server()->dispatch( $default_request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $default_response->get_matched_route(), 'A POST request from an author should be served by the schema-aware datapoint route.' );
-		$this->assertEquals( 403, $default_response->get_status(), 'An author should be forbidden from a schema-aware editable datapoint without its own permission check.' );
-		$this->assertEquals( 'rest_forbidden', $default_response->get_data()['code'], 'The schema-aware editable datapoint should fail the default permission check for an author.' );
-
-		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-schema-request' );
-		$request->set_body_params( array( 'data' => array( 'propertyID' => '123456789' ) ) );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/permission-aware-schema-request', $response->get_matched_route(), 'A permission-aware, schema-aware datapoint should be served by its own route.' );
-		$this->assertEquals( 200, $response->get_status(), 'A permission-aware, schema-aware datapoint should allow an author via its own permission check.' );
-		$this->assertEquals( 'POST', $response->get_data()->method, 'The `POST:permission-aware-schema-request` definition should be executed for an author.' );
-		$this->assertEquals( 'permission-aware-schema-request', $response->get_data()->datapoint, 'The response should come from the `permission-aware-schema-request` datapoint.' );
-		$this->assertEquals( (object) array( 'propertyID' => '123456789' ), $response->get_data()->data, 'The `data` argument of the request should be passed to the datapoint.' );
-
-		// A subscriber has neither `edit_posts` nor `manage_options`.
-		$this->set_current_active_user_role( 'subscriber' );
-
-		$subscriber_request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-schema-request' );
-		$subscriber_request->set_body_params( array( 'data' => array( 'propertyID' => '123456789' ) ) );
-		$subscriber_response = rest_get_server()->dispatch( $subscriber_request );
-
-		$this->assertEquals( 403, $subscriber_response->get_status(), 'A permission-aware, schema-aware datapoint should forbid a user who fails its own permission check.' );
-		$this->assertEquals( 'rest_forbidden', $subscriber_response->get_data()['code'], 'The permission-aware, schema-aware datapoint should fail its own permission check for a subscriber.' );
-	}
-
-	public function test_datapoint_rest_endpoint__permission_aware_schema_aware_datapoint_checks_put_request_with_post_definition() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		// An author has `edit_posts` but not `manage_options`.
-		$this->set_current_active_user_role( 'author' );
-
-		$request = new WP_REST_Request( 'PUT', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-schema-request' );
-		$request->set_body_params( array( 'data' => array( 'propertyID' => '123456789' ) ) );
-		$response = rest_get_server()->dispatch( $request );
-
-		$this->assertEquals( '/google-site-kit/v1/modules/fake-module/data/permission-aware-schema-request', $response->get_matched_route(), 'A PUT request should be served by the schema-aware datapoint route.' );
-		$this->assertEquals( 200, $response->get_status(), 'A PUT request should be allowed by the own permission check of the `POST:permission-aware-schema-request` definition.' );
-		$this->assertEquals( 'POST', $response->get_data()->method, 'A PUT request should execute the `POST:permission-aware-schema-request` definition.' );
-	}
-
-	public function test_datapoint_rest_endpoint__schema_aware_datapoint_listed_in_rest_index() {
-		$this->setup_fake_module();
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		$this->controller->register();
-		$this->register_rest_routes();
-
-		$request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT );
-		$request->set_query_params( array( 'context' => 'help' ) );
-		$routes = rest_get_server()->dispatch( $request )->get_data()['routes'];
-
-		$this->assertArrayHasKey( '/google-site-kit/v1/modules/fake-module/data/schema-aware-request', $routes, 'The schema-aware datapoint route should be listed in the REST index.' );
-
-		$route = $routes['/google-site-kit/v1/modules/fake-module/data/schema-aware-request'];
-
-		$this->assertEquals( array( 'GET' ), $route['endpoints'][0]['methods'], 'The first endpoint of the schema-aware datapoint route should handle GET requests.' );
-		$this->assertEquals( array( 'POST', 'PUT', 'PATCH' ), $route['endpoints'][1]['methods'], 'The second endpoint of the schema-aware datapoint route should handle editable requests.' );
-		// WordPress lists more schema keywords in the index from version 5.6, so only
-		// the keywords every supported version lists are compared.
-		$listed_keywords = fn ( array $args ) => array_map(
-			fn ( array $arg ) => array_intersect_key( $arg, array_flip( array( 'type', 'description', 'required' ) ) ),
-			$args
-		);
-
-		$this->assertEquals(
-			array(
-				'propertyID' => array(
-					'type'        => 'string',
-					'description' => 'Property to request data for.',
-					'required'    => true,
-				),
-				'limit'      => array(
-					'type'        => 'integer',
-					'description' => 'Maximum number of rows to return.',
-					'required'    => false,
-				),
-			),
-			$listed_keywords( $route['endpoints'][0]['args'] ),
-			'The REST index should list the argument schema of the GET definition for the GET endpoint.'
-		);
-		$this->assertEquals(
-			array(
-				'data' => array(
-					'type'        => 'object',
-					'description' => 'Settings to save.',
-					'required'    => true,
-				),
-			),
-			$listed_keywords( $route['endpoints'][1]['args'] ),
-			'The REST index should list the argument schema of the POST definition for the editable endpoint.'
-		);
-		$this->assertEquals(
-			array(
-				'$schema'    => 'http://json-schema.org/draft-04/schema#',
-				'title'      => 'fake-module-schema-aware-request',
-				'type'       => 'object',
-				'properties' => array(
-					'method'    => array(
-						'type' => 'string',
-					),
-					'datapoint' => array(
-						'type' => 'string',
-					),
-					'data'      => array(
-						'type' => 'object',
-					),
-				),
-			),
-			$route['schema'],
-			'The REST index should list the resource schema of the GET definition when both definitions are schema-aware.'
-		);
 	}
 
 	public function test_recover_modules_rest_endpoint__no_get_method() {

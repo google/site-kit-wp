@@ -13,50 +13,32 @@ namespace Google\Site_Kit\Tests\Core\Modules\Datapoints;
 use Google\Site_Kit\Core\Modules\Schema_Aware_Datapoint;
 
 /**
- * Fake datapoint that describes its REST arguments and response, so it is
- * served by its own REST route.
+ * Fake datapoint that describes the parameters it accepts, so its requests are
+ * validated before it runs.
+ *
+ * @since n.e.x.t
  */
 class FakeModule_Schema_Aware_Request extends FakeModule_Test_Request implements Schema_Aware_Datapoint {
 
 	/**
-	 * Gets the argument schema of the datapoint's REST endpoint.
+	 * Gets the schema of the parameters the datapoint accepts.
 	 *
-	 * @return array Map of argument names to their schemas.
+	 * @since n.e.x.t
+	 *
+	 * @return array Map of parameter names to their schemas.
 	 */
-	public function get_args() {
+	public function get_args_schema() {
 		return array(
 			'propertyID' => array(
-				'type'        => 'string',
-				'description' => 'Property to request data for.',
-				'required'    => true,
+				'type'     => 'string',
+				'required' => true,
 			),
 			'limit'      => array(
-				'type'        => 'integer',
-				'description' => 'Maximum number of rows to return.',
+				'type' => 'integer',
 			),
-		);
-	}
-
-	/**
-	 * Gets the resource schema of the data the datapoint returns.
-	 *
-	 * @return array Resource schema.
-	 */
-	public function get_schema() {
-		return array(
-			'$schema'    => 'http://json-schema.org/draft-04/schema#',
-			'title'      => 'fake-module-schema-aware-request',
-			'type'       => 'object',
-			'properties' => array(
-				'method'    => array(
-					'type' => 'string',
-				),
-				'datapoint' => array(
-					'type' => 'string',
-				),
-				'data'      => array(
-					'type' => 'object',
-				),
+			'metric'     => array(
+				'type'    => 'string',
+				'default' => 'totalUsers',
 			),
 		);
 	}

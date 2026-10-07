@@ -11,13 +11,13 @@
 namespace Google\Site_Kit\Core\Modules;
 
 /**
- * Interface for a datapoint that describes its REST arguments and response.
+ * Interface for a datapoint that describes the parameters it accepts.
  *
- * A datapoint implementing this interface is served by its own REST route,
- * so WordPress validates its arguments before the datapoint runs and lists
- * its argument schema in the REST API index, along with its resource schema
- * when the index is requested with `context=help`. Other datapoints are
- * served by the catch-all module data route.
+ * `Module::execute_data_request()` validates the parameters of every request
+ * made through `Module::get_data()` or `Module::set_data()`, including REST
+ * requests, against the schema before the datapoint runs, and passes on the
+ * sanitized values. Code that calls the datapoint's `create_request()` directly
+ * skips this validation.
  *
  * @since n.e.x.t
  * @access private
@@ -26,25 +26,15 @@ namespace Google\Site_Kit\Core\Modules;
 interface Schema_Aware_Datapoint {
 
 	/**
-	 * Gets the argument schema of the datapoint's REST endpoint.
+	 * Gets the schema of the parameters the datapoint accepts.
 	 *
-	 * A `POST` datapoint receives the `data` argument of the request, so its
-	 * schema describes `data` as an object with the datapoint's parameters as
-	 * its properties. WordPress checks the `required` flag of those properties
-	 * from version 5.5, so the datapoint keeps its own checks for them.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return array Map of argument names to their schemas.
-	 */
-	public function get_args();
-
-	/**
-	 * Gets the resource schema of the data the datapoint returns.
+	 * The schema has the same shape as the `args` of a REST route: a map of
+	 * parameter names to their schemas. For a `POST` datapoint, these are the
+	 * keys of the data to set.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return array Resource schema.
+	 * @return array Map of parameter names to their schemas.
 	 */
-	public function get_schema();
+	public function get_args_schema();
 }
