@@ -108,10 +108,9 @@ class ScreensTest extends TestCase {
 	public function test_removal_of_admin_notices( $hookname ) {
 		// Set current hook suffix to fake Site Kit admin page.
 		$GLOBALS['hook_suffix'] = 'fake_sitekit_admin_page';
-		$reflection_property    = new \ReflectionProperty( 'Google\Site_Kit\Core\Admin\Screens', 'screens' );
-		$reflection_property->setAccessible( true );
-		$reflection_property->setValue(
+		$this->force_set_property(
 			$this->screens,
+			'screens',
 			array(
 				$GLOBALS['hook_suffix'] => true,
 			)

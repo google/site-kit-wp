@@ -177,8 +177,7 @@ class AssetsTest extends TestCase {
 		set_current_screen( 'dashboard' );
 
 		// Use reflection to access the private `has_registered_assets()` method.
-		$reflection = new \ReflectionMethod( $this->assets, 'has_registered_assets' );
-		$reflection->setAccessible( true );
+		$reflection = $this->get_accessible_method( $this->assets, 'has_registered_assets' );
 
 		// Initially, `has_registered_assets()` should return false.
 		$this->assertFalse( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return false before registration.' );

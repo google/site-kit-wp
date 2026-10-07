@@ -171,20 +171,12 @@ class Compatibility_ChecksTest extends TestCase {
 			)
 		);
 
-		$reflection = new \ReflectionClass( $datapoint );
-		$property   = $reflection->getProperty( 'checks' );
-		$property->setAccessible( true );
-
-		$this->assertSame( $mock_checks, $property->getValue( $datapoint ), 'Checks instance should be set correctly' );
+		$this->assertSame( $mock_checks, $this->force_get_property( $datapoint, 'checks' ), 'The `checks` property should be the checks instance passed to the constructor.' );
 	}
 
 	public function test_constructor_without_checks_instance() {
 		$datapoint = new Compatibility_Checks( array() );
 
-		$reflection = new \ReflectionClass( $datapoint );
-		$property   = $reflection->getProperty( 'checks' );
-		$property->setAccessible( true );
-
-		$this->assertNull( $property->getValue( $datapoint ), 'Checks instance should be null when not provided' );
+		$this->assertNull( $this->force_get_property( $datapoint, 'checks' ), 'The `checks` property should be null when no checks instance is passed.' );
 	}
 }
