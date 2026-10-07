@@ -142,7 +142,16 @@ class Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_visitor_mix_options() {
-		return $this->get_dimension_options( array( 'newVsReturning' ) );
+		return $this->get_dimension_options(
+			array( 'newVsReturning' ),
+			array(
+				// Analytics reports `(not set)` for a visitor that is neither new nor returning.
+				'newVsReturning' => array(
+					'filterType'    => 'emptyFilter',
+					'notExpression' => true,
+				),
+			)
+		);
 	}
 
 	/**
@@ -153,7 +162,18 @@ class Report_Options {
 	 * @return array Report request options array.
 	 */
 	public function get_referrers_options() {
-		return $this->get_dimension_options( array( 'sessionSource' ) );
+		return $this->get_dimension_options(
+			array( 'sessionSource' ),
+			array(
+				// Analytics reports `(direct)` for a visitor that no site referred.
+				'sessionSource' => array(
+					'filterType'    => 'stringFilter',
+					'matchType'     => 'EXACT',
+					'value'         => '(direct)',
+					'notExpression' => true,
+				),
+			)
+		);
 	}
 
 	/**

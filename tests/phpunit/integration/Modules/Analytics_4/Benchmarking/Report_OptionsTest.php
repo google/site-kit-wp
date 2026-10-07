@@ -98,7 +98,13 @@ class Report_OptionsTest extends TestCase {
 		$this->assertSame( '2025-08-17', $ninety_day_options['startDate'], 'The daily series of a 90-day period ending on `2026-09-15` should start on `2025-08-17`.' );
 	}
 
-	public function test_get_channels_options__counts_visitors_by_channel_in_the_selected_period_and_the_compare_period() {
+	/**
+	 * @dataProvider data_dimension_options
+	 *
+	 * @param string $method    The method that returns the report options.
+	 * @param string $dimension The dimension the report counts visitors by.
+	 */
+	public function test_get_dimension_options__counts_visitors_by_the_dimension_in_the_selected_period_and_the_compare_period( $method, $dimension ) {
 		$this->assertSame(
 			array(
 				'startDate'        => '2026-08-19',
@@ -109,7 +115,7 @@ class Report_OptionsTest extends TestCase {
 					array( 'name' => 'totalUsers' ),
 				),
 				'dimensions'       => array(
-					array( 'name' => 'sessionDefaultChannelGrouping' ),
+					array( 'name' => $dimension ),
 				),
 				'orderby'          => array(
 					array(
@@ -119,34 +125,15 @@ class Report_OptionsTest extends TestCase {
 				),
 				'limit'            => 50,
 			),
-			$this->report_options->get_channels_options(),
-			'The `get_channels_options()` method should ask for up to 50 rows of `totalUsers` by `sessionDefaultChannelGrouping`, in the selected period and the compare period.'
+			$this->report_options->$method(),
+			"The `{$method}()` method should ask for up to 50 rows of `totalUsers` by `{$dimension}`, in the selected period and the compare period."
 		);
 	}
 
-	public function test_get_devices_options__counts_visitors_by_device_category_in_the_selected_period_and_the_compare_period() {
-		$this->assertSame(
-			array(
-				'startDate'        => '2026-08-19',
-				'endDate'          => '2026-09-15',
-				'compareStartDate' => '2026-07-22',
-				'compareEndDate'   => '2026-08-18',
-				'metrics'          => array(
-					array( 'name' => 'totalUsers' ),
-				),
-				'dimensions'       => array(
-					array( 'name' => 'deviceCategory' ),
-				),
-				'orderby'          => array(
-					array(
-						'metric' => array( 'metricName' => 'totalUsers' ),
-						'desc'   => true,
-					),
-				),
-				'limit'            => 50,
-			),
-			$this->report_options->get_devices_options(),
-			'The `get_devices_options()` method should ask for up to 50 rows of `totalUsers` by `deviceCategory`, in the selected period and the compare period.'
+	public function data_dimension_options() {
+		return array(
+			'channels' => array( 'get_channels_options', 'sessionDefaultChannelGrouping' ),
+			'devices'  => array( 'get_devices_options', 'deviceCategory' ),
 		);
 	}
 
@@ -170,9 +157,15 @@ class Report_OptionsTest extends TestCase {
 					),
 				),
 				'limit'            => 50,
+				'dimensionFilters' => array(
+					'newVsReturning' => array(
+						'filterType'    => 'emptyFilter',
+						'notExpression' => true,
+					),
+				),
 			),
 			$this->report_options->get_visitor_mix_options(),
-			'The `get_visitor_mix_options()` method should ask for up to 50 rows of `totalUsers` by `newVsReturning`, in the selected period and the compare period.'
+			'The `get_visitor_mix_options()` method should ask for up to 50 rows of `totalUsers` by `newVsReturning`, in the selected period and the compare period, excluding the rows that are neither new nor returning.'
 		);
 	}
 
@@ -196,9 +189,17 @@ class Report_OptionsTest extends TestCase {
 					),
 				),
 				'limit'            => 50,
+				'dimensionFilters' => array(
+					'sessionSource' => array(
+						'filterType'    => 'stringFilter',
+						'matchType'     => 'EXACT',
+						'value'         => '(direct)',
+						'notExpression' => true,
+					),
+				),
 			),
 			$this->report_options->get_referrers_options(),
-			'The `get_referrers_options()` method should ask for up to 50 rows of `totalUsers` by `sessionSource`, in the selected period and the compare period.'
+			'The `get_referrers_options()` method should ask for up to 50 rows of `totalUsers` by `sessionSource`, in the selected period and the compare period, excluding the `(direct)` row.'
 		);
 	}
 

@@ -1098,9 +1098,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
 				array(
 					'module'                           => $this,
-					'service'                          => function () {
-						return $this->get_service( 'analyticsdata' );
-					},
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);

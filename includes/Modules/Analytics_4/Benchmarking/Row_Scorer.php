@@ -39,8 +39,9 @@ class Row_Scorer {
 	);
 
 	/**
-	 * A row's score is multiplied by this number when the row's visitors and the
-	 * site's visitors both went up, or both went down.
+	 * A row's score is multiplied by this number when the row's visitors moved the
+	 * same way as the site's, and the site went up or down by at least
+	 * `SITE_DIRECTION_THRESHOLD_PERCENT`.
 	 *
 	 * @since n.e.x.t
 	 */

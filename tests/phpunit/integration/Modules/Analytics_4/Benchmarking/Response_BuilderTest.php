@@ -317,7 +317,7 @@ class Response_BuilderTest extends TestCase {
 		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertWPError( $response, 'The `build()` method should return an error when the second batch call fails.' );
-		$this->assertSame( 403, $response->get_error_code(), 'The error should have the `403` code the Analytics 4 module returned for the failed batch call.' );
+		$this->assertSame( 403, $response->get_error_code(), 'The error should have the `403` code the Analytics 4 module returned for the failed second batch call.' );
 		$this->assertCount( 2, $this->batch_requests, 'The `build()` method should make the second batch call after the first one succeeds.' );
 	}
 
@@ -476,23 +476,6 @@ class Response_BuilderTest extends TestCase {
 			'The `build()` method should ask for five reports in one call.'
 		);
 		$this->assertSame( array( 'channels' ), array_keys( $response['contextualData'] ), 'The response should have no `content` and no `categories` rows while neither the post date nor the post categories have data.' );
-	}
-
-	public function test_build__asks_for_the_daily_series_over_the_395_days_ending_on_the_end_date() {
-		$this->builder->build( '2026-08-19', '2026-09-15' );
-
-		// `assertEquals()` ignores that the Google API client writes `endDate`
-		// before `startDate`.
-		$this->assertEquals(
-			array(
-				array(
-					'startDate' => '2025-08-17',
-					'endDate'   => '2026-09-15',
-				),
-			),
-			$this->batch_requests[0]['requests'][0]['dateRanges'],
-			'The `build()` method should ask for the daily series over the 395 days from `2025-08-17` to `2026-09-15`.'
-		);
 	}
 
 	public function test_build__asks_for_each_dimension_report_over_the_selected_period_and_the_28_days_before_it() {
