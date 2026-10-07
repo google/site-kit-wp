@@ -184,7 +184,7 @@ fi
 
 if [ "$COMMAND" != "ui" ]; then
 	echo
-	echo "To view the report, run: tests/vrt/bin/vrt report"
+	echo "To view the report, use: npm run test:visualreport"
 fi
 
 exit $EXIT_CODE

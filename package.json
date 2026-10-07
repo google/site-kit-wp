@@ -18,6 +18,7 @@
 		"pretest:visualtest": "VRT=1 npm run build:storybook",
 		"test": "npm run -w tests/js test:js:watch",
 		"test:visualtest": "./tests/vrt/bin/vrt test",
+		"test:visualreport": "./tests/vrt/bin/vrt report",
 		"pretest:visualapprove": "VRT=1 npm run build:storybook",
 		"test:visualapprove": "./tests/vrt/bin/vrt approve",
 		"test:analyze": "npm run -w assets build:production -- --env ANALYZE",
