@@ -26,6 +26,7 @@ exports[`MetricsSelectionPanel Header should render correctly 1`] = `
             Select up to 8 metrics
           </h3>
           <button
+            aria-label="Close"
             class="googlesitekit-cta-link googlesitekit-selection-panel-header__close googlesitekit-cta-link--link-button"
           >
             <span

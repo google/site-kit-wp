@@ -122,19 +122,6 @@
 		}
 	}
 
-	.googlesitekit-feature-card__service {
-		align-items: center;
-		display: flex;
-		gap: var(--googlesitekit-feature-card-gap-m);
-
-		svg {
-			background: $c-neutral-n-10;
-			border-radius: 10px;
-			display: block;
-			padding: 6px;
-		}
-	}
-
 	.googlesitekit-feature-card__actions {
 		align-items: center;
 		display: flex;

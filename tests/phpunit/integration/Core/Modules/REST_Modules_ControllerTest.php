@@ -806,6 +806,82 @@ class REST_Modules_ControllerTest extends TestCase {
 		$this->assertEquals( 403, $response->get_status(), 'A permission-aware datapoint whose permission check throws should deny access instead of reverting to the default permission.' );
 	}
 
+	public function test_datapoint_rest_endpoint__permission_aware_datapoint_checks_definition_the_endpoint_runs() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		// The current user is an administrator, who would satisfy the default
+		// `manage_options` permission, so only the datapoint's own check can deny the request.
+		$throwing_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'PUT', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/throwing-permission-aware-request' )
+		);
+		$this->assertEquals( 403, $throwing_response->get_status(), 'A PUT request should be checked with the own permission check of the `POST` definition it runs.' );
+
+		// An author has `edit_posts` but not `manage_options`.
+		$this->set_current_active_user_role( 'author' );
+
+		$aware_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'PUT', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
+		);
+		$this->assertEquals( 200, $aware_response->get_status(), 'A PUT request from an author should be allowed by the `edit_posts` check of the `POST:permission-aware-request` definition.' );
+		$this->assertEquals( 'POST', $aware_response->get_data()->method, 'A PUT request should run the `POST:permission-aware-request` definition.' );
+
+		// The default for reads also denies an author, so only the `GET:` definition's own check allows this.
+		$head_response = rest_get_server()->dispatch(
+			new WP_REST_Request( 'HEAD', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/permission-aware-request' )
+		);
+		$this->assertEquals( 200, $head_response->get_status(), 'A HEAD request from an author should be allowed by the `edit_posts` check of the `GET:permission-aware-request` definition.' );
+	}
+
+	public function test_datapoint_rest_endpoint__schema_aware_datapoint_returns_validation_error() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 400, $response->get_status(), 'A request missing the required `propertyID` parameter should return HTTP 400.' );
+		$this->assertEquals( 'rest_missing_callback_param', $response->get_data()['code'], 'The REST response should have the error code WordPress uses for a missing parameter.' );
+		$this->assertEquals( array( 'propertyID' ), $response->get_data()['data']['params'], 'The error should name the missing `propertyID` parameter.' );
+	}
+
+	public function test_datapoint_rest_endpoint__schema_aware_datapoint_receives_sanitized_params() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->setup_fake_module();
+
+		$get_request = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$get_request->set_query_params(
+			array(
+				'propertyID' => '123456789',
+				'limit'      => '10',
+			)
+		);
+		$get_response = rest_get_server()->dispatch( $get_request );
+
+		$this->assertEquals( 200, $get_response->get_status(), 'A valid GET request to a schema-aware datapoint should return HTTP 200.' );
+		$this->assertSame( 10, $get_response->get_data()->data->limit, 'The GET datapoint should receive `limit` converted to an integer.' );
+
+		$post_request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/modules/fake-module/data/schema-aware-request' );
+		$post_request->set_body_params(
+			array(
+				'data' => array(
+					'propertyID' => '123456789',
+					'limit'      => '10',
+				),
+			)
+		);
+		$post_response = rest_get_server()->dispatch( $post_request );
+
+		$this->assertEquals( 200, $post_response->get_status(), 'A valid POST request to a schema-aware datapoint should return HTTP 200.' );
+		$this->assertSame( 10, $post_response->get_data()->data->limit, 'The POST datapoint should receive `limit` from the `data` argument converted to an integer.' );
+	}
+
 	public function test_datapoint_rest_endpoint__post_invalid_slug() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();

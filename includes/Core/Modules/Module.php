@@ -32,6 +32,7 @@ use Google\Site_Kit_Dependencies\Google\Service as Google_Service;
 use Google\Site_Kit_Dependencies\Google_Service_Exception;
 use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 use WP_Error;
+use WP_REST_Request;
 
 /**
  * Base class for a module.
@@ -50,6 +51,47 @@ use WP_Error;
  * @property-read bool   $internal     Whether the module is internal, thus without any UI.
  */
 abstract class Module {
+
+	/**
+	 * HTTP status a Google API uses when a request was rate-limit rejected.
+	 *
+	 * Newer APIs return nothing but this: an Analytics Data API error body
+	 * returns `code`, `message`, and `status`, with no `error.errors` for the
+	 * client to read, so a reason alone would miss every Analytics report.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const RATE_LIMIT_STATUS = 429;
+
+	/**
+	 * Google API error reasons that mean the same thing.
+	 *
+	 * The older APIs send these alongside a `403` rather than a `429`, so both are
+	 * checked. Kept in agreement with the same list in `assets/js/util/errors.ts`,
+	 * which decides whether the browser offers the reader a retry.
+	 *
+	 * @since n.e.x.t
+	 * @var string[]
+	 */
+	const RATE_LIMIT_REASONS = array(
+		'rateLimitExceeded',
+		'userRateLimitExceeded',
+		'quotaExceeded',
+	);
+
+	/**
+	 * Seconds the browser keeps a rate-limit error before it asks again.
+	 *
+	 * Search Console measures its short-term load quota over ten minutes, and the Analytics
+	 * Data API refreshes hourly tokens continuously rather than on the hour. Ten minutes
+	 * therefore clears the shorter of the two windows without holding a reader on an error
+	 * for the whole of the longer one.
+	 *
+	 * @since n.e.x.t
+	 * @var int
+	 */
+	const RATE_LIMIT_CACHE_TTL = 10 * MINUTE_IN_SECONDS;
 
 	/**
 	 * Plugin context.
@@ -352,9 +394,48 @@ abstract class Module {
 	}
 
 	/**
+	 * Gets the data request with its parameters validated and sanitized against a datapoint's schema.
+	 *
+	 * Uses the REST API's parameter handling, so an invalid request fails with the
+	 * same `rest_missing_callback_param` or `rest_invalid_param` error, with status
+	 * 400, that a REST route with this schema would return, and a parameter's
+	 * `default` is applied the way the REST server applies it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Data_Request $data        Data request object.
+	 * @param array        $args_schema Map of parameter names to their schemas.
+	 * @return Data_Request|WP_Error Data request with the sanitized parameters, or error if a parameter is missing or invalid.
+	 */
+	private function get_validated_data_request( Data_Request $data, array $args_schema ) {
+		$request = new WP_REST_Request();
+		$request->set_attributes( array( 'args' => $args_schema ) );
+		$request->set_query_params( $data->data );
+		$request->set_default_params(
+			array_map(
+				fn ( $arg ) => $arg['default'],
+				array_filter( $args_schema, fn ( $arg ) => isset( $arg['default'] ) )
+			)
+		);
+
+		$check_required = $request->has_valid_params();
+		if ( is_wp_error( $check_required ) ) {
+			return $check_required;
+		}
+
+		$check_sanitized = $request->sanitize_params();
+		if ( is_wp_error( $check_sanitized ) ) {
+			return $check_sanitized;
+		}
+
+		return new Data_Request( $data->method, $data->type, $data->identifier, $data->datapoint, $request->get_params(), $data->key );
+	}
+
+	/**
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Validates the parameters of a `Schema_Aware_Datapoint` before running it.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.
@@ -362,7 +443,16 @@ abstract class Module {
 	final protected function execute_data_request( Data_Request $data ) {
 		$restore_defers = array();
 		try {
-			$datapoint    = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+			$datapoint = $this->get_datapoint_definition( "{$data->method}:{$data->datapoint}" );
+
+			if ( $datapoint instanceof Schema_Aware_Datapoint ) {
+				$validated_data = $this->get_validated_data_request( $data, $datapoint->get_args_schema() );
+				if ( is_wp_error( $validated_data ) ) {
+					return $validated_data;
+				}
+				$data = $validated_data;
+			}
+
 			$oauth_client = $this->get_oauth_client_for_datapoint( $datapoint );
 
 			$this->validate_datapoint_scopes( $datapoint, $oauth_client );
@@ -716,6 +806,12 @@ abstract class Module {
 			'status' => $status,
 			'reason' => $reason,
 		);
+
+		// The browser caches errors with a `cacheTTL`, so a rate-limited
+		// request is not sent again until the quota has had time to reset.
+		if ( static::RATE_LIMIT_STATUS === $status || in_array( $reason, static::RATE_LIMIT_REASONS, true ) ) {
+			$data['cacheTTL'] = static::RATE_LIMIT_CACHE_TTL;
+		}
 
 		if ( ! empty( $reconnect_url ) ) {
 			$data['reconnectURL'] = $reconnect_url;
