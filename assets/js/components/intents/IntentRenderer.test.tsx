@@ -42,6 +42,7 @@ import {
 	provideSiteInfo,
 	provideUserAuthentication,
 	render,
+	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
 import IntentRenderer from './IntentRenderer';
 
@@ -90,11 +91,12 @@ describe( 'IntentRenderer', () => {
 	} );
 
 	it( 'renders the main dashboard and sends no intent request when no component is registered for the slug', async () => {
-		const { getByText, waitForRegistry } = render(
+		const { getByText } = render(
 			<IntentRenderer slug="unregistered-intent" intentCode="abc123" />,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
-		await waitForRegistry();
+		// Nothing changes in the registry on this path, so wait for any resolver to run instead.
+		await waitForDefaultTimeouts();
 
 		expect(
 			getByText( 'DashboardMainApp', { exact: false } )
