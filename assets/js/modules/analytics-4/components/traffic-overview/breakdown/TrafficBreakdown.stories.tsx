@@ -24,28 +24,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { Story } from '@/js/types/Story';
 import { provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TrafficBreakdown from './TrafficBreakdown';
-
-/**
- * Builds a breakdown report from label and visitor pairs, in the order given.
- *
- * @since 1.188.0
- *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
- */
-function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
-	};
-}
 
 const CHANNELS = createBreakdownReport( [
 	[ 'Direct', 1200 ],
@@ -119,6 +103,38 @@ WithOthers.args = {
 	},
 };
 WithOthers.scenario = {};
+
+/**
+ * Shares that would add up to 99% or 101% if each were rounded on its own,
+ * and an "Others" row below one percent.
+ */
+export const LongTail = Template.bind(
+	{}
+) as Story< TrafficBreakdownStoryProps >;
+LongTail.storyName = 'Long Tail';
+LongTail.args = {
+	reports: {
+		channels: createBreakdownReport( [
+			[ 'Direct', 4630 ],
+			[ 'Organic Search', 3040 ],
+			[ 'Organic Social', 1560 ],
+			[ 'Referral', 730 ],
+			[ 'Paid Search', 25 ],
+			[ 'Email', 15 ],
+		] ),
+		locations: createBreakdownReport( [
+			[ 'Singapore', 334 ],
+			[ 'Brazil', 333 ],
+			[ 'China', 333 ],
+		] ),
+		devices: createBreakdownReport( [
+			[ 'desktop', 505 ],
+			[ 'mobile', 305 ],
+			[ 'tablet', 190 ],
+		] ),
+	},
+};
+LongTail.scenario = {};
 
 /** The other two columns must keep their widths beside an empty one. */
 export const EmptyColumn = Template.bind(

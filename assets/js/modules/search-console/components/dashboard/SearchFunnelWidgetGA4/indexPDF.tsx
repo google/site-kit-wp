@@ -146,8 +146,8 @@ const SearchFunnelWidgetGA4PDF: FC< SearchFunnelWidgetGA4PDFProps > = ( {
 
 	return (
 		<View>
-			{ /* This widget shares the Traffic area with the All Visitors widget, so it
-			     renders its own heading. */ }
+			{ /* The Search Funnel widget shares the Traffic area with the
+			     Traffic Overview widget, so it renders its own heading. */ }
 			<PDFTypography size="large" style={ styles.heading }>
 				{ __( 'Search traffic over time', 'google-site-kit' ) }
 			</PDFTypography>

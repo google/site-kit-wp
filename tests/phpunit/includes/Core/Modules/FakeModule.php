@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Permission_Aware_Request;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Request;
 use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Test_Request;
 use WP_Error;
 use Exception;
@@ -157,6 +158,8 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 					},
 				)
 			),
+			'GET:schema-aware-request'               => new FakeModule_Schema_Aware_Request( array( 'service' => '' ) ),
+			'POST:schema-aware-request'              => new FakeModule_Schema_Aware_Request( array( 'service' => '' ) ),
 		);
 	}
 

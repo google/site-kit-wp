@@ -58,6 +58,7 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 
 	const ctaData = {
 		type: 'NEWSLETTER_SIGNUP',
+		state: 'ACTIVE',
 		config: { title: 'Subscribe to our newsletter' },
 	} as const;
 
@@ -316,6 +317,63 @@ describe( 'modules/reader-revenue-manager CTAs', () => {
 							data: { ...ctaData, displayName: 123 },
 						} )
 				).toThrow( 'data.displayName must be a string.' );
+			} );
+
+			it( 'should default the CTA state to ACTIVE', async () => {
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( {
+						...createArgs,
+						data: {
+							type: ctaData.type,
+							config: ctaData.config,
+						},
+					} );
+
+				expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
+					body: {
+						data: createArgs,
+					},
+				} );
+			} );
+
+			it( 'should pass through an explicit DRAFT state', async () => {
+				fetchMock.postOnce( createCTAEndpoint, {
+					body: cta,
+					status: 200,
+				} );
+
+				await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.createCTA( {
+						...createArgs,
+						data: { ...ctaData, state: 'DRAFT' },
+					} );
+
+				expect( fetchMock ).toHaveFetched( createCTAEndpoint, {
+					body: {
+						data: {
+							...createArgs,
+							data: { ...ctaData, state: 'DRAFT' },
+						},
+					},
+				} );
+			} );
+
+			it( 'should reject an unsupported CTA state', () => {
+				expect( () =>
+					registry
+						.dispatch( MODULES_READER_REVENUE_MANAGER )
+						.createCTA( {
+							...createArgs,
+							data: { ...ctaData, state: 'ENABLED' },
+						} )
+				).toThrow( 'data.state is not supported.' );
 			} );
 		} );
 	} );

@@ -40,3 +40,10 @@ export const enum NOTICE_TYPES {
 	INFO_ALT_2 = 'info-alt-2',
 	ERROR = 'error',
 }
+
+export const enum NOTICE_VARIANTS {
+	DEFAULT = 'default',
+	SIDE_PANEL = 'side-panel',
+	SMALL = 'small',
+	SNACKBAR = 'snackbar',
+}

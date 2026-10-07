@@ -40,7 +40,6 @@ import StepHint from '@/js/components/setup/StepHint';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import { trackEvent } from '@/js/util';
 
@@ -52,8 +51,6 @@ export default function Actions( {
 	inProgressFeedback,
 	ctaFeedback,
 } ) {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const viewContext = useViewContext();
 	const { dismissItem } = useDispatch( CORE_USER );
 	const { navigateTo } = useDispatch( CORE_LOCATION );
@@ -80,20 +77,12 @@ export default function Actions( {
 	const goToSharedDashboard = useCallback( () => {
 		Promise.all( [
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
-			trackEvent(
-				viewContext,
-				setupFlowRefreshEnabled
-					? 'setup_flow_v3_skip_to_viewonly'
-					: 'skip_setup_to_viewonly'
-			),
+			trackEvent( viewContext, 'setup_flow_v3_skip_to_viewonly' ),
 		] ).finally( () => {
-			const redirectURL = setupFlowRefreshEnabled
-				? addQueryArgs( dashboardURL, {
-						notification:
-							forwardableParams.notification ||
-							'initial_setup_success',
-				  } )
-				: dashboardURL;
+			const redirectURL = addQueryArgs( dashboardURL, {
+				notification:
+					forwardableParams.notification || 'initial_setup_success',
+			} );
 
 			navigateTo( redirectURL );
 		} );
@@ -102,7 +91,6 @@ export default function Actions( {
 		forwardableParams.notification,
 		dismissItem,
 		navigateTo,
-		setupFlowRefreshEnabled,
 		viewContext,
 	] );
 
@@ -112,9 +100,7 @@ export default function Actions( {
 		);
 	} );
 
-	const optInProps = setupFlowRefreshEnabled
-		? { trackEventAction: 'setup_flow_v3_tracking_optin' }
-		: {};
+	const optInProps = { trackEventAction: 'setup_flow_v3_tracking_optin' };
 
 	return (
 		<Fragment>
@@ -151,36 +137,31 @@ export default function Actions( {
 					<ResetButton />
 				) }
 			</div>
-			{ setupFlowRefreshEnabled && (
-				<StepHint
-					leadingText={ __(
-						'Why is this required?',
+			<StepHint
+				leadingText={ __( 'Why is this required?', 'google-site-kit' ) }
+				tooltipText={ createInterpolateElement(
+					__(
+						'Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. <a>Learn more</a>',
 						'google-site-kit'
-					) }
-					tooltipText={ createInterpolateElement(
-						__(
-							'Site Kit needs to connect to your Google account to access data from Google products like Search Console or Analytics and display it on your dashboard. <a>Learn more</a>',
-							'google-site-kit'
+					),
+					{
+						a: (
+							<Link
+								href={ learnMoreLink }
+								onClick={ () => {
+									trackEvent(
+										viewContext,
+										'click_learn_more_link',
+										'cta_tooltip'
+									);
+								} }
+								external
+								hideExternalIndicator
+							/>
 						),
-						{
-							a: (
-								<Link
-									href={ learnMoreLink }
-									onClick={ () => {
-										trackEvent(
-											viewContext,
-											'click_learn_more_link',
-											'cta_tooltip'
-										);
-									} }
-									external
-									hideExternalIndicator
-								/>
-							),
-						}
-					) }
-				/>
-			) }
+					}
+				) }
+			/>
 		</Fragment>
 	);
 }

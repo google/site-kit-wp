@@ -326,6 +326,9 @@ WithWooCommerceProductsToggle.decorators = [
 				wooCommerceInstalled: true,
 				wooCommerceActive: true,
 			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setFreshDataIncludesWooCommerceProducts( true );
 		}
 
 		return (

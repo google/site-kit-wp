@@ -23,6 +23,10 @@ import { GATrackingEventArgs } from './GATrackingEventArgs';
 /* eslint-disable no-var */
 
 declare global {
+	var _googlesitekitFeaturesBadgeData: import('@/js/util/features-badge').FeatureCountFingerprint & {
+		resetSession: boolean;
+	};
+
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];

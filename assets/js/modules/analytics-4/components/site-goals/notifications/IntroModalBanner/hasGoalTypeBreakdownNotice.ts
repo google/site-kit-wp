@@ -26,6 +26,7 @@ import {
 	SITE_GOALS_BREAKDOWN_NOTICE,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/components/site-goals/utils/isSiteGoalsWidgetShowingContent';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 /**
@@ -38,6 +39,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
  *
  * @since 1.184.0
  * @since 1.186.0 Required the goal type's widget to render, rather than only its category to be active, so the tour never points at a widget that is absent from the page.
+ * @since n.e.x.t Required the goal type's widget to show its own content, since a widget that shows the removal notice holds no breakdown notice.
  *
  * @param select   The registry `select` function.
  * @param goalType The goal type whose widget to check.
@@ -51,9 +53,7 @@ export function hasGoalTypeBreakdownNotice(
 	// the resolved value. An unresolved read counts as no notice, which keeps
 	// the tour from pointing at a missing step target.
 	return (
-		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-			goalType
-		) === true &&
+		isSiteGoalsWidgetShowingContent( select, goalType ) === true &&
 		select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
 			SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ]
 		) === false &&

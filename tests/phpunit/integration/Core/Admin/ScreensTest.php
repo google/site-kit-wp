@@ -36,7 +36,6 @@ use WPDieException;
  * @group Admin
  */
 class ScreensTest extends TestCase {
-
 	use Fake_Site_Connection_Trait;
 
 	/**
@@ -358,16 +357,7 @@ class ScreensTest extends TestCase {
 		return null;
 	}
 
-	public function test_dashboard_initialize() {
-		$this->set_analytics_setup_complete( false );
-
-		$redirect = $this->load_dashboard_screen();
-
-		$this->assertNull( $redirect, 'Should not redirect.' );
-	}
-
-	public function test_dashboard_initialize__no_redirect_when_setup_complete_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__no_redirect_when_setup_complete() {
 		$this->set_analytics_setup_complete( true );
 
 		$redirect = $this->load_dashboard_screen();
@@ -376,7 +366,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_when_site_purpose_is_unanswered() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( false );
 
@@ -388,7 +377,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__no_redirect_when_site_purpose_is_answered() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( true );
 
@@ -397,8 +385,45 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Should not redirect when the site purpose question is answered.' );
 	}
 
-	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__no_redirect_to_key_metrics_setup_for_an_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( false );
+
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Key Metrics setup when the request has an intent.' );
+	}
+
+	public function test_dashboard_initialize__no_redirect_to_analytics_setup_for_an_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( false );
+
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Analytics setup when the request has an intent.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_for_an_unregistered_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( false );
+
+		$_GET['intent']      = 'not-a-registered-intent';
+		$_GET['intent_code'] = 'abc123';
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNotNull( $redirect, 'Should redirect when the intent is not registered.' );
+		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'An unregistered intent should not skip the Key Metrics setup redirect.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		$redirect = $this->load_dashboard_screen();
@@ -410,8 +435,7 @@ class ScreensTest extends TestCase {
 		$this->assertStringContainsString( 'reAuth=true', $redirect->get_location(), 'Redirect should include reAuth.' );
 	}
 
-	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete() {
 		$this->set_analytics_setup_complete( false );
 
 		// Recreate Screens with MutableInput context so query params are accessible.
@@ -432,8 +456,7 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
 
-	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_and_ga4_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		// Recreate Screens with MutableInput context so query params are accessible.
@@ -468,8 +491,7 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
 
-	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		// Activate the `analytics-4` module.

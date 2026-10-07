@@ -47,7 +47,7 @@ const MEMBER_COUNT = 7;
 /**
  * Reads a string field, which travels as its position in the string table.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array}       strings The response's string table.
  * @param {number|null} index   The string's position, or null when the row carried no string.
@@ -61,7 +61,7 @@ function readString( strings: string[], index: unknown ): string | null {
  * Builds one `dailyTraffic` row per daily count, dating each from the first
  * plotted day.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {*}     firstDate     The first plotted day, as `YYYY-MM-DD`. Read only when there are counts to date.
  * @param {Array} dailyVisitors One visitor count per day, from that day on.
@@ -92,7 +92,7 @@ function decodeDailyTraffic(
 /**
  * Decodes one dimension's rows into the shape its `contextualData` key holds.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} code    The dimension's code.
  * @param {Array}  rows    The dimension's encoded rows.
@@ -154,7 +154,7 @@ function decodeDimensionRows(
 /**
  * Decodes an encoded benchmarking response.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {*} encoded The encoded response.
  * @return {Object|null} The decoded response, or null when it cannot be read.
