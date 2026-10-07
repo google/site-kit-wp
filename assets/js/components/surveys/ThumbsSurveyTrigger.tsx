@@ -202,7 +202,11 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					aria-controls={
 						hasUpvoteFeedbackOptions ? menuID : undefined
 					}
-					aria-expanded={ isUpvoteFeedbackMenuOpen }
+					aria-expanded={
+						hasUpvoteFeedbackOptions
+							? isUpvoteFeedbackMenuOpen
+							: undefined
+					}
 					aria-haspopup={
 						hasUpvoteFeedbackOptions ? 'menu' : undefined
 					}
