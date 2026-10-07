@@ -73,9 +73,9 @@ SetupInProgress.args = {
 	},
 };
 
-export const InsufficientPermissionError = Template.bind( {} );
-InsufficientPermissionError.storyName = 'Insufficient permission error';
-InsufficientPermissionError.args = {
+export const SetupInsufficientPermissions = Template.bind( {} );
+SetupInsufficientPermissions.storyName = 'Setup insufficient permissions';
+SetupInsufficientPermissions.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry );
 
@@ -92,12 +92,10 @@ InsufficientPermissionError.args = {
 	},
 };
 
-export const InsufficientPermissionErrorSetupFlowRefreshPhase4 = Template.bind(
-	{}
-);
-InsufficientPermissionErrorSetupFlowRefreshPhase4.storyName =
-	'Insufficient permission error, setupFlowRefreshPhase4 enabled';
-InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
+export const AudienceCreationInsufficientPermissions = Template.bind( {} );
+AudienceCreationInsufficientPermissions.storyName =
+	'Audience creation insufficient permissions';
+AudienceCreationInsufficientPermissions.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry, {
 			grantedScopes: EDIT_SCOPE,
@@ -124,9 +122,6 @@ InsufficientPermissionErrorSetupFlowRefreshPhase4.args = {
 		} );
 	},
 };
-InsufficientPermissionErrorSetupFlowRefreshPhase4.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
 
 export const SetupError = Template.bind( {} );
 SetupError.storyName = 'Setup error';
@@ -147,18 +142,11 @@ SetupError.args = {
 	},
 };
 
-export const SetupErrorSetupFlowRefreshPhase4 = Template.bind( {} );
-SetupErrorSetupFlowRefreshPhase4.storyName =
-	'Setup error, setupFlowRefreshPhase4 enabled';
-SetupErrorSetupFlowRefreshPhase4.args = SetupError.args;
-SetupErrorSetupFlowRefreshPhase4.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
-SetupErrorSetupFlowRefreshPhase4.scenario = {};
+SetupError.scenario = {};
 
-export const FailedAudience = Template.bind( {} );
-FailedAudience.storyName = 'Failed audience';
-FailedAudience.args = {
+export const AudienceCreationError = Template.bind( {} );
+AudienceCreationError.storyName = 'Audience creation error';
+AudienceCreationError.args = {
 	setupRegistry: ( registry ) => {
 		provideUserAuthentication( registry, {
 			grantedScopes: EDIT_SCOPE,
@@ -186,14 +174,7 @@ FailedAudience.args = {
 	},
 };
 
-export const FailedAudienceSetupFlowRefreshPhase4 = Template.bind( {} );
-FailedAudienceSetupFlowRefreshPhase4.storyName =
-	'Failed audience, setupFlowRefreshPhase4 enabled';
-FailedAudienceSetupFlowRefreshPhase4.args = FailedAudience.args;
-FailedAudienceSetupFlowRefreshPhase4.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
-FailedAudienceSetupFlowRefreshPhase4.scenario = {};
+AudienceCreationError.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/AudienceSegmentation/Dashboard/PrimaryUserSetupWidget',
