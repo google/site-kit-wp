@@ -27,6 +27,7 @@ import { createMemoryHistory } from 'history';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	dismissItemEndpoint,
 	dismissedItemsEndpoint,
@@ -43,6 +44,10 @@ import {
 	HUB_LAUNCH_VERSION,
 } from './constants';
 import FeatureDiscoveryContent from './FeatureDiscoveryContent';
+
+jest.mock( './all-services/CategoryFilterChips', () =>
+	mockCreateComponent( 'CategoryFilterChips' )
+);
 
 const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
