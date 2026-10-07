@@ -135,8 +135,9 @@ const fetchGetRecentContentStore = createFetchStore( {
 				publishedAt: `${ post.date_gmt }Z`,
 			} ) )
 			.sort(
-				( a, b ) =>
-					Date.parse( b.publishedAt ) - Date.parse( a.publishedAt )
+				( itemA, itemB ) =>
+					Date.parse( itemB.publishedAt ) -
+					Date.parse( itemA.publishedAt )
 			)
 			.slice( 0, count );
 	},
