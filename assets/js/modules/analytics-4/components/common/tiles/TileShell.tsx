@@ -1,5 +1,5 @@
 /**
- * Site Goals tile shell component.
+ * TileShell component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -28,16 +28,22 @@ import type { FC, ReactNode } from 'react';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import Typography from '@/js/components/Typography';
 
-interface GoalTileProps {
+export interface TileShellProps {
+	/** Block class; the `__inner`, `__header`, `__title` and `__body` classes are built from it. */
 	baseClassName: string;
+	/** Extra class for the outer element. */
 	className?: string;
+	/** Tile title, shown as an `h3`. */
 	title: ReactNode;
+	/** Label at the end of the header, such as a column name. */
 	headerLabel?: string;
+	/** Tooltip content shown next to the title. */
 	infoTooltip?: ReactNode;
+	/** Extra class for the body element. */
 	bodyClassName?: string;
 }
 
-const GoalTile: FC< GoalTileProps > = ( {
+const TileShell: FC< TileShellProps > = ( {
 	baseClassName,
 	className,
 	title,
@@ -86,4 +92,4 @@ const GoalTile: FC< GoalTileProps > = ( {
 	);
 };
 
-export default GoalTile;
+export default TileShell;
