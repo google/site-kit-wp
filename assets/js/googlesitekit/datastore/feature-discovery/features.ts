@@ -26,7 +26,6 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
-import { FEATURE_DISCOVERY_SETUP_QUERY_ARG } from '@/js/components/feature-discovery/constants';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
@@ -201,13 +200,7 @@ export const actions = {
 			}
 
 			const { response, error } = ( yield commonActions.await(
-				registry.dispatch( CORE_MODULES ).activateModule( moduleSlug, {
-					// Marks the setup as started from the hub, so that its
-					// completion only returns here for setups that were.
-					redirectQueryArgs: {
-						[ FEATURE_DISCOVERY_SETUP_QUERY_ARG ]: slug,
-					},
-				} )
+				registry.dispatch( CORE_MODULES ).activateModule( moduleSlug )
 			) ) as {
 				response?: { moduleReauthURL: string };
 				error?: unknown;

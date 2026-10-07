@@ -67,12 +67,6 @@ describe( 'feature-discovery pending setup', () => {
 		beforeEach( () => {
 			registry = createTestRegistry() as Registry;
 			provideSiteInfo( registry );
-			// The URL of a setup started from the hub.
-			global.history.replaceState(
-				{},
-				'',
-				'/?featureDiscoverySetup=adsense'
-			);
 		} );
 
 		it( 'should return the hub URL when the record belongs to the feature', async () => {
@@ -100,18 +94,6 @@ describe( 'feature-discovery pending setup', () => {
 		} );
 
 		it( 'should return undefined when there is no record', async () => {
-			expect(
-				await getPendingSetupReturnURL(
-					registry.select as Select,
-					'adsense'
-				)
-			).toBeUndefined();
-		} );
-
-		it( 'should return undefined when the setup was not started from the hub', async () => {
-			global.history.replaceState( {}, '', '/' );
-			await setPendingSetup( 'adsense', '/whats-new' );
-
 			expect(
 				await getPendingSetupReturnURL(
 					registry.select as Select,
