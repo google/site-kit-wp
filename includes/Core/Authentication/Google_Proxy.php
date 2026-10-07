@@ -130,6 +130,7 @@ class Google_Proxy {
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 * @since 1.189.0 Includes the `verification_evidence` query parameter.
+	 * @since n.e.x.t Uses the V3 setup flow by default.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
