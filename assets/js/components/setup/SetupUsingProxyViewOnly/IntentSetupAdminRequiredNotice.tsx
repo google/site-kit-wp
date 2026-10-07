@@ -49,7 +49,7 @@ const IntentSetupAdminRequiredNotice: FC = () => {
 					'google-site-kit'
 				) }
 				description={ __(
-					'Only administrators of this site can sign in to Site Kit and finish this setup. Ask one of them to give you administrator access, then go back to where you started and try again.',
+					'Only administrators of this site can sign in to Site Kit and finish this setup. To complete setup, you can ask a site administrator to give you administrator access, then go back to where you started and try again.',
 					'google-site-kit'
 				) }
 			/>

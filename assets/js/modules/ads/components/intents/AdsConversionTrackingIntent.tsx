@@ -213,7 +213,7 @@ const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 								type={ TYPE_BODY }
 							>
 								{ __(
-									'You can change this later in the Site Kit settings.',
+									'You can change this later in settings.',
 									'google-site-kit'
 								) }
 							</Typography>
@@ -278,7 +278,7 @@ const AdsConversionTrackingIntent: FC< IntentComponentProps > = ( {
 							type={ TYPE_BODY }
 						>
 							{ __(
-								'Once we’ll place the tag on your site, you’ll be directed back to Google Ads. You’ll choose a conversion action, which is the visitor activity you want to measure, like a purchase or a form submission. Your tag starts recording results once that’s done.',
+								'Once we place the tag on your site, you’ll be directed back to Google Ads. You’ll choose a conversion action, which is the visitor activity you want to measure, like a purchase or a form submission. Your tag starts recording results once that’s done.',
 								'google-site-kit'
 							) }
 						</Typography>

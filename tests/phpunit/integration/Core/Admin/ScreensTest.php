@@ -883,10 +883,10 @@ class ScreensTest extends TestCase {
 		try {
 			$this->deny_access( 'googlesitekit-splash' );
 			$this->fail( 'The request should end with the message.' );
-		} catch ( WPDieException $e ) {
-			$this->assertStringContainsString( 'You need administrator access to continue', $e->getMessage(), 'The message should say administrator access is needed.' );
-			$this->assertStringContainsString( 'Only administrators of this site can sign in to Site Kit and finish this setup.', $e->getMessage(), 'The message should say why.' );
-			$this->assertStringNotContainsString( 'page=googlesitekit-dashboard', $e->getMessage(), 'An editor who cannot use the dashboard should not get a link to it.' );
+		} catch ( WPDieException $error ) {
+			$this->assertStringContainsString( 'You need administrator access to continue', $error->getMessage(), 'The message should say administrator access is needed.' );
+			$this->assertStringContainsString( 'Only administrators of this site can sign in to Site Kit and finish this setup.', $error->getMessage(), 'The message should say why.' );
+			$this->assertStringNotContainsString( 'page=googlesitekit-dashboard', $error->getMessage(), 'An editor who cannot use the dashboard should not get a link to it.' );
 
 			list( , , $args ) = $wp_die_handler_spy->args;
 			$this->assertSame( 403, $args['response'], 'The response should be a 403.' );

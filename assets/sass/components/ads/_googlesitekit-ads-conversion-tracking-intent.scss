@@ -203,7 +203,8 @@
 		}
 	}
 
-	// The graphic takes the space the content leaves, so it shrinks first.
+	// The graphic uses the remaining space leftover from the content.
+	// The graphic should disappear/shrink in size before the content.
 	.googlesitekit-ads-conversion-tracking-intent__graphic {
 		display: none;
 

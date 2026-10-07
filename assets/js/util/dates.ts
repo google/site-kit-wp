@@ -252,7 +252,9 @@ export function dateSub( relativeDate: unknown, duration: number ): Date {
  * Returns an empty string for a missing or invalid date, so the caller can
  * leave out the text that shows it instead of failing to render.
  *
- * @since n.e.x.t
+ * @since 1.182.0
+ * @since 1.184.0 Moved from `PDFHeader` to a shared helper for use in other PDF components.
+ * @since n.e.x.t Moved from PDF to the generic `dates` utils.
  *
  * @param {Date|string} date      Date instance or date string (YYYY-MM-DD) to format.
  * @param {Object}      [options] `Intl.DateTimeFormat` options that override the defaults, e.g. `{ month: 'long' }` for "July 28, 2026".
