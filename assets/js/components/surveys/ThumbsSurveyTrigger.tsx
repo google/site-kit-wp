@@ -229,7 +229,11 @@ const ThumbsSurveyTrigger: FC< ThumbsSurveyTriggerProps > = ( {
 					aria-controls={
 						hasDownvoteFeedbackOptions ? menuID : undefined
 					}
-					aria-expanded={ isDownvoteFeedbackMenuOpen }
+					aria-expanded={
+						hasDownvoteFeedbackOptions
+							? isDownvoteFeedbackMenuOpen
+							: undefined
+					}
 					aria-haspopup={
 						hasDownvoteFeedbackOptions ? 'menu' : undefined
 					}
