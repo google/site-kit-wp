@@ -1,5 +1,5 @@
 /**
- * Site Goals table tile component.
+ * TableTile component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -27,12 +27,14 @@ import { FC, ReactNode } from 'react';
 import Link from '@/js/components/Link';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
-import GoalTile from './GoalTile';
-import ZeroDataMessage, { MetricLabel } from './ZeroDataMessage';
+import TileShell from './TileShell';
+import TileZeroDataMessage, { MetricLabel } from './TileZeroDataMessage';
 
 export interface TableTileRow {
 	label: string;
 	value: string | number;
+	/** A second value shown after `value`, such as a share of the total. */
+	secondaryValue?: string | number;
 	url?: string;
 	pagePath?: string;
 }
@@ -61,7 +63,7 @@ const TableTile: FC< TableTileProps > = ( {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
 	return (
-		<GoalTile
+		<TileShell
 			baseClassName="googlesitekit-table-tile"
 			title={ title }
 			headerLabel={ headerLabel }
@@ -83,7 +85,7 @@ const TableTile: FC< TableTileProps > = ( {
 			{ ! loading && ! error && rows.length === 0 && (
 				<div className="googlesitekit-table-tile__zero-state">
 					{ zeroState || (
-						<ZeroDataMessage
+						<TileZeroDataMessage
 							metricLabel={ noDataMetricLabel || 'visitors' }
 						/>
 					) }
@@ -113,12 +115,17 @@ const TableTile: FC< TableTileProps > = ( {
 							</div>
 							<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value">
 								{ row.value }
+								{ row.secondaryValue !== undefined && (
+									<span className="googlesitekit-table-tile__secondary-value">
+										{ row.secondaryValue }
+									</span>
+								) }
 							</div>
 						</div>
 					) ) }
 				</div>
 			) }
-		</GoalTile>
+		</TileShell>
 	);
 };
 

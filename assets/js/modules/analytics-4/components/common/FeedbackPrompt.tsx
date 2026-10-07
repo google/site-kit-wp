@@ -1,5 +1,5 @@
 /**
- * WidgetFeedbackPrompt component.
+ * FeedbackPrompt component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,32 +34,36 @@ import ThumbsSurveyTrigger, {
 } from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
-import useViewContext from '@/js/hooks/useViewContext';
-import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
 import { trackEvent } from '@/js/util';
 
-interface WidgetFeedbackPromptProps {
+interface FeedbackPromptProps {
+	/** Identifier used to build the survey trigger string. */
 	voteID: string;
-	goalType: GoalType;
+	/**
+	 * The vote event's category and label, such as
+	 * `{ category: 'mainDashboard_site-goals-widget-survey', label: 'ecommerce' }`.
+	 */
+	gaTrackingEventArgs: Required< Pick< GATrackingEventArgs, 'category' > > &
+		Pick< GATrackingEventArgs, 'label' >;
 }
 
 /**
- * Renders the "Is this section helpful?" prompt with thumbs feedback
- * for a Site Goals widget card.
+ * Renders the "Is this section helpful?" prompt with thumbs feedback.
  *
  * @since 1.182.0
+ * @since n.e.x.t Replaced the `goalType` prop with `gaTrackingEventArgs`.
  *
- * @param props          Component props.
- * @param props.voteID   Identifier used to build the survey trigger string.
- * @param props.goalType Goal type (`ecommerce` or `lead`), used for tracking.
+ * @param props                     Component props.
+ * @param props.voteID              Identifier used to build the survey trigger string.
+ * @param props.gaTrackingEventArgs Category and label used to track the vote event.
  * @return React element.
  */
-const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
+const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	voteID,
-	goalType,
+	gaTrackingEventArgs,
 } ) => {
 	const breakpoint = useBreakpoint();
-	const viewContext = useViewContext();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
 	// popper past the card edge. Center it above the thumbs instead and let
 	// Popper shift it to fit.
@@ -67,9 +71,9 @@ const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
 
 	function handleVote( direction: VoteDirection ) {
 		trackEvent(
-			`${ viewContext }_site-goals-widget-survey`,
+			gaTrackingEventArgs.category,
 			direction === 'up' ? 'vote_up' : 'vote_down',
-			goalType
+			gaTrackingEventArgs.label
 		);
 	}
 
@@ -91,4 +95,4 @@ const WidgetFeedbackPrompt: FC< WidgetFeedbackPromptProps > = ( {
 	);
 };
 
-export default WidgetFeedbackPrompt;
+export default FeedbackPrompt;

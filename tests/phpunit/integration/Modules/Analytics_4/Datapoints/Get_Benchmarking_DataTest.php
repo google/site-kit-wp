@@ -224,7 +224,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * @param array $params Optional. Query parameters. Default the two valid dates.
 	 * @return \WP_REST_Response The response.
 	 */
-	private function request( array $params = null ) {
+	private function request( ?array $params = null ) {
 		if ( null === $params ) {
 			$params = array(
 				'startDate' => self::START_DATE,

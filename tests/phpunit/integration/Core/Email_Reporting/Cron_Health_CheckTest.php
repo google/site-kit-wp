@@ -217,8 +217,7 @@ class Cron_Health_CheckTest extends TestCase {
 
 	private function register_email_log_dependencies() {
 		$email_log       = new Email_Log( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
-		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register_method->setAccessible( true );
+		$register_method = $this->get_accessible_method( Email_Log::class, 'register_email_log' );
 		$register_method->invoke( $email_log );
 	}
 

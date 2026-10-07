@@ -37,7 +37,7 @@ import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { numFmt } from '@/js/util';
-import GoalTile from './GoalTile';
+import TileShell from './TileShell';
 
 export interface TileProps {
 	className?: string;
@@ -74,7 +74,7 @@ export const Tile: FC< TileProps > = ( {
 	);
 
 	return (
-		<GoalTile
+		<TileShell
 			baseClassName="googlesitekit-site-goals-tile"
 			className={ classnames( className, {
 				'googlesitekit-site-goals-tile--primary': primary,
@@ -145,6 +145,6 @@ export const Tile: FC< TileProps > = ( {
 					) }
 				</Fragment>
 			) }
-		</GoalTile>
+		</TileShell>
 	);
 };

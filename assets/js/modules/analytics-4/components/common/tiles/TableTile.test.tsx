@@ -43,6 +43,58 @@ describe( 'TableTile', () => {
 		expect( getByText( '25' ) ).toBeInTheDocument();
 	} );
 
+	it( "should render a row's secondary value after its value", () => {
+		const { container } = render(
+			<TableTile
+				title="Top pages driving leads"
+				rows={ [
+					{ label: 'Page A', value: 40, secondaryValue: '34%' },
+				] }
+			/>
+		);
+
+		const valueCell = container.querySelector(
+			'.googlesitekit-table-tile__cell--value'
+		);
+
+		expect( valueCell ).toHaveTextContent( '4034%' );
+		expect(
+			valueCell?.querySelector(
+				'.googlesitekit-table-tile__secondary-value'
+			)
+		).toHaveTextContent( '34%' );
+	} );
+
+	it( 'should render a secondary value of 0', () => {
+		const { container } = render(
+			<TableTile
+				title="Top pages driving leads"
+				rows={ [ { label: 'Page A', value: 40, secondaryValue: 0 } ] }
+			/>
+		);
+
+		expect(
+			container.querySelector(
+				'.googlesitekit-table-tile__secondary-value'
+			)
+		).toHaveTextContent( '0' );
+	} );
+
+	it( 'should render only the value for a row without a secondary value', () => {
+		const { container } = render(
+			<TableTile
+				title="Top pages driving leads"
+				rows={ [ { label: 'Page A', value: 40 } ] }
+			/>
+		);
+
+		const valueCell = container.querySelector(
+			'.googlesitekit-table-tile__cell--value'
+		);
+
+		expect( valueCell?.innerHTML ).toBe( '40' );
+	} );
+
 	it( 'renders linked labels when row URL is provided', () => {
 		const { getByRole } = render(
 			<TableTile

@@ -230,7 +230,7 @@ The `db.php` drop-in registers PHP error handlers that capture all errors, warni
 
 **How it works:**
 
-1. **During the test:** Three PHP handlers (error handler, exception handler, shutdown handler) log every PHP error into the `wp_e2e_error_log` table in the test's database. Captured error levels include `E_WARNING`, `E_NOTICE`, `E_DEPRECATED`, `E_STRICT`, `E_USER_*` variants, `UNCAUGHT_EXCEPTION`, and fatal errors (`E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR`).
+1. **During the test:** Three PHP handlers (error handler, exception handler, shutdown handler) log every PHP error into the `wp_e2e_error_log` table in the test's database. Captured error levels include `E_WARNING`, `E_NOTICE`, `E_DEPRECATED`, `E_USER_*` variants, `UNCAUGHT_EXCEPTION`, and fatal errors (`E_ERROR`, `E_PARSE`, `E_CORE_ERROR`, `E_COMPILE_ERROR`).
 2. **After the test:** The `WordPress.tearDown()` method queries `wp_e2e_error_log` and filters results against a version-aware ignore list (`wordpress/error-log-ignore-list.ts`).
 3. **If errors remain:** The error log is attached to the test result as a `php-error-log` JSON artifact, and the test is failed with a summary of all errors (format: `[LEVEL] message (file:line)`).
 
