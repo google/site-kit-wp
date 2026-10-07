@@ -175,6 +175,7 @@
 		"jest-dev-server": {
 			"wait-on": "^8.0.5"
 		},
+		"postcss-selector-parser": "^7.1.6",
 		"prismjs": "^1.30.0",
 		"puppeteer": {
 			"node-fetch": "^2.7.0",
