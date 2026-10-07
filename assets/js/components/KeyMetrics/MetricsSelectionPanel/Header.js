@@ -38,13 +38,10 @@ import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewOnly from '@/js/hooks/useViewOnly';
 
 export default function Header( { closePanel } ) {
 	const isViewOnly = useViewOnly();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
 	const adminSettingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAdminSettingsURL()
 	);
@@ -71,15 +68,10 @@ export default function Header( { closePanel } ) {
 			{ ! isViewOnly && (
 				<P>
 					{ createInterpolateElement(
-						setupFlowRefreshEnabled
-							? __(
-									'Edit your personalized goals in <link><strong>Settings</strong></link>',
-									'google-site-kit'
-							  )
-							: __(
-									'Edit your personalized goals or deactivate this widget in <link><strong>Settings</strong></link>',
-									'google-site-kit'
-							  ),
+						__(
+							'Edit your personalized goals in <link><strong>Settings</strong></link>',
+							'google-site-kit'
+						),
 						{
 							link: (
 								<Link

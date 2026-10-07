@@ -75,18 +75,18 @@ describe( 'reloadForFeatures', () => {
 
 	it( 'should not reload when the story lists the same flags in a different order', () => {
 		global._googlesitekitBaseData.enabledFeatures = [
-			'setupFlowRefresh',
+			'datePicker',
 			'rrmExpressSetup',
 		];
 
-		expect(
-			reloadForFeatures( [ 'rrmExpressSetup', 'setupFlowRefresh' ] )
-		).toBe( false );
+		expect( reloadForFeatures( [ 'rrmExpressSetup', 'datePicker' ] ) ).toBe(
+			false
+		);
 		expect( pageReloadMock ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should store the flags and reload when the story needs different flags', () => {
-		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
+		global._googlesitekitBaseData.enabledFeatures = [ 'datePicker' ];
 
 		expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 		expect(
@@ -116,7 +116,7 @@ describe( 'reloadForFeatures', () => {
 	} );
 
 	it( 'should not reload when session storage cannot store the flags', () => {
-		global._googlesitekitBaseData.enabledFeatures = [ 'setupFlowRefresh' ];
+		global._googlesitekitBaseData.enabledFeatures = [ 'datePicker' ];
 
 		// `jest-localstorage-mock` already makes `setItem` a mock, so
 		// `jest.restoreAllMocks()` does not remove the throw. Without
@@ -177,9 +177,7 @@ describe( 'reloadForFeatures', () => {
 		} );
 
 		it( 'should reload the Storybook app, not only the page', () => {
-			global._googlesitekitBaseData.enabledFeatures = [
-				'setupFlowRefresh',
-			];
+			global._googlesitekitBaseData.enabledFeatures = [ 'datePicker' ];
 
 			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 			expect( parentReloadMock ).toHaveBeenCalledTimes( 1 );
@@ -187,13 +185,11 @@ describe( 'reloadForFeatures', () => {
 		} );
 
 		it( 'should set the flags in the Storybook app URL and load it when the page URL has a `features` value', () => {
-			global._googlesitekitBaseData.enabledFeatures = [
-				'setupFlowRefresh',
-			];
+			global._googlesitekitBaseData.enabledFeatures = [ 'datePicker' ];
 			global.location.href =
-				'http://localhost/iframe.html?viewMode=story&id=story-id&features=setupFlowRefresh';
+				'http://localhost/iframe.html?viewMode=story&id=story-id&features=datePicker';
 			global.parent.location.href =
-				'http://localhost/?path=/story/story-id&features=setupFlowRefresh';
+				'http://localhost/?path=/story/story-id&features=datePicker';
 
 			expect( reloadForFeatures( [ 'rrmExpressSetup' ] ) ).toBe( true );
 			expect( parentReplaceMock ).toHaveBeenCalledWith(

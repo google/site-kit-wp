@@ -25,7 +25,6 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
-import { enabledFeatures } from '@/js/features';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createWidgets,
@@ -69,10 +68,6 @@ describe( 'Analytics 4 widget registrations', () => {
 		] );
 		widgets = createWidgets( registry );
 		registerDefaultWidgets( widgets );
-	} );
-
-	afterEach( () => {
-		enabledFeatures.delete( 'setupFlowRefresh' );
 	} );
 
 	/**
@@ -137,19 +132,7 @@ describe( 'Analytics 4 widget registrations', () => {
 	} );
 
 	describe( 'Audience Segmentation back notice widget', () => {
-		it( 'should not register back notice widget when setupFlowRefresh is disabled', () => {
-			registerWidgets( widgets );
-
-			expect(
-				registry
-					.select( CORE_WIDGETS )
-					.getWidget( 'analyticsAudienceSegmentationBackNotice' )
-			).toBeNull();
-		} );
-
-		it( 'should register back notice widget when setupFlowRefresh is enabled', () => {
-			enabledFeatures.add( 'setupFlowRefresh' );
-
+		it( 'should register the back notice widget', () => {
 			registerWidgets( widgets );
 
 			expect(
@@ -160,7 +143,6 @@ describe( 'Analytics 4 widget registrations', () => {
 		} );
 
 		it( 'should only be active when raw hidden is true and notice is not dismissed', () => {
-			enabledFeatures.add( 'setupFlowRefresh' );
 			registerWidgets( widgets );
 
 			const widget = registry

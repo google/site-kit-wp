@@ -28,6 +28,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -119,9 +120,8 @@ describe( 'useVisibleSections', () => {
 	} );
 
 	it( 'does not include key metrics section if it is hidden', async () => {
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: true,
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			keyMetricsSetupIsWidgetAreaHidden: true,
 		} );
 
 		provideWidgetContexts(

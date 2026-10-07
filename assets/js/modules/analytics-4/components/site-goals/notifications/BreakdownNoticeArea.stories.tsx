@@ -43,10 +43,10 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
-import { ALL_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import { provideCustomDimensionError } from '@/js/modules/analytics-4/utils/custom-dimensions';
 import { Story } from '@/js/types/Story';
 import {
@@ -143,9 +143,7 @@ Loading.args = {
 			),
 			() => new Promise( () => {} )
 		);
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.createCustomDimensions( ALL_CUSTOM_DIMENSIONS );
+		registry.dispatch( MODULES_ANALYTICS_4 ).createCustomDimensions();
 	},
 };
 

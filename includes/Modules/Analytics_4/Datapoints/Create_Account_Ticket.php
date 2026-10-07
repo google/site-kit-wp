@@ -14,7 +14,6 @@ use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Account_Ticket;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest;
@@ -94,14 +93,12 @@ class Create_Account_Ticket extends Datapoint implements Executable_Datapoint {
 			$this->provisioning_redirect_uri
 		);
 
-		// Add `service_version` query parameter if the feature flag is enabled.
-		if ( Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
+		// Add `service_version` query parameter.
+		$redirect_uri = add_query_arg( 'service_version', 'v3', $redirect_uri );
 
-			// Add `show_progress` query parameter if `showProgress` is set and truthy.
-			if ( ! empty( $data_request->data['showProgress'] ) ) {
-				$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
-			}
+		// Add `show_progress` query parameter if `showProgress` is set and truthy.
+		if ( ! empty( $data_request->data['showProgress'] ) ) {
+			$redirect_uri = add_query_arg( 'show_progress', 1, $redirect_uri );
 		}
 
 		$account_ticket_request = new Proxy_GoogleAnalyticsAdminProvisionAccountTicketRequest();
