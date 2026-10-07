@@ -10,13 +10,14 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
+use DateTimeImmutable;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
-use Google\Site_Kit\Modules\Analytics_4;
+use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Report_Options;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Encoder;
 use WP_Error;
@@ -45,14 +46,6 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	const DATE_PATTERN = '/\A(\d{4})-(\d{2})-(\d{2})\z/';
 
 	/**
-	 * Analytics 4 module instance.
-	 *
-	 * @since n.e.x.t
-	 * @var Analytics_4
-	 */
-	private $module;
-
-	/**
 	 * Response builder instance.
 	 *
 	 * @since n.e.x.t
@@ -69,8 +62,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 */
 	public function __construct( array $definition ) {
 		parent::__construct( $definition );
-		$this->module           = $definition['module'];
-		$this->response_builder = new Response_Builder( $this->module, $definition['custom_dimensions_data_available'] );
+		$this->response_builder = new Response_Builder( $definition['module'], $definition['custom_dimensions_data_available'] );
 	}
 
 	/**
@@ -82,7 +74,7 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date.
+	 * @return callable|WP_Error Closure returning the encoded response, or an error for an invalid date, or for a period longer than half of `Report_Options::DAILY_SERIES_DAYS`.
 	 * @throws Missing_Required_Param_Exception Thrown when `startDate` or `endDate` is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -117,6 +109,22 @@ class Get_Benchmarking_Data extends Shareable_Datapoint implements Executable_Da
 		if ( $start_date > $end_date ) {
 			return $this->invalid_param_error(
 				__( 'Request parameter startDate must not be later than endDate.', 'google-site-kit' )
+			);
+		}
+
+		// The compare period is as long as the selected period, and both have to fit
+		// in the daily series. Otherwise `Response_Builder` counts too few visitors
+		// for the compare period.
+		$maximum_period_days = intdiv( Report_Options::DAILY_SERIES_DAYS, 2 );
+		$period_days         = ( new DateTimeImmutable( $start_date ) )->diff( new DateTimeImmutable( $end_date ) )->days + 1;
+
+		if ( $period_days > $maximum_period_days ) {
+			return $this->invalid_param_error(
+				sprintf(
+					/* translators: %d: the most days the period can have, e.g. 197 */
+					__( 'The period from startDate to endDate must not be longer than %d days.', 'google-site-kit' ),
+					$maximum_period_days
+				)
 			);
 		}
 

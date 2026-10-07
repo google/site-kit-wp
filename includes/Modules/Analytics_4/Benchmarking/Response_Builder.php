@@ -31,6 +31,8 @@ class Response_Builder {
 
 	/**
 	 * The most rows a dimension keeps in the response.
+	 *
+	 * @since n.e.x.t
 	 */
 	const MAX_ROWS_PER_DIMENSION = 5;
 
@@ -153,9 +155,12 @@ class Response_Builder {
 				continue;
 			}
 
+			// `usort()` isn't stable on PHP 7.4. So the `strcmp()` orders rows with the
+			// same score by label, to come back in the same order on every run.
 			usort(
 				$scored_rows,
-				fn( $a, $b ) => ( $b['score'] <=> $a['score'] ) ?: strcmp( $a['row'][ $label_key ], $b['row'][ $label_key ] )
+				fn( $first_scored_row, $second_scored_row ) => ( $second_scored_row['score'] <=> $first_scored_row['score'] )
+					?: strcmp( $first_scored_row['row'][ $label_key ], $second_scored_row['row'][ $label_key ] )
 			);
 
 			$dimension_scores[ $dimension_code ] = array_sum( array_column( $scored_rows, 'score' ) );
@@ -165,9 +170,13 @@ class Response_Builder {
 			);
 		}
 
+		// `uksort()` isn't stable on PHP 7.4 either. So the index in
+		// `Wire_Format::DIMENSION_INDEXES` orders dimensions with the same sum, to
+		// come back in the same order on every run.
 		uksort(
 			$dimension_scores,
-			fn( $a, $b ) => ( $dimension_scores[ $b ] <=> $dimension_scores[ $a ] ) ?: Wire_Format::DIMENSION_INDEXES[ $a ] - Wire_Format::DIMENSION_INDEXES[ $b ]
+			fn( $first_dimension_code, $second_dimension_code ) => ( $dimension_scores[ $second_dimension_code ] <=> $dimension_scores[ $first_dimension_code ] )
+				?: Wire_Format::DIMENSION_INDEXES[ $first_dimension_code ] - Wire_Format::DIMENSION_INDEXES[ $second_dimension_code ]
 		);
 
 		return array(
@@ -379,8 +388,8 @@ class Response_Builder {
 	 * Pairs a dimension report's two periods by the value of its first dimension.
 	 *
 	 * A value missing from one period has `0` visitors in that period. A pair
-	 * keeps the `values` of its first row in the selected period, such as a
-	 * page's title.
+	 * keeps the `values` of its first row, such as a page's title, and the rows
+	 * of the selected period are read first.
 	 *
 	 * @since n.e.x.t
 	 *

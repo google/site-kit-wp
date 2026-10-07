@@ -25,11 +25,15 @@ class Report_Options {
 
 	/**
 	 * Days in the daily series, the 13 months the Typical Traffic chart shows.
+	 *
+	 * @since n.e.x.t
 	 */
 	const DAILY_SERIES_DAYS = 395;
 
 	/**
 	 * The most rows a dimension report asks Analytics for in each of its periods.
+	 *
+	 * @since n.e.x.t
 	 */
 	const REPORT_ROW_LIMIT = 50;
 

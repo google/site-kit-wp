@@ -416,7 +416,7 @@ class Row_ScorerTest extends TestCase {
 		$this->assertFalse( ( new Row_Scorer( 2050, 1000 ) )->is_excluded_row( 'DEVICES', $row ), 'A device category that went from 0 to 50 visitors should be kept while the site went up 105%.' );
 	}
 
-	public function test_is_excluded_row__keeps_a_row_that_lost_under_1_percent_of_the_site_when_the_site_is_stable() {
+	public function test_is_excluded_row__keeps_a_row_that_changed_by_under_1_percent_of_the_site_when_the_site_is_stable() {
 		$row_scorer = new Row_Scorer( 1000, 1000 );
 
 		$this->assertFalse(
@@ -429,6 +429,17 @@ class Row_ScorerTest extends TestCase {
 				)
 			),
 			'A channel that lost 9 visitors should be kept while the site stayed at 1000, since a stable site has no direction to move against.'
+		);
+		$this->assertFalse(
+			$row_scorer->is_excluded_row(
+				'CHANNELS',
+				array(
+					'label'    => 'Direct',
+					'current'  => 109,
+					'previous' => 100,
+				)
+			),
+			'A channel that went up by 9 visitors should be kept while the site stayed at 1000, since a stable site has no direction to move against.'
 		);
 	}
 
@@ -478,6 +489,54 @@ class Row_ScorerTest extends TestCase {
 				)
 			),
 			'A device category that went up 10% should be kept while the site went up 25%.'
+		);
+	}
+
+	public function test_is_excluded_row__keeps_a_device_row_that_went_up_18_percent_when_the_site_went_down_20_percent() {
+		$row_scorer = new Row_Scorer( 800, 1000 );
+
+		$this->assertFalse(
+			$row_scorer->is_excluded_row(
+				'DEVICES',
+				array(
+					'label'    => 'desktop',
+					'current'  => 118,
+					'previous' => 100,
+				)
+			),
+			"A device category that went up 18% should be kept while the site went down 20%, since its change is 38 percentage points from the site's change."
+		);
+	}
+
+	public function test_is_excluded_row__excludes_a_device_row_that_went_down_18_percent_when_the_site_went_down_20_percent() {
+		$row_scorer = new Row_Scorer( 800, 1000 );
+
+		$this->assertTrue(
+			$row_scorer->is_excluded_row(
+				'DEVICES',
+				array(
+					'label'    => 'desktop',
+					'current'  => 82,
+					'previous' => 100,
+				)
+			),
+			"A device category that went down 18% should be excluded while the site went down 20%, since its change is under 5 percentage points from the site's change."
+		);
+	}
+
+	public function test_is_excluded_row__excludes_a_device_row_that_went_up_4_percent_when_the_site_is_stable() {
+		$row_scorer = new Row_Scorer( 1000, 1000 );
+
+		$this->assertTrue(
+			$row_scorer->is_excluded_row(
+				'DEVICES',
+				array(
+					'label'    => 'desktop',
+					'current'  => 208,
+					'previous' => 200,
+				)
+			),
+			"A device category that went up 4% should be excluded while the site stayed at 1000, since its change is under 5 percentage points from the site's change."
 		);
 	}
 

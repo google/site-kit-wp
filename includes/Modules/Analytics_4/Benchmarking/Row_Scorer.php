@@ -25,6 +25,8 @@ class Row_Scorer {
 	/**
 	 * What each dimension's scores are multiplied by, so a page or a referrer
 	 * counts for more than a device category.
+	 *
+	 * @since n.e.x.t
 	 */
 	const DIMENSION_WEIGHTS = array(
 		'CONTENT'        => 1.5,
@@ -39,29 +41,39 @@ class Row_Scorer {
 	/**
 	 * A row's score is multiplied by this number when the row's visitors and the
 	 * site's visitors both went up, or both went down.
+	 *
+	 * @since n.e.x.t
 	 */
 	const SAME_DIRECTION_BOOST = 1.25;
 
 	/**
 	 * The smallest change in the site's visitors, in percent, that counts as going
 	 * up or down.
+	 *
+	 * @since n.e.x.t
 	 */
 	const SITE_DIRECTION_THRESHOLD_PERCENT = 3;
 
 	/**
 	 * The smallest change in visitors a row needs to stay in the response.
+	 *
+	 * @since n.e.x.t
 	 */
 	const MINIMUM_ABSOLUTE_DELTA = 5;
 
 	/**
 	 * The smallest change a row needs to stay in the response, as a percentage of
 	 * the larger of the site's two visitor totals.
+	 *
+	 * @since n.e.x.t
 	 */
 	const MINIMUM_TRAFFIC_IMPACT_PERCENT = 0.40;
 
 	/**
 	 * A row that moved against the site stays in the response when its change is
 	 * at least this percentage of the larger of the site's two visitor totals.
+	 *
+	 * @since n.e.x.t
 	 */
 	const COUNTER_TREND_TRAFFIC_IMPACT_PERCENT = 1.0;
 
@@ -69,33 +81,45 @@ class Row_Scorer {
 	 * A row that moved against the site also stays in the response when its own
 	 * visitors changed by at least this percentage and `COUNTER_TREND_DELTA`
 	 * visitors.
+	 *
+	 * @since n.e.x.t
 	 */
 	const COUNTER_TREND_SELF_CHANGE_PERCENT = 10;
 
 	/**
 	 * The smallest change in visitors that, together with
 	 * `COUNTER_TREND_SELF_CHANGE_PERCENT`, keeps a row that moved against the site.
+	 *
+	 * @since n.e.x.t
 	 */
 	const COUNTER_TREND_DELTA = 25;
 
 	/**
 	 * A device or visitor mix row is excluded when its own change is less than this
 	 * many percentage points from the site's change, because it only follows the site.
+	 *
+	 * @since n.e.x.t
 	 */
 	const MACRO_DIVERGENCE_PERCENT = 5;
 
 	/**
 	 * The site's direction when its visitors went up by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
+	 *
+	 * @since n.e.x.t
 	 */
 	const DIRECTION_UP = 'UP';
 
 	/**
 	 * The site's direction when its visitors went down by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
+	 *
+	 * @since n.e.x.t
 	 */
 	const DIRECTION_DOWN = 'DOWN';
 
 	/**
 	 * The site's direction when its visitors changed by less than `SITE_DIRECTION_THRESHOLD_PERCENT`.
+	 *
+	 * @since n.e.x.t
 	 */
 	const DIRECTION_STABLE = 'STABLE';
 
@@ -164,7 +188,7 @@ class Row_Scorer {
 	 * - Its change is under `MINIMUM_ABSOLUTE_DELTA` visitors or under
 	 *   `MINIMUM_TRAFFIC_IMPACT_PERCENT`.
 	 * - It moved against the site, and neither `COUNTER_TREND_TRAFFIC_IMPACT_PERCENT`
-	 *   nor `COUNTER_TREND_SELF_CHANGE_PERCENT` keeps it.
+	 *   nor `COUNTER_TREND_SELF_CHANGE_PERCENT` together with `COUNTER_TREND_DELTA` keeps it.
 	 * - It's a `DEVICES` or `VISITOR_MIX` row whose own change is less than
 	 *   `MACRO_DIVERGENCE_PERCENT` percentage points from the site's change.
 	 *
@@ -240,7 +264,7 @@ class Row_Scorer {
 	 * Gets the change in a row's own visitors, in percent.
 	 *
 	 * `is_excluded_row()` excludes a row with no visitors in either period before
-	 * it calls this method.
+	 * it calls `get_self_change_percent()`.
 	 *
 	 * @since n.e.x.t
 	 *

@@ -19,6 +19,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
@@ -28,6 +29,8 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  * @group Analytics_4
  */
 class Response_BuilderTest extends TestCase {
+
+	use Saved_Site_Data_Trait;
 
 	/**
 	 * Custom_Dimensions_Data_Available instance.
@@ -216,8 +219,7 @@ class Response_BuilderTest extends TestCase {
 	 * Makes the fake Analytics API return rows for all seven reports, so each of
 	 * the six dimensions keeps at least one row.
 	 *
-	 * Two channels score the same, two pages score the same, and the `DEVICES`
-	 * and `VISITOR_MIX` sums are equal.
+	 * Two channels score the same, and two pages score the same.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -802,7 +804,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( 0, $response['contextualData']['content'][0]['publishedDaysAgo'], 'A post dated `2026-09-16` should be reported as published 0 days before `2026-09-15`.' );
 	}
 
-	public function test_build__ranks_rows_and_dimensions_the_same_way_when_every_report_returns_its_rows_in_reverse_order() {
+	public function test_build__ranks_rows_the_same_way_when_every_report_returns_its_rows_in_reverse_order() {
 		$this->provide_reports_for_every_dimension();
 
 		$first_response = $this->builder->build( '2026-08-19', '2026-09-15' );
@@ -834,33 +836,17 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	public function test_build__does_not_save_anything_to_the_site() {
-		global $wpdb;
-
 		$this->provide_reports_for_every_dimension();
 
-		// WordPress stores a transient in the `options` table when the site has no
-		// persistent object cache.
-		$options_before   = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options ORDER BY option_name", ARRAY_A );
-		$post_meta_before = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta ORDER BY meta_id", ARRAY_A );
-		$user_meta_before = $wpdb->get_results( "SELECT user_id, meta_key, meta_value FROM $wpdb->usermeta ORDER BY umeta_id", ARRAY_A );
+		$site_data_before = $this->get_saved_site_data();
 
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
-		$this->assertSame(
-			$options_before,
-			$wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options ORDER BY option_name", ARRAY_A ),
-			'The `build()` method should add or change no option and no transient.'
-		);
-		$this->assertSame(
-			$post_meta_before,
-			$wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta ORDER BY meta_id", ARRAY_A ),
-			'The `build()` method should add or change no post meta.'
-		);
-		$this->assertSame(
-			$user_meta_before,
-			$wpdb->get_results( "SELECT user_id, meta_key, meta_value FROM $wpdb->usermeta ORDER BY umeta_id", ARRAY_A ),
-			'The `build()` method should add or change no user meta.'
-		);
+		$site_data_after = $this->get_saved_site_data();
+
+		$this->assertSame( $site_data_before['options'], $site_data_after['options'], 'The `build()` method should add or change no option and no transient.' );
+		$this->assertSame( $site_data_before['post_meta'], $site_data_after['post_meta'], 'The `build()` method should add or change no post meta.' );
+		$this->assertSame( $site_data_before['user_meta'], $site_data_after['user_meta'], 'The `build()` method should add or change no user meta.' );
 	}
 
 	public function test_build__asks_analytics_for_the_reports_again_on_every_call() {
@@ -957,6 +943,41 @@ class Response_BuilderTest extends TestCase {
 
 		$this->assertSame( array( 'CHANNELS' ), $ranked_data['dimensions'], '`dimensions` should not list `DEVICES` once every device row is excluded.' );
 		$this->assertSame( array( 'channels' ), array_keys( $ranked_data['contextualData'] ), '`contextualData` should have no `devices` key once every device row is excluded.' );
+	}
+
+	public function test_rank_contextual_data__does_not_count_an_excluded_row_toward_the_sum_of_its_dimension() {
+		$ranked_data = $this->builder->rank_contextual_data(
+			array(
+				// The channel row scores 11.
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+				// The `desktop` row scores 10. `mobile` would add 9.375, but `Row_Scorer`
+				// excludes it for a change under 5 percentage points from the site's 25%.
+				'devices'  => array(
+					array(
+						'label'    => 'desktop',
+						'current'  => 300,
+						'previous' => 200,
+					),
+					array(
+						'label'    => 'mobile',
+						'current'  => 625,
+						'previous' => 500,
+					),
+				),
+			),
+			array(
+				'current'  => 1000,
+				'previous' => 800,
+			)
+		);
+
+		$this->assertSame( array( 'CHANNELS', 'DEVICES' ), $ranked_data['dimensions'], "`dimensions` should list `CHANNELS` first, because the sum of `DEVICES` doesn't count the excluded `mobile` row." );
 	}
 
 	public function test_rank_contextual_data__orders_the_dimensions_by_the_sum_of_their_row_scores() {
