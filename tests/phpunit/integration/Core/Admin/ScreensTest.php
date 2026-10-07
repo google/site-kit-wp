@@ -527,21 +527,13 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * Makes the given editor a view-only dashboard user and the current user.
+	 * Makes the given editor the current user, with Site Kit permissions of their own.
 	 *
 	 * @param int $user_id Editor to switch to.
+	 * @return Dismissed_Items Dismissed items of the editor.
 	 */
-	private function switch_to_view_only_user( $user_id ) {
+	private function switch_to_editor( $user_id ) {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		( new Module_Sharing_Settings( new Options( $context ) ) )->set(
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'editor' ),
-					'management'  => 'all_admins',
-				),
-			)
-		);
 
 		// The permissions registered at plugin load stay bound to the admin, so this user needs their own.
 		remove_all_filters( 'map_meta_cap' );
@@ -554,6 +546,26 @@ class ScreensTest extends TestCase {
 		$dismissed_items = new Dismissed_Items( $user_options );
 
 		( new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items ) )->register();
+
+		return $dismissed_items;
+	}
+
+	/**
+	 * Makes the given editor a view-only dashboard user and the current user.
+	 *
+	 * @param int $user_id Editor to switch to.
+	 */
+	private function switch_to_view_only_user( $user_id ) {
+		( new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) )->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		$dismissed_items = $this->switch_to_editor( $user_id );
 
 		// Until the splash is dismissed a shared role lands on the splash screen instead of the dashboard.
 		$dismissed_items->add( 'shared_dashboard_splash' );
@@ -770,11 +782,12 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * Denies access to the dashboard screen and captures the redirect.
+	 * Denies access to the given screen and captures the redirect.
 	 *
+	 * @param string $screen_slug Slug of the screen to deny access to, e.g. `googlesitekit-dashboard`.
 	 * @return \Google\Site_Kit\Tests\Exception\RedirectException|null
 	 */
-	private function deny_dashboard_access() {
+	private function deny_access( $screen_slug ) {
 		global $plugin_page;
 
 		// The plugin registered its own Screens at plugin load, and that one would redirect first.
@@ -783,7 +796,7 @@ class ScreensTest extends TestCase {
 		$this->screens->register();
 
 		$previous_plugin_page = $plugin_page;
-		$plugin_page          = 'googlesitekit-dashboard';
+		$plugin_page          = $screen_slug;
 
 		try {
 			do_action( 'admin_page_access_denied' );
@@ -804,7 +817,7 @@ class ScreensTest extends TestCase {
 		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
 		$_GET['intent_code'] = 'abc123';
 
-		$redirect = $this->deny_dashboard_access();
+		$redirect = $this->deny_access( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
 		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
@@ -824,10 +837,97 @@ class ScreensTest extends TestCase {
 			$_GET[ $key ] = $value;
 		}
 
-		$redirect = $this->deny_dashboard_access();
+		$redirect = $this->deny_access( 'googlesitekit-dashboard' );
 
 		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
 		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
 		$this->assertStringNotContainsString( 'purpose=', $redirect->get_location(), 'A request without a usable intent should not get the intent purpose.' );
+	}
+
+	public function test_splash_access_denied__explain_the_intent_to_an_editor_without_dashboard_access() {
+		$this->switch_to_editor( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_SPLASH ), 'An editor with no shared role should not reach the splash screen.' );
+		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'An editor with no shared role should not reach the dashboard.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		try {
+			$this->deny_access( 'googlesitekit-splash' );
+			$this->fail( 'The request should end with the message.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'You need administrator access to continue', $e->getMessage(), 'The message should say administrator access is needed.' );
+			$this->assertStringContainsString( 'Only administrators of this site can sign in to Site Kit and finish this setup.', $e->getMessage(), 'The message should say why.' );
+			$this->assertStringNotContainsString( 'page=googlesitekit-dashboard', $e->getMessage(), 'An editor who cannot use the dashboard should not get a link to it.' );
+			$this->assertSame( 403, $e->getCode(), 'The response should be a 403.' );
+		}
+	}
+
+	public function test_splash_access_denied__explain_the_intent_to_a_view_only_user_with_a_link_to_the_dashboard() {
+		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_SPLASH ), 'A view-only user who dismissed the splash screen should not reach it again.' );
+		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'A view-only user should reach the dashboard.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		try {
+			$this->deny_access( 'googlesitekit-splash' );
+			$this->fail( 'The request should end with the message instead of redirecting to the dashboard.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'You need administrator access to continue', $e->getMessage(), 'The message should say administrator access is needed.' );
+			$this->assertStringContainsString( 'page=googlesitekit-dashboard', $e->getMessage(), 'A view-only user should get a link to the dashboard.' );
+			$this->assertStringContainsString( 'Go to dashboard', $e->getMessage(), 'The link to the dashboard should be labeled.' );
+		}
+	}
+
+	public function data_splash_requests_without_the_intent_purpose() {
+		return array(
+			'no purpose'      => array( array() ),
+			'another purpose' => array( array( 'purpose' => 'something-else' ) ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_splash_requests_without_the_intent_purpose
+	 */
+	public function test_splash_access_denied__redirect_a_view_only_user_to_the_dashboard_without_the_intent_purpose( $query_args ) {
+		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+		$this->set_up_screens_with_intents( new Intents() );
+
+		foreach ( $query_args as $key => $value ) {
+			$_GET[ $key ] = $value;
+		}
+
+		$redirect = $this->deny_access( 'googlesitekit-splash' );
+
+		$this->assertNotNull( $redirect, 'Should redirect a view-only user to the dashboard.' );
+		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $redirect->get_location(), 'Redirect should go to the dashboard.' );
+	}
+
+	public function test_splash_access_denied__no_message_for_a_user_who_can_sign_in() {
+		$this->switch_to_editor( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		// A site can give the capability to sign in to a role that can't otherwise reach the splash screen.
+		add_filter(
+			'user_has_cap',
+			function ( $allcaps ) {
+				$allcaps[ Permissions::AUTHENTICATE ] = true;
+
+				return $allcaps;
+			}
+		);
+
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ), 'The editor should be able to sign in.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		$this->assertNull( $this->deny_access( 'googlesitekit-splash' ), 'A user who can sign in should get the usual WordPress error, not the message.' );
 	}
 }
