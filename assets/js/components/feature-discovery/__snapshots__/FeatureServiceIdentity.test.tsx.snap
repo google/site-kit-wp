@@ -1,0 +1,43 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureServiceIdentity should render the Site Kit icon and label for a feature with no module 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-service-identity"
+  >
+    <svg
+      aria-hidden="true"
+      class="googlesitekit-feature-service-identity__icon"
+      data-testid="site-kit-icon"
+      height="36"
+      width="36"
+    />
+    <span
+      class="googlesitekit-typography googlesitekit-feature-service-identity__text googlesitekit-typography--body googlesitekit-typography--large"
+    >
+      Site Kit feature
+    </span>
+  </div>
+</div>
+`;
+
+exports[`FeatureServiceIdentity should render the feature’s module icon and name 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-service-identity"
+  >
+    <svg
+      aria-hidden="true"
+      class="googlesitekit-feature-service-identity__icon"
+      data-testid="analytics-icon"
+      height="36"
+      width="36"
+    />
+    <span
+      class="googlesitekit-typography googlesitekit-feature-service-identity__text googlesitekit-typography--body googlesitekit-typography--large"
+    >
+      Analytics
+    </span>
+  </div>
+</div>
+`;

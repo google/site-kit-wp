@@ -21,7 +21,7 @@
  */
 import compareVersions from 'compare-versions';
 import { FC } from 'react';
-import { Redirect, Route, Switch, useLocation } from 'react-router-dom';
+import { Redirect, Route, Switch } from 'react-router-dom';
 
 /**
  * WordPress dependencies
@@ -36,18 +36,28 @@ import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-dis
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	DEFAULT_TAB_PATH,
-	FEATURE_DISCOVERY_TABS,
 	FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
 	FIRST_VISIT_TAB_PATH,
 	HUB_LAUNCH_VERSION,
 } from './constants';
 
-const TAB_PATHS = FEATURE_DISCOVERY_TABS.map( ( { path } ) => path );
+export interface FeatureDiscoveryTab {
+	Component: FC;
+	label: string;
+	panelID: string;
+	path: string;
+	tabID: string;
+}
 
-const FeatureDiscoveryContent: FC = () => {
-	const location = useLocation();
-	const isExplicitTab = TAB_PATHS.includes( location.pathname );
+export interface FeatureDiscoveryContentProps {
+	tabs: FeatureDiscoveryTab[];
+	isExplicitTab: boolean;
+}
 
+const FeatureDiscoveryContent: FC< FeatureDiscoveryContentProps > = ( {
+	tabs,
+	isExplicitTab,
+} ) => {
 	const initialVersion = useSelect(
 		( select: Select ) => select( CORE_USER ).getInitialSiteKitVersion(),
 		[]
@@ -104,7 +114,8 @@ const FeatureDiscoveryContent: FC = () => {
 	// A user returning from a setup they started on the hub goes back to the
 	// tab they set out from, in place of the usual default.
 	const returnTab =
-		pendingSetup && TAB_PATHS.includes( pendingSetup.returnTab )
+		pendingSetup &&
+		tabs.some( ( { path } ) => path === pendingSetup.returnTab )
 			? pendingSetup.returnTab
 			: undefined;
 
@@ -114,20 +125,18 @@ const FeatureDiscoveryContent: FC = () => {
 
 	return (
 		<Switch>
-			{ FEATURE_DISCOVERY_TABS.map(
-				( { path, tabID, panelID, Component } ) => (
-					<Route key={ path } path={ path } exact>
-						<div
-							aria-labelledby={ tabID }
-							id={ panelID }
-							role="tabpanel"
-							tabIndex={ 0 }
-						>
-							<Component />
-						</div>
-					</Route>
-				)
-			) }
+			{ tabs.map( ( { path, tabID, panelID, Component } ) => (
+				<Route key={ path } path={ path } exact>
+					<div
+						aria-labelledby={ tabID }
+						id={ panelID }
+						role="tabpanel"
+						tabIndex={ 0 }
+					>
+						<Component />
+					</div>
+				</Route>
+			) ) }
 			<Redirect to={ defaultPath } />
 		</Switch>
 	);

@@ -201,7 +201,7 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
             class="mdc-layout-grid__cell mdc-layout-grid__cell--span-12"
           >
             <div
-              class="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh"
+              class="googlesitekit-setup-module googlesitekit-setup-module--analytics"
             >
               <div
                 class="googlesitekit-setup-module__step"
@@ -687,7 +687,7 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                     Connect Service
                   </p>
                   <div
-                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh"
+                    class="googlesitekit-setup-module googlesitekit-setup-module--analytics"
                   >
                     <div
                       class="googlesitekit-setup-module__step"
