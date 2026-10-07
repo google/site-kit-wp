@@ -55,6 +55,9 @@ export const FEATURE_DISCOVERY_TABS = [
 
 export const DEFAULT_TAB_PATH = WHATS_NEW_TAB_PATH;
 export const FIRST_VISIT_TAB_PATH = ALL_SERVICES_TAB_PATH;
+// Query arg the hub adds to a setup flow's URL, with the feature's slug as its
+// value, so that the setup's completion can tell it was started from the hub.
+export const FEATURE_DISCOVERY_SETUP_QUERY_ARG = 'featureDiscoverySetup';
 export const FEATURE_DISCOVERY_VISITED_ITEM_SLUG = 'feature-discovery-visited';
 export const HUB_LAUNCH_VERSION = '1.188.0'; // Will be updated in issue #13422
 

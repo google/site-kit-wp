@@ -53,10 +53,13 @@ export default function useConsumePendingSetup(): boolean {
 
 		hasStartedRef.current = true;
 
-		consumePendingSetup().then( ( pendingSetup ) => {
-			receivePendingSetup( pendingSetup );
-			setHasConsumed( true );
-		} );
+		// A failed read is treated as no record, so the hub still renders.
+		consumePendingSetup()
+			.catch( () => null )
+			.then( ( pendingSetup ) => {
+				receivePendingSetup( pendingSetup );
+				setHasConsumed( true );
+			} );
 	}, [ receivePendingSetup ] );
 
 	return hasConsumed;

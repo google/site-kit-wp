@@ -60,4 +60,20 @@ describe( 'useConsumePendingSetup', () => {
 			registry.select( CORE_FEATURE_DISCOVERY ).getPendingSetup()
 		).toEqual( record );
 	} );
+
+	it( 'should still finish, with no record stored, when reading the record fails', async () => {
+		consumePendingSetupSpy.mockRejectedValue( new Error( 'Bad record' ) );
+
+		const { result, waitForNextUpdate } = renderHook(
+			() => useConsumePendingSetup(),
+			{ registry }
+		);
+
+		await waitForNextUpdate?.();
+
+		expect( result.current ).toBe( true );
+		expect(
+			registry.select( CORE_FEATURE_DISCOVERY ).getPendingSetup()
+		).toBeNull();
+	} );
 } );

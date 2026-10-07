@@ -108,10 +108,12 @@ export default function useFinishSetup(
 			// completes back to the hub instead of the dashboard.
 			const featureSlug = MODULE_SLUG_TO_FEATURE_SLUG[ moduleSlug ];
 			if ( featureSlug ) {
+				// A failed lookup is treated as no record, so setup still
+				// completes to the dashboard.
 				const hubURL = await getPendingSetupReturnURL(
 					select as Select,
 					featureSlug
-				);
+				).catch( () => undefined );
 
 				if ( hubURL ) {
 					navigateTo( hubURL );

@@ -17,11 +17,17 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { getQueryArg } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
 import type { Select } from 'googlesitekit-data';
 import {
 	ALL_SERVICES_TAB_PATH,
+	FEATURE_DISCOVERY_SETUP_QUERY_ARG,
 	WHATS_NEW_TAB_PATH,
 } from '@/js/components/feature-discovery/constants';
 import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
@@ -90,7 +96,8 @@ export async function consumePendingSetup(): Promise< PendingSetup | null > {
 
 /**
  * Gets the hub URL a setup flow should complete to, where the pending setup
- * record belongs to the feature that just completed.
+ * record belongs to the feature that just completed and the setup was started
+ * from the hub.
  *
  * The record is only read, not deleted, so it is left for
  * `consumePendingSetup()` to pick up once the hub mounts.
@@ -109,9 +116,20 @@ export async function getPendingSetupReturnURL(
 		FEATURE_DISCOVERY_SETUP_CACHE_KEY
 	);
 
+	// The record alone can't say where the setup was started from: one left by
+	// an abandoned hub setup would otherwise redirect a later setup of the same
+	// feature that was started elsewhere. So the setup's URL, which only the
+	// hub marks, must name the feature as well.
+	const startedFromHub =
+		getQueryArg(
+			global.location.href,
+			FEATURE_DISCOVERY_SETUP_QUERY_ARG
+		) === featureSlug;
+
 	if (
 		! cacheHit ||
-		( value as PendingSetup )?.featureSlug !== featureSlug
+		( value as PendingSetup )?.featureSlug !== featureSlug ||
+		! startedFromHub
 	) {
 		return undefined;
 	}

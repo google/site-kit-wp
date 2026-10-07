@@ -23,6 +23,7 @@ import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/c
 import { type Registry } from '@/js/googlesitekit-data';
 import { deleteItem, getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import * as pendingSetup from '@/js/googlesitekit/feature-discovery/pending-setup';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	setPendingSetup,
@@ -224,6 +225,11 @@ describe( 'useFinishSetup', () => {
 			await deleteItem( FEATURE_DISCOVERY_SETUP_CACHE_KEY );
 		} );
 
+		// Sets the URL of a setup that was started from the hub.
+		function startedFromHub( featureSlug: string ) {
+			global.location.href = `http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&featureDiscoverySetup=${ featureSlug }`;
+		}
+
 		async function finish( moduleSlug: string, redirectURL?: string ) {
 			const { result } = renderHook( () => useFinishSetup( moduleSlug ), {
 				registry,
@@ -239,6 +245,7 @@ describe( 'useFinishSetup', () => {
 			'should return to the hub from %s when a matching record exists',
 			async ( moduleSlug, featureSlug ) => {
 				await setPendingSetup( featureSlug, '/whats-new' );
+				startedFromHub( featureSlug );
 
 				await finish( moduleSlug );
 
@@ -260,6 +267,8 @@ describe( 'useFinishSetup', () => {
 		it( 'should complete to the dashboard when the record belongs to a different feature', async () => {
 			await setPendingSetup( 'ads', '/whats-new' );
 
+			startedFromHub( 'adsense' );
+
 			await finish( 'adsense' );
 
 			expect( getLocationAssignURL() ).toContain(
@@ -268,6 +277,8 @@ describe( 'useFinishSetup', () => {
 		} );
 
 		it( 'should complete to the dashboard when there is no record', async () => {
+			startedFromHub( 'adsense' );
+
 			await finish( 'adsense' );
 
 			expect( getLocationAssignURL() ).toContain(
@@ -281,6 +292,35 @@ describe( 'useFinishSetup', () => {
 				{ featureSlug: 'adsense', returnTab: '/whats-new' },
 				{ ttl: 60, timestamp: 1 }
 			);
+
+			startedFromHub( 'adsense' );
+
+			await finish( 'adsense' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should complete to the dashboard when the setup was not started from the hub', async () => {
+			await setPendingSetup( 'adsense', '/whats-new' );
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard';
+
+			await finish( 'adsense' );
+
+			expect( getLocationAssignURL() ).toContain(
+				'page=googlesitekit-dashboard'
+			);
+		} );
+
+		it( 'should complete to the dashboard when reading the record fails', async () => {
+			jest.spyOn(
+				pendingSetup,
+				'getPendingSetupReturnURL'
+			).mockRejectedValueOnce( new Error( 'Bad record' ) );
+
+			startedFromHub( 'adsense' );
 
 			await finish( 'adsense' );
 

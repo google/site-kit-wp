@@ -307,7 +307,11 @@ describe( 'core/feature-discovery features', () => {
 
 				expect(
 					registry.dispatch( CORE_MODULES ).activateModule
-				).toHaveBeenCalledWith( 'test-module' );
+				).toHaveBeenCalledWith( 'test-module', {
+					redirectQueryArgs: {
+						featureDiscoverySetup: 'test-feature',
+					},
+				} );
 				expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
 
 				// The record is stored (and so would survive the OAuth round trip).
@@ -388,7 +392,11 @@ describe( 'core/feature-discovery features', () => {
 
 				expect(
 					registry.dispatch( CORE_MODULES ).activateModule
-				).toHaveBeenCalledWith( 'test-module' );
+				).toHaveBeenCalledWith( 'test-module', {
+					redirectQueryArgs: {
+						featureDiscoverySetup: 'test-feature',
+					},
+				} );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
 			} );
