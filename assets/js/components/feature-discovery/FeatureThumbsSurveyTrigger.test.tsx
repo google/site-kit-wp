@@ -56,7 +56,7 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 			.mockResolvedValue( {} );
 	} );
 
-	it( 'should allow voting while the feature vote is loading', () => {
+	it( 'should immediately select a vote while the feature vote is loading', () => {
 		jest.spyOn(
 			registry.select( CORE_FEATURE_DISCOVERY ),
 			'getFeatureRelevancyVote'
@@ -75,6 +75,13 @@ describe( 'FeatureThumbsSurveyTrigger', () => {
 		);
 
 		expect( setFeatureRelevancyVote ).toHaveBeenCalledWith( 'first', 'up' );
+
+		expect(
+			getByRole( 'button', {
+				name: 'Yes, this was helpful',
+				pressed: true,
+			} )
+		).toBeInTheDocument();
 	} );
 
 	it.each< VoteDirection >( [ 'up', 'down' ] )(

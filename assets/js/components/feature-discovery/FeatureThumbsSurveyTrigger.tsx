@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useMemo } from '@wordpress/element';
+import { useCallback, useMemo, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -54,7 +54,10 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setFeatureRelevancyVote } = useDispatch( CORE_FEATURE_DISCOVERY );
 
-	const voteDirection = useSelect(
+	const [ voteDirection, setVoteDirection ] =
+		useState< VoteDirection | null >( null );
+
+	const relevancyVote = useSelect(
 		( select: Select ) =>
 			select( CORE_FEATURE_DISCOVERY ).getFeatureRelevancyVote( slug ),
 		[ slug ]
@@ -114,8 +117,10 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 	);
 
 	const onVote = useCallback(
-		( direction: VoteDirection ) =>
-			setFeatureRelevancyVote( slug, direction ),
+		( direction: VoteDirection ) => {
+			setFeatureRelevancyVote( slug, direction );
+			setVoteDirection( direction );
+		},
 		[ setFeatureRelevancyVote, slug ]
 	);
 
@@ -128,11 +133,10 @@ const FeatureThumbsSurveyTrigger: FC< FeatureThumbsSurveyTriggerProps > = ( {
 			feedbackOptions={ {
 				[ VOTE_DIRECTION_DOWN ]: feedbackOptions,
 			} }
-			key={ slug }
 			onSelectFeedback={ onSelectFeedback }
 			onVote={ onVote }
 			popperPlacement="top-start"
-			voteDirection={ voteDirection ?? null }
+			voteDirection={ voteDirection || relevancyVote }
 			voteID={ `feature_relevancy_${ slug }` }
 		/>
 	);
