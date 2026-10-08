@@ -31,6 +31,7 @@ import {
 	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { buildPrimaryEventReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/headlineMetrics';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -78,7 +79,7 @@ const TotalFormCompletionsWidget: FC< TotalFormCompletionsWidgetProps > = ( {
 			widgetSlug={ KM_ANALYTICS_TOTAL_FORM_COMPLETIONS }
 			metricValue={ currentPrimaryCount }
 			metricValueFormat={ { style: 'decimal' } }
-			subText={ undefined }
+			subText={ getLeadEventsSubtitle( detectedLeadEvents || [] ) }
 			previousValue={ previousPrimaryCount }
 			currentValue={ currentPrimaryCount }
 			loading={ loading && ! hasNoLeadEvents }

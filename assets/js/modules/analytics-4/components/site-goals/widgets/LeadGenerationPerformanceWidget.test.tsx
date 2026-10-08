@@ -998,7 +998,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		) as HTMLElement;
 
 		expect(
-			within( tooltipContent ).getByText( 'like submitting a form', {
+			within( tooltipContent ).getByText( 'like filling out a form', {
 				exact: false,
 			} )
 		).toBeInTheDocument();

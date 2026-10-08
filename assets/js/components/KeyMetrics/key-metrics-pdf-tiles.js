@@ -114,6 +114,7 @@ import {
 	buildVisitorTypeReportOptions,
 	mapVisitorTypeRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/visitorType';
+import { getLeadEventsSubtitle } from '@/js/modules/analytics-4/components/site-goals/utils/keyActionText';
 import { processReports } from '@/js/modules/analytics-4/components/site-goals/utils/reports';
 import {
 	getEngagedTrafficSourceReportOptions,
@@ -2245,7 +2246,7 @@ export const KEY_METRICS_PDF_TILES = {
 					);
 				}
 			),
-			( [ report ] ) => {
+			( [ report ], { registry } ) => {
 				const { currentPrimaryCount, previousPrimaryCount } =
 					processReports( report || {}, {}, { aggregate: true } );
 
@@ -2258,6 +2259,11 @@ export const KEY_METRICS_PDF_TILES = {
 					value: numFmt( currentPrimaryCount, {
 						style: 'decimal',
 					} ),
+					subtext: getLeadEventsSubtitle(
+						registry
+							.select( MODULES_ANALYTICS_4 )
+							.getDetectedLeadEvents() || []
+					),
 					...getPDFTileChange(
 						previousPrimaryCount,
 						currentPrimaryCount
