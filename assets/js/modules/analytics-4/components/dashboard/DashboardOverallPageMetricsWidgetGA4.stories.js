@@ -403,7 +403,7 @@ LongDataValues.scenario = {
 	waitForFontSizeToMatch: '.googlesitekit-data-block__datapoint',
 	// Once #10798 is implemented we can have story level viewports which better
 	// capture sizes at each flexbox reflow that cause font size changes.
-	fontSizeLarge: 41,
+	fontSizeLarge: false, // No resizing occurs at this viewport.
 	fontSizeMedium: false, // No resizing occurs at this viewport.
 	fontSizeSmall: 27,
 };

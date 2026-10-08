@@ -100,7 +100,18 @@ class Response_Builder {
 			'previous' => $this->sum_visitors( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
 		);
 
-		$ranked_data = $this->rank_contextual_data( $this->build_contextual_data( $reports, $end_date ), $visitors );
+		$contextual_data = $this->filter_contextual_data(
+			$this->build_contextual_data( $reports, $end_date ),
+			array(
+				'start_date'         => $start_date,
+				'end_date'           => $end_date,
+				'compare_start_date' => $compare_range['startDate'],
+				'compare_end_date'   => $compare_range['endDate'],
+				'row_limit'          => Report_Options::REPORT_ROW_LIMIT,
+			)
+		);
+
+		$ranked_data = $this->rank_contextual_data( $contextual_data, $visitors );
 
 		return array(
 			'visitors'       => $visitors,
@@ -379,6 +390,95 @@ class Response_Builder {
 				),
 				$pairs
 			);
+		}
+
+		return $contextual_data;
+	}
+
+	/**
+	 * Runs each `googlesitekit_benchmarking_contextual_data` callback, so another
+	 * module can add the rows of a dimension Analytics doesn't report, such as
+	 * `searchQueries`.
+	 *
+	 * Each callback runs in its own `try`, rather than all of them in one
+	 * `apply_filters()` call, so a callback that throws or doesn't return an
+	 * array is skipped and the rows every other callback and Analytics added are
+	 * kept. Running them outside `apply_filters()` also means `current_filter()`
+	 * and the `all` hook don't see the filter. They still run in the order of
+	 * their priority, since `WP_Hook` keeps them sorted by it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $contextual_data The rows built from Analytics reports, keyed by `contextualData` key.
+	 * @param array $args            The dates and the row limit the callbacks receive.
+	 * @return array The rows, keyed by `contextualData` key, validated after each callback that returned an array.
+	 */
+	private function filter_contextual_data( array $contextual_data, array $args ) {
+		global $wp_filter;
+
+		if ( ! isset( $wp_filter['googlesitekit_benchmarking_contextual_data'] ) ) {
+			return $contextual_data;
+		}
+
+		$validator = new Contextual_Data_Validator();
+
+		/**
+		 * Filters the rows of the benchmarking response, before they are
+		 * ranked.
+		 *
+		 * A callback adds the rows of a dimension under its
+		 * `contextualData` key. Each key has its own row fields:
+		 * - `channels`, `devices`, `visitorMix`, `referrers`, and
+		 *   `categories`: `label`, and the visitors of the selected and
+		 *   the compare period as `current` and `previous`.
+		 * - `searchQueries`: `label`, the clicks of each period as
+		 *   `current` and `previous`, and the average position of each
+		 *   period as `positionCurrent` and `positionPrevious`, or `null`
+		 *   for a period the query isn't reported in.
+		 * - `content`: `url`, `title`, `publishedDaysAgo`, and the visitors of
+		 *   each period as `current` and `previous`.
+		 *
+		 * What a callback returns is checked before the next callback receives
+		 * it. These are removed:
+		 * - A key or a row field the response doesn't define.
+		 * - A key whose value isn't a list of rows.
+		 * - A row that misses a field or has a value of the wrong type.
+		 *
+		 * A numeric string is stored as a number. When the rows are ranked, a
+		 * row whose change explains too little of the site's change is left
+		 * out, each key keeps at most its 5 highest scoring rows, and a key
+		 * with no row left is left out of the response.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param array $contextual_data The rows, keyed by `contextualData` key.
+		 * @param array $args {
+		 *     The period the rows are for.
+		 *
+		 *     @type string $start_date         The start date of the selected period, as `YYYY-MM-DD`.
+		 *     @type string $end_date           The end date of the selected period, as `YYYY-MM-DD`.
+		 *     @type string $compare_start_date The start date of the compare period, as `YYYY-MM-DD`.
+		 *     @type string $compare_end_date   The end date of the compare period, as `YYYY-MM-DD`.
+		 *     @type int    $row_limit          The most rows to ask a report for.
+		 * }
+		 */
+		foreach ( $wp_filter['googlesitekit_benchmarking_contextual_data']->callbacks as $priority_callbacks ) {
+			foreach ( $priority_callbacks as $callback ) {
+				try {
+					// Pass only as many arguments as the callback accepts, as
+					// `apply_filters()` does.
+					$filtered_data = call_user_func_array(
+						$callback['function'],
+						array_slice( array( $contextual_data, $args ), 0, (int) $callback['accepted_args'] )
+					);
+				} catch ( \Throwable $exception ) {
+					continue;
+				}
+
+				if ( is_array( $filtered_data ) ) {
+					$contextual_data = $validator->validate( $filtered_data );
+				}
+			}
 		}
 
 		return $contextual_data;

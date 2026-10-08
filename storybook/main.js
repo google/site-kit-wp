@@ -29,6 +29,7 @@ const { ProvidePlugin } = require( 'webpack' );
  * Internal dependencies
  */
 const { rootDir, siteKitExternals, svgRule } = require( '../webpack/common' );
+const stories = require( './stories' );
 
 function getModuleAbsolutePath( packageName ) {
 	return path.dirname(
@@ -63,12 +64,7 @@ const siteKitPackageAliases = mapValues(
 
 module.exports = {
 	framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
-	stories: [
-		path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
-		path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
-		path.resolve( rootDir, 'assets/js/**/*.stories.tsx' ),
-		path.resolve( rootDir, 'assets/blocks/**/*.stories.tsx' ),
-	],
+	stories,
 	typescript: {
 		check: false,
 		checkOptions: {},
