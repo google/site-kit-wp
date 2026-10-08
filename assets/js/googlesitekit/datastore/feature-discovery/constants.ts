@@ -99,4 +99,5 @@ export const FEATURE_RELEVANCY_REASONS = {
 	NOT_RELEVANT: 'not_relevant',
 	ALREADY_USING: 'already_using',
 	TOO_COMPLICATED: 'too_complicated',
+	SOMETHING_ELSE: 'something_else',
 } as const;
