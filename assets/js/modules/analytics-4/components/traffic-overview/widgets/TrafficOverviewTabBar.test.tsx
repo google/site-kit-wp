@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render, screen } from '@tests/js/test-utils';
+import { fireEvent, render, screen, within } from '@tests/js/test-utils';
 import TrafficOverviewTabBar, {
 	TrafficOverviewTab,
 } from './TrafficOverviewTabBar';
@@ -136,5 +136,32 @@ describe( 'TrafficOverviewTabBar', () => {
 				'.googlesitekit-scrollable-tabs .mdc-tab-bar'
 			)
 		).not.toBeNull();
+	} );
+
+	it( 'should show a "Beta" badge only in the tab that is in beta', () => {
+		render(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'recent-activity',
+						label: 'Recent activity',
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		const [ trafficOverviewTab, recentActivityTab ] =
+			screen.getAllByRole( 'tab' );
+
+		expect(
+			within( recentActivityTab ).getByText( 'Beta' )
+		).toBeInTheDocument();
+		expect(
+			within( trafficOverviewTab ).queryByText( 'Beta' )
+		).not.toBeInTheDocument();
 	} );
 } );

@@ -22,9 +22,16 @@
 import { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
+import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import ScrollableTabs from '@/js/components/ScrollableTabs';
 
 export interface TrafficOverviewTab {
@@ -32,6 +39,8 @@ export interface TrafficOverviewTab {
 	id: string;
 	/** The text the tab shows. */
 	label: string;
+	/** Whether the tab shows a "Beta" badge after its label. */
+	isBeta?: boolean;
 }
 
 interface TrafficOverviewTabBarProps {
@@ -75,6 +84,12 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 						<span className="mdc-tab__text-label">
 							{ tab.label }
 						</span>
+						{ tab.isBeta && (
+							<Badge
+								label={ __( 'Beta', 'google-site-kit' ) }
+								variant={ BADGE_VARIANTS.ANNOUNCEMENT }
+							/>
+						) }
 					</Tab>
 				) ) }
 			</TabBar>
