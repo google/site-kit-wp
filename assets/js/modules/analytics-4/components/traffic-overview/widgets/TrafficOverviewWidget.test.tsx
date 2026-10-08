@@ -27,21 +27,31 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	RECENT_ACTIVITY_TAB_ID,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
+	fireEvent,
 	render,
 	screen,
 	waitFor,
+	within,
 } from '@tests/js/test-utils';
 import {
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	provideUserInfo,
 } from '@tests/js/utils';
 import TrafficOverviewWidget from './TrafficOverviewWidget';
@@ -56,6 +66,13 @@ describe( 'TrafficOverviewWidget', () => {
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
+
+	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+
+	// When Analytics is not connected, the widget renders
+	// `ActivateAnalyticsCTA`, which needs an `IntersectionObserver` that jsdom
+	// doesn't have.
+	mockIntersectionObserver();
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -284,5 +301,230 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetchedTimes( 5, reportEndpoint )
 		);
+	} );
+
+	it( 'should show a "Recent activity" tab with a "Beta" badge after the "Traffic overview" tab when the `freshData` feature flag is enabled', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 2 );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
+		expect( tabs[ 1 ] ).toHaveTextContent( 'Recent activity' );
+		expect( within( tabs[ 1 ] ).getByText( 'Beta' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the Recent activity panel and the "Sources: Analytics Search Console" footer when the `freshData` feature flag is enabled and the user selects the "Recent activity" tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		fetchMock.get( postsEndpoint, {
+			body: [
+				{
+					id: 12,
+					date_gmt: '2026-09-24T14:05:00',
+					link: 'http://example.com/autumn-recipes/',
+					title: { rendered: 'Autumn recipes' },
+				},
+			],
+			status: 200,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByRole( 'tabpanel', { name: 'Recent activity Beta' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Sources: Analytics Search Console' );
+	} );
+
+	it( 'should open on the "Recent activity" tab when the `freshData` feature flag is enabled and `initialActiveTabID` is the `id` of that tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		fetchMock.get( postsEndpoint, {
+			body: [
+				{
+					id: 12,
+					date_gmt: '2026-09-24T14:05:00',
+					link: 'http://example.com/autumn-recipes/',
+					title: { rendered: 'Autumn recipes' },
+				},
+			],
+			status: 200,
+		} );
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget
+				{ ...widgetComponentProps }
+				initialActiveTabID={ RECENT_ACTIVITY_TAB_ID }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Recent activity' );
+		expect(
+			screen.getByRole( 'tabpanel', { name: 'Recent activity Beta' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should show the "Recent activity" tab alone, with a "Set up Analytics" button and no footer, when the `freshData` feature flag is enabled and Analytics is not connected', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 1 );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Recent activity' );
+		expect(
+			screen.getByRole( 'button', { name: 'Set up Analytics' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toBeNull();
+	} );
+
+	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the user has dismissed the Analytics setup CTA', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry
+			.dispatch( CORE_USER )
+			.receiveGetDismissedItems( [
+				'analytics-setup-cta-recent-activity',
+			] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items have not loaded', async () => {
+		const dismissedItemsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismissed-items'
+		);
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		// `isItemDismissed()` and `getDismissedItems()` each have a resolver,
+		// and each resolver requests the dismissed items.
+		freezeFetch( dismissedItemsEndpoint, { repeat: 2 } );
+
+		const { container } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( dismissedItemsEndpoint )
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render nothing when the `freshData` feature flag is enabled and the list of modules has not loaded', async () => {
+		const modulesEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/modules/data/list'
+		);
+
+		registry = createTestRegistry();
+		provideUserInfo( registry );
+		provideSiteInfo( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		freezeFetch( modulesEndpoint );
+
+		const { container } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( modulesEndpoint )
+		);
+
+		expect( container ).toBeEmptyDOMElement();
 	} );
 } );

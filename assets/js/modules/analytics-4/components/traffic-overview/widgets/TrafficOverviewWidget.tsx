@@ -30,12 +30,21 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { WidgetProps } from '@/js/googlesitekit/widgets/components/Widget';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
-import { TRAFFIC_OVERVIEW_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { useFeature } from '@/js/hooks/useFeature';
+import {
+	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
+	RECENT_ACTIVITY_TAB_ID,
+	TRAFFIC_OVERVIEW_TAB_ID,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import RecentActivityFooter from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityFooter';
+import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/RecentActivityPanel';
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import whenActive from '@/js/util/when-active';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 import TrafficOverviewTabBar, {
 	TrafficOverviewTab,
@@ -46,36 +55,102 @@ type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 interface TrafficOverviewTabDescriptor extends TrafficOverviewTab {
 	/** The panel the widget renders while the tab is active. */
 	PanelComponent: ComponentType;
+	/** The footer the widget renders while the tab is active. */
+	FooterComponent: ComponentType;
 }
 
-/** The tabs the widget shows, in the order given. */
-const TABS: TrafficOverviewTabDescriptor[] = [
-	{
-		id: TRAFFIC_OVERVIEW_TAB_ID,
-		label: __( 'Traffic overview', 'google-site-kit' ),
-		PanelComponent: TrafficOverviewPanel,
-	},
-];
+interface TrafficOverviewWidgetProps extends WidgetComponentProps {
+	/** The `id` of the tab the widget opens on, which defaults to the `id` of the Traffic overview tab. */
+	initialActiveTabID?: string;
+}
 
-const TrafficOverviewWidget: FC< WidgetComponentProps > = ( { Widget } ) => {
+const TrafficOverviewWidget: FC< TrafficOverviewWidgetProps > = ( {
+	Widget,
+	WidgetNull,
+	initialActiveTabID = TRAFFIC_OVERVIEW_TAB_ID,
+} ) => {
 	// `getWidgetComponentProps` lives in a JavaScript file, so TypeScript reads
 	// `Widget` as a component that takes no props. The cast leaves `widgetSlug`
 	// out, because `getWidgetComponentProps` already sets it.
 	const WidgetComponent = Widget as FC< Omit< WidgetProps, 'widgetSlug' > >;
 
-	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
+	const freshDataEnabled = useFeature( 'freshData' );
 
-	const { PanelComponent } =
-		TABS.find( ( tab ) => tab.id === activeTabID ) ?? TABS[ 0 ];
+	const isAnalyticsConnected = useSelect(
+		( select: Select ) =>
+			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+		[]
+	);
+
+	const shouldShowRecentActivityTab = useSelect(
+		( select: Select ) => {
+			if ( ! freshDataEnabled ) {
+				return false;
+			}
+
+			if ( isAnalyticsConnected ) {
+				return true;
+			}
+
+			// When Analytics is not connected, the Recent activity tab shows only
+			// its Analytics setup CTA, so the widget hides the tab while the
+			// dismissed items load and after the user dismisses that CTA.
+			return (
+				select( CORE_USER ).isItemDismissed(
+					RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG
+				) === false
+			);
+		},
+		[ freshDataEnabled, isAnalyticsConnected ]
+	);
+
+	const [ activeTabID, setActiveTabID ] = useState( initialActiveTabID );
+
+	if ( isAnalyticsConnected === undefined ) {
+		return null;
+	}
+
+	const tabs: TrafficOverviewTabDescriptor[] = [];
+
+	// The Traffic overview tab shows Analytics reports only.
+	if ( isAnalyticsConnected ) {
+		tabs.push( {
+			id: TRAFFIC_OVERVIEW_TAB_ID,
+			label: __( 'Traffic overview', 'google-site-kit' ),
+			PanelComponent: TrafficOverviewPanel,
+			FooterComponent: TrafficOverviewSourceLink,
+		} );
+	}
+
+	if ( shouldShowRecentActivityTab ) {
+		tabs.push( {
+			id: RECENT_ACTIVITY_TAB_ID,
+			label: __( 'Recent activity', 'google-site-kit' ),
+			isBeta: true,
+			PanelComponent: RecentActivityPanel,
+			FooterComponent: RecentActivityFooter,
+		} );
+	}
+
+	if ( tabs.length === 0 ) {
+		return <WidgetNull />;
+	}
+
+	const { PanelComponent, FooterComponent } =
+		tabs.find( ( tab ) => tab.id === activeTabID ) ?? tabs[ 0 ];
+
+	// When Analytics is not connected, the widget shows no report, so it has
+	// no source to name in a footer.
+	const Footer = isAnalyticsConnected ? FooterComponent : undefined;
 
 	return (
 		<WidgetComponent
 			className="googlesitekit-widget--footer-v2"
-			Footer={ TrafficOverviewSourceLink }
+			Footer={ Footer }
 			noPadding
 		>
 			<TrafficOverviewTabBar
-				tabs={ TABS }
+				tabs={ tabs }
 				activeTabID={ activeTabID }
 				onTabChange={ setActiveTabID }
 			/>
@@ -84,6 +159,4 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( { Widget } ) => {
 	);
 };
 
-export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
-	TrafficOverviewWidget
-) as FC< WidgetComponentProps >;
+export default TrafficOverviewWidget;
