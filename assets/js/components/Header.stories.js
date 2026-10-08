@@ -116,24 +116,6 @@ HeaderWithAddFeaturesButton.parameters = {
 	features: [ 'featureDiscoveryHub' ],
 };
 
-export const HeaderWithHelpMenuSFR = Template.bind( {} );
-HeaderWithHelpMenuSFR.storyName =
-	'Plugin Header with Help Menu - SetupFlowRefresh';
-HeaderWithHelpMenuSFR.args = {
-	children: <HelpMenu />,
-	setupRegistry: ( registry ) => {
-		provideUserAuthentication( registry );
-	},
-};
-HeaderWithHelpMenuSFR.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-HeaderWithHelpMenuSFR.scenario = {
-	delay: 3000,
-	clickSelector: '.googlesitekit-help-menu__button',
-	postInteractionWait: 3000,
-};
-
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
 HeaderWithHelpMenuDateRangeSelector.storyName =
 	'Plugin Header with Help Menu and Date Range Selector';
