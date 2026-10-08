@@ -24,18 +24,26 @@ import invariant from 'invariant';
 /**
  * Internal dependencies
  */
-import { createReducer } from 'googlesitekit-data';
+import { commonActions, createReducer } from 'googlesitekit-data';
 import {
+	DATE_PICKER_LOOKBACK_MONTHS,
 	INVALID_DATE_RANGE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	addDays,
+	addMonths,
 	getDateString,
-	getPreviousDate,
+	getDayCount,
+	getMonthStart,
+	getMonthsInRange,
 	isValidDateRange,
+	isValidDateRangeSelection,
 	isValidDateString,
+	resolveDateRangeSelection,
 } from '@/js/util';
+import { CORE_USER } from './constants';
 
 export const initialState = {
-	dateRange: 'last-28-days',
+	dateRangeSelection: { type: 'preset', slug: 'last-28-days' },
 	// This is where we actually _set_ the reference date (which should
 	// have a default value of the current date).
 	//
@@ -56,7 +64,7 @@ export const initialState = {
  */
 
 // Actions
-const SET_DATE_RANGE = 'SET_DATE_RANGE';
+const SET_DATE_RANGE_SELECTION = 'SET_DATE_RANGE_SELECTION';
 const SET_REFERENCE_DATE = 'SET_REFERENCE_DATE';
 
 export const actions = {
@@ -66,17 +74,36 @@ export const actions = {
 	 * @since 1.12.0
 	 *
 	 * @param {string} slug Date range slug.
-	 * @return {Object} Redux-style action.
+	 * @return {Object} Generator instance.
 	 */
 	setDateRange( slug ) {
 		invariant( slug, 'Date range slug is required.' );
 		invariant( isValidDateRange( slug ), INVALID_DATE_RANGE_ERROR );
 
-		return {
-			type: SET_DATE_RANGE,
-			payload: {
-				slug,
-			},
+		return actions.setDateRangeSelection( { type: 'preset', slug } );
+	},
+
+	/**
+	 * Commits a date range selection within the selectable window.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} selection Date range selection.
+	 * @yield {Object} Redux-style action.
+	 */
+	*setDateRangeSelection( selection ) {
+		const registry = yield commonActions.getRegistry();
+
+		const referenceDate = registry.select( CORE_USER ).getReferenceDate();
+
+		invariant(
+			isValidDateRangeSelection( selection, referenceDate ),
+			'Invalid date range selection.'
+		);
+
+		yield {
+			type: SET_DATE_RANGE_SELECTION,
+			payload: { selection },
 		};
 	},
 
@@ -109,8 +136,8 @@ export const controls = {};
 
 export const reducer = createReducer( ( state, { type, payload } ) => {
 	switch ( type ) {
-		case SET_DATE_RANGE:
-			state.dateRange = payload.slug;
+		case SET_DATE_RANGE_SELECTION:
+			state.dateRangeSelection = payload.selection;
 			break;
 
 		case SET_REFERENCE_DATE:
@@ -134,8 +161,20 @@ export const selectors = {
 	 * @return {string} The current date range slug.
 	 */
 	getDateRange( state ) {
-		const { dateRange } = state;
-		return dateRange;
+		const selection = selectors.getDateRangeSelection( state );
+
+		switch ( selection.type ) {
+			case 'preset':
+				return selection.slug;
+			case 'calendarMonth':
+				return `month-${ selection.month }`;
+			case 'custom':
+				return `custom-${
+					selection.endDate
+				}-last-${ selectors.getDateRangeNumberOfDays( state ) }-days`;
+			default:
+				return undefined;
+		}
 	},
 
 	/**
@@ -153,19 +192,23 @@ export const selectors = {
 		state,
 		{ compare = false, referenceDate = state.referenceDate } = {}
 	) {
-		const dateRange = selectors.getDateRange( state );
-		const endDate = getPreviousDate( referenceDate, 0 );
-		const matches = dateRange.match( '-(.*)-' );
-		const numberOfDays = Number( matches ? matches[ 1 ] : 28 );
-		const startDate = getPreviousDate( endDate, numberOfDays - 1 );
-		const dates = { startDate, endDate };
+		const dates = resolveDateRangeSelection(
+			selectors.getDateRangeSelection( state ),
+			referenceDate
+		);
+
+		const { startDate, endDate } = dates;
+
+		const numberOfDays = getDayCount( startDate, endDate );
 
 		if ( compare ) {
-			const compareEndDate = getPreviousDate( startDate, 1 );
-			const compareStartDate = getPreviousDate(
+			const compareEndDate = addDays( startDate, -1 );
+
+			const compareStartDate = addDays(
 				compareEndDate,
-				numberOfDays - 1
+				1 - numberOfDays
 			);
+
 			dates.compareStartDate = compareStartDate;
 			dates.compareEndDate = compareEndDate;
 		}
@@ -182,9 +225,63 @@ export const selectors = {
 	 * @return {number}      Integer. The number of days in the current date range.
 	 */
 	getDateRangeNumberOfDays( state ) {
-		const dateRange = selectors.getDateRange( state );
-		const matches = dateRange.match( /-(\d+)-/ );
-		return parseInt( matches ? matches[ 1 ] : 28, 10 );
+		const { startDate, endDate } = selectors.getDateRangeDates( state );
+
+		return getDayCount( startDate, endDate );
+	},
+
+	/**
+	 * Gets the committed date range selection.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {Object} Date range selection.
+	 */
+	getDateRangeSelection( state ) {
+		return state.dateRangeSelection;
+	},
+
+	/**
+	 * Gets the earliest selectable date.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {string} First day of the earliest selectable month.
+	 */
+	getEarliestSelectableDate( state ) {
+		return addMonths(
+			getMonthStart( state.referenceDate ),
+			1 - DATE_PICKER_LOOKBACK_MONTHS
+		);
+	},
+
+	/**
+	 * Gets the latest selectable date.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {string} Reference date in YYYY-MM-DD format.
+	 */
+	getLatestSelectableDate( state ) {
+		return selectors.getReferenceDate( state );
+	},
+
+	/**
+	 * Gets selectable calendar months, newest first.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state The current data store's state.
+	 * @return {string[]} Months in YYYY-MM format.
+	 */
+	getSelectableCalendarMonths( state ) {
+		return getMonthsInRange(
+			selectors.getEarliestSelectableDate( state ),
+			selectors.getLatestSelectableDate( state )
+		).reverse();
 	},
 
 	/**

@@ -38,13 +38,144 @@ describe( 'core/user date-range', () => {
 				} ).toThrow( 'Date range slug is required.' );
 			} );
 
+			it( 'should reject an invalid slug', () => {
+				expect( () =>
+					registry.dispatch( CORE_USER ).setDateRange( 'invalid' )
+				).toThrow( 'Invalid date range' );
+			} );
+
 			it( 'should set the date range', () => {
 				const someDateRange = 'last-14-days';
 
 				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect(
+					registry.select( CORE_USER ).getDateRangeSelection()
+				).toEqual( { type: 'preset', slug: someDateRange } );
 				expect( registry.select( CORE_USER ).getDateRange() ).toEqual(
 					someDateRange
 				);
+			} );
+		} );
+
+		describe( 'setDateRangeSelection', () => {
+			beforeEach( () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+			} );
+
+			it.each( [
+				{ type: 'preset', slug: 'last-7-days' },
+				{ type: 'preset', slug: 'last-14-days' },
+				{ type: 'preset', slug: 'last-28-days' },
+				{ type: 'preset', slug: 'last-90-days' },
+				{ type: 'calendarMonth', month: '2026-09' },
+				{ type: 'calendarMonth', month: '2025-08' },
+				{
+					type: 'custom',
+					startDate: '2025-08-01',
+					endDate: '2026-09-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-09-07',
+					endDate: '2026-09-07',
+				},
+			] )( 'should commit a valid selection %j', async ( selection ) => {
+				await registry
+					.dispatch( CORE_USER )
+					.setDateRangeSelection( selection );
+				expect(
+					registry.select( CORE_USER ).getDateRangeSelection()
+				).toEqual( selection );
+			} );
+
+			it.each( [
+				undefined,
+				null,
+				{},
+				[],
+				'last-28-days',
+				{ type: 'invalid' },
+				{ type: 'preset' },
+				{ type: 'preset', slug: 28 },
+				{ type: 'preset', slug: 'invalid-range' },
+				{ type: 'calendarMonth' },
+				{ type: 'calendarMonth', month: 202609 },
+				{ type: 'calendarMonth', month: '2026-9' },
+				{ type: 'calendarMonth', month: '2026-09-01' },
+				{ type: 'calendarMonth', month: '2026-00' },
+				{ type: 'calendarMonth', month: '2026-13' },
+				{ type: 'calendarMonth', month: '2025-07' },
+				{ type: 'calendarMonth', month: '2026-10' },
+				{ type: 'custom' },
+				{ type: 'custom', startDate: '2026-08-01' },
+				{ type: 'custom', startDate: 1, endDate: '2026-09-07' },
+				{
+					type: 'custom',
+					startDate: '2026-08-1',
+					endDate: '2026-09-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-08-01',
+					endDate: '2026-9-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-02-29',
+					endDate: '2026-09-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-08-01',
+					endDate: '2026-08-32',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-08-01T00:00:00Z',
+					endDate: '2026-09-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-09-07',
+					endDate: '2026-09-06',
+				},
+				{
+					type: 'custom',
+					startDate: '2025-07-31',
+					endDate: '2026-09-07',
+				},
+				{
+					type: 'custom',
+					startDate: '2026-09-07',
+					endDate: '2026-09-08',
+				},
+			] )(
+				'should reject an invalid selection %j without changing state',
+				async ( selection ) => {
+					await expect(
+						registry
+							.dispatch( CORE_USER )
+							.setDateRangeSelection( selection )
+					).rejects.toThrow( 'Invalid date range selection.' );
+					expect(
+						registry.select( CORE_USER ).getDateRangeSelection()
+					).toEqual( { type: 'preset', slug: 'last-28-days' } );
+				}
+			);
+
+			it( 'should accept valid leap days', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2024-03-01' );
+				const selection = {
+					type: 'custom',
+					startDate: '2024-02-29',
+					endDate: '2024-02-29',
+				};
+				await registry
+					.dispatch( CORE_USER )
+					.setDateRangeSelection( selection );
+				expect(
+					registry.select( CORE_USER ).getDateRangeNumberOfDays()
+				).toBe( 1 );
 			} );
 		} );
 
@@ -74,6 +205,9 @@ describe( 'core/user date-range', () => {
 				const someDateRange = 'last-7-days';
 
 				registry.dispatch( CORE_USER ).setDateRange( someDateRange );
+				expect(
+					registry.select( CORE_USER ).getDateRangeSelection()
+				).toEqual( { type: 'preset', slug: someDateRange } );
 				expect( registry.select( CORE_USER ).getDateRange() ).toEqual(
 					someDateRange
 				);
@@ -203,6 +337,238 @@ describe( 'core/user date-range', () => {
 						);
 					}
 				);
+			} );
+		} );
+
+		describe( 'selection resolution', () => {
+			it.each( [
+				[
+					{ type: 'preset', slug: 'last-28-days' },
+					'last-28-days',
+					28,
+					'2026-08-11',
+					'2026-09-07',
+					'2026-07-14',
+					'2026-08-10',
+				],
+				[
+					{ type: 'calendarMonth', month: '2026-08' },
+					'month-2026-08',
+					31,
+					'2026-08-01',
+					'2026-08-31',
+					'2026-07-01',
+					'2026-07-31',
+				],
+				[
+					{ type: 'calendarMonth', month: '2026-09' },
+					'month-2026-09',
+					7,
+					'2026-09-01',
+					'2026-09-07',
+					'2026-08-25',
+					'2026-08-31',
+				],
+				[
+					{
+						type: 'custom',
+						startDate: '2026-04-04',
+						endDate: '2026-08-04',
+					},
+					'custom-2026-08-04-last-123-days',
+					123,
+					'2026-04-04',
+					'2026-08-04',
+					'2025-12-02',
+					'2026-04-03',
+				],
+				[
+					{
+						type: 'custom',
+						startDate: '2026-09-07',
+						endDate: '2026-09-07',
+					},
+					'custom-2026-09-07-last-1-days',
+					1,
+					'2026-09-07',
+					'2026-09-07',
+					'2026-09-06',
+					'2026-09-06',
+				],
+			] )(
+				'should resolve %j and its immediately preceding comparison period',
+				async (
+					selection,
+					slug,
+					days,
+					startDate,
+					endDate,
+					compareStartDate,
+					compareEndDate
+				) => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( '2026-09-07' );
+					await registry
+						.dispatch( CORE_USER )
+						.setDateRangeSelection( selection );
+					const select = registry.select( CORE_USER );
+					expect( select.getDateRange() ).toBe( slug );
+					expect( select.getDateRangeNumberOfDays() ).toBe( days );
+					expect( select.getDateRangeDates() ).toEqual( {
+						startDate,
+						endDate,
+					} );
+					expect(
+						select.getDateRangeDates( { compare: true } )
+					).toEqual( {
+						startDate,
+						endDate,
+						compareStartDate,
+						compareEndDate,
+					} );
+				}
+			);
+
+			it.each( [
+				[ '2026-10-07', '2026-10-01', '2026-09-24', '2026-09-30' ],
+				[ '2026-03-10', '2026-03-04', '2026-02-25', '2026-03-03' ],
+			] )(
+				'should keep preset and comparison periods at seven calendar days across DST at %s',
+				(
+					referenceDate,
+					startDate,
+					compareStartDate,
+					compareEndDate
+				) => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( referenceDate );
+					registry
+						.dispatch( CORE_USER )
+						.setDateRange( 'last-7-days' );
+					expect(
+						registry.select( CORE_USER ).getDateRangeNumberOfDays()
+					).toBe( 7 );
+					expect(
+						registry
+							.select( CORE_USER )
+							.getDateRangeDates( { compare: true } )
+					).toEqual( {
+						startDate,
+						endDate: referenceDate,
+						compareStartDate,
+						compareEndDate,
+					} );
+				}
+			);
+
+			it( 'should clamp a calendar month to an earlier reference date and compare with the preceding day', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+				await registry.dispatch( CORE_USER ).setDateRangeSelection( {
+					type: 'calendarMonth',
+					month: '2026-09',
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getDateRangeDates( {
+						referenceDate: '2026-08-31',
+						compare: true,
+					} )
+				).toEqual( {
+					startDate: '2026-08-31',
+					endDate: '2026-08-31',
+					compareStartDate: '2026-08-30',
+					compareEndDate: '2026-08-30',
+				} );
+			} );
+
+			it( 'should clamp custom dates to an overridden reference date and compare the shortened range', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+				await registry.dispatch( CORE_USER ).setDateRangeSelection( {
+					type: 'custom',
+					startDate: '2026-08-04',
+					endDate: '2026-08-10',
+				} );
+
+				expect(
+					registry.select( CORE_USER ).getDateRangeDates( {
+						referenceDate: '2026-08-07',
+						compare: true,
+					} )
+				).toEqual( {
+					startDate: '2026-08-04',
+					endDate: '2026-08-07',
+					compareStartDate: '2026-07-31',
+					compareEndDate: '2026-08-03',
+				} );
+			} );
+
+			it( 'should use an overridden reference date to resolve a calendar month', async () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+				await registry.dispatch( CORE_USER ).setDateRangeSelection( {
+					type: 'calendarMonth',
+					month: '2026-09',
+				} );
+				expect(
+					registry.select( CORE_USER ).getDateRangeDates( {
+						referenceDate: '2026-09-03',
+						compare: true,
+					} )
+				).toEqual( {
+					startDate: '2026-09-01',
+					endDate: '2026-09-03',
+					compareStartDate: '2026-08-29',
+					compareEndDate: '2026-08-31',
+				} );
+			} );
+		} );
+
+		describe( 'selectable window', () => {
+			it.each( [
+				[ '2026-09-07', '2025-08-01' ],
+				[ '2026-01-01', '2024-12-01' ],
+				[ '2024-02-29', '2023-01-01' ],
+			] )(
+				'should bound the window at %s',
+				( referenceDate, earliestDate ) => {
+					registry
+						.dispatch( CORE_USER )
+						.setReferenceDate( referenceDate );
+					expect(
+						registry.select( CORE_USER ).getEarliestSelectableDate()
+					).toBe( earliestDate );
+					expect(
+						registry.select( CORE_USER ).getLatestSelectableDate()
+					).toBe( referenceDate );
+				}
+			);
+
+			it( 'should list all fourteen months newest first and update when the reference date changes', () => {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-07' );
+				const select = registry.select( CORE_USER );
+				const months = select.getSelectableCalendarMonths();
+				expect( months ).toEqual( [
+					'2026-09',
+					'2026-08',
+					'2026-07',
+					'2026-06',
+					'2026-05',
+					'2026-04',
+					'2026-03',
+					'2026-02',
+					'2026-01',
+					'2025-12',
+					'2025-11',
+					'2025-10',
+					'2025-09',
+					'2025-08',
+				] );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2026-10-01' );
+				expect( select.getSelectableCalendarMonths() ).toEqual( [
+					'2026-10',
+					...months.slice( 0, -1 ),
+				] );
 			} );
 		} );
 

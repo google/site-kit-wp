@@ -19,14 +19,22 @@
  */
 import {
 	DAY_IN_SECONDS,
+	DateRangeSelection,
 	INVALID_DATE_INSTANCE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	addDays,
+	addMonths,
 	dateSub,
 	formatDate,
 	getDateString,
+	getDayCount,
+	getMonthEnd,
+	getMonthStart,
+	getMonthsInRange,
 	getPreviousDate,
 	isValidDateRange,
 	isValidDateString,
+	resolveDateRangeSelection,
 	stringToDate,
 } from './dates';
 
@@ -197,6 +205,151 @@ describe( 'dateSub', () => {
 	} );
 } );
 
+describe( 'month helpers', () => {
+	it.each( [
+		[ '2026-01-31', '2026-01-01', '2026-01-31' ],
+		[ '2026-02-10', '2026-02-01', '2026-02-28' ],
+		[ '2024-02-10', '2024-02-01', '2024-02-29' ],
+		[ '2026-12-01', '2026-12-01', '2026-12-31' ],
+	] )( 'should resolve the bounds of %s', ( date, start, end ) => {
+		expect( getMonthStart( date ) ).toBe( start );
+		expect( getMonthEnd( date ) ).toBe( end );
+	} );
+
+	it.each( [
+		[ '2026-01-31', 1, '2026-02-28' ],
+		[ '2024-01-31', 1, '2024-02-29' ],
+		[ '2026-03-31', -1, '2026-02-28' ],
+		[ '2026-12-15', 2, '2027-02-15' ],
+		[ '2026-01-15', -2, '2025-11-15' ],
+		[ '2024-02-29', 12, '2025-02-28' ],
+		[ '2026-01-31', 0, '2026-01-31' ],
+	] )(
+		'should shift %s by %s months with day clamping',
+		( date, months, expected ) => {
+			expect( addMonths( date as string, months as number ) ).toBe(
+				expected
+			);
+		}
+	);
+} );
+
+describe( 'getDayCount', () => {
+	it.each( [
+		[ '2026-09-07', '2026-09-07', 1 ],
+		[ '2026-01-31', '2026-02-01', 2 ],
+		[ '2024-02-01', '2024-02-29', 29 ],
+		[ '2026-02-01', '2026-02-28', 28 ],
+		[ '2025-12-31', '2026-01-01', 2 ],
+		[ '2026-03-01', '2026-03-31', 31 ],
+		[ '2026-10-01', '2026-11-30', 61 ],
+		[ '2026-04-04', '2026-08-04', 123 ],
+	] )( 'should count %s through %s inclusively', ( start, end, expected ) => {
+		expect( getDayCount( start as string, end as string ) ).toBe(
+			expected
+		);
+	} );
+} );
+
+describe( 'getMonthsInRange', () => {
+	it( 'should include partial months across a year boundary', () => {
+		expect( getMonthsInRange( '2025-11-20', '2026-02-01' ) ).toEqual( [
+			'2025-11',
+			'2025-12',
+			'2026-01',
+			'2026-02',
+		] );
+	} );
+	it( 'should include a single month', () => {
+		expect( getMonthsInRange( '2026-09-07', '2026-09-07' ) ).toEqual( [
+			'2026-09',
+		] );
+	} );
+} );
+
+describe( 'resolveDateRangeSelection', () => {
+	it.each( [
+		[ 'last-7-days', '2026-09-01' ],
+		[ 'last-14-days', '2026-08-25' ],
+		[ 'last-28-days', '2026-08-11' ],
+		[ 'last-90-days', '2026-06-10' ],
+	] )( 'should resolve the %s preset', ( slug, startDate ) => {
+		expect(
+			resolveDateRangeSelection( { type: 'preset', slug }, '2026-09-07' )
+		).toEqual( { startDate, endDate: '2026-09-07' } );
+	} );
+
+	it.each( [
+		[ '2026-08', '2026-09-07', '2026-08-01', '2026-08-31' ],
+		[ '2026-09', '2026-09-07', '2026-09-01', '2026-09-07' ],
+		[ '2026-09', '2026-09-01', '2026-09-01', '2026-09-01' ],
+		[ '2024-02', '2024-03-07', '2024-02-01', '2024-02-29' ],
+		[ '2026-02', '2026-03-07', '2026-02-01', '2026-02-28' ],
+	] )(
+		'should resolve month %s against %s',
+		( month, referenceDate, startDate, endDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month },
+					referenceDate
+				)
+			).toEqual( { startDate, endDate } );
+			expect( console ).not.toHaveWarned();
+		}
+	);
+
+	it.each( [ '2026-08-31', '2025-12-31' ] )(
+		'should clamp both calendar-month endpoints and warn for an earlier reference date %s',
+		( referenceDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month: '2026-09' },
+					referenceDate
+				)
+			).toEqual( { startDate: referenceDate, endDate: referenceDate } );
+		}
+	);
+
+	it( 'should return custom dates unchanged without mutating the selection', () => {
+		const selection: DateRangeSelection = Object.freeze( {
+			type: 'custom',
+			startDate: '2026-08-04',
+			endDate: '2026-08-10',
+		} );
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-08-04', endDate: '2026-08-10' }
+		);
+	} );
+
+	it.each( [
+		[ '2026-08-07', '2026-08-04', '2026-08-07' ],
+		[ '2026-08-04', '2026-08-04', '2026-08-04' ],
+		[ '2026-08-01', '2026-08-01', '2026-08-01' ],
+		[ '2026-08-10', '2026-08-04', '2026-08-10' ],
+	] )(
+		'should clamp custom endpoints to reference date %s',
+		( referenceDate, startDate, endDate ) => {
+			const selection: DateRangeSelection = Object.freeze( {
+				type: 'custom',
+				startDate: '2026-08-04',
+				endDate: '2026-08-10',
+			} );
+
+			expect(
+				resolveDateRangeSelection( selection, referenceDate )
+			).toEqual( { startDate, endDate } );
+		}
+	);
+
+	it( 'should return the reference date for an unknown selection type', () => {
+		const selection = { type: 'unknown' } as unknown as DateRangeSelection;
+
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-09-07', endDate: '2026-09-07' }
+		);
+	} );
+} );
+
 describe( 'formatDate', () => {
 	// The test environment runs in American English, the `en-US` locale.
 	it.each( [
@@ -221,5 +374,25 @@ describe( 'formatDate', () => {
 		[ 'a value that is neither a string nor a Date', 20260728 ],
 	] )( 'should return an empty string for %s', ( _, date ) => {
 		expect( formatDate( date ) ).toBe( '' );
+	} );
+
+	it( 'should format dates using the user locale', () => {
+		Object.assign( global._googlesitekitLegacyData, { locale: 'en_US' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( 'Aug 4, 2026' );
+		Object.assign( global._googlesitekitLegacyData, { locale: 'de_DE' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( '4. Aug. 2026' );
+	} );
+} );
+
+describe( 'addDays', () => {
+	it.each( [
+		[ '2026-10-07', -6, '2026-10-01' ],
+		[ '2026-03-10', -7, '2026-03-03' ],
+		[ '2026-04-07', -7, '2026-03-31' ],
+		[ '2026-11-03', -7, '2026-10-27' ],
+		[ '2024-02-28', 1, '2024-02-29' ],
+		[ '2026-12-31', 1, '2027-01-01' ],
+	] )( 'should shift %s by %s calendar days', ( date, days, expected ) => {
+		expect( addDays( date as string, days as number ) ).toBe( expected );
 	} );
 } );
