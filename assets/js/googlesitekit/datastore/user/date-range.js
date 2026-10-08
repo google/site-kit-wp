@@ -252,7 +252,7 @@ export const selectors = {
 	 */
 	getEarliestSelectableDate( state ) {
 		return addMonths(
-			getMonthStart( state.referenceDate ),
+			getMonthStart( selectors.getReferenceDate( state ) ),
 			1 - DATE_PICKER_LOOKBACK_MONTHS
 		);
 	},
