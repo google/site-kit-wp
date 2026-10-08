@@ -3,14 +3,14 @@
 echo "Starting the HTTP server for Storybook files..."
 
 # Check if the Storybook build exists.
-if [ ! -f /src/dist/iframe.html ]; then
-    echo "Error: Storybook build not found at /src/dist/iframe.html"
+if [ ! -f /src/storybook-static/iframe.html ]; then
+    echo "Error: Storybook build not found at /src/storybook-static/iframe.html"
     echo "Please run: npm run build:storybook"
     exit 1
 fi
 
 # Start a Node HTTP server in the background.
-npx http-server /src/dist -p 3000 --silent -c-1 &
+npx http-server /src/storybook-static -p 3000 --silent -c-1 &
 SERVER_PID=$!
 
 # Function to stop the server on exit.

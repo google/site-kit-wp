@@ -16,7 +16,7 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$SCRIPT_DIR/../../"
-DIST_DIR="$ROOT_DIR/dist"
+DIST_DIR="$ROOT_DIR/storybook-static"
 PORT=9001
 
 # Install the appropriate Playwright browser.

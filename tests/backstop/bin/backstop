@@ -24,11 +24,15 @@ VERSION=6.3.25-node22-chrome146.0.7680.164
 IMAGE=ghcr.io/google/site-kit-wp/vrt:$VERSION
 
 # Run the backstopjs command inside a Docker container with an HTTP server for Storybook.
+# The entrypoint is run from the mounted source rather than the copy baked into the image,
+# so that changes to it take effect without needing to publish a new image.
 docker run --rm --tty \
 	--shm-size=512m \
 	--mount "type=bind,source=$ROOT_DIR,target=/src" \
 	--env STORYBOOK_SERVER_URL=http://localhost:3000/iframe.html?id= \
+	--entrypoint bash \
 	$IMAGE \
+	/src/tests/backstop/backstop-entrypoint.sh \
 	"$@"
 
 DOCKER_EXIT_CODE=$?
