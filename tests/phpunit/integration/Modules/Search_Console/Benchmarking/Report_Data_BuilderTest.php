@@ -84,21 +84,21 @@ class Report_Data_BuilderTest extends TestCase {
 								return $this->create_error_response();
 							}
 
+							$rows = array_map(
+								fn( $row ) => array(
+									'keys'     => array( $row[0] ),
+									'clicks'   => $row[1],
+									'position' => $row[2],
+								),
+								$this->report_rows[ $identifier ] ?? array()
+							);
+
+							// Google APIs leave an empty list out of their JSON, so a
+							// report with no rows has no `rows` key.
 							return new Response(
 								200,
 								array(),
-								wp_json_encode(
-									array(
-										'rows' => array_map(
-											fn( $row ) => array(
-												'keys'     => array( $row[0] ),
-												'clicks'   => $row[1],
-												'position' => $row[2],
-											),
-											$this->report_rows[ $identifier ] ?? array()
-										),
-									)
-								)
+								wp_json_encode( empty( $rows ) ? array() : array( 'rows' => $rows ) )
 							);
 						}
 					)
