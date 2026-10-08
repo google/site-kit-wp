@@ -96,11 +96,10 @@ AllServicesFiltered.storyName = 'All services filtered to one category';
 AllServicesFiltered.parameters = { route: '/all-services' };
 AllServicesFiltered.args = AllServices.args;
 AllServicesFiltered.scenario = {
-	onReadyScript: 'feature-discovery-select-audience-chip.js',
 	readySelector: `${ AUDIENCE_CHIP_SELECTOR }.mdc-chip--selected`,
 };
 AllServicesFiltered.play = async () => {
-	await Promise.resolve();
+	await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
 
 	const chip = document.querySelector( AUDIENCE_CHIP_SELECTOR );
 

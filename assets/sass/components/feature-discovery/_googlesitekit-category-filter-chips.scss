@@ -29,8 +29,8 @@
 			&.googlesitekit-chip {
 				padding: 6px 14px;
 
-				&.mdc-chip--selected .mdc-chip__text {
-					padding: 0 11px;
+				.mdc-chip__text {
+					padding: 0;
 				}
 			}
 
