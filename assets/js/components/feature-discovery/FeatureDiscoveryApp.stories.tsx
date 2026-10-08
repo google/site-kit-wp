@@ -51,6 +51,9 @@ interface StoryArgs {
 	setupRegistry?: ( registry: Registry ) => void;
 }
 
+const AUDIENCE_CHIP_SELECTOR =
+	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"]';
+
 function Template( { setupRegistry = () => {} }: StoryArgs ) {
 	function setupStoryRegistry( registry: Registry ) {
 		provideSiteInfo( registry );
@@ -87,6 +90,21 @@ AllServices.args = {
 	},
 };
 AllServices.scenario = {};
+
+export const AllServicesFiltered = Template.bind( {} ) as Story< StoryArgs >;
+AllServicesFiltered.storyName = 'All services filtered to one category';
+AllServicesFiltered.parameters = { route: '/all-services' };
+AllServicesFiltered.args = AllServices.args;
+AllServicesFiltered.scenario = {
+	readySelector: `${ AUDIENCE_CHIP_SELECTOR }.mdc-chip--selected`,
+};
+AllServicesFiltered.play = async () => {
+	await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
+
+	const chip = document.querySelector( AUDIENCE_CHIP_SELECTOR );
+
+	chip?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+};
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
 WhatsNewUnread.storyName = '"What’s new" unread features';
