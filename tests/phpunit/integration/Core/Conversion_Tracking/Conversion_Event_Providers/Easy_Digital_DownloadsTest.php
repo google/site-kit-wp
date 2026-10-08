@@ -75,9 +75,7 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	public function test_get_currency( $store_currency, $expected ) {
 		$edd = $this->create_provider( $store_currency );
 
-		$reflection = new \ReflectionClass( $edd );
-		$method     = $reflection->getMethod( 'get_currency' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $edd, 'get_currency' );
 
 		$this->assertSame(
 			$expected,
@@ -226,9 +224,7 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	 * @dataProvider enhanced_conversion_session_provider
 	 */
 	public function test_get_enhanced_conversions_data_from_session_returns_expected_data( $session_data, $expected ) {
-		$reflection = new \ReflectionClass( $this->edd );
-		$method     = $reflection->getMethod( 'get_enhanced_conversions_data_from_session' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->edd, 'get_enhanced_conversions_data_from_session' );
 
 		$result                     = $method->invoke( $this->edd, $session_data );
 		$expected_without_user_data = $expected;
@@ -245,9 +241,7 @@ class Easy_Digital_DownloadsTest extends TestCase {
 	 * @dataProvider session_user_data_provider
 	 */
 	public function test_extract_user_data_from_session_returns_expected_data( $session_data, $expected ) {
-		$reflection = new \ReflectionClass( $this->edd );
-		$method     = $reflection->getMethod( 'extract_user_data_from_session' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( $this->edd, 'extract_user_data_from_session' );
 
 		$result = $method->invoke( $this->edd, $session_data );
 		$this->assertSame( $expected, $result, 'EDD session user data should match expected user data.' );

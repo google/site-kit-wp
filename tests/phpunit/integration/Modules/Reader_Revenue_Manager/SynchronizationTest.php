@@ -15,12 +15,10 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
-use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Cron;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\Publication;
 use Google\Site_Kit\Tests\TestCase;
 use ReflectionFunction;
-use ReflectionProperty;
 
 /**
  * @group Modules
@@ -213,9 +211,6 @@ class SynchronizationTest extends TestCase {
 		$callback = array_column( $wp_filter[ $hook ]->callbacks[10], 'function' )[0];
 		$cron     = ( new ReflectionFunction( $callback ) )->getClosureThis();
 
-		$datapoint = new ReflectionProperty( Cron::class, 'datapoint' );
-		$datapoint->setAccessible( true );
-
-		return $datapoint->getValue( $cron );
+		return $this->force_get_property( $cron, 'datapoint' );
 	}
 }

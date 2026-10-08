@@ -48,7 +48,6 @@ export default function TourTooltip( {
 		<div
 			className={ classnames(
 				'googlesitekit-tour-tooltip',
-				'googlesitekit-tour-tooltip--setupFlowRefresh',
 				step.className,
 				{
 					'googlesitekit-tour-tooltip--no-title': ! step.title,

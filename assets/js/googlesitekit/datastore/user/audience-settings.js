@@ -342,17 +342,6 @@ const baseSelectors = {
 	),
 
 	/**
-	 * Gets the audience segmentation widget visibility from the audience settings.
-	 *
-	 * @since 1.124.0
-	 * @since 1.183.0 Hardwired to return `false` when the `setupFlowRefresh` feature flag is enabled.
-	 * @since n.e.x.t Always returns `false`, as the audience segmentation widget is now an integral part of the dashboard.
-	 *
-	 * @return {boolean} Whether or not the audience segmentation widget is hidden.
-	 */
-	isAudienceSegmentationWidgetHidden: () => false,
-
-	/**
 	 * Gets the `didSetAudiences` flag from the audience settings.
 	 *
 	 * @since 1.136.0

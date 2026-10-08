@@ -29,13 +29,10 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import LeanCTABanner from '@/js/components/LeanCTABanner';
 import Link from '@/js/components/Link';
 import P from '@/js/components/Typography/P';
-import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewContext from '@/js/hooks/useViewContext';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import { AUDIENCE_SELECTION_PANEL_OPENED_KEY } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceSelectionPanel/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { trackEvent } from '@/js/util';
@@ -43,7 +40,6 @@ import NoAudienceBannerGraphic from '@/svg/graphics/no-audience-banner-graphic.s
 
 const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const viewContext = useViewContext();
-	const isViewOnly = useViewOnly();
 
 	const didSetAudiences = useSelect( ( select ) =>
 		select( CORE_USER ).didSetAudiences()
@@ -52,14 +48,8 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 	const Icon = useSelect( ( select ) =>
 		select( CORE_MODULES ).getModuleIcon( MODULE_SLUG_ANALYTICS_4 )
 	);
-	const adminSettingsURL = useSelect( ( select ) =>
-		select( CORE_SITE ).getSiteKitAdminSettingsURL( {
-			scrollTo: 'visitor-groups',
-		} )
-	);
 
 	const { setValue } = useDispatch( CORE_UI );
-	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const eventLabel = didSetAudiences
 		? 'no-longer-available'
@@ -114,32 +104,6 @@ const NoAudienceBanner = forwardRef( ( props, ref ) => {
 						}
 					) }
 			</P>
-			{ ! isViewOnly && (
-				<P>
-					{ createInterpolateElement(
-						__(
-							'You can deactivate this widget in <a>Settings</a>.',
-							'google-site-kit'
-						),
-						{
-							a: (
-								<Link
-									onClick={ () => {
-										trackEvent(
-											`${ viewContext }_audiences-no-audiences`,
-											'change_settings',
-											eventLabel
-										).finally( () => {
-											navigateTo( adminSettingsURL );
-										} );
-									} }
-									secondary
-								/>
-							),
-						}
-					) }
-				</P>
-			) }
 		</LeanCTABanner>
 	);
 } );
