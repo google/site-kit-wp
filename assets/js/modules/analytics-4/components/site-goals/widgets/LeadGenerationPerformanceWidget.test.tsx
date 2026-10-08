@@ -227,6 +227,17 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 		};
 
+		const topTrafficSessionsOptions = {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			...( Object.keys( breakdownFilter ).length
+				? { dimensionFilters: breakdownFilter }
+				: {} ),
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_lead',
+		};
+
 		const topPagesOptions = {
 			...dates,
 			dimensions: [ 'pagePath', 'eventName' ],
@@ -324,6 +335,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 				topTrafficChannelsOptions,
 				topTrafficTotalOptions,
 				topTrafficRateOptions,
+				topTrafficSessionsOptions,
 				topPagesOptions,
 				pageTitlesOptions,
 				visitorTypeOptions,
@@ -414,6 +426,23 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: empty
+					? []
+					: [ 'Direct', 'Organic Search', 'Organic Social' ].map(
+							( channel ) => ( {
+								dimensionValues: [ { value: channel } ],
+								metricValues: [ { value: '2000' } ],
+							} )
+					  ),
+			},
+			{ options: topTrafficSessionsOptions }
+		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 			{

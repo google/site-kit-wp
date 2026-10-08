@@ -32,6 +32,7 @@ import {
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,
 	GOAL_TYPES,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { buildTopTrafficChannelsSessionsReportOptions } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -214,7 +215,7 @@ function seedGoalDriverReports(
 	{
 		empty = false,
 		loading = false,
-		breakdownFilter = {},
+		breakdownFilter,
 	}: {
 		empty?: boolean;
 		loading?: boolean;
@@ -264,6 +265,15 @@ function seedGoalDriverReports(
 		reportID:
 			'analytics-4_goal-driver-reports_top-traffic-channels-rate_lead',
 	};
+
+	const topTrafficSessionsOptions =
+		buildTopTrafficChannelsSessionsReportOptions( {
+			dates: goalDriverDates,
+			primaryEvent: eventNames,
+			breakdownFilter,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			context: GOAL_TYPES.LEAD,
+		} );
 
 	const topPagesOptions = {
 		...goalDriverDates,
@@ -350,6 +360,7 @@ function seedGoalDriverReports(
 			topTrafficChannelsOptions,
 			topTrafficTotalOptions,
 			topTrafficRateOptions,
+			topTrafficSessionsOptions,
 			topPagesOptions,
 			pageTitlesOptions,
 			visitorTypeOptions,
@@ -433,24 +444,15 @@ function seedGoalDriverReports(
 				: [
 						{
 							dimensionValues: [ { value: 'Direct' } ],
-							metricValues: [
-								{ value: '75' },
-								{ value: '1000' },
-							],
+							metricValues: [ { value: '75' }, { value: '75' } ],
 						},
 						{
 							dimensionValues: [ { value: 'Organic search' } ],
-							metricValues: [
-								{ value: '47' },
-								{ value: '1000' },
-							],
+							metricValues: [ { value: '47' }, { value: '47' } ],
 						},
 						{
 							dimensionValues: [ { value: 'Organic social' } ],
-							metricValues: [
-								{ value: '12' },
-								{ value: '1000' },
-							],
+							metricValues: [ { value: '12' }, { value: '12' } ],
 						},
 				  ],
 		},
@@ -459,6 +461,25 @@ function seedGoalDriverReports(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ topTrafficRateOptions ] );
+
+	// Every channel has 1,000 sessions, so the rates above read 7.5%, 4.7%
+	// and 1.2%.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: empty
+				? []
+				: [ 'Direct', 'Organic search', 'Organic social' ].map(
+						( channel ) => ( {
+							dimensionValues: [ { value: channel } ],
+							metricValues: [ { value: '1000' } ],
+						} )
+				  ),
+		},
+		{ options: topTrafficSessionsOptions }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getReport', [ topTrafficSessionsOptions ] );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
 		{

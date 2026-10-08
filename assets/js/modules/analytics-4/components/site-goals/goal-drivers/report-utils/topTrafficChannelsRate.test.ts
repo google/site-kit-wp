@@ -20,6 +20,7 @@
 import { REPORT_UTILS_TEST_DATES as dates, makeRow } from './__fixtures__';
 import {
 	buildTopTrafficChannelsRateReportOptions,
+	buildTopTrafficChannelsSessionsReportOptions,
 	mapTopTrafficChannelsRateRows,
 } from './topTrafficChannelsRate';
 
@@ -76,22 +77,76 @@ describe( 'buildTopTrafficChannelsRateReportOptions', () => {
 	} );
 } );
 
+describe( 'buildTopTrafficChannelsSessionsReportOptions', () => {
+	it( 'should return undefined without a primary event', () => {
+		expect(
+			buildTopTrafficChannelsSessionsReportOptions( {
+				dates,
+				primaryEvent: undefined,
+				limit: 6,
+			} )
+		).toBeUndefined();
+	} );
+
+	it( 'should request sessions per channel without an event filter', () => {
+		expect(
+			buildTopTrafficChannelsSessionsReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				limit: 6,
+			} )
+		).toEqual( {
+			...dates,
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions',
+		} );
+	} );
+
+	it( 'should filter the sessions by the given breakdown filter', () => {
+		const breakdownFilter = {
+			'customEvent:googlesitekit_event_provider': 'woocommerce',
+		};
+
+		expect(
+			buildTopTrafficChannelsSessionsReportOptions( {
+				dates,
+				primaryEvent: 'purchase',
+				breakdownFilter,
+				limit: 6,
+			} )?.dimensionFilters
+		).toEqual( breakdownFilter );
+	} );
+} );
+
 describe( 'mapTopTrafficChannelsRateRows', () => {
 	it( "should map each row to that channel's own rate, not a share of the total", () => {
+		const sessionsReport = {
+			rows: [
+				makeRow( 'Organic Search', '10' ),
+				makeRow( 'Direct', '20' ),
+			],
+		};
+		// Direct has 1 session with an event out of its 20 sessions.
 		const rows = [
-			makeRow( 'Organic Search', '3', '10' ),
-			makeRow( 'Direct', '1', '20' ),
+			makeRow( 'Organic Search', '3', '3' ),
+			makeRow( 'Direct', '5', '1' ),
 		];
 
-		expect( mapTopTrafficChannelsRateRows( rows ) ).toEqual( [
-			{ label: 'Organic Search', value: '30%' },
-			{ label: 'Direct', value: '5%' },
-		] );
+		expect( mapTopTrafficChannelsRateRows( rows, sessionsReport ) ).toEqual(
+			[
+				{ label: 'Organic Search', value: '30%' },
+				{ label: 'Direct', value: '5%' },
+			]
+		);
 	} );
 
 	it( 'should return a 0% value rather than dividing by zero when sessions is zero', () => {
 		expect(
-			mapTopTrafficChannelsRateRows( [ makeRow( 'Direct', '3', '0' ) ] )
+			mapTopTrafficChannelsRateRows( [ makeRow( 'Direct', '3', '3' ) ], {
+				rows: [ makeRow( 'Direct', '0' ) ],
+			} )
 		).toEqual( [ { label: 'Direct', value: '0%' } ] );
 	} );
 } );
