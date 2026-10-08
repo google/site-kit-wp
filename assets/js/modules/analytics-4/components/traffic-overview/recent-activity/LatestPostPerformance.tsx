@@ -21,9 +21,127 @@
  */
 import { FC } from 'react';
 
+/**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+import { Fragment, useMemo } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import PreviewBlock from '@/js/components/PreviewBlock';
+import ReportError from '@/js/components/ReportError';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import EngagementOutcomesGroup from './EngagementOutcomesGroup';
+import LatestPostHeader from './LatestPostHeader';
+import { PostReportArgs } from './postReportOptions';
+import TrafficSourcesGroup from './TrafficSourcesGroup';
+import { getPostWindow } from './utils/getPostWindow';
+import VisitorBreakdownGroup from './VisitorBreakdownGroup';
+
+const RECENT_CONTENT_OPTIONS = { count: 1 };
+
 const LatestPostPerformance: FC = () => {
+	// `useInstanceId` is typed as `string | number`, so it is read as a string
+	// the way `TextField` does.
+	const instanceID = useInstanceId(
+		LatestPostPerformance,
+		'googlesitekit-traffic-overview__latest-post-performance-heading'
+	);
+	const headingID = `${ instanceID }`;
+
+	const recentContent = useInViewSelect< RecentContentItem[] | undefined >(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getRecentContent(
+				RECENT_CONTENT_OPTIONS
+			),
+		[]
+	);
+
+	const recentContentError = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getRecentContent',
+				[ RECENT_CONTENT_OPTIONS ]
+			),
+		[]
+	);
+
+	const referenceDate = useSelect(
+		( select: Select ) => select( CORE_USER ).getReferenceDate(),
+		[]
+	);
+
+	const canViewSharedAnalytics4 = useCanViewSharedModule(
+		MODULE_SLUG_ANALYTICS_4
+	);
+
+	const post = recentContent?.[ 0 ];
+
+	const reportArgs = useMemo< PostReportArgs | undefined >(
+		() =>
+			post
+				? {
+						permalink: post.permalink,
+						...getPostWindow( post.publishedAt, referenceDate ),
+				  }
+				: undefined,
+		[ post, referenceDate ]
+	);
+
+	if ( ! canViewSharedAnalytics4 ) {
+		return null;
+	}
+
 	return (
-		<div className="googlesitekit-traffic-overview__latest-post-performance" />
+		<section
+			className="googlesitekit-traffic-overview__latest-post-performance"
+			aria-labelledby={ headingID }
+		>
+			<Typography
+				as="h3"
+				type={ TYPE_TITLE }
+				size={ SIZE_MEDIUM }
+				id={ headingID }
+				className="googlesitekit-traffic-overview__latest-post-performance-heading"
+			>
+				{ __(
+					'Latest post performance since published',
+					'google-site-kit'
+				) }
+			</Typography>
+
+			{ !! recentContentError && (
+				<ReportError
+					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
+					error={ recentContentError }
+				/>
+			) }
+
+			{ ! recentContentError && ! reportArgs && (
+				<PreviewBlock width="100%" height="190px" />
+			) }
+
+			{ post && reportArgs && (
+				<Fragment>
+					<LatestPostHeader post={ post } />
+					<div className="googlesitekit-traffic-overview__latest-post-tiles">
+						<VisitorBreakdownGroup reportArgs={ reportArgs } />
+						<TrafficSourcesGroup reportArgs={ reportArgs } />
+						<EngagementOutcomesGroup reportArgs={ reportArgs } />
+					</div>
+				</Fragment>
+			) }
+		</section>
 	);
 };
 

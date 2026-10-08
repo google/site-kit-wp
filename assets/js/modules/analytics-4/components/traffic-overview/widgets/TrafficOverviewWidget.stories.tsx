@@ -37,6 +37,11 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import {
+	provideLatestPost,
+	provideLatestPostAnalyticsReports,
+	provideLatestPostKeywordReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -151,8 +156,9 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property and the site's latest post in the store, so
- * the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the site's latest post, and the post's
+ * reports in the store, so the Recent activity tab renders without sending a
+ * request.
  *
  * @since n.e.x.t
  *
@@ -163,21 +169,12 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent(
-		[
-			{
-				id: 12,
-				title: 'Autumn recipes',
-				permalink: 'https://example.com/autumn-recipes/',
-				pagePath: '/autumn-recipes/',
-				publishedAt: '2026-09-24T14:05:00Z',
-			},
-		],
-		{ count: 1, includeProducts: false }
-	);
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
+		.setDetectedEvents( [ 'purchase' ] );
+	provideLatestPost( registry );
+	provideLatestPostAnalyticsReports( registry );
+	provideLatestPostKeywordReport( registry );
 }
 
 interface TrafficOverviewWidgetStoryProps {

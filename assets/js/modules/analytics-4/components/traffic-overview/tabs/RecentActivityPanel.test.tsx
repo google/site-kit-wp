@@ -59,6 +59,28 @@ describe( 'RecentActivityPanel', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
+
+	/**
+	 * Mocks the report requests of the latest post performance section. The
+	 * mocks are added after the existing ones, so a report response that the
+	 * test has already set up takes precedence.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function mockLatestPostReports() {
+		fetchMock.get(
+			reportEndpoint,
+			{ body: {}, status: 200 },
+			{ overwriteRoutes: false }
+		);
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
+	}
+
 	// `ActivateAnalyticsCTA` observes when it scrolls into view, and jsdom
 	// has no `IntersectionObserver`.
 	mockIntersectionObserver();
@@ -111,6 +133,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
+		mockLatestPostReports();
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -130,6 +154,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
+		mockLatestPostReports();
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -197,6 +223,7 @@ describe( 'RecentActivityPanel', () => {
 
 	it( 'should render the "No recent visitor data yet" notice in place of the insight notice and the recent traffic breakdown when Analytics is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -230,6 +257,7 @@ describe( 'RecentActivityPanel', () => {
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		freezeFetch( reportEndpoint );
+		mockLatestPostReports();
 
 		const { container } = render( <RecentActivityPanel />, { registry } );
 
@@ -305,7 +333,7 @@ describe( 'RecentActivityPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should render the fresh metrics row and the latest post performance alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
+	it( 'should render the fresh metrics row alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
 		// We create a registry that doesn't know whether Analytics is gathering
 		// data, so that calling `isGatheringData()` would request a report.
 		registry = createTestRegistry();
@@ -337,7 +365,6 @@ describe( 'RecentActivityPanel', () => {
 
 		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__fresh-metrics-row',
-			'googlesitekit-traffic-overview__latest-post-performance',
 		] );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
