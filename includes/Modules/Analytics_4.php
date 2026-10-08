@@ -171,6 +171,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 */
 	const CUSTOM_DIMENSION_POST_AUTHOR     = 'googlesitekit_post_author';
 	const CUSTOM_DIMENSION_POST_CATEGORIES = 'googlesitekit_post_categories';
+	const CUSTOM_DIMENSION_POST_DATE       = 'googlesitekit_post_date';
 	const CUSTOM_DIMENSION_EVENT_PROVIDER  = 'googlesitekit_event_provider';
 	const CUSTOM_DIMENSION_FORM_ID         = 'googlesitekit_form_id';
 
@@ -1098,11 +1099,8 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
 			$this->datapoints['GET:benchmarking-data'] = new Get_Benchmarking_Data(
 				array(
-					'module'  => $this,
-					'service' => function () {
-						return $this->get_service( 'analyticsdata' );
-					},
-					'context' => $this->context,
+					'module'                           => $this,
+					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);
 		}
