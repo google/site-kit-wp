@@ -79,7 +79,10 @@ declare global {
 	var GOOGLESITEKIT_VERSION: string;
 
 	var _googlesitekitTrackingData:
-		| Partial< import('@/js/util/tracking/createTracking').TrackingConfig >
+		| Partial<
+				import('@/js/util/tracking/createTracking').TrackingConfig &
+					import('@/js/util/otel').TelemetryConfig
+		  >
 		| undefined;
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

@@ -1,0 +1,2 @@
+# Holds the Google Cloud project ID for this machine.
+.env
