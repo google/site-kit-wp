@@ -40,7 +40,7 @@ import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-component
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { numFmt } from '@/js/util';
-import { AllTrafficPDFData, TrafficBreakdownRow } from './getPDFData';
+import { TrafficBreakdownRow, TrafficOverviewPDFData } from './getPDFData';
 
 const styles = createPDFStyles( {
 	heading: {
@@ -81,7 +81,7 @@ const styles = createPDFStyles( {
 /**
  * Capitalizes the first letter of each word, as CSS `text-transform: capitalize` does.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} label A dimension value, such as `smart tv`.
  * @return {string} The label with each word capitalized, such as `Smart Tv`.
@@ -97,7 +97,7 @@ function capitalizeWords( label: string ): string {
 /**
  * Maps a breakdown's rows to `PDFMetricTileTable` rows.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<Object>} rows Ranked `{ label, formattedPercentage }` rows.
  * @return {Array<Object>} Rows of `{ primary, metric }`, with no change badge.
@@ -113,9 +113,9 @@ const TrafficOverviewPDF: FC< PDFWidgetComponentProps > = ( {
 	data,
 	chartImages,
 } ) => {
-	const trafficData = data as AllTrafficPDFData[ 'data' ] | undefined;
+	const trafficData = data as TrafficOverviewPDFData[ 'data' ] | undefined;
 	const trafficChartImages =
-		chartImages as AllTrafficPDFData[ 'chartImages' ];
+		chartImages as TrafficOverviewPDFData[ 'chartImages' ];
 
 	// Without data the widget returns null, and no placeholder takes its place.
 	if ( ! trafficData ) {

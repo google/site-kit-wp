@@ -30,7 +30,6 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import { PDFChevronRight } from '@/js/components/pdf-export/pdf-icons';
 import {
 	PDF_PAGE_PADDING,
@@ -39,6 +38,7 @@ import {
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { getSiteHost } from '@/js/components/pdf-export/pdf-utils';
 import { PDFHeaderSection } from '@/js/components/pdf-export/types';
+import { formatDate } from '@/js/util';
 import PDFChip from './PDFChip';
 import PDFLink from './PDFLink';
 import PDFSiteKitLogo from './PDFSiteKitLogo';
@@ -132,8 +132,8 @@ const PDFHeader: FC< PDFHeaderProps > = ( {
 	dateRange,
 	sections,
 } ) => {
-	const startDate = formatDateString( dateRange.startDate );
-	const endDate = formatDateString( dateRange.endDate );
+	const startDate = formatDate( dateRange.startDate );
+	const endDate = formatDate( dateRange.endDate );
 	/** Avoid a dangling " - " when one (or both) of the dates is invalid. */
 	const formattedDateRange =
 		startDate && endDate

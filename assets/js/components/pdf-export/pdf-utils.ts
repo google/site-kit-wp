@@ -24,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { formatDateRange } from './formatDateString';
+import { formatDateRange } from '@/js/util';
 
 // The printable characters Windows, macOS and Linux reject in filenames.
 const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;

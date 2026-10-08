@@ -122,15 +122,6 @@
 			text-decoration: none;
 		}
 
-		.googlesitekit-analytics-cta {
-
-			@media (min-width: $bp-xxlarge) {
-				--cta-analytics-gap: #{$grid-gap-phone};
-
-				flex-direction: column;
-			}
-		}
-
 		.googlesitekit-activate-analytics-cta__title {
 			margin-bottom: 0;
 		}

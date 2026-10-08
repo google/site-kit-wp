@@ -36,7 +36,7 @@ const ALREADY_REGISTERED_MESSAGE = 'has been already registered';
  * A binding survives a page reload, so the second `setupPage()` call throws
  * before it adds the `__test` helper again.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Object} page The Playwright page to patch.
  */
@@ -71,7 +71,7 @@ module.exports = {
 	 *
 	 * A page load removes the `__test` helper, so `preVisit()` adds it again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Object} page    The Playwright page for the current test file.
 	 * @param {Object} context The test runner context for the story.

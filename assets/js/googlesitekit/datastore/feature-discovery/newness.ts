@@ -61,7 +61,7 @@ export const actions = {
 	/**
 	 * Dismisses a feature permanently for the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} slug Feature slug.
 	 * @return {Object} Generator instance.

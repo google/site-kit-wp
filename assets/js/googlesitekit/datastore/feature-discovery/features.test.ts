@@ -24,7 +24,18 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { createTestRegistry } from '@tests/js/utils';
+import { getItem } from '@/js/googlesitekit/api/cache';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import {
+	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
+	consumePendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	createTestRegistry,
+	provideModules,
+	provideSiteInfo,
+} from '@tests/js/utils';
 import {
 	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORIES,
@@ -212,6 +223,47 @@ describe( 'core/feature-discovery features', () => {
 		} );
 
 		describe( 'setupFeature', () => {
+			const activationEndpoint = new RegExp(
+				'^/google-site-kit/v1/core/modules/data/activation'
+			);
+
+			let navigateTo: jest.SpyInstance;
+
+			beforeEach( () => {
+				navigateTo = jest
+					.spyOn( registry.dispatch( CORE_LOCATION ), 'navigateTo' )
+					.mockImplementation( () => ( {} ) );
+				provideSiteInfo( registry );
+				provideModules( registry, [
+					{ slug: 'test-module', active: false, connected: false },
+				] );
+			} );
+
+			afterEach( async () => {
+				await consumePendingSetup();
+				global.history.replaceState( {}, '', '/' );
+			} );
+
+			function registerSetupFlowFeature( moduleSlug = 'test-module' ) {
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+							moduleSlug,
+						},
+					} )
+				);
+			}
+
+			function registerSetupComponent() {
+				registry
+					.dispatch( CORE_MODULES )
+					.registerModule( 'test-module', {
+						SetupComponent: () => null,
+					} );
+			}
+
 			it( 'should require a slug', () => {
 				expect( () =>
 					registry.dispatch( CORE_FEATURE_DISCOVERY ).setupFeature()
@@ -222,12 +274,140 @@ describe( 'core/feature-discovery features', () => {
 				registry
 					.dispatch( CORE_FEATURE_DISCOVERY )
 					.registerFeature( 'test-feature', createSettings() );
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( { response: { success: true } } );
 
 				await expect(
 					registry
 						.dispatch( CORE_FEATURE_DISCOVERY )
 						.setupFeature( 'test-feature' )
 				).resolves.toEqual( {} );
+			} );
+
+			it( 'should activate the module, record the pending setup and navigate to the module setup', async () => {
+				registerSetupFlowFeature();
+				registerSetupComponent();
+				global.history.replaceState( {}, '', '/#/whats-new' );
+
+				const reauthURL = 'http://example.com/reauth';
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: { success: true, moduleReauthURL: reauthURL },
+				} );
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect(
+					registry.dispatch( CORE_MODULES ).activateModule
+				).toHaveBeenCalledWith( 'test-module' );
+				expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
+
+				// The record is stored (and so would survive the OAuth round trip).
+				expect( await consumePendingSetup() ).toEqual( {
+					featureSlug: 'test-feature',
+					returnTab: '/whats-new',
+				} );
+			} );
+
+			it( 'should record the pending setup before navigating', async () => {
+				registerSetupFlowFeature();
+				registerSetupComponent();
+
+				let recordedAtNavigation = null;
+				navigateTo.mockImplementation( async () => {
+					recordedAtNavigation = (
+						await getItem( FEATURE_DISCOVERY_SETUP_CACHE_KEY )
+					 ).cacheHit;
+					return {};
+				} );
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect( recordedAtNavigation ).toBe( true );
+			} );
+
+			it( 'should return the activation error as-is and not record or navigate', async () => {
+				registerSetupFlowFeature();
+				registerSetupComponent();
+
+				const error = {
+					code: 'activation_failed',
+					message: 'Could not activate.',
+					data: { status: 500 },
+				};
+				fetchMock.postOnce( activationEndpoint, {
+					body: error,
+					status: 500,
+				} );
+				const result = await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect( result ).toEqual( { error } );
+				expect( console ).toHaveErrored();
+				expect( navigateTo ).not.toHaveBeenCalled();
+				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should stop without recording or navigating when the module has no setup component', async () => {
+				registerSetupFlowFeature();
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect(
+					registry.dispatch( CORE_MODULES ).activateModule
+				).toHaveBeenCalledWith( 'test-module' );
+				expect( navigateTo ).not.toHaveBeenCalled();
+				expect( await consumePendingSetup() ).toBeNull();
+			} );
+		} );
+
+		describe( 'receivePendingSetup', () => {
+			it( 'should store the pending setup', () => {
+				const pendingSetup = {
+					featureSlug: 'adsense',
+					returnTab: '/whats-new',
+				};
+
+				registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.receivePendingSetup( pendingSetup );
+
+				expect(
+					registry.select( CORE_FEATURE_DISCOVERY ).getPendingSetup()
+				).toEqual( pendingSetup );
 			} );
 		} );
 	} );

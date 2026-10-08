@@ -60,7 +60,6 @@ describe( 'useChangeMetricsFeatureTourEffect', () => {
 
 		renderHook( () => useChangeMetricsFeatureTourEffect(), {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( dismissTourSpy ).toHaveBeenCalledWith( 'mocked-tour' );
@@ -74,24 +73,12 @@ describe( 'useChangeMetricsFeatureTourEffect', () => {
 
 		renderHook( () => useChangeMetricsFeatureTourEffect(), {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( dismissTourSpy ).not.toHaveBeenCalled();
 	} );
 
 	it( 'should not dismiss the tour when the welcome modal is not present', () => {
-		renderHook( () => useChangeMetricsFeatureTourEffect(), {
-			registry,
-			features: [ 'setupFlowRefresh' ],
-		} );
-
-		expect( dismissTourSpy ).not.toHaveBeenCalled();
-	} );
-
-	it( 'should not dismiss the tour when setupFlowRefresh is disabled', () => {
-		global.location.href = WELCOME_MODAL_URL;
-
 		renderHook( () => useChangeMetricsFeatureTourEffect(), {
 			registry,
 		} );

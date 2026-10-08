@@ -82,7 +82,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	/**
 	 * Connects the site and the current user to the Site Kit Service.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	private function connect_to_service() {
 		$this->fake_proxy_site_connection();
@@ -94,7 +94,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	 *
 	 * Saves the URL and arguments of each request in `$service_requests`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param int   $status HTTP status to return.
 	 * @param array $body   Body to return.
@@ -122,7 +122,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	/**
 	 * Sends a request to the `core/intents/data/intent` route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param array $query Query parameters.
 	 * @return \WP_REST_Response Response from the route.
@@ -137,7 +137,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	/**
 	 * Sends a request to the `core/intents/data/complete-intent` route.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param array $data Value of the `data` parameter.
 	 * @return \WP_REST_Response Response from the route.
@@ -152,7 +152,7 @@ class REST_Intents_ControllerTest extends TestCase {
 	/**
 	 * Switches the current user to a new editor who can view the shared dashboard but can't set up Site Kit.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	private function switch_to_view_only_user() {
 		$this->fake_proxy_site_connection();

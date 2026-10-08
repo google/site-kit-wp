@@ -43,6 +43,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs, {
 	BreakdownTab,
@@ -53,7 +55,6 @@ import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/compo
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
 import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
@@ -81,7 +82,6 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -648,7 +648,23 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					>
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
-							supportURL={ keyActionDocumentationURL }
+							rateInfoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via createInterpolateElement.
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ keyActionDocumentationURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
 							rateTitle={ __(
 								'Form completion rate',
 								'google-site-kit'
@@ -731,9 +747,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<WidgetFeedbackPrompt
+				<FeedbackPrompt
 					voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
-					goalType={ GOAL_TYPES.LEAD }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_site-goals-widget-survey`,
+						label: GOAL_TYPES.LEAD,
+					} }
 				/>
 			</WidgetComponent>
 		);

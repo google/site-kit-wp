@@ -25,6 +25,8 @@ import { createMemoryHistory } from 'history';
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	dismissItemEndpoint,
@@ -37,11 +39,32 @@ import {
 	muteFetch,
 	render,
 } from '@tests/js/test-utils';
+import AllServicesTab from './all-services/AllServicesTab';
 import {
 	FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
 	HUB_LAUNCH_VERSION,
 } from './constants';
-import FeatureDiscoveryContent from './FeatureDiscoveryContent';
+import FeatureDiscoveryContent, {
+	type FeatureDiscoveryTab,
+} from './FeatureDiscoveryContent';
+import WhatsNewTab from './whats-new/WhatsNewTab';
+
+const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
+	{
+		Component: AllServicesTab,
+		label: 'All services and features',
+		path: '/all-services',
+		tabID: 'all-services-tab',
+		panelID: 'all-services-panel',
+	},
+	{
+		Component: WhatsNewTab,
+		label: 'What’s new?',
+		path: '/whats-new',
+		tabID: 'whats-new-tab',
+		panelID: 'whats-new-panel',
+	},
+];
 
 const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
@@ -60,15 +83,26 @@ describe( 'FeatureDiscoveryContent', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveInitialSiteKitVersion( '1.186.0' );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 	} );
 
 	function renderContent( route: string, history = createMemoryHistory() ) {
-		return render( <FeatureDiscoveryContent />, {
-			registry,
-			route,
-			history,
-		} );
+		return render(
+			<FeatureDiscoveryContent
+				tabs={ FEATURE_DISCOVERY_TABS }
+				isExplicitTab={ FEATURE_DISCOVERY_TABS.some(
+					( { path } ) => path === route
+				) }
+			/>,
+			{
+				registry,
+				route,
+				history,
+				viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
+			}
+		);
 	}
 
 	describe( 'explicit tab routes', () => {
@@ -156,6 +190,34 @@ describe( 'FeatureDiscoveryContent', () => {
 			expect( history.action ).toBe( 'POP' );
 
 			await waitForRegistry();
+		} );
+	} );
+
+	describe( 'returning from a setup started on the hub', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
+		} );
+
+		it( 'should redirect to the pending setup return tab in place of the computed default', async () => {
+			// A returning user would otherwise land on /whats-new.
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'adsense',
+				returnTab: '/all-services',
+			} );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/all-services' );
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 		} );
 	} );
 
@@ -317,8 +379,19 @@ describe( 'FeatureDiscoveryContent', () => {
 
 			await waitForRegistry();
 
-			rerender( <FeatureDiscoveryContent /> );
-			rerender( <FeatureDiscoveryContent /> );
+			rerender(
+				<FeatureDiscoveryContent
+					tabs={ FEATURE_DISCOVERY_TABS }
+					isExplicitTab
+				/>
+			);
+
+			rerender(
+				<FeatureDiscoveryContent
+					tabs={ FEATURE_DISCOVERY_TABS }
+					isExplicitTab
+				/>
+			);
 
 			expect( fetchMock ).toHaveFetchedTimes( 1, dismissItemEndpoint );
 		} );

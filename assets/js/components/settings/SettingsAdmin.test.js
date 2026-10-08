@@ -29,18 +29,32 @@ import {
 } from '@tests/js/test-utils';
 import SettingsAdmin from './SettingsAdmin';
 
-jest.mock(
-	'@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences',
-	() => {
-		const {
-			mockCreateComponent,
-		} = require( '@tests/js/mock-component-utils' );
-		return mockCreateComponent( 'SettingsCardAudiences' );
-	}
-);
+jest.mock( './SettingsCardKeyMetrics', () => {
+	const { mockCreateComponent } = require( '@tests/js/mock-component-utils' );
+	return mockCreateComponent( 'SettingsCardKeyMetrics' );
+} );
 
 describe( 'SettingsAdmin', () => {
 	let registry;
+
+	function provideAnalyticsConnected( connected ) {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected,
+			},
+		] );
+	}
+
+	function provideSitePurpose( hasPurpose ) {
+		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
+			purpose: {
+				values: hasPurpose ? [ 'publish_blog' ] : [],
+				scope: 'site',
+			},
+		} );
+	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -52,42 +66,62 @@ describe( 'SettingsAdmin', () => {
 
 		provideUserAuthentication( registry );
 		registry.dispatch( CORE_USER ).receiveCapabilities( {} );
-
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: false,
-			},
-		] );
-
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			configuredAudiences: [ 'audienceA' ],
-			isAudienceSegmentationWidgetHidden: true,
-			didSetAudiences: true,
-		} );
 	} );
 
-	it( 'should render SettingsCardAudiences when setupFlowRefresh is disabled', async () => {
+	it( 'renders the Key Metrics card when Analytics is connected', async () => {
+		provideAnalyticsConnected( true );
+		provideSitePurpose( false );
+
 		const { getByText, waitForRegistry } = render( <SettingsAdmin />, {
 			registry,
 		} );
 
 		await waitForRegistry();
 
-		expect( getByText( /SettingsCardAudiences/i ) ).toBeInTheDocument();
+		expect( getByText( /SettingsCardKeyMetrics/i ) ).toBeInTheDocument();
 	} );
 
-	it( 'should not render SettingsCardAudiences when setupFlowRefresh is enabled', async () => {
+	it( 'does not render the Key Metrics card when Analytics is not connected and there is no site purpose answer', async () => {
+		provideAnalyticsConnected( false );
+		provideSitePurpose( false );
+
 		const { queryByText, waitForRegistry } = render( <SettingsAdmin />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		await waitForRegistry();
 
 		expect(
-			queryByText( /SettingsCardAudiences/i )
+			queryByText( /SettingsCardKeyMetrics/i )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'renders the Key Metrics card when Analytics is not connected but a site purpose answer exists and `setupFlowRefreshPhase4` is enabled', async () => {
+		provideAnalyticsConnected( false );
+		provideSitePurpose( true );
+
+		const { getByText, waitForRegistry } = render( <SettingsAdmin />, {
+			registry,
+			features: [ 'setupFlowRefreshPhase4' ],
+		} );
+
+		await waitForRegistry();
+
+		expect( getByText( /SettingsCardKeyMetrics/i ) ).toBeInTheDocument();
+	} );
+
+	it( 'does not render the Key Metrics card when a site purpose answer exists but `setupFlowRefreshPhase4` is disabled', async () => {
+		provideAnalyticsConnected( false );
+		provideSitePurpose( true );
+
+		const { queryByText, waitForRegistry } = render( <SettingsAdmin />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			queryByText( /SettingsCardKeyMetrics/i )
 		).not.toBeInTheDocument();
 	} );
 } );

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { VoteDirection } from '@/js/components/surveys/constants';
 import { FEATURE_RELEVANCY_REASONS } from './constants';
 
 /**
@@ -48,7 +49,7 @@ export function getFeatureNewnessKey( slug: string ) {
 /**
  * Gets the survey trigger ID for a feature setup.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug Feature slug.
  * @return {string} Survey trigger ID.
@@ -60,7 +61,7 @@ export function getFeatureSetupSurveyTriggerID( slug: string ) {
 /**
  * Gets the survey trigger ID for a feature relevancy reason.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug   Feature slug.
  * @param {string} reason Feature relevancy reason.
@@ -71,4 +72,20 @@ export function getFeatureRelevancyTriggerID(
 	reason: typeof FEATURE_RELEVANCY_REASONS[ keyof typeof FEATURE_RELEVANCY_REASONS ]
 ) {
 	return `feedback:feature_relevancy_${ slug }:${ reason }`;
+}
+
+/**
+ * Gets the dismissed item slug for a feature relevancy vote.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}        slug      Feature slug.
+ * @param {VoteDirection} direction Vote direction.
+ * @return {string} Relevancy vote slug.
+ */
+export function getFeatureRelevancyVoteSlug(
+	slug: string,
+	direction: VoteDirection
+) {
+	return `feature-discovery-relevancy-${ slug }-${ direction }`;
 }

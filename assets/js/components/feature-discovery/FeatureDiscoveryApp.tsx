@@ -32,7 +32,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
-import { FEATURE_DISCOVERY_TABS } from '@/js/components/feature-discovery/constants';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import useConsumePendingSetup from '@/js/components/feature-discovery/useConsumePendingSetup';
 import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
@@ -47,10 +51,33 @@ import {
 import P from '@/js/components/Typography/P';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { Cell, Grid, Row } from '@/js/material-components';
-import FeatureDiscoveryContent from './FeatureDiscoveryContent';
+import AllServicesTab from './all-services/AllServicesTab';
+import FeatureDetailPanel from './detail/FeatureDetailPanel';
+import FeatureDiscoveryContent, {
+	type FeatureDiscoveryTab,
+} from './FeatureDiscoveryContent';
+import WhatsNewTab from './whats-new/WhatsNewTab';
+
+const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
+	{
+		Component: AllServicesTab,
+		label: __( 'All services and features', 'google-site-kit' ),
+		panelID: 'googlesitekit-feature-discovery-all-services-tab-panel',
+		path: ALL_SERVICES_TAB_PATH,
+		tabID: 'googlesitekit-feature-discovery-all-services-tab',
+	},
+	{
+		Component: WhatsNewTab,
+		label: __( 'What’s new?', 'google-site-kit' ),
+		panelID: 'googlesitekit-feature-discovery-whats-new-tab-panel',
+		path: WHATS_NEW_TAB_PATH,
+		tabID: 'googlesitekit-feature-discovery-whats-new-tab',
+	},
+];
 
 const FeatureDiscoveryApp: FC = () => {
 	useFeatureCountCache();
+	const hasConsumedPendingSetup = useConsumePendingSetup();
 
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
@@ -59,7 +86,8 @@ const FeatureDiscoveryApp: FC = () => {
 		( { path } ) => path === location.pathname
 	);
 
-	const activeIndex = activeTabIndex > -1 ? activeTabIndex : undefined;
+	const isExplicitTab = activeTabIndex > -1;
+	const activeIndex = isExplicitTab ? activeTabIndex : undefined;
 
 	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
 
@@ -85,7 +113,6 @@ const FeatureDiscoveryApp: FC = () => {
 											'google-site-kit'
 										) }
 									</Typography>
-									{ /* @ts-expect-error P is not properly typed yet. */ }
 									<P className="googlesitekit-feature-discovery__description">
 										{ __(
 											'Discover features built to help your site succeed and take control of your site’s growth. Turn on additional features and tools to uncover deeper insights about your audience, simplify your reporting, and reach your goals faster.',
@@ -124,12 +151,18 @@ const FeatureDiscoveryApp: FC = () => {
 									) }
 								</TabBar>
 								<div className="googlesitekit-feature-discovery__content">
-									<FeatureDiscoveryContent />
+									{ hasConsumedPendingSetup && (
+										<FeatureDiscoveryContent
+											tabs={ FEATURE_DISCOVERY_TABS }
+											isExplicitTab={ isExplicitTab }
+										/>
+									) }
 								</div>
 							</Layout>
 						</Cell>
 					</Row>
 				</Grid>
+				<FeatureDetailPanel />
 			</div>
 		</Fragment>
 	);

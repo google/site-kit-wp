@@ -36,7 +36,7 @@ import { useWindowWidth } from '@/js/hooks/useWindowSize';
  * shown it widens the header actions, so they also collapse at or below the
  * given window width.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param collapseWidth Window width in pixels at or below which the actions collapse when the "Add features" button is shown.
  * @return `true` if the header feature actions should collapse, otherwise `false`.

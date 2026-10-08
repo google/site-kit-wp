@@ -51,13 +51,7 @@ import {
 	dismissedPromptsEndpoint,
 } from '@tests/js/mock-dismiss-prompt-endpoints';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
-import {
-	act,
-	fireEvent,
-	render,
-	setEnabledFeatures,
-	waitFor,
-} from '@tests/js/test-utils';
+import { act, fireEvent, render, waitFor } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -301,9 +295,7 @@ describe( 'SetupCTABanner', () => {
 			expect( isActive ).toBe( false );
 		} );
 
-		it( 'is active when analytics setup is not complete and `setupFlowRefresh` is enabled', async () => {
-			setEnabledFeatures( [ 'setupFlowRefresh' ] );
-
+		it( 'is active when analytics setup is not complete', async () => {
 			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
 				isAnalyticsSetupComplete: false,
 			} );
@@ -316,9 +308,7 @@ describe( 'SetupCTABanner', () => {
 			expect( isActive ).toBe( true );
 		} );
 
-		it( 'is not active when analytics setup is complete and `setupFlowRefresh` is enabled', async () => {
-			setEnabledFeatures( [ 'setupFlowRefresh' ] );
-
+		it( 'is not active when analytics setup is complete', async () => {
 			registry.dispatch( CORE_USER ).receiveGetInitialSetupSettings( {
 				isAnalyticsSetupComplete: true,
 			} );

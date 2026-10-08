@@ -1,0 +1,100 @@
+/**
+ * Feature detail panel styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-feature-details-panel {
+		--googlesitekit-feature-details-panel-padding-s: 8px;
+		--googlesitekit-feature-details-panel-padding-m: 16px;
+		--googlesitekit-feature-details-panel-padding-l: 24px;
+
+		display: flex;
+		flex-direction: column;
+		overflow-y: auto;
+
+		@media ( min-width: $bp-tablet ) {
+			--googlesitekit-feature-details-panel-padding-m: 24px;
+			--googlesitekit-feature-details-panel-padding-l: 42px;
+
+			inline-size: 800px;
+			max-inline-size: 100%;
+		}
+
+		.googlesitekit-selection-panel-header {
+			display: grid;
+			gap: var(--googlesitekit-feature-details-panel-padding-s);
+		}
+
+		.googlesitekit-selection-panel-header__row {
+			gap: var(--googlesitekit-feature-details-panel-padding-m);
+		}
+
+		.googlesitekit-selection-panel-header__close {
+			align-self: start;
+		}
+	}
+
+	.googlesitekit-feature-details-panel__footer,
+	.googlesitekit-feature-details-panel__header {
+		background: inherit;
+
+		@media ( height >= 540px ) {
+			position: sticky;
+		}
+	}
+
+	.googlesitekit-feature-details-panel__header {
+		inset-block-start: 0;
+	}
+
+	.googlesitekit-feature-details-panel__footer {
+		border-block-start: 1px solid $c-utility-divider;
+		inset-block-end: 0;
+	}
+
+	.googlesitekit-feature-details-panel__tab-bar {
+		padding-inline: var(--googlesitekit-feature-details-panel-padding-m);
+
+		.mdc-tab {
+			padding-inline: var(--googlesitekit-feature-details-panel-padding-l);
+		}
+	}
+
+	.googlesitekit-feature-details-panel__content {
+		flex-grow: 1;
+		padding: var(--googlesitekit-feature-details-panel-padding-m);
+	}
+
+	.googlesitekit-feature-details-panel__relevancy {
+		align-items: center;
+		color: $c-surfaces-on-background-variant;
+		display: flex;
+		gap: var(--googlesitekit-feature-details-panel-padding-s);
+		padding-block: var(--googlesitekit-feature-details-panel-padding-s);
+		padding-inline: var(--googlesitekit-feature-details-panel-padding-m);
+	}
+
+	.googlesitekit-feature-details-panel__actions {
+		align-items: center;
+		background: $c-surfaces-background;
+		display: flex;
+		gap: var(--googlesitekit-feature-details-panel-padding-s);
+		justify-content: end;
+		padding: var(--googlesitekit-feature-details-panel-padding-m);
+	}
+}
