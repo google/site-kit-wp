@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`HelpMenu with the \`setupFlowRefresh\` feature flag enabled should render the "Get help with AdSense" menu item when AdSense is active 1`] = `
+exports[`HelpMenu should render the "Get help with AdSense" menu item when AdSense is active 1`] = `
 <div>
   <div
     class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"
@@ -164,7 +164,7 @@ exports[`HelpMenu with the \`setupFlowRefresh\` feature flag enabled should rend
 </div>
 `;
 
-exports[`HelpMenu with the \`setupFlowRefresh\` feature flag enabled should render the correct menu items 1`] = `
+exports[`HelpMenu should render the correct menu items 1`] = `
 <div>
   <div
     class="googlesitekit-dropdown-menu googlesitekit-dropdown-menu__icon-menu mdc-menu-surface--anchor"

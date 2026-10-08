@@ -10,7 +10,9 @@
     "google/site-kit-phpcs-standards": "0.1",
     "php-stubs/woocommerce-stubs": "^10.5",
     "php-stubs/wp-cli-stubs": "^2.12",
-    "phpcompatibility/phpcompatibility-wp": "^2.1",
+    "phpcompatibility/php-compatibility": "^10.0@alpha",
+    "phpcompatibility/phpcompatibility-paragonie": "^2.0@alpha",
+    "phpcompatibility/phpcompatibility-wp": "^3.0@alpha",
     "phpstan/phpstan": "^2.1",
     "phpunit/phpunit": "^9.0",
     "roots/wordpress": ">=5.2",
@@ -133,6 +135,7 @@
     "analyze": "phpstan analyze --memory-limit=2G",
     "lint": "phpcs",
     "lint-fix": "phpcbf",
+    "lint:autoload": "@composer dump-autoload --dry-run --optimize --strict-psr",
     "test": "phpunit",
     "test:multisite": "@test --configuration=phpunit.multisite.xml"
   }

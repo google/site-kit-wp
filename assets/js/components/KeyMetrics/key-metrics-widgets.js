@@ -29,6 +29,11 @@ import {
 	CORE_USER,
 	KM_ANALYTICS_ADSENSE_TOP_EARNING_CONTENT,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_LEAST_ENGAGING_PAGES,
 	KM_ANALYTICS_MOST_ENGAGING_PAGES,
 	KM_ANALYTICS_NEW_VISITORS,
@@ -41,6 +46,7 @@ import {
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CATEGORIES,
 	KM_ANALYTICS_TOP_CITIES,
@@ -54,11 +60,13 @@ import {
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 	KM_ANALYTICS_TOP_RECENT_TRENDING_PAGES,
 	KM_ANALYTICS_TOP_RETURNING_VISITOR_PAGES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 	KM_ANALYTICS_VISITS_PER_VISITOR,
 	KM_ANALYTICS_VISIT_LENGTH,
@@ -421,13 +429,16 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS ]: {
-		title: __( 'Top traffic source driving leads', 'google-site-kit' ),
+		title: __(
+			'Top traffic channels by form completion',
+			'google-site-kit'
+		),
 		description: __(
-			'Channel which brought in the most leads to your site',
+			'Where do most of your leads come from?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in the most leads to your site',
+			'Where do most of your leads come from?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -440,13 +451,13 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_PURCHASES ]: {
-		title: __( 'Top traffic source driving purchases', 'google-site-kit' ),
+		title: __( 'Top traffic channels by total sales', 'google-site-kit' ),
 		description: __(
-			'Channel which brought in the most purchases to your site',
+			'Where do most of your buyers come from?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Channel (e.g. social, paid, search) that brought in the most purchases to your site',
+			'Where do most of your buyers come from?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
@@ -491,13 +502,13 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_DRIVING_TRAFFIC.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS ]: {
-		title: __( 'Top cities driving leads', 'google-site-kit' ),
+		title: __( 'Leads by cities', 'google-site-kit' ),
 		description: __(
-			'Cities driving the most contact form submissions',
+			'Which cities are people reaching out from?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Cities driving the most contact form submissions',
+			'Which cities are people reaching out from?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -525,13 +536,13 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_CITIES_DRIVING_PURCHASES ]: {
-		title: __( 'Top cities driving purchases', 'google-site-kit' ),
+		title: __( 'Sales by cities', 'google-site-kit' ),
 		description: __(
-			'Cities driving the most purchases',
+			'Which cities bring in the most buyers?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Cities driving the most purchases',
+			'Which cities bring in the most buyers?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
@@ -540,13 +551,13 @@ const KEY_METRICS_WIDGETS = {
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
 	},
 	[ KM_ANALYTICS_TOP_DEVICE_DRIVING_PURCHASES ]: {
-		title: __( 'Top device driving purchases', 'google-site-kit' ),
+		title: __( 'Sales by device type', 'google-site-kit' ),
 		description: __(
-			'Top device driving the most purchases',
+			'Are people buying more on mobile or desktop?',
 			'google-site-kit'
 		),
 		infoTooltip: __(
-			'Top device driving the most purchases',
+			'Are people buying more on mobile or desktop?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [ ENUM_CONVERSION_EVENTS.PURCHASE ],
@@ -581,7 +592,7 @@ const KEY_METRICS_WIDGETS = {
 	[ KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS ]: {
 		title: __( 'Top pages driving leads', 'google-site-kit' ),
 		description: __(
-			'Pages on which forms are most frequently submitted',
+			'Which pages get people to take action?',
 			'google-site-kit'
 		),
 		requiredConversionEventName: [
@@ -718,6 +729,167 @@ const KEY_METRICS_WIDGETS = {
 		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
 		displayInList: shouldDisplayWidgetWithConversionEvent,
 		metadata: { group: KEY_METRICS_GROUP_SELLING_PRODUCTS.SLUG },
+	},
+	[ KM_ANALYTICS_TOTAL_FORM_COMPLETIONS ]: {
+		title: __( 'Total form completions', 'google-site-kit' ),
+		description: __(
+			'Total visitors who successfully completed a form',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Total visitors who successfully completed a form',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_FORM_COMPLETION_RATE ]: {
+		title: __( 'Form completion rate', 'google-site-kit' ),
+		description: __(
+			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'The percentage of total visitors who successfully completed a key action (like making a purchase or filling out a form)',
+			'google-site-kit'
+		),
+		documentationLinkSlug: 'site-goals-lead-generation-key-action',
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE ]: {
+		title: __( 'Form completion engagement rate', 'google-site-kit' ),
+		description: __(
+			'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'The percentage of visitors who engaged with your content by staying on a page for a period of time, viewing multiple pages, or completing a key action',
+			'google-site-kit'
+		),
+		documentationLinkSlug: 'site-goals-engagement-rate',
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE ]: {
+		title: __(
+			'Top traffic channels by form completion rate',
+			'google-site-kit'
+		),
+		description: __(
+			'Which channels are most efficient at capturing leads?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which channels are most efficient at capturing leads?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_LEADS_BY_VISITOR_TYPE ]: {
+		title: __( 'Leads by visitor type', 'google-site-kit' ),
+		description: __(
+			'Which types of visitors are most likely to reach out?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which types of visitors are most likely to reach out?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_LEADS_BY_COUNTRIES ]: {
+		title: __( 'Leads by countries', 'google-site-kit' ),
+		description: __(
+			'Which countries are people reaching out from?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Which countries are people reaching out from?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_LEADS_BY_DEVICE_TYPE ]: {
+		title: __( 'Leads by device type', 'google-site-kit' ),
+		description: __(
+			'What devices do people use when they take action?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'What devices do people use when they take action?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		displayInSelectionPanel: shouldDisplayWidgetWithConversionEvent,
+		displayInList: shouldDisplayWidgetWithConversionEvent,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
+	},
+	[ KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS ]: {
+		title: __( 'Top authors driving leads', 'google-site-kit' ),
+		description: __(
+			'Whose content is best at converting readers?',
+			'google-site-kit'
+		),
+		infoTooltip: __(
+			'Whose content is best at converting readers?',
+			'google-site-kit'
+		),
+		requiredConversionEventName: [
+			ENUM_CONVERSION_EVENTS.SUBMIT_LEAD_FORM,
+			ENUM_CONVERSION_EVENTS.CONTACT,
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		],
+		requiredCustomDimensions: [ 'googlesitekit_post_author' ],
+		displayInSelectionPanel:
+			shouldDisplayWidgetWithConversionEventAndCustomDimensions,
+		displayInWidgetArea: shouldDisplayWidgetWithCustomDimensions,
+		displayInList:
+			shouldDisplayWidgetWithConversionEventAndCustomDimensions,
+		metadata: { group: KEY_METRICS_GROUP_GENERATING_LEADS.SLUG },
 	},
 };
 

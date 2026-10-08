@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { useInViewSelect } from 'googlesitekit-data';
 import BadgeWithTooltip from '@/js/components/BadgeWithTooltip';
 import ChangeBadge from '@/js/components/ChangeBadge';
 import InfoTooltip from '@/js/components/InfoTooltip';
@@ -78,48 +78,19 @@ export default function AudienceTile( {
 	const viewContext = useViewContext();
 	const isViewOnly = useViewOnly();
 
-	const isPropertyPartialData = useInViewSelect( ( select ) => {
-		const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
-
-		return (
-			propertyID &&
-			select( MODULES_ANALYTICS_4 ).isPropertyPartialData( propertyID )
-		);
-	} );
-	const isSiteKitAudience = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isSiteKitAudience( audienceResourceName )
-	);
 	const isAudiencePartialData = useInViewSelect(
-		( select ) => {
-			if ( isSiteKitAudience || isPropertyPartialData === undefined ) {
-				return false;
-			}
-
-			return (
-				! isPropertyPartialData &&
-				audienceResourceName &&
-				select( MODULES_ANALYTICS_4 ).isAudiencePartialData(
-					audienceResourceName
-				)
-			);
-		},
-		[ isPropertyPartialData, isSiteKitAudience, audienceResourceName ]
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).isAudienceTilePartialData(
+				audienceResourceName
+			),
+		[ audienceResourceName ]
 	);
 	const isTopContentPartialData = useInViewSelect(
-		( select ) => {
-			if ( isPropertyPartialData === undefined ) {
-				return false;
-			}
-
-			return (
-				! isPropertyPartialData &&
-				! isAudiencePartialData &&
-				select( MODULES_ANALYTICS_4 ).isCustomDimensionPartialData(
-					'googlesitekit_post_type'
-				)
-			);
-		},
-		[ isAudiencePartialData ]
+		( select ) =>
+			select( MODULES_ANALYTICS_4 ).isAudienceTileTopContentPartialData(
+				audienceResourceName
+			),
+		[ audienceResourceName ]
 	);
 
 	const postTypeDimensionExists = useInViewSelect(

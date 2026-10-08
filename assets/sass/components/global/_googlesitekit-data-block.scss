@@ -17,9 +17,6 @@
  */
 
 .googlesitekit-data-block {
-	--color-up: #{$c-utility-success};
-	--color-down: #{$c-utility-error};
-
 	position: relative;
 	text-align: left;
 
@@ -151,12 +148,7 @@
 		width: 9px;
 	}
 
-	.googlesitekit-data-block__suffix {
-		margin-left: 4px;
-	}
-
-	.googlesitekit-data-block__value,
-	.googlesitekit-data-block__suffix {
+	.googlesitekit-data-block__value {
 		color: $c-surfaces-on-surface-variant;
 		display: inline-block;
 		font-size: $fs-body-sm;
@@ -170,16 +162,6 @@
 			font-weight: $fw-normal;
 			letter-spacing: $ls-m;
 		}
-	}
-
-	.googlesitekit-data-block__value--up,
-	.googlesitekit-data-block__suffix--up {
-		color: var(--color-up);
-	}
-
-	.googlesitekit-data-block__value--down,
-	.googlesitekit-data-block__suffix--down {
-		color: var(--color-down);
 	}
 
 	.googlesitekit-data-block__source {

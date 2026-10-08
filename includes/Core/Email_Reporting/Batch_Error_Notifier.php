@@ -169,12 +169,20 @@ class Batch_Error_Notifier {
 	 * error-email key.
 	 *
 	 * @since 1.175.0
+	 * @since n.e.x.t Returns the generic key without a map lookup when there is no category.
 	 *
 	 * @param string|null $category_id Error category ID.
 	 * @param string|null $module_slug Module slug (e.g. analytics-4, search-console).
 	 * @return string Content_Map key.
 	 */
 	private function resolve_content_key( $category_id, $module_slug ) {
+		// PHP 8.5 deprecates `null` as an array offset, so an error without a category
+		// (no error details, or details that are malformed or lack one) must not reach
+		// the lookup below.
+		if ( null === $category_id ) {
+			return 'error-email';
+		}
+
 		$category_suffix = self::CATEGORY_CONTENT_MAP[ $category_id ] ?? null;
 
 		if ( $category_suffix && ! empty( $module_slug ) ) {

@@ -30,9 +30,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import ThumbsSurveyTrigger, {
-	VoteDirection,
-} from '@/js/components/surveys/ThumbsSurveyTrigger';
+import { VoteDirection } from '@/js/components/surveys/constants';
+import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
 import useViewContext from '@/js/hooks/useViewContext';
 import { SITE_GOALS_PANEL_VOTE_IDS_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';

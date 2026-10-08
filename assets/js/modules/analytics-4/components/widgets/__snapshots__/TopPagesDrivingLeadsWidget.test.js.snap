@@ -23,7 +23,7 @@ exports[`TopPagesDrivingLeadsWidget should render correctly with the expected me
             class="googlesitekit-info-tooltip"
             role="tooltip"
             tabindex="0"
-            title="Pages on which forms are most frequently submitted"
+            title="Which pages get people to take action?"
           >
             <svg />
           </span>
@@ -149,7 +149,7 @@ exports[`TopPagesDrivingLeadsWidget should render the generic error variant when
           class="googlesitekit-info-tooltip"
           role="tooltip"
           tabindex="0"
-          title="Pages on which forms are most frequently submitted"
+          title="Which pages get people to take action?"
         >
           <svg />
         </span>
@@ -224,7 +224,7 @@ exports[`TopPagesDrivingLeadsWidget should render the insufficient permissions e
           class="googlesitekit-info-tooltip"
           role="tooltip"
           tabindex="0"
-          title="Pages on which forms are most frequently submitted"
+          title="Which pages get people to take action?"
         >
           <svg />
         </span>
@@ -295,7 +295,7 @@ exports[`TopPagesDrivingLeadsWidget should render the loading state while resolv
               class="googlesitekit-info-tooltip"
               role="tooltip"
               tabindex="0"
-              title="Pages on which forms are most frequently submitted"
+              title="Which pages get people to take action?"
             >
               <svg />
             </span>

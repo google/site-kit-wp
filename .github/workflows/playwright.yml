@@ -95,7 +95,7 @@ jobs:
 
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
+          php-version: '8.5'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -224,12 +224,15 @@ jobs:
 
       - name: Save report URL
         if: always() && env.CAN_UPLOAD_PLAYWRIGHT_REPORTS == 'true'
+        env:
+          OUTCOME: ${{ steps.run-tests.outcome }}
+          PUBLIC_URL: ${{ steps.upload-to-gcs.outputs.public-url }}
         run: |
           mkdir -p /tmp/artifact-url
-          if [ "${{ steps.run-tests.outcome }}" == "success" ]; then
-            echo "- ✅ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+          if [ "${OUTCOME}" == "success" ]; then
+            echo "- ✅ [WordPress ${WP_VERSION}](${PUBLIC_URL}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           else
-            echo "- ❌ [WordPress ${{ matrix.wp_version }}](${{ steps.upload-to-gcs.outputs.public-url }}/playwright-html/index.html)" > /tmp/artifact-url/url.md
+            echo "- ❌ [WordPress ${WP_VERSION}](${PUBLIC_URL}/playwright-html/index.html)" > /tmp/artifact-url/url.md
           fi
 
       - name: Upload report URL

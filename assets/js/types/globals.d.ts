@@ -23,6 +23,10 @@ import { GATrackingEventArgs } from './GATrackingEventArgs';
 /* eslint-disable no-var */
 
 declare global {
+	var _googlesitekitFeaturesBadgeData: import('@/js/util/features-badge').FeatureCountFingerprint & {
+		resetSession: boolean;
+	};
+
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];
@@ -92,6 +96,7 @@ declare global {
 		assetsURL: string;
 		wpPrivacyURL?: string;
 		enabledFeatures?: string[];
+		wooCommerceActive?: boolean;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

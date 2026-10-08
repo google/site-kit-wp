@@ -83,7 +83,7 @@ describe( 'PDFChangeBadge', () => {
 	it( 'scales the badge radius and padding', () => {
 		const badgeJSON = renderBadge( { change: '+5.1%' } );
 
-		expect( badgeJSON ).toContain( `"borderRadius":${ 100 * PDF_SCALE }` );
+		expect( badgeJSON ).toContain( `"borderRadius":${ 4 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain( `"paddingVertical":${ 4 * PDF_SCALE }` );
 		expect( badgeJSON ).toContain(
 			`"paddingHorizontal":${ 8 * PDF_SCALE }`

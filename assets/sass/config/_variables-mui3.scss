@@ -169,6 +169,16 @@ $c-utility-on-warning: $c-yellow-y-0;
 $c-utility-warning: $c-yellow-y-500;
 $c-utility-on-warning-container: $c-yellow-y-700;
 $c-utility-warning-container: $c-yellow-y-50;
+$c-badge-announcement-background: $c-violet-v-50;
+$c-badge-announcement-text: $c-violet-v-500;
+$c-badge-recommendation-background: $c-blue-b-50;
+$c-badge-recommendation-text: $c-blue-b-500;
+$c-badge-cost-background: $c-site-kit-sk-50;
+$c-badge-cost-text: $c-site-kit-sk-500;
+$c-badge-experimental-background: $c-pink-p-50;
+$c-badge-experimental-text: $c-pink-p-500;
+$c-badge-warning-background: $c-yellow-y-50;
+$c-badge-warning-text: $c-yellow-y-700;
 $c-utility-divider: $c-neutral-n-50;
 $c-utility-divider-1: $c-neutral-n-100;
 $c-utility-outline: $c-neutral-n-200;
@@ -201,6 +211,8 @@ $c-interactive-callout-new-focus: $c-violet-v-200;
 
 // Custom color not from palette.
 $c-content-primary-hover: #2e5f41;
+$c-grey-g-700: #5f6368;
+$c-grey-g-800: #3c4043;
 $c-grey-g-900: #202124;
 
 // Font sizes
@@ -244,6 +256,7 @@ $lh-link-md: 1.43;
 $lh-link-sm: 1.33;
 
 // Border radiuses
+$br-xxs: 4px;
 $br-xs: 8px;
 $br-sm: 16px;
 $br-md: 24px;

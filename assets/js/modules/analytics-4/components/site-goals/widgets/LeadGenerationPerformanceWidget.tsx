@@ -43,6 +43,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs, {
 	BreakdownTab,
@@ -52,7 +54,7 @@ import GatheringBreakdownDataBadge from '@/js/modules/analytics-4/components/sit
 import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/components/KeyActionTiles';
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_LEAD_PROVIDER_LABELS,
@@ -69,6 +71,7 @@ import {
 	resolveGoalDriverSelectionState,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers';
 import { GoalDriverID } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useShouldShowSiteGoalsRemovalNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowSiteGoalsRemovalNotice';
 import { useSiteGoalsBreakdown } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsBreakdown';
 import { useSiteGoalsWidgetViewAction } from '@/js/modules/analytics-4/components/site-goals/hooks/useSiteGoalsWidgetViewAction';
 import BreakdownNoticeArea from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNoticeArea';
@@ -79,7 +82,6 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent, untrailingslashit } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -347,6 +349,11 @@ const LeadGenerationPerformanceWidget = forwardRef<
 		);
 
 		const hasLeadEvents = !! detectedLeadEvents?.length;
+
+		const shouldShowRemovalNotice = useShouldShowSiteGoalsRemovalNotice(
+			GOAL_TYPES.LEAD
+		);
+
 		const drivers = resolveGoalDriverIDs(
 			selectedGoalDriverIDs || resolvedSelections[ GOAL_TYPES.LEAD ],
 			GOAL_TYPES.LEAD
@@ -376,7 +383,6 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			activeTabID,
 			setSelectedTab,
 			isOtherSourcesTab,
-			isBreakdownValueTab,
 			hasOtherSources,
 			otherSourcesCount,
 			otherSourcesPreviousCount,
@@ -538,6 +544,30 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			return <WidgetNullComponent />;
 		}
 
+		if ( shouldShowRemovalNotice === true ) {
+			return <SiteGoalsRemovalNotice goalType={ GOAL_TYPES.LEAD } />;
+		}
+
+		if ( shouldShowRemovalNotice === undefined ) {
+			return (
+				<WidgetComponent
+					onToggleCollapsed={ handleToggleCollapsed }
+					Header={ WidgetHeaderTitle }
+					headerContents={
+						<span>
+							{ __(
+								'Lead generation performance',
+								'google-site-kit'
+							) }
+						</span>
+					}
+					collapsible
+				>
+					<PreviewBlock width="100%" height="130px" />
+				</WidgetComponent>
+			);
+		}
+
 		if ( error ) {
 			return (
 				<WidgetComponent>
@@ -595,12 +625,10 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							) }
 						/>
 
-						{ isBreakdownValueTab && (
-							<EventProviderDeactivatedNotice
-								goalType={ GOAL_TYPES.LEAD }
-								providerSlug={ formProviders?.[ activeTabID ] }
-							/>
-						) }
+						<EventProviderDeactivatedNotice
+							goalType={ GOAL_TYPES.LEAD }
+							providerSlug={ formProviders?.[ activeTabID ] }
+						/>
 					</Fragment>
 				) }
 
@@ -620,7 +648,23 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					>
 						<KeyActionTiles
 							isOtherSourcesTab={ isOtherSourcesTab }
-							supportURL={ keyActionDocumentationURL }
+							rateInfoTooltip={ createInterpolateElement(
+								__(
+									'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
+									'google-site-kit'
+								),
+								{
+									a: (
+										// Content is added via createInterpolateElement.
+										// eslint-disable-next-line jsx-a11y/anchor-has-content
+										<a
+											href={ keyActionDocumentationURL }
+											target="_blank"
+											rel="noreferrer noopener"
+										/>
+									),
+								}
+							) }
 							rateTitle={ __(
 								'Form completion rate',
 								'google-site-kit'
@@ -703,9 +747,12 @@ const LeadGenerationPerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<WidgetFeedbackPrompt
+				<FeedbackPrompt
 					voteID={ SITE_GOALS_VOTE_ID_WIDGET_LEAD_GENERATION }
-					goalType={ GOAL_TYPES.LEAD }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_site-goals-widget-survey`,
+						label: GOAL_TYPES.LEAD,
+					} }
 				/>
 			</WidgetComponent>
 		);

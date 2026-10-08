@@ -50,7 +50,15 @@
 		"jsdoc/require-returns": "error",
 		"jsdoc/require-yields": "off",
 		"jsdoc/no-undefined-types": "error",
-		"jsdoc/tag-lines": "off",
+		"jsdoc/newline-after-description": "off",
+		"jsdoc/tag-lines": [
+			"error",
+			"any",
+			{
+				"startLines": 1,
+				"endLines": null
+			}
+		],
 		"jsdoc/valid-types": "error",
 		"lodash/import-scope": [
 			"error",
@@ -168,6 +176,7 @@
 			"googlesitekit-widgets",
 			"googlesitekit-components",
 			"googlesitekit-notifications",
+			"googlesitekit-intents",
 			"googlesitekit-feature-discovery",
 			"@wordpress/i18n__non-shim",
 			"@wordpress/api-fetch__non-shim"

@@ -38,6 +38,8 @@ import { Button, SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import SupportLink from '@/js/components/SupportLink';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	MODULES_READER_REVENUE_MANAGER,
@@ -94,7 +96,10 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 							'google-site-kit'
 						) }
 					</Typography>
-					<p className="googlesitekit-setup-module__description">
+					<P
+						className="googlesitekit-setup-module__description"
+						size={ SIZE_MEDIUM }
+					>
 						{ createInterpolateElement(
 							__(
 								'Once you have created your publication, it is submitted for review. <a>Learn more</a>',
@@ -113,7 +118,7 @@ export default function PublicationCreate( { onCompleteSetup } ) {
 								),
 							}
 						) }
-					</p>
+					</P>
 					<div className="googlesitekit-setup-module__action">
 						<Button
 							href={ createPublicationURL }

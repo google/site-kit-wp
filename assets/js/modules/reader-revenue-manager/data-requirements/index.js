@@ -25,7 +25,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
 /**
  * Returns a function that checks if the module settings are available.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the module settings are available or not.
  */
@@ -39,7 +39,7 @@ export function requireSettingsAvailable() {
 /**
  * Returns a function that checks if the publication onboarding state matches the given state.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string|undefined} state Publication onboarding state to match.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the publication onboarding state matches or not.
@@ -60,7 +60,7 @@ export function requirePublicationOnboardingState( state ) {
 /**
  * Returns a function that checks if the payment option matches the given option.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} option Payment option to match.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the payment option matches or not.
@@ -79,7 +79,7 @@ export function requirePaymentOption( option ) {
 /**
  * Returns a function that checks if the publication has at least one product ID.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the publication has at least one product ID or not.
  */
@@ -98,7 +98,7 @@ export function requireProductIDs() {
 /**
  * Returns a function that checks if the selected product ID matches the given ID.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} id Product ID to match.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the selected product ID matches or not.
@@ -114,7 +114,7 @@ export function requireProductID( id ) {
 /**
  * Returns a function that checks if the content policy state is one of the given states.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {Array<string>} states Content policy states to match against.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the content policy state is one of the given states or not.
@@ -132,7 +132,7 @@ export function requireContentPolicyState( states ) {
 /**
  * Returns a function that checks if the given express setup CTA was actioned.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} ctaType Express setup CTA type slug.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA was actioned or not.
@@ -151,7 +151,7 @@ export function requireExpressSetupCTAActioned( ctaType ) {
 /**
  * Returns a function that checks if the given express setup CTA is already configured.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} ctaType Express setup CTA type slug.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA is configured or not.

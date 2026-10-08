@@ -83,6 +83,11 @@
 		margin: 0;
 	}
 
+	.googlesitekit-feature-card__dismiss-menu {
+		display: flex;
+		flex-shrink: 0;
+	}
+
 	.googlesitekit-feature-card__dismiss {
 		color: $c-surfaces-on-background-variant;
 		padding: 2px;
@@ -109,19 +114,6 @@
 			align-items: center;
 			display: flex;
 			justify-content: space-between;
-		}
-	}
-
-	.googlesitekit-feature-card__service {
-		align-items: center;
-		display: flex;
-		gap: var(--googlesitekit-feature-card-gap-m);
-
-		svg {
-			background: $c-neutral-n-10;
-			border-radius: 10px;
-			display: block;
-			padding: 6px;
 		}
 	}
 
