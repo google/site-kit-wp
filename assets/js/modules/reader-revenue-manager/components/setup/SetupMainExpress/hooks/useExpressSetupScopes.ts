@@ -39,7 +39,7 @@ const EMPTY_SCOPES: string[] = [];
 /**
  * Requests missing permissions on entry to an express setup flow.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string[]} [additionalScopes] Scopes required by the specific flow.
  * @return {void}

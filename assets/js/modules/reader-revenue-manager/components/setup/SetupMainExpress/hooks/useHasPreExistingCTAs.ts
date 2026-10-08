@@ -29,7 +29,7 @@ import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-mana
  * The CTA created during setup is itself part of the configured CTAs, so the
  * publication had pre-existing CTAs when more than one is configured.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {(boolean|undefined)} `true` when there are pre-existing CTAs, `false` when
  *                               there are none, `undefined` while the CTAs are loading.

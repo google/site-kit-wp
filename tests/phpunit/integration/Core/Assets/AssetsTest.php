@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
+use Google\Site_Kit\Tests\FakeInstalledPlugins;
 use Google\Site_Kit\Tests\TestCase;
 
 /**
@@ -28,6 +29,7 @@ use Google\Site_Kit\Tests\TestCase;
 class AssetsTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
+	use FakeInstalledPlugins;
 
 	/**
 	 * @var Assets
@@ -175,8 +177,7 @@ class AssetsTest extends TestCase {
 		set_current_screen( 'dashboard' );
 
 		// Use reflection to access the private `has_registered_assets()` method.
-		$reflection = new \ReflectionMethod( $this->assets, 'has_registered_assets' );
-		$reflection->setAccessible( true );
+		$reflection = $this->get_accessible_method( $this->assets, 'has_registered_assets' );
 
 		// Initially, `has_registered_assets()` should return false.
 		$this->assertFalse( $reflection->invoke( $this->assets ), '`has_registered_assets()` should return false before registration.' );
@@ -437,5 +438,42 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
+	}
+
+	public function test_base_data__woocommerce_not_installed() {
+		$this->set_installed_plugins( array() );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is not installed.' );
+		$this->assertFalse( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be false when WooCommerce is not installed.' );
+	}
+
+	public function test_base_data__woocommerce_installed_but_not_active() {
+		$this->set_installed_plugins(
+			array( 'woocommerce/woocommerce.php' => array( 'Name' => 'WooCommerce' ) )
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['wooCommerceActive'], 'wooCommerceActive should be false when WooCommerce is installed but not active.' );
+		$this->assertTrue( $data['wooCommerceInstalled'], 'wooCommerceInstalled should be true when WooCommerce is installed but not active.' );
+	}
+
+	/**
+	 * `class_alias()` cannot be undone within a process, so this must run in isolation
+	 * to avoid making `WooCommerce` exist for every other test in the suite.
+	 *
+	 * @runInSeparateProcess
+	 */
+	public function test_base_data__woocommerce_active() {
+		// Fake the existence of the `WooCommerce` class.
+		if ( ! class_exists( 'WooCommerce' ) ) {
+			class_alias( __CLASS__, 'WooCommerce' );
+		}
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['wooCommerceActive'], 'wooCommerceActive should be true when the WooCommerce class exists.' );
 	}
 }

@@ -37,6 +37,7 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
 import EffortIndicator from '@/js/components/feature-discovery/EffortIndicator';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
+import FeatureServiceIdentity from '@/js/components/feature-discovery/FeatureServiceIdentity';
 import Link from '@/js/components/Link';
 import FeedbackMenu, {
 	FeedbackMenuOption,
@@ -45,7 +46,6 @@ import Typography from '@/js/components/Typography';
 import {
 	SIZE_LARGE,
 	SIZE_MEDIUM,
-	TYPE_BODY,
 	TYPE_TITLE,
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
@@ -57,10 +57,10 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureRelevancyTriggerID } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import SiteKitIcon from '@/svg/graphics/logo-g.svg';
 import CloseIcon from '@/svg/icons/close.svg';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 
 export interface FeatureCardProps {
 	slug: string;
@@ -84,6 +84,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		'feature-feedback-menu'
 	) as string;
 	const { dismissFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
+	const { setValue } = useDispatch( CORE_UI );
 	const { triggerSurvey } = useDispatch( CORE_USER );
 
 	const feedbackOptions = useMemo< FeedbackMenuOption[] >(
@@ -160,26 +161,13 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 		[ slug ]
 	);
 
-	const module = useSelect(
-		( select: Select ) =>
-			feature?.moduleSlug
-				? select( CORE_MODULES ).getModule( feature.moduleSlug )
-				: undefined,
-		[ feature ]
-	);
-
-	const ModuleIcon = module?.Icon || SiteKitIcon;
-
-	const moduleName =
-		module?.name || __( 'Site Kit feature', 'google-site-kit' );
-
 	const onClickDismiss = useCallback( () => {
 		setIsFeedbackMenuOpen( ( isOpen ) => ! isOpen );
 	}, [] );
 
 	const onClickReadMore = useCallback( () => {
-		// TODO: #13330 -- Implement feature detail panel shell.
-	}, [] );
+		setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, slug );
+	}, [ setValue, slug ] );
 
 	useEffect( () => {
 		if ( isFeatureUnread ) {
@@ -286,14 +274,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 			</div>
 
 			<footer className="googlesitekit-feature-card__footer">
-				<div className="googlesitekit-feature-card__service">
-					<ModuleIcon aria-hidden="true" height={ 36 } width={ 36 } />
-
-					{ /* @ts-expect-error - The `Typography` component is not typed yet. */ }
-					<Typography size={ SIZE_LARGE } type={ TYPE_BODY }>
-						{ moduleName }
-					</Typography>
-				</div>
+				<FeatureServiceIdentity feature={ feature } />
 
 				<div className="googlesitekit-feature-card__actions">
 					<FeatureCTA slug={ slug } isTertiary />

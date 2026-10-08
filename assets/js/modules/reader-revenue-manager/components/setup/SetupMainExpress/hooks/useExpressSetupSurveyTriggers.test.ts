@@ -69,7 +69,7 @@ describe( 'useExpressSetupSurveyTriggers', () => {
 	/**
 	 * Counts the survey trigger requests made for the given trigger ID.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @private
 	 *
 	 * @param {string} triggerID Survey trigger ID.

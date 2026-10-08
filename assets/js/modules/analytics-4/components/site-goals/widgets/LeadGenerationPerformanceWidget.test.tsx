@@ -28,6 +28,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -59,6 +60,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -68,12 +70,16 @@ import {
 	provideUserAuthentication,
 	render,
 	waitFor,
+	within,
 } from '@tests/js/test-utils';
 import { provideUserCapabilities } from '@tests/js/utils';
 import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey-endpoints';
 import LeadGenerationPerformanceWidget from './LeadGenerationPerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'LeadGenerationPerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -944,6 +950,70 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'shows the Key action rate tile\'s tooltip text and a working "Learn more" link', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setDetectedEvents( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates( {
+			compare: true,
+		} );
+
+		const leadEventsReport = buildLeadEventsReportOptions( dates, [
+			ENUM_CONVERSION_EVENTS.GENERATE_LEAD,
+		] );
+		const engagementReport = buildEngagementReportOptions( dates );
+		seedGoalDriverReports( [ ENUM_CONVERSION_EVENTS.GENERATE_LEAD ] );
+
+		provideAnalytics4MockReport( registry, leadEventsReport );
+		provideAnalytics4MockReport( registry, engagementReport );
+
+		const { container, waitForRegistry } = render(
+			<LeadGenerationPerformanceWidget { ...widgetProps } />,
+			{ registry }
+		);
+		await waitForRegistry();
+
+		const keyActionRow = container.querySelector(
+			'.googlesitekit-site-goals-primary-action'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		const infoTooltip = keyActionRow.querySelector(
+			'.googlesitekit-info-tooltip'
+		);
+		expect( infoTooltip ).toBeInTheDocument();
+
+		fireEvent.mouseOver( infoTooltip as Element );
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		const tooltipContent = document.querySelector(
+			'.googlesitekit-info-tooltip__content'
+			// eslint-disable-next-line sitekit/acronym-case
+		) as HTMLElement;
+
+		expect(
+			within( tooltipContent ).getByText( 'like submitting a form', {
+				exact: false,
+			} )
+		).toBeInTheDocument();
+
+		const learnMoreLink = within( tooltipContent ).getByRole( 'link', {
+			name: /Learn more/,
+		} );
+
+		expect( learnMoreLink.getAttribute( 'href' ) ).toEqual(
+			expect.stringContaining(
+				'doc=site-goals-lead-generation-key-action'
+			)
+		);
+	} );
+
 	it( 'shows 90 days in the chart tile title when the date range is the last 90 days', async () => {
 		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 		registry
@@ -1395,7 +1465,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1417,12 +1487,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_up',
+			'lead'
 		);
 
 		await waitFor( () =>
@@ -1436,7 +1515,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		);
 	} );
 
-	it( 'dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1458,12 +1537,21 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_down',
+			'lead'
 		);
 
 		await waitFor( () =>

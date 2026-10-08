@@ -283,8 +283,9 @@ function getLineChartOptions( {
 			0: {
 				color,
 				lineWidth: 4 * LINE_CHART_OPTION_SCALE,
-				// Index 1 renders the y-axis on the right, matching the All Traffic
-				// chart, so every report chart keeps the axis on the same side.
+				// Index 1 renders the y-axis on the right, matching the
+				// Traffic Overview chart, so every report chart keeps the
+				// axis on the same side.
 				targetAxisIndex: 1,
 			},
 			1: {

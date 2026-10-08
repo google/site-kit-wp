@@ -65,7 +65,7 @@ describe( 'TrafficChart', () => {
 	 * The time is midday, because a time zone can move midnight to the day
 	 * before or the day after.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} date The day the property was created, as `YYYY-MM-DD`.
 	 * @return {void}
@@ -100,7 +100,7 @@ describe( 'TrafficChart', () => {
 	/**
 	 * Waits for the chart to render, then reads the props it received.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {Object} The props the chart last received.
 	 */

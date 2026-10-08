@@ -25,31 +25,35 @@ import { ComponentType } from 'react';
  * Internal dependencies
  */
 import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
+import { ErrorObject } from '@/js/util/errors';
 
 /**
  * Props passed to the component registered for an intent.
  *
- * @since n.e.x.t
+ * @since 1.189.0
+ * @since n.e.x.t Added the `error` prop.
  */
 export interface IntentComponentProps {
 	/** Slug the intent is registered under, e.g. `ads-conversion-tracking`. */
 	slug: string;
 	/** Code the Site Kit Service created for the intent. */
 	intentCode: string;
-	/** Payload the Site Kit Service returns for the intent, with different fields for each type of intent. */
-	payload: Intent[ 'payload' ];
+	/** Payload the Site Kit Service returns for the intent, with different fields for each type of intent. Not set when the intent can't be loaded. */
+	payload?: Intent[ 'payload' ];
+	/** Error from loading the intent, set in place of `payload`. The component shows the error itself, since what the user should do next differs for each type of intent. */
+	error?: ErrorObject;
 }
 
 /**
  * Intent registration type.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export interface IntentRegistration {
 	/**
-	 * Component rendered after the Site Kit Service returns the intent.
+	 * Component rendered after the Site Kit Service returns the intent, or with the error when the intent can't be loaded.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	Component: ComponentType< IntentComponentProps >;
 }
@@ -57,13 +61,13 @@ export interface IntentRegistration {
 /**
  * Intents API instance type.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export interface IntentsAPI {
 	/**
 	 * Registers an intent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string}             slug     Intent's slug.
 	 * @param {IntentRegistration} settings Intent's settings.
@@ -74,7 +78,7 @@ export interface IntentsAPI {
 	/**
 	 * Gets the registration for an intent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} slug Intent's slug.
 	 * @return {IntentRegistration|undefined} The registration, or `undefined` when the slug is not registered.
@@ -85,7 +89,7 @@ export interface IntentsAPI {
 /**
  * Creates the intents registry.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {IntentsAPI} Intents registry.
  */

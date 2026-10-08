@@ -83,24 +83,7 @@ describe( 'ChangeMetricsLink', () => {
 		expect( button ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render a button to change metrics', () => {
-		provideKeyMetrics( registry, {
-			widgetSlugs: [
-				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
-				KM_ANALYTICS_MOST_ENGAGING_PAGES,
-			],
-		} );
-
-		const { queryByRole } = render( <ChangeMetricsLink />, {
-			registry,
-		} );
-
-		const button = queryByRole( 'button' );
-		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Change metrics' );
-	} );
-
-	it( 'should render "Select metrics" when the `setupFlowRefresh` feature flag is enabled', () => {
+	it( 'should render "Select metrics"', () => {
 		provideKeyMetrics( registry, {
 			widgetSlugs: [
 				KM_ANALYTICS_LEAST_ENGAGING_PAGES,
@@ -110,7 +93,6 @@ describe( 'ChangeMetricsLink', () => {
 
 		const { getByRole } = render( <ChangeMetricsLink />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( getByRole( 'button' ) ).toHaveTextContent( 'Select metrics' );
@@ -130,7 +112,7 @@ describe( 'ChangeMetricsLink', () => {
 
 		const { getByRole } = render( <ChangeMetricsLink />, { registry } );
 
-		const button = getByRole( 'button', { name: /change metrics/i } );
+		const button = getByRole( 'button', { name: /select metrics/i } );
 
 		fireEvent.click( button );
 

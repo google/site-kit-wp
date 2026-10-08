@@ -86,9 +86,6 @@
 
 			p {
 				color: $c-surfaces-on-background-variant;
-				font-size: $fs-body-sm;
-				letter-spacing: $ls-xs;
-				line-height: $lh-body-sm;
 				margin: 0;
 			}
 
@@ -121,10 +118,6 @@
 
 		.googlesitekit-setup__intro-title {
 			color: $c-primary;
-			font-family: $f-secondary;
-			font-size: $fs-title-sm;
-			font-weight: $fw-bold;
-			line-height: $lh-title-sm;
 			margin: 0 0 17px;
 		}
 	}

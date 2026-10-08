@@ -35,7 +35,7 @@ export const FEATURES_MENU_BUTTON_CLASS = 'googlesitekit-features-menu__button';
  * expanded. The main dashboard also shows the PDF download button, so it needs
  * a wider threshold than the entity dashboard.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export const MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH = 1060;
 
@@ -43,6 +43,6 @@ export const MAIN_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH = 1060;
  * Window width at or below which the entity dashboard header feature actions
  * collapse into the features menu when the "Add features" button is shown.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  */
 export const ENTITY_DASHBOARD_FEATURES_MENU_COLLAPSE_WIDTH = 1000;

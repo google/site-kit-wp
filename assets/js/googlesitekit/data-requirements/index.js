@@ -120,7 +120,7 @@ export function requireModuleConnected( slug ) {
  * only satisfied when the module is known to be disconnected, so an
  * unresolved `undefined` value does not pass.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is not connected or not.
@@ -178,7 +178,7 @@ export function requireItemDismissed( item ) {
 /**
  * Returns a function that checks if the given prompt is dismissed.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} prompt Dismissible prompt ID.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given prompt is dismissed or not.
@@ -188,23 +188,6 @@ export function requirePromptDismissed( prompt ) {
 		await resolveSelect( CORE_USER ).getDismissedPrompts();
 
 		return true === select( CORE_USER ).isPromptDismissed( prompt );
-	};
-}
-
-/**
- * Returns a function that checks if the audience segmentation widget is hidden.
- *
- * @since 1.166.0
- *
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the widget is hidden or not.
- */
-export function requireAudienceSegmentationWidgetHidden() {
-	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-		return (
-			true === select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-		);
 	};
 }
 

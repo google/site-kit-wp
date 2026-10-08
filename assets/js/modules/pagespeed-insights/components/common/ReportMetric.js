@@ -31,6 +31,7 @@ import { __, _x } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import InfoTooltip from '@/js/components/InfoTooltip';
 import {
 	CATEGORY_AVERAGE,
@@ -72,6 +73,7 @@ export default function ReportMetric( {
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
 							className="googlesitekit-pagespeed-report-metric__badge"
+							variant={ BADGE_VARIANTS.EXPERIMENTAL }
 						/>
 					) }
 					{ isUnavailable && (

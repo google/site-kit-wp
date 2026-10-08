@@ -38,7 +38,7 @@ import useStep from './useStep';
  * Fires the started survey when the express setup is opened for a recognised
  * CTA, and the completed survey once the setup complete step is reached.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {void}
  */

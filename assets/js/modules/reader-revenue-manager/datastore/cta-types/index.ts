@@ -95,7 +95,7 @@ export function isCTAType( type: unknown ): type is CallToActionType {
 /**
  * Checks whether a value is a supported CTA state.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param  state Value to check.
  * @return {boolean} Whether the value is a supported CTA state.

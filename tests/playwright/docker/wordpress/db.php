@@ -20,7 +20,6 @@ $_e2e_error_level_map = array(
 	E_WARNING         => 'E_WARNING',
 	E_NOTICE          => 'E_NOTICE',
 	E_DEPRECATED      => 'E_DEPRECATED',
-	E_STRICT          => 'E_STRICT',
 	E_USER_ERROR      => 'E_USER_ERROR',
 	E_USER_WARNING    => 'E_USER_WARNING',
 	E_USER_NOTICE     => 'E_USER_NOTICE',

@@ -22,6 +22,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import getKeyActionChartReportOptions from '@/js/modules/analytics-4/components/site-goals/components/getKeyActionChartReportOptions';
@@ -52,6 +53,7 @@ import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
@@ -690,6 +692,13 @@ function seedTabbedBreakdown(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getReport', [ discoveryOptions ] );
+
+	// The breakdown also needs plugin conversion tracking to be on for a user
+	// who can manage options.
+	provideUserCapabilities( registry );
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
 
 	// The breakdown custom dimensions exist and are done gathering, so neither
 	// the "enable breakdown" notice nor the gathering badge renders.
