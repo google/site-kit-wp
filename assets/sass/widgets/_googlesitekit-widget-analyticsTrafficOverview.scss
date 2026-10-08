@@ -62,9 +62,6 @@
 			font-weight: $fw-normal;
 			letter-spacing: $ls-s;
 			line-height: 20px;
-
-			// Material draws the label of a tab that is not selected at 60%
-			// opacity, but the design draws it at 100%.
 			opacity: 1;
 		}
 
@@ -329,8 +326,6 @@
 		display: flex;
 		gap: 4px;
 
-		// The design has 4px after "Sources:" and 8px between the two links,
-		// so the second link adds 4px to the `gap`.
 		.googlesitekit-cta-link + .googlesitekit-cta-link {
 			margin-left: 4px;
 		}

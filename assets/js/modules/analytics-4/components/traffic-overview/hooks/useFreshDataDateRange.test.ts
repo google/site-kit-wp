@@ -98,7 +98,7 @@ describe( 'useFreshDataDateRange', () => {
 		} );
 	} );
 
-	it( 'should return a date range that starts one day before the reference date when the site uses a UTC offset and its time zone is an empty string', async () => {
+	it( 'should return a date range that starts two days before the reference date when the site uses a UTC offset and its time zone is an empty string', async () => {
 		provideSiteInfo( registry, { timezone: '' } );
 
 		const { result, waitForRegistry } = renderHook(
@@ -109,12 +109,12 @@ describe( 'useFreshDataDateRange', () => {
 		await waitForRegistry();
 
 		expect( result.current ).toEqual( {
-			startDate: '2025-02-04',
+			startDate: '2025-02-03',
 			endDate: '2025-02-05',
 		} );
 	} );
 
-	it( 'should return a date range that starts one day before the reference date when the browser does not know the site time zone', async () => {
+	it( 'should return a date range that starts two days before the reference date when the browser does not know the site time zone', async () => {
 		provideSiteInfo( registry, { timezone: 'Invalid/Timezone' } );
 
 		const { result, waitForRegistry } = renderHook(
@@ -125,7 +125,7 @@ describe( 'useFreshDataDateRange', () => {
 		await waitForRegistry();
 
 		expect( result.current ).toEqual( {
-			startDate: '2025-02-04',
+			startDate: '2025-02-03',
 			endDate: '2025-02-05',
 		} );
 	} );

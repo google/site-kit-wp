@@ -46,7 +46,10 @@ export interface FreshDataDateRange {
  * The reference date is a date in the browser's time zone. When the site's
  * time zone is behind the browser's time zone, the site's yesterday is two
  * days before the reference date for part of each day, so the date range
- * starts two days before the reference date.
+ * starts two days before the reference date. The date range also starts two
+ * days before the reference date when the site uses a UTC offset or a time
+ * zone the browser doesn't know, because the site's time zone might then be
+ * behind the browser's time zone.
  *
  * @since n.e.x.t
  *
@@ -64,7 +67,7 @@ export function useFreshDataDateRange(): FreshDataDateRange {
 	);
 
 	return useMemo( () => {
-		let siteDate: string;
+		let daysBeforeReferenceDate: number;
 
 		try {
 			// We read the site's date at the moment the reference date starts
@@ -81,19 +84,22 @@ export function useFreshDataDateRange(): FreshDataDateRange {
 					.formatToParts( stringToDate( referenceDate ) )
 					.map( ( { type, value } ) => [ type, value ] )
 			);
+			const siteDate = `${ year }-${ month }-${ day }`;
 
-			siteDate = `${ year }-${ month }-${ day }`;
+			daysBeforeReferenceDate = siteDate < referenceDate ? 2 : 1;
 		} catch {
 			// `Intl.DateTimeFormat` throws for a time zone the browser doesn't
 			// know, and for the empty string, which is the time zone of a site
-			// that uses a UTC offset.
-			siteDate = referenceDate;
+			// that uses a UTC offset. In both cases, we can't tell whether the
+			// site's time zone is behind the browser's time zone, because the
+			// site info has no UTC offset.
+			daysBeforeReferenceDate = 2;
 		}
 
 		return {
 			startDate: getPreviousDate(
 				referenceDate,
-				siteDate < referenceDate ? 2 : 1
+				daysBeforeReferenceDate
 			),
 			endDate: referenceDate,
 		};

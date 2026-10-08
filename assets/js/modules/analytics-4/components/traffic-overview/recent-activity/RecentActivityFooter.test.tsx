@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
@@ -133,6 +134,47 @@ describe( 'RecentActivityFooter', () => {
 				} )
 				.getAttribute( 'href' )
 		).toBe( searchConsoleReportURL );
+	} );
+
+	it( 'should link "Analytics" and "Search Console" to the reports of the whole site when the page has an entity URL set', async () => {
+		provideSiteInfo( registry, {
+			currentEntityURL: 'https://example.com/about/',
+		} );
+
+		const { waitForRegistry } = render( <RecentActivityFooter />, {
+			registry,
+			viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		const analyticsLink = screen.getByRole( 'link', {
+			name: 'Analytics (opens in a new tab)',
+		} );
+		const searchConsoleLink = screen.getByRole( 'link', {
+			name: 'Search Console (opens in a new tab)',
+		} );
+
+		// `getServiceReportURL()` encodes the report parameters, and
+		// `getAccountChooserURL()` then encodes the report URL as the
+		// `continue` parameter of the account chooser URL, so the report
+		// parameters in each `href` are encoded twice.
+		const analyticsHref = decodeURIComponent(
+			decodeURIComponent( analyticsLink.getAttribute( 'href' ) as string )
+		);
+		const searchConsoleHref = decodeURIComponent(
+			decodeURIComponent(
+				searchConsoleLink.getAttribute( 'href' ) as string
+			)
+		);
+
+		expect( analyticsHref ).toContain( '/p1234567890/reports/explorer' );
+		expect( analyticsHref ).not.toContain( '/about/' );
+
+		expect( searchConsoleHref ).toContain(
+			'resource_id=https://example.com/'
+		);
+		expect( searchConsoleHref ).not.toContain( '/about/' );
 	} );
 
 	it( 'should render nothing for a view-only user', async () => {
