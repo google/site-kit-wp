@@ -968,6 +968,41 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
+	public function test_build__runs_the_callbacks_in_the_order_of_their_priority_when_the_later_priority_is_added_first() {
+		$received_data = array();
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) use ( &$received_data ) {
+				$received_data = $contextual_data;
+
+				return $contextual_data;
+			},
+			20
+		);
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				);
+
+				return $contextual_data;
+			},
+			5
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertArrayHasKey( 'searchQueries', $received_data, 'The callback at priority 20 should run after the one at priority 5, and receive its `searchQueries` rows, even though it was added first.' );
+	}
+
 	public function test_build__keeps_the_5_highest_scoring_of_40_rows_a_callback_adds_and_orders_their_dimension_by_the_sum_of_their_scores() {
 		$this->provide_reports_for_every_dimension();
 
