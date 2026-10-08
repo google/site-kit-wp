@@ -1,12 +1,11 @@
 ---
 name: check-pr-failures
 description: >
-  Work through the failing CI checks on a Site Kit pull request: classify each failure as caused by
+  Work through the failing CI checks on a pull request: classify each failure as caused by
   the PR, pre-existing, flaky or environmental, and iterate until the board is green or every
   remaining failure is evidenced as unrelated. Use when the user asks why CI is failing, to
   check or watch a PR's checks, or to work through test failures on a pull request (e.g.
-  "why is CI failing on #12345", "check the failures on my PR", "/check-pr-failures 12345") in the
-  google/site-kit-wp repo.
+  "why is CI failing on #12345", "check the failures on my PR", "/check-pr-failures 12345").
 argument-hint: "[pr-number]"
 allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 ---
