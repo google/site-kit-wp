@@ -92,7 +92,7 @@
 
 			svg {
 				fill: currentColor;
-				margin-left: $grid-gap-phone / 2;
+				margin-left: $grid-gap-phone * 0.5;
 			}
 		}
 
@@ -140,7 +140,7 @@
 				margin-right: 0;
 
 				@media (min-width: $bp-tablet) {
-					margin-right: $grid-gap-phone / 2;
+					margin-right: $grid-gap-phone * 0.5;
 				}
 			}
 
