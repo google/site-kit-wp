@@ -303,13 +303,9 @@ export function addMonths( dateString: string, months: number ): string {
 	const date = stringToDate( dateString );
 	const day = date.getDate();
 
-	date.setMonth( date.getMonth() + months, 1 );
-
-	const lastDay = stringToDate(
-		getMonthEnd( getDateString( date ) )
-	).getDate();
-
-	date.setDate( Math.min( day, lastDay ) );
+	// Day zero of the following month is the last day of the target month.
+	date.setMonth( date.getMonth() + months + 1, 0 );
+	date.setDate( Math.min( day, date.getDate() ) );
 
 	return getDateString( date );
 }
@@ -341,6 +337,7 @@ export function addDays( dateString: string, days: number ): string {
  * @return {number} Inclusive day count.
  */
 export function getDayCount( startDate: string, endDate: string ): number {
+	// ISO date-only strings parse as UTC, so DST cannot introduce fractional days.
 	return (
 		( Date.parse( endDate ) - Date.parse( startDate ) ) /
 			( DAY_IN_SECONDS * 1000 ) +
