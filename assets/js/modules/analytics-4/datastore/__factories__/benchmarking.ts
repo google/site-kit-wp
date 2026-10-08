@@ -24,7 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import benchmarkingData from '@/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { BenchmarkingDataParams } from '@/js/modules/analytics-4/datastore/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { decodeBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benchmarking/decodeBenchmarkingResponse';
@@ -33,6 +33,8 @@ import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benc
 /**
  * The decoded `benchmarking-data.json` fixture, which is never `null` because the
  * fixture is a valid response in format version `1`.
+ *
+ * @since n.e.x.t
  */
 export const decodedBenchmarkingResponse = decodeBenchmarkingResponse(
 	benchmarkingData

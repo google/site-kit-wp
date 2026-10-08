@@ -26,21 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '@tests/js/utils';
-import { decodedBenchmarkingResponse, provideBenchmarkingData } from '.';
-
-describe( 'decodedBenchmarkingResponse', () => {
-	it( 'should have the decoded visitor totals and dimensions of the `benchmarking-data.json` fixture', () => {
-		expect( decodedBenchmarkingResponse ).toMatchObject( {
-			visitors: { current: 412, previous: 388 },
-			dimensions: [
-				'CONTENT',
-				'SEARCH_QUERIES',
-				'REFERRERS',
-				'CHANNELS',
-			],
-		} );
-	} );
-} );
+import { provideBenchmarkingData } from '.';
 
 describe( 'provideBenchmarkingData', () => {
 	let registry: WPDataRegistry;

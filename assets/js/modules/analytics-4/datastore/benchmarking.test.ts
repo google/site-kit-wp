@@ -428,6 +428,45 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			).toBeUndefined();
 		} );
 
+		it( 'should send a new request when the next page loads after the first response has an unrecognized format version, such as `2`', async () => {
+			fetchMock.getOnce( benchmarkingDataEndpoint, {
+				body: [ 2, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+			} );
+			fetchMock.getOnce( benchmarkingDataEndpoint, {
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			const nextPageRegistry = createTestRegistry();
+
+			nextPageRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getBenchmarkingData( '2026-08-19', '2026-09-15' );
+			await untilResolved(
+				nextPageRegistry,
+				MODULES_ANALYTICS_4
+			).getBenchmarkingData( '2026-08-19', '2026-09-15' );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect(
+				nextPageRegistry
+					.select( MODULES_ANALYTICS_4 )
+					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
+			).toEqual( {
+				visitors: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
+				dimensions: [],
+				contextualData: {},
+			} );
+		} );
+
 		it( 'should not send a request when the start date is missing', async () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )

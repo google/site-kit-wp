@@ -52,6 +52,11 @@ import { isValidDateRange } from '@/js/util/report-validation';
 import { MODULES_ANALYTICS_4 } from './constants';
 import { ReportOptions } from './types';
 
+/**
+ * The date range of a benchmarking request.
+ *
+ * @since n.e.x.t
+ */
 export type BenchmarkingDataParams = Pick<
 	ReportOptions,
 	'startDate' | 'endDate'
@@ -103,6 +108,17 @@ const fetchGetBenchmarkingDataStore = createFetchStore( {
 		const decodedResponse = decodeBenchmarkingResponse( encodedResponse );
 
 		if ( ! decodedResponse ) {
+			// `get()` has already stored the encoded response in the API cache.
+			// Delete it from the cache, so a reload sends a new request.
+			await deleteItem(
+				createCacheKey(
+					'modules',
+					MODULE_SLUG_ANALYTICS_4,
+					'benchmarking-data',
+					params
+				)
+			);
+
 			throw {
 				code: 'benchmarking_decode_failed',
 				message: __(
@@ -151,7 +167,7 @@ const baseActions = {
 	 *
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
-	 * @return {void}
+	 * @return {Object} Generator instance.
 	 */
 	clearBenchmarkingData: createValidatedAction(
 		( startDate: string, endDate: string ) =>
