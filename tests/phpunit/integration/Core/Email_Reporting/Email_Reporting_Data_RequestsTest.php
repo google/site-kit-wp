@@ -42,7 +42,6 @@ use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use ReflectionProperty;
 use WP_Error;
 
 /**
@@ -528,39 +527,28 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 
 		$data_requests = $this->create_data_requests();
 
-		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
-		$modules_property->setAccessible( true );
-		$modules_property->setValue( $this->modules, array( 'sentinel' => new \stdClass() ) );
+		$this->force_set_property( $this->modules, 'modules', array( 'sentinel' => new \stdClass() ) );
+		$this->force_set_property( $this->modules, 'dependencies', array( 'sentinel' => array( 'dep' ) ) );
+		$this->force_set_property( $this->modules, 'dependants', array( 'dep' => array( 'sentinel' ) ) );
 
-		$dependencies_property = new ReflectionProperty( Modules::class, 'dependencies' );
-		$dependencies_property->setAccessible( true );
-		$dependencies_property->setValue( $this->modules, array( 'sentinel' => array( 'dep' ) ) );
+		$authentication_before = $this->force_get_property( $this->modules, 'authentication' );
 
-		$dependants_property = new ReflectionProperty( Modules::class, 'dependants' );
-		$dependants_property->setAccessible( true );
-		$dependants_property->setValue( $this->modules, array( 'dep' => array( 'sentinel' ) ) );
-
-		$authentication_property = new ReflectionProperty( Modules::class, 'authentication' );
-		$authentication_property->setAccessible( true );
-		$authentication_before = $authentication_property->getValue( $this->modules );
-
-		$method = new \ReflectionMethod( Email_Reporting_Data_Requests::class, 'maybe_reset_runtime_caches_for_user_change' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Email_Reporting_Data_Requests::class, 'maybe_reset_runtime_caches_for_user_change' );
 
 		$method->invoke( $data_requests, $first_user_id );
 		$method->invoke( $data_requests, $first_user_id );
 
-		$this->assertNotEmpty( $modules_property->getValue( $this->modules ), 'Runtime module cache should not reset when processing the same user repeatedly.' );
-		$this->assertNotEmpty( $dependencies_property->getValue( $this->modules ), 'Module dependency cache should not reset when processing the same user repeatedly.' );
-		$this->assertNotEmpty( $dependants_property->getValue( $this->modules ), 'Module dependant cache should not reset when processing the same user repeatedly.' );
-		$this->assertSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should not be recreated when user does not change.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'modules' ), 'Runtime module cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'dependencies' ), 'Module dependency cache should not reset when processing the same user repeatedly.' );
+		$this->assertNotEmpty( $this->force_get_property( $this->modules, 'dependants' ), 'Module dependant cache should not reset when processing the same user repeatedly.' );
+		$this->assertSame( $authentication_before, $this->force_get_property( $this->modules, 'authentication' ), 'Authentication instance should not be recreated when user does not change.' );
 
 		$method->invoke( $data_requests, $second_user_id );
 
-		$this->assertSame( array(), $modules_property->getValue( $this->modules ), 'Runtime module cache should reset when switching to a different user.' );
-		$this->assertSame( array(), $dependencies_property->getValue( $this->modules ), 'Module dependency cache should reset when switching to a different user.' );
-		$this->assertSame( array(), $dependants_property->getValue( $this->modules ), 'Module dependant cache should reset when switching to a different user.' );
-		$this->assertNotSame( $authentication_before, $authentication_property->getValue( $this->modules ), 'Authentication instance should be recreated when switching users.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'modules' ), 'Runtime module cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'dependencies' ), 'Module dependency cache should reset when switching to a different user.' );
+		$this->assertSame( array(), $this->force_get_property( $this->modules, 'dependants' ), 'Module dependant cache should reset when switching to a different user.' );
+		$this->assertNotSame( $authentication_before, $this->force_get_property( $this->modules, 'authentication' ), 'Authentication instance should be recreated when switching users.' );
 	}
 
 	public function test_categorize_error() {
@@ -815,9 +803,7 @@ class Email_Reporting_Data_RequestsTest extends TestCase {
 			$module_objects[ $slug ] = $this->create_module_without_service_entity( $slug, $owner_id );
 		}
 
-		$modules_property = new ReflectionProperty( Modules::class, 'modules' );
-		$modules_property->setAccessible( true );
-		$modules_property->setValue( $modules_instance, $module_objects );
+		$this->force_set_property( $modules_instance, 'modules', $module_objects );
 
 		$this->set_active_modules( array_keys( $module_objects ) );
 
