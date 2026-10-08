@@ -21,6 +21,12 @@
  */
 import { getLocale, isValidDateString, stringToDate } from '@/js/util';
 
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+	month: 'short',
+	day: 'numeric',
+	year: 'numeric',
+};
+
 /**
  * Formats a `YYYY-MM-DD` date as a localized short date, e.g. "Jan 1, 2021".
  *
@@ -38,9 +44,28 @@ export function formatDateString( dateString: string ): string {
 		return '';
 	}
 
-	return new Intl.DateTimeFormat( getLocale(), {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
-	} ).format( stringToDate( dateString ) );
+	return new Intl.DateTimeFormat( getLocale(), DATE_FORMAT_OPTIONS ).format(
+		stringToDate( dateString )
+	);
+}
+
+/**
+ * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
+ * "Mar 1 – 7, 2026".
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param {string} endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return {string} The localized range, or an empty string when either date is invalid.
+ */
+export function formatDateRange( startDate: string, endDate: string ): string {
+	if ( ! isValidDateString( startDate ) || ! isValidDateString( endDate ) ) {
+		return '';
+	}
+
+	return new Intl.DateTimeFormat(
+		getLocale(),
+		DATE_FORMAT_OPTIONS
+	).formatRange( stringToDate( startDate ), stringToDate( endDate ) );
 }

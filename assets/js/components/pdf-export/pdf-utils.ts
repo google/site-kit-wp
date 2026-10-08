@@ -16,9 +16,6 @@
  * limitations under the License.
  */
 
-// The `es5` target leaves `Intl.DateTimeFormat.prototype.formatRange` untyped.
-/// <reference lib="es2021.intl" />
-
 /**
  * WordPress dependencies
  */
@@ -27,7 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { getLocale, isValidDateString, stringToDate } from '@/js/util';
+import { formatDateRange } from './formatDateString';
 
 // The printable characters Windows, macOS and Linux reject in filenames.
 const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;
@@ -38,8 +35,8 @@ const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;
  *
  * @since n.e.x.t
  *
- * @param character A single character.
- * @return Whether the character is a control character.
+ * @param {string} character A single character.
+ * @return {boolean} Whether the character is a control character.
  */
 function isControlCharacter( character: string ): boolean {
 	const code = character.charCodeAt( 0 );
@@ -71,39 +68,17 @@ export function getSiteHost(
 }
 
 /**
- * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
- * "Mar 1 – 7, 2026".
- *
- * @since n.e.x.t
- *
- * @param startDate The first day of the range, as `YYYY-MM-DD`.
- * @param endDate   The last day of the range, as `YYYY-MM-DD`.
- * @return The localized range, or an empty string when either date is invalid.
- */
-function formatDateRange( startDate: string, endDate: string ): string {
-	if ( ! isValidDateString( startDate ) || ! isValidDateString( endDate ) ) {
-		return '';
-	}
-
-	return new Intl.DateTimeFormat( getLocale(), {
-		month: 'short',
-		day: 'numeric',
-		year: 'numeric',
-	} ).formatRange( stringToDate( startDate ), stringToDate( endDate ) );
-}
-
-/**
  * Builds a filesystem-safe PDF filename for the dashboard export, e.g.
  * `Site Kit Dashboard - example.com - Mar 1 – 7, 2026.pdf`.
  *
  * @since 1.181.0
  * @since n.e.x.t Takes the site URL and the report dates instead of the site name and date range slug.
  *
- * @param siteURL             The reference site URL.
- * @param dateRange           The report date range.
- * @param dateRange.startDate The first day of the range, as `YYYY-MM-DD`.
- * @param dateRange.endDate   The last day of the range, as `YYYY-MM-DD`.
- * @return The composed filename.
+ * @param {string} siteURL             The reference site URL.
+ * @param {Object} dateRange           The report date range.
+ * @param {string} dateRange.startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param {string} dateRange.endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return {string} The composed filename.
  */
 export function getPDFFilename(
 	siteURL: string,
@@ -116,7 +91,11 @@ export function getPDFFilename(
 
 	const formattedDateRange = formatDateRange( startDate, endDate );
 	if ( formattedDateRange ) {
-		segments.push( formattedDateRange );
+		// Some locales separate the date parts with `/`, e.g. `2026/09/04` in
+		// Japanese, so hyphenate them rather than run the numbers together.
+		segments.push(
+			formattedDateRange.replace( RESERVED_FILENAME_CHARACTERS, '-' )
+		);
 	}
 
 	const name = segments
@@ -126,7 +105,7 @@ export function getPDFFilename(
 		.filter( ( character ) => ! isControlCharacter( character ) )
 		.join( '' )
 		.replace( /\s+/g, ' ' )
-		// Windows drops trailing dots and spaces from filenames.
+		// Avoid a dot or space right before the extension, e.g. Hungarian dates end with a dot.
 		.replace( /[. ]+$/, '' );
 
 	return `${ name }.pdf`;

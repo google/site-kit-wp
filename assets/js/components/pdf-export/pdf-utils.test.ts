@@ -35,11 +35,13 @@ jest.mock( '@wordpress/i18n', () => {
 } );
 
 describe( 'getPDFFilename', () => {
-	const siteURL = 'https://example.com/blog/';
+	afterEach( () => {
+		delete global._googlesitekitLegacyData.locale;
+	} );
 
 	it( 'should show the month and year once for a range within one month', () => {
 		expect(
-			getPDFFilename( siteURL, {
+			getPDFFilename( 'https://example.com/blog/', {
 				startDate: '2026-03-01',
 				endDate: '2026-03-07',
 			} )
@@ -48,7 +50,7 @@ describe( 'getPDFFilename', () => {
 
 	it( 'should show both months for a range spanning two months', () => {
 		expect(
-			getPDFFilename( siteURL, {
+			getPDFFilename( 'https://example.com/blog/', {
 				startDate: '2026-02-23',
 				endDate: '2026-03-01',
 			} )
@@ -57,12 +59,25 @@ describe( 'getPDFFilename', () => {
 
 	it( 'should show both full dates for a range spanning two years', () => {
 		expect(
-			getPDFFilename( siteURL, {
+			getPDFFilename( 'https://example.com/blog/', {
 				startDate: '2025-12-28',
 				endDate: '2026-01-03',
 			} )
 		).toBe(
 			'Site Kit Dashboard - example.com - Dec 28, 2025 – Jan 3, 2026.pdf'
+		);
+	} );
+
+	it( 'should hyphenate the date parts for a locale that separates them with slashes', () => {
+		global._googlesitekitLegacyData.locale = 'ja';
+
+		expect(
+			getPDFFilename( 'https://example.com/blog/', {
+				startDate: '2026-09-04',
+				endDate: '2026-10-01',
+			} )
+		).toBe(
+			'Site Kit Dashboard - example.com - 2026-09-04～2026-10-01.pdf'
 		);
 	} );
 
@@ -86,7 +101,7 @@ describe( 'getPDFFilename', () => {
 
 	it( 'should drop the date range when the start date is invalid', () => {
 		expect(
-			getPDFFilename( siteURL, {
+			getPDFFilename( 'https://example.com/blog/', {
 				startDate: 'invalid',
 				endDate: '2026-03-07',
 			} )
@@ -95,7 +110,7 @@ describe( 'getPDFFilename', () => {
 
 	it( 'should drop the date range when the end date is invalid', () => {
 		expect(
-			getPDFFilename( siteURL, {
+			getPDFFilename( 'https://example.com/blog/', {
 				startDate: '2026-03-01',
 				endDate: '',
 			} )
