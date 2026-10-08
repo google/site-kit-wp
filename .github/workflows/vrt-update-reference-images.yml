@@ -119,14 +119,20 @@ jobs:
         run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
       - name: Render changed reference images
         working-directory: tests/vrt
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
         run: |
           touch "$RUNNER_TEMP/render-start"
-          npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --update-snapshots=changed
+          npx playwright test --shard="$SHARD/$SHARD_TOTAL" --update-snapshots=changed
       # An update saves the first stable screenshot, which could be an
       # in-between state. Rendering again must match it.
       - name: Verify reference images
         working-directory: tests/vrt
-        run: npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }}
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+        run: npx playwright test --shard="$SHARD/$SHARD_TOTAL"
       - name: Collect changed reference images
         run: |
           mkdir -p "$RUNNER_TEMP/reference-images"

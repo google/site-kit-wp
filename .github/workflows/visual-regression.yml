@@ -132,7 +132,9 @@ jobs:
         working-directory: tests/vrt
         env:
           REPEAT_EACH: ${{ github.event.inputs.repeat_each || '1' }}
-        run: npx playwright test --shard=${{ matrix.shard }}/${{ strategy.job-total }} --repeat-each="$REPEAT_EACH"
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+        run: npx playwright test --shard="$SHARD/$SHARD_TOTAL" --repeat-each="$REPEAT_EACH"
       - name: Upload blob report
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
         if: always()
@@ -193,9 +195,11 @@ jobs:
       - name: Set report target directory
         id: report-target
         if: env.CAN_UPLOAD_VRT_REPORTS == 'true'
+        env:
+          PR_NUMBER: ${{ github.event.number }}
         run: |
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            echo "dir=pull/${{ github.event.number }}" >> "$GITHUB_OUTPUT"
+          if [[ "$GITHUB_EVENT_NAME" == "pull_request" ]]; then
+            echo "dir=pull/$PR_NUMBER" >> "$GITHUB_OUTPUT"
           else
             echo "dir=${GITHUB_REF##*/}" >> "$GITHUB_OUTPUT"
           fi
@@ -331,10 +335,12 @@ jobs:
 
       - name: Build comment body
         id: build-comment
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           {
             echo 'body<<EOF'
-            echo '🖼️ **VRT report for ${{ github.event.pull_request.head.sha }}:**'
+            echo "🖼️ **VRT report for ${HEAD_SHA}:**"
             cat /tmp/artifact-url/url.md
             echo EOF
           } >> "$GITHUB_OUTPUT"
