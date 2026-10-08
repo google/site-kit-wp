@@ -30,12 +30,17 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import {
+	publicationPoliciesStep,
+	publicationSetupStep,
+	setupCompleteStep,
+	termsOfServiceStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import {
 	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
@@ -50,6 +55,7 @@ import {
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SetupCTANewsletterSignup from './index';
+import { signupFormStep } from './StepSignupForm';
 
 const ORGANIZATION_ID = 'ABCD1234';
 const PUBLICATION_ID = 'ABCD_123-4';
@@ -105,7 +111,7 @@ ConnectPublication.storyName = '1. Connect Publication';
 ConnectPublication.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+		step: publicationSetupStep.slug,
 	},
 };
 ConnectPublication.scenario = {};
@@ -115,7 +121,7 @@ TermsOfService.storyName = '2. Terms of Service';
 TermsOfService.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE,
+		step: termsOfServiceStep.slug,
 	},
 };
 TermsOfService.scenario = {};
@@ -125,7 +131,7 @@ PublicationPolicies.storyName = '3. Publication Policies';
 PublicationPolicies.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
+		step: publicationPoliciesStep.slug,
 	},
 };
 PublicationPolicies.scenario = {};
@@ -135,7 +141,7 @@ SetupCTA.storyName = '4. Set Up Sign-up Form';
 SetupCTA.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.SETUP_CTA,
+		step: signupFormStep.slug,
 	},
 };
 SetupCTA.scenario = {};
@@ -145,7 +151,7 @@ SetupComplete.storyName = '5. Setup Complete';
 SetupComplete.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
+		step: setupCompleteStep.slug,
 	},
 };
 SetupComplete.scenario = {};
@@ -156,7 +162,7 @@ SetupCompleteWithPreExistingCTAs.storyName =
 SetupCompleteWithPreExistingCTAs.parameters = {
 	query: {
 		...BASE_QUERY,
-		step: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
+		step: setupCompleteStep.slug,
 	},
 };
 SetupCompleteWithPreExistingCTAs.args = {
