@@ -15,6 +15,14 @@ the file + section when flagging a violation.
 - Every **Implementation Brief** checkbox is implemented.
 - Every **Test Coverage** item exists as a real, passing test.
 - Edge cases named in the issue are handled. No required behavior is missing.
+- An Implementation Brief bullet point that migrates or replaces something leaves no old copy
+  behind: every place that used the old code uses the new code, and the old code is
+  removed.
+- A removal leaves nothing behind: no reference to a removed symbol, class, flag or
+  component (comments included), no parameter or branch that only the removed code used,
+  and no deleted test whose code still exists elsewhere (those tests move instead).
+- A criterion that applies in several places (for example view and edit mode) uses the
+  same check in each of them.
 
 ## 2. Convention adherence
 
@@ -34,6 +42,10 @@ the file + section when flagging a violation.
 - **Event tracking** — correct `trackEvent`/`trackEventOnce` category/label usage (`event-tracking.md`).
 - **Storybook** — stories present for new/changed UI components (`storybook.md`).
 - **Tests** — co-located; registry-mocking pattern; no real network calls (`tests.md`).
+- **Test helpers** — existing helpers and mocks are reused; no function or `jest.mock()`
+  factory is copied into a second file; values that production code builds (for example
+  report options) come from the production function, not written out by hand. Test data is
+  still written directly in each test (`tests.md`).
 
 **PHP** (see `docs/context/php/`)
 
@@ -54,7 +66,15 @@ the file + section when flagging a violation.
 - Error handling and edge cases.
 - **Security** — XSS, capability checks, nonce verification, no direct SQL, input sanitization.
 - **Performance** — no needless re-renders, missing memoization, expensive selectors, N+1 queries, or large asset bloat.
-- **Documentation** — complex logic and all exports documented.
+- **Documentation** — complex logic and all exports documented. Every added or touched
+  comment explains why the code is the way it is, avoids details that go out of date (such
+  as specific counts), and any fact it states is true. Docblocks made out of date by the
+  change are updated.
+- **Disabled lint rules** — no new `eslint-disable` / `phpcs:ignore` added to make a check
+  pass; `complexity` is fixed by extracting a helper. A rule disabled anyway has explicit
+  approval and a reason in the PR.
+- **Scope** — every change outside the issue's scope is explained in the PR's "Relevant
+  technical choices".
 - Accessibility and backward compatibility where relevant.
 
 ## 4. Verification
@@ -71,9 +91,10 @@ the file + section when flagging a violation.
   touch; a rule gated below `$bp-tablet` (600px) is verified at mobile width, since the
   default (desktop-only) VRT run does not exercise mobile-only rules.
 - For UI changes, add/update Storybook stories and the corresponding VRT reference (run
-  `./tests/backstop/bin/backstop test --filter="<scenario label>"` to check just that
-  scenario, or the same with `approve` to accept it — `npm run test:visualtest` does not
-  forward extra CLI args, so call the script directly).
+  `npm run test:visualtest -- -- --filter="<scenario label>"` to check just that scenario,
+  or `npm run test:visualapprove` with the same arguments to accept it). Stories set every value the
+  component reads for their state, and every new or changed reference image was opened and
+  shows the state its story names.
 
 ---
 

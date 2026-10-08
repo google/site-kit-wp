@@ -380,6 +380,9 @@ Two things follow from that chain:
 4. **VRT Considerations**: Add `scenario` to the stories that should be captured for visual regression testing
 5. **Documentation**: Add comments explaining complex story setups
 6. **Consistent Structure**: Follow established patterns for similar component types
+7. **Full State**: Set every value the component reads for the state the story shows,
+   including a new setting that has a default. A value that isn't set usually shows a loading
+   or empty state instead, and the VRT reference image then shows that state.
 
 ### TypeScript Stories
 
