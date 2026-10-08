@@ -33,6 +33,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Tooltip } from 'googlesitekit-components';
 import Badge from './Badge';
+import { BADGE_VARIANTS } from './Badge/constants';
 import Link from './Link';
 
 function NewBadge( {
@@ -50,6 +51,7 @@ function NewBadge( {
 			} ) }
 			label={ __( 'New', 'google-site-kit' ) }
 			hasLeftSpacing={ hasLeftSpacing }
+			variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 		/>
 	);
 

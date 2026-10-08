@@ -40,24 +40,19 @@ import DocumentationLink from '@/js/components/DocumentationLink';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
-import useFormValue from '@/js/hooks/useFormValue';
 import {
 	ExpressSetupStepDetails,
 	ExpressSetupStepHeadline,
 	PublicationSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import {
-	MODULES_READER_REVENUE_MANAGER,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_TERMS_OF_SERVICE,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { languageCodeFormat, regionCodeFormat } from '@/js/util/i18n';
 
 interface ConnectPublicationProps {
 	description?: string;
-	onComplete: ( hasAcceptedTerms: boolean ) => void;
+	onComplete: () => void;
 }
 
 const ConnectPublication: FC< ConnectPublicationProps > = ( {
@@ -66,11 +61,6 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 } ) => {
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
-
-	const [ , setShowTermsOfService ] = useFormValue< boolean >(
-		READER_REVENUE_MANAGER_SETUP_FORM,
-		SHOW_TERMS_OF_SERVICE
-	);
 
 	const defaultDescription = __(
 		'To use Reader Revenue Manager, connect your publication or create a new one.',
@@ -144,10 +134,7 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 			const { error } = await submitChanges();
 
 			if ( ! error ) {
-				const hasAcceptedTerms =
-					!! publication.rrmProduct?.tosAcceptance?.userAccepted;
-
-				onComplete( hasAcceptedTerms );
+				onComplete();
 			}
 		},
 		[ onComplete, publication, submitChanges ]
@@ -180,12 +167,6 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 		publications,
 		selectPublication,
 	] );
-
-	useEffect( () => {
-		setShowTermsOfService(
-			! publication?.rrmProduct?.tosAcceptance?.userAccepted
-		);
-	}, [ publication, setShowTermsOfService ] );
 
 	return (
 		<form

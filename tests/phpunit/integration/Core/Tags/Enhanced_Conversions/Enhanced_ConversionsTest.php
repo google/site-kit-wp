@@ -57,9 +57,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data does not match expected values.' );
@@ -81,9 +79,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( $expected, $user_data, 'User data should only contain email when name fields are empty.' );
@@ -95,9 +91,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		wp_set_current_user( 0 );
 
 		// Use reflection method to access the protected method.
-		$reflection = new \ReflectionClass( $this->enhanced_conversions );
-		$method     = $reflection->getMethod( 'get_user_data' );
-		$method->setAccessible( true );
+		$method    = $this->get_accessible_method( $this->enhanced_conversions, 'get_user_data' );
 		$user_data = $method->invoke( $this->enhanced_conversions );
 
 		$this->assertEquals( array(), $user_data, 'User data should be empty when user is not logged in.' );

@@ -30,7 +30,6 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { formatDateString } from '@/js/components/pdf-export/formatDateString';
 import {
 	PDF_PAGE_BOTTOM_PADDING,
 	PDF_PAGE_PADDING,
@@ -49,6 +48,7 @@ import {
 	PDFReportWidget,
 	PDFSectionAnchor,
 } from '@/js/components/pdf-export/types';
+import { formatDate } from '@/js/util';
 import { getLocale } from '@/js/util/i18n';
 import PDFEmailReportingNotice from './PDFEmailReportingNotice';
 import PDFHeader from './PDFHeader';
@@ -68,8 +68,8 @@ function formatDocumentDateRange( dateRange: {
 	startDate: string;
 	endDate: string;
 } ): string {
-	const startDate = formatDateString( dateRange.startDate );
-	const endDate = formatDateString( dateRange.endDate );
+	const startDate = formatDate( dateRange.startDate );
+	const endDate = formatDate( dateRange.endDate );
 
 	return startDate && endDate
 		? sprintf(

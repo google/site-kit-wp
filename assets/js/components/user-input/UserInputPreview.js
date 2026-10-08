@@ -48,7 +48,6 @@ import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -75,7 +74,6 @@ export default function UserInputPreview( props ) {
 		loading = false,
 		settingsView = false,
 	} = props;
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const previewContainer = useRef();
 	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
 	const handleModal = useCallback( () => {
@@ -241,15 +239,10 @@ export default function UserInputPreview( props ) {
 								className="googlesitekit-settings-user-input__heading"
 								size={ SIZE_SMALL }
 							>
-								{ setupFlowRefreshEnabled
-									? __(
-											'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
-											'google-site-kit'
-									  )
-									: __(
-											'Edit your answers for more personalized metrics:',
-											'google-site-kit'
-									  ) }
+								{ __(
+									'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
+									'google-site-kit'
+								) }
 							</P>
 						</LoadingWrapper>
 					</div>

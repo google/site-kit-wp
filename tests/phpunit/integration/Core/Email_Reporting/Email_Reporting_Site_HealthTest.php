@@ -91,8 +91,7 @@ class Email_Reporting_Site_HealthTest extends TestCase {
 
 		$this->email_log = new Email_Log( $this->context );
 
-		$register_method = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register_method->setAccessible( true );
+		$register_method = $this->get_accessible_method( Email_Log::class, 'register_email_log' );
 		$register_method->invoke( $this->email_log );
 
 		$this->delete_email_logs();

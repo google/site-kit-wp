@@ -23,7 +23,6 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Scopes;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit_Dependencies\Google\Service\PeopleService as Google_Service_PeopleService;
@@ -392,8 +391,8 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @since 1.49.0 Uses the new `Google_Proxy::setup_url_v2` method when the `serviceSetupV2` feature flag is enabled.
 	 */
 	public function authorize_user() {
-		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) ?? '' );
-		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) ?? '' );
+		$code       = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$error_code = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'error' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 
 		// If we have a code, check if there's a stored redirect URL to prevent duplicate setups.
 		// The OAuth2 spec requires that an authorization code can only be used once.
@@ -463,7 +462,7 @@ final class OAuth_Client extends OAuth_Client_Base {
 		if ( isset( $token_response['scope'] ) ) {
 			$scopes = explode( ' ', sanitize_text_field( $token_response['scope'] ) );
 		} elseif ( $this->context->input()->filter( INPUT_GET, 'scope' ) ) {
-			$scope  = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'scope' ) );
+			$scope  = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'scope' ), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 			$scopes = explode( ' ', $scope );
 		} else {
 			$scopes = $this->get_required_scopes();
@@ -672,10 +671,6 @@ final class OAuth_Client extends OAuth_Client_Base {
 	 * @return string The value of the `notification` query param.
 	 */
 	private function get_notification_for_default_redirect_url() {
-		if ( ! Feature_Flags::enabled( 'setupFlowRefresh' ) ) {
-			return 'authentication_success';
-		}
-
 		if ( $this->dismissed_items->is_dismissed( 'welcome-modal-gathering-data' ) ) {
 			return 'authentication_success';
 		}
