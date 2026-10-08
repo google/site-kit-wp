@@ -127,7 +127,7 @@ Follow the conventions you loaded in Step 3. In addition:
   JS or Typescript source file; add `*Test.php` under the mirroring path in
   `tests/phpunit/integration/`.
 - **Storybook.** Add a `*.stories.js` or `*.stories.tsx` next to any new UI component (and update VRT
-  references where relevant — see Storybook docs).
+  reference images where relevant — see `tests/vrt/README.md`).
 - **Styles.** Put SCSS under `assets/sass/`.
 - **Feature flags.** Gate not-yet-shippable work behind a flag in `feature-flags.json`
   (see `docs/context/js/feature-flags.md`).
@@ -166,10 +166,10 @@ Run, and fix anything that fails:
   rule is invisible at desktop width, and the default VRT run is desktop-only so it will
   not exercise it. Re-check the exact state described in the issue (e.g. the badge *next to
   the title*, not just the component in isolation).
-- **VRT** — if you added/changed a Storybook story, check just that scenario rather than
-  the full suite (`npm run test:visualtest` wraps nested `npm run` calls and won't forward
-  extra CLI args, so call the script directly):
-  `./tests/backstop/bin/backstop test --filter="<scenario label>"`.
+- **VRT** — if you added/changed a Storybook story, check just that story rather than
+  the full suite: `npm run test:visualtest -- --grep "<story label>"`, and
+  `npm run test:visualapprove -- --grep "<story label>"` to write the new reference
+  images (see `tests/vrt/README.md`).
 
 ## Step 7 — Wrap up
 
