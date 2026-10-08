@@ -43,6 +43,8 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetHeaderTitle from '@/js/googlesitekit/widgets/components/WidgetHeaderTitle';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import ChangeGoalDriversLink from '@/js/modules/analytics-4/components/site-goals/ChangeGoalDriversLink';
 import BreakdownTabs from '@/js/modules/analytics-4/components/site-goals/components/BreakdownTabs';
 import EventProviderDeactivatedNotice from '@/js/modules/analytics-4/components/site-goals/components/EventProviderDeactivatedNotice';
@@ -51,7 +53,6 @@ import KeyActionTiles from '@/js/modules/analytics-4/components/site-goals/compo
 import OtherSourcesNotice from '@/js/modules/analytics-4/components/site-goals/components/OtherSourcesNotice';
 import PartialDataBadge from '@/js/modules/analytics-4/components/site-goals/components/PartialDataBadge';
 import SiteGoalsRemovalNotice from '@/js/modules/analytics-4/components/site-goals/components/SiteGoalsRemovalNotice';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
 import {
 	BREAKDOWN_ORIGIN_WIDGET,
 	SITE_GOALS_BREAKDOWN_ECOMMERCE_PROVIDERS,
@@ -87,7 +88,6 @@ import {
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { trackEvent } from '@/js/util';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
-import WidgetFeedbackPrompt from './WidgetFeedbackPrompt';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -690,9 +690,12 @@ const OnlineStorePerformanceWidget = forwardRef<
 					</Fragment>
 				) }
 
-				<WidgetFeedbackPrompt
+				<FeedbackPrompt
 					voteID={ SITE_GOALS_VOTE_ID_WIDGET_ONLINE_STORE }
-					goalType={ GOAL_TYPES.ECOMMERCE }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_site-goals-widget-survey`,
+						label: GOAL_TYPES.ECOMMERCE,
+					} }
 				/>
 			</WidgetComponent>
 		);

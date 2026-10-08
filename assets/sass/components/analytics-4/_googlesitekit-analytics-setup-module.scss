@@ -19,8 +19,8 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-setup-module--analytics {
-
-		&.googlesitekit-feature--setupFlowRefresh {
+		// The compound selector keeps these rules above other setup module styles.
+		&.googlesitekit-setup-module {
 
 			.googlesitekit-setup__step-hint {
 				margin: 7px 0 0 15px;

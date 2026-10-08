@@ -32,7 +32,7 @@ import { useInstanceId } from '@wordpress/compose';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_BODY } from '@/js/components/Typography/constants';
-import ZeroDataMessage from '@/js/modules/analytics-4/components/site-goals/components/ZeroDataMessage';
+import { TileZeroDataMessage } from '@/js/modules/analytics-4/components/common/tiles';
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import TrafficBreakdownRow from './TrafficBreakdownRow';
@@ -90,7 +90,7 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 				</div>
 			) }
 			{ loaded && rows.length === 0 && (
-				<ZeroDataMessage metricLabel="visitors" />
+				<TileZeroDataMessage metricLabel="visitors" />
 			) }
 			{ loaded &&
 				rows.length > 0 &&

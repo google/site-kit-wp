@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	publications,
@@ -29,8 +28,6 @@ import {
 import {
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_TYPES,
-	READER_REVENUE_MANAGER_SETUP_FORM,
-	SHOW_TERMS_OF_SERVICE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
@@ -90,27 +87,6 @@ describe( 'StepTermsOfService', () => {
 		provideModuleRegistrations( registry, moduleData );
 		provideSiteInfo( registry );
 		providePublication( registry, TEST_PUBLICATION );
-	} );
-
-	it( 'should keep the terms step visible after visiting it', () => {
-		provideTermsOfService( registry );
-
-		registry
-			.dispatch( CORE_FORMS )
-			.setValues( READER_REVENUE_MANAGER_SETUP_FORM, {
-				[ SHOW_TERMS_OF_SERVICE ]: false,
-			} );
-
-		render( <StepTermsOfService onComplete={ () => {} } />, { registry } );
-
-		expect(
-			registry
-				.select( CORE_FORMS )
-				.getValue(
-					READER_REVENUE_MANAGER_SETUP_FORM,
-					SHOW_TERMS_OF_SERVICE
-				)
-		).toBe( true );
 	} );
 
 	it( 'should render as a progress bar if the terms of service are loading', () => {

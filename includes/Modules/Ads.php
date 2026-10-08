@@ -50,7 +50,6 @@ use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Ads\AMP_Tag;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
-use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
 
@@ -61,7 +60,7 @@ use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
  * @access private
  * @ignore
  */
-final class Ads extends Module implements Module_With_Inline_Data, Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration, Provides_Feature_Metrics {
+final class Ads extends Module implements Module_With_Assets, Module_With_Debug_Fields, Module_With_Scopes, Module_With_Settings, Module_With_Tag, Module_With_Deactivation, Module_With_Persistent_Registration, Provides_Feature_Metrics {
 	use Module_With_Assets_Trait;
 	use Module_With_Scopes_Trait;
 	use Module_With_Settings_Trait;
@@ -264,6 +263,8 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 			),
 		);
 
+		$modules_data[ self::MODULE_SLUG ]['supportedConversionEvents'] = $this->conversion_tracking->get_supported_conversion_events();
+
 		return $modules_data;
 	}
 
@@ -406,23 +407,6 @@ final class Ads extends Module implements Module_With_Inline_Data, Module_With_A
 	 */
 	public function get_tag_matchers() {
 		return new Tag_Matchers();
-	}
-
-	/**
-	 * Gets required inline data for the module.
-	 *
-	 * @since 1.158.0
-	 * @since 1.160.0 Include $modules_data parameter to match the interface.
-	 * @since 1.181.0 Remove $modules_data parameter as per updated interface.
-	 *
-	 * @return array An array of the module's inline data.
-	 */
-	public function get_inline_data() {
-		$inline_data = array();
-
-		$inline_data['supportedConversionEvents'] = $this->conversion_tracking->get_supported_conversion_events();
-
-		return $inline_data;
 	}
 
 	/**

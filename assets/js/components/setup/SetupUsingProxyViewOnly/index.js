@@ -43,6 +43,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
 import Header from './Header';
+import IntentSetupAdminRequiredNotice from './IntentSetupAdminRequiredNotice';
 import LegacySplashViewOnlyContent from './LegacySplashViewOnlyContent';
 import SplashViewOnlyContent from './SplashViewOnlyContent';
 
@@ -111,7 +112,10 @@ export default function SetupUsingProxyViewOnly() {
 	const splashSetupContent = (
 		<Layout rounded={ ! setupFlowRefreshPhase4Enabled }>
 			<section className={ classname }>
-				<Grid>{ splashContent }</Grid>
+				<Grid>
+					<IntentSetupAdminRequiredNotice />
+					{ splashContent }
+				</Grid>
 			</section>
 		</Layout>
 	);

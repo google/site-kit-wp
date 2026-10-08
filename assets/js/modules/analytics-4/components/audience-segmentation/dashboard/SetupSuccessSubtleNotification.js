@@ -24,15 +24,13 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch } from 'googlesitekit-data';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
@@ -44,17 +42,6 @@ export const AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION =
 export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 	const breakpoint = useBreakpoint();
 	const { dismissNotification } = useDispatch( CORE_NOTIFICATIONS );
-	const isAudienceSegmentationWidgetHidden = useSelect( ( select ) =>
-		select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-	);
-
-	useEffect( () => {
-		if ( isAudienceSegmentationWidgetHidden ) {
-			dismissNotification(
-				AUDIENCE_SEGMENTATION_SETUP_SUCCESS_NOTIFICATION
-			);
-		}
-	}, [ dismissNotification, isAudienceSegmentationWidgetHidden ] );
 
 	function scrollToWidgetArea( event ) {
 		event.preventDefault();
@@ -70,10 +57,6 @@ export default function SetupSuccessSubtleNotification( { id, Notification } ) {
 				behavior: 'smooth',
 			} );
 		}, 50 );
-	}
-
-	if ( isAudienceSegmentationWidgetHidden === undefined ) {
-		return null;
 	}
 
 	return (

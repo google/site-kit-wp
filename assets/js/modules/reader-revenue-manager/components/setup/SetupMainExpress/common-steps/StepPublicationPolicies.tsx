@@ -45,8 +45,13 @@ import ProgressBar from '@/js/googlesitekit/components-gm2/ProgressBar';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	PUBLICATION_POLICIES_FORM,
 	READER_REVENUE_MANAGER_SETUP_FORM,
@@ -65,9 +70,8 @@ function isValidPolicyURL( value: string ) {
 	}
 }
 
-interface StepPublicationPoliciesProps {
+interface StepPublicationPoliciesProps extends SetupStepProps {
 	description?: string;
-	onComplete: () => void;
 }
 
 const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
@@ -290,6 +294,24 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			</form>
 		</div>
 	);
+};
+
+export const publicationPoliciesStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES,
+	label: __( 'Add publication policies', 'google-site-kit' ),
+	Component: StepPublicationPolicies,
+	isComplete: ( select: Select ) => {
+		const publication: Publication | undefined = select(
+			MODULES_READER_REVENUE_MANAGER
+		).getPublication();
+
+		return (
+			/* eslint-disable-next-line sitekit/acronym-case -- `Url` is the identifier used by the API. */
+			!! publication?.publicationTosUrl &&
+			/* eslint-disable-next-line sitekit/acronym-case -- `Url` is the identifier used by the API. */
+			!! publication?.publicationPrivacyPolicyUrl
+		);
+	},
 };
 
 export default StepPublicationPolicies;

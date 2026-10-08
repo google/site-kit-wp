@@ -17,3 +17,5 @@
  */
 
 export { default as AdsConversionTrackingIntent } from './AdsConversionTrackingIntent';
+export { default as AdsConversionTrackingIntentError } from './AdsConversionTrackingIntentError';
+export { default as AdsConversionTrackingIntentStep } from './AdsConversionTrackingIntentStep';

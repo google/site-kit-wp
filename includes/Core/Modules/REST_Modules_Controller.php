@@ -1019,6 +1019,7 @@ class REST_Modules_Controller {
 	 * Resolves datapoint permission callback.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Checks the `GET:` definition for `HEAD` requests and the `POST:` definition for `PUT` and `PATCH` requests.
 	 *
 	 * @param WP_REST_Request $request The request.
 	 * @param callable        $default_callback Default permission callback.
@@ -1026,7 +1027,9 @@ class REST_Modules_Controller {
 	 */
 	private function resolve_datapoint_permission( WP_REST_Request $request, callable $default_callback ) {
 		try {
-			$method    = $request->get_method();
+			// The readable endpoint also serves `HEAD` and the editable one also serves `PUT`
+			// and `PATCH`, but `get_data()` and `set_data()` only run `GET:` and `POST:` definitions.
+			$method    = in_array( $request->get_method(), array( 'GET', 'HEAD' ), true ) ? 'GET' : 'POST';
 			$module    = $this->modules->get_module( $request['slug'] );
 			$datapoint = $module->get_datapoint_definition( "{$method}:{$request['datapoint']}" );
 		} catch ( Exception $e ) {

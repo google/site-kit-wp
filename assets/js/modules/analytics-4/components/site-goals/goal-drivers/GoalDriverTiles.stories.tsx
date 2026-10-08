@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { TilesGroup } from '@/js/modules/analytics-4/components/site-goals/components/TilesGroup';
+import { TilesGroup } from '@/js/modules/analytics-4/components/common/tiles';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';

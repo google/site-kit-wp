@@ -192,23 +192,6 @@ export function requirePromptDismissed( prompt ) {
 }
 
 /**
- * Returns a function that checks if the audience segmentation widget is hidden.
- *
- * @since 1.166.0
- *
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the widget is hidden or not.
- */
-export function requireAudienceSegmentationWidgetHidden() {
-	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-		return (
-			true === select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-		);
-	};
-}
-
-/**
  * Returns a function that checks if the given module's datastore is gathering data.
  *
  * @since 1.170.0

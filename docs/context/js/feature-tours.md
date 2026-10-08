@@ -490,26 +490,26 @@ export function useChangeMetricsFeatureTourEffect( {
 }
 ```
 
-> This is a simplified illustration. The real hook also gates on the `setupFlowRefresh` feature flag and dismisses the tour while the initial welcome modal is active — see `assets/js/components/KeyMetrics/hooks/useChangeMetricsFeatureTourEffect.js`.
+> This is a simplified illustration. Since 1.187.0, the notification queue triggers this tour, and the real hook only dismisses it while the initial welcome modal is active. See `assets/js/components/KeyMetrics/hooks/useChangeMetricsFeatureTourEffect.js`.
 
 ## Tour Styling and Configuration
 
 ### Joyride Styling
 
-Default styles for tours are exported from `TourTooltips`. The exact values for `overlayColor` and the spotlight `border` are conditional on the `setupFlowRefresh` feature flag; the simplified shape is:
+Default styles for tours are exported from `TourTooltips`:
 
 ```javascript
 export const joyrideStyles = {
 	options: {
 		arrowColor: '#3c7251', // $c-content-primary
 		backgroundColor: '#3c7251', // $c-content-primary
-		overlayColor: 'rgba(0, 0, 0, 0.6)', // Dark overlay
+		overlayColor: 'rgba(0, 0, 0, 0.25)',
 		textColor: '#fff', // $c-content-on-primary
-		zIndex: 20000, // High z-index
+		zIndex: 20000,
 	},
 	spotlight: {
-		border: '2px solid #3c7251', // $c-content-primary
-		backgroundColor: '#fff', // White background
+		border: 'none',
+		backgroundColor: '#fff',
 	},
 };
 
@@ -562,8 +562,8 @@ Tours automatically add CSS classes for styling:
 	/* Tooltip card styles */
 }
 
-.googlesitekit-tooltip-indicators {
-	/* Step indicator styles */
+.googlesitekit-tooltip-steps {
+	/* Step counter styles, e.g. "2 / 5" */
 }
 ```
 

@@ -25,7 +25,6 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -36,11 +35,8 @@ import Intents from 'googlesitekit-intents';
 import DashboardMainApp from '@/js/components/DashboardMainApp';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
-import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_INTENTS } from '@/js/googlesitekit/datastore/intents/constants';
 import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { ErrorObject } from '@/js/util/errors';
 
@@ -80,12 +76,6 @@ const IntentRenderer: FC< IntentRendererProps > = ( { slug, intentCode } ) => {
 		[ slug, intentCode ]
 	) as ErrorObject | undefined;
 
-	const dashboardURL = useSelect(
-		( select: Select ) =>
-			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard' ),
-		[]
-	) as string | undefined;
-
 	if ( ! IntentComponent ) {
 		return <DashboardMainApp />;
 	}
@@ -100,31 +90,13 @@ const IntentRenderer: FC< IntentRendererProps > = ( { slug, intentCode } ) => {
 					<Row>
 						<Cell size={ 12 }>
 							{ isLoadingIntent && <ProgressBar /> }
-							{ intentError && (
-								<Notice
-									type={ NOTICE_TYPES.ERROR }
-									title={ __(
-										'We couldn’t load your request',
-										'google-site-kit'
-									) }
-									description={ __(
-										'The link may already have been used, or it may have expired. You can start again from the Google Ads console.',
-										'google-site-kit'
-									) }
-									ctaButton={ {
-										label: __(
-											'Go to dashboard',
-											'google-site-kit'
-										),
-										href: dashboardURL,
-									} }
-								/>
-							) }
-							{ intent && (
+							{ /* The intent component shows the error itself, since what the user should do next differs for each type of intent. */ }
+							{ ( intent || intentError ) && (
 								<IntentComponent
 									slug={ slug }
 									intentCode={ intentCode }
-									payload={ intent.payload }
+									payload={ intent?.payload }
+									error={ intentError }
 								/>
 							) }
 						</Cell>

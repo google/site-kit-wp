@@ -28,6 +28,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { setItem } from '@/js/googlesitekit/api/cache';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -58,6 +59,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { getPreviousDate } from '@/js/util';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import { fireEvent, render, waitFor, within } from '@tests/js/test-utils';
 import {
@@ -71,6 +73,9 @@ import { surveyTriggerEndpoint } from '../../../../../../../tests/js/mock-survey
 import OnlineStorePerformanceWidget from './OnlineStorePerformanceWidget';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 describe( 'OnlineStorePerformanceWidget', () => {
 	let registry: WPDataRegistry;
@@ -1635,7 +1640,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'dispatches an up vote on thumbs-up click', async () => {
+	it( 'should track and dispatch an up vote on thumbs-up click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1658,12 +1663,21 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_up',
+			'ecommerce'
 		);
 
 		await waitFor( () =>
@@ -1677,7 +1691,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 	} );
 
-	it( 'dispatches a down vote on thumbs-down click', async () => {
+	it( 'should track and dispatch a down vote on thumbs-down click', async () => {
 		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
 
 		registry
@@ -1700,12 +1714,21 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		const { getByRole, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
 		await waitForRegistry();
 
+		mockTrackEvent.mockClear();
+
 		fireEvent.click(
 			getByRole( 'button', { name: 'No, this was not helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_site-goals-widget-survey',
+			'vote_down',
+			'ecommerce'
 		);
 
 		await waitFor( () =>

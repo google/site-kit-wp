@@ -311,5 +311,31 @@ describe( 'FeatureCTA', () => {
 				'googlesitekit-button-icon--spinner__running'
 			);
 		} );
+
+		it( 'should fire the setup complete callback when setup completes', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			const onSetupComplete = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureCTA
+					slug="test-feature"
+					onSetupComplete={ onSetupComplete }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			expect( onSetupComplete ).not.toHaveBeenCalled();
+
+			await waitFor( () =>
+				expect(
+					getByRole( 'button', { name: 'Set up now' } )
+				).not.toBeDisabled()
+			);
+
+			expect( onSetupComplete ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 } );

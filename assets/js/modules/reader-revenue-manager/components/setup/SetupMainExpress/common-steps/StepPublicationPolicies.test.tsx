@@ -20,13 +20,12 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import StepPublicationPolicies from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies';
+import StepPublicationPolicies, {
+	publicationPoliciesStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import {
-	EXPRESS_SETUP_STEPS,
-	MODULES_READER_REVENUE_MANAGER,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -66,7 +65,7 @@ describe( 'StepPublicationPolicies', () => {
 		provideModules( registry, moduleData );
 		provideModuleRegistrations( registry, moduleData );
 
-		global.location.href = `http://example.com/?step=${ EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES }`;
+		global.location.href = `http://example.com/?step=${ publicationPoliciesStep.slug }`;
 	} );
 
 	it( 'should render as a progress bar if the publication is loading', () => {

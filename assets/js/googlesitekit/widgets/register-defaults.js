@@ -192,16 +192,6 @@ export function registerDefaults( widgetsAPI ) {
 					return [];
 				}
 
-				const isAudienceSegmentationWidgetHidden =
-					select( CORE_USER ).isAudienceSegmentationWidgetHidden();
-
-				if (
-					isAudienceSegmentationWidgetHidden === undefined ||
-					isAudienceSegmentationWidgetHidden
-				) {
-					return [];
-				}
-
 				return areaWidgets;
 			},
 		},

@@ -19,15 +19,20 @@
 /**
  * Internal dependencies
  */
+import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
 import { FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { WELCOME_MODAL_NOTIFICATION } from '@/js/components/WelcomeModal';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
+	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 	PERMISSION_UPDATE_PLUGINS,
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
@@ -670,6 +675,61 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success';
 
 			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'feature_discovery_callout_notification', () => {
+		const notification =
+			DEFAULT_NOTIFICATIONS[ FEATURE_DISCOVERY_CALLOUT_NOTIFICATION ];
+
+		it( 'is registered only for main and entity dashboard admin contexts', () => {
+			expect( notification.viewContexts ).toEqual( [
+				VIEW_CONTEXT_MAIN_DASHBOARD,
+				VIEW_CONTEXT_ENTITY_DASHBOARD,
+			] );
+			expect( notification.viewContexts ).not.toContain(
+				VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
+			);
+			expect( notification.viewContexts ).not.toContain(
+				VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY
+			);
+			expect( notification.viewContexts ).not.toContain(
+				VIEW_CONTEXT_FEATURE_DISCOVERY
+			);
+			expect( notification.featureFlag ).toBe( 'featureDiscoveryHub' );
+		} );
+
+		it( 'requires the manage options capability', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				[ PERMISSION_MANAGE_OPTIONS ]: true,
+			} );
+
+			expect(
+				await notification.checkRequirements(
+					{
+						select: registry.select,
+						resolveSelect: registry.resolveSelect,
+					},
+					VIEW_CONTEXT_MAIN_DASHBOARD
+				)
+			).toBe( true );
+
+			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+				[ PERMISSION_MANAGE_OPTIONS ]: false,
+			} );
+
+			expect(
+				await notification.checkRequirements(
+					{
+						select: registry.select,
+						resolveSelect: registry.resolveSelect,
+					},
+					VIEW_CONTEXT_MAIN_DASHBOARD
+				)
+			).toBe( false );
 		} );
 	} );
 } );
