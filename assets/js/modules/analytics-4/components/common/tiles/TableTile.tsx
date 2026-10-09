@@ -27,7 +27,7 @@ import { FC, ReactNode } from 'react';
 import Link from '@/js/components/Link';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
-import TileShell from './TileShell';
+import TileShell, { TileShellProps } from './TileShell';
 import TileZeroDataMessage, { MetricLabel } from './TileZeroDataMessage';
 
 export interface TableTileRow {
@@ -41,6 +41,8 @@ export interface TableTileRow {
 
 export interface TableTileProps {
 	title: string;
+	/** The heading element of the title, `h3` unless the tile sits under an `h3`. */
+	titleAs?: TileShellProps[ 'titleAs' ];
 	headerLabel?: string;
 	rows?: TableTileRow[];
 	loading?: boolean;
@@ -48,10 +50,16 @@ export interface TableTileProps {
 	limit?: number;
 	noDataMetricLabel?: MetricLabel;
 	zeroState?: ReactNode;
+	/**
+	 * Called when the "Retry" button of the error state is clicked, after the
+	 * button requests the failed report again.
+	 */
+	onRetry?: () => void;
 }
 
 const TableTile: FC< TableTileProps > = ( {
 	title,
+	titleAs,
 	headerLabel,
 	rows = [],
 	loading = false,
@@ -59,6 +67,7 @@ const TableTile: FC< TableTileProps > = ( {
 	limit,
 	noDataMetricLabel,
 	zeroState,
+	onRetry,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
@@ -66,6 +75,7 @@ const TableTile: FC< TableTileProps > = ( {
 		<TileShell
 			baseClassName="googlesitekit-table-tile"
 			title={ title }
+			titleAs={ titleAs }
 			headerLabel={ headerLabel }
 		>
 			{ loading && (
@@ -78,7 +88,11 @@ const TableTile: FC< TableTileProps > = ( {
 
 			{ ! loading && !! error && (
 				<div className="googlesitekit-table-tile__error">
-					<ReportError moduleSlug="analytics-4" error={ error } />
+					<ReportError
+						moduleSlug="analytics-4"
+						error={ error }
+						onRetry={ onRetry }
+					/>
 				</div>
 			) }
 

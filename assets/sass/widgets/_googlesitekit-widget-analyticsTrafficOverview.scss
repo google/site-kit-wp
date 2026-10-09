@@ -317,6 +317,111 @@
 			}
 		}
 
+		// The typography classes have the font. Only the colour and the
+		// spacing are set here.
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-columns {
+			display: grid;
+
+			// The phone design stacks the columns 8px apart. The tablet design
+			// stacks every three-across group of the tab, so the columns stay
+			// stacked through tablet. Three columns from desktop up.
+			gap: 8px;
+			grid-template-columns: minmax(0, 1fr);
+			margin-top: 12px;
+
+			@media (min-width: $bp-desktop) {
+				gap: 42px;
+
+				// Equal fractions, so the two columns left on a site with no
+				// published posts keep their widths.
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			// Each column has a rail and a dot, the way the site goals goal
+			// drivers do. The design ends the shares 16px before the right
+			// edge of the column.
+			.googlesitekit-table-tile {
+				padding: 8px 16px 8px $tile-content-offset;
+				position: relative;
+
+				&::before {
+					background: $c-utility-divider;
+					bottom: 0;
+					content: "";
+					left: $tile-connector-offset;
+					position: absolute;
+					top: 0;
+					width: 2px;
+				}
+
+				// Below the 8px of padding, the title's line is 20px, so a 9px
+				// dot 15px from the top sits on the middle of its lowercase
+				// letters, as in the Traffic overview tab's breakdown.
+				&::after {
+					background: $c-utility-divider;
+					border-radius: 50%;
+					content: "";
+					height: 9px;
+					left: 0;
+					position: absolute;
+					top: 15px;
+					width: 9px;
+				}
+			}
+
+			// The design sets the title in the body medium style, whose line
+			// is 20px.
+			.googlesitekit-table-tile__title.googlesitekit-typography {
+				line-height: $lh-body-md;
+			}
+
+			// Each row starts 24px below the one above it.
+			.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+				margin-top: 4px;
+			}
+
+			// The label cell hides what overflows it, which hides the dotted
+			// outline of a focused post link. A padding of 4px fits the
+			// outline's 3px offset and 1px width, and the negative margin
+			// keeps the text in place.
+			.googlesitekit-table-tile__cell--label {
+				margin: -4px;
+				padding: 4px;
+			}
+
+			// A post title has the weight of the channel and referral labels.
+			// The weight goes on the link's text, because the tile sets the
+			// link itself to the normal weight.
+			.googlesitekit-table-tile__cell--label .googlesitekit-cta-link__contents {
+				font-weight: $fw-medium;
+			}
+
+			// The counts and the shares have the letter spacing of the body
+			// medium style.
+			.googlesitekit-table-tile__cell--value {
+				font-variant-numeric: tabular-nums;
+				letter-spacing: $ls-s;
+			}
+
+			// The share has the colour of the visitor count, and a width of
+			// its own, so the counts above and below it line up. `7ch` fits
+			// the widest shares, "(>99.9%)" and "(<0.1%)". The design ends
+			// each share 70px past the end of its count, and `7ch` is 65px
+			// in Google Sans Text, so the margin is 5px.
+			.googlesitekit-table-tile__secondary-value {
+				color: $c-surfaces-on-surface;
+				display: inline-block;
+				margin-left: 5px;
+				min-width: 7ch;
+				text-align: right;
+			}
+		}
+
 		.googlesitekit-traffic-overview__latest-post-performance {
 			margin-top: 48px;
 

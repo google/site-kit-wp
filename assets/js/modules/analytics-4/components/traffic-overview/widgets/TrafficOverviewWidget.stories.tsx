@@ -34,6 +34,10 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import {
+	createBreakdownReport,
+	provideRecentTrafficBreakdownReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -148,15 +152,40 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property and the site's latest post in the store, so
- * the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the site's latest post and the reports of
+ * the recent traffic breakdown in the store, so the Recent activity tab
+ * renders without sending a request.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry to put the property and the post in.
+ * @param {Object} registry The registry to put the property, the post and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
+	provideRecentTrafficBreakdownReports( registry, {
+		posts: createBreakdownReport( [
+			[ '/autumn-recipes/', 64 ],
+			[ '/winter-soups/', 23 ],
+			[ '/spring-salads/', 9 ],
+			[ '/summer-drinks/', 4 ],
+		] ),
+		postTitles: {
+			'/autumn-recipes/': 'Autumn recipes',
+			'/winter-soups/': 'Winter soups',
+			'/spring-salads/': 'Spring salads',
+		},
+		channels: createBreakdownReport( [
+			[ 'Direct', 52 ],
+			[ 'Organic Search', 31 ],
+			[ 'Referral', 12 ],
+			[ 'Organic Social', 5 ],
+		] ),
+		referrals: createBreakdownReport( [
+			[ 'substack.com', 7 ],
+			[ 'reddit.com', 3 ],
+			[ 'medium.com', 2 ],
+		] ),
+	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
@@ -362,8 +391,10 @@ RecentActivityGatheringData.scenario = {
 
 /**
  * This story sets no `scenario`, so it runs no visual check. When the site has
- * no published posts, the Recent activity tab only omits the latest post
- * performance, which renders no content yet.
+ * no published posts, the Recent activity tab omits the latest post
+ * performance, which renders no content yet, and the "Top posts by visitors"
+ * column, which the "No Published Posts" story of `RecentTrafficBreakdown`
+ * captures.
  */
 export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
 RecentActivityNoPublishedPosts.storyName =

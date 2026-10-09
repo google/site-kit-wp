@@ -285,6 +285,7 @@ class RequestHelpers {
 				'pageTitle',
 				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
+				'sessionSource',
 				'customEvent:googlesitekit_event_provider',
 				'customEvent:googlesitekit_form_id',
 				'customEvent:googlesitekit_post_author',
