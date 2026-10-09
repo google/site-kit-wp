@@ -19,8 +19,8 @@
 /**
  * Internal dependencies
  */
-import { getDateString } from '@/js/util';
-import { createTestRegistry } from '@tests/js/utils';
+import { getDateString, stringToDate } from '@/js/util';
+import { createTestRegistry, provideTimezone } from '@tests/js/utils';
 import { CORE_USER } from './constants';
 
 describe( 'core/user date-range', () => {
@@ -63,23 +63,38 @@ describe( 'core/user date-range', () => {
 			} );
 
 			it.each( [
-				{ type: 'preset', slug: 'last-7-days' },
-				{ type: 'preset', slug: 'last-14-days' },
-				{ type: 'preset', slug: 'last-28-days' },
-				{ type: 'preset', slug: 'last-90-days' },
-				{ type: 'calendarMonth', month: '2026-09' },
-				{ type: 'calendarMonth', month: '2025-08' },
-				{
-					type: 'custom',
-					startDate: '2025-08-01',
-					endDate: '2026-09-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-09-07',
-					endDate: '2026-09-07',
-				},
-			] )( 'should commit a valid selection %j', async ( selection ) => {
+				[ 'a 7-day preset', { type: 'preset', slug: 'last-7-days' } ],
+				[
+					'the legacy 14-day preset',
+					{ type: 'preset', slug: 'last-14-days' },
+				],
+				[ 'a 28-day preset', { type: 'preset', slug: 'last-28-days' } ],
+				[ 'a 90-day preset', { type: 'preset', slug: 'last-90-days' } ],
+				[
+					'the current calendar month',
+					{ type: 'calendarMonth', month: '2026-09' },
+				],
+				[
+					'the earliest selectable month',
+					{ type: 'calendarMonth', month: '2025-08' },
+				],
+				[
+					'the full selectable window',
+					{
+						type: 'custom',
+						startDate: '2025-08-01',
+						endDate: '2026-09-07',
+					},
+				],
+				[
+					'a single-day custom range',
+					{
+						type: 'custom',
+						startDate: '2026-09-07',
+						endDate: '2026-09-07',
+					},
+				],
+			] )( 'should commit %s', async ( _label, selection ) => {
 				await registry
 					.dispatch( CORE_USER )
 					.setDateRangeSelection( selection );
@@ -89,69 +104,120 @@ describe( 'core/user date-range', () => {
 			} );
 
 			it.each( [
-				undefined,
-				null,
-				{},
-				[],
-				'last-28-days',
-				{ type: 'invalid' },
-				{ type: 'preset' },
-				{ type: 'preset', slug: 28 },
-				{ type: 'preset', slug: 'invalid-range' },
-				{ type: 'calendarMonth' },
-				{ type: 'calendarMonth', month: 202609 },
-				{ type: 'calendarMonth', month: '2026-9' },
-				{ type: 'calendarMonth', month: '2026-09-01' },
-				{ type: 'calendarMonth', month: '2026-00' },
-				{ type: 'calendarMonth', month: '2026-13' },
-				{ type: 'calendarMonth', month: '2025-07' },
-				{ type: 'calendarMonth', month: '2026-10' },
-				{ type: 'custom' },
-				{ type: 'custom', startDate: '2026-08-01' },
-				{ type: 'custom', startDate: 1, endDate: '2026-09-07' },
-				{
-					type: 'custom',
-					startDate: '2026-08-1',
-					endDate: '2026-09-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-08-01',
-					endDate: '2026-9-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-02-29',
-					endDate: '2026-09-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-08-01',
-					endDate: '2026-08-32',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-08-01T00:00:00Z',
-					endDate: '2026-09-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-09-07',
-					endDate: '2026-09-06',
-				},
-				{
-					type: 'custom',
-					startDate: '2025-07-31',
-					endDate: '2026-09-07',
-				},
-				{
-					type: 'custom',
-					startDate: '2026-09-07',
-					endDate: '2026-09-08',
-				},
+				[ 'an undefined selection', undefined ],
+				[ 'a null selection', null ],
+				[ 'an empty object', {} ],
+				[ 'an array', [] ],
+				[ 'a bare slug', 'last-28-days' ],
+				[ 'an unknown selection type', { type: 'invalid' } ],
+				[ 'a missing preset slug', { type: 'preset' } ],
+				[ 'a numeric preset slug', { type: 'preset', slug: 28 } ],
+				[
+					'an invalid preset slug',
+					{ type: 'preset', slug: 'invalid-range' },
+				],
+				[ 'a missing calendar month', { type: 'calendarMonth' } ],
+				[
+					'a numeric calendar month',
+					{ type: 'calendarMonth', month: 202609 },
+				],
+				[
+					'an unpadded calendar month',
+					{ type: 'calendarMonth', month: '2026-9' },
+				],
+				[
+					'a full date as the month',
+					{ type: 'calendarMonth', month: '2026-09-01' },
+				],
+				[ 'month zero', { type: 'calendarMonth', month: '2026-00' } ],
+				[
+					'month thirteen',
+					{ type: 'calendarMonth', month: '2026-13' },
+				],
+				[
+					'a month before the window',
+					{ type: 'calendarMonth', month: '2025-07' },
+				],
+				[
+					'a future month',
+					{ type: 'calendarMonth', month: '2026-10' },
+				],
+				[ 'missing custom endpoints', { type: 'custom' } ],
+				[
+					'a missing custom end date',
+					{ type: 'custom', startDate: '2026-08-01' },
+				],
+				[
+					'a numeric custom start date',
+					{ type: 'custom', startDate: 1, endDate: '2026-09-07' },
+				],
+				[
+					'an unpadded custom start date',
+					{
+						type: 'custom',
+						startDate: '2026-08-1',
+						endDate: '2026-09-07',
+					},
+				],
+				[
+					'an unpadded custom end date',
+					{
+						type: 'custom',
+						startDate: '2026-08-01',
+						endDate: '2026-9-07',
+					},
+				],
+				[
+					'a non-leap February 29',
+					{
+						type: 'custom',
+						startDate: '2026-02-29',
+						endDate: '2026-09-07',
+					},
+				],
+				[
+					'an impossible end date',
+					{
+						type: 'custom',
+						startDate: '2026-08-01',
+						endDate: '2026-08-32',
+					},
+				],
+				[
+					'a timestamp as the start date',
+					{
+						type: 'custom',
+						startDate: '2026-08-01T00:00:00Z',
+						endDate: '2026-09-07',
+					},
+				],
+				[
+					'reversed custom endpoints',
+					{
+						type: 'custom',
+						startDate: '2026-09-07',
+						endDate: '2026-09-06',
+					},
+				],
+				[
+					'a custom start before the window',
+					{
+						type: 'custom',
+						startDate: '2025-07-31',
+						endDate: '2026-09-07',
+					},
+				],
+				[
+					'a custom end after the reference date',
+					{
+						type: 'custom',
+						startDate: '2026-09-07',
+						endDate: '2026-09-08',
+					},
+				],
 			] )(
-				'should reject an invalid selection %j without changing state',
-				async ( selection ) => {
+				'should reject %s without changing state',
+				async ( _label, selection ) => {
 					await expect(
 						registry
 							.dispatch( CORE_USER )
@@ -343,6 +409,7 @@ describe( 'core/user date-range', () => {
 		describe( 'selection resolution', () => {
 			it.each( [
 				[
+					'a 28-day preset',
 					{ type: 'preset', slug: 'last-28-days' },
 					'last-28-days',
 					28,
@@ -352,6 +419,7 @@ describe( 'core/user date-range', () => {
 					'2026-08-10',
 				],
 				[
+					'a completed calendar month',
 					{ type: 'calendarMonth', month: '2026-08' },
 					'month-2026-08',
 					31,
@@ -361,6 +429,7 @@ describe( 'core/user date-range', () => {
 					'2026-07-31',
 				],
 				[
+					'the current partial month',
 					{ type: 'calendarMonth', month: '2026-09' },
 					'month-2026-09',
 					7,
@@ -370,6 +439,7 @@ describe( 'core/user date-range', () => {
 					'2026-08-31',
 				],
 				[
+					'a custom range spanning months',
 					{
 						type: 'custom',
 						startDate: '2026-04-04',
@@ -383,6 +453,7 @@ describe( 'core/user date-range', () => {
 					'2026-04-03',
 				],
 				[
+					'a single-day custom range',
 					{
 						type: 'custom',
 						startDate: '2026-09-07',
@@ -396,8 +467,9 @@ describe( 'core/user date-range', () => {
 					'2026-09-06',
 				],
 			] )(
-				'should resolve %j and its immediately preceding comparison period',
+				'should resolve %s and its immediately preceding comparison period',
 				async (
+					_label,
 					selection,
 					slug,
 					days,
@@ -431,25 +503,81 @@ describe( 'core/user date-range', () => {
 			);
 
 			it.each( [
-				[ '2026-10-07', '2026-10-01', '2026-09-24', '2026-09-30' ],
-				[ '2026-03-10', '2026-03-04', '2026-02-25', '2026-03-03' ],
+				[
+					'Sydney spring forward',
+					'Australia/Sydney',
+					'2026-10-07',
+					'2026-10-01',
+					'2026-09-24',
+					'2026-09-30',
+					-600,
+					-660,
+				],
+				[
+					'Sydney fall back',
+					'Australia/Sydney',
+					'2026-04-07',
+					'2026-04-01',
+					'2026-03-25',
+					'2026-03-31',
+					-660,
+					-600,
+				],
+				[
+					'New York spring forward',
+					'America/New_York',
+					'2026-03-10',
+					'2026-03-04',
+					'2026-02-25',
+					'2026-03-03',
+					300,
+					240,
+				],
+				[
+					'New York fall back',
+					'America/New_York',
+					'2026-11-03',
+					'2026-10-28',
+					'2026-10-21',
+					'2026-10-27',
+					240,
+					300,
+				],
 			] )(
-				'should keep preset and comparison periods at seven calendar days across DST at %s',
+				'should keep preset and comparison periods at seven calendar days across %s',
 				(
+					_label,
+					timezone,
 					referenceDate,
 					startDate,
 					compareStartDate,
-					compareEndDate
+					compareEndDate,
+					startOffset,
+					endOffset
 				) => {
+					const originalTimezone = provideTimezone( timezone );
+
+					// Ensure this case actually crosses the expected DST transition.
+					expect(
+						stringToDate( startDate ).getTimezoneOffset()
+					).toBe( startOffset );
+
+					expect(
+						stringToDate( referenceDate ).getTimezoneOffset()
+					).toBe( endOffset );
+
 					registry
 						.dispatch( CORE_USER )
 						.setReferenceDate( referenceDate );
+
 					registry
 						.dispatch( CORE_USER )
 						.setDateRange( 'last-7-days' );
+
 					expect(
 						registry.select( CORE_USER ).getDateRangeNumberOfDays()
 					).toBe( 7 );
+
 					expect(
 						registry
 							.select( CORE_USER )
@@ -460,6 +588,8 @@ describe( 'core/user date-range', () => {
 						compareStartDate,
 						compareEndDate,
 					} );
+
+					provideTimezone( originalTimezone );
 				}
 			);
 
@@ -526,12 +656,12 @@ describe( 'core/user date-range', () => {
 
 		describe( 'selectable window', () => {
 			it.each( [
-				[ '2026-09-07', '2025-08-01' ],
-				[ '2026-01-01', '2024-12-01' ],
-				[ '2024-02-29', '2023-01-01' ],
+				[ 'a mid-month reference date', '2026-09-07', '2025-08-01' ],
+				[ 'the first day of a year', '2026-01-01', '2024-12-01' ],
+				[ 'a leap-day reference date', '2024-02-29', '2023-01-01' ],
 			] )(
-				'should bound the window at %s',
-				( referenceDate, earliestDate ) => {
+				'should bound the window for %s',
+				( _label, referenceDate, earliestDate ) => {
 					registry
 						.dispatch( CORE_USER )
 						.setReferenceDate( referenceDate );
