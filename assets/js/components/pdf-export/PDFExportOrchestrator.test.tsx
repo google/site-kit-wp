@@ -357,6 +357,18 @@ describe( 'PDFExportOrchestrator', () => {
 		expect( pdf ).toHaveBeenCalledTimes( 2 );
 	} );
 
+	it( 'should download the PDF with a filename naming the site and the reporting period', async () => {
+		await renderAndCaptureReport();
+
+		await waitFor( () => expect( triggerDownload ).toHaveBeenCalled() );
+
+		// The last 28 days, ending the day before the `2021-01-10` reference date.
+		expect( triggerDownload ).toHaveBeenCalledWith(
+			'blob:mock-url',
+			'Site Kit Dashboard - example.com - Dec 13, 2020 – Jan 9, 2021.pdf'
+		);
+	} );
+
 	it( 'sizes the final page to the measured content height plus the bottom padding', async () => {
 		const getData: jest.Mock = jest.fn( () =>
 			Promise.resolve( { data: { totalUsers: 100 } } )

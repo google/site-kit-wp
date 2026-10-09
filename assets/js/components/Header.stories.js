@@ -74,8 +74,6 @@ PluginHeader.args = {
 	},
 };
 PluginHeader.scenario = {
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
 	delay: 3000,
 };
 
@@ -88,8 +86,6 @@ HeaderWithDateSelector.args = {
 	},
 };
 HeaderWithDateSelector.scenario = {
-	hierarchyRootSeparator: '|',
-	hierarchySeparator: {},
 	delay: 3000,
 };
 
@@ -105,7 +101,6 @@ HeaderWithHelpMenu.scenario = {
 	delay: 3000,
 	clickSelector: '.googlesitekit-help-menu__button',
 	postInteractionWait: 3000,
-	onReadyScript: 'mouse.js',
 };
 
 export const HeaderWithAddFeaturesButton = Template.bind( {} );

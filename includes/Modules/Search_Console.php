@@ -33,9 +33,12 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Datapoint_Exception;
 use Google\Site_Kit\Core\Util\Date;
+use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Google_URL_Matcher_Trait;
 use Google\Site_Kit\Core\Util\Google_URL_Normalizer;
+use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Core\Util\Sort;
+use Google\Site_Kit\Modules\Search_Console\Benchmarking\Report_Data_Builder;
 use Google\Site_Kit\Modules\Search_Console\Settings;
 use Google\Site_Kit\Modules\Search_Console\Datapoints\Batch_Search_Analytics;
 use Google\Site_Kit\Modules\Search_Console\Datapoints\Get_Search_Analytics;
@@ -62,6 +65,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	use Module_With_Assets_Trait;
 	use Module_With_Owner_Trait;
 	use Module_With_Data_Available_State_Trait;
+	use Method_Proxy_Trait;
 
 	/**
 	 * Module slug name.
@@ -72,6 +76,7 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
+	 * @since n.e.x.t Added the search query rows to the benchmarking contextual data.
 	 */
 	public function register() {
 		$this->register_scopes_hook();
@@ -142,6 +147,10 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 			},
 			11
 		);
+
+		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
+			add_filter( 'googlesitekit_benchmarking_contextual_data', $this->get_method_proxy( 'add_search_query_rows' ), 10, 2 );
+		}
 	}
 
 	/**
@@ -379,6 +388,32 @@ final class Search_Console extends Module implements Module_With_Scopes, Module_
 		$option = $this->get_settings()->get();
 
 		return $option['propertyID'];
+	}
+
+	/**
+	 * Adds the search query rows to the contextual data of the benchmarking response.
+	 *
+	 * `is_connected()` is always `true` for Search Console, so the property is
+	 * what tells whether there is anything to report.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $contextual_data The rows of the benchmarking response, keyed by `contextualData` key.
+	 * @param array $args            The period the rows are for, with `start_date`, `end_date`, `compare_start_date`, `compare_end_date`, and `row_limit`.
+	 * @return array The contextual data, with the `searchQueries` rows when Search Console reported any.
+	 */
+	private function add_search_query_rows( array $contextual_data, array $args ) {
+		if ( empty( $this->get_property_id() ) ) {
+			return $contextual_data;
+		}
+
+		$rows = ( new Report_Data_Builder( $this ) )->build_search_query_rows( $args );
+
+		if ( ! empty( $rows ) ) {
+			$contextual_data['searchQueries'] = $rows;
+		}
+
+		return $contextual_data;
 	}
 
 	/**

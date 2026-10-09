@@ -282,9 +282,9 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   unmet, feature disabled, invalid input, empty or error response.
 - **Storybook stories belong here, not in the brief.** "Add a Story for `<Component>`", or list
   the states when there is more than one: "(default, loading, error)".
-- **VRT belongs here too, not in a section of its own.** Say what the change does to the Backstop
-  scenarios and the reference images — a new scenario for a new story, new references for a
-  component whose rendering changes. "No VRT changes expected" is a complete answer when nothing
+- **VRT belongs here too, not in a section of its own.** Say what the change does to the VRT
+  scenarios and the reference images — a new scenario for a new story, new reference images for
+  a component whose rendering changes. "No VRT changes expected" is a complete answer when nothing
   the VRT job renders can move.
 - **Say so when nothing is needed, and say why.** Never leave Test Coverage empty, and never drop
   the Storybook or VRT line in silence. When the change needs no tests or no story, write one
