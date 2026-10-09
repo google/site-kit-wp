@@ -94,6 +94,25 @@ export function requireAdSenseLinked() {
 }
 
 /**
+ * Returns a function that checks if AdSense is not linked to the connected Analytics property.
+ *
+ * This is not the inverse of `requireAdSenseLinked()`: the requirement is
+ * only satisfied when AdSense is known to be unlinked, so an unresolved
+ * `undefined` value does not pass.
+ *
+ * @since n.e.x.t
+ *
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether AdSense is not linked or not.
+ */
+export function requireAdSenseNotLinked() {
+	return async ( { select, resolveSelect } ) => {
+		await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+		return false === select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
+	};
+}
+
+/**
  * Returns a function that checks if the connected web datastream is not available.
  *
  * @since 1.166.0

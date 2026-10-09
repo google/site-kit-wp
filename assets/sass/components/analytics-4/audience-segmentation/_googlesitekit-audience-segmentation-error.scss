@@ -65,7 +65,7 @@
 		.googlesitekit-widget-audience-segmentation-error__svg-wrapper {
 			display: flex;
 			justify-content: flex-start;
-			margin: $grid-gap-phone $grid-gap-phone / 2 0;
+			margin: $grid-gap-phone $grid-gap-phone * 0.5 0;
 
 			@media (min-width: $width-desktop + 1 + px) {
 				justify-content: space-evenly;

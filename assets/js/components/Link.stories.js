@@ -260,7 +260,6 @@ VRTStory.storyName = 'All Links VRT';
 VRTStory.scenario = {
 	hoverSelector: '.googlesitekit-cta-link--hover',
 	postInteractionWait: 1000,
-	onReadyScript: 'mouse.js',
 };
 
 export default {

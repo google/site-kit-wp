@@ -10,6 +10,7 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Benchmarking;
 
+use Exception;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
@@ -837,6 +838,311 @@ class Response_BuilderTest extends TestCase {
 		$this->builder->build( '2026-08-19', '2026-09-15' );
 
 		$this->assertCount( 2, $this->batch_requests, 'The second `build()` call should make its own batch call rather than reuse the first response.' );
+	}
+
+	public function test_build__runs_the_contextual_data_filter_with_the_rows_built_so_far_and_the_period() {
+		$this->report_rows = array(
+			'date'                          => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+			'sessionDefaultChannelGrouping' => array(
+				array( 'Organic Search', 'date_range_0', 210 ),
+				array( 'Organic Search', 'date_range_1', 168 ),
+			),
+		);
+
+		$filter_args = array();
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( ...$args ) use ( &$filter_args ) {
+				$filter_args = $args;
+
+				return $args[0];
+			},
+			10,
+			2
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				array(
+					'channels'   => array(
+						array(
+							'label'    => 'Organic Search',
+							'current'  => 210,
+							'previous' => 168,
+						),
+					),
+					'devices'    => array(),
+					'visitorMix' => array(),
+					'referrers'  => array(),
+				),
+				array(
+					'start_date'         => '2026-08-19',
+					'end_date'           => '2026-09-15',
+					'compare_start_date' => '2026-07-22',
+					'compare_end_date'   => '2026-08-18',
+					'row_limit'          => 50,
+				),
+			),
+			$filter_args,
+			'The filter should receive the rows built from the Analytics reports, before they are ranked, and the two periods with the row limit of `50`.'
+		);
+	}
+
+	public function test_build__passes_only_the_rows_to_a_callback_that_accepts_one_argument() {
+		$filter_arg_count = 0;
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( ...$args ) use ( &$filter_arg_count ) {
+				$filter_arg_count = count( $args );
+
+				return $args[0];
+			}
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame( 1, $filter_arg_count, 'A callback added with the default of one accepted argument should receive only the rows, as `apply_filters()` would pass them.' );
+	}
+
+	public function test_build__passes_the_validated_rows_of_a_callback_to_the_next_callback() {
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['browsers']      = array(
+					array(
+						'label'    => 'Chrome',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				);
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => '300',
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$received_data = array();
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) use ( &$received_data ) {
+				$received_data = $contextual_data;
+
+				return $contextual_data;
+			},
+			20
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				'channels'      => array(),
+				'devices'       => array(),
+				'visitorMix'    => array(),
+				'referrers'     => array(),
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				),
+			),
+			$received_data,
+			'The callback at priority 20 should receive the rows the first callback returned after they are validated: without `browsers`, and with `current` stored as `300`.'
+		);
+	}
+
+	public function test_build__runs_the_callbacks_in_the_order_of_their_priority_when_the_later_priority_is_added_first() {
+		$received_data = array();
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) use ( &$received_data ) {
+				$received_data = $contextual_data;
+
+				return $contextual_data;
+			},
+			20
+		);
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				);
+
+				return $contextual_data;
+			},
+			5
+		);
+
+		$this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertArrayHasKey( 'searchQueries', $received_data, 'The callback at priority 20 should run after the one at priority 5, and receive its `searchQueries` rows, even though it was added first.' );
+	}
+
+	public function test_build__keeps_the_5_highest_scoring_of_40_rows_a_callback_adds_and_orders_their_dimension_by_the_sum_of_their_scores() {
+		$this->provide_reports_for_every_dimension();
+
+		$analytics_response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array_map(
+					fn( $index ) => array(
+						'label'            => sprintf( 'query %02d', $index ),
+						'current'          => 100 + $index,
+						'previous'         => 10,
+						'positionCurrent'  => 5.0,
+						'positionPrevious' => 6.0,
+					),
+					range( 0, 39 )
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array( 'query 39', 'query 38', 'query 37', 'query 36', 'query 35' ),
+			array_column( $response['contextualData']['searchQueries'], 'label' ),
+			'`searchQueries` should keep the 5 of its 40 rows that gained the most clicks, highest first.'
+		);
+		$this->assertSame(
+			array_merge( array( 'SEARCH_QUERIES' ), $analytics_response['dimensions'] ),
+			$response['dimensions'],
+			'`dimensions` should list `SEARCH_QUERIES` first, since the scores of its 40 rows add up to more than any other dimension, and keep the order of the others.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_failing_contextual_data_callbacks
+	 *
+	 * @param callable $failing_callback A `googlesitekit_benchmarking_contextual_data` callback that fails.
+	 */
+	public function test_build__keeps_the_rows_of_analytics_and_of_every_other_callback_when_a_callback_fails( $failing_callback ) {
+		$this->provide_reports_for_every_dimension();
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$expected_response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		// The failing callback runs first, at priority 5, so the callback above
+		// still has to receive the rows built from Analytics reports.
+		add_filter( 'googlesitekit_benchmarking_contextual_data', $failing_callback, 5 );
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertContains( 'SEARCH_QUERIES', $expected_response['dimensions'], 'The response without the failing callback should list `SEARCH_QUERIES`.' );
+		$this->assertSame( $expected_response, $response, 'The failing callback should leave the response the same, with the `searchQueries` rows of the other callback and every dimension built from Analytics reports.' );
+	}
+
+	public function data_failing_contextual_data_callbacks() {
+		return array(
+			'a callback that throws'           => array(
+				function () {
+					throw new Exception( 'The callback failed.' );
+				},
+			),
+			'a callback that returns a string' => array(
+				fn() => 'plant garlic',
+			),
+			'a callback that returns nothing'  => array(
+				function () {},
+			),
+		);
+	}
+
+	public function test_build__removes_a_key_a_callback_adds_that_the_response_does_not_define_and_keeps_the_rest() {
+		$this->report_rows = array(
+			'date' => array(
+				array( '20260818', 388 ),
+				array( '20260915', 412 ),
+			),
+		);
+
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$contextual_data['browsers']      = array(
+					array(
+						'label'    => 'Chrome',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				);
+				$contextual_data['searchQueries'] = array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => '300',
+						'previous'         => 200,
+						'positionCurrent'  => '3.4',
+						'positionPrevious' => 4.8,
+					),
+				);
+
+				return $contextual_data;
+			}
+		);
+
+		$response = $this->builder->build( '2026-08-19', '2026-09-15' );
+
+		$this->assertSame(
+			array(
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 200,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				),
+			),
+			$response['contextualData'],
+			'`contextualData` should have the `searchQueries` row, with its numeric strings stored as numbers, and no `browsers` key.'
+		);
+		$this->assertSame( array( 'SEARCH_QUERIES' ), $response['dimensions'], '`dimensions` should list `SEARCH_QUERIES` alone.' );
 	}
 
 	public function test_rank_contextual_data__keeps_the_5_highest_scoring_rows_of_a_dimension() {

@@ -24,16 +24,22 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+} from '@/js/googlesitekit/constants';
 import {
 	CORE_USER,
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
+	act,
 	createTestRegistry,
 	render,
 	screen,
@@ -83,24 +89,11 @@ describe( 'RecentActivityPanel', () => {
 
 	// `ActivateAnalyticsCTA` observes when it scrolls into view, and jsdom
 	// has no `IntersectionObserver`.
-	mockIntersectionObserver();
+	const { getObservedElements, simulateIntersection } =
+		mockIntersectionObserver();
 
-	/**
-	 * Gets the class name of each element the panel renders directly inside
-	 * it, in the order the elements appear.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Element} container The element the panel rendered into.
-	 * @return {Array<string>} The class names.
-	 */
-	function getSectionClassNames( container: Element ) {
-		return Array.from(
-			container.querySelectorAll(
-				'.googlesitekit-traffic-overview__panel > *'
-			)
-		).map( ( section ) => section.className );
-	}
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -130,6 +123,10 @@ describe( 'RecentActivityPanel', () => {
 			],
 			status: 200,
 		} );
+	} );
+
+	afterEach( () => {
+		mockTrackEvent.mockClear();
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
@@ -198,6 +195,46 @@ describe( 'RecentActivityPanel', () => {
 		expect( panel.children ).toHaveLength( 1 );
 	} );
 
+	it( 'should track a `view_cta` event labeled `recent_activity` when the Analytics setup CTA is scrolled into view', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+
+		const activateAnalyticsCTA = getObservedElements().find( ( element ) =>
+			element.classList.contains( 'googlesitekit-activate-analytics-cta' )
+		);
+
+		act( () => {
+			simulateIntersection( activateAnalyticsCTA as Element, true );
+		} );
+
+		await waitFor( () => {
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				'mainDashboard_activate-analytics-cta',
+				'view_cta',
+				'recent_activity'
+			);
+		} );
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'should not request the recent posts when Analytics is not connected', async () => {
 		provideModules( registry, [
 			{
@@ -221,7 +258,7 @@ describe( 'RecentActivityPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should render the "No recent visitor data yet" notice in place of the insight notice and the recent traffic breakdown when Analytics is gathering data', async () => {
+	it( 'should render the "Gathering data…" notice in place of the insight notice and the recent traffic breakdown when Analytics is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
 		mockLatestPostReports();
 
@@ -232,11 +269,9 @@ describe( 'RecentActivityPanel', () => {
 
 		await waitForRegistry();
 
-		expect(
-			screen.getByText( 'No recent visitor data yet' )
-		).toBeInTheDocument();
+		expect( screen.getByText( 'Gathering data…' ) ).toBeInTheDocument();
 		expect( getSectionClassNames( container ) ).toEqual( [
-			'googlesitekit-notice-container',
+			'googlesitekit-gathering-data-notice googlesitekit-gathering-data-notice--has-style-large',
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 			'googlesitekit-traffic-overview__latest-post-performance',
 		] );

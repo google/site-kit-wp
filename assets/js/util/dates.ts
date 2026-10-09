@@ -43,6 +43,12 @@ export const DAY_IN_SECONDS = 24 * HOUR_IN_SECONDS;
 export const WEEK_IN_SECONDS = 7 * DAY_IN_SECONDS;
 export const MONTH_IN_SECONDS = 30 * DAY_IN_SECONDS;
 
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+};
+
 interface DateRangeOption {
 	slug: string;
 	label: string;
@@ -273,9 +279,28 @@ export function formatDate(
 	}
 
 	return new Intl.DateTimeFormat( getLocale(), {
-		year: 'numeric',
-		month: 'short',
-		day: 'numeric',
+		...DATE_FORMAT_OPTIONS,
 		...options,
 	} ).format( dateInstance );
+}
+
+/**
+ * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
+ * "Mar 1 – 7, 2026".
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param {string} endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return {string} The localized range, or an empty string when either date is invalid.
+ */
+export function formatDateRange( startDate: string, endDate: string ): string {
+	if ( ! isValidDateString( startDate ) || ! isValidDateString( endDate ) ) {
+		return '';
+	}
+
+	return new Intl.DateTimeFormat(
+		getLocale(),
+		DATE_FORMAT_OPTIONS
+	).formatRange( stringToDate( startDate ), stringToDate( endDate ) );
 }

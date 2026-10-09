@@ -20,6 +20,10 @@ import FeaturesProvider from '../../assets/js/components/FeaturesProvider';
 import InViewProvider from '../../assets/js/components/InViewProvider';
 import { Provider as ViewContextProvider } from '../../assets/js/components/Root/ViewContextContext';
 import { enabledFeatures } from '../../assets/js/features';
+import {
+	Provider as WidgetContextProvider,
+	type WidgetContextValue,
+} from '../../assets/js/googlesitekit/widgets/components/WidgetContext';
 import { createTestRegistry, createWaitForRegistry } from './utils';
 
 /**
@@ -45,6 +49,7 @@ type CustomRenderOptions = {
 	route?: string;
 	inView?: boolean;
 	viewContext?: string;
+	widget?: WidgetContextValue;
 };
 
 type CustomRenderResult = RenderResult & {
@@ -70,6 +75,7 @@ type CustomRenderResult = RenderResult & {
  * Renders the given UI into a container to make assertions.
  *
  * @since 1.25.0 Added `features` option.
+ * @since n.e.x.t Added `widget` option.
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
@@ -81,6 +87,7 @@ type CustomRenderResult = RenderResult & {
  * @param {string}       [options.route]       Route to pass to history as starting route.
  * @param {boolean}      [options.inView]      If the component should consider itself in-view (see `useInView` hook).
  * @param {string}       [options.viewContext] `viewContext` to use for this component and its children.
+ * @param {Object}       [options.widget]      Optional. The widget the component renders in (see `useWidget` hook).
  * @return {CustomRenderResult} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 function customRender(
@@ -98,6 +105,7 @@ function customRender(
 		route = undefined,
 		inView = true,
 		viewContext = null,
+		widget = {},
 		...renderOptions
 	} = options;
 
@@ -130,7 +138,11 @@ function customRender(
 					<FeaturesProvider value={ enabledFeatures }>
 						{ /* @ts-expect-error - `ViewContextProvider` is not typed yet. */ }
 						<ViewContextProvider value={ viewContext }>
-							<Router history={ history }>{ children }</Router>
+							<WidgetContextProvider value={ widget }>
+								<Router history={ history }>
+									{ children }
+								</Router>
+							</WidgetContextProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>
@@ -190,6 +202,7 @@ type CustomRenderHookResult< Props, Result > = RenderHookResult<
  * @since 1.12.0
  * @since 1.25.0 Added `features` option.
  * @since 1.45.0 Added `viewContext` option.
+ * @since n.e.x.t Added `widget` option.
  * @private
  *
  * @param {Function}            callback              The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.
@@ -200,6 +213,7 @@ type CustomRenderHookResult< Props, Result > = RenderHookResult<
  * @param {Object}              [options.registry]    Registry to use with the RegistryProvider. Default is a new test registry.
  * @param {string}              [options.viewContext] ViewContext value.
  * @param {boolean}             [options.inView]      If the component should consider itself in-view (see `useInView` hook).
+ * @param {Object}              [options.widget]      Optional. The widget the hook runs in (see `useWidget` hook).
  * @return {CustomRenderHookResult} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 function customRenderHook< Props, Result >(
@@ -214,6 +228,7 @@ function customRenderHook< Props, Result >(
 		history = createMemoryHistory(),
 		route = undefined,
 		inView = true,
+		widget = {},
 		...renderHookOptions
 	} = options;
 
@@ -246,7 +261,11 @@ function customRenderHook< Props, Result >(
 					<FeaturesProvider value={ enabledFeatures }>
 						{ /* @ts-expect-error - `ViewContextProvider` is not typed yet. */ }
 						<ViewContextProvider value={ viewContext }>
-							<Router history={ history }>{ children }</Router>
+							<WidgetContextProvider value={ widget }>
+								<Router history={ history }>
+									{ children }
+								</Router>
+							</WidgetContextProvider>
 						</ViewContextProvider>
 					</FeaturesProvider>
 				</RegistryProvider>

@@ -24,13 +24,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import {
-	RECENT_ACTIVITY_TAB_ID,
-	TRAFFIC_OVERVIEW_WIDGET_SLUG,
-} from '@/js/modules/analytics-4/components/traffic-overview/constants';
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
+import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -359,6 +360,10 @@ describe( 'TrafficOverviewWidget', () => {
 			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
 		);
 
+		// Selecting the Recent activity tab renders `RecentActivityPanel`, which
+		// starts requests of its own. We wait again here for those requests,
+		// because a response that arrives during the next test fails that test
+		// on an `act()` warning.
 		await waitForRegistry();
 
 		expect(
@@ -367,45 +372,6 @@ describe( 'TrafficOverviewWidget', () => {
 		expect(
 			container.querySelector( '.googlesitekit-widget__footer' )
 		).toHaveTextContent( 'Sources: Analytics Search Console' );
-	} );
-
-	it( 'should open on the "Recent activity" tab when the `freshData` feature flag is enabled and `initialActiveTabID` is the `id` of that tab', async () => {
-		registry
-			.dispatch( MODULES_SEARCH_CONSOLE )
-			.setPropertyID( 'https://example.com/' );
-		fetchMock.get( postsEndpoint, {
-			body: [
-				{
-					id: 12,
-					date_gmt: '2026-09-24T14:05:00',
-					link: 'http://example.com/autumn-recipes/',
-					title: { rendered: 'Autumn recipes' },
-				},
-			],
-			status: 200,
-		} );
-		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
-
-		const { waitForRegistry } = render(
-			<TrafficOverviewWidget
-				{ ...widgetComponentProps }
-				initialActiveTabID={ RECENT_ACTIVITY_TAB_ID }
-			/>,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'freshData' ],
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			screen.getByRole( 'tab', { selected: true } )
-		).toHaveTextContent( 'Recent activity' );
-		expect(
-			screen.getByRole( 'tabpanel', { name: 'Recent activity Beta' } )
-		).toBeInTheDocument();
 	} );
 
 	it( 'should show the "Recent activity" tab alone, with a "Set up Analytics" button and no footer, when the `freshData` feature flag is enabled and Analytics is not connected', async () => {
@@ -473,7 +439,51 @@ describe( 'TrafficOverviewWidget', () => {
 		expect( container ).toBeEmptyDOMElement();
 	} );
 
-	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items have not loaded', async () => {
+	it( 'should show the "Traffic overview" tab alone when the `freshData` feature flag is enabled and the widget is on the entity dashboard', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 1 );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Traffic overview' );
+	} );
+
+	it( 'should render nothing when the `freshData` feature flag is enabled, Analytics is not connected, and the widget is on the entity dashboard', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render nothing, and should keep the widget active, when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items have not loaded', async () => {
 		const dismissedItemsEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/dismissed-items'
 		);
@@ -505,6 +515,114 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 
 		expect( container ).toBeEmptyDOMElement();
+		expect(
+			registry
+				.select( CORE_WIDGETS )
+				.isWidgetActive( TRAFFIC_OVERVIEW_WIDGET_SLUG )
+		).toBe( true );
+	} );
+
+	it( 'should render nothing, and should mark the widget as inactive, when the `freshData` feature flag is enabled, Analytics is not connected, and the dismissed items fail to load', async () => {
+		const dismissedItemsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismissed-items'
+		);
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		fetchMock.get( dismissedItemsEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( container ).toBeEmptyDOMElement();
+		expect(
+			registry
+				.select( CORE_WIDGETS )
+				.isWidgetActive( TRAFFIC_OVERVIEW_WIDGET_SLUG )
+		).toBe( false );
+	} );
+
+	it( 'should show the "Recent activity" tab with a "Set up Analytics" button when the `freshData` feature flag is enabled, Analytics is not connected, the dismissed items fail to load, and the user then dismisses another item', async () => {
+		const dismissedItemsEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismissed-items'
+		);
+		const dismissItemEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/dismiss-item'
+		);
+
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		fetchMock.get( dismissedItemsEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+		// The response to `dismissItem()` lists every dismissed item, and
+		// `CORE_USER` stores that list, so the widget knows the user hasn't
+		// dismissed the Analytics setup CTA.
+		fetchMock.post( dismissItemEndpoint, {
+			body: [ 'another-item' ],
+			status: 200,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( container ).toBeEmptyDOMElement();
+
+		await act( () =>
+			registry.dispatch( CORE_USER ).dismissItem( 'another-item' )
+		);
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 1 );
+		expect( tabs[ 0 ] ).toHaveTextContent( 'Recent activity' );
+		expect(
+			screen.getByRole( 'button', { name: 'Set up Analytics' } )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render nothing when the `freshData` feature flag is enabled and the list of modules has not loaded', async () => {

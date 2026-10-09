@@ -64,6 +64,7 @@ import * as modulesReaderRevenueManager from '@/js/modules/reader-revenue-manage
 import * as modulesSearchConsole from '@/js/modules/search-console';
 import * as modulesSignInWithGoogle from '@/js/modules/sign-in-with-google';
 import * as modulesTagManager from '@/js/modules/tagmanager';
+import { USER_AVATAR_URL } from './user-avatar';
 
 const allCoreStores = [
 	coreFeatureDiscovery,
@@ -257,8 +258,7 @@ export function provideUserInfo(
 		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
 		wpEmail: 'wapuu.wordpress@gmail.com',
-		picture:
-			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+		picture: USER_AVATAR_URL,
 	};
 
 	registry.dispatch( CORE_USER ).receiveUserInfo( {

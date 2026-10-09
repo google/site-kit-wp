@@ -25,16 +25,14 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement, useCallback } from '@wordpress/element';
+import { createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import useWidget from '@/js/googlesitekit/widgets/hooks/useWidget';
-import useViewContext from '@/js/hooks/useViewContext';
+import useTrackSourceLinkClickCallback from '@/js/hooks/useTrackSourceLinkClickCallback';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { trackEvent } from '@/js/util';
 import Link from './Link';
 
 export interface SourceLinkProps {
@@ -50,21 +48,8 @@ function SourceLink( {
 	className = '',
 	external = false,
 }: SourceLinkProps ) {
-	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
-	const widget = useWidget();
-
-	const handleClick = useCallback( () => {
-		if ( ! widget.slug || ! viewContext ) {
-			return;
-		}
-
-		trackEvent(
-			`${ viewContext }_widget`,
-			'click_source_link',
-			widget.slug
-		);
-	}, [ viewContext, widget ] );
+	const handleClick = useTrackSourceLinkClickCallback();
 
 	if ( viewOnlyDashboard ) {
 		return null;

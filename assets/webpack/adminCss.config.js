@@ -60,6 +60,11 @@ module.exports = ( mode ) => ( {
 							implementation: require( 'sass' ),
 							sassOptions: {
 								includePaths: [ rootDir + '/node_modules' ],
+								quietDeps: true,
+								fatalDeprecations: [
+									'slash-div',
+									'global-builtin',
+								],
 							},
 						},
 					},
