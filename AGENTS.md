@@ -78,7 +78,7 @@ comments, approve, or change the PR state unless explicitly asked.
 - **PHP**: PHPUnit with WordPress test suite (`tests/phpunit/`)
 - **JS**: Jest with React Testing Library (`tests/js/`)
 - **E2E**: Puppeteer browser automation (`tests/e2e/`)
-- **Visual**: Backstop.js for regression (`tests/backstop/`)
+- **Visual**: Playwright screenshots of Storybook stories (`tests/vrt/`)
 
 **Key test utilities**: `tests/js/test-utils.js` (JS), `tests/phpunit/includes/TestCase.php` (PHP)
 
@@ -124,15 +124,16 @@ ComponentName.stories.js
 ```
 
 ### Visual Regression Testing (VRT)
-**Automated visual testing via BackstopJS + Storybook:**
-- **Reference Images**: `tests/backstop/reference/` - Golden master screenshots
-- **Config**: `tests/backstop/config.js` + `scenarios.js` - BackstopJS setup
-- **VRT Styles**: `storybook/preview-head-vrt.html` - Animation/transition disabling
+**Automated visual testing via Playwright + Storybook, in Docker** (guide: `tests/vrt/README.md`):
+- **Reference Images**: `tests/vrt/__screenshots__/<story path>/<viewport>.png`
+- **Config**: `tests/vrt/playwright.config.js` + `scenarios.js` (reads each story's `.scenario`)
+- **VRT Mode**: `storybook/preview-head-vrt.html` (animations off) + `storybook/utils/vrt.js` (fonts, render state)
 
 **VRT workflow:**
-- `npm run test:visualtest` - Run VRT tests (compare vs reference)
-- `npm run test:visualapprove` - Accept new screenshots as reference
-- **Auto-generated**: Scenarios created from all `*.stories.js` files
-- **Special classes**: `.googlesitekit-vrt-animation-none`, `.googlesitekit-vrt-animation-paused`
+- `npm run test:visualtest -- --grep "<story label>"` - Compare stories against reference images
+- `npm run test:visualapprove -- --grep "<story label>"` - Write new reference images to commit
+- Or add the `VRT: Update reference images` label to a PR to have CI commit them
+- **Auto-generated**: One test per story with a `.scenario`, at three viewports
+- **Special class**: `.googlesitekit-vrt-animation-paused` keeps animations paused at their first frame
 
 **When in doubt**: Check existing similar modules, refer to config files, or search the codebase for patterns.

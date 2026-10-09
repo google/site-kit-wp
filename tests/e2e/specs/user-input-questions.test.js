@@ -216,12 +216,13 @@ describe( 'User Input Settings', () => {
 		await page.setRequestInterception( true );
 		await setSearchConsoleProperty();
 
-		await step(
-			'visit admin dashboard',
-			visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
-		);
-
+		// Listen for the data-available responses while the dashboard loads. They can
+		// arrive before `visitAdminPage()` resolves on the page `load` event.
 		await Promise.all( [
+			step(
+				'visit admin dashboard',
+				visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' )
+			),
 			page.waitForResponse( ( res ) =>
 				res
 					.url()
@@ -250,6 +251,19 @@ describe( 'User Input Settings', () => {
 				await expect( page ).toClick( '.mdc-chip', {
 					text: /key metrics/i,
 				} );
+
+				// The chip scrolls the page smoothly. Wait until the page stops
+				// moving, so that the next click lands on its target.
+				await page.waitForFunction(
+					() =>
+						new Promise( ( resolve ) => {
+							const { scrollY } = window;
+							setTimeout(
+								() => resolve( window.scrollY === scrollY ),
+								100
+							);
+						} )
+				);
 			}
 		);
 

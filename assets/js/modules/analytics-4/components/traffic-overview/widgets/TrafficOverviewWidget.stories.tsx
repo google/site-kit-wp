@@ -38,12 +38,14 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { Story } from '@/js/types/Story';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TrafficOverviewWidget from './TrafficOverviewWidget';
@@ -143,6 +145,36 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 	getTrafficOverviewReportArgs( registry ).forEach( ( options ) =>
 		provideAnalytics4MockReport( registry, options )
 	);
+}
+
+/**
+ * Puts the Search Console property and the site's latest post in the store, so
+ * the Recent activity tab renders without sending a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the property and the post in.
+ * @return {void}
+ */
+function provideRecentActivityData( registry: WPDataRegistry ) {
+	registry
+		.dispatch( MODULES_SEARCH_CONSOLE )
+		.setPropertyID( 'https://example.com/' );
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent(
+		[
+			{
+				id: 12,
+				title: 'Autumn recipes',
+				permalink: 'https://example.com/autumn-recipes/',
+				pagePath: '/autumn-recipes/',
+				publishedAt: '2026-09-24T14:05:00Z',
+			},
+		],
+		{ count: 1, includeProducts: false }
+	);
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
 }
 
 interface TrafficOverviewWidgetStoryProps {
@@ -264,6 +296,91 @@ ReportFailure.args = {
 				.finishResolution( 'getReport', [ options ] );
 		} );
 	},
+};
+
+export const RecentActivity = Template.bind( {} ) as Story;
+RecentActivity.storyName = 'Recent Activity (freshData enabled)';
+RecentActivity.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+	},
+};
+RecentActivity.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivity.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+export const RecentActivityAnalyticsNotConnected = Template.bind( {} ) as Story;
+RecentActivityAnalyticsNotConnected.storyName =
+	'Recent Activity, Analytics Not Connected (freshData enabled)';
+RecentActivityAnalyticsNotConnected.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideModuleRegistrations( registry );
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+	},
+};
+RecentActivityAnalyticsNotConnected.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityAnalyticsNotConnected.scenario = {
+	viewport: 'large',
+};
+
+export const RecentActivityGatheringData = Template.bind( {} ) as Story;
+RecentActivityGatheringData.storyName =
+	'Recent Activity, Gathering Data (freshData enabled)';
+RecentActivityGatheringData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+	},
+};
+RecentActivityGatheringData.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityGatheringData.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+/**
+ * This story sets no `scenario`, so it runs no visual check. When the site has
+ * no published posts, the Recent activity tab only omits the latest post
+ * performance, which renders no content yet.
+ */
+export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
+RecentActivityNoPublishedPosts.storyName =
+	'Recent Activity, No Published Posts (freshData enabled)';
+RecentActivityNoPublishedPosts.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
+			count: 1,
+			includeProducts: false,
+		} );
+	},
+};
+RecentActivityNoPublishedPosts.parameters = {
+	features: [ 'freshData' ],
 };
 
 export default {

@@ -884,6 +884,8 @@ describe( 'useFeature', () => {
 } );
 ```
 
+The `viewContext`, `inView`, and `widget` options work the same way for a hook that calls `useViewContext()`, `useInView()`, or `useWidget()`.
+
 ## Best Practices
 
 ### Hook Development

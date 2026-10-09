@@ -41,7 +41,10 @@ import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/co
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
-import { useStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	EXPRESS_SETUP_CTA_FORMS,
@@ -53,8 +56,7 @@ import CTASettings from './CTASettings';
 import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
-const StepSignupForm: FC = () => {
-	const [ , setStep ] = useStep();
+const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 	const [ isPublishing, setIsPublishing ] = useState( false );
 
 	const { createCTA, submitChanges } = useDispatch(
@@ -149,8 +151,8 @@ const StepSignupForm: FC = () => {
 		}
 
 		setIsPublishing( false );
-		setStep( EXPRESS_SETUP_STEPS.SETUP_COMPLETE );
-	}, [ createCTA, createCTAParams, setStep, submitChanges ] );
+		onComplete();
+	}, [ createCTA, createCTAParams, onComplete, submitChanges ] );
 
 	const onSubmit = useCallback(
 		async ( event: FormEvent< HTMLFormElement > ) => {
@@ -228,6 +230,14 @@ const StepSignupForm: FC = () => {
 			</form>
 		</div>
 	);
+};
+
+// No `isComplete`: the express setup allows setting up more than one CTA of
+// the same type, so this step never counts as complete.
+export const signupFormStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM,
+	label: __( 'Set up a sign-up form', 'google-site-kit' ),
+	Component: StepSignupForm,
 };
 
 export default StepSignupForm;

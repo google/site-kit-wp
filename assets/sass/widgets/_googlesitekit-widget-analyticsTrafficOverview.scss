@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 .googlesitekit-plugin {
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__tabs {
 		position: relative;
@@ -36,10 +38,10 @@
 			z-index: 1;
 		}
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				.mdc-tab-scroller__scroll-content {
 					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
@@ -62,12 +64,20 @@
 			font-weight: $fw-normal;
 			letter-spacing: $ls-s;
 			line-height: 20px;
+
+			// Material draws the label of a tab that is not selected at 60%
+			// opacity, but the design draws it at 100%.
+			opacity: 1;
 		}
 
 		.mdc-tab--active .mdc-tab__text-label {
 			color: $c-content-primary;
 			font-weight: $fw-medium;
 			letter-spacing: 0;
+		}
+
+		.mdc-tab .googlesitekit-badge {
+			margin-left: 10px;
 		}
 	}
 
@@ -76,10 +86,10 @@
 		flex-direction: column;
 		padding-top: 20px;
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				padding-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 				padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
@@ -277,6 +287,54 @@
 			// The share stays on one line however long the label gets.
 			flex-shrink: 0;
 			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel--recent-activity {
+
+		@each $size in map.keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
+
+				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-row:not(:first-child) {
+			margin-top: 48px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 38px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown {
+			margin-top: 50px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 64px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-performance {
+			margin-top: 48px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 80px;
+			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
+		align-items: center;
+		display: flex;
+		gap: 4px;
+
+		// The design has 4px after "Sources:" and 8px between the two links,
+		// so the second link adds 4px to the `gap`.
+		.googlesitekit-cta-link + .googlesitekit-cta-link {
+			margin-left: 4px;
 		}
 	}
 }

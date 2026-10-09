@@ -20,7 +20,7 @@
  * WordPress dependencies
  */
 import { createRef } from '@wordpress/element';
-import { DOWN, ENTER, ESCAPE, TAB } from '@wordpress/keycodes';
+import { DOWN, ENTER } from '@wordpress/keycodes';
 
 /**
  * Internal dependencies
@@ -117,9 +117,9 @@ describe( 'FeedbackMenu', () => {
 		await waitFor( () => expect( onClose ).toHaveBeenCalledTimes( 1 ) );
 	} );
 
-	it.each( [ ESCAPE, TAB ] )(
-		'should close on key code %s and restore source focus without selecting',
-		( keyCode ) => {
+	it.each( [ 'Escape', 'Tab' ] )(
+		'should close on %s and restore source focus without selecting',
+		( key ) => {
 			const onClose = jest.fn();
 			const onSelect = jest.fn();
 
@@ -141,11 +141,18 @@ describe( 'FeedbackMenu', () => {
 				</div>
 			);
 
-			fireEvent.keyDown( getByRole( 'menu' ), { keyCode } );
+			const onWindowKeyDown = jest.fn();
+
+			global.window.addEventListener( 'keydown', onWindowKeyDown );
+
+			fireEvent.keyDown( getByRole( 'menu' ), { key } );
 
 			expect( onClose ).toHaveBeenCalledTimes( 1 );
 			expect( onSelect ).not.toHaveBeenCalled();
+			expect( onWindowKeyDown ).not.toHaveBeenCalled();
 			expect( sourceRef.current ).toHaveFocus();
+
+			global.window.removeEventListener( 'keydown', onWindowKeyDown );
 		}
 	);
 

@@ -198,7 +198,7 @@
 
 			.googlesitekit-analytics__select-property,
 			.googlesitekit-analytics__select-profile {
-				margin-top: $grid-gap-phone / 2;
+				margin-top: $grid-gap-phone * 0.5;
 			}
 		}
 
@@ -214,7 +214,7 @@
 				// The error message sits below the input. Add space below it so
 				// the error doesn't crowd the toggle in the next row.
 				.mdc-text-field-helper-line {
-					margin-bottom: $grid-gap-phone / 2;
+					margin-bottom: $grid-gap-phone * 0.5;
 				}
 			}
 		}

@@ -70,10 +70,10 @@ the file + section when flagging a violation.
 - Responsive / `@media` changes are checked on **both sides** of each breakpoint they
   touch; a rule gated below `$bp-tablet` (600px) is verified at mobile width, since the
   default (desktop-only) VRT run does not exercise mobile-only rules.
-- For UI changes, add/update Storybook stories and the corresponding VRT reference (run
-  `./tests/backstop/bin/backstop test --filter="<scenario label>"` to check just that
-  scenario, or the same with `approve` to accept it — `npm run test:visualtest` does not
-  forward extra CLI args, so call the script directly).
+- For UI changes, add/update Storybook stories and the corresponding VRT reference images (run
+  `npm run test:visualtest -- --grep "<story label>"` to check just that story, and
+  `npm run test:visualapprove -- --grep "<story label>"` to accept the new images; see
+  `tests/vrt/README.md`).
 
 ---
 

@@ -254,6 +254,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 								onClose={ onCloseFeedbackMenu }
 								onSelect={ onSelectFeedback }
 								options={ feedbackOptions }
+								placement="top-end"
 								sourceRef={ dismissButtonRef }
 								wrapperRef={ menuWrapperRef }
 							/>
