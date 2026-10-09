@@ -13,8 +13,10 @@ export function ThrowError( event ) {
 		event.preventDefault();
 	}
 
+	// No emoji: the system emoji font loads lazily, which shifts the text after
+	// it in visual regression screenshots.
 	throw new Error(
-		'Something bad happened. 💣 (On purpose; ErrorComponent was used to simulate an error.)'
+		'Something bad happened. (On purpose; ErrorComponent was used to simulate an error.)'
 	);
 }
 

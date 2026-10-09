@@ -21,7 +21,7 @@
  */
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { createTestRegistry } from '@tests/js/test-utils';
-import { requireAdSenseLinked } from './index';
+import { requireAdSenseLinked, requireAdSenseNotLinked } from './index';
 
 describe( 'analytics-4 data requirements', () => {
 	let registry;
@@ -51,6 +51,30 @@ describe( 'analytics-4 data requirements', () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
 			expect( await requireAdSenseLinked()( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'requireAdSenseNotLinked', () => {
+		it( 'should return true when AdSense is not linked', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { adSenseLinked: false } );
+
+			expect( await requireAdSenseNotLinked()( registry ) ).toBe( true );
+		} );
+
+		it( 'should return false when AdSense is linked', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetSettings( { adSenseLinked: true } );
+
+			expect( await requireAdSenseNotLinked()( registry ) ).toBe( false );
+		} );
+
+		it( 'should return false when the linked state is not available', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+			expect( await requireAdSenseNotLinked()( registry ) ).toBe( false );
 		} );
 	} );
 } );

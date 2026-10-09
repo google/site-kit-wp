@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 @mixin clearfix {
 
 	&::after {
@@ -38,9 +40,9 @@
 }
 
 @mixin googlesitekit-typography( $type, $size ) {
-	font-family: map-get($typography-font-families, $type);
+	font-family: map.get($typography-font-families, $type);
 
-	@each $property, $value in map-get($typography-settings, $type, $size) {
+	@each $property, $value in map.get($typography-settings, $type, $size) {
 		#{$property}: $value;
 	}
 }

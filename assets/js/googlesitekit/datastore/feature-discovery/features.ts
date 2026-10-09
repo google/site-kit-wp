@@ -25,9 +25,16 @@ import { isPlainObject } from 'lodash';
 /**
  * Internal dependencies
  */
-import { commonActions, createReducer } from 'googlesitekit-data';
+import { Registry, commonActions, createReducer } from 'googlesitekit-data';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
+import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
+	getCurrentFeatureDiscoveryTabPath,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
 	FEATURE_CATEGORY_ORDER,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
@@ -37,21 +44,31 @@ import type {
 	FeatureCategorySlug,
 	FeatureDiscoveryState,
 	FeatureSettings,
+	PendingSetup,
 } from './types';
 
 const REGISTER_FEATURE = 'REGISTER_FEATURE' as const;
+const RECEIVE_PENDING_SETUP = 'RECEIVE_PENDING_SETUP' as const;
 
-type Action = {
-	type: typeof REGISTER_FEATURE;
-	payload: { slug: string; settings: Omit< Feature, 'slug' > };
-};
+type Action =
+	| {
+			type: typeof REGISTER_FEATURE;
+			payload: { slug: string; settings: Omit< Feature, 'slug' > };
+	  }
+	| {
+			type: typeof RECEIVE_PENDING_SETUP;
+			payload: { pendingSetup: PendingSetup | null };
+	  };
 
 export const initialState: FeatureDiscoveryState = {
 	features: {},
+	pendingSetup: null,
 };
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
 const setupTypes = Object.values( FEATURE_SETUP_TYPES );
+
+type SetupFeatureResult = { error?: unknown };
 
 export const actions = {
 	/**
@@ -148,22 +165,99 @@ export const actions = {
 	/**
 	 * Starts the setup for the feature registered under a given slug.
 	 *
+	 * For `setup-flow` features that activate a module, this activates the
+	 * module, records that the user left the hub to set it up, and takes them
+	 * into the module's setup. Where the module has no setup screen, it is
+	 * simply activated and the user stays on the hub.
+	 *
 	 * @since 1.189.0
+	 * @since n.e.x.t Implemented the `setup-flow` setup type.
 	 *
 	 * @param {string} slug Feature's slug.
-	 * @return {Object} Empty object.
+	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated.
 	 */
 	setupFeature: createValidatedAction(
 		( slug: string ) => {
 			invariant( slug, 'slug is required to set up a feature.' );
 		},
-		function* (): Generator< unknown, Record< string, never >, unknown > {
-			// TODO: #13338 -- Dispatch the mechanism named by `setup.type`.
-			yield commonActions.await( Promise.resolve() );
+		function* (
+			slug: string
+		): Generator< unknown, SetupFeatureResult, unknown > {
+			const registry = ( yield commonActions.getRegistry() ) as Registry;
+
+			const feature = registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.getFeature( slug );
+
+			if ( feature?.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+				return {};
+			}
+
+			const { moduleSlug } = feature.setup;
+
+			if ( ! moduleSlug ) {
+				return {};
+			}
+
+			const { response, error } = ( yield commonActions.await(
+				registry.dispatch( CORE_MODULES ).activateModule( moduleSlug )
+			) ) as {
+				response?: { moduleReauthURL: string };
+				error?: unknown;
+			};
+
+			if ( error ) {
+				return { error };
+			}
+
+			// Modules with no setup screen, such as PageSpeed Insights, are
+			// connected as soon as they are activated, so the user stays on
+			// the hub.
+			if (
+				! registry.select( CORE_MODULES ).getModule( moduleSlug )
+					?.SetupComponent
+			) {
+				return {};
+			}
+
+			// The record must be written before navigating so that it survives
+			// the OAuth round trip.
+			yield commonActions.await(
+				setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
+			);
+
+			yield commonActions.await(
+				registry
+					.dispatch( CORE_LOCATION )
+					.navigateTo( response?.moduleReauthURL as string )
+			);
 
 			return {};
 		}
 	),
+
+	/**
+	 * Stores the setup the user left the hub to complete, as consumed from
+	 * the cache when the hub mounted.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {(Object|null)} pendingSetup             The pending setup, or `null` if there is none.
+	 * @param {string}        pendingSetup.featureSlug Slug of the feature being set up.
+	 * @param {string}        pendingSetup.returnTab   Path of the tab the user set out from.
+	 * @return {Object} Redux-style action.
+	 */
+	receivePendingSetup( pendingSetup: PendingSetup | null ) {
+		invariant(
+			pendingSetup === null || isPlainObject( pendingSetup ),
+			'pendingSetup must be an object or null.'
+		);
+
+		return {
+			payload: { pendingSetup },
+			type: RECEIVE_PENDING_SETUP,
+		};
+	},
 };
 
 export const reducer = createReducer(
@@ -181,6 +275,12 @@ export const reducer = createReducer(
 				}
 
 				state.features[ slug ] = { ...settings, slug };
+
+				return state;
+			}
+
+			case RECEIVE_PENDING_SETUP: {
+				state.pendingSetup = payload.pendingSetup;
 
 				return state;
 			}

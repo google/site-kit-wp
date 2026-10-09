@@ -1,22 +1,18 @@
 <script>
-	// Flag the document as in VRT mode.
+	// Flag the document as in VRT mode. `storybook/utils/vrt.js` reads the
+	// flag to hold rendering until the web fonts load and to report the
+	// story's render state to the runner in `tests/vrt`.
 	document.documentElement.dataset.vrt = true;
-
-	window.addEventListener( 'load', async () => {
-		// Wait for all web fonts to be loaded.
-		const readyPromises = [ ...document.fonts.values() ].map( ( font ) => font.load() );
-
-		await Promise.allSettled( readyPromises );
-
-		// Signal Backstop that the environment is ready to go.
-		document.body.classList.add( 'backstopjs-ready' );
-	} );
 </script>
 <style>
-	/* Disable animations/transitions by default in VRT unless a paused wrapper is present. */
-	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
-	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
-	#storybook-root:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
+	/*
+	 * Disable animations/transitions by default in VRT unless a paused wrapper is present.
+	 * This covers the whole document, not just `#storybook-root`, so portals rendered
+	 * directly under `body` (modals, tooltips, Joyride) are captured in their final state.
+	 */
+	body:not( :has( .googlesitekit-vrt-animation-paused ) ) *,
+	body:not( :has( .googlesitekit-vrt-animation-paused ) ) *::before,
+	body:not( :has( .googlesitekit-vrt-animation-paused ) ) *::after {
 		animation: none !important;
 		transition: none !important;
 	}
@@ -26,14 +22,28 @@
 	 *   .googlesitekit-vrt-animation-paused
 	 * This only affects animations (not transitions).
 	 */
-	#storybook-root .googlesitekit-vrt-animation-paused *,
-	#storybook-root .googlesitekit-vrt-animation-paused *::before,
-	#storybook-root .googlesitekit-vrt-animation-paused *::after {
+	.googlesitekit-vrt-animation-paused *,
+	.googlesitekit-vrt-animation-paused *::before,
+	.googlesitekit-vrt-animation-paused *::after {
 		animation-play-state: paused !important;
 	}
 
-	/* Disable Joyride animations. These are not covered by the above CSS because they render outside of #storybook-root. */
-	div[id^="react-joyride-step-"] div.__floater.__floater__open {
-		transition: none !important;
+	/*
+	 * Name an installed monospace font: in the Playwright Docker image, the generic
+	 * `monospace` family can resolve to either of two fonts from one run to the next.
+	 */
+	code,
+	kbd,
+	pre,
+	samp {
+		font-family: "Liberation Mono", monospace !important;
+	}
+
+	/*
+	 * The WordPress admin spinner is an animated GIF loaded from a remote host, which
+	 * a screenshot can neither pause nor wait for. Swap in a static ring.
+	 */
+	.spinner {
+		background-image: url( "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Ccircle cx='10' cy='10' r='7' fill='none' stroke='%23a7aaad' stroke-width='3'/%3E%3C/svg%3E" ) !important;
 	}
 </style>
