@@ -317,6 +317,30 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-columns {
+			display: grid;
+			gap: 8px;
+			grid-template-columns: 1fr;
+			margin-top: 12px;
+
+			@media (min-width: $bp-desktop) {
+				gap: 42px;
+
+				// Equal fractions, so the two columns that remain when the
+				// site has no published posts keep their width.
+				grid-template-columns: repeat(3, 1fr);
+			}
+
+			.googlesitekit-traffic-overview__breakdown-column {
+				padding-right: $grid-gap-phone;
+			}
+		}
+
 		.googlesitekit-traffic-overview__latest-post-performance {
 			margin-top: 48px;
 
@@ -335,6 +359,38 @@
 		// so the second link adds 4px to the `gap`.
 		.googlesitekit-cta-link + .googlesitekit-cta-link {
 			margin-left: 4px;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__recent-traffic-breakdown {
+		// The table tiles render 20px lines, 4px apart, the way the breakdown
+		// of the Traffic overview tab does, in place of the 16px titles and the
+		// 8px row gaps of the shared table tile.
+		.googlesitekit-table-tile__title.googlesitekit-typography,
+		.googlesitekit-table-tile__cell--label,
+		.googlesitekit-table-tile__cell--value {
+			line-height: $lh-body-md;
+		}
+
+		.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+			margin-top: 4px;
+		}
+
+		.googlesitekit-table-tile__cell--label .googlesitekit-cta-link {
+			font-weight: $fw-medium;
+		}
+
+		.googlesitekit-table-tile__cell--value {
+			letter-spacing: $ls-s;
+		}
+
+		// The widest share, `(100.0%)`, fits in 63px, so the counts of every
+		// row line up.
+		.googlesitekit-table-tile__secondary-value {
+			color: $c-surfaces-on-surface;
+			display: inline-block;
+			min-width: 63px;
+			text-align: right;
 		}
 	}
 }
