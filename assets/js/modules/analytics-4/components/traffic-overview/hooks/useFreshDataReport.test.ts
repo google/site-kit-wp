@@ -25,17 +25,22 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { get } from 'googlesitekit-api';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
 	actHook as act,
 	createTestRegistry,
 	renderHook,
-	waitFor,
 } from '@tests/js/test-utils';
-import { freezeFetch, waitForDefaultTimeouts } from '@tests/js/utils';
+import {
+	createWaitForRegistry,
+	freezeFetch,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import { useFreshDataReport } from './useFreshDataReport';
 
-// The fetch options reach `get()` and never the request that `fetchMock`
-// receives, so the tests read them from a spy on `get()`.
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
 jest.mock( 'googlesitekit-api', () =>
 	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
 );
@@ -47,21 +52,10 @@ describe( 'useFreshDataReport', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	const reportArgs = {
-		startDate: '2025-02-04',
-		endDate: '2025-02-05',
-		metrics: [ { name: 'totalUsers' } ],
-		dimensions: [ 'sessionDefaultChannelGroup' ],
-	};
-
-	const report = {
-		rows: [
-			{
-				dimensionValues: [ { value: 'Direct' } ],
-				metricValues: [ { value: '82' } ],
-			},
-		],
-	};
+	const channelsReport = createBreakdownReport( [
+		[ 'Direct', 12 ],
+		[ 'Referral', 4 ],
+	] );
 
 	const errorResponse = {
 		code: 'internal_server_error',
@@ -70,90 +64,118 @@ describe( 'useFreshDataReport', () => {
 	};
 
 	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
-	afterEach( () => {
 		jest.mocked( get ).mockClear();
+
+		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	} );
 
-	it( 'should request the report once, with a five-minute cache', async () => {
-		fetchMock.getOnce( reportEndpoint, { body: report, status: 200 } );
+	it( 'should build the report options for the date range of the Recent activity tab, not for the date range of the dashboard', () => {
+		freezeFetch( reportEndpoint );
+
+		const { result } = renderHook(
+			() => useFreshDataReport( getTopChannelsReportOptions ),
+			{ registry }
+		);
+
+		expect( result.current.reportOptions ).toEqual(
+			getTopChannelsReportOptions( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
+		);
+	} );
+
+	it( 'should request the report with a cache of five minutes', async () => {
+		fetchMock.getOnce( reportEndpoint, {
+			body: channelsReport,
+			status: 200,
+		} );
 
 		const { waitForRegistry } = renderHook(
-			() => useFreshDataReport( reportArgs ),
+			() => useFreshDataReport( getTopChannelsReportOptions ),
 			{ registry }
 		);
 
 		await waitForRegistry();
 
-		expect( get ).toHaveBeenCalledTimes( 1 );
-		expect( get ).toHaveBeenCalledWith(
-			'modules',
-			'analytics-4',
-			'report',
-			expect.objectContaining( {
-				startDate: '2025-02-04',
-				endDate: '2025-02-05',
-			} ),
-			{ cacheTTL: 300 }
-		);
+		expect( fetchMock ).toHaveFetchedTimes( 1 );
+		expect( jest.mocked( get ).mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+			cacheTTL: 300,
+		} );
 	} );
 
-	it( 'should return `loading` as `true` and no report while the request runs', async () => {
+	it( 'should be loading, with no report and no error, while the request has not finished', async () => {
 		freezeFetch( reportEndpoint );
 
-		const { result } = renderHook( () => useFreshDataReport( reportArgs ), {
-			registry,
-		} );
+		const { result } = renderHook(
+			() => useFreshDataReport( getTopChannelsReportOptions ),
+			{ registry }
+		);
 
 		await waitForDefaultTimeouts();
 
-		expect( result.current.loading ).toBe( true );
-		expect( result.current.report ).toBeUndefined();
+		expect( result.current ).toMatchObject( {
+			report: undefined,
+			loading: true,
+			error: undefined,
+		} );
 	} );
 
-	it( 'should return the report and `loading` as `false` once the request finishes', async () => {
-		fetchMock.getOnce( reportEndpoint, { body: report, status: 200 } );
+	it( 'should return the report, and should not be loading, once the request succeeds', async () => {
+		fetchMock.getOnce( reportEndpoint, {
+			body: channelsReport,
+			status: 200,
+		} );
 
 		const { result, waitForRegistry } = renderHook(
-			() => useFreshDataReport( reportArgs ),
+			() => useFreshDataReport( getTopChannelsReportOptions ),
 			{ registry }
 		);
 
 		await waitForRegistry();
 
-		expect( result.current.loading ).toBe( false );
-		expect( result.current.report ).toEqual( report );
-		expect( result.current.error ).toBeUndefined();
+		expect( result.current ).toMatchObject( {
+			report: channelsReport,
+			loading: false,
+			error: undefined,
+		} );
 	} );
 
-	it( 'should return the error and `loading` as `false` when the request fails', async () => {
+	it( 'should return the error, and should not be loading, once the request fails', async () => {
 		fetchMock.getOnce( reportEndpoint, {
 			body: errorResponse,
 			status: 500,
 		} );
 
 		const { result, waitForRegistry } = renderHook(
-			() => useFreshDataReport( reportArgs ),
+			() => useFreshDataReport( getTopChannelsReportOptions ),
 			{ registry }
 		);
 
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect( result.current.loading ).toBe( false );
-		expect( result.current.error ).toEqual( errorResponse );
+		expect( result.current ).toMatchObject( {
+			report: undefined,
+			loading: false,
+			error: errorResponse,
+		} );
 	} );
 
-	it( 'should request the report again, and return it, when `retry` is called after the request fails', async () => {
+	it( 'should request the report again, with the same cache, when `retry` is called after the request fails', async () => {
 		fetchMock.getOnce( reportEndpoint, {
 			body: errorResponse,
 			status: 500,
 		} );
+		fetchMock.getOnce( reportEndpoint, {
+			body: channelsReport,
+			status: 200,
+		} );
 
 		const { result, waitForRegistry } = renderHook(
-			() => useFreshDataReport( reportArgs ),
+			() => useFreshDataReport( getTopChannelsReportOptions ),
 			{ registry }
 		);
 
@@ -161,30 +183,40 @@ describe( 'useFreshDataReport', () => {
 
 		expect( console ).toHaveErrored();
 
-		fetchMock.getOnce( reportEndpoint, { body: report, status: 200 } );
+		// `waitForRegistry` settles once, so a new one waits for the retry.
+		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {
 			result.current.retry();
 		} );
 
-		await waitFor( () =>
-			expect( result.current.report ).toEqual( report )
-		);
+		await waitForRetry();
 
-		expect( fetchMock ).toHaveFetchedTimes( 2, reportEndpoint );
-		expect( result.current.error ).toBeUndefined();
+		expect( fetchMock ).toHaveFetchedTimes( 2 );
+		expect( jest.mocked( get ).mock.calls[ 1 ][ 4 ] ).toStrictEqual( {
+			cacheTTL: 300,
+		} );
+		expect( result.current ).toMatchObject( {
+			report: channelsReport,
+			loading: false,
+			error: undefined,
+		} );
 	} );
 
-	it( 'should not request the report, and return `loading` as `true`, while the widget is out of view', async () => {
-		const { result } = renderHook( () => useFreshDataReport( reportArgs ), {
-			registry,
-			inView: false,
+	it( 'should not request the report while the Traffic Overview widget is out of view', async () => {
+		fetchMock.get( reportEndpoint, {
+			body: channelsReport,
+			status: 200,
 		} );
+
+		const { result } = renderHook(
+			() => useFreshDataReport( getTopChannelsReportOptions ),
+			{ registry, inView: false }
+		);
 
 		await waitForDefaultTimeouts();
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
-		expect( result.current.loading ).toBe( true );
 		expect( result.current.report ).toBeUndefined();
 	} );
 } );

@@ -65,6 +65,20 @@ describe( 'RecentActivityPanel', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	/**
+	 * Answers every report request with a report that has no rows, the way
+	 * `muteFetch` answers one request. The recent traffic breakdown requests
+	 * three reports, and the tests that call this check which sections render,
+	 * not their rows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function muteReportRequests() {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+	}
+
 	// `ActivateAnalyticsCTA` observes when it scrolls into view, and jsdom
 	// has no `IntersectionObserver`.
 	const { getObservedElements, simulateIntersection } =
@@ -108,7 +122,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
-		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		muteReportRequests();
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -129,7 +143,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
-		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		muteReportRequests();
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -282,14 +296,13 @@ describe( 'RecentActivityPanel', () => {
 		] );
 	} );
 
-	it( 'should not render the latest post performance, or the "Top posts by visitors" column, when the site has no published posts', async () => {
-		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
-
+	it( 'should not render the latest post performance when the site has no published posts', async () => {
 		fetchMock.get(
 			postsEndpoint,
 			{ body: [], status: 200 },
 			{ overwriteRoutes: true }
 		);
+		muteReportRequests();
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -303,17 +316,49 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 		] );
+	} );
+
+	it( 'should render the "Top posts by visitors" column of the recent traffic breakdown when the site has published posts', async () => {
+		muteReportRequests();
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
 		expect(
-			screen.queryByText( 'Top posts by visitors' )
+			screen.getByRole( 'heading', { name: 'Top posts by visitors' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should leave out the "Top posts by visitors" column of the recent traffic breakdown when the site has no published posts', async () => {
+		fetchMock.get(
+			postsEndpoint,
+			{ body: [], status: 200 },
+			{ overwriteRoutes: true }
+		);
+		muteReportRequests();
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			screen.queryByRole( 'heading', { name: 'Top posts by visitors' } )
 		).not.toBeInTheDocument();
 		expect(
-			screen.getByText( 'Top channels by visitors' )
+			screen.getByRole( 'heading', { name: 'Top channels by visitors' } )
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'heading', { name: 'Top referrals by visitors' } )
 		).toBeInTheDocument();
 	} );
 
 	it( 'should render the four sections when the request for the recent posts fails', async () => {
-		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
-
+		muteReportRequests();
 		fetchMock.get(
 			postsEndpoint,
 			{

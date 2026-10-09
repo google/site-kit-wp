@@ -36,16 +36,36 @@ export interface FreshDataDateRange {
 }
 
 /**
- * Gets the date range of the Recent activity tab.
+ * Gets the date range of the Recent activity tab for a reference date.
  *
  * The date range runs from two days before the reference date to the reference
- * date, and stays the same when the user selects another date range for the
- * dashboard.
+ * date.
  *
  * The reference date is a date in the browser's time zone. Analytics reports
  * in the time zone of the Analytics property, and Search Console in Pacific
  * Time. The date range starts two days back to hold yesterday in both
  * reports.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} referenceDate The reference date, such as `2025-02-05`.
+ * @return {Object} The `startDate` and the `endDate` of the date range.
+ */
+export function getFreshDataDateRange(
+	referenceDate: string
+): FreshDataDateRange {
+	return {
+		startDate: getPreviousDate( referenceDate, 2 ),
+		endDate: referenceDate,
+	};
+}
+
+/**
+ * Gets the date range of the Recent activity tab.
+ *
+ * The date range is the one `getFreshDataDateRange` returns for the user's
+ * reference date, and stays the same when the user selects another date range
+ * for the dashboard.
  *
  * @since n.e.x.t
  *
@@ -58,10 +78,7 @@ export function useFreshDataDateRange(): FreshDataDateRange {
 	);
 
 	return useMemo(
-		() => ( {
-			startDate: getPreviousDate( referenceDate, 2 ),
-			endDate: referenceDate,
-		} ),
+		() => getFreshDataDateRange( referenceDate ),
 		[ referenceDate ]
 	);
 }

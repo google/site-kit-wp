@@ -1,5 +1,5 @@
 /**
- * Recent activity "Top posts by visitors" column.
+ * Recent activity top posts column.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,63 +32,78 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	TableTile,
+	TableTileRow,
+} from '@/js/modules/analytics-4/components/common/tiles';
 import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getRecentTrafficBreakdownRows';
+import { getTopPostsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPageURL';
+import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
-import { getFullURL } from '@/js/util';
-import RecentTrafficBreakdownColumn from './RecentTrafficBreakdownColumn';
 
-export interface TopPostsColumnProps {
-	/** The report options of the column's report, with the `pagePath` dimension and the `totalUsers` metric. */
-	reportArgs: ReportOptions;
-}
+const TopPostsColumn: FC = () => {
+	const { reportOptions, report, loading, error, retry } = useFreshDataReport(
+		getTopPostsReportOptions
+	);
 
-const TopPostsColumn: FC< TopPostsColumnProps > = ( { reportArgs } ) => {
-	const { report, loading, error, retry } = useFreshDataReport( reportArgs );
-
-	const rows = useMemo(
+	// Each row's `label` is the page path, until the title replaces it below.
+	const pathRows = useMemo(
 		() => getRecentTrafficBreakdownRows( report ),
 		[ report ]
 	);
 
-	// The label of each row is a page path.
 	const pagePaths = useMemo(
-		() => rows.map( ( { label } ) => label ),
-		[ rows ]
+		() => pathRows.map( ( { label } ) => label ),
+		[ pathRows ]
 	);
 
-	// `getPageTitles()` requests a title for each row of the report it
-	// receives, so it receives the shown rows, not every page with visitors.
-	const shownPagesReport = useMemo(
-		() => ( {
-			dimensionHeaders: [ { name: 'pagePath' } ],
-			rows: pagePaths.map( ( pagePath ) => ( {
-				dimensionValues: [ { value: pagePath } ],
-			} ) ),
-		} ),
-		[ pagePaths ]
+	// `getPageTitles` requests a title for every row of the report it gets, so
+	// it gets the report with only the rows the column shows, rather than with
+	// every page that had visitors.
+	const shownRowsReport = useMemo< Report | undefined >(
+		() =>
+			report && {
+				...report,
+				rows: report.rows?.filter( ( row ) =>
+					pagePaths.includes(
+						row.dimensionValues?.[ 0 ]?.value ?? ''
+					)
+				),
+			},
+		[ report, pagePaths ]
 	);
 
 	const titles = useInViewSelect< Record< string, string > | undefined >(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPageTitles(
-				shownPagesReport,
-				reportArgs
-			),
-		[ shownPagesReport, reportArgs ]
+			shownRowsReport
+				? select( MODULES_ANALYTICS_4 ).getPageTitles(
+						shownRowsReport,
+						reportOptions
+				  )
+				: undefined,
+		[ shownRowsReport, reportOptions ]
 	);
 
-	// `getPageTitles()` returns `undefined` when its report request fails, so
-	// the column reads the error of that request.
+	// `getPageTitles` reads `undefined` both while the titles load and after
+	// their request fails, so the error of that request is read from the store.
 	const titlesError = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getFirstReportError(
-				getPageTitlesReportOptions( reportArgs, pagePaths )
-			),
-		[ reportArgs, pagePaths ]
+			pagePaths.length
+				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+						'getReport',
+						[
+							getPageTitlesReportOptions(
+								reportOptions,
+								pagePaths
+							),
+						]
+				  )
+				: undefined,
+		[ pagePaths, reportOptions ]
 	);
 
 	const siteURL = useSelect(
@@ -96,31 +111,42 @@ const TopPostsColumn: FC< TopPostsColumnProps > = ( { reportArgs } ) => {
 		[]
 	);
 
-	const rowsWithTitles = rows.map( ( row ) => {
-		const pagePath = row.label;
-		const title = decodeAmpersand( titles?.[ pagePath ] ?? '' ).trim();
+	const rows = useMemo(
+		(): TableTileRow[] =>
+			pathRows.map( ( row ) => {
+				const pagePath = row.label;
+				const title = decodeAmpersand(
+					titles?.[ pagePath ] ?? ''
+				).trim();
 
-		return {
-			...row,
-			label:
-				title && title !== __( '(unknown)', 'google-site-kit' )
-					? title
-					: pagePath,
-			// GA4 reports `(not set)` for a visit with no page path, so that row
-			// gets no link.
-			url: pagePath.startsWith( '/' )
-				? getFullURL( siteURL, pagePath )
-				: undefined,
-		};
-	} );
+				return {
+					...row,
+					// A page that Analytics has no title for keeps its path.
+					label:
+						title && title !== __( '(unknown)', 'google-site-kit' )
+							? title
+							: pagePath,
+					url: getPageURL( siteURL, pagePath ),
+				};
+			} ),
+		[ pathRows, titles, siteURL ]
+	);
 
 	return (
-		<RecentTrafficBreakdownColumn
+		<TableTile
 			title={ __( 'Top posts by visitors', 'google-site-kit' ) }
-			rows={ rowsWithTitles }
-			loading={ loading || ( titles === undefined && ! titlesError ) }
+			titleAs="h4"
+			rows={ rows }
+			loading={
+				loading ||
+				( pagePaths.length > 0 &&
+					titles === undefined &&
+					! titlesError )
+			}
 			error={ error || titlesError }
-			onRetry={ retry }
+			// The "Retry" button requests failed titles again on its own, but
+			// not a failed report of pages, which `retry` requests again.
+			onRetry={ error ? retry : undefined }
 		/>
 	);
 };

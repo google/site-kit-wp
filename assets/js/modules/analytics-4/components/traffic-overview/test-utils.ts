@@ -24,15 +24,40 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
-	getRecentTopChannelsReportArgs,
-	getRecentTopPostsReportArgs,
-	getRecentTopReferralsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+	getTopChannelsReportOptions,
+	getTopPostsReportOptions,
+	getTopReferralsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import {
+	Report,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
+
+export interface RecentTrafficBreakdownReportOptions {
+	/** The options of the "Top posts by visitors" report. */
+	posts: ReportOptions;
+	/** The options of the "Top channels by visitors" report. */
+	channels: ReportOptions;
+	/** The options of the "Top referrals by visitors" report. */
+	referrals: ReportOptions;
+}
+
+export interface RecentTrafficBreakdownReports {
+	/** The report of visitors for each page path. */
+	posts?: Report;
+	/** The title of each page path, for the pages the posts column shows. */
+	postTitles?: Record< string, string >;
+	/** The report of visitors for each channel. */
+	channels?: Report;
+	/** The report of visitors for each site that referred them. */
+	referrals?: Report;
+}
 
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
@@ -74,70 +99,100 @@ export function getSectionClassNames( container: Element ): string[] {
 }
 
 /**
- * Puts the reports of the "What’s affecting recent traffic?" section of the
- * Recent activity tab in the store, with the titles of its three top posts,
- * so a story renders the section without a report request.
+ * Gets the options of the three reports of the Recent activity tab's traffic
+ * breakdown.
+ *
+ * The options cover the date range of the tab for the registry's reference
+ * date, the one `useFreshDataDateRange` returns.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry  The registry to put the reports in.
- * @param {Object} dateRange The date range of the Recent activity tab.
+ * @param {Object} registry The registry, with its reference date set.
+ * @return {Object} The options of the posts, channels and referrals reports.
+ */
+export function getRecentTrafficBreakdownReportOptions(
+	registry: WPDataRegistry
+): RecentTrafficBreakdownReportOptions {
+	const dateRange = getFreshDataDateRange(
+		registry.select( CORE_USER ).getReferenceDate()
+	);
+
+	return {
+		posts: getTopPostsReportOptions( dateRange ),
+		channels: getTopChannelsReportOptions( dateRange ),
+		referrals: getTopReferralsReportOptions( dateRange ),
+	};
+}
+
+/**
+ * Puts the reports of the Recent activity tab's traffic breakdown in the
+ * store, so the breakdown renders without sending a request.
+ *
+ * Each report is left out when it isn't given. With the posts report, the
+ * function also puts in the report of titles that the posts column asks for,
+ * which has a title for each page path of the posts the column shows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry             The registry, with its reference date set.
+ * @param {Object} reports              The reports.
+ * @param {Object} [reports.posts]      The report of visitors for each page path.
+ * @param {Object} [reports.postTitles] The title of each page path. A path with no title here gets none in the report of titles.
+ * @param {Object} [reports.channels]   The report of visitors for each channel.
+ * @param {Object} [reports.referrals]  The report of visitors for each site that referred them.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(
 	registry: WPDataRegistry,
-	dateRange: FreshDataDateRange
+	{
+		posts,
+		postTitles = {},
+		channels,
+		referrals,
+	}: RecentTrafficBreakdownReports
 ) {
-	const topPostsReportArgs = getRecentTopPostsReportArgs( dateRange );
+	const reportOptions = getRecentTrafficBreakdownReportOptions( registry );
+	const { receiveGetReport } = registry.dispatch( MODULES_ANALYTICS_4 );
 
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		createBreakdownReport( [
-			[ '/ice-cream-is-good-for-your-health/', 82 ],
-			[ '/use-spf-everyday/', 21 ],
-			[ '/stay-hydrated/', 8 ],
-			[ '/summer-reading-list/', 6 ],
-			[ '/about/', 4 ],
-		] ),
-		{ options: topPostsReportArgs }
-	);
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		{
-			rows: [
-				[
-					'/ice-cream-is-good-for-your-health/',
-					'Ice cream is good for your health',
-				],
-				[ '/use-spf-everyday/', 'Use SPF everyday, even for short' ],
-				[ '/stay-hydrated/', 'Stay hydrated' ],
-			].map( ( [ pagePath, pageTitle ] ) => ( {
-				dimensionValues: [ { value: pagePath }, { value: pageTitle } ],
-			} ) ),
-		},
-		{
-			options: getPageTitlesReportOptions( topPostsReportArgs, [
-				'/ice-cream-is-good-for-your-health/',
-				'/use-spf-everyday/',
-				'/stay-hydrated/',
-			] ),
+	if ( posts ) {
+		// A report from the API names its dimensions in `dimensionHeaders`,
+		// and `getPageTitles` finds the page paths by that name.
+		receiveGetReport(
+			{ dimensionHeaders: [ { name: 'pagePath' } ], ...posts },
+			{ options: reportOptions.posts }
+		);
+
+		const pagePaths = getRecentTrafficBreakdownRows( posts ).map(
+			( { label } ) => label
+		);
+
+		if ( pagePaths.length ) {
+			receiveGetReport(
+				{
+					rows: pagePaths
+						.filter( ( pagePath ) => postTitles[ pagePath ] )
+						.map( ( pagePath ) => ( {
+							dimensionValues: [
+								{ value: pagePath },
+								{ value: postTitles[ pagePath ] },
+							],
+						} ) ),
+				},
+				{
+					options: getPageTitlesReportOptions(
+						reportOptions.posts,
+						pagePaths
+					),
+				}
+			);
 		}
-	);
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		createBreakdownReport( [
-			[ 'Direct', 82 ],
-			[ 'Organic Search', 21 ],
-			[ 'Organic Social', 8 ],
-			[ 'Referral', 5 ],
-			[ 'Email', 2 ],
-		] ),
-		{ options: getRecentTopChannelsReportArgs( dateRange ) }
-	);
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
-		createBreakdownReport( [
-			[ 'substack.com', 82 ],
-			[ 'reddit.com', 21 ],
-			[ 'medium.com', 8 ],
-			[ 'news.ycombinator.com', 3 ],
-		] ),
-		{ options: getRecentTopReferralsReportArgs( dateRange ) }
-	);
+	}
+
+	if ( channels ) {
+		receiveGetReport( channels, { options: reportOptions.channels } );
+	}
+
+	if ( referrals ) {
+		receiveGetReport( referrals, { options: reportOptions.referrals } );
+	}
 }

@@ -25,7 +25,6 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,16 +32,9 @@ import { __ } from '@wordpress/i18n';
  */
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
-import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
-import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
-import {
-	getRecentTopChannelsReportArgs,
-	getRecentTopPostsReportArgs,
-	getRecentTopReferralsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/utils/getRecentTrafficBreakdownRows';
-import RecentTrafficBreakdownColumn from './RecentTrafficBreakdownColumn';
+import TopChannelsColumn from './TopChannelsColumn';
 import TopPostsColumn from './TopPostsColumn';
+import TopReferralsColumn from './TopReferralsColumn';
 
 export interface RecentTrafficBreakdownProps {
 	/** Whether the site has no published posts, which leaves out the "Top posts by visitors" column. */
@@ -52,32 +44,13 @@ export interface RecentTrafficBreakdownProps {
 const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 	hasNoPublishedPosts = false,
 } ) => {
-	const headingID = String(
-		useInstanceId(
-			RecentTrafficBreakdown,
-			'googlesitekit-traffic-overview__recent-traffic-breakdown-heading'
-		)
+	// `useInstanceId` is typed as `string | number`, so it is read as a string
+	// the way `TextField` does.
+	const instanceID = useInstanceId(
+		RecentTrafficBreakdown,
+		'googlesitekit-traffic-overview__recent-traffic-breakdown-heading'
 	);
-
-	const dateRange = useFreshDataDateRange();
-
-	const [
-		topPostsReportArgs,
-		topChannelsReportArgs,
-		topReferralsReportArgs,
-	] = useMemo(
-		() => [
-			getRecentTopPostsReportArgs( dateRange ),
-			getRecentTopChannelsReportArgs( dateRange ),
-			getRecentTopReferralsReportArgs( dateRange ),
-		],
-		[ dateRange ]
-	);
-
-	// The posts column requests its own report, so nothing requests that
-	// report while the site has no published posts.
-	const topChannels = useFreshDataReport( topChannelsReportArgs );
-	const topReferrals = useFreshDataReport( topReferralsReportArgs );
+	const headingID = `${ instanceID }`;
 
 	return (
 		<section
@@ -94,31 +67,9 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 				{ __( 'What’s affecting recent traffic?', 'google-site-kit' ) }
 			</Typography>
 			<div className="googlesitekit-traffic-overview__recent-traffic-breakdown-columns">
-				{ ! hasNoPublishedPosts && (
-					<TopPostsColumn reportArgs={ topPostsReportArgs } />
-				) }
-				<RecentTrafficBreakdownColumn
-					title={ __(
-						'Top channels by visitors',
-						'google-site-kit'
-					) }
-					rows={ getRecentTrafficBreakdownRows( topChannels.report ) }
-					loading={ topChannels.loading }
-					error={ topChannels.error }
-					onRetry={ topChannels.retry }
-				/>
-				<RecentTrafficBreakdownColumn
-					title={ __(
-						'Top referrals by visitors',
-						'google-site-kit'
-					) }
-					rows={ getRecentTrafficBreakdownRows(
-						topReferrals.report
-					) }
-					loading={ topReferrals.loading }
-					error={ topReferrals.error }
-					onRetry={ topReferrals.retry }
-				/>
+				{ ! hasNoPublishedPosts && <TopPostsColumn /> }
+				<TopChannelsColumn />
+				<TopReferralsColumn />
 			</div>
 		</section>
 	);

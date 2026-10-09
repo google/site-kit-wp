@@ -30,7 +30,19 @@ import {
 	createTestRegistry,
 	renderHook,
 } from '@tests/js/test-utils';
-import { useFreshDataDateRange } from './useFreshDataDateRange';
+import {
+	getFreshDataDateRange,
+	useFreshDataDateRange,
+} from './useFreshDataDateRange';
+
+describe( 'getFreshDataDateRange', () => {
+	it( 'should return a date range from two days before the reference date to the reference date', () => {
+		expect( getFreshDataDateRange( '2025-03-01' ) ).toEqual( {
+			startDate: '2025-02-27',
+			endDate: '2025-03-01',
+		} );
+	} );
+} );
 
 describe( 'useFreshDataDateRange', () => {
 	let registry: WPDataRegistry;

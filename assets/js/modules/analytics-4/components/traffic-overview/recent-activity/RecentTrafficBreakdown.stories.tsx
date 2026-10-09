@@ -1,5 +1,5 @@
 /**
- * Recent activity traffic breakdown stories.
+ * RecentTrafficBreakdown component stories.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -25,14 +30,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
+import { FRESH_DATA_REPORT_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
-	getRecentTopChannelsReportArgs,
-	getRecentTopPostsReportArgs,
-	getRecentTopReferralsReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { provideRecentTrafficBreakdownReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+	createBreakdownReport,
+	getRecentTrafficBreakdownReportOptions,
+	provideRecentTrafficBreakdownReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -41,57 +44,81 @@ import {
 	provideSiteInfo,
 } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
-import RecentTrafficBreakdown from './RecentTrafficBreakdown';
+import RecentTrafficBreakdown, {
+	RecentTrafficBreakdownProps,
+} from './RecentTrafficBreakdown';
 
-/**
- * The date range of the Recent activity tab, from two days before the
- * reference date to the reference date.
- */
-const DATE_RANGE = { startDate: '2025-02-03', endDate: '2025-02-05' };
+const POSTS = createBreakdownReport( [
+	[ '/ice-cream-is-good-for-your-health/', 82 ],
+	[ '/use-spf-every-day/', 21 ],
+	[ '/stay-hydrated/', 8 ],
+	[ '/summer-hats/', 5 ],
+	[ '/beach-reads/', 4 ],
+] );
 
-/**
- * Sets the reference date and connects Analytics.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry The registry to set up.
- * @return {void}
- */
-function commonSetup( registry: WPDataRegistry ) {
-	provideSiteInfo( registry );
-	registry.dispatch( CORE_USER ).setReferenceDate( DATE_RANGE.endDate );
-	provideModules( registry, [
-		{
-			slug: MODULE_SLUG_ANALYTICS_4,
-			active: true,
-			connected: true,
-		},
-	] );
-	provideModuleRegistrations( registry );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-}
+const POST_TITLES = {
+	'/ice-cream-is-good-for-your-health/': 'Ice cream is good for your health',
+	'/use-spf-every-day/': 'Use SPF every day, even for short walks',
+	'/stay-hydrated/': 'Stay hydrated',
+};
 
-interface RecentTrafficBreakdownStoryProps {
+const CHANNELS = createBreakdownReport( [
+	[ 'Direct', 96 ],
+	[ 'Organic Search', 41 ],
+	[ 'Organic Social', 17 ],
+	[ 'Referral', 12 ],
+	[ 'Email', 4 ],
+] );
+
+const REFERRALS = createBreakdownReport( [
+	[ 'substack.com', 7 ],
+	[ 'reddit.com', 3 ],
+	[ 'medium.com', 2 ],
+] );
+
+interface RecentTrafficBreakdownStoryProps extends RecentTrafficBreakdownProps {
 	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
-	/** Whether the site has no published posts, which leaves out the "Top posts by visitors" column. */
-	hasNoPublishedPosts?: boolean;
+	/**
+	 * Whether the story pauses its animations. The loading placeholders get
+	 * their colour from an animation, which the visual regression tests turn
+	 * off unless it is paused.
+	 */
+	pauseAnimation?: boolean;
 }
 
 function Template( {
 	setupRegistry,
-	hasNoPublishedPosts,
+	pauseAnimation = false,
+	...props
 }: RecentTrafficBreakdownStoryProps ) {
-	// The styles of `RecentTrafficBreakdown` apply inside the Recent activity
-	// panel of the widget, so the stories render the component inside that
-	// panel.
+	function setup( registry: WPDataRegistry ) {
+		provideSiteInfo( registry );
+		// A column with a report error reads the module list and the
+		// Analytics settings.
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		setupRegistry( registry );
+	}
+
+	// The section's styles are scoped to the widget and to the Recent activity
+	// panel, so the story renders inside both. The widget's white background
+	// lets the light rails and loading placeholders show.
 	return (
-		<WithRegistrySetup func={ setupRegistry }>
-			<div className="googlesitekit-widget--analyticsTrafficOverview">
+		<WithRegistrySetup func={ setup }>
+			<div
+				className={ classnames(
+					'googlesitekit-widget',
+					'googlesitekit-widget--analyticsTrafficOverview',
+					{
+						'googlesitekit-vrt-animation-paused': pauseAnimation,
+					}
+				) }
+			>
 				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--recent-activity">
-					<RecentTrafficBreakdown
-						hasNoPublishedPosts={ hasNoPublishedPosts }
-					/>
+					<RecentTrafficBreakdown { ...props } />
 				</div>
 			</div>
 		</WithRegistrySetup>
@@ -99,93 +126,155 @@ function Template( {
 }
 
 /**
- * The `RecentActivity` story of `TrafficOverviewWidget` captures the "What’s
- * affecting recent traffic?" section at the large size, so the `Default`
- * story captures the small size alone, where the three columns stack.
+ * The three columns side by side from the desktop breakpoint, and stacked
+ * below it, as the `medium` and `small` captures show.
  */
-export const Default = Template.bind( {} ) as Story;
-Default.storyName = 'Default';
-Default.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideRecentTrafficBreakdownReports( registry, DATE_RANGE );
-	},
+export const Loaded = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
+Loaded.storyName = 'Loaded';
+Loaded.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: POSTS,
+			postTitles: POST_TITLES,
+			channels: CHANNELS,
+			referrals: REFERRALS,
+		} ),
 };
-Default.scenario = {
-	viewport: 'small',
-};
+Loaded.scenario = {};
 
-export const Loading = Template.bind( {} ) as Story;
+export const Loading = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		// Each column reads its report under the report options and the
-		// fetch options, so the resolution starts under both.
-		[
-			getRecentTopPostsReportArgs( DATE_RANGE ),
-			getRecentTopChannelsReportArgs( DATE_RANGE ),
-			getRecentTopReferralsReportArgs( DATE_RANGE ),
-		].forEach( ( options ) =>
+	pauseAnimation: true,
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		Object.values(
+			getRecentTrafficBreakdownReportOptions( registry )
+		).forEach( ( options ) =>
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.startResolution( 'getReport', [
 					options,
-					FRESH_DATA_FETCH_OPTIONS,
+					FRESH_DATA_REPORT_FETCH_OPTIONS,
 				] )
-		);
-	},
+		),
 };
-
-export const OneColumnError = Template.bind( {} ) as Story;
-OneColumnError.storyName = 'One Column Error';
-OneColumnError.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideRecentTrafficBreakdownReports( registry, DATE_RANGE );
-
-		// A column renders its error in place of its rows.
-		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
-			{
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-			'getReport',
-			[ getRecentTopChannelsReportArgs( DATE_RANGE ) ]
-		);
-	},
-};
-OneColumnError.scenario = {
+Loading.scenario = {
 	viewport: 'large',
 };
 
-export const ZeroRows = Template.bind( {} ) as Story;
-ZeroRows.storyName = 'Zero Rows';
-ZeroRows.args = {
+/** The report of the channels column fails, and the other two columns keep their rows. */
+export const OneColumnErrored = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
+OneColumnErrored.storyName = 'One Column Errored';
+OneColumnErrored.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		[
-			getRecentTopPostsReportArgs( DATE_RANGE ),
-			getRecentTopChannelsReportArgs( DATE_RANGE ),
-			getRecentTopReferralsReportArgs( DATE_RANGE ),
-		].forEach( ( options ) =>
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetReport( {}, { options } )
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: POSTS,
+			postTitles: POST_TITLES,
+			referrals: REFERRALS,
+		} );
+
+		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message:
+					'Request contains an invalid argument. Learn more about the Analytics Data API.',
+				data: { status: 400, reason: 'badRequest' },
+			},
+			'getReport',
+			[ channels ]
 		);
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [
+				channels,
+				FRESH_DATA_REPORT_FETCH_OPTIONS,
+			] );
 	},
 };
+OneColumnErrored.scenario = {
+	viewport: 'large',
+};
 
-export const NoPublishedPosts = Template.bind( {} ) as Story;
+/** A report with no rows is what the API returns for a range with no traffic. */
+export const ZeroRows = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
+ZeroRows.storyName = 'Zero Rows';
+ZeroRows.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: {},
+			channels: {},
+			referrals: {},
+		} ),
+};
+ZeroRows.scenario = {
+	viewport: 'large',
+};
+
+/** The two columns left on a site with no published posts keep their widths. */
+export const NoPublishedPosts = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
 NoPublishedPosts.storyName = 'No Published Posts';
 NoPublishedPosts.args = {
 	hasNoPublishedPosts: true,
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		commonSetup( registry );
-		provideRecentTrafficBreakdownReports( registry, DATE_RANGE );
-	},
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		provideRecentTrafficBreakdownReports( registry, {
+			channels: CHANNELS,
+			referrals: REFERRALS,
+		} ),
 };
+NoPublishedPosts.scenario = {
+	viewport: 'large',
+};
+
+/**
+ * Titles and sources that have to be cut short, counts in the thousands, and
+ * the widest shares, "(>99.9%)" and "(<0.1%)", whose counts still line up.
+ */
+export const LongTitlesAndExtremeShares = Template.bind(
+	{}
+) as Story< RecentTrafficBreakdownStoryProps >;
+LongTitlesAndExtremeShares.storyName = 'Long Titles and Extreme Shares';
+LongTitlesAndExtremeShares.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: createBreakdownReport( [
+				[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
+				[ '/sunscreen-myths/', 1206 ],
+				[ '/hydration/', 9 ],
+			] ),
+			postTitles: {
+				'/how-to-choose-store-and-serve-ice-cream/':
+					'The complete guide to choosing, storing and serving ice cream on the hottest days of the summer',
+				'/sunscreen-myths/':
+					'Seven sunscreen myths that dermatologists wish you would stop believing',
+				'/hydration/': 'Stay hydrated',
+			},
+			channels: createBreakdownReport( [
+				[ 'Direct', 2999 ],
+				[ 'Mobile Push Notifications', 1 ],
+			] ),
+			referrals: createBreakdownReport( [
+				[ 'android-app://com.google.android.googlequicksearchbox', 46 ],
+				[
+					'newsletter.an-example-publication-with-a-long-name.com',
+					31,
+				],
+				[ 'reddit.com', 3 ],
+			] ),
+		} ),
+};
+LongTitlesAndExtremeShares.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/RecentTrafficBreakdown',

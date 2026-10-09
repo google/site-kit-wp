@@ -17,6 +17,11 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback, useMemo } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
 import {
@@ -25,82 +30,93 @@ import {
 	useInViewSelect,
 	useSelect,
 } from 'googlesitekit-data';
+import { FRESH_DATA_REPORT_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
-import { MINUTE_IN_SECONDS } from '@/js/util';
+import { ErrorObject } from '@/js/util/errors';
+import {
+	FreshDataDateRange,
+	useFreshDataDateRange,
+} from './useFreshDataDateRange';
 
 export interface FreshDataReport {
-	/** The report, which reads `undefined` until it loads and while the Traffic Overview widget is out of view. */
+	/** The options the report is requested with. */
+	reportOptions: ReportOptions;
+	/**
+	 * The report, or `undefined` until the request succeeds. The request waits
+	 * until the Traffic Overview widget first comes into view.
+	 */
 	report?: Report;
-	/** Whether the report request has not finished, which includes the time the widget is out of view. */
+	/** `true` until the request has finished, whether it succeeded or failed. */
 	loading: boolean;
-	/** The error of the report request, which reads `undefined` while the request has not failed. */
-	error?: unknown;
-	/** Requests the report again, for the "Retry" button of the report error. */
+	/** The error of the request, or `undefined` when the request has not failed. */
+	error?: ErrorObject;
+	/** Requests the report again. */
 	retry: () => void;
 }
 
 /**
- * The fetch options of a Recent activity report. The browser keeps the report
- * for five minutes, in place of the hour it keeps other reports.
- */
-export const FRESH_DATA_FETCH_OPTIONS = { cacheTTL: 5 * MINUTE_IN_SECONDS };
-
-/**
- * Requests a GA4 report for the Recent activity tab, and reads the state of
- * the request.
+ * Resolves one of the Recent activity tab's reports.
  *
- * The data store records the request under both arguments of `getReport()`,
- * the report options and the fetch options, so the hook reads the loading
- * state under both. The data store saves an error under the report options
- * alone.
+ * The hook builds the report options for the tab's date range, and requests
+ * the report with a cache of five minutes. The store saves the request's
+ * progress under both arguments of `getReport`, the options and the fetch
+ * options, but saves its error under the options alone. So the hook reads each
+ * under its own key, and `retry` restarts the request under both arguments,
+ * which the "Retry" button of a report error does not do on its own.
  *
  * @since n.e.x.t
  *
- * @param {Object} reportArgs The report options to pass to the `getReport` selector.
- * @return {Object} The report, whether its request is running, its error, and a function that requests it again.
+ * @param {Function} buildReportOptions Builds the report options from the tab's date range. Pass the same function on every render, such as one defined outside the component, so the options are built only when the date range changes.
+ * @return {Object} The report options, the report, whether it is loading, its error, and a function that requests it again.
  */
 export function useFreshDataReport(
-	reportArgs: ReportOptions
+	buildReportOptions: ( dateRange: FreshDataDateRange ) => ReportOptions
 ): FreshDataReport {
+	const dateRange = useFreshDataDateRange();
+
+	const reportOptions = useMemo(
+		() => buildReportOptions( dateRange ),
+		[ buildReportOptions, dateRange ]
+	);
+
 	const report = useInViewSelect< Report | undefined >(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getReport(
-				reportArgs,
-				FRESH_DATA_FETCH_OPTIONS
+				reportOptions,
+				FRESH_DATA_REPORT_FETCH_OPTIONS
 			),
-		[ reportArgs ]
+		[ reportOptions ]
 	);
 
 	const loading = useSelect(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ reportArgs, FRESH_DATA_FETCH_OPTIONS ]
+				[ reportOptions, FRESH_DATA_REPORT_FETCH_OPTIONS ]
 			),
-		[ reportArgs ]
+		[ reportOptions ]
 	);
 
 	const error = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getFirstReportError( reportArgs ),
-		[ reportArgs ]
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+				reportOptions,
+			] ),
+		[ reportOptions ]
 	);
 
 	const { invalidateResolution } = useDispatch( MODULES_ANALYTICS_4 );
 
-	// The "Retry" button of `ReportError` resets the request under the report
-	// options alone, so the button never sends the request with the fetch
-	// options again.
-	function retry() {
+	const retry = useCallback( () => {
 		invalidateResolution( 'getReport', [
-			reportArgs,
-			FRESH_DATA_FETCH_OPTIONS,
+			reportOptions,
+			FRESH_DATA_REPORT_FETCH_OPTIONS,
 		] );
-	}
+	}, [ invalidateResolution, reportOptions ] );
 
-	return { report, loading, error, retry };
+	return { reportOptions, report, loading, error, retry };
 }

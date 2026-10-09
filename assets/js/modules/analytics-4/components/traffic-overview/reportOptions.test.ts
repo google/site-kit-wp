@@ -22,13 +22,10 @@
 import {
 	getBreakdownReportArgs,
 	getBreakdownReportOptions,
-	getRecentTopChannelsReportArgs,
-	getRecentTopPostsReportArgs,
-	getRecentTopReferralsReportArgs,
 } from './reportOptions';
 
 describe( 'getBreakdownReportOptions', () => {
-	it( 'should return the dimension, the ordering by total users, and the report ID it receives', () => {
+	it( 'returns the dimension, the ordering by total users, and the report ID it receives', () => {
 		expect(
 			getBreakdownReportOptions( {
 				dimensionName: 'country',
@@ -43,7 +40,7 @@ describe( 'getBreakdownReportOptions', () => {
 } );
 
 describe( 'getBreakdownReportArgs', () => {
-	it( 'should return the dates, the total users metric, the dimension, the ordering, and the report ID', () => {
+	it( 'returns the dates, the total users metric, the dimension, the ordering, and the report ID', () => {
 		expect(
 			getBreakdownReportArgs( {
 				dimensionName: 'sessionDefaultChannelGrouping',
@@ -61,7 +58,7 @@ describe( 'getBreakdownReportArgs', () => {
 		} );
 	} );
 
-	it( 'should add the URL to the args when it receives an entity URL', () => {
+	it( 'adds the URL to the args when it receives an entity URL', () => {
 		expect(
 			getBreakdownReportArgs( {
 				dimensionName: 'deviceCategory',
@@ -81,7 +78,7 @@ describe( 'getBreakdownReportArgs', () => {
 		} );
 	} );
 
-	it( 'should omit the URL when it receives no entity URL', () => {
+	it( 'omits the URL when it receives no entity URL', () => {
 		const args = getBreakdownReportArgs( {
 			dimensionName: 'deviceCategory',
 			reportID: 'test-devices-breakdown',
@@ -90,63 +87,5 @@ describe( 'getBreakdownReportArgs', () => {
 		} );
 
 		expect( args ).not.toHaveProperty( 'url' );
-	} );
-} );
-
-describe( 'getRecentTopPostsReportArgs', () => {
-	it( 'should return the dates, the total users metric, the page path dimension, the ordering by total users, and the report ID', () => {
-		expect(
-			getRecentTopPostsReportArgs( {
-				startDate: '2025-02-04',
-				endDate: '2025-02-05',
-			} )
-		).toEqual( {
-			startDate: '2025-02-04',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'totalUsers' } ],
-			dimensions: [ 'pagePath' ],
-			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_component_topPostsArgs',
-		} );
-	} );
-} );
-
-describe( 'getRecentTopChannelsReportArgs', () => {
-	it( 'should return the dates, the total users metric, the channel group dimension, the ordering by total users, and the report ID', () => {
-		expect(
-			getRecentTopChannelsReportArgs( {
-				startDate: '2025-02-04',
-				endDate: '2025-02-05',
-			} )
-		).toEqual( {
-			startDate: '2025-02-04',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'totalUsers' } ],
-			dimensions: [ 'sessionDefaultChannelGroup' ],
-			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_component_topChannelsArgs',
-		} );
-	} );
-} );
-
-describe( 'getRecentTopReferralsReportArgs', () => {
-	it( 'should return the session source dimension, and a filter that keeps the "Referral" channel group alone', () => {
-		expect(
-			getRecentTopReferralsReportArgs( {
-				startDate: '2025-02-04',
-				endDate: '2025-02-05',
-			} )
-		).toEqual( {
-			startDate: '2025-02-04',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'totalUsers' } ],
-			dimensions: [ 'sessionSource' ],
-			dimensionFilters: { sessionDefaultChannelGroup: 'Referral' },
-			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_component_topReferralsArgs',
-		} );
 	} );
 } );
