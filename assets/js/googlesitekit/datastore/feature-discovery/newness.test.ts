@@ -211,6 +211,22 @@ describe( 'core/feature-discovery newness', () => {
 			registerFeature( 'unread-newer-second', {
 				addedInVersion: '1.160.0',
 			} );
+			registerFeature( 'in-progress-old', {
+				addedInVersion: '1.159.0',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+			registerFeature( 'in-progress-new', {
+				addedInVersion: '1.160.0',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
 			registerFeature( 'dismissed' );
 			registerFeature( 'set-up', {
 				setup: {
@@ -228,11 +244,151 @@ describe( 'core/feature-discovery newness', () => {
 					.getWhatsNewFeatures()
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [
+				'in-progress-new',
+				'in-progress-old',
 				'unread-newer-first',
 				'unread-newer-second',
 				'unread-oldest',
 				'read-newest',
 			] );
+		} );
+
+		it( 'should preserve existing order when no features provide isInProgress', () => {
+			provideNewnessState( {
+				expirableItems: {
+					[ getFeatureNewnessKey( 'read-newest' ) ]:
+						Math.floor( Date.now() / 1000 ) + 100,
+				},
+			} );
+
+			registerFeature( 'read-newest', { addedInVersion: '1.161.0' } );
+			registerFeature( 'unread-oldest', { addedInVersion: '1.159.0' } );
+			registerFeature( 'unread-newer-first', {
+				addedInVersion: '1.160.0',
+			} );
+			registerFeature( 'unread-newer-second', {
+				addedInVersion: '1.160.0',
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getWhatsNewFeatures()
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [
+				'unread-newer-first',
+				'unread-newer-second',
+				'unread-oldest',
+				'read-newest',
+			] );
+		} );
+
+		it( 'should not restore features excluded for other reasons when they are in progress', () => {
+			provideModules( registry, [
+				{ slug: 'analytics-4', active: false, connected: false },
+			] );
+			provideNewnessState( {
+				dismissedItems: [
+					getFeatureDismissalKey( 'dismissed-in-progress' ),
+				],
+				expirableItems: {
+					[ getFeatureNewnessKey( 'expired-in-progress' ) ]:
+						Math.floor( Date.now() / 1000 ) - 10,
+				},
+			} );
+
+			const inProgressSetup = {
+				type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+				isEnabled: () => false,
+				isInProgress: () => true,
+			};
+
+			registerFeature( 'eligible-in-progress', {
+				setup: inProgressSetup,
+				addedInVersion: '1.160.0',
+			} );
+			registerFeature( 'dismissed-in-progress', {
+				setup: inProgressSetup,
+				addedInVersion: '1.160.0',
+			} );
+			registerFeature( 'expired-in-progress', {
+				setup: inProgressSetup,
+				addedInVersion: '1.160.0',
+			} );
+			registerFeature( 'too-old-in-progress', {
+				setup: inProgressSetup,
+				addedInVersion: '1.100.0',
+			} );
+			registerFeature( 'unavailable-in-progress', {
+				setup: inProgressSetup,
+				addedInVersion: '1.160.0',
+				prerequisiteModules: [ 'analytics-4' ],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getWhatsNewFeatures()
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'eligible-in-progress' ] );
+		} );
+	} );
+
+	describe( 'isFeatureUnread', () => {
+		it( 'should return false for an unseen in-progress feature', () => {
+			provideNewnessState();
+			registerFeature( 'in-progress-unseen', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureUnread( 'in-progress-unseen' )
+			).toBe( false );
+		} );
+
+		it( 'should return false for a seen in-progress feature', () => {
+			provideNewnessState( {
+				expirableItems: {
+					[ getFeatureNewnessKey( 'in-progress-seen' ) ]:
+						Math.floor( Date.now() / 1000 ) + 100,
+				},
+			} );
+			registerFeature( 'in-progress-seen', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureUnread( 'in-progress-seen' )
+			).toBe( false );
+		} );
+
+		it( 'should return undefined when in-progress state is unresolved', () => {
+			provideNewnessState();
+			registerFeature( 'in-progress-unresolved', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => undefined,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureUnread( 'in-progress-unresolved' )
+			).toBeUndefined();
 		} );
 	} );
 
@@ -263,6 +419,21 @@ describe( 'core/feature-discovery newness', () => {
 			expect(
 				registry.select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount()
 			).toBe( 1 );
+		} );
+
+		it( 'should not count unseen in-progress features', () => {
+			provideNewnessState();
+			registerFeature( 'in-progress-unseen', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry.select( CORE_FEATURE_DISCOVERY ).getNewFeatureCount()
+			).toBe( 0 );
 		} );
 	} );
 
