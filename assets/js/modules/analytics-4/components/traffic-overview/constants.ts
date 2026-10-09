@@ -22,6 +22,16 @@
  */
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
+/**
+ * The DOM `id` of the Recent activity tab. The Recent activity panel points
+ * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
+ */
+export const RECENT_ACTIVITY_TAB_ID = 'googlesitekit-recent-activity-tab';
+
+/** The dismissed item slug of the Analytics setup CTA in the Recent activity tab. */
+export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
+	'analytics-setup-cta-recent-activity';
+
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 
