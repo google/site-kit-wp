@@ -82,7 +82,7 @@ class Google_ProxyTest extends TestCase {
 				'foo'     => 'foo-789',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789', 'Setup URL should match expected format with query parameters.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5&verification_evidence=none', 'Setup URL should match expected format with query parameters, including the service_version and steps query parameters.' );
 
 		$url = $this->google_proxy->setup_url(
 			array(
@@ -90,7 +90,7 @@ class Google_ProxyTest extends TestCase {
 				'site_code' => 'site_code-456',
 			)
 		);
-		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_code=site_code-456', 'Setup URL should match expected format with site code parameter.' );
+		$this->assertEquals( $url, 'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_code=site_code-456&service_version=v3&steps=5&verification_evidence=none', 'Setup URL should match expected format with site code parameter.' );
 
 		// Check an exception is thrown when `code` query param is not passed.
 		try {
@@ -109,27 +109,7 @@ class Google_ProxyTest extends TestCase {
 		}
 	}
 
-	public function test_setup_url__with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
-		$url = $this->google_proxy->setup_url(
-			array(
-				'code'    => 'code-123',
-				'site_id' => 'site_id-456',
-				'foo'     => 'foo-789',
-			)
-		);
-
-		$this->assertEquals(
-			$url,
-			'https://sitekit.withgoogle.com/v3/site-management/setup/?code=code-123&site_id=site_id-456&foo=foo-789&service_version=v3&steps=5&verification_evidence=none',
-			'Setup URL should include the service_version and steps query parameters.'
-		);
-	}
-
-	public function test_setup_url__applies_params_filter_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
+	public function test_setup_url__applies_params_filter() {
 		add_filter(
 			'googlesitekit_proxy_setup_url_params',
 			function ( $params ) {
@@ -484,8 +464,6 @@ class Google_ProxyTest extends TestCase {
 		$user_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $user_id );
 		( new User_Options( $this->context, $user_id ) )->set( Verification_Meta::OPTION, 'meta-token' );
-
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
 
 		$url = $this->google_proxy->setup_url(
 			array(

@@ -44,7 +44,6 @@ import {
 	BREAKPOINT_TABLET,
 	useBreakpoint,
 } from '@/js/hooks/useBreakpoint';
-import { useFeature } from '@/js/hooks/useFeature';
 import useIsIntentSetupFlow from '@/js/hooks/useIsIntentSetupFlow';
 import { Cell, Row } from '@/js/material-components';
 import SplashBackground from '@/svg/graphics/splash-graphic.svg';
@@ -68,9 +67,6 @@ export default function SplashContent( {
 	const breakpoint = useBreakpoint();
 	const isMobileOrTablet =
 		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const isIntentSetupFlow = useIsIntentSetupFlow();
 
 	const cellDetailsProp = analyticsModuleActive
@@ -110,8 +106,7 @@ export default function SplashContent( {
 
 					<ConnectedURLComparison />
 
-					{ setupFlowRefreshPhase4Enabled &&
-						analyticsModuleActive && <Services /> }
+					{ analyticsModuleActive && <Services /> }
 
 					{ analyticsModuleAvailable &&
 						! analyticsModuleActive &&

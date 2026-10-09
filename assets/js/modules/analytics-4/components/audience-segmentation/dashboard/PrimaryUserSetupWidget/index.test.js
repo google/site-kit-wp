@@ -124,30 +124,7 @@ describe( 'PrimaryUserSetupWidget', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should handle generic errors and display a retry button', async () => {
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			body: {
-				code: 'test_error',
-				message: 'Error message.',
-			},
-			status: 500,
-		} );
-
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				getByText( 'Your visitor groups data loading failed' )
-			).toBeInTheDocument();
-			expect( getByText( 'Retry' ) ).toBeInTheDocument();
-		} );
-
-		expect( container ).toMatchSnapshot();
-	} );
-
-	it( 'should render the setup error widget when setupFlowRefreshPhase4 is enabled', async () => {
+	it( 'should render the setup error widget when audience setup fails', async () => {
 		provideSiteInfo( registry );
 
 		fetchMock.post( syncAvailableAudiencesEndpoint, {
@@ -166,7 +143,6 @@ describe( 'PrimaryUserSetupWidget', () => {
 
 		const { getByRole, getByText } = render( <WidgetWithComponentProps />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitFor( () => {
@@ -195,7 +171,7 @@ describe( 'PrimaryUserSetupWidget', () => {
 		} );
 	} );
 
-	it( 'should render the audience creation setup error widget when setupFlowRefreshPhase4 is enabled and audience creation fails', async () => {
+	it( 'should render the audience creation setup error widget when audience creation fails', async () => {
 		provideSiteInfo( registry );
 
 		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
@@ -219,7 +195,6 @@ describe( 'PrimaryUserSetupWidget', () => {
 
 		const { getByRole, getByText } = render( <WidgetWithComponentProps />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitFor( () => {
@@ -233,42 +208,6 @@ describe( 'PrimaryUserSetupWidget', () => {
 				getByRole( 'button', { name: 'No thanks' } )
 			).toBeInTheDocument();
 		} );
-	} );
-
-	it( 'should display the audiences that failed to be created', async () => {
-		fetchMock.post( syncAvailableCustomDimensionsEndpoint, {
-			body: [],
-			status: 200,
-		} );
-
-		fetchMock.post( syncAvailableAudiencesEndpoint, {
-			body: availableAudiences.slice( 0, 2 ),
-			status: 200,
-		} );
-
-		fetchMock.post( createAudienceEndpoint, {
-			body: {
-				code: 'test_error',
-				message: 'Error message.',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-
-		const { container, getByText } = render( <WidgetWithComponentProps />, {
-			registry,
-		} );
-
-		await waitFor( () => {
-			expect(
-				getByText( 'Failed to create the following audiences:' )
-			).toBeInTheDocument();
-			expect( getByText( 'Retry' ) ).toBeInTheDocument();
-			expect( getByText( 'new-visitors' ) ).toBeInTheDocument();
-			expect( getByText( 'returning-visitors' ) ).toBeInTheDocument();
-		} );
-
-		expect( container ).toMatchSnapshot();
 	} );
 
 	it( 'should retry audience creation when the retry button is clicked', async () => {
@@ -322,18 +261,20 @@ describe( 'PrimaryUserSetupWidget', () => {
 			status: 403,
 		} );
 
-		const { container, queryByText, getByText } = render(
-			<WidgetWithComponentProps />,
-			{
-				registry,
-			}
-		);
+		const { container, getByText } = render( <WidgetWithComponentProps />, {
+			registry,
+		} );
 
 		await waitFor( () => {
 			expect(
-				getByText( 'Insufficient permissions' )
+				getByText( 'Visitor groups setup failed' )
 			).toBeInTheDocument();
-			expect( queryByText( 'Retry' ) ).not.toBeInTheDocument();
+			expect(
+				getByText(
+					/you don’t have the required permissions to set up visitor groups/
+				)
+			).toBeInTheDocument();
+			expect( getByText( 'Retry' ) ).toBeInTheDocument();
 		} );
 
 		expect( container ).toMatchSnapshot();

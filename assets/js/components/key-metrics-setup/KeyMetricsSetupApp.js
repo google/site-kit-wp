@@ -65,7 +65,6 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -78,9 +77,6 @@ import { trackEvent } from '@/js/util';
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
 	const forwardableParams = useForwardableParams();
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 
 	const [ isFooterInline, setIsFooterInline ] = useState( false );
 
@@ -181,10 +177,10 @@ export default function KeyMetricsSetupApp() {
 
 	const progressIndicatorProps = useMemo(
 		() =>
-			setupFlowRefreshPhase4Enabled && ! isGA4Active
+			! isGA4Active
 				? { totalSegments: 5, currentSegment: 3 }
 				: { totalSegments: 6, currentSegment: 4 },
-		[ isGA4Active, setupFlowRefreshPhase4Enabled ]
+		[ isGA4Active ]
 	);
 
 	useMount( () => {

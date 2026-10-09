@@ -33,7 +33,6 @@ import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import ConnectedIcon from '@/svg/icons/connected.svg';
@@ -43,9 +42,6 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const hasSitePurposeAnswer = useSelect(
 		( select ) =>
 			!! select( CORE_USER ).getUserInputSettings()?.purpose?.values
@@ -54,9 +50,7 @@ export default function SettingsAdmin() {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
-	const showKeyMetricsSettings =
-		isAnalyticsConnected ||
-		( hasSitePurposeAnswer && setupFlowRefreshPhase4Enabled );
+	const showKeyMetricsSettings = isAnalyticsConnected || hasSitePurposeAnswer;
 
 	const showKeyMetricsSettingsLoading = useSelect(
 		( select ) =>

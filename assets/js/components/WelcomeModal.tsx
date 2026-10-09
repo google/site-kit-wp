@@ -50,7 +50,6 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { useHasBeenViewed } from '@/js/googlesitekit/notifications/hooks/useHasBeenViewed';
 import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNotificationEvents';
-import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -119,13 +118,11 @@ function shouldRenderModalVariant( {
 function getModalDescription( {
 	modalVariant,
 	isViewOnly,
-	setupFlowRefreshPhase4Enabled,
 }: {
 	modalVariant: MODAL_VARIANT;
 	isViewOnly: boolean;
-	setupFlowRefreshPhase4Enabled: boolean;
 } ): string | ReactElement {
-	if ( isViewOnly && setupFlowRefreshPhase4Enabled ) {
+	if ( isViewOnly ) {
 		switch ( modalVariant ) {
 			case MODAL_VARIANT.DATA_AVAILABLE:
 				return __(
@@ -171,9 +168,6 @@ interface WelcomeModalProps {
 }
 
 const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const isViewOnly = useViewOnly();
 	const viewContext = useViewContext();
 
@@ -384,7 +378,6 @@ const WelcomeModal: FC< WelcomeModalProps > = ( { id, Notification } ) => {
 	const description = getModalDescription( {
 		modalVariant,
 		isViewOnly,
-		setupFlowRefreshPhase4Enabled,
 	} );
 
 	const Graphic =

@@ -130,6 +130,7 @@ class Google_Proxy {
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 * @since 1.189.0 Includes the `verification_evidence` query parameter.
+	 * @since n.e.x.t Uses the V3 setup flow by default.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -144,23 +145,21 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
-		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['service_version']       = 'v3';
-			$query_params['steps']                 = 5;
-			$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
+		$query_params['service_version']       = 'v3';
+		$query_params['steps']                 = 5;
+		$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
 
-			/**
-			 * Filters parameters included in the proxy setup URL.
-			 *
-			 * @since 1.184.0
-			 *
-			 * @param array $query_params Query parameters.
-			 */
-			$query_params = apply_filters(
-				'googlesitekit_proxy_setup_url_params',
-				$query_params,
-			);
-		}
+		/**
+		 * Filters parameters included in the proxy setup URL.
+		 *
+		 * @since 1.184.0
+		 *
+		 * @param array $query_params Query parameters.
+		 */
+		$query_params = apply_filters(
+			'googlesitekit_proxy_setup_url_params',
+			$query_params,
+		);
 
 		return add_query_arg(
 			$query_params,

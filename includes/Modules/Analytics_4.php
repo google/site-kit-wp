@@ -600,9 +600,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * @return array
 	 */
 	protected function set_setup_url_steps_param( $query_params ) {
-		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['steps'] = 6;
-		}
+		$query_params['steps'] = 6;
 
 		return $query_params;
 	}
