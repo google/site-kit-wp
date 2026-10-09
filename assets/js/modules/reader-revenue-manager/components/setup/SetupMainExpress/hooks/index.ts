@@ -16,8 +16,11 @@
  * limitations under the License.
  */
 
+export { default as useExpressSetupEventCategory } from './useExpressSetupEventCategory';
 export { default as useExpressSetupScopes } from './useExpressSetupScopes';
+export { default as useExpressSetupStepEventLabel } from './useExpressSetupStepEventLabel';
 export { default as useExpressSetupSurveyTriggers } from './useExpressSetupSurveyTriggers';
+export { default as useExpressSetupTrackEvent } from './useExpressSetupTrackEvent';
 export { default as useHasPreExistingCTAs } from './useHasPreExistingCTAs';
 export {
 	default as useSetupFlow,

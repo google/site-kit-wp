@@ -27,3 +27,6 @@ import {
 export const EXPRESS_SETUP_SCOPES = [ READONLY_SCOPE, MANAGE_SCOPE ];
 
 export const EXPRESS_SETUP_STEP_UI_KEY = 'express-setup-step';
+
+// Used by the publication setup step while its create form is shown.
+export const CREATE_PUBLICATION_EVENT_LABEL = 'create-publication';

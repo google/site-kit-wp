@@ -53,6 +53,8 @@ import {
 	ExpressSetupStepLanguageSelect,
 	ExpressSetupStepRegionSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	CREATE_PUBLICATION_FORM,
@@ -70,6 +72,8 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isBusy, setIsBusy ] = useState( false );
 
 	const defaultDescription = __(
@@ -84,7 +88,18 @@ const CreatePublication: FC< CreatePublicationProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication" external />,
+			a: (
+				<DocumentationLink
+					slug="rrm-publication"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							CREATE_PUBLICATION_EVENT_LABEL
+						)
+					}
+					external
+				/>
+			),
 		}
 	);
 

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	publications,
@@ -31,6 +32,8 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -294,6 +297,42 @@ describe( 'StepTermsOfService', () => {
 
 		await waitFor( () => {
 			expect( onComplete ).toHaveBeenCalled();
+		} );
+	} );
+
+	describe( 'event tracking', () => {
+		mockLocation();
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the Learn more link', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			provideTermsOfService( registry );
+
+			const { getByText } = render(
+				<StepTermsOfService onComplete={ () => {} } />,
+				{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+			);
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'terms-of-service'
+			);
 		} );
 	} );
 } );

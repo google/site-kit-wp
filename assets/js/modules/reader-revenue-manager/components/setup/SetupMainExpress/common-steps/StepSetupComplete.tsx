@@ -37,13 +37,14 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
-import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
-// Does not extend `SetupStepProps`: this step ends the flow, so it ignores the
-// `onComplete` callback the flow passes to every step.
-interface StepSetupCompleteProps {
+interface StepSetupCompleteProps extends SetupStepProps {
 	title?: string;
 	children?: ReactNode;
 	secondaryCTA?: ReactNode;
@@ -53,6 +54,7 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	title = __( 'Reader Revenue Manager is set up', 'google-site-kit' ),
 	children,
 	secondaryCTA,
+	onComplete,
 } ) => {
 	const [ cta ] = useQueryArg( 'cta' );
 
@@ -64,11 +66,15 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
-	const onReturnToDashboardClick = useCallback( () => {
+	// "Return to Dashboard" completes this last step, so the flow can track it
+	// before the page is left.
+	const onReturnToDashboardClick = useCallback( async () => {
+		await onComplete();
+
 		if ( dashboardURL ) {
 			navigateTo( dashboardURL );
 		}
-	}, [ dashboardURL, navigateTo ] );
+	}, [ dashboardURL, navigateTo, onComplete ] );
 
 	// The CTA details only make sense within a CTA-specific setup flow, which
 	// is identified by the `cta` query argument.

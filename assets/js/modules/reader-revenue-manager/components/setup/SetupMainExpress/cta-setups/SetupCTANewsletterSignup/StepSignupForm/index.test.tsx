@@ -34,6 +34,7 @@ import {
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -354,6 +355,37 @@ describe( 'StepSignupForm', () => {
 
 		await waitFor( () => {
 			expect( onComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	describe( 'event tracking', () => {
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the Learn more link', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
+
+			const { getByText } = renderStepSignupForm( {}, registry );
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				expect.stringContaining(
+					'_rrm-express-setup_newsletter-signup'
+				),
+				'click_learn_more_link',
+				'newsletter-signup-form'
+			);
 		} );
 	} );
 } );

@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import StepPublicationPolicies, {
 	publicationPoliciesStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps/StepPublicationPolicies';
@@ -27,6 +28,7 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
@@ -353,5 +355,41 @@ describe( 'StepPublicationPolicies', () => {
 		expect( onComplete ).not.toHaveBeenCalled();
 		expect( fetchMock ).toHaveFetched( publicationEndpoint );
 		expect( console ).toHaveErrored();
+	} );
+
+	describe( 'event tracking', () => {
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the Learn more link', () => {
+			global.location.href = `http://example.com/?cta=newsletter-signup&step=${ publicationPoliciesStep.slug }`;
+
+			providePublication( registry, TEST_PUBLICATION );
+
+			const { getByText } = render(
+				<StepPublicationPolicies onComplete={ () => {} } />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'publication-policies'
+			);
+		} );
 	} );
 } );

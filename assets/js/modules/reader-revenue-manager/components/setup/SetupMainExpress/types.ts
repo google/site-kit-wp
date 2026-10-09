@@ -33,8 +33,11 @@ import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datasto
 export interface SetupStepProps {
 	/**
 	 * Called once the step has been completed, to advance the flow.
+	 *
+	 * May return a promise that settles once the completion has been tracked,
+	 * for a step that leaves the page and must not navigate before then.
 	 */
-	onComplete: () => void;
+	onComplete: () => void | Promise< unknown >;
 }
 
 /**

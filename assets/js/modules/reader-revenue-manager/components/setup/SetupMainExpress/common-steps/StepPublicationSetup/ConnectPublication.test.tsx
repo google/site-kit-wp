@@ -20,10 +20,13 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -296,4 +299,52 @@ describe( 'ConnectPublication', () => {
 			} );
 		}
 	);
+
+	describe( 'event tracking', () => {
+		mockLocation();
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track a click on the Learn more link', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			providePublications( registry, [ TEST_DEFAULT_PUBLICATION ] );
+
+			const { getByText } = render(
+				<ConnectPublication onComplete={ () => {} } />,
+				{ registry, viewContext: VIEW_CONTEXT_MODULE_SETUP }
+			);
+
+			// Wait for the default publication to be selected on load.
+			await waitFor( () => {
+				expect(
+					registry
+						.select( MODULES_READER_REVENUE_MANAGER )
+						.getPublicationID()
+				).toBe(
+					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+					TEST_DEFAULT_PUBLICATION.publicationId
+				);
+			} );
+
+			fireEvent.click( getByText( 'Learn more' ) );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				`${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`,
+				'click_learn_more_link',
+				'connect-publication'
+			);
+		} );
+	} );
 } );

@@ -37,6 +37,8 @@ import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
+import { CREATE_PUBLICATION_EVENT_LABEL } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -62,6 +64,8 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 	createDescription,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ showPublicationCreate, setShowPublicationCreate ] =
 		useFormValue< boolean >(
 			READER_REVENUE_MANAGER_SETUP_FORM,
@@ -110,6 +114,22 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 		showPublicationCreate,
 	] );
 
+	function onTogglePublicationCreate() {
+		if ( showPublicationCreate ) {
+			trackEvent(
+				'click_use_existing_publication_link',
+				CREATE_PUBLICATION_EVENT_LABEL
+			);
+		} else {
+			trackEvent(
+				'click_create_new_publication_link',
+				EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION
+			);
+		}
+
+		setShowPublicationCreate( ! showPublicationCreate );
+	}
+
 	if ( ! hasResolvedPublications ) {
 		return <ProgressBar />;
 	}
@@ -142,9 +162,7 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 								<PlusIcon width={ 12 } height={ 12 } />
 							)
 						}
-						onClick={ () =>
-							setShowPublicationCreate( ! showPublicationCreate )
-						}
+						onClick={ onTogglePublicationCreate }
 						type="button"
 					>
 						{ showPublicationCreate
