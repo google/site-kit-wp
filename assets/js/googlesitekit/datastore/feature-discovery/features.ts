@@ -76,20 +76,24 @@ export const actions = {
 	 *
 	 * @since 1.186.0
 	 *
-	 * @param {string}         slug                           Feature's slug.
-	 * @param {Object}         settings                       Feature's settings.
-	 * @param {string}         settings.title                 Feature's card title.
-	 * @param {string}         settings.shortDescription      Feature's card description.
-	 * @param {number}         settings.effort                Effort level: `1`, `2` or `3`.
-	 * @param {string}         [settings.moduleSlug]          Optional. Module whose service identity is shown on the feature card.
-	 * @param {Array.<string>} settings.goalCategories        Goal categories the feature belongs to, in order. The first is its primary category.
-	 * @param {string}         settings.addedInVersion        Site Kit version the feature was released in.
-	 * @param {Object}         settings.setup                 Setup descriptor driving the feature's CTA and activation.
-	 * @param {Array.<string>} [settings.prerequisiteModules] Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
-	 * @param {Function}       [settings.checkRequirements]   Optional. Hides the feature when it returns false. Default is visible.
-	 * @param {Object}         [settings.detail]              Optional. Detail panel content.
-	 * @param {Array.<string>} [settings.badges]              Optional. Static badges. Default is: `[]`.
-	 * @param {Object}         [settings.successNotice]       Optional. Copy for the notice shown once the feature is set up.
+	 * @param {string}         slug                               Feature's slug.
+	 * @param {Object}         settings                           Feature's settings.
+	 * @param {string}         settings.title                     Feature's card title.
+	 * @param {string}         settings.shortDescription          Feature's card description.
+	 * @param {number}         settings.effort                    Effort level: `1`, `2` or `3`.
+	 * @param {string}         [settings.moduleSlug]              Optional. Module whose service identity is shown on the feature card.
+	 * @param {Array.<string>} settings.goalCategories            Goal categories the feature belongs to, in order. The first is its primary category.
+	 * @param {string}         settings.addedInVersion            Site Kit version the feature was released in.
+	 * @param {Object}         settings.setup                     Setup descriptor driving the feature's CTA and activation.
+	 * @param {Function}       [settings.setup.isInProgress]      Optional. Returns whether setup has started but not completed.
+	 * @param {Function}       [settings.setup.getResumeURL]      Optional. Returns a URL to resume an unfinished setup.
+	 * @param {string}         [settings.setup.resumeCTALabel]    Optional. Label for the detail panel CTA while setup is in progress.
+	 * @param {Array.<string>} [settings.prerequisiteModules]     Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
+	 * @param {Function}       [settings.checkRequirements]       Optional. Hides the feature when it returns false. Default is visible.
+	 * @param {Object}         [settings.detail]                  Optional. Detail panel content.
+	 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
+	 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
+	 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
 	 * @return {Object} Redux-style action.
 	 */
 	registerFeature( slug: string, settings: FeatureSettings ) {

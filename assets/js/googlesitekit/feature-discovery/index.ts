@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_FEATURE_DISCOVERY,
 	actions,
@@ -31,6 +32,8 @@ import {
 	selectors,
 } from '@/js/googlesitekit/datastore/feature-discovery';
 import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
+import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
 export { actions, registerStore, selectors };
 
@@ -52,19 +55,23 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		 *
 		 * @since 1.188.0
 		 *
-		 * @param {string}         slug                           Feature's slug.
-		 * @param {Object}         settings                       Feature's settings.
-		 * @param {string}         settings.title                 Feature's card title.
-		 * @param {string}         settings.shortDescription      Feature's card description.
-		 * @param {number}         settings.effort                Effort level: `1`, `2` or `3`.
-		 * @param {Array.<string>} settings.goalCategories        Goal categories the feature belongs to, in order. The first is its primary category.
-		 * @param {string}         settings.addedInVersion        Site Kit version the feature was released in.
-		 * @param {Object}         settings.setup                 Setup descriptor driving the feature's CTA and activation.
-		 * @param {Array.<string>} [settings.prerequisiteModules] Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
-		 * @param {Function}       [settings.checkRequirements]   Optional. Hides the feature when it returns false. Default is visible.
-		 * @param {Object}         [settings.detail]              Optional. Detail panel content.
-		 * @param {Array.<string>} [settings.badges]              Optional. Static badges. Default is: `[]`.
-		 * @param {Object}         [settings.successNotice]       Optional. Copy for the notice shown once the feature is set up.
+		 * @param {string}         slug                               Feature's slug.
+		 * @param {Object}         settings                           Feature's settings.
+		 * @param {string}         settings.title                     Feature's card title.
+		 * @param {string}         settings.shortDescription          Feature's card description.
+		 * @param {number}         settings.effort                    Effort level: `1`, `2` or `3`.
+		 * @param {Array.<string>} settings.goalCategories            Goal categories the feature belongs to, in order. The first is its primary category.
+		 * @param {string}         settings.addedInVersion            Site Kit version the feature was released in.
+		 * @param {Object}         settings.setup                     Setup descriptor driving the feature's CTA and activation.
+		 * @param {Function}       [settings.setup.isInProgress]      Optional. Returns whether setup has started but not completed.
+		 * @param {Function}       [settings.setup.getResumeURL]      Optional. Returns a URL to resume an unfinished setup.
+		 * @param {string}         [settings.setup.resumeCTALabel]    Optional. Label for the detail panel CTA while setup is in progress.
+		 * @param {Array.<string>} [settings.prerequisiteModules]     Optional. Modules the feature depends on but does not itself set up. Default is: `[]`.
+		 * @param {Function}       [settings.checkRequirements]       Optional. Hides the feature when it returns false. Default is visible.
+		 * @param {Object}         [settings.detail]                  Optional. Detail panel content.
+		 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
+		 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
+		 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
 		 * @return {Object} Feature registration action result.
 		 */
 		registerFeature: ( slug: string, settings: FeatureSettings ) => {
@@ -72,6 +79,31 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 				slug,
 				settings
 			);
+		},
+
+		/**
+		 * Removes the dismissed-item mark for a feature's incomplete setup reminder.
+		 *
+		 * @since n.e.x.t
+		 *
+		 * @param {string} slug Feature's slug.
+		 * @return {Promise<void>} Promise that resolves once the reminder has been reset.
+		 */
+		resetIncompleteSetupReminder: async ( slug: string ) => {
+			if ( ! isFeatureEnabled( 'featureDiscoveryHub' ) ) {
+				return;
+			}
+
+			const key = getFeatureIncompleteSetupReminderKey( slug );
+			const dismissed = registry
+				.select( CORE_USER )
+				.isItemDismissed( key );
+
+			if ( dismissed !== true ) {
+				return;
+			}
+
+			await dispatch( CORE_USER ).removeDismissedItems( key );
 		},
 	};
 

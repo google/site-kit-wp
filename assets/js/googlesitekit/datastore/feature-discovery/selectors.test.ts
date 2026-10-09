@@ -306,6 +306,166 @@ describe( 'core/feature-discovery selectors', () => {
 		} );
 	} );
 
+	describe( 'isFeatureInProgress', () => {
+		it( 'should return undefined for an unregistered feature', () => {
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'nope' )
+			).toBeUndefined();
+		} );
+
+		it( 'should return false when setup has no isInProgress callback', () => {
+			registerFeature( 'no-callback', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'no-callback' )
+			).toBe( false );
+		} );
+
+		it( 'should return true when not connected and isInProgress returns true', () => {
+			registerFeature( 'in-progress', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'in-progress' )
+			).toBe( true );
+		} );
+
+		it( 'should return false when not connected and isInProgress returns false', () => {
+			registerFeature( 'not-in-progress', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => false,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'not-in-progress' )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the feature is connected even if isInProgress returns true', () => {
+			registerFeature( 'connected', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => true,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'connected' )
+			).toBe( false );
+		} );
+
+		it( 'should return undefined while in-progress state is unresolved', () => {
+			registerFeature( 'unresolved', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => undefined,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'unresolved' )
+			).toBeUndefined();
+		} );
+	} );
+
+	describe( 'getFeatureResumeURL', () => {
+		it( 'should return undefined for an unregistered feature', () => {
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureResumeURL( 'nope' )
+			).toBeUndefined();
+		} );
+
+		it( 'should prefer getResumeURL over getSetupURL', () => {
+			registerFeature( 'resume-first', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					getSetupURL: () => 'https://example.test/setup',
+					getResumeURL: () => 'https://example.test/resume',
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureResumeURL( 'resume-first' )
+			).toBe( 'https://example.test/resume' );
+		} );
+
+		it( 'should fall back to getSetupURL when no getResumeURL exists', () => {
+			registerFeature( 'setup-fallback', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					getSetupURL: () => 'https://example.test/setup',
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureResumeURL( 'setup-fallback' )
+			).toBe( 'https://example.test/setup' );
+		} );
+
+		it( 'should return undefined when no URL callback exists', () => {
+			registerFeature( 'no-url-callback', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureResumeURL( 'no-url-callback' )
+			).toBeUndefined();
+		} );
+
+		it( 'should return undefined when getResumeURL is unresolved', () => {
+			registerFeature( 'unresolved-url', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					getResumeURL: () => undefined,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureResumeURL( 'unresolved-url' )
+			).toBeUndefined();
+		} );
+	} );
+
 	describe( 'getAvailableFeatures', () => {
 		beforeEach( () => {
 			provideModules( registry, [
@@ -390,6 +550,49 @@ describe( 'core/feature-discovery selectors', () => {
 					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'audience-one', 'audience-two' ] );
+		} );
+
+		it( 'should place in-progress features first and keep registration order within each group', () => {
+			registerFeature( 'not-started-first', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => false,
+				},
+			} );
+			registerFeature( 'in-progress-first', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+			registerFeature( 'not-started-second', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => false,
+				},
+			} );
+			registerFeature( 'in-progress-second', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [
+				'in-progress-first',
+				'in-progress-second',
+				'not-started-first',
+				'not-started-second',
+			] );
 		} );
 
 		it( 'should not match on a secondary category', () => {

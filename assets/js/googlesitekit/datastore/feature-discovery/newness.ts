@@ -168,6 +168,18 @@ export const selectors = {
 	 */
 	isFeatureUnread: createRegistrySelector(
 		( select: Select ) => ( state: FeatureDiscoveryState, slug: string ) => {
+			const isInProgress = select(
+				CORE_FEATURE_DISCOVERY
+			).isFeatureInProgress( slug );
+
+			if ( isInProgress === undefined ) {
+				return undefined;
+			}
+
+			if ( isInProgress ) {
+				return false;
+			}
+
 			const isFeatureNew = select( CORE_FEATURE_DISCOVERY ).isFeatureNew(
 				slug
 			);
@@ -198,9 +210,8 @@ export const selectors = {
 				return undefined;
 			}
 
-			const { isFeatureNew, isFeatureUnread } = select(
-				CORE_FEATURE_DISCOVERY
-			);
+			const { isFeatureInProgress, isFeatureNew, isFeatureUnread } =
+				select( CORE_FEATURE_DISCOVERY );
 
 			return select( CORE_FEATURE_DISCOVERY )
 				.getAvailableFeatures()
@@ -212,6 +223,13 @@ export const selectors = {
 						)
 				)
 				.sort( ( first: Feature, second: Feature ) => {
+					const firstInProgress = isFeatureInProgress( first.slug );
+					const secondInProgress = isFeatureInProgress( second.slug );
+
+					if ( firstInProgress !== secondInProgress ) {
+						return firstInProgress ? -1 : 1;
+					}
+
 					const firstUnread = isFeatureUnread( first.slug );
 					const secondUnread = isFeatureUnread( second.slug );
 

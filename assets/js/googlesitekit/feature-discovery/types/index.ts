@@ -37,4 +37,14 @@ export interface FeatureDiscoveryAPI {
 	 * @return {void}
 	 */
 	registerFeature( slug: string, settings: FeatureSettings ): void;
+
+	/**
+	 * Removes a feature's dismissed incomplete-setup reminder marker.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} slug Feature's slug.
+	 * @return {Promise<void>}
+	 */
+	resetIncompleteSetupReminder( slug: string ): Promise< void >;
 }
