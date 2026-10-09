@@ -29,10 +29,9 @@ import { Fragment } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect } from 'googlesitekit-data';
 import ReportError from '@/js/components/ReportError';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import TrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/breakdown/TrafficBreakdown';
 import TrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TrafficChart';
 import TotalVisitors from '@/js/modules/analytics-4/components/traffic-overview/components/TotalVisitors';
@@ -42,22 +41,11 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TrafficOverviewPanel: FC = () => {
-	const viewOnly = useViewOnly();
-
 	const { totalsReport, graphReport, breakdownReports, loaded, errors } =
 		useTrafficOverviewReports();
 
-	const canViewSharedAnalytics4 = useSelect(
-		( select: Select ) => {
-			if ( ! viewOnly ) {
-				return true;
-			}
-
-			return select( CORE_USER ).canViewSharedModule(
-				MODULE_SLUG_ANALYTICS_4
-			);
-		},
-		[ viewOnly ]
+	const canViewSharedAnalytics4 = useCanViewSharedModule(
+		MODULE_SLUG_ANALYTICS_4
 	);
 
 	const isGatheringData = useInViewSelect< boolean | undefined >(

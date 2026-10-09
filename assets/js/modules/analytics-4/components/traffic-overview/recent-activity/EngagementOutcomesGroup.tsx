@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
-import { usePostReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePostReport';
+import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -83,11 +83,11 @@ const EngagementOutcomesGroup: FC< EngagementOutcomesGroupProps > = ( {
 		[ hasPurchaseEvent, reportArgs ]
 	);
 
-	const engagement = usePostReport< Report >(
+	const engagement = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		engagementReportOptions
 	);
-	const purchases = usePostReport< Report >(
+	const purchases = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		purchasesReportOptions
 	);
@@ -104,10 +104,7 @@ const EngagementOutcomesGroup: FC< EngagementOutcomesGroupProps > = ( {
 				<Fragment>
 					<LatestPostMetricRow
 						label={ __( 'Session Duration', 'google-site-kit' ) }
-						value={ numFmt(
-							getMetricValue( engagementRow, 0 ),
-							's'
-						) }
+						value={ numFmt( getMetricValue( engagementRow ), 's' ) }
 						loading={ engagement.loading }
 					/>
 					<LatestPostMetricRow

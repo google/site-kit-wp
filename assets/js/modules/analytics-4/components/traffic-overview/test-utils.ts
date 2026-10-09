@@ -117,6 +117,29 @@ function provideReport(
 }
 
 /**
+ * Gets the options of the Analytics reports of the latest post performance
+ * section for `LATEST_POST`, including its purchases report.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the reference date.
+ * @return {Array<Object>} The visitors, top channel, top referrer, engagement, and purchases report options, in that order.
+ */
+export function getLatestPostAnalyticsReportOptions(
+	registry: WPDataRegistry
+): ReportOptions[] {
+	const reportArgs = getLatestPostReportArgs( registry );
+
+	return [
+		getVisitorsReportOptions( reportArgs ),
+		getTopChannelReportOptions( reportArgs ),
+		getTopReferrerReportOptions( reportArgs ),
+		getEngagementReportOptions( reportArgs ),
+		getPurchasesReportOptions( reportArgs ),
+	];
+}
+
+/**
  * Stores the Analytics reports of the latest post performance section for
  * `LATEST_POST`, including its purchases report.
  *
@@ -126,11 +149,17 @@ function provideReport(
  * @return {void}
  */
 export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
-	const reportArgs = getLatestPostReportArgs( registry );
+	const [
+		visitorsOptions,
+		topChannelOptions,
+		topReferrerOptions,
+		engagementOptions,
+		purchasesOptions,
+	] = getLatestPostAnalyticsReportOptions( registry );
 
 	const reports: Array< [ ReportOptions, Report ] > = [
 		[
-			getVisitorsReportOptions( reportArgs ),
+			visitorsOptions,
 			{
 				rows: [
 					{
@@ -146,25 +175,22 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
 			},
 		],
 		[
-			getTopChannelReportOptions( reportArgs ),
+			topChannelOptions,
 			createBreakdownReport( [ [ 'Organic Social', 41 ] ] ),
 		],
 		[
-			getTopReferrerReportOptions( reportArgs ),
+			topReferrerOptions,
 			createBreakdownReport( [ [ 'substack.com', 23 ] ] ),
 		],
 		[
-			getEngagementReportOptions( reportArgs ),
+			engagementOptions,
 			{
 				rows: [
 					{ metricValues: [ { value: '76' }, { value: '18' } ] },
 				],
 			},
 		],
-		[
-			getPurchasesReportOptions( reportArgs ),
-			createBreakdownReport( [ [ 'purchase', 4 ] ] ),
-		],
+		[ purchasesOptions, createBreakdownReport( [ [ 'purchase', 4 ] ] ) ],
 	];
 
 	reports.forEach( ( [ options, report ] ) =>

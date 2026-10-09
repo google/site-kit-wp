@@ -30,7 +30,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { usePostReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePostReport';
+import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
@@ -55,7 +55,7 @@ interface VisitorBreakdownGroupProps {
  * @param {string} visitorType The type of visitors, `new` or `returning`.
  * @return {number} The number of visitors, or 0 when the report has no such row.
  */
-function getVisitors(
+function getVisitorsOfType(
 	report: Report | undefined,
 	visitorType: 'new' | 'returning'
 ): number {
@@ -74,7 +74,7 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 		[ reportArgs ]
 	);
 
-	const { report, loading, error } = usePostReport< Report >(
+	const { report, loading, error } = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		reportOptions
 	);
@@ -97,12 +97,14 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 					/>
 					<LatestPostMetricRow
 						label={ __( 'New visitors', 'google-site-kit' ) }
-						value={ numFmt( getVisitors( report, 'new' ) ) }
+						value={ numFmt( getVisitorsOfType( report, 'new' ) ) }
 						loading={ loading }
 					/>
 					<LatestPostMetricRow
 						label={ __( 'Returning visitors', 'google-site-kit' ) }
-						value={ numFmt( getVisitors( report, 'returning' ) ) }
+						value={ numFmt(
+							getVisitorsOfType( report, 'returning' )
+						) }
 						loading={ loading }
 					/>
 				</Fragment>

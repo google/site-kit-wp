@@ -28,7 +28,10 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
@@ -357,11 +360,6 @@ RecentActivityGatheringData.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
-/**
- * This story sets no `scenario`, so it runs no visual check. When the site has
- * no published posts, the Recent activity tab only omits the latest post
- * performance, which renders no content yet.
- */
 export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
 RecentActivityNoPublishedPosts.storyName =
 	'Recent Activity, No Published Posts (freshData enabled)';
@@ -371,13 +369,17 @@ RecentActivityNoPublishedPosts.args = {
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			count: 1,
+			...LATEST_POST_RECENT_CONTENT_OPTIONS,
 			includeProducts: false,
 		} );
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {
 	features: [ 'freshData' ],
+};
+RecentActivityNoPublishedPosts.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
 export default {

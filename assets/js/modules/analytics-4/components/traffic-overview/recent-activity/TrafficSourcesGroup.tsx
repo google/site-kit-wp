@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
-import { usePostReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePostReport';
+import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
@@ -44,6 +44,9 @@ import {
 	getTopKeywordReportOptions,
 	getTopReferrerReportOptions,
 } from './postReportOptions';
+
+/** The value a row shows when its report has no rows. */
+const NO_VALUE = '-';
 
 interface SearchConsoleRow {
 	/** The values of the report's dimensions, e.g. the search query. */
@@ -62,10 +65,10 @@ interface TrafficSourcesGroupProps {
  * @since n.e.x.t
  *
  * @param {Object} [report] The report, which is `undefined` while it loads.
- * @return {string} The dimension value, or `-` when the report has no rows.
+ * @return {string} The dimension value, or `NO_VALUE` when the report has no rows.
  */
 function getTopDimensionValue( report?: Report ): string {
-	return report?.rows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value || '-';
+	return report?.rows?.[ 0 ]?.dimensionValues?.[ 0 ]?.value || NO_VALUE;
 }
 
 const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
@@ -91,15 +94,15 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 		[ canViewSearchConsole, reportArgs ]
 	);
 
-	const topChannel = usePostReport< Report >(
+	const topChannel = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		topChannelReportOptions
 	);
-	const topReferrer = usePostReport< Report >(
+	const topReferrer = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		topReferrerReportOptions
 	);
-	const topKeyword = usePostReport< SearchConsoleRow[] >(
+	const topKeyword = useReportState< SearchConsoleRow[] >(
 		MODULES_SEARCH_CONSOLE,
 		topKeywordReportOptions
 	);
@@ -121,7 +124,7 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 			{ canViewSearchConsole && (
 				<LatestPostMetricRow
 					label={ __( 'Top keyword', 'google-site-kit' ) }
-					value={ topKeyword.report?.[ 0 ]?.keys?.[ 0 ] || '-' }
+					value={ topKeyword.report?.[ 0 ]?.keys?.[ 0 ] || NO_VALUE }
 					loading={ topKeyword.loading }
 					error={ topKeyword.error }
 					moduleSlug={ MODULE_SLUG_SEARCH_CONSOLE }

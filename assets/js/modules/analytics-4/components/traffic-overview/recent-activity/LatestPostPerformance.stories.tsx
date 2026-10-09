@@ -32,6 +32,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	createBreakdownReport,
+	getLatestPostAnalyticsReportOptions,
 	getLatestPostKeywordReportOptions,
 	getLatestPostReportArgs,
 	provideLatestPost,
@@ -46,13 +47,7 @@ import { Story } from '@/js/types/Story';
 import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import LatestPostPerformance from './LatestPostPerformance';
-import {
-	getEngagementReportOptions,
-	getPurchasesReportOptions,
-	getTopChannelReportOptions,
-	getTopReferrerReportOptions,
-	getVisitorsReportOptions,
-} from './postReportOptions';
+import { getTopReferrerReportOptions } from './postReportOptions';
 
 interface LatestPostPerformanceStoryProps {
 	/** Sets the registry state the story needs before it renders. */
@@ -145,15 +140,7 @@ Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 
-		const reportArgs = getLatestPostReportArgs( registry );
-
-		[
-			getVisitorsReportOptions( reportArgs ),
-			getTopChannelReportOptions( reportArgs ),
-			getTopReferrerReportOptions( reportArgs ),
-			getEngagementReportOptions( reportArgs ),
-			getPurchasesReportOptions( reportArgs ),
-		].forEach( ( options ) =>
+		getLatestPostAnalyticsReportOptions( registry ).forEach( ( options ) =>
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
 				.startResolution( 'getReport', [ options ] )

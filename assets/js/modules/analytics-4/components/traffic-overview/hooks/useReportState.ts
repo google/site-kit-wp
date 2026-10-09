@@ -1,5 +1,5 @@
 /**
- * Traffic Overview `usePostReport` hook.
+ * Traffic Overview `useReportState` hook.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,7 +21,7 @@
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 
-export interface PostReport< ReportType > {
+export interface ReportState< ReportType > {
 	/** The report, or `undefined` until it loads. */
 	report?: ReportType;
 	/** Whether the report is loading. */
@@ -40,10 +40,10 @@ export interface PostReport< ReportType > {
  * @param {Object} [options] The report options. Without options, the hook requests no report.
  * @return {Object} The report, whether it is loading, and its error.
  */
-export function usePostReport< ReportType >(
+export function useReportState< ReportType >(
 	storeName: string,
 	options?: object
-): PostReport< ReportType > {
+): ReportState< ReportType > {
 	const report = useInViewSelect< ReportType | undefined >(
 		( select: Select ) =>
 			options ? select( storeName ).getReport( options ) : undefined,
