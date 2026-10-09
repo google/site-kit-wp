@@ -3236,6 +3236,21 @@ class Analytics_4Test extends TestCase {
 		$this->addToAssertionCount( 1 );
 	}
 
+	public function test_validate_shared_dimensions__accepts_session_source() {
+		$request_helpers = new \Google\Site_Kit\Modules\Analytics_4\Report\RequestHelpers( $this->context );
+
+		$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
+		$dimension->setName( 'sessionSource' );
+
+		try {
+			$request_helpers->validate_shared_dimensions( array( $dimension ) );
+		} catch ( \Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception $exception ) {
+			$this->fail( 'validate_shared_dimensions() should accept the `sessionSource` dimension in a shared report request, but it threw: ' . $exception->getMessage() );
+		}
+
+		$this->addToAssertionCount( 1 );
+	}
+
 	public function test_report__shared_dimension_validation() {
 		$property_id = '123456789';
 
