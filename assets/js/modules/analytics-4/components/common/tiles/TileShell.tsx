@@ -33,8 +33,13 @@ export interface TileShellProps {
 	baseClassName: string;
 	/** Extra class for the outer element. */
 	className?: string;
-	/** Tile title, shown as an `h3`. */
+	/** Tile title, shown as the heading that `titleAs` names. */
 	title: ReactNode;
+	/**
+	 * The heading element of the title. A tile in a section that has an `h3`
+	 * heading of its own uses `h4`.
+	 */
+	titleAs?: 'h3' | 'h4';
 	/** Label at the end of the header, such as a column name. */
 	headerLabel?: string;
 	/** Tooltip content shown next to the title. */
@@ -47,6 +52,7 @@ const TileShell: FC< TileShellProps > = ( {
 	baseClassName,
 	className,
 	title,
+	titleAs = 'h3',
 	headerLabel,
 	infoTooltip,
 	bodyClassName,
@@ -57,7 +63,7 @@ const TileShell: FC< TileShellProps > = ( {
 			<div className={ `${ baseClassName }__inner` }>
 				<div className={ `${ baseClassName }__header` }>
 					<Typography
-						as="h3"
+						as={ titleAs }
 						type="title"
 						size="small"
 						className={ `${ baseClassName }__title` }

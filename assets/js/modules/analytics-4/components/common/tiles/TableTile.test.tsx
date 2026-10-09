@@ -17,48 +17,15 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import {
-	act,
-	createTestRegistry,
-	fireEvent,
-	render,
-} from '@tests/js/test-utils';
-import {
-	provideModuleRegistrations,
-	provideModules,
-	waitForDefaultTimeouts,
-} from '@tests/js/utils';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
+import { provideModuleRegistrations, provideModules } from '@tests/js/utils';
 import TableTile from './TableTile';
 
 describe( 'TableTile', () => {
-	let registry: WPDataRegistry;
-
-	beforeEach( () => {
-		// The error tests render `ReportError`, which reads the module list
-		// and the Analytics settings, so the registry has both and sends no
-		// request for them.
-		registry = createTestRegistry();
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	} );
-
-	it( 'should render the title, the header label, and the rows', () => {
+	it( 'renders title, header label, and rows', () => {
 		const { getByText } = render(
 			<TableTile
 				title="Top pages driving leads"
@@ -76,6 +43,39 @@ describe( 'TableTile', () => {
 		expect( getByText( '40' ) ).toBeInTheDocument();
 		expect( getByText( 'Page B' ) ).toBeInTheDocument();
 		expect( getByText( '25' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should render the title as an `h3` by default', () => {
+		const { getByRole } = render(
+			<TableTile
+				title="Top channels by visitors"
+				rows={ [ { label: 'Direct', value: 40 } ] }
+			/>
+		);
+
+		expect(
+			getByRole( 'heading', {
+				level: 3,
+				name: 'Top channels by visitors',
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should render the title as the heading element that `titleAs` names', () => {
+		const { getByRole } = render(
+			<TableTile
+				title="Top channels by visitors"
+				titleAs="h4"
+				rows={ [ { label: 'Direct', value: 40 } ] }
+			/>
+		);
+
+		expect(
+			getByRole( 'heading', {
+				level: 4,
+				name: 'Top channels by visitors',
+			} )
+		).toBeInTheDocument();
 	} );
 
 	it( "should render a row's secondary value after its value", () => {
@@ -130,7 +130,7 @@ describe( 'TableTile', () => {
 		expect( valueCell?.innerHTML ).toBe( '40' );
 	} );
 
-	it( 'should render a row label as a link when the row has a URL', () => {
+	it( 'renders linked labels when row URL is provided', () => {
 		const { getByRole } = render(
 			<TableTile
 				title="Top pages driving leads"
@@ -149,7 +149,7 @@ describe( 'TableTile', () => {
 		).toHaveAttribute( 'href', 'https://example.com/page' );
 	} );
 
-	it( 'should render the "sales" zero data message when `noDataMetricLabel` is "sales"', () => {
+	it( 'renders goal-specific zero data message', () => {
 		const { getByText } = render(
 			<TableTile
 				title="Top traffic channels driving sales"
@@ -165,7 +165,14 @@ describe( 'TableTile', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the error message and the "Get help" link of an error', async () => {
+	it( 'renders error state with actions', async () => {
+		// The error actions read the module list, so it is in the store
+		// before the tile renders, and no request for it outlives the test.
+		const registry = createTestRegistry();
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
 		const { getByText, waitForRegistry } = render(
 			<TableTile
 				title="Top pages driving leads"
@@ -184,20 +191,24 @@ describe( 'TableTile', () => {
 		expect( getByText( 'Get help' ) ).toBeInTheDocument();
 	} );
 
-	it( 'should call `onRetry` when the user clicks the "Retry" button of the error', async () => {
+	it( 'should call `onRetry` when the "Retry" button of the error state is clicked', async () => {
+		const registry = createTestRegistry();
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+
+		// The "Retry" button appears only for an error that the store saved
+		// for a `getReport` call.
 		const error = {
 			code: 'internal_server_error',
 			message: 'Internal server error',
 			data: { status: 500 },
 		};
-
-		// The "Retry" button appears for an error the store saved for a
-		// report request.
-		await registry
+		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setErrorForSelector( error, 'getReport', [
 				{
-					startDate: '2025-02-04',
+					startDate: '2025-02-03',
 					endDate: '2025-02-05',
 					metrics: [ { name: 'totalUsers' } ],
 				},
@@ -216,12 +227,7 @@ describe( 'TableTile', () => {
 
 		await waitForRegistry();
 
-		// The click updates the data store, and `ReportErrorActions` renders
-		// again after the click returns.
-		await act( async () => {
-			fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
-			await waitForDefaultTimeouts();
-		} );
+		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
 
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );
 	} );

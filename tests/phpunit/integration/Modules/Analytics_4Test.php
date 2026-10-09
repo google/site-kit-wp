@@ -3242,11 +3242,10 @@ class Analytics_4Test extends TestCase {
 		$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
 		$dimension->setName( 'sessionSource' );
 
-		try {
-			$request_helpers->validate_shared_dimensions( array( $dimension ) );
-		} catch ( \Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception $exception ) {
-			$this->fail( 'validate_shared_dimensions() should accept the `sessionSource` dimension in a shared report request, but it threw: ' . $exception->getMessage() );
-		}
+		// The Recent activity tab lists the sites that referred visitors by this
+		// dimension, and a view-only user can see that tab, so validating it for
+		// a shared request should not throw an exception.
+		$request_helpers->validate_shared_dimensions( array( $dimension ) );
 
 		$this->addToAssertionCount( 1 );
 	}
