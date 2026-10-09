@@ -352,7 +352,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		fireEvent.click(
-			screen.getByRole( 'tab', { name: 'Recent activity' } )
+			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
 		);
 
 		// Selecting the Recent activity tab renders `RecentActivityPanel`, which
@@ -362,7 +362,7 @@ describe( 'TrafficOverviewWidget', () => {
 		await waitForRegistry();
 
 		expect(
-			screen.getByRole( 'tabpanel', { name: 'Recent activity' } )
+			screen.getByRole( 'tabpanel', { name: 'Recent activity Beta' } )
 		).toBeInTheDocument();
 		expect(
 			container.querySelector( '.googlesitekit-widget__footer' )

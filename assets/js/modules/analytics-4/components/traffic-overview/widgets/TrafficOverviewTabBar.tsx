@@ -79,13 +79,16 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 						key={ tab.id }
 						id={ tab.id }
 						className="mdc-tab--min-width"
-						aria-label={ tab.label }
 						focusOnActivate={ false }
 					>
 						<span className="mdc-tab__text-label">
 							{ tab.label }
 						</span>
 						{ tab.isBeta && (
+							// WCAG 2.5.3, Label in Name, requires the tab's accessible
+							// name to include "Beta", because the badge shows inside
+							// the tab.
+							// See: https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html
 							<Badge
 								label={ __( 'Beta', 'google-site-kit' ) }
 								variant={ BADGE_VARIANTS.ANNOUNCEMENT }
