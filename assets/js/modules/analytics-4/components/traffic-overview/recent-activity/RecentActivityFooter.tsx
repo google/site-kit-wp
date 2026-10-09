@@ -32,19 +32,16 @@ import { __, _x, sprintf } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
-import useWidget from '@/js/googlesitekit/widgets/hooks/useWidget';
-import useViewContext from '@/js/hooks/useViewContext';
+import useTrackSourceLinkClickCallback from '@/js/hooks/useTrackSourceLinkClickCallback';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { generateDateRangeArgs } from '@/js/modules/search-console/util';
-import { trackEvent } from '@/js/util';
 
 const RecentActivityFooter: FC = () => {
 	const viewOnly = useViewOnly();
-	const viewContext = useViewContext();
-	const widget = useWidget();
+	const handleClick = useTrackSourceLinkClickCallback();
 
 	const { startDate, endDate } = useFreshDataDateRange();
 
@@ -85,14 +82,6 @@ const RecentActivityFooter: FC = () => {
 
 	if ( viewOnly ) {
 		return null;
-	}
-
-	function handleClick() {
-		trackEvent(
-			`${ viewContext }_widget`,
-			'click_source_link',
-			widget.slug
-		);
 	}
 
 	return (

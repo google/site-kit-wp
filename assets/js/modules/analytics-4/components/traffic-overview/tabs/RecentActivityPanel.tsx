@@ -25,14 +25,15 @@ import { FC } from 'react';
  * WordPress dependencies
  */
 import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import ActivateAnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
-import Notice from '@/js/components/Notice';
+import GatheringDataNotice, {
+	NOTICE_STYLE,
+} from '@/js/components/GatheringDataNotice';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
@@ -108,16 +109,7 @@ const RecentActivityPanel: FC = () => {
 			{ isAnalyticsConnected && (
 				<Fragment>
 					{ isGatheringData === true && (
-						<Notice
-							title={ __(
-								'No recent visitor data yet',
-								'google-site-kit'
-							) }
-							description={ __(
-								'Analytics hasn’t reported any visits in the last 24 hours. Data may still be on its way.',
-								'google-site-kit'
-							) }
-						/>
+						<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 					) }
 					{ isGatheringData === false && <InsightNotice /> }
 					<FreshMetricsRow />

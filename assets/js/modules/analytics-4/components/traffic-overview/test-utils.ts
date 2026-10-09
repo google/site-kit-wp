@@ -42,3 +42,19 @@ export function createBreakdownReport(
 		} ) ),
 	};
 }
+
+/**
+ * Gets the class names of the panel's direct children, in order.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Element} container The element the panel rendered into.
+ * @return {Array<string>} The class names.
+ */
+export function getSectionClassNames( container: Element ): string[] {
+	return Array.from(
+		container.querySelectorAll(
+			'.googlesitekit-traffic-overview__panel > *'
+		)
+	).map( ( section ) => section.className );
+}

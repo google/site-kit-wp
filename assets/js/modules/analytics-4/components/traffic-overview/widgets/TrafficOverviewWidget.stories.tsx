@@ -28,10 +28,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import {
-	RECENT_ACTIVITY_TAB_ID,
-	TRAFFIC_OVERVIEW_WIDGET_SLUG,
-} from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
@@ -183,19 +180,12 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 interface TrafficOverviewWidgetStoryProps {
 	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
-	/** The `id` of the tab the story opens on, which is the Traffic overview tab for a story that sets none. */
-	initialActiveTabID?: string;
 }
 
-function Template( {
-	setupRegistry,
-	initialActiveTabID,
-}: TrafficOverviewWidgetStoryProps ) {
+function Template( { setupRegistry }: TrafficOverviewWidgetStoryProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WidgetWithComponentProps
-				initialActiveTabID={ initialActiveTabID }
-			/>
+			<WidgetWithComponentProps />
 		</WithRegistrySetup>
 	);
 }
@@ -311,7 +301,6 @@ ReportFailure.args = {
 export const RecentActivity = Template.bind( {} ) as Story;
 RecentActivity.storyName = 'Recent Activity (freshData enabled)';
 RecentActivity.args = {
-	initialActiveTabID: RECENT_ACTIVITY_TAB_ID,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
@@ -323,6 +312,8 @@ RecentActivity.parameters = {
 };
 RecentActivity.scenario = {
 	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+	onReadyScript: 'mouse.js',
 };
 
 export const RecentActivityAnalyticsNotConnected = Template.bind( {} ) as Story;
@@ -351,17 +342,10 @@ RecentActivityAnalyticsNotConnected.scenario = {
 	viewport: 'large',
 };
 
-/**
- * This story sets no `scenario`, so it runs no visual check. While Analytics
- * is gathering data, the Recent activity tab only shows a short notice in place
- * of the insight notice and the recent traffic breakdown, which render no
- * content yet.
- */
 export const RecentActivityGatheringData = Template.bind( {} ) as Story;
 RecentActivityGatheringData.storyName =
 	'Recent Activity, Gathering Data (freshData enabled)';
 RecentActivityGatheringData.args = {
-	initialActiveTabID: RECENT_ACTIVITY_TAB_ID,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
@@ -371,6 +355,11 @@ RecentActivityGatheringData.args = {
 };
 RecentActivityGatheringData.parameters = {
 	features: [ 'freshData' ],
+};
+RecentActivityGatheringData.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+	onReadyScript: 'mouse.js',
 };
 
 /**
@@ -382,7 +371,6 @@ export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
 RecentActivityNoPublishedPosts.storyName =
 	'Recent Activity, No Published Posts (freshData enabled)';
 RecentActivityNoPublishedPosts.args = {
-	initialActiveTabID: RECENT_ACTIVITY_TAB_ID,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );

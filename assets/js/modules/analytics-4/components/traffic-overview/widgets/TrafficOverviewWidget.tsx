@@ -35,6 +35,9 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { WidgetProps } from '@/js/googlesitekit/widgets/components/Widget';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import useDashboardType, {
+	DASHBOARD_TYPE_ENTITY,
+} from '@/js/hooks/useDashboardType';
 import { useFeature } from '@/js/hooks/useFeature';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
@@ -59,15 +62,9 @@ interface TrafficOverviewTabDescriptor extends TrafficOverviewTab {
 	FooterComponent: ComponentType;
 }
 
-interface TrafficOverviewWidgetProps extends WidgetComponentProps {
-	/** The `id` of the tab the widget opens on, which defaults to the `id` of the Traffic overview tab. */
-	initialActiveTabID?: string;
-}
-
-const TrafficOverviewWidget: FC< TrafficOverviewWidgetProps > = ( {
+const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
 	Widget,
 	WidgetNull,
-	initialActiveTabID = TRAFFIC_OVERVIEW_TAB_ID,
 } ) => {
 	// `getWidgetComponentProps` lives in a JavaScript file, so TypeScript reads
 	// `Widget` as a component that takes no props. The cast leaves `widgetSlug`
@@ -75,6 +72,7 @@ const TrafficOverviewWidget: FC< TrafficOverviewWidgetProps > = ( {
 	const WidgetComponent = Widget as FC< Omit< WidgetProps, 'widgetSlug' > >;
 
 	const freshDataEnabled = useFeature( 'freshData' );
+	const dashboardType = useDashboardType();
 
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
@@ -88,25 +86,47 @@ const TrafficOverviewWidget: FC< TrafficOverviewWidgetProps > = ( {
 				return false;
 			}
 
+			// The Recent activity tab shows data for the whole site, but the entity
+			// dashboard shows data for one page.
+			if ( dashboardType === DASHBOARD_TYPE_ENTITY ) {
+				return false;
+			}
+
 			if ( isAnalyticsConnected ) {
 				return true;
 			}
 
 			// When Analytics is not connected, the Recent activity tab shows only
-			// its Analytics setup CTA, so the widget hides the tab while the
-			// dismissed items load and after the user dismisses that CTA.
-			return (
-				select( CORE_USER ).isItemDismissed(
-					RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG
-				) === false
+			// its Analytics setup CTA, so the widget hides the tab after the user
+			// dismisses that CTA.
+			const isDismissed = select( CORE_USER ).isItemDismissed(
+				RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG
 			);
+
+			// When the request for the dismissed items fails, the Recent activity
+			// tab stays hidden, because the user may have dismissed the Analytics
+			// setup CTA.
+			if (
+				isDismissed === undefined &&
+				select( CORE_USER ).getErrorForSelector( 'getDismissedItems' )
+			) {
+				return false;
+			}
+
+			return isDismissed === undefined ? undefined : ! isDismissed;
 		},
-		[ freshDataEnabled, isAnalyticsConnected ]
+		[ freshDataEnabled, dashboardType, isAnalyticsConnected ]
 	);
 
-	const [ activeTabID, setActiveTabID ] = useState( initialActiveTabID );
+	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
 
-	if ( isAnalyticsConnected === undefined ) {
+	// While the modules or the dismissed items load, the widget returns
+	// `null` rather than `WidgetNull`, which would mark the widget as
+	// inactive until they load.
+	if (
+		isAnalyticsConnected === undefined ||
+		shouldShowRecentActivityTab === undefined
+	) {
 		return null;
 	}
 

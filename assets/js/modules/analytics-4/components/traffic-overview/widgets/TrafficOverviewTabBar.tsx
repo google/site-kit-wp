@@ -79,6 +79,7 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 						key={ tab.id }
 						id={ tab.id }
 						className="mdc-tab--min-width"
+						aria-label={ tab.label }
 						focusOnActivate={ false }
 					>
 						<span className="mdc-tab__text-label">
