@@ -17,8 +17,21 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	FreshDataDateRange,
+	getFreshDataDateRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getDateDimensionValues } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 
 /**
@@ -41,6 +54,73 @@ export function createBreakdownReport(
 			metricValues: [ { value: String( visitors ) } ],
 		} ) ),
 	};
+}
+
+/**
+ * Builds the insight notice's report for a Recent activity date range.
+ *
+ * The report has a row for every day, the way the API returns it. Each
+ * window's visitors fall on the window's last day, and every other day has no
+ * visitors.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        dateRange   The Recent activity date range.
+ * @param {number}        current     Visitors in the date range.
+ * @param {Array<number>} comparisons Visitors in the same date range one, two, three and four weeks earlier. A missing week has no visitors.
+ * @return {Object} The insight report.
+ */
+export function createInsightReport(
+	dateRange: FreshDataDateRange,
+	current: number,
+	comparisons: number[]
+): Report {
+	const { startDate, endDate } = getInsightReportArgs( dateRange );
+	const dates = getDateDimensionValues( startDate, endDate );
+	const weeklyVisitors = [ current, ...comparisons ];
+
+	return {
+		rows: dates.map( ( date, index ) => {
+			const daysBeforeEndDate = dates.length - 1 - index;
+			const visitors =
+				daysBeforeEndDate % 7 === 0
+					? weeklyVisitors[ daysBeforeEndDate / 7 ]
+					: 0;
+
+			return {
+				dimensionValues: [ { value: date } ],
+				metricValues: [ { value: String( visitors || 0 ) } ],
+			};
+		} ),
+	};
+}
+
+/**
+ * Puts the insight notice's report for the reference date's Recent activity
+ * date range in the store.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}        registry    The registry to put the report in.
+ * @param {number}        current     Visitors in the date range.
+ * @param {Array<number>} comparisons Visitors in the same date range one, two, three and four weeks earlier.
+ * @return {void}
+ */
+export function provideInsightReport(
+	registry: WPDataRegistry,
+	current: number,
+	comparisons: number[]
+) {
+	const dateRange = getFreshDataDateRange(
+		registry.select( CORE_USER ).getReferenceDate()
+	);
+
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.receiveGetReport(
+			createInsightReport( dateRange, current, comparisons ),
+			{ options: getInsightReportArgs( dateRange ) }
+		);
 }
 
 /**

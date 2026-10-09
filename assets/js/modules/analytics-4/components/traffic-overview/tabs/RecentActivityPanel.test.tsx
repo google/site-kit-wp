@@ -33,7 +33,10 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getSectionClassNames,
+	provideInsightReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -90,6 +93,8 @@ describe( 'RecentActivityPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 		fetchMock.get( postsEndpoint, {
 			body: [
 				{
@@ -274,6 +279,25 @@ describe( 'RecentActivityPanel', () => {
 
 		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__latest-post-performance',
+		] );
+	} );
+
+	it( 'should render the other sections without the insight notice when the site has too few visitors to compare', async () => {
+		// The site had no visitors four weeks ago, so the insight notice has
+		// no median to compare against.
+		provideInsightReport( registry, 3, [ 2, 1, 1 ] );
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 			'googlesitekit-traffic-overview__latest-post-performance',
 		] );
 	} );

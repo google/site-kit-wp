@@ -208,6 +208,27 @@ export function getPreviousDate(
 }
 
 /**
+ * Adds a number of calendar days to a date.
+ *
+ * Unlike `getPreviousDate()`, which subtracts whole 24 hour periods, this
+ * counts calendar days, so a daylight saving change between the two dates
+ * does not move the result by a day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateString Date string (YYYY-MM-DD) to add days to.
+ * @param {number} days       Number of days to add. A negative number subtracts days.
+ * @return {string} The date string (YYYY-MM-DD) for the resulting date.
+ */
+export function addDaysToDate( dateString: string, days: number ): string {
+	const date = stringToDate( dateString );
+
+	date.setDate( date.getDate() + days );
+
+	return getDateString( date );
+}
+
+/**
  * Asserts whether a given dateRange string is valid or invalid.
  *
  * @since 1.18.0

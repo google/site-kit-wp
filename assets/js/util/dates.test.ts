@@ -21,6 +21,7 @@ import {
 	DAY_IN_SECONDS,
 	INVALID_DATE_INSTANCE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	addDaysToDate,
 	dateSub,
 	formatDate,
 	getDateString,
@@ -101,6 +102,26 @@ describe( 'getPreviousDate', () => {
 			expect( getPreviousDate( relativeDate, daysBefore ) ).toEqual(
 				expected
 			);
+		}
+	);
+} );
+
+describe( 'addDaysToDate', () => {
+	it.each( [
+		// [ dateString, days, expectedReturnDate ]
+		[ '2020-01-01', 0, '2020-01-01' ],
+		[ '2020-01-01', 1, '2020-01-02' ],
+		[ '2020-01-08', -7, '2020-01-01' ],
+		[ '2020-01-01', -1, '2019-12-31' ],
+		[ '2020-02-28', 1, '2020-02-29' ],
+		// The days across a daylight saving change in time zones that have
+		// one, where a day lasts 25 or 23 hours.
+		[ '2025-11-02', 1, '2025-11-03' ],
+		[ '2025-03-12', -28, '2025-02-12' ],
+	] )(
+		'with date of %s and days value of %s should return %s',
+		( dateString, days, expected ) => {
+			expect( addDaysToDate( dateString, days ) ).toEqual( expected );
 		}
 	);
 } );
