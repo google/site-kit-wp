@@ -27,7 +27,7 @@ import { useMemo } from '@wordpress/element';
 import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import { TOTAL_USERS_METRIC } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -69,19 +69,8 @@ export interface TrafficReport {
 export function useTrafficReport(
 	reportOptions: Partial< ReportOptions >
 ): TrafficReport {
-	const viewOnly = useViewOnly();
-
-	const canViewSharedAnalytics4 = useSelect(
-		( select: Select ) => {
-			if ( ! viewOnly ) {
-				return true;
-			}
-
-			return select( CORE_USER ).canViewSharedModule(
-				MODULE_SLUG_ANALYTICS_4
-			);
-		},
-		[ viewOnly ]
+	const canViewSharedAnalytics4 = useCanViewSharedModule(
+		MODULE_SLUG_ANALYTICS_4
 	);
 
 	const { startDate, endDate } = useSelect(

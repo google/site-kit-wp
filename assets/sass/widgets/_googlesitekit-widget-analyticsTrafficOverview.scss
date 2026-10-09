@@ -326,6 +326,96 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__latest-post-performance {
+
+		.googlesitekit-traffic-overview__latest-post-performance-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 18px;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-header {
+			align-items: center;
+			display: flex;
+			gap: 18px;
+			margin-bottom: 18px;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-icon {
+			align-items: center;
+			background: $c-blue-b-50;
+			border-radius: 50%;
+			color: $c-blue-b-500;
+			display: flex;
+			flex-shrink: 0;
+			height: 36px;
+			justify-content: center;
+			width: 36px;
+
+			svg {
+				transform: rotate(45deg);
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-title {
+			font-size: $fs-body-lg;
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-date {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-tiles {
+			display: grid;
+			gap: 16px;
+			grid-template-columns: 1fr;
+
+			@media (min-width: $bp-desktop) {
+				gap: 50px;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-tile {
+			background: $c-surfaces-background;
+			border-radius: 8px;
+			padding: 22px;
+		}
+
+		.googlesitekit-table-tile__title.googlesitekit-typography {
+			font-size: $fs-body-md;
+			margin-bottom: 12px;
+		}
+
+		// The labels are short, so the value takes the remaining width, and a
+		// long value, e.g. a referring site, is cut off instead of its label.
+		.googlesitekit-table-tile__row {
+			grid-template-columns: auto minmax(0, 1fr);
+		}
+
+		// The tiles align the value to the end of its column, which lets a long
+		// value overflow it, so the value fills the column instead, and its
+		// preview block keeps to the end.
+		.googlesitekit-table-tile__cell--value {
+			justify-self: stretch;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			.googlesitekit-preview-block {
+				margin-left: auto;
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-row--error {
+			display: block;
+
+			.googlesitekit-table-tile__error {
+				margin-top: 8px;
+			}
+		}
+	}
+
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
 		align-items: center;
 		display: flex;
