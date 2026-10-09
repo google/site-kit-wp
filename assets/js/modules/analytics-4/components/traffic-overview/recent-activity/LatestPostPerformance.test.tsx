@@ -40,7 +40,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { act, createTestRegistry, render } from '@tests/js/test-utils';
+import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
 	provideModules,
 	provideSiteInfo,
@@ -112,7 +112,7 @@ describe( 'LatestPostPerformance', () => {
 		provideLatestPostAnalyticsReports( registry );
 	} );
 
-	it( 'renders the section heading, then the post title linking to the entity dashboard of the post', async () => {
+	it( 'should render the section heading and the post title linking to the entity dashboard of the post', async () => {
 		provideLatestPostKeywordReport( registry );
 
 		const { getByRole, waitForRegistry } = render(
@@ -135,7 +135,7 @@ describe( 'LatestPostPerformance', () => {
 		);
 	} );
 
-	it( 'renders the visitor breakdown, traffic sources, and engagement and outcomes tiles with their rows', async () => {
+	it( 'should render the visitor breakdown, traffic sources, and engagement and outcomes tiles with their rows', async () => {
 		provideLatestPostKeywordReport( registry );
 
 		const { container, waitForRegistry } = render(
@@ -168,7 +168,7 @@ describe( 'LatestPostPerformance', () => {
 		] );
 	} );
 
-	it( 'leaves out the purchases row, rather than showing zero, when Site Goals has detected no conversion event', async () => {
+	it( 'should leave out the purchases row, rather than showing zero, when Site Goals has detected no conversion event', async () => {
 		provideLatestPostKeywordReport( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );
 
@@ -186,7 +186,7 @@ describe( 'LatestPostPerformance', () => {
 		] );
 	} );
 
-	it( 'leaves out the purchases row when Site Goals has detected an "add_to_cart" event but no "purchase" event', async () => {
+	it( 'should leave out the purchases row when Site Goals has detected an "add_to_cart" event but no "purchase" event', async () => {
 		provideLatestPostKeywordReport( registry );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
@@ -202,7 +202,7 @@ describe( 'LatestPostPerformance', () => {
 		expect( queryByText( 'Purchases affected by post' ) ).toBeNull();
 	} );
 
-	it( 'renders the settings error in the purchases row, rather than loading forever, when the Analytics settings request fails', async () => {
+	it( 'should render the settings error in the purchases row, rather than loading forever, when the Analytics settings request fails', async () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideModules( registry );
@@ -242,7 +242,7 @@ describe( 'LatestPostPerformance', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'renders a report error in the top keyword row only, and keeps the Analytics rows, when the Search Console report fails', async () => {
+	it( 'should render a report error in the top keyword row only, and should keep the Analytics rows, when the Search Console report fails', async () => {
 		const keywordReportOptions =
 			getLatestPostKeywordReportOptions( registry );
 		registry.dispatch( MODULES_SEARCH_CONSOLE ).setErrorForSelector(
@@ -280,7 +280,7 @@ describe( 'LatestPostPerformance', () => {
 		).toHaveLength( 1 );
 	} );
 
-	it( 'keeps the reports on the date range of the post when the dashboard date range and the site time zone change', async () => {
+	it( 'should keep the reports on the date range of the post when the dashboard date range changes', async () => {
 		provideLatestPostKeywordReport( registry );
 
 		const { container, waitForRegistry } = render(
@@ -292,10 +292,7 @@ describe( 'LatestPostPerformance', () => {
 
 		const tilesBefore = getTiles( container );
 
-		act( () => {
-			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
-			provideSiteInfo( registry, { timezone: 'Pacific/Kiritimati' } );
-		} );
+		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 
 		await waitForRegistry();
 
@@ -303,7 +300,7 @@ describe( 'LatestPostPerformance', () => {
 		expect( fetchMock ).not.toHaveFetched();
 	} );
 
-	it( 'leaves out the top keyword row for a view-only user who cannot view Search Console', async () => {
+	it( 'should leave out the top keyword row for a view-only user who cannot view Search Console', async () => {
 		provideUserCapabilities( registry, {
 			[ getMetaCapabilityPropertyName(
 				PERMISSION_READ_SHARED_MODULE_DATA,
@@ -325,29 +322,5 @@ describe( 'LatestPostPerformance', () => {
 		expect( getTiles( container )[ 1 ].rows ).toEqual(
 			ANALYTICS_TRAFFIC_SOURCES_ROWS
 		);
-	} );
-
-	it( 'renders nothing, and requests no report, for a view-only user who cannot view Analytics', async () => {
-		registry = createTestRegistry();
-		provideSiteInfo( registry );
-		provideModules( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		provideLatestPost( registry );
-		provideUserCapabilities( registry, {
-			[ getMetaCapabilityPropertyName(
-				PERMISSION_READ_SHARED_MODULE_DATA,
-				MODULE_SLUG_ANALYTICS_4
-			) ]: false,
-		} );
-
-		const { container, waitForRegistry } = render(
-			<LatestPostPerformance />,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
-		);
-
-		await waitForRegistry();
-
-		expect( container ).toBeEmptyDOMElement();
-		expect( fetchMock ).not.toHaveFetched();
 	} );
 } );

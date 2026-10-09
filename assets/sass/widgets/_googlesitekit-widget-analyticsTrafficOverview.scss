@@ -394,6 +394,9 @@
 			grid-template-columns: auto minmax(0, 1fr);
 		}
 
+		// The tiles align the value to the end of its column, which lets a long
+		// value overflow it, so the value fills the column instead, and its
+		// preview block keeps to the end.
 		.googlesitekit-table-tile__cell--value {
 			justify-self: stretch;
 			overflow: hidden;

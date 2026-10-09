@@ -35,7 +35,7 @@ function getLocalTime( ...args: [ number, number, number, number, number ] ) {
 }
 
 describe( 'getPostWindow', () => {
-	it( 'starts the day before the publish day and ends on the reference date', () => {
+	it( 'should start the day before the publish day and end on the reference date', () => {
 		expect(
 			getPostWindow( getLocalTime( 2026, 8, 17, 14, 30 ), '2026-10-08' )
 		).toEqual( {
@@ -44,14 +44,14 @@ describe( 'getPostWindow', () => {
 		} );
 	} );
 
-	it( 'drops the publish time, so a post published just before midnight starts the day before its publish day', () => {
+	it( 'should drop the publish time, so a post published just before midnight starts the day before its publish day', () => {
 		expect(
 			getPostWindow( getLocalTime( 2026, 9, 6, 23, 59 ), '2026-10-08' )
 				.startDate
 		).toBe( '2026-10-05' );
 	} );
 
-	it( 'starts the day before the reference date for a post published on the reference date', () => {
+	it( 'should start the day before the reference date for a post published on the reference date', () => {
 		expect(
 			getPostWindow( getLocalTime( 2026, 9, 8, 0, 5 ), '2026-10-08' )
 		).toEqual( {
@@ -60,7 +60,7 @@ describe( 'getPostWindow', () => {
 		} );
 	} );
 
-	it( 'gives a one-day range when the reference date is before the publish day', () => {
+	it( 'should give a one-day range when the reference date is before the publish day', () => {
 		expect(
 			getPostWindow( getLocalTime( 2026, 9, 8, 14, 30 ), '2026-10-01' )
 		).toEqual( {

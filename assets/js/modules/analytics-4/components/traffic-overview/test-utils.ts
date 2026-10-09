@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	PostReportArgs,
 	getEngagementReportOptions,
@@ -84,12 +85,14 @@ export function provideLatestPost( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.receiveGetRecentContent( [ LATEST_POST ], {
-			count: 1,
+			...LATEST_POST_RECENT_CONTENT_OPTIONS,
 			includeProducts: false,
 		} );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
+		.finishResolution( 'getRecentContent', [
+			LATEST_POST_RECENT_CONTENT_OPTIONS,
+		] );
 }
 
 /**

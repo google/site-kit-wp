@@ -40,7 +40,7 @@ const PLAIN_PERMALINK_REPORT_ARGS = {
 };
 
 describe( 'getVisitorsReportOptions', () => {
-	it( 'splits the total users of the post into new and returning visitors with a dimension filter', () => {
+	it( 'should split the total users of the post into new and returning visitors with a dimension filter', () => {
 		expect( getVisitorsReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
@@ -54,7 +54,7 @@ describe( 'getVisitorsReportOptions', () => {
 		} );
 	} );
 
-	it( 'matches a plain permalink by its path and query string, since its path is the home page path', () => {
+	it( 'should match a plain permalink by its path and query string, since its path is the home page path', () => {
 		expect(
 			getVisitorsReportOptions( PLAIN_PERMALINK_REPORT_ARGS )
 				.dimensionFilters
@@ -66,7 +66,7 @@ describe( 'getVisitorsReportOptions', () => {
 } );
 
 describe( 'getTopChannelReportOptions', () => {
-	it( 'requests the channel with the most visitors to the post', () => {
+	it( 'should request the channel with the most visitors to the post', () => {
 		expect( getTopChannelReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
@@ -81,7 +81,7 @@ describe( 'getTopChannelReportOptions', () => {
 } );
 
 describe( 'getTopReferrerReportOptions', () => {
-	it( 'requests the source with the most visitors to the post from the referral channel only', () => {
+	it( 'should request the source with the most visitors to the post from the referral channel only', () => {
 		expect( getTopReferrerReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
@@ -99,7 +99,7 @@ describe( 'getTopReferrerReportOptions', () => {
 } );
 
 describe( 'getEngagementReportOptions', () => {
-	it( 'requests the average session duration and the engaged sessions of the post', () => {
+	it( 'should request the average session duration and the engaged sessions of the post', () => {
 		expect( getEngagementReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
@@ -114,7 +114,7 @@ describe( 'getEngagementReportOptions', () => {
 } );
 
 describe( 'getPurchasesReportOptions', () => {
-	it( 'counts the purchase events in the sessions that landed on the post', () => {
+	it( 'should count the purchase events in the sessions that landed on the post', () => {
 		expect( getPurchasesReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',
@@ -128,7 +128,7 @@ describe( 'getPurchasesReportOptions', () => {
 		} );
 	} );
 
-	it( 'matches the landing page of a plain permalink by its path and query string', () => {
+	it( 'should match the landing page of a plain permalink by its path and query string', () => {
 		expect(
 			getPurchasesReportOptions( PLAIN_PERMALINK_REPORT_ARGS )
 				.dimensionFilters
@@ -140,7 +140,7 @@ describe( 'getPurchasesReportOptions', () => {
 } );
 
 describe( 'getTopKeywordReportOptions', () => {
-	it( 'requests the top search query for the post URL', () => {
+	it( 'should request the top search query for the post URL', () => {
 		expect( getTopKeywordReportOptions( POST_REPORT_ARGS ) ).toEqual( {
 			startDate: '2026-09-17',
 			endDate: '2026-10-08',

@@ -33,7 +33,12 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getSectionClassNames,
+	provideLatestPost,
+	provideLatestPostAnalyticsReports,
+	provideLatestPostKeywordReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -292,7 +297,9 @@ describe( 'RecentActivityPanel', () => {
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		freezeFetch( reportEndpoint );
-		mockLatestPostReports();
+		provideLatestPost( registry );
+		provideLatestPostAnalyticsReports( registry );
+		provideLatestPostKeywordReport( registry );
 
 		const { container } = render( <RecentActivityPanel />, { registry } );
 

@@ -22,13 +22,15 @@
 import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
 
 /**
- * Gets a metric value of a report row as a number.
+ * Reads a row's metric value.
+ *
+ * The API returns metric values as strings.
  *
  * @since n.e.x.t
  *
- * @param {Object} [row]   The report row, which is `undefined` while the report loads.
+ * @param {Object} [row]   A report row, which is `undefined` while the report loads.
  * @param {number} [index] The index of the metric in the row. Defaults to the first metric.
- * @return {number} The metric value, or 0 when the row has no such metric.
+ * @return {number} The metric value, or `0` when it is missing or not a number.
  */
 export function getMetricValue( row?: ReportRow, index = 0 ): number {
 	return Number( row?.metricValues?.[ index ]?.value ) || 0;

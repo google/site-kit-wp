@@ -37,7 +37,7 @@ describe( 'LatestPostHeader', () => {
 		provideSiteInfo( registry );
 	} );
 
-	it( 'links the post title to the entity dashboard of the post', () => {
+	it( 'should link the post title to the entity dashboard of the post', () => {
 		const { getByRole } = render(
 			<LatestPostHeader post={ LATEST_POST } />,
 			{ registry }
@@ -51,7 +51,7 @@ describe( 'LatestPostHeader', () => {
 		);
 	} );
 
-	it( 'shows the publish date and time in the site time zone, without the year', () => {
+	it( 'should show the publish date and time in the site time zone, without the year', () => {
 		const { getByText } = render(
 			<LatestPostHeader
 				post={ {
@@ -68,7 +68,7 @@ describe( 'LatestPostHeader', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'shows the publish date and time in the browser time zone when the site time zone is a UTC offset', () => {
+	it( 'should show the publish date and time in the browser time zone when the site time zone is a UTC offset', () => {
 		provideSiteInfo( registry, { timezone: '' } );
 
 		const { getByText } = render(

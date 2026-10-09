@@ -37,7 +37,7 @@ import ReportError from '@/js/components/ReportError';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -48,21 +48,16 @@ import TrafficSourcesGroup from './TrafficSourcesGroup';
 import { getPostWindow } from './utils/getPostWindow';
 import VisitorBreakdownGroup from './VisitorBreakdownGroup';
 
-const RECENT_CONTENT_OPTIONS = { count: 1 };
-
 const LatestPostPerformance: FC = () => {
-	// `useInstanceId` is typed as `string | number`, so it is read as a string
-	// the way `TextField` does.
-	const instanceID = useInstanceId(
+	const headingID = useInstanceId(
 		LatestPostPerformance,
 		'googlesitekit-traffic-overview__latest-post-performance-heading'
-	);
-	const headingID = `${ instanceID }`;
+	) as string;
 
 	const recentContent = useInViewSelect< RecentContentItem[] | undefined >(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getRecentContent(
-				RECENT_CONTENT_OPTIONS
+				LATEST_POST_RECENT_CONTENT_OPTIONS
 			),
 		[]
 	);
@@ -71,7 +66,7 @@ const LatestPostPerformance: FC = () => {
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getRecentContent',
-				[ RECENT_CONTENT_OPTIONS ]
+				[ LATEST_POST_RECENT_CONTENT_OPTIONS ]
 			),
 		[]
 	);
@@ -79,10 +74,6 @@ const LatestPostPerformance: FC = () => {
 	const referenceDate = useSelect(
 		( select: Select ) => select( CORE_USER ).getReferenceDate(),
 		[]
-	);
-
-	const canViewSharedAnalytics4 = useCanViewSharedModule(
-		MODULE_SLUG_ANALYTICS_4
 	);
 
 	const post = recentContent?.[ 0 ];
@@ -97,10 +88,6 @@ const LatestPostPerformance: FC = () => {
 				: undefined,
 		[ post, referenceDate ]
 	);
-
-	if ( ! canViewSharedAnalytics4 ) {
-		return null;
-	}
 
 	return (
 		<section
