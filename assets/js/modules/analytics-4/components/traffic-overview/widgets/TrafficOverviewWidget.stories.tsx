@@ -34,6 +34,7 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { provideRecentTrafficBreakdownReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -148,12 +149,13 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property and the site's latest post in the store, so
- * the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the site's latest post, and the reports of
+ * the "What’s affecting recent traffic?" section in the store, so the Recent
+ * activity tab renders without sending a request.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry to put the property and the post in.
+ * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
@@ -175,6 +177,11 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
+
+	provideRecentTrafficBreakdownReports( registry, {
+		startDate: '2025-02-03',
+		endDate: '2025-02-05',
+	} );
 }
 
 interface TrafficOverviewWidgetStoryProps {
@@ -362,8 +369,9 @@ RecentActivityGatheringData.scenario = {
 
 /**
  * This story sets no `scenario`, so it runs no visual check. When the site has
- * no published posts, the Recent activity tab only omits the latest post
- * performance, which renders no content yet.
+ * no published posts, the Recent activity tab omits the latest post
+ * performance, which renders no content yet, and the "Top posts by visitors"
+ * column, which `RecentTrafficBreakdown.test.tsx` covers.
  */
 export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
 RecentActivityNoPublishedPosts.storyName =
