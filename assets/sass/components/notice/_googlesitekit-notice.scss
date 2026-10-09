@@ -163,7 +163,7 @@
 	&.googlesitekit-notice--compact,
 	&.googlesitekit-notice--small {
 		border-radius: $br-xs;
-		padding: $grid-gap-phone / 2 $grid-gap-phone;
+		padding: $grid-gap-phone * 0.5 $grid-gap-phone;
 	}
 
 	&.googlesitekit-notice--compact {

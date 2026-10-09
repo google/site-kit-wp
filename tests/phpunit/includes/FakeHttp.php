@@ -15,6 +15,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Client;
 use Google\Site_Kit_Dependencies\GuzzleHttp\HandlerStack;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 
 class FakeHttp {
 
@@ -43,6 +44,44 @@ class FakeHttp {
 
 		$google_client->setHttpClient(
 			new Client( $config )
+		);
+	}
+
+	/**
+	 * Creates the response to a Google API batch request, with one part for each
+	 * request in the batch.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param RequestInterface $request              The batch request.
+	 * @param callable         $create_part_response Creates the response to one request in the batch. Called with
+	 *                                               the request's `Content-ID`, and returns a `ResponseInterface`.
+	 * @return Response The multipart response, in the shape `Google\Http\Batch` parses.
+	 */
+	public static function create_batch_response( RequestInterface $request, callable $create_part_response ) {
+		preg_match( '/boundary=([^;]+)/', $request->getHeaderLine( 'Content-Type' ), $boundary_matches );
+		preg_match_all( '/Content-ID:\s*(.+)/i', (string) $request->getBody(), $content_id_matches );
+
+		$boundary = trim( $boundary_matches[1] );
+		$body     = '';
+
+		foreach ( array_map( 'trim', $content_id_matches[1] ) as $content_id ) {
+			$part_response = $create_part_response( $content_id );
+
+			$body .= "--{$boundary}\r\n";
+			$body .= "Content-Type: application/http\r\n";
+			$body .= "Content-ID: {$content_id}\r\n\r\n";
+			$body .= "HTTP/1.1 {$part_response->getStatusCode()} {$part_response->getReasonPhrase()}\r\n";
+			$body .= "Content-Type: application/json; charset=UTF-8\r\n\r\n";
+			$body .= $part_response->getBody() . "\r\n";
+		}
+
+		$body .= "--{$boundary}--";
+
+		return new Response(
+			200,
+			array( 'Content-Type' => "multipart/mixed; boundary={$boundary}" ),
+			$body
 		);
 	}
 }

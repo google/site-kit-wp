@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 .googlesitekit-plugin {
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__tabs {
 		position: relative;
@@ -36,10 +38,10 @@
 			z-index: 1;
 		}
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				.mdc-tab-scroller__scroll-content {
 					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
@@ -84,10 +86,10 @@
 		flex-direction: column;
 		padding-top: 20px;
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				padding-bottom: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 				padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});

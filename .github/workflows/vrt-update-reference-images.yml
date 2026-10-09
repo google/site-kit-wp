@@ -1,0 +1,244 @@
+# Renders visual regression images in CI and commits them, as an alternative
+# to `npm run test:visualapprove`.
+#
+# Add the "VRT: Update reference images" label to a PR to update its
+# reference images, or run the workflow on a branch (e.g. `develop`) to open
+# a PR with updated reference images.
+#
+# Jobs that run code from the PR get no secrets. The job that pushes, with the
+# bot's token, runs no code from the repository: it only checks and copies the
+# rendered PNG files.
+
+name: Update VRT References
+
+on:
+  pull_request:
+    types:
+      - labeled
+  workflow_dispatch:
+
+concurrency:
+  group: vrt-update-reference-images-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  LABEL: 'VRT: Update reference images'
+  SCREENSHOTS_DIR: tests/vrt/__screenshots__
+
+jobs:
+  start:
+    name: Start
+    runs-on: ubuntu-latest
+    if: >-
+      github.event_name == 'workflow_dispatch' || (
+        github.event.label.name == 'VRT: Update reference images' &&
+        github.event.pull_request.head.repo.full_name == github.repository
+      )
+    permissions:
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Remove the label
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr edit "$PR_NUMBER" --repo "$GITHUB_REPOSITORY" --remove-label "$LABEL"
+
+  build:
+    name: Build Storybook
+    runs-on: ubuntu-latest
+    needs: start
+    timeout-minutes: 20
+    outputs:
+      playwright-version: ${{ steps.playwright.outputs.version }}
+    steps:
+      # For a PR, this is its merge commit: what the VRT check renders.
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: npm install
+        run: npm ci -w assets -w storybook -w tests/js -w tests/vrt --include-workspace-root
+      - name: Build Storybook
+        run: VRT=1 npm run build:storybook
+      - name: List orphaned reference images
+        run: |
+          node tests/vrt/bin/check-snapshots.js --build --prune
+          mkdir -p "$RUNNER_TEMP/orphans"
+          git ls-files --deleted -- "$SCREENSHOTS_DIR" > "$RUNNER_TEMP/orphans/deleted.txt"
+          cat "$RUNNER_TEMP/orphans/deleted.txt"
+      - name: Get Playwright version
+        id: playwright
+        working-directory: tests/vrt
+        run: echo "version=$(node -p "require( '@playwright/test/package.json' ).version")" >> "$GITHUB_OUTPUT"
+      - name: Upload Storybook build
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
+        with:
+          name: storybook-vrt-update
+          path: |
+            dist
+            !dist/**/*.map
+          retention-days: 1
+      - name: Upload orphan list
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
+        with:
+          name: vrt-orphans
+          path: ${{ runner.temp }}/orphans/deleted.txt
+          retention-days: 1
+
+  render:
+    name: Render reference images (${{ matrix.shard }}/${{ strategy.job-total }})
+    runs-on: ubuntu-latest
+    needs: build
+    timeout-minutes: 40
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.build.outputs.playwright-version }}-noble
+      options: --ipc=host
+    strategy:
+      fail-fast: true
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
+      - name: Download Storybook build
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          name: storybook-vrt-update
+          path: dist
+      - name: npm install
+        run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
+      - name: Render changed reference images
+        working-directory: tests/vrt
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+        run: |
+          touch "$RUNNER_TEMP/render-start"
+          npx playwright test --shard="$SHARD/$SHARD_TOTAL" --update-snapshots=changed
+      # An update saves the first stable screenshot, which could be an
+      # in-between state. Rendering again must match it.
+      - name: Verify reference images
+        working-directory: tests/vrt
+        env:
+          SHARD: ${{ matrix.shard }}
+          SHARD_TOTAL: ${{ strategy.job-total }}
+        run: npx playwright test --shard="$SHARD/$SHARD_TOTAL"
+      - name: Collect changed reference images
+        run: |
+          mkdir -p "$RUNNER_TEMP/reference-images"
+          find "$SCREENSHOTS_DIR" -name '*.png' -newer "$RUNNER_TEMP/render-start" -print0 |
+            xargs -0 -r cp --parents --target-directory="$RUNNER_TEMP/reference-images"
+          find "$RUNNER_TEMP/reference-images" -type f | sed "s#^$RUNNER_TEMP/reference-images/##"
+      - name: Upload changed reference images
+        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
+        with:
+          name: vrt-reference-images-${{ matrix.shard }}
+          path: ${{ runner.temp }}/reference-images
+          if-no-files-found: ignore
+          retention-days: 1
+
+  commit:
+    name: Commit reference images
+    runs-on: ubuntu-latest
+    needs: render
+    timeout-minutes: 10
+    steps:
+      - name: Download changed reference images
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          pattern: vrt-reference-images-*
+          path: ${{ runner.temp }}/reference-images
+          merge-multiple: true
+      - name: Download orphan list
+        uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
+        with:
+          name: vrt-orphans
+          path: ${{ runner.temp }}/orphans
+      # The files come from jobs that ran the PR's code, so accept nothing but
+      # PNG reference images.
+      - name: Check files
+        run: |
+          mkdir -p "$RUNNER_TEMP/reference-images"
+          cd "$RUNNER_TEMP/reference-images"
+          if [ -n "$(find . ! -type f ! -type d)" ]; then
+            echo "Found something other than regular files."
+            exit 1
+          fi
+          find . -type f | while read -r file; do
+            if ! [[ "$file" =~ ^\./tests/vrt/__screenshots__/[a-z0-9/_-]+\.png$ ]]; then
+              echo "Unexpected file: $file"
+              exit 1
+            fi
+            if [ "$(head -c 8 "$file" | od -An -tx1 | tr -d ' \n')" != "89504e470d0a1a0a" ]; then
+              echo "Not a PNG: $file"
+              exit 1
+            fi
+            if [ "$(stat -c %s "$file")" -gt 5242880 ]; then
+              echo "Larger than 5 MB: $file"
+              exit 1
+            fi
+          done
+          while read -r file; do
+            if [ -n "$file" ] && ! [[ "$file" =~ ^tests/vrt/__screenshots__/[a-z0-9/_-]+\.png$ ]]; then
+              echo "Unexpected orphan: $file"
+              exit 1
+            fi
+          done < "$RUNNER_TEMP/orphans/deleted.txt"
+
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          token: ${{ secrets.GH_BOT_TOKEN }}
+          path: repo
+
+      - name: Commit and push
+        working-directory: repo
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_REF: ${{ github.ref_name }}
+          GH_TOKEN: ${{ secrets.GH_BOT_TOKEN }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ] && [ "$(git rev-parse HEAD)" != "$HEAD_SHA" ]; then
+            echo "The branch changed while the reference images rendered. Add the \"$LABEL\" label again."
+            exit 1
+          fi
+
+          cp -R "$RUNNER_TEMP/reference-images/." .
+          while read -r file; do
+            if [ -n "$file" ]; then
+              git rm --quiet --ignore-unmatch -- "$file"
+            fi
+          done < "$RUNNER_TEMP/orphans/deleted.txt"
+
+          git add -- "$SCREENSHOTS_DIR"
+          if git diff --cached --quiet; then
+            echo "The reference images are already up to date."
+            exit 0
+          fi
+
+          git -c user.name=google-site-kit-bot -c user.email=google-site-kit-bot@google.com \
+            commit --quiet --message "Update VRT reference images."
+          git diff --stat HEAD~1 HEAD
+
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            git push origin "HEAD:refs/heads/$HEAD_REF"
+          else
+            BRANCH="vrt/update-reference-images-$GITHUB_RUN_ID"
+            git push origin "HEAD:refs/heads/$BRANCH"
+            gh pr create --base "$BASE_REF" --head "$BRANCH" \
+              --title "Update VRT reference images." \
+              --body "Reference images rendered by $RUN_URL. Review the changed images before merging."
+          fi

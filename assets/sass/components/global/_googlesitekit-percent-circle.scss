@@ -118,7 +118,7 @@ $circle-width: 0.1em;
 @for $i from 1 through 100 {
 
 	.googlesitekit-percentage-circle--percent-#{$i} .googlesitekit-percentage-circle__bar {
-		transform: rotate((360 / 100 * $i) + deg);
+		transform: rotate((360 * 0.01 * $i) + deg);
 	}
 }
 
