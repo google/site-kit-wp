@@ -108,6 +108,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -127,6 +129,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -278,7 +282,9 @@ describe( 'RecentActivityPanel', () => {
 		] );
 	} );
 
-	it( 'should not render the latest post performance when the site has no published posts', async () => {
+	it( 'should not render the latest post performance, or the "Top posts by visitors" column, when the site has no published posts', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
 		fetchMock.get(
 			postsEndpoint,
 			{ body: [], status: 200 },
@@ -297,9 +303,17 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 		] );
+		expect(
+			screen.queryByText( 'Top posts by visitors' )
+		).not.toBeInTheDocument();
+		expect(
+			screen.getByText( 'Top channels by visitors' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render the four sections when the request for the recent posts fails', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
 		fetchMock.get(
 			postsEndpoint,
 			{

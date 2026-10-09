@@ -113,7 +113,11 @@ const RecentActivityPanel: FC = () => {
 					) }
 					{ isGatheringData === false && <InsightNotice /> }
 					<FreshMetricsRow />
-					{ isGatheringData === false && <RecentTrafficBreakdown /> }
+					{ isGatheringData === false && (
+						<RecentTrafficBreakdown
+							hasNoPublishedPosts={ hasNoPublishedPosts }
+						/>
+					) }
 					{ ! hasNoPublishedPosts && <LatestPostPerformance /> }
 				</Fragment>
 			) }
