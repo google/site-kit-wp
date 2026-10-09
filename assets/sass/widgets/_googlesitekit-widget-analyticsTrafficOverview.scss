@@ -292,10 +292,10 @@
 
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel--recent-activity {
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 			}

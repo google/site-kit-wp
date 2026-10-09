@@ -313,7 +313,6 @@ RecentActivity.parameters = {
 RecentActivity.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
-	onReadyScript: 'mouse.js',
 };
 
 export const RecentActivityAnalyticsNotConnected = Template.bind( {} ) as Story;
@@ -359,7 +358,6 @@ RecentActivityGatheringData.parameters = {
 RecentActivityGatheringData.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
-	onReadyScript: 'mouse.js',
 };
 
 /**

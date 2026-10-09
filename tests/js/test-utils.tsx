@@ -87,7 +87,7 @@ type CustomRenderResult = RenderResult & {
  * @param {string}       [options.route]       Route to pass to history as starting route.
  * @param {boolean}      [options.inView]      If the component should consider itself in-view (see `useInView` hook).
  * @param {string}       [options.viewContext] `viewContext` to use for this component and its children.
- * @param {Object}       [options.widget]      The widget the component renders in (see `useWidget` hook).
+ * @param {Object}       [options.widget]      Optional. The widget the component renders in (see `useWidget` hook).
  * @return {CustomRenderResult} An object containing all of {@link https://testing-library.com/docs/react-testing-library/api#render-result} as well as the `registry`.
  */
 function customRender(
@@ -213,7 +213,7 @@ type CustomRenderHookResult< Props, Result > = RenderHookResult<
  * @param {Object}              [options.registry]    Registry to use with the RegistryProvider. Default is a new test registry.
  * @param {string}              [options.viewContext] ViewContext value.
  * @param {boolean}             [options.inView]      If the component should consider itself in-view (see `useInView` hook).
- * @param {Object}              [options.widget]      The widget the component renders in (see `useWidget` hook).
+ * @param {Object}              [options.widget]      Optional. The widget the hook runs in (see `useWidget` hook).
  * @return {CustomRenderHookResult} Object with `result`, `rerender`, `unmount`, and async utilities. @link https://react-hooks-testing-library.com/reference/api#renderhook-result.
  */
 function customRenderHook< Props, Result >(
