@@ -45,6 +45,7 @@ export interface TableTileProps {
 	rows?: TableTileRow[];
 	loading?: boolean;
 	error?: unknown;
+	onRetry?: () => void;
 	limit?: number;
 	noDataMetricLabel?: MetricLabel;
 	zeroState?: ReactNode;
@@ -56,6 +57,7 @@ const TableTile: FC< TableTileProps > = ( {
 	rows = [],
 	loading = false,
 	error,
+	onRetry,
 	limit,
 	noDataMetricLabel,
 	zeroState,
@@ -78,7 +80,11 @@ const TableTile: FC< TableTileProps > = ( {
 
 			{ ! loading && !! error && (
 				<div className="googlesitekit-table-tile__error">
-					<ReportError moduleSlug="analytics-4" error={ error } />
+					<ReportError
+						moduleSlug="analytics-4"
+						error={ error }
+						onRetry={ onRetry }
+					/>
 				</div>
 			) }
 
