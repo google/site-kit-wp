@@ -395,8 +395,13 @@
 		}
 
 		.googlesitekit-table-tile__cell--value {
+			justify-self: stretch;
 			overflow: hidden;
 			text-overflow: ellipsis;
+
+			.googlesitekit-preview-block {
+				margin-left: auto;
+			}
 		}
 
 		.googlesitekit-traffic-overview__latest-post-row--error {

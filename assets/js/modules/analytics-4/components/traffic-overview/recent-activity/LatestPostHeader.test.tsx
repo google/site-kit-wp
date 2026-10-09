@@ -51,7 +51,26 @@ describe( 'LatestPostHeader', () => {
 		);
 	} );
 
-	it( 'shows the publish date and time without the year', () => {
+	it( 'shows the publish date and time in the site time zone, without the year', () => {
+		const { getByText } = render(
+			<LatestPostHeader
+				post={ {
+					...LATEST_POST,
+					// 14:30 on July 14 in the site's `America/Detroit` time zone.
+					publishedAt: '2026-07-14T18:30:00Z',
+				} }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByText( /^posted July 14\b.*\b2:30\sPM$/ )
+		).toBeInTheDocument();
+	} );
+
+	it( 'shows the publish date and time in the browser time zone when the site time zone is a UTC offset', () => {
+		provideSiteInfo( registry, { timezone: '' } );
+
 		const { getByText } = render(
 			<LatestPostHeader
 				post={ {

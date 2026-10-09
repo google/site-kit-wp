@@ -52,12 +52,20 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 		[ post.permalink ]
 	);
 
+	const timezone = useSelect(
+		( select: Select ) => select( CORE_SITE ).getTimezone(),
+		[]
+	);
+
 	// eslint-disable-next-line sitekit/no-direct-date -- The date comes from the post's publish time, not from the reference date.
 	const publishTime = formatDate( new Date( post.publishedAt ), {
 		year: undefined,
 		month: 'long',
 		hour: 'numeric',
 		minute: '2-digit',
+		// A site set to a UTC offset rather than a named time zone has an
+		// empty time zone, which `Intl` rejects, so the browser's is used.
+		...( timezone && { timeZone: timezone } ),
 	} );
 
 	return (

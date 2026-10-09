@@ -40,7 +40,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import { act, createTestRegistry, render } from '@tests/js/test-utils';
 import {
 	provideModules,
 	provideSiteInfo,
@@ -292,8 +292,10 @@ describe( 'LatestPostPerformance', () => {
 
 		const tilesBefore = getTiles( container );
 
-		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
-		provideSiteInfo( registry, { timezone: 'Pacific/Kiritimati' } );
+		act( () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
+			provideSiteInfo( registry, { timezone: 'Pacific/Kiritimati' } );
+		} );
 
 		await waitForRegistry();
 

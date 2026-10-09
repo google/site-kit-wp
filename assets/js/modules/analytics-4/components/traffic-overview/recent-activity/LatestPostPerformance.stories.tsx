@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import classnames from 'classnames';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -26,6 +31,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
+	createBreakdownReport,
 	getLatestPostKeywordReportOptions,
 	getLatestPostReportArgs,
 	provideLatestPost,
@@ -51,6 +57,8 @@ import {
 interface LatestPostPerformanceStoryProps {
 	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	/** Pauses the preview blocks' animation, which VRT otherwise turns off, leaving the blocks blank. */
+	pauseAnimation?: boolean;
 }
 
 /**
@@ -80,12 +88,20 @@ function commonSetup(
 	provideLatestPost( registry );
 }
 
-function Template( { setupRegistry }: LatestPostPerformanceStoryProps ) {
+function Template( {
+	setupRegistry,
+	pauseAnimation = false,
+}: LatestPostPerformanceStoryProps ) {
 	// The section's styles are scoped to the widget and the panel, so the
 	// story renders inside both.
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<div className="googlesitekit-widget--analyticsTrafficOverview">
+			<div
+				className={ classnames(
+					'googlesitekit-widget--analyticsTrafficOverview',
+					{ 'googlesitekit-vrt-animation-paused': pauseAnimation }
+				) }
+			>
 				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--recent-activity">
 					<LatestPostPerformance />
 				</div>
@@ -125,6 +141,7 @@ export const Loading = Template.bind(
 ) as Story< LatestPostPerformanceStoryProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
+	pauseAnimation: true,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 
@@ -177,6 +194,52 @@ KeywordError.args = {
 	},
 };
 KeywordError.scenario = {};
+
+/** Values too long for their row are cut off rather than overlapping the label. */
+export const LongValues = Template.bind(
+	{}
+) as Story< LatestPostPerformanceStoryProps >;
+LongValues.storyName = 'Long Values';
+LongValues.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideLatestPostAnalyticsReports( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport(
+				createBreakdownReport( [
+					[
+						'some-really-long-referring-subdomain.example-newsletter.com',
+						23,
+					],
+				] ),
+				{
+					options: getTopReferrerReportOptions(
+						getLatestPostReportArgs( registry )
+					),
+				}
+			);
+
+		const keywordOptions = getLatestPostKeywordReportOptions( registry );
+
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			[
+				{
+					keys: [
+						'is ice cream actually good for your health or not',
+					],
+					clicks: 12,
+				},
+			],
+			{ options: keywordOptions }
+		);
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.finishResolution( 'getReport', [ keywordOptions ] );
+	},
+};
+LongValues.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/LatestPostPerformance',
