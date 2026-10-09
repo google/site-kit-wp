@@ -17,16 +17,25 @@
 /**
  * Internal dependencies
  */
+import { provideTimezone } from '@tests/js/utils';
 import {
 	DAY_IN_SECONDS,
+	DateRangeSelection,
 	INVALID_DATE_INSTANCE_ERROR,
 	INVALID_DATE_STRING_ERROR,
+	addDays,
+	addMonths,
 	dateSub,
 	formatDate,
 	getDateString,
+	getDayCount,
+	getMonthEnd,
+	getMonthStart,
+	getMonthsInRange,
 	getPreviousDate,
 	isValidDateRange,
 	isValidDateString,
+	resolveDateRangeSelection,
 	stringToDate,
 } from './dates';
 
@@ -197,6 +206,227 @@ describe( 'dateSub', () => {
 	} );
 } );
 
+describe( 'month helpers', () => {
+	it.each( [
+		[ 'a date at month end', '2026-01-31', '2026-01-01', '2026-01-31' ],
+		[
+			'February in a common year',
+			'2026-02-10',
+			'2026-02-01',
+			'2026-02-28',
+		],
+		[ 'February in a leap year', '2024-02-10', '2024-02-01', '2024-02-29' ],
+		[
+			'the last month of a year',
+			'2026-12-01',
+			'2026-12-01',
+			'2026-12-31',
+		],
+	] )(
+		'should resolve the month bounds for %s',
+		( _label, date, start, end ) => {
+			expect( getMonthStart( date ) ).toBe( start );
+			expect( getMonthEnd( date ) ).toBe( end );
+		}
+	);
+
+	it.each( [
+		[ 'forward clamping to February 28', '2026-01-31', 1, '2026-02-28' ],
+		[ 'forward clamping to February 29', '2024-01-31', 1, '2024-02-29' ],
+		[ 'backward clamping to February 28', '2026-03-31', -1, '2026-02-28' ],
+		[ 'a forward year boundary', '2026-12-15', 2, '2027-02-15' ],
+		[ 'a backward year boundary', '2026-01-15', -2, '2025-11-15' ],
+		[ 'a leap day moved to a common year', '2024-02-29', 12, '2025-02-28' ],
+		[ 'a zero-month offset', '2026-01-31', 0, '2026-01-31' ],
+	] )( 'should shift months for %s', ( _label, date, months, expected ) => {
+		expect( addMonths( date as string, months as number ) ).toBe(
+			expected
+		);
+	} );
+} );
+
+describe( 'getDayCount', () => {
+	it.each( [
+		[ 'a single day', '2026-09-07', '2026-09-07', 1 ],
+		[
+			'adjacent dates across a month boundary',
+			'2026-01-31',
+			'2026-02-01',
+			2,
+		],
+		[ 'a leap-year February', '2024-02-01', '2024-02-29', 29 ],
+		[ 'a common-year February', '2026-02-01', '2026-02-28', 28 ],
+		[
+			'adjacent dates across a year boundary',
+			'2025-12-31',
+			'2026-01-01',
+			2,
+		],
+		[ 'a full March', '2026-03-01', '2026-03-31', 31 ],
+		[ 'October through November', '2026-10-01', '2026-11-30', 61 ],
+		[ 'a range spanning several months', '2026-04-04', '2026-08-04', 123 ],
+	] )(
+		'should count days inclusively for %s',
+		( _label, start, end, expected ) => {
+			expect( getDayCount( start as string, end as string ) ).toBe(
+				expected
+			);
+		}
+	);
+} );
+
+describe( 'getMonthsInRange', () => {
+	it( 'should include partial months across a year boundary', () => {
+		expect( getMonthsInRange( '2025-11-20', '2026-02-01' ) ).toEqual( [
+			'2025-11',
+			'2025-12',
+			'2026-01',
+			'2026-02',
+		] );
+	} );
+	it( 'should include a single month', () => {
+		expect( getMonthsInRange( '2026-09-07', '2026-09-07' ) ).toEqual( [
+			'2026-09',
+		] );
+	} );
+} );
+
+describe( 'resolveDateRangeSelection', () => {
+	it.each( [
+		[ 'a 7-day preset', 'last-7-days', '2026-09-01' ],
+		[ 'the legacy 14-day preset', 'last-14-days', '2026-08-25' ],
+		[ 'a 28-day preset', 'last-28-days', '2026-08-11' ],
+		[ 'a 90-day preset', 'last-90-days', '2026-06-10' ],
+	] )( 'should resolve %s', ( _label, slug, startDate ) => {
+		expect(
+			resolveDateRangeSelection( { type: 'preset', slug }, '2026-09-07' )
+		).toEqual( { startDate, endDate: '2026-09-07' } );
+	} );
+
+	it.each( [
+		[
+			'a completed calendar month',
+			'2026-08',
+			'2026-09-07',
+			'2026-08-01',
+			'2026-08-31',
+		],
+		[
+			'the current partial month',
+			'2026-09',
+			'2026-09-07',
+			'2026-09-01',
+			'2026-09-07',
+		],
+		[
+			'the first day of the current month',
+			'2026-09',
+			'2026-09-01',
+			'2026-09-01',
+			'2026-09-01',
+		],
+		[
+			'February in a leap year',
+			'2024-02',
+			'2024-03-07',
+			'2024-02-01',
+			'2024-02-29',
+		],
+		[
+			'February in a common year',
+			'2026-02',
+			'2026-03-07',
+			'2026-02-01',
+			'2026-02-28',
+		],
+	] )(
+		'should resolve %s',
+		( _label, month, referenceDate, startDate, endDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month },
+					referenceDate
+				)
+			).toEqual( { startDate, endDate } );
+			expect( console ).not.toHaveWarned();
+		}
+	);
+
+	it.each( [
+		[ 'a reference date in the preceding month', '2026-08-31' ],
+		[ 'a reference date in the preceding year', '2025-12-31' ],
+	] )(
+		'should clamp both calendar-month endpoints for %s',
+		( _label, referenceDate ) => {
+			expect(
+				resolveDateRangeSelection(
+					{ type: 'calendarMonth', month: '2026-09' },
+					referenceDate
+				)
+			).toEqual( { startDate: referenceDate, endDate: referenceDate } );
+		}
+	);
+
+	it( 'should return custom dates unchanged without mutating the selection', () => {
+		const selection: DateRangeSelection = Object.freeze( {
+			type: 'custom',
+			startDate: '2026-08-04',
+			endDate: '2026-08-10',
+		} );
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-08-04', endDate: '2026-08-10' }
+		);
+	} );
+
+	it.each( [
+		[
+			'a reference date inside the range',
+			'2026-08-07',
+			'2026-08-04',
+			'2026-08-07',
+		],
+		[
+			'a reference date at the start',
+			'2026-08-04',
+			'2026-08-04',
+			'2026-08-04',
+		],
+		[
+			'a reference date before the range',
+			'2026-08-01',
+			'2026-08-01',
+			'2026-08-01',
+		],
+		[
+			'a reference date at the end',
+			'2026-08-10',
+			'2026-08-04',
+			'2026-08-10',
+		],
+	] )(
+		'should resolve custom endpoints for %s',
+		( _label, referenceDate, startDate, endDate ) => {
+			const selection: DateRangeSelection = Object.freeze( {
+				type: 'custom',
+				startDate: '2026-08-04',
+				endDate: '2026-08-10',
+			} );
+
+			expect(
+				resolveDateRangeSelection( selection, referenceDate )
+			).toEqual( { startDate, endDate } );
+		}
+	);
+
+	it( 'should return the reference date for an unknown selection type', () => {
+		const selection = { type: 'unknown' } as unknown as DateRangeSelection;
+
+		expect( resolveDateRangeSelection( selection, '2026-09-07' ) ).toEqual(
+			{ startDate: '2026-09-07', endDate: '2026-09-07' }
+		);
+	} );
+} );
+
 describe( 'formatDate', () => {
 	// The test environment runs in American English, the `en-US` locale.
 	it.each( [
@@ -222,4 +452,92 @@ describe( 'formatDate', () => {
 	] )( 'should return an empty string for %s', ( _, date ) => {
 		expect( formatDate( date ) ).toBe( '' );
 	} );
+
+	it( 'should format dates using the user locale', () => {
+		Object.assign( global._googlesitekitLegacyData, { locale: 'en_US' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( 'Aug 4, 2026' );
+		Object.assign( global._googlesitekitLegacyData, { locale: 'de_DE' } );
+		expect( formatDate( '2026-08-04' ) ).toBe( '4. Aug. 2026' );
+	} );
+} );
+
+describe( 'addDays', () => {
+	it.each( [
+		[
+			'Sydney spring forward',
+			'Australia/Sydney',
+			'2026-10-07',
+			-6,
+			'2026-10-01',
+			-660,
+			-600,
+		],
+		[
+			'New York spring forward',
+			'America/New_York',
+			'2026-03-10',
+			-7,
+			'2026-03-03',
+			240,
+			300,
+		],
+		[
+			'Sydney fall back',
+			'Australia/Sydney',
+			'2026-04-07',
+			-7,
+			'2026-03-31',
+			-600,
+			-660,
+		],
+		[
+			'New York fall back',
+			'America/New_York',
+			'2026-11-03',
+			-7,
+			'2026-10-27',
+			300,
+			240,
+		],
+	] )(
+		'should shift calendar days across %s',
+		(
+			_label,
+			timezone,
+			date,
+			days,
+			expected,
+			dateOffset,
+			expectedOffset
+		) => {
+			const originalTimezone = provideTimezone( timezone as string );
+
+			// Ensure this case actually crosses the expected DST transition.
+			expect( stringToDate( date as string ).getTimezoneOffset() ).toBe(
+				dateOffset
+			);
+
+			expect(
+				stringToDate( expected as string ).getTimezoneOffset()
+			).toBe( expectedOffset );
+
+			expect( addDays( date as string, days as number ) ).toBe(
+				expected
+			);
+
+			provideTimezone( originalTimezone );
+		}
+	);
+
+	it.each( [
+		[ 'a leap-day boundary', '2024-02-28', 1, '2024-02-29' ],
+		[ 'a year boundary', '2026-12-31', 1, '2027-01-01' ],
+	] )(
+		'should shift calendar days for %s',
+		( _label, date, days, expected ) => {
+			expect( addDays( date as string, days as number ) ).toBe(
+				expected
+			);
+		}
+	);
 } );
