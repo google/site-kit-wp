@@ -211,7 +211,10 @@ final class Plugin {
 				$nonces = new Core\Nonces\Nonces( $this->context );
 				$nonces->register();
 
-				// Assets must be registered after Modules instance is registered.
+				// Pointers adds a data script through the `googlesitekit_assets` filter.
+				( new Core\Admin\Pointers() )->register();
+
+				// Assets must be registered after Modules and Pointers instances are registered.
 				$assets->register();
 
 				$screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication, $intents );
@@ -231,7 +234,6 @@ final class Plugin {
 				( new Core\Admin_Bar\Admin_Bar( $this->context, $assets, $modules ) )->register();
 				( new Core\Admin\Available_Tools() )->register();
 				( new Core\Admin\Notices() )->register();
-				( new Core\Admin\Pointers() )->register();
 				( new Core\Admin\Dashboard( $this->context, $assets, $modules, $dismissed_items ) )->register();
 				( new Core\Admin\Authorize_Application( $this->context, $assets ) )->register();
 				( new Core\Notifications\Notifications( $this->context, $options, $authentication ) )->register();
