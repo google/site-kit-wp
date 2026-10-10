@@ -18,7 +18,6 @@
  * Internal dependencies
  */
 import type { ContentEventsConfig } from '@/js/event-providers/content-events';
-import { GATrackingEventArgs } from './GATrackingEventArgs';
 
 /* eslint-disable no-var */
 
@@ -30,15 +29,11 @@ declare global {
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];
-		googlesitekitAdminPointersTracking: {
-			register: (
-				slug: string,
-				tracking: Record< string, GATrackingEventArgs >
-			) => {
-				onDismiss: null | ( () => void );
-			};
-		};
 	}
+
+	var _googlesitekitAdminPointersData:
+		| import('@/js/admin-pointers/types').AdminPointer[]
+		| undefined;
 
 	// eslint-disable-next-line camelcase
 	var __webpack_public_path__: string;
@@ -117,6 +112,9 @@ declare global {
 	var wp_has_consent: ( ( category: string ) => boolean ) | undefined;
 	// eslint-disable-next-line camelcase
 	var waitfor_consent_hook: boolean | undefined;
+
+	// WordPress admin globals.
+	var ajaxurl: string;
 
 	// Third-party WordPress plugin globals — no public type packages available.
 	/* eslint-disable @typescript-eslint/no-explicit-any */
