@@ -592,7 +592,7 @@ final class Pointer {
 
 **Location**: `includes/Core/Admin/Pointer.php`
 
-`Pointer` is a value object with getters (`get_slug()`, `get_title()`, `get_content()`, `get_target_id()`, `get_position()`, `get_buttons()`, `get_class()`, `get_tracking()`) and an `is_active( $hook_suffix )` method. There is no `get_pointer_data()` method, and dismissal is not checked here — individual pointers check `dismissed_wp_pointers` user meta in their own `active_callback` (see the view-only example below).
+`Pointer` is a value object with getters (`get_slug()`, `get_title()`, `get_content()`, `get_target_id()`, `get_position()`, `get_buttons()`, `get_class()`, `get_tracking()`) and an `is_active( $hook_suffix )` method. It does not build the script data itself (see `Pointers::get_pointer_data()` below), and dismissal is not checked here — individual pointers check `dismissed_wp_pointers` user meta in their own `active_callback` (see the view-only example below).
 
 ```php
 public function get_content() {
@@ -620,15 +620,37 @@ public function is_active( $hook_suffix ) {
 
 **Location**: `includes/Core/Admin/Pointers.php`
 
-Central manager for all pointers. It uses `Method_Proxy_Trait`, hooks only `admin_enqueue_scripts`, filters the pointers down to the active ones for the current screen, enqueues the WordPress `wp-pointer` assets plus Site Kit's dashboard styles and the `googlesitekit-admin-pointers-tracking` script, then prints one script per active pointer on `admin_print_footer_scripts`.
+Central manager for all pointers. It uses `Method_Proxy_Trait` and does two things:
+
+- It adds the `googlesitekit-admin-pointers-data` `Script_Data` through the `googlesitekit_assets` filter. That data script sets the `_googlesitekitAdminPointersData` global to the active pointers.
+- On `admin_enqueue_scripts` (priority `11`, after `Assets` registers its scripts), it filters the pointers down to the active ones for the current screen. When at least one is active, it enqueues the `wp-pointer` style, Site Kit's dashboard styles and the `googlesitekit-admin-pointers` script. The script depends on `wp-pointer` and the data script.
+
+`Pointers` must be registered before `Assets` in `Plugin.php`, because `Assets::register()` caches the asset list right away.
 
 ```php
 class Pointers {
 
 	use Method_Proxy_Trait;
 
+	private $active_pointers = array();
+
 	public function register() {
-		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
+		add_filter( 'googlesitekit_assets', $this->get_method_proxy( 'add_assets' ) );
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ), 11 );
+	}
+
+	private function add_assets( $assets ) {
+		$assets[] = new Script_Data(
+			'googlesitekit-admin-pointers-data',
+			array(
+				'global'        => '_googlesitekitAdminPointersData',
+				'data_callback' => function () {
+					return $this->get_active_pointers_data();
+				},
+			)
+		);
+
+		return $assets;
 	}
 
 	private function enqueue_pointers( $hook_suffix ) {
@@ -641,30 +663,20 @@ class Pointers {
 			return;
 		}
 
-		$active_pointers = array_filter(
+		$this->active_pointers = array_filter(
 			$pointers,
 			function ( Pointer $pointer ) use ( $hook_suffix ) {
 				return $pointer->is_active( $hook_suffix );
 			}
 		);
 
-		if ( empty( $active_pointers ) ) {
+		if ( empty( $this->active_pointers ) ) {
 			return;
 		}
 
 		wp_enqueue_style( 'wp-pointer' );
 		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
-
-		add_action(
-			'admin_print_footer_scripts',
-			function () use ( $active_pointers ) {
-				foreach ( $active_pointers as $pointer ) {
-					$this->print_pointer_script( $pointer );
-				}
-			}
-		);
+		wp_enqueue_script( 'googlesitekit-admin-pointers' );
 	}
 
 	private function get_pointers() {
@@ -680,17 +692,19 @@ class Pointers {
 }
 ```
 
-#### Pointer Script Generation
+#### Pointer Data
 
-**Location**: `includes/Core/Admin/Pointers.php` (`print_pointer_script()` method)
+**Location**: `includes/Core/Admin/Pointers.php` (`get_pointer_data()` method)
 
-Each pointer is printed as a single inline script via `BC_Functions::wp_print_inline_script_tag()`. The pointer's data (slug, class, target id, `wp_kses`-escaped title/content, JSON-encoded position, and optional tracking config) is passed through `data-*` attributes and read back via `document.currentScript.dataset`. The inline JS initializes the WordPress pointer and (when tracking is configured) registers handlers with `window.googlesitekitAdminPointersTracking`.
+`get_pointer_data()` builds one entry of `_googlesitekitAdminPointersData`. It returns `null` for a pointer with empty content, and the data script leaves that pointer out. Each entry has `slug`, `class`, `targetID`, `title`, `content` (with the buttons appended), `position` and `tracking` (`null` when the pointer has no tracking config). The title and content are filtered with `wp_kses` against fixed allowlists.
+
+The `googlesitekit-admin-pointers` bundle (`assets/js/googlesitekit-admin-pointers.ts`) reads this data and calls `initializePointer()` from `assets/js/admin-pointers/` for each entry. That function opens the WordPress pointer, posts the `dismiss-wp-pointer` action to `ajaxurl` when the pointer closes, and registers the pointer's tracking events through `registerPointerTracking()`.
 
 ```php
-private function print_pointer_script( $pointer ) {
+private function get_pointer_data( Pointer $pointer ) {
 	$content = $pointer->get_content();
 	if ( empty( $content ) ) {
-		return;
+		return null;
 	}
 
 	$buttons = $pointer->get_buttons();
@@ -706,24 +720,14 @@ private function print_pointer_script( $pointer ) {
 
 	// ... build $kses_title / $kses_content allowlists ...
 
-	$data = array(
-		'data-slug'      => $pointer->get_slug(),
-		'data-class'     => implode( ' ', $class ),
-		'data-target-id' => $pointer->get_target_id(),
-		'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
-		'data-content'   => wp_kses( $content, $kses_content ),
-		'data-position'  => wp_json_encode( $pointer->get_position() ),
-	);
-
-	if ( ! empty( $pointer->get_tracking() ) ) {
-		$data['data-tracking'] = wp_json_encode( $pointer->get_tracking() );
-	}
-
-	BC_Functions::wp_print_inline_script_tag(
-		// inline JS that calls target.pointer( options ).pointer( 'open' )
-		// and dismisses via wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } )
-		$inline_js,
-		$data
+	return array(
+		'slug'     => $pointer->get_slug(),
+		'class'    => implode( ' ', $class ),
+		'targetID' => $pointer->get_target_id(),
+		'title'    => wp_kses( $pointer->get_title(), $kses_title ),
+		'content'  => wp_kses( $content, $kses_content ),
+		'position' => $pointer->get_position(),
+		'tracking' => $pointer->get_tracking() ?: null,
 	);
 }
 ```
@@ -1150,6 +1154,12 @@ All admin features are registered from `Plugin.php`. Most are instantiated insid
 
 ```php
 // Inside the init bootstrap closure:
+// Pointers adds a data script through the `googlesitekit_assets` filter.
+( new Core\Admin\Pointers() )->register();
+
+// Assets must be registered after Modules and Pointers instances are registered.
+$assets->register();
+
 $screens = new Core\Admin\Screens( $this->context, $assets, $modules, $authentication );
 $screens->register();
 
@@ -1157,7 +1167,6 @@ $screens->register();
 
 ( new Core\Admin\Available_Tools() )->register();
 ( new Core\Admin\Notices() )->register();
-( new Core\Admin\Pointers() )->register();
 ( new Core\Admin\Dashboard( $this->context, $assets, $modules, $dismissed_items ) )->register();
 ( new Core\Admin\Authorize_Application( $this->context, $assets ) )->register();
 ( new Core\Admin\Standalone( $this->context ) )->register();
