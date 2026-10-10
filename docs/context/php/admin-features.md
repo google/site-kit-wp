@@ -547,31 +547,7 @@ private function get_reconnect_after_url_mismatch_notice() {
 
 **Location**: `includes/Core/Admin/Pointer.php`
 
-Represents a WordPress pointer for onboarding (`@since 1.83.0`).
-
-```php
-final class Pointer {
-	private $slug;
-	private $args = array();
-
-	public function __construct( $slug, array $args ) {
-		$this->slug = $slug;
-		$this->args = wp_parse_args(
-			$args,
-			array(
-				'title'           => '',
-				'content'         => '',
-				'target_id'       => '',
-				'position'        => 'top',
-				'active_callback' => null,
-				'buttons'         => null,
-				'class'           => '',
-				'tracking'        => array(),
-			)
-		);
-	}
-}
-```
+Represents a WordPress pointer for onboarding (`@since 1.83.0`). A feature creates a `Pointer` with a unique slug and an array of arguments, and adds it through the `googlesitekit_admin_pointers` filter (see the example below).
 
 **Constructor Arguments**:
 
@@ -584,149 +560,28 @@ final class Pointer {
 | `active_callback` | callable | Determines whether the pointer is active. Receives the current admin screen hook suffix. |
 | `buttons` | string | Optional HTML for the pointer buttons (rendered in a `googlesitekit-pointer-buttons` container). Default `null`. |
 | `class` | string\|array | Optional additional CSS class(es). Default `''`. |
-| `tracking` | array | Optional tracking config for `view`, `dismiss`, and `click` events. Default `array()`. |
+| `tracking` | array | Optional tracking config, keyed by `view`, `click` and `dismiss`. Each event is an array with `category`, `action` and an optional `label`. Default `array()`. |
 
 > Note: the real argument names are `target_id` and `position`, not `target`/`edge`/`align`/`pointer_class`.
 
-#### Pointer Accessors and Activation
+#### Activation and Dismissal
 
-**Location**: `includes/Core/Admin/Pointer.php`
+- A pointer is active on a screen when it has a `title`, `content` and `target_id`, and its `active_callback` returns `true` for the screen's hook suffix. A pointer without an `active_callback` is active on every admin screen.
+- A pointer whose content is empty is not shown.
+- When the user closes a pointer, Site Kit adds the pointer's slug to the user's `dismissed_wp_pointers` user meta. Site Kit does not check this meta for you. Each pointer checks it in its own `active_callback` (see the example below).
 
-`Pointer` is a value object with getters (`get_slug()`, `get_title()`, `get_content()`, `get_target_id()`, `get_position()`, `get_buttons()`, `get_class()`, `get_tracking()`) and an `is_active( $hook_suffix )` method. There is no `get_pointer_data()` method, and dismissal is not checked here — individual pointers check `dismissed_wp_pointers` user meta in their own `active_callback` (see the view-only example below).
+#### Markup, Buttons and Tracking
 
-```php
-public function get_content() {
-	if ( is_callable( $this->args['content'] ) ) {
-		return call_user_func( $this->args['content'] );
-	} else {
-		return '<p>' . wp_kses( $this->args['content'], 'googlesitekit_admin_pointer' ) . '</p>';
-	}
-}
-
-public function is_active( $hook_suffix ) {
-	if ( empty( $this->args['title'] ) || empty( $this->args['content'] ) || empty( $this->args['target_id'] ) ) {
-		return false;
-	}
-
-	if ( ! is_callable( $this->args['active_callback'] ) ) {
-		return true;
-	}
-
-	return (bool) call_user_func( $this->args['active_callback'], $hook_suffix );
-}
-```
+- The title and content are filtered with `wp_kses` before they reach the page. The title allows `span` and `button`. The content allows `a`, `h4`, `p`, `br`, `strong`, `em`, `button` and `div`. Other tags are removed.
+- An element with `data-action="dismiss"`, in the title or in `buttons`, closes the pointer.
+- A link with the `googlesitekit-pointer-cta` class is the pointer's call to action. Clicking it sends the `click` event before the browser opens the link.
+- The `view` event is sent when the pointer opens. The `dismiss` event is sent when the pointer closes, unless the user closed it by clicking the call to action.
 
 ### Pointers Class
 
 **Location**: `includes/Core/Admin/Pointers.php`
 
-Central manager for all pointers. It uses `Method_Proxy_Trait`, hooks only `admin_enqueue_scripts`, filters the pointers down to the active ones for the current screen, enqueues the WordPress `wp-pointer` assets plus Site Kit's dashboard styles and the `googlesitekit-admin-pointers-tracking` script, then prints one script per active pointer on `admin_print_footer_scripts`.
-
-```php
-class Pointers {
-
-	use Method_Proxy_Trait;
-
-	public function register() {
-		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
-	}
-
-	private function enqueue_pointers( $hook_suffix ) {
-		if ( empty( $hook_suffix ) ) {
-			return;
-		}
-
-		$pointers = $this->get_pointers();
-		if ( empty( $pointers ) ) {
-			return;
-		}
-
-		$active_pointers = array_filter(
-			$pointers,
-			function ( Pointer $pointer ) use ( $hook_suffix ) {
-				return $pointer->is_active( $hook_suffix );
-			}
-		);
-
-		if ( empty( $active_pointers ) ) {
-			return;
-		}
-
-		wp_enqueue_style( 'wp-pointer' );
-		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
-
-		add_action(
-			'admin_print_footer_scripts',
-			function () use ( $active_pointers ) {
-				foreach ( $active_pointers as $pointer ) {
-					$this->print_pointer_script( $pointer );
-				}
-			}
-		);
-	}
-
-	private function get_pointers() {
-		$pointers = apply_filters( 'googlesitekit_admin_pointers', array() );
-
-		return array_filter(
-			$pointers,
-			function ( $pointer ) {
-				return $pointer instanceof Pointer;
-			}
-		);
-	}
-}
-```
-
-#### Pointer Script Generation
-
-**Location**: `includes/Core/Admin/Pointers.php` (`print_pointer_script()` method)
-
-Each pointer is printed as a single inline script via `BC_Functions::wp_print_inline_script_tag()`. The pointer's data (slug, class, target id, `wp_kses`-escaped title/content, JSON-encoded position, and optional tracking config) is passed through `data-*` attributes and read back via `document.currentScript.dataset`. The inline JS initializes the WordPress pointer and (when tracking is configured) registers handlers with `window.googlesitekitAdminPointersTracking`.
-
-```php
-private function print_pointer_script( $pointer ) {
-	$content = $pointer->get_content();
-	if ( empty( $content ) ) {
-		return;
-	}
-
-	$buttons = $pointer->get_buttons();
-	if ( $buttons ) {
-		$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
-	}
-
-	$class      = array( 'wp-pointer' );
-	$class[]    = sanitize_html_class( $pointer->get_slug() );
-	if ( $pointer->get_class() ) {
-		$class[] = $pointer->get_class();
-	}
-
-	// ... build $kses_title / $kses_content allowlists ...
-
-	$data = array(
-		'data-slug'      => $pointer->get_slug(),
-		'data-class'     => implode( ' ', $class ),
-		'data-target-id' => $pointer->get_target_id(),
-		'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
-		'data-content'   => wp_kses( $content, $kses_content ),
-		'data-position'  => wp_json_encode( $pointer->get_position() ),
-	);
-
-	if ( ! empty( $pointer->get_tracking() ) ) {
-		$data['data-tracking'] = wp_json_encode( $pointer->get_tracking() );
-	}
-
-	BC_Functions::wp_print_inline_script_tag(
-		// inline JS that calls target.pointer( options ).pointer( 'open' )
-		// and dismisses via wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } )
-		$inline_js,
-		$data
-	);
-}
-```
+`Pointers` collects every `Pointer` from the `googlesitekit_admin_pointers` filter. On each admin screen it passes the active pointers to the `googlesitekit-admin-pointers` script, which opens them. Feature code never calls `Pointers` directly. `Pointers` must be registered before `Assets`, because it adds its data script through the `googlesitekit_assets` filter.
 
 ### Pointer Examples
 
