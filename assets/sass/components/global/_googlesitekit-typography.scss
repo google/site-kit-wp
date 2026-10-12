@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 $typography-settings: (
 	display: (
 		small:   (font-size: $fs-display-sm, font-weight: $fw-normal, letter-spacing: 0, line-height: $lh-display-sm),
@@ -58,7 +60,7 @@ $typography-font-families: (
 
 		@each $type, $sizes in $typography-settings {
 			&.googlesitekit-typography--#{$type} {
-				font-family: map-get($typography-font-families, $type);
+				font-family: map.get($typography-font-families, $type);
 
 				@each $size, $styles in $sizes {
 					&.googlesitekit-typography--#{$size} {

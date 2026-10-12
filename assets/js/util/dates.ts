@@ -25,6 +25,11 @@ import { isDate, isString } from 'lodash';
  */
 import { _n, sprintf } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { getLocale } from './i18n';
+
 export const INVALID_DATE_INSTANCE_ERROR =
 	'Date param must construct to a valid date instance or be a valid date instance itself.';
 export const INVALID_DATE_STRING_ERROR =
@@ -37,6 +42,12 @@ export const HOUR_IN_SECONDS = 60 * MINUTE_IN_SECONDS;
 export const DAY_IN_SECONDS = 24 * HOUR_IN_SECONDS;
 export const WEEK_IN_SECONDS = 7 * DAY_IN_SECONDS;
 export const MONTH_IN_SECONDS = 30 * DAY_IN_SECONDS;
+
+const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'short',
+	day: 'numeric',
+};
 
 interface DateRangeOption {
 	slug: string;
@@ -239,4 +250,57 @@ export function dateSub( relativeDate: unknown, duration: number ): Date {
 	// Valid use of `new Date()` using calculations.
 	// eslint-disable-next-line sitekit/no-direct-date
 	return new Date( timestamp - duration * 1000 );
+}
+
+/**
+ * Formats a date as a localized date in the site locale, e.g. "Jul 28, 2026".
+ *
+ * Returns an empty string for a missing or invalid date, so the caller can
+ * leave out the text that shows it instead of failing to render.
+ *
+ * @since 1.182.0
+ * @since 1.184.0 Moved from `PDFHeader` to a shared helper for use in other PDF components.
+ * @since n.e.x.t Moved from PDF to the generic `dates` utils.
+ *
+ * @param {Date|string} date      Date instance or date string (YYYY-MM-DD) to format.
+ * @param {Object}      [options] `Intl.DateTimeFormat` options that override the defaults, e.g. `{ month: 'long' }` for "July 28, 2026".
+ * @return {string} Localized date, or an empty string if the date is missing or invalid.
+ */
+export function formatDate(
+	date: unknown,
+	options: Intl.DateTimeFormatOptions = {}
+): string {
+	const dateInstance = isValidDateString( date )
+		? stringToDate( date )
+		: date;
+
+	if ( ! isDate( dateInstance ) || isNaN( Number( dateInstance ) ) ) {
+		return '';
+	}
+
+	return new Intl.DateTimeFormat( getLocale(), {
+		...DATE_FORMAT_OPTIONS,
+		...options,
+	} ).format( dateInstance );
+}
+
+/**
+ * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
+ * "Mar 1 – 7, 2026".
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate The first day of the range, as `YYYY-MM-DD`.
+ * @param {string} endDate   The last day of the range, as `YYYY-MM-DD`.
+ * @return {string} The localized range, or an empty string when either date is invalid.
+ */
+export function formatDateRange( startDate: string, endDate: string ): string {
+	if ( ! isValidDateString( startDate ) || ! isValidDateString( endDate ) ) {
+		return '';
+	}
+
+	return new Intl.DateTimeFormat(
+		getLocale(),
+		DATE_FORMAT_OPTIONS
+	).formatRange( stringToDate( startDate ), stringToDate( endDate ) );
 }

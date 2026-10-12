@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 @import "variables-mui3";
 
 /*
@@ -165,8 +167,8 @@ $c-brand: $c-royal-blue;
 $c-highlight: $c-cornflower-blue;
 $c-subtle: $c-jumbo;
 $c-link: $c-content-secondary;
-$c-link-wpdb: map-get($wp-colors, "blue-50");
-$c-link-wpdb-hover: map-get($wp-colors, "blue-60");
+$c-link-wpdb: map.get($wp-colors, "blue-50");
+$c-link-wpdb-hover: map.get($wp-colors, "blue-60");
 $c-input: $c-royal-blue;
 $c-disabled: $c-silver;
 $c-required: $c-valencia;

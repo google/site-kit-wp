@@ -32,6 +32,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
+import useConsumePendingSetup from '@/js/components/feature-discovery/useConsumePendingSetup';
 import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
@@ -58,20 +63,21 @@ const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
 		Component: AllServicesTab,
 		label: __( 'All services and features', 'google-site-kit' ),
 		panelID: 'googlesitekit-feature-discovery-all-services-tab-panel',
-		path: '/all-services',
+		path: ALL_SERVICES_TAB_PATH,
 		tabID: 'googlesitekit-feature-discovery-all-services-tab',
 	},
 	{
 		Component: WhatsNewTab,
 		label: __( 'What’s new?', 'google-site-kit' ),
 		panelID: 'googlesitekit-feature-discovery-whats-new-tab-panel',
-		path: '/whats-new',
+		path: WHATS_NEW_TAB_PATH,
 		tabID: 'googlesitekit-feature-discovery-whats-new-tab',
 	},
 ];
 
 const FeatureDiscoveryApp: FC = () => {
 	useFeatureCountCache();
+	const hasConsumedPendingSetup = useConsumePendingSetup();
 
 	const breakpoint = useBreakpoint();
 	const location = useLocation();
@@ -145,10 +151,12 @@ const FeatureDiscoveryApp: FC = () => {
 									) }
 								</TabBar>
 								<div className="googlesitekit-feature-discovery__content">
-									<FeatureDiscoveryContent
-										tabs={ FEATURE_DISCOVERY_TABS }
-										isExplicitTab={ isExplicitTab }
-									/>
+									{ hasConsumedPendingSetup && (
+										<FeatureDiscoveryContent
+											tabs={ FEATURE_DISCOVERY_TABS }
+											isExplicitTab={ isExplicitTab }
+										/>
+									) }
 								</div>
 							</Layout>
 						</Cell>

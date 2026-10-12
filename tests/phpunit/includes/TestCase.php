@@ -122,12 +122,8 @@ class TestCase extends WP_UnitTestCase {
 	 * @throws \ReflectionException
 	 */
 	protected function force_set_property( $class_instance, $property, $value ) {
-		$reflection_property = new \ReflectionProperty( $class_instance, $property );
-		// PHP < 8.1 requires this for private properties; 8.1+ ignores it; 8.5+ deprecates it.
-		if ( \PHP_VERSION_ID < 80100 ) {
-			$reflection_property->setAccessible( true );
-		}
-		$target = is_string( $class_instance ) ? null : $class_instance;
+		$reflection_property = $this->get_accessible_property( $class_instance, $property );
+		$target              = is_string( $class_instance ) ? null : $class_instance;
 		$reflection_property->setValue( $target, $value );
 	}
 
@@ -141,14 +137,50 @@ class TestCase extends WP_UnitTestCase {
 	 * @throws \ReflectionException
 	 */
 	protected function force_get_property( $class_instance, $property ) {
-		$reflection_property = new \ReflectionProperty( $class_instance, $property );
-		// PHP < 8.1 requires this for private properties; 8.1+ ignores it; 8.5+ deprecates it.
+		$reflection_property = $this->get_accessible_property( $class_instance, $property );
+		$target              = is_string( $class_instance ) ? null : $class_instance;
+
+		return $reflection_property->getValue( $target );
+	}
+
+	/**
+	 * Gets a reflection of a method that can be invoked even when it is private or protected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object|string $class_instance Class instance, or name of the class that has the method.
+	 * @param string        $method_name    Method name.
+	 * @return \ReflectionMethod Reflection of the method.
+	 * @throws \ReflectionException Thrown if the method does not exist.
+	 */
+	protected function get_accessible_method( $class_instance, $method_name ) {
+		$reflection_method = new \ReflectionMethod( $class_instance, $method_name );
+		// PHP < 8.1 requires this for non-public methods; 8.1+ ignores it; 8.5+ deprecates it.
+		if ( \PHP_VERSION_ID < 80100 ) {
+			$reflection_method->setAccessible( true );
+		}
+
+		return $reflection_method;
+	}
+
+	/**
+	 * Gets a reflection of a property that can be read and written even when it is private or protected.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param object|string $class_instance Class instance, or name of the class that has the property.
+	 * @param string        $property_name  Property name.
+	 * @return \ReflectionProperty Reflection of the property.
+	 * @throws \ReflectionException Thrown if the property does not exist.
+	 */
+	protected function get_accessible_property( $class_instance, $property_name ) {
+		$reflection_property = new \ReflectionProperty( $class_instance, $property_name );
+		// PHP < 8.1 requires this for non-public properties; 8.1+ ignores it; 8.5+ deprecates it.
 		if ( \PHP_VERSION_ID < 80100 ) {
 			$reflection_property->setAccessible( true );
 		}
-		$target = is_string( $class_instance ) ? null : $class_instance;
 
-		return $reflection_property->getValue( $target );
+		return $reflection_property;
 	}
 
 	/**

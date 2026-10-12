@@ -81,6 +81,10 @@
 	}
 
 	.googlesitekit-feature-details-panel__relevancy {
+		align-items: center;
+		color: $c-surfaces-on-background-variant;
+		display: flex;
+		gap: var(--googlesitekit-feature-details-panel-padding-s);
 		padding-block: var(--googlesitekit-feature-details-panel-padding-s);
 		padding-inline: var(--googlesitekit-feature-details-panel-padding-m);
 	}

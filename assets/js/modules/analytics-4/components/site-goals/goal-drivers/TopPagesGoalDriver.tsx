@@ -32,7 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import {
 	GOAL_DRIVER_IDS,
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,

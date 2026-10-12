@@ -25,19 +25,23 @@ import { ComponentType } from 'react';
  * Internal dependencies
  */
 import { Intent } from '@/js/googlesitekit/datastore/intents/intents';
+import { ErrorObject } from '@/js/util/errors';
 
 /**
  * Props passed to the component registered for an intent.
  *
  * @since 1.189.0
+ * @since n.e.x.t Added the `error` prop.
  */
 export interface IntentComponentProps {
 	/** Slug the intent is registered under, e.g. `ads-conversion-tracking`. */
 	slug: string;
 	/** Code the Site Kit Service created for the intent. */
 	intentCode: string;
-	/** Payload the Site Kit Service returns for the intent, with different fields for each type of intent. */
-	payload: Intent[ 'payload' ];
+	/** Payload the Site Kit Service returns for the intent, with different fields for each type of intent. Not set when the intent can't be loaded. */
+	payload?: Intent[ 'payload' ];
+	/** Error from loading the intent, set in place of `payload`. The component shows the error itself, since what the user should do next differs for each type of intent. */
+	error?: ErrorObject;
 }
 
 /**
@@ -47,7 +51,7 @@ export interface IntentComponentProps {
  */
 export interface IntentRegistration {
 	/**
-	 * Component rendered after the Site Kit Service returns the intent.
+	 * Component rendered after the Site Kit Service returns the intent, or with the error when the intent can't be loaded.
 	 *
 	 * @since 1.189.0
 	 */

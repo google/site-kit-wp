@@ -38,7 +38,7 @@ import ReportTable from '@/js/components/ReportTable';
 import TableOverflowContainer from '@/js/components/TableOverflowContainer';
 import Typography from '@/js/components/Typography';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import ZeroDataMessage from '@/js/modules/analytics-4/components/common/ZeroDataMessage';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { numFmt } from '@/js/util';
 

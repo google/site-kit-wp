@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Core\Admin;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Assets;
 use Google\Site_Kit\Core\Authentication\Authentication;
+use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
 use Google\Site_Kit\Core\Intents\Intents;
 use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Completed_By;
@@ -153,6 +154,8 @@ final class Screens {
 			function () {
 				// Redirect dashboard to splash if no dashboard access (yet).
 				$this->no_access_redirect_dashboard_to_splash();
+				// Explain why a user who can't sign in can't continue the intent the splash was opened for.
+				$this->no_access_explain_intent_on_splash();
 				// Redirect splash to (shared) dashboard if splash is dismissed.
 				$this->no_access_redirect_splash_to_dashboard();
 
@@ -291,6 +294,7 @@ final class Screens {
 	 * not eligible for accessing Site Kit entirely, i.e. if they are not allowed to authenticate.
 	 *
 	 * @since 1.12.0
+	 * @since n.e.x.t Added the `purpose=intent` argument when the request has an intent.
 	 */
 	private function no_access_redirect_dashboard_to_splash() {
 		global $plugin_page;
@@ -305,13 +309,18 @@ final class Screens {
 			$notification = $this->context->input()->filter( INPUT_GET, 'notification' );
 			$panel        = $this->context->input()->filter( INPUT_GET, 'panel' );
 
+			// The splash only needs the purpose to sign the user in for the intent:
+			// the service adds the intent arguments back when it returns the user.
+			$purpose = '' !== $this->get_intent_attributes( $this->context )['slug'] ? Google_Proxy::PURPOSE_INTENT : null;
+
 			wp_safe_redirect(
 				$this->context->admin_url(
 					'splash',
 					array_filter(
 						array(
-							'notification' => $notification,
-							'panel'        => $panel,
+							'notification'              => $notification,
+							'panel'                     => $panel,
+							Google_Proxy::PARAM_PURPOSE => $purpose,
 						),
 						function ( $value ) {
 							return null !== $value && '' !== $value;
@@ -321,6 +330,53 @@ final class Screens {
 			);
 			exit;
 		}
+	}
+
+	/**
+	 * Explains to a user who can't sign in to Site Kit that only administrators can continue an intent.
+	 *
+	 * The Site Kit Service sends a user who hasn't signed in to Site Kit with their Google account to the splash
+	 * screen with `purpose=intent`. A user who can't sign in can only open the splash screen as a view-only user
+	 * who hasn't dismissed it yet, which the splash screen handles itself. Everyone else would get the generic
+	 * WordPress permissions error, or be redirected to the dashboard without being told why.
+	 *
+	 * The splash screen URL doesn't say which intent it was opened for, so the message doesn't name it.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function no_access_explain_intent_on_splash() {
+		global $plugin_page;
+
+		if ( ! isset( $plugin_page ) || self::PREFIX . 'splash' !== $plugin_page ) {
+			return;
+		}
+
+		if ( Google_Proxy::PURPOSE_INTENT !== $this->context->input()->filter( INPUT_GET, Google_Proxy::PARAM_PURPOSE ) ) {
+			return;
+		}
+
+		// A site can give the capability to sign in to other roles, and the message would be wrong for them.
+		if ( current_user_can( Permissions::AUTHENTICATE ) ) {
+			return;
+		}
+
+		$title   = __( 'You need administrator access to continue', 'google-site-kit' );
+		$message = sprintf(
+			'<h1>%s</h1><p>%s</p>',
+			esc_html( $title ),
+			esc_html__( 'Only administrators of this site can sign in to Site Kit and finish this setup. Ask one of them to give you administrator access, then go back to where you started and try again.', 'google-site-kit' )
+		);
+
+		// A view-only user can still use the dashboard, which the splash screen would otherwise have redirected them to.
+		if ( current_user_can( Permissions::VIEW_DASHBOARD ) ) {
+			$message .= sprintf(
+				'<p><a href="%s">%s</a></p>',
+				esc_url( $this->context->admin_url( 'dashboard' ) ),
+				esc_html__( 'Go to dashboard', 'google-site-kit' )
+			);
+		}
+
+		wp_die( $message, esc_html( $title ), 403 ); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Every part of the message is escaped above.
 	}
 
 	/**
@@ -541,7 +597,7 @@ final class Screens {
 					'render_callback'     => function ( Context $context ) {
 						$is_view_only = ! $this->authentication->is_authenticated();
 
-						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '' );
+						$setup_slug = htmlspecialchars( $context->input()->filter( INPUT_GET, 'slug' ) ?: '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 						$reauth = $context->input()->filter( INPUT_GET, 'reAuth', FILTER_VALIDATE_BOOLEAN );
 						if ( $context->input()->filter( INPUT_GET, 'permaLink' ) ) {
 							?>

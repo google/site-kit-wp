@@ -426,7 +426,7 @@ final class Site_Verification extends Module implements Module_With_Scopes {
 		);
 
 		foreach ( $verification_tags as $verification_tag ) {
-			$verification_tag = html_entity_decode( $verification_tag );
+			$verification_tag = html_entity_decode( $verification_tag, ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 
 			if ( 0 !== strpos( $verification_tag, '<meta ' ) ) {
 				$verification_tag = '<meta name="google-site-verification" content="' . esc_attr( $verification_tag ) . '">';

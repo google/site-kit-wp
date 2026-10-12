@@ -52,6 +52,7 @@ describe( 'FeatureDetailPanel', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, name: 'Analytics' },
