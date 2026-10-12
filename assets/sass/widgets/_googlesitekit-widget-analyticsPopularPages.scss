@@ -16,6 +16,8 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 .googlesitekit-plugin {
 	.googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout {
 		.googlesitekit-table__body-item:last-child {
@@ -52,10 +54,10 @@
 			z-index: 1;
 		}
 
-		@each $size in map-keys($mdc-layout-grid-columns) {
+		@each $size in map.keys($mdc-layout-grid-columns) {
 
 			@include mdc-layout-grid-media-query_($size) {
-				$margin: map-get($mdc-layout-grid-default-margin, $size);
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
 
 				.mdc-tab-scroller__scroll-content {
 					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
