@@ -132,6 +132,12 @@ export interface FeatureCategory {
 	chipLabel: string;
 }
 
+export interface PendingSetup {
+	featureSlug: string;
+	returnTab: string;
+}
+
 export interface FeatureDiscoveryState {
 	features: Record< string, Feature >;
+	pendingSetup: PendingSetup | null;
 }

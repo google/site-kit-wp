@@ -53,18 +53,18 @@
 		hyphens: auto;
 		line-height: $lh-title-md;
 		outline: 0;
-		padding: 0 ($grid-gap-phone / 4) ($grid-gap-phone / 2) ($grid-gap-phone / 4);
+		padding: 0 ($grid-gap-phone * 0.25) ($grid-gap-phone * 0.5) ($grid-gap-phone * 0.25);
 		position: relative;
 		text-align: right;
 		text-decoration: none;
 		white-space: normal;
 
 		@media (min-width: $bp-tablet) {
-			padding: 0 ($grid-gap-phone / 2) ($grid-gap-phone / 2) ($grid-gap-phone / 2);
+			padding: 0 ($grid-gap-phone * 0.5) ($grid-gap-phone * 0.5) ($grid-gap-phone * 0.5);
 		}
 
 		@media (min-width: $bp-desktop) {
-			padding: 0 ($grid-gap-desktop / 2) ($grid-gap-desktop / 2) ($grid-gap-desktop / 2);
+			padding: 0 ($grid-gap-desktop * 0.5) ($grid-gap-desktop * 0.5) ($grid-gap-desktop * 0.5);
 		}
 
 		&:first-child {
@@ -141,15 +141,15 @@
 	}
 
 	.googlesitekit-table__body-item {
-		padding: ($grid-gap-phone / 2) ($grid-gap-phone / 4);
+		padding: ($grid-gap-phone * 0.5) ($grid-gap-phone * 0.25);
 		text-align: right;
 
 		@media (min-width: $bp-tablet) {
-			padding: $grid-gap-phone / 2;
+			padding: $grid-gap-phone * 0.5;
 		}
 
 		@media (min-width: $bp-desktop) {
-			padding: $grid-gap-desktop / 2;
+			padding: $grid-gap-desktop * 0.5;
 		}
 
 		&:first-child {

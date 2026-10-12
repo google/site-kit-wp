@@ -19,12 +19,15 @@ use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\Transients;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Wire_Format;
+use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
+use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use WP_Error;
 use WP_REST_Request;
@@ -38,6 +41,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
+	use Saved_Site_Data_Trait;
 
 	const START_DATE = '2026-08-19';
 	const END_DATE   = '2026-09-15';
@@ -180,7 +184,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 			private $result;
 
 			public function __construct( Context $context, Analytics_4 $analytics_4, $result ) {
-				parent::__construct( $context, $analytics_4 );
+				parent::__construct( $analytics_4, new Custom_Dimensions_Data_Available( new Transients( $context ) ) );
 				$this->result = $result;
 			}
 
@@ -188,7 +192,12 @@ class Get_Benchmarking_DataTest extends TestCase {
 				$this->calls[] = array( $start_date, $end_date );
 
 				if ( null === $this->result ) {
-					return parent::build( $start_date, $end_date );
+					return array(
+						'visitors'       => array(),
+						'dailyTraffic'   => array(),
+						'dimensions'     => array(),
+						'contextualData' => array(),
+					);
 				}
 
 				return $this->result;
@@ -468,6 +477,36 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( self::START_DATE, self::START_DATE ) ), $builder->calls, 'The builder should be called with the single day.' );
 	}
 
+	public function test_rest_endpoint__accepts_a_period_of_197_days() {
+		$builder = $this->enable_datapoint();
+
+		$response = $this->request(
+			array(
+				'startDate' => '2026-03-03',
+				'endDate'   => '2026-09-15',
+			)
+		);
+
+		$this->assertSame( 200, $response->get_status(), 'A request for the 197 days from `2026-03-03` to `2026-09-15` should answer 200.' );
+		$this->assertSame( array( array( '2026-03-03', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-03-03` and `2026-09-15`, the first and the last day of the 197 days.' );
+	}
+
+	public function test_rest_endpoint__refuses_a_period_of_198_days() {
+		$builder = $this->enable_datapoint();
+
+		$response = $this->request(
+			array(
+				'startDate' => '2026-03-02',
+				'endDate'   => '2026-09-15',
+			)
+		);
+
+		$this->assertSame( 400, $response->get_status(), 'A request for the 198 days from `2026-03-02` to `2026-09-15` should answer 400.' );
+		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 198 days.' );
+		$this->assertStringContainsString( '197 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 197 days.' );
+		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 198 days.' );
+	}
+
 	public function test_rest_endpoint__answers_the_same_for_any_other_parameter() {
 		$builder = $this->enable_datapoint();
 
@@ -588,15 +627,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	public function test_rest_endpoint__writes_nothing_to_the_site() {
-		global $wpdb;
-
 		$builder = $this->enable_datapoint();
 
-		// A transient is an `options` row on a site with no persistent object
-		// cache, so the options snapshot covers those too.
-		$options_before   = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options ORDER BY option_name", ARRAY_A );
-		$post_meta_before = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta ORDER BY meta_id", ARRAY_A );
-		$user_meta_before = $wpdb->get_results( "SELECT user_id, meta_key, meta_value FROM $wpdb->usermeta ORDER BY umeta_id", ARRAY_A );
+		$site_data_before = $this->get_saved_site_data();
 
 		$first  = $this->request();
 		$second = $this->request();
@@ -607,20 +640,10 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		wp_cache_flush();
 
-		$this->assertSame(
-			$options_before,
-			$wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options ORDER BY option_name", ARRAY_A ),
-			'No option or transient should be added or changed by the requests.'
-		);
-		$this->assertSame(
-			$post_meta_before,
-			$wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM $wpdb->postmeta ORDER BY meta_id", ARRAY_A ),
-			'No post meta should be added or changed by the requests.'
-		);
-		$this->assertSame(
-			$user_meta_before,
-			$wpdb->get_results( "SELECT user_id, meta_key, meta_value FROM $wpdb->usermeta ORDER BY umeta_id", ARRAY_A ),
-			'No user meta should be added or changed by the requests.'
-		);
+		$site_data_after = $this->get_saved_site_data();
+
+		$this->assertSame( $site_data_before['options'], $site_data_after['options'], 'No option or transient should be added or changed by the requests.' );
+		$this->assertSame( $site_data_before['post_meta'], $site_data_after['post_meta'], 'No post meta should be added or changed by the requests.' );
+		$this->assertSame( $site_data_before['user_meta'], $site_data_after['user_meta'], 'No user meta should be added or changed by the requests.' );
 	}
 }

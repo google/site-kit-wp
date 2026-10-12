@@ -31,6 +31,7 @@ import {
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
 import { act, createTestRegistry, render, screen } from '@tests/js/test-utils';
 import {
 	provideModuleRegistrations,
@@ -46,26 +47,6 @@ describe( 'TrafficOverviewSourceLink', () => {
 	const settingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
-
-	/**
-	 * Reads the rendered link's address and decodes it.
-	 *
-	 * @since 1.188.0
-	 *
-	 * @return {string} The decoded address.
-	 */
-	function getSourceLinkHref() {
-		const href = screen
-			.getByRole( 'link', {
-				name: 'Analytics (opens in a new tab)',
-			} )
-			.getAttribute( 'href' ) as string;
-
-		// `getServiceReportURL` encodes the report parameters into the Analytics
-		// URL. `getAccountChooserURL` then encodes that URL into its `continue`
-		// parameter, so the `href` needs decoding twice.
-		return decodeURIComponent( decodeURIComponent( href ) );
-	}
 
 	beforeEach( () => {
 		registry = createTestRegistry();
@@ -93,7 +74,11 @@ describe( 'TrafficOverviewSourceLink', () => {
 
 		await waitForRegistry();
 
-		const href = getSourceLinkHref();
+		const href = decodeServiceURL(
+			screen
+				.getByRole( 'link', { name: 'Analytics (opens in a new tab)' } )
+				.getAttribute( 'href' ) as string
+		);
 
 		expect( href ).toContain( '/p1234567890/reports/explorer' );
 		expect( href ).toContain( 'r=lifecycle-traffic-acquisition-v2' );
@@ -118,7 +103,11 @@ describe( 'TrafficOverviewSourceLink', () => {
 
 		await waitForRegistry();
 
-		const href = getSourceLinkHref();
+		const href = decodeServiceURL(
+			screen
+				.getByRole( 'link', { name: 'Analytics (opens in a new tab)' } )
+				.getAttribute( 'href' ) as string
+		);
 
 		expect( href ).toContain( 'unifiedPagePathScreen' );
 		expect( href ).toContain( '/about/' );

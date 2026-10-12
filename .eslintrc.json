@@ -295,6 +295,7 @@
 		{
 			"files": [
 				"webpack/*",
+				"tests/vrt/**/*.js",
 				"**/__factories__/*",
 				"*.stories.js",
 				"*.stories.tsx",

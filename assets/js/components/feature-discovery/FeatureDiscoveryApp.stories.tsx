@@ -96,7 +96,8 @@ AllServicesFiltered.storyName = 'All services filtered to one category';
 AllServicesFiltered.parameters = { route: '/all-services' };
 AllServicesFiltered.args = AllServices.args;
 AllServicesFiltered.scenario = {
-	readySelector: `${ AUDIENCE_CHIP_SELECTOR }.mdc-chip--selected`,
+	readySelector:
+		'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"].mdc-chip--selected',
 };
 AllServicesFiltered.play = async () => {
 	await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
