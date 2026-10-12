@@ -502,7 +502,7 @@ interface UseExampleReturn {
 /**
  * Custom hook description.
  *
- * \@since 1.187.0
+ * \@since n.e.x.t
  *
  * \@return {Object} Description of return value.
  */
