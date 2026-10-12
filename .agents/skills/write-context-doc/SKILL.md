@@ -14,26 +14,199 @@ allowed-tools: Bash, Read, Grep, Glob, Edit, Write
 
 Write or update the context doc for **$ARGUMENTS** — a path under `docs/context/`, a section
 name, or the system to document. If you were given none of these, ask which doc or system before
-doing anything else. Do not reimplement the procedure here — read and follow the playbook, which
-is the single source of truth shared with the other AI tools.
+doing anything else.
 
-## Procedure
+A context doc explains how a feature uses or extends one system: its public API, its arguments,
+its filters and actions, its rules, and the behavior to expect. AI tools load these docs before
+they change code (`docs/context/workflow/implement-issue.md` Step 3) and cite them when they
+review a PR (`docs/context/workflow/review-pr.md`). Write each doc so a reader can use the system
+correctly without reading its implementation first.
 
-1. **Read the playbook** `docs/context/workflow/write-context-doc.md` and follow every step.
-2. **Set the scope**: the doc and the sections the job covers. Leave unrelated sections alone,
-   even when they are stale.
-3. **Read the code** for every class, argument, default, filter, capability and behavior you
-   will describe. Where the old doc and the code disagree, the code wins.
-4. **Write the sections** in the playbook's structure: a short intro, a constructor-argument
-   table, behavior bullets, a short registration example, and real examples described in prose.
-5. **Register a new doc** in the scope maps in `implement-issue.md` Step 3 and `review-pr.md`
-   Step 3.
-6. **Report** the sections you changed, each place where the old doc and the code disagreed,
-   and the stale sections you left for a separate task.
+A context doc is **not** a copy of the code. Copied class bodies and private methods go stale
+with the next refactor, and a stale doc teaches the wrong thing with full confidence.
 
-## Important
+## Step 1 — Set the scope
 
-- **Usage, not implementation.** No class bodies, private methods, copied defaults, bootstrap
-  code or line numbers. Code examples only show how a feature registers or uses something.
-- **Verify before naming.** Never describe a symbol or behavior you have not read in the code.
+Work out which doc and which sections the job covers:
+
+- **A change to a documented system.** Update only the sections for the system the change
+  touches. Find them with the scope map in `docs/context/workflow/implement-issue.md` Step 3.
+- **A new system with no doc.** Decide whether it belongs in an existing doc or needs a new file
+  (see Step 6).
+- **A rewrite of stale sections.** Rewrite the sections the user named.
+
+Do not rewrite unrelated sections in the same change, even when they are stale. Many docs still
+copy internal code. List the stale sections you found in your report (Step 8) and suggest a
+separate task for them.
+
+## Step 2 — Read the code
+
+Do not write from the old doc, the issue, or memory. Open the source of every class you will
+describe and confirm, by reading it:
+
+- every class, public method, constant, filter, action, option and script handle you name, and
+  its exact spelling;
+- every constructor argument, its type and its default;
+- every capability check, and the `Permissions` constant it uses;
+- every hook a feature uses, traced to its `apply_filters()` / `do_action()` call site, with the
+  arguments it passes and when it fires;
+- the callers of each public method, so you know which methods other features actually use;
+- the real features that use the system, so you can point at one as an example.
+
+Where the old doc and the code disagree, the code wins. Note each disagreement for your report.
+
+## Step 3 — Decide what belongs in the doc
+
+Ask of every fact: **does a feature that uses this system need to know it?** If yes, it belongs.
+If it only describes how the system works inside, leave it out.
+
+Include, when it applies:
+
+- **What the system is for**, and how a feature uses it, in one or two sentences.
+- **The public API**: the class a feature creates, its constructor arguments, and the public
+  methods other features call.
+- **Extension points**: each filter or action, what a callback receives, and what it must return.
+- **Rules**: when something is active, which capability it needs, where it runs (site admin,
+  network admin, front end), and any registration order other code depends on.
+- **Behavior to expect**, especially behavior that surprises people. For example: "Site Kit
+  removes all admin notices from its own screens, including its own."
+- **What does not exist**, when readers keep guessing it. For example: "There is no filter for
+  screens." Keep this to facts about the current code.
+- **Where to look**: the path of each class, and of one real feature that uses the system well.
+
+Leave out:
+
+- class bodies, private and protected methods, and private properties;
+- copies of constructor default arrays (put each default in the argument table instead);
+- registration code copied from `Plugin.php` or another bootstrap file;
+- lists that copy data from the code and change often, such as every registered screen or every
+  asset handle, unless the list itself is the API;
+- line numbers and `file:line` references;
+- history: what the code used to do, or what an earlier version of the doc said wrongly.
+
+## Step 4 — Structure each section
+
+Use this shape for a system, and leave out the parts that do not apply:
+
+```
+## <System name>
+
+### <Class name>
+
+**Location**: `path/to/Class.php`
+
+<One or two sentences: what it represents, and how a feature creates and registers it.>
+
+**Constructor Arguments**:
+
+| Argument | Type | Description |
+|----------|------|-------------|
+| `name` | string | Required. <What it does.> |
+| `other` | callable | <What it does. What the callable receives.> Default <value>. |
+
+#### <Behavior heading, e.g. Activation and Dismissal>
+
+- <One rule or behavior per bullet.>
+
+### <Manager class name>
+
+**Location**: `path/to/Manager.php`
+
+<A few sentences: what it collects, from which filter, and what it does with it. Say whether
+feature code ever calls it directly.>
+
+### Adding a <thing>
+
+<One short example of the registration a feature writes.>
+
+### <Thing> Examples
+
+#### <Real feature>
+
+**Location**: `path/to/Feature.php`
+
+<A few sentences on what it does and which arguments it relies on.>
+```
+
+- Put each argument's default and "Required" in its table row, not in a code block.
+- Write behavior as bullets: one rule per bullet, stated as a fact about the current code.
+- Describe a real example in prose, with its location. Add code only when it shows something the
+  generic example does not.
+- When you change a section, update the doc's other sections that refer to it, such as a "Best
+  Practices" or "Extensibility" section. Remove any "see … above" that points at something you
+  deleted.
+
+## Step 5 — Write code examples
+
+Code is allowed for one purpose: **to show how a feature registers or uses something.**
+
+- Keep each example short: the call a feature writes, and nothing else.
+- Use only the public API, with argument names that exist today.
+- Use a generic slug such as `example-notice` when the example is not a real feature.
+- Never paste a private method, a class body, or a bootstrap file as an example.
+
+For example, this shows how a feature adds a notice:
+
+```php
+add_filter(
+	'googlesitekit_admin_notices',
+	function ( $notices ) {
+		$notices[] = new Notice(
+			'example-notice',
+			array(
+				'content' => __( 'Example notice content.', 'google-site-kit' ),
+				'type'    => Notice::TYPE_WARNING,
+			)
+		);
+
+		return $notices;
+	}
+);
+```
+
+## Step 6 — Add a new doc
+
+When a system needs a new file:
+
+- Put it in `docs/context/js/` or `docs/context/php/`, named after the system in kebab case
+  (`admin-features.md`, `state-management.md`).
+- Start with a `#` title and a short paragraph on what the system is for, then the sections from
+  Step 4.
+- Add a row for it to the scope map in `docs/context/workflow/implement-issue.md` Step 3, and add
+  the file name to the list in `docs/context/workflow/review-pr.md` Step 3. Without these
+  entries, no workflow loads the doc.
+
+## Step 7 — Write in plain words
+
+The readers include engineers whose first language is not English, and AI tools that take every
+sentence literally. Follow the plain-words rules in
+`docs/context/workflow/write-implementation-brief.md` Step 5 ("Content"). In short:
+
+- Short sentences, one idea each. Use the simplest accurate word.
+- No idioms or metaphors. Say what the code does.
+- Name who does what: "`Notices` renders each active notice", not "notices are rendered".
+- List the members of any set you name, such as the tags an allowlist keeps.
+- Spell names exactly as the code does.
+
+## Step 8 — Verify and report
+
+Before you finish, check every claim one more time against the code. Search for each symbol you
+name, and confirm each path exists. Then confirm with `git diff` that you changed only the
+sections in scope.
+
+Report to the user:
+
+- which sections you rewrote or added;
+- each place where the old doc and the code disagreed, with the file you checked;
+- stale sections you found but left alone, so they can become a separate task.
+
+## Guardrails
+
+- **Usage, not implementation.** Explain how a feature uses the system. Never copy internal code.
+- **Verify before naming.** Never describe a symbol, argument, default or behavior you have not
+  read in the code.
+- **Stay in scope.** Change only the sections the job covers.
+- **No line numbers and no history.** Describe the code as it is now.
+- **Keep the scope maps in sync.** A new doc gets an entry in `implement-issue.md` and
+  `review-pr.md`.
 - **Don't commit.** Do not commit, push or open a PR unless the user explicitly asks.
