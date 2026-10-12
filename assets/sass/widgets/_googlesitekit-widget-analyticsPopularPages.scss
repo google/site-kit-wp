@@ -27,4 +27,115 @@
 			}
 		}
 	}
+
+	.googlesitekit-widget.googlesitekit-analytics-popular-pages-widget--tabbed .googlesitekit-widget__footer {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__tabs {
+		position: relative;
+
+		&::after {
+			border-bottom: 1px solid $c-utility-divider;
+			bottom: 0;
+			content: "";
+			display: block;
+			left: 0;
+			position: absolute;
+			width: 100%;
+			z-index: 0;
+		}
+
+		.mdc-tab-bar {
+			position: relative;
+			z-index: 1;
+		}
+
+		@each $size in map-keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map-get($mdc-layout-grid-default-margin, $size);
+
+				.mdc-tab-scroller__scroll-content {
+					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+				}
+			}
+		}
+
+		.mdc-tab {
+			height: 54px;
+			padding: 0 28px;
+		}
+
+		.mdc-tab .mdc-tab__content {
+			height: 52px;
+		}
+
+		.mdc-tab .mdc-tab__text-label {
+			color: $c-surfaces-on-background-variant;
+			font-size: $fs-body-md;
+			font-weight: $fw-normal;
+			letter-spacing: $ls-s;
+			line-height: 20px;
+		}
+
+		.mdc-tab--active .mdc-tab__text-label {
+			color: $c-content-primary;
+			font-weight: $fw-medium;
+			letter-spacing: 0;
+		}
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__latest-content-table {
+		// The Posted columns replace the numbered list the shared table styles
+		// draw in the first column.
+		.googlesitekit-table__body-item:first-child .googlesitekit-table__body-item-content {
+			margin-left: 0;
+
+			&::before {
+				content: none;
+			}
+		}
+
+		.googlesitekit-table__head-item,
+		.googlesitekit-table__body-item {
+			&:nth-child(-n + 3) {
+				text-align: left;
+			}
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-date {
+			white-space: nowrap;
+			width: 52px;
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__posted-time {
+			white-space: nowrap;
+			width: 59px;
+		}
+
+		.googlesitekit-table__head-item--primary {
+			width: 42%;
+		}
+
+		.googlesitekit-table__wrapper--3-col .googlesitekit-table__head-item--primary {
+			width: auto;
+		}
+
+		.googlesitekit-analytics-popular-pages-widget__title a {
+			display: block;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-analytics-popular-pages-widget__report-error {
+		padding: $grid-gap-phone $grid-gap-phone 0;
+
+		@media (min-width: $bp-tablet) {
+			padding: $grid-gap-desktop $grid-gap-desktop 0;
+		}
+	}
 }

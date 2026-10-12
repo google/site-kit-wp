@@ -19,218 +19,62 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
-import { cloneDeep } from 'lodash';
 import PropTypes from 'prop-types';
 
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
-import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
-import PreviewTable from '@/js/components/PreviewTable';
-import ReportTable from '@/js/components/ReportTable';
-import TableOverflowContainer from '@/js/components/TableOverflowContainer';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	BREAKPOINT_SMALL,
-	BREAKPOINT_TABLET,
-	useBreakpoint,
-} from '@/js/hooks/useBreakpoint';
-import useViewOnly from '@/js/hooks/useViewOnly';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
+import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { numFmt } from '@/js/util';
 import whenActive from '@/js/util/when-active';
-import Footer from './Footer';
+import ContentTabs, {
+	LATEST_CONTENT_TAB_ID,
+	TOP_CONTENT_TAB_ID,
+} from './ContentTabs';
 import Header from './Header';
-import { getPopularPagesReportOptions } from './reportOptions';
+import LatestContentTable from './LatestContentTable';
+import TopContentTable from './TopContentTable';
 
 function ModulePopularPagesWidgetGA4( props ) {
 	const { Widget, WidgetReportError } = props;
 
-	const breakpoint = useBreakpoint();
+	const freshDataEnabled = useFeature( 'freshData' );
 
-	const isGatheringData = useInViewSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).isGatheringData()
-	);
+	const [ activeTabID, setActiveTabID ] = useState( TOP_CONTENT_TAB_ID );
 
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
-	);
-
-	const viewOnlyDashboard = useViewOnly();
-
-	const args = {
-		...dates,
-		...getPopularPagesReportOptions(),
-	};
-
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			args,
-		] )
-	);
-
-	const report = useInViewSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
-		[ args ]
-	);
-
-	const titles = useInViewSelect(
-		( select ) =>
-			! error
-				? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
-				: undefined,
-		[ error, report, args ]
-	);
-
-	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
-
-		return undefined !== error || ( reportLoaded && undefined !== titles );
-	} );
-
-	const loading = ! loaded || isGatheringData === undefined;
-
-	if ( loading ) {
+	if ( ! freshDataEnabled ) {
 		return (
-			<Widget Header={ Header } Footer={ Footer } noPadding>
-				<PreviewTable padding />
-			</Widget>
+			<TopContentTable
+				Widget={ Widget }
+				WidgetReportError={ WidgetReportError }
+				Header={ Header }
+			/>
 		);
 	}
 
-	if ( error ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer }>
-				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
-		);
-	}
-
-	const columnClassName =
-		'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';
-
-	const tableColumns = [
-		{
-			columnHeaderClassName: columnClassName,
-			title: __( 'Title', 'google-site-kit' ),
-			description: __( 'Page Title', 'google-site-kit' ),
-			primary: true,
-			Component( { row } ) {
-				const [ { value: title }, { value: url } ] =
-					row.dimensionValues;
-				const serviceURL = useSelect( ( select ) => {
-					if ( viewOnlyDashboard ) {
-						return null;
-					}
-
-					return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-						'all-pages-and-screens',
-						{
-							filters: { unifiedPagePathScreen: url },
-							dates,
-						}
-					);
-				} );
-
-				return (
-					<DetailsPermaLinks
-						title={ title }
-						path={ url }
-						serviceURL={ serviceURL }
-					/>
-				);
-			},
-		},
-		{
-			columnHeaderClassName: columnClassName,
-			title: __( 'Pageviews', 'google-site-kit' ),
-			description: __( 'Pageviews', 'google-site-kit' ),
-			field: 'metricValues.0.value',
-			className: 'googlesitekit-table__head-item--pageviews',
-			Component( { fieldValue } ) {
-				return (
-					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-				);
-			},
-		},
-		{
-			columnHeaderClassName: columnClassName,
-			title: __( 'Sessions', 'google-site-kit' ),
-			description: __( 'Sessions', 'google-site-kit' ),
-			field: 'metricValues.1.value',
-			className: 'googlesitekit-table__head-item--sessions',
-			Component( { fieldValue } ) {
-				return (
-					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
-				);
-			},
-		},
-		{
-			columnHeaderClassName: columnClassName,
-			title: __( 'Engagement Rate', 'google-site-kit' ),
-			description: __( 'Engagement Rate', 'google-site-kit' ),
-			field: 'metricValues.2.value',
-			className: 'googlesitekit-table__head-item--engagement-rate',
-			Component( { fieldValue } ) {
-				return <span>{ numFmt( fieldValue, '%' ) }</span>;
-			},
-		},
-		{
-			columnHeaderClassName: columnClassName,
-			title: __( 'Session Duration', 'google-site-kit' ),
-			description: __( 'Session Duration', 'google-site-kit' ),
-			field: 'metricValues.3.value',
-			Component( { fieldValue } ) {
-				return <span>{ numFmt( fieldValue, 's' ) }</span>;
-			},
-		},
-	];
-
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
-	const ZeroState = ZeroDataMessage;
-
-	// Combine the titles from the pageTitles with the rows from the metrics report.
-	rows.forEach( ( row ) => {
-		const url = row.dimensionValues[ 0 ].value;
-		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
-	} );
-
-	const tabbedLayout =
-		breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET;
-
-	const reportTable = (
-		<ReportTable
-			className={ classnames( {
-				'googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout':
-					tabbedLayout,
-			} ) }
-			rows={ rows }
-			columns={ tableColumns }
-			zeroState={ ZeroState }
-			gatheringData={ isGatheringData }
-			tabbedLayout={ tabbedLayout }
+	const tabBar = (
+		<ContentTabs
+			activeTabID={ activeTabID }
+			onTabChange={ setActiveTabID }
 		/>
 	);
 
+	const ActiveTable =
+		activeTabID === LATEST_CONTENT_TAB_ID
+			? LatestContentTable
+			: TopContentTable;
+
 	return (
-		<Widget Header={ Header } Footer={ Footer } noPadding>
-			{ tabbedLayout ? (
-				reportTable
-			) : (
-				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
-			) }
-		</Widget>
+		<ActiveTable
+			Widget={ Widget }
+			WidgetReportError={ WidgetReportError }
+			tabBar={ tabBar }
+		/>
 	);
 }
 
