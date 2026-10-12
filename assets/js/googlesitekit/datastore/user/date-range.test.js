@@ -502,7 +502,7 @@ describe( 'core/user date-range', () => {
 				}
 			);
 
-			it.each( [
+			describe.each( [
 				[
 					'Sydney spring forward',
 					'Australia/Sydney',
@@ -544,7 +544,7 @@ describe( 'core/user date-range', () => {
 					300,
 				],
 			] )(
-				'should keep preset and comparison periods at seven calendar days across %s',
+				'%s',
 				(
 					_label,
 					timezone,
@@ -555,41 +555,51 @@ describe( 'core/user date-range', () => {
 					startOffset,
 					endOffset
 				) => {
-					const originalTimezone = provideTimezone( timezone );
+					let originalTimezone;
 
-					// Ensure this case actually crosses the expected DST transition.
-					expect(
-						stringToDate( startDate ).getTimezoneOffset()
-					).toBe( startOffset );
-
-					expect(
-						stringToDate( referenceDate ).getTimezoneOffset()
-					).toBe( endOffset );
-
-					registry
-						.dispatch( CORE_USER )
-						.setReferenceDate( referenceDate );
-
-					registry
-						.dispatch( CORE_USER )
-						.setDateRange( 'last-7-days' );
-
-					expect(
-						registry.select( CORE_USER ).getDateRangeNumberOfDays()
-					).toBe( 7 );
-
-					expect(
-						registry
-							.select( CORE_USER )
-							.getDateRangeDates( { compare: true } )
-					).toEqual( {
-						startDate,
-						endDate: referenceDate,
-						compareStartDate,
-						compareEndDate,
+					beforeEach( () => {
+						originalTimezone = provideTimezone( timezone );
 					} );
 
-					provideTimezone( originalTimezone );
+					afterEach( () => {
+						provideTimezone( originalTimezone );
+					} );
+
+					it( 'should keep preset and comparison periods at seven calendar days', () => {
+						// Ensure this case actually crosses the expected DST transition.
+						expect(
+							stringToDate( startDate ).getTimezoneOffset()
+						).toBe( startOffset );
+
+						expect(
+							stringToDate( referenceDate ).getTimezoneOffset()
+						).toBe( endOffset );
+
+						registry
+							.dispatch( CORE_USER )
+							.setReferenceDate( referenceDate );
+
+						registry
+							.dispatch( CORE_USER )
+							.setDateRange( 'last-7-days' );
+
+						expect(
+							registry
+								.select( CORE_USER )
+								.getDateRangeNumberOfDays()
+						).toBe( 7 );
+
+						expect(
+							registry
+								.select( CORE_USER )
+								.getDateRangeDates( { compare: true } )
+						).toEqual( {
+							startDate,
+							endDate: referenceDate,
+							compareStartDate,
+							compareEndDate,
+						} );
+					} );
 				}
 			);
 

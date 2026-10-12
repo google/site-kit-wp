@@ -462,7 +462,7 @@ describe( 'formatDate', () => {
 } );
 
 describe( 'addDays', () => {
-	it.each( [
+	describe.each( [
 		[
 			'Sydney spring forward',
 			'Australia/Sydney',
@@ -500,7 +500,7 @@ describe( 'addDays', () => {
 			240,
 		],
 	] )(
-		'should shift calendar days across %s',
+		'%s',
 		(
 			_label,
 			timezone,
@@ -510,22 +510,30 @@ describe( 'addDays', () => {
 			dateOffset,
 			expectedOffset
 		) => {
-			const originalTimezone = provideTimezone( timezone as string );
+			let originalTimezone: string | undefined;
 
-			// Ensure this case actually crosses the expected DST transition.
-			expect( stringToDate( date as string ).getTimezoneOffset() ).toBe(
-				dateOffset
-			);
+			beforeEach( () => {
+				originalTimezone = provideTimezone( timezone as string );
+			} );
 
-			expect(
-				stringToDate( expected as string ).getTimezoneOffset()
-			).toBe( expectedOffset );
+			afterEach( () => {
+				provideTimezone( originalTimezone );
+			} );
 
-			expect( addDays( date as string, days as number ) ).toBe(
-				expected
-			);
+			it( 'should shift calendar days', () => {
+				// Ensure this case actually crosses the expected DST transition.
+				expect(
+					stringToDate( date as string ).getTimezoneOffset()
+				).toBe( dateOffset );
 
-			provideTimezone( originalTimezone );
+				expect(
+					stringToDate( expected as string ).getTimezoneOffset()
+				).toBe( expectedOffset );
+
+				expect( addDays( date as string, days as number ) ).toBe(
+					expected
+				);
+			} );
 		}
 	);
 
