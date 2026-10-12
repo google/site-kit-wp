@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import { ComponentType, Fragment, type MouseEvent } from 'react';
+import { ComponentType, type MouseEvent } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { createInterpolateElement } from '@wordpress/element';
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -70,20 +70,19 @@ export default function ExpressSetupBanner( props: ExpressSetupBannerProps ) {
 	async function handleCTAClick(
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) {
-		await trackEvent( eventCategory, 'confirm_notification', eventLabel );
+		trackEvent( eventCategory, 'confirm_notification', eventLabel );
 		await props.ctaButton?.onClick?.( event );
 	}
 
 	async function handleDismissClick(
 		event: MouseEvent< HTMLAnchorElement | HTMLButtonElement >
 	) {
-		await trackEvent( eventCategory, 'dismiss_notification', eventLabel );
 		await props.dismissButton?.onClick?.( event );
+		trackEvent( eventCategory, 'dismiss_notification', eventLabel );
 	}
 
-	async function handleLearnMoreClick() {
-		await trackEvent( eventCategory, 'click_learn_more_link', eventLabel );
-		await props.learnMoreLink?.onClick?.();
+	function handleLearnMoreClick() {
+		trackEvent( eventCategory, 'click_learn_more_link', eventLabel );
 	}
 
 	return (
@@ -125,14 +124,22 @@ export default function ExpressSetupBanner( props: ExpressSetupBannerProps ) {
 				mobile: BannerSVGMobile as unknown as string,
 				verticalPosition: 'center',
 			} }
-			ctaButton={ {
-				...props.ctaButton,
-				onClick: handleCTAClick,
-			} }
-			dismissButton={ {
-				...props.dismissButton,
-				onClick: handleDismissClick,
-			} }
+			ctaButton={
+				props.ctaButton
+					? {
+							...props.ctaButton,
+							onClick: handleCTAClick,
+					  }
+					: undefined
+			}
+			dismissButton={
+				props.dismissButton
+					? {
+							...props.dismissButton,
+							onClick: handleDismissClick,
+					  }
+					: undefined
+			}
 		/>
 	);
 }
