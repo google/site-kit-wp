@@ -64,12 +64,34 @@
 			font-weight: $fw-normal;
 			letter-spacing: $ls-s;
 			line-height: 20px;
+
+			// Material draws the label of a tab that is not selected at 60%
+			// opacity, but the design draws it at 100%.
+			opacity: 1;
 		}
 
 		.mdc-tab--active .mdc-tab__text-label {
 			color: $c-content-primary;
 			font-weight: $fw-medium;
 			letter-spacing: 0;
+		}
+
+		// The label sets its color on its own span, so the icon repeats it, and
+		// Material's color transition for the label, to match the label in the
+		// selected and the unselected tab.
+		.mdc-tab .googlesitekit-traffic-overview__tab-icon {
+			color: $c-surfaces-on-background-variant;
+			margin-right: 4px;
+			transition: 150ms color linear;
+		}
+
+		.mdc-tab--active .googlesitekit-traffic-overview__tab-icon {
+			color: $c-content-primary;
+			transition-delay: 100ms;
+		}
+
+		.mdc-tab .googlesitekit-badge {
+			margin-left: 10px;
 		}
 	}
 
@@ -279,6 +301,54 @@
 			// The share stays on one line however long the label gets.
 			flex-shrink: 0;
 			white-space: nowrap;
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel--recent-activity {
+
+		@each $size in map.keys($mdc-layout-grid-columns) {
+
+			@include mdc-layout-grid-media-query_($size) {
+				$margin: map.get($mdc-layout-grid-default-margin, $size);
+
+				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-row:not(:first-child) {
+			margin-top: 48px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 38px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown {
+			margin-top: 50px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 64px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-performance {
+			margin-top: 48px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 80px;
+			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
+		align-items: center;
+		display: flex;
+		gap: 4px;
+
+		// The design has 4px after "Sources:" and 8px between the two links,
+		// so the second link adds 4px to the `gap`.
+		.googlesitekit-cta-link + .googlesitekit-cta-link {
+			margin-left: 4px;
 		}
 	}
 }
