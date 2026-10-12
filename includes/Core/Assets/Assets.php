@@ -734,10 +734,13 @@ final class Assets {
 				)
 			),
 			new Script(
-				'googlesitekit-admin-pointers-tracking',
+				'googlesitekit-admin-pointers',
 				array(
-					'src'          => $base_url . 'js/googlesitekit-admin-pointers-tracking.js',
-					'dependencies' => $this->get_asset_dependencies(),
+					'src'          => $base_url . 'js/googlesitekit-admin-pointers.js',
+					'dependencies' => array_merge(
+						$dependencies,
+						array( 'wp-pointer', 'googlesitekit-admin-pointers-data' )
+					),
 				)
 			),
 			// WP Dashboard assets.

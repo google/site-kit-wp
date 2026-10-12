@@ -19,8 +19,8 @@
 /**
  * Internal dependencies.
  */
-import { GATrackingEventArgs } from './types/GATrackingEventArgs';
-import { trackEvent } from './util';
+import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';
+import { trackEvent } from '@/js/util';
 
 const TRACKING_KEYS = [ 'view', 'click', 'dismiss' ];
 
@@ -37,7 +37,7 @@ function fireTrackingEvent( eventConfig: GATrackingEventArgs ) {
 	return trackEvent( category, action );
 }
 
-function registerPointerTracking(
+export default function registerPointerTracking(
 	slug: string,
 	tracking: Record< string, GATrackingEventArgs >
 ) {
@@ -106,7 +106,3 @@ function registerPointerTracking(
 		},
 	};
 }
-
-window.googlesitekitAdminPointersTracking =
-	window.googlesitekitAdminPointersTracking || {};
-window.googlesitekitAdminPointersTracking.register = registerPointerTracking;

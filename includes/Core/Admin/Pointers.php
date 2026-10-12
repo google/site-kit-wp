@@ -10,7 +10,7 @@
 
 namespace Google\Site_Kit\Core\Admin;
 
-use Google\Site_Kit\Core\Util\BC_Functions;
+use Google\Site_Kit\Core\Assets\Script_Data;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 
 /**
@@ -25,18 +25,52 @@ class Pointers {
 	use Method_Proxy_Trait;
 
 	/**
+	 * Pointers that are active on the current admin screen.
+	 *
+	 * @since n.e.x.t
+	 * @var Pointer[]
+	 */
+	private $active_pointers = array();
+
+	/**
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.83.0
+	 * @since n.e.x.t Registers the pointers data script.
 	 */
 	public function register() {
-		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ) );
+		add_filter( 'googlesitekit_assets', $this->get_method_proxy( 'add_assets' ) );
+		// Runs after Assets registers its scripts on the same hook.
+		add_action( 'admin_enqueue_scripts', $this->get_method_proxy( 'enqueue_pointers' ), 11 );
+	}
+
+	/**
+	 * Adds the pointers data script to the list of Site Kit assets.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $assets List of Asset instances.
+	 * @return array Filtered list of Asset instances.
+	 */
+	private function add_assets( $assets ) {
+		$assets[] = new Script_Data(
+			'googlesitekit-admin-pointers-data',
+			array(
+				'global'        => '_googlesitekitAdminPointersData',
+				'data_callback' => function () {
+					return $this->get_active_pointers_data();
+				},
+			)
+		);
+
+		return $assets;
 	}
 
 	/**
 	 * Enqueues pointer scripts.
 	 *
 	 * @since 1.83.0
+	 * @since n.e.x.t Enqueues the admin pointers script instead of printing inline scripts.
 	 *
 	 * @param string $hook_suffix The current admin page.
 	 */
@@ -50,31 +84,21 @@ class Pointers {
 			return;
 		}
 
-		$active_pointers = array_filter(
+		$this->active_pointers = array_filter(
 			$pointers,
 			function ( Pointer $pointer ) use ( $hook_suffix ) {
 				return $pointer->is_active( $hook_suffix );
 			}
 		);
 
-		if ( empty( $active_pointers ) ) {
+		if ( empty( $this->active_pointers ) ) {
 			return;
 		}
 
 		wp_enqueue_style( 'wp-pointer' );
 		// Dashboard styles are required where pointers are used to ensure proper styling.
 		wp_enqueue_style( 'googlesitekit-wp-dashboard-css' );
-		wp_enqueue_script( 'wp-pointer' );
-		wp_enqueue_script( 'googlesitekit-admin-pointers-tracking' );
-
-		add_action(
-			'admin_print_footer_scripts',
-			function () use ( $active_pointers ) {
-				foreach ( $active_pointers as $pointer ) {
-					$this->print_pointer_script( $pointer );
-				}
-			}
-		);
+		wp_enqueue_script( 'googlesitekit-admin-pointers' );
 	}
 
 	/**
@@ -103,28 +127,46 @@ class Pointers {
 	}
 
 	/**
-	 * Prints script for a given pointer.
+	 * Gets the data for all active pointers that have content.
 	 *
-	 * @since 1.83.0
-	 * @since 1.166.0 Updated to support buttons and header dismiss icon.
+	 * @since n.e.x.t
 	 *
-	 * @param Pointer $pointer Pointer to print.
+	 * @return array List of pointer data.
 	 */
-	private function print_pointer_script( $pointer ) {
+	private function get_active_pointers_data() {
+		$data = array();
+
+		foreach ( $this->active_pointers as $pointer ) {
+			$pointer_data = $this->get_pointer_data( $pointer );
+			if ( $pointer_data ) {
+				$data[] = $pointer_data;
+			}
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Gets the data the admin pointers script needs to render a pointer.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Pointer $pointer Pointer to get data for.
+	 * @return array|null Pointer data, or null if the pointer has no content.
+	 */
+	private function get_pointer_data( Pointer $pointer ) {
 		$content = $pointer->get_content();
 		if ( empty( $content ) ) {
-			return;
+			return null;
 		}
 
 		$buttons = $pointer->get_buttons();
 		if ( $buttons ) {
-			// Content including buttons escaped below in the inline script with wp_kses.
+			// Content including buttons escaped below with wp_kses.
 			$content .= '<div class="googlesitekit-pointer-buttons">' . $buttons . '</div>';
 		}
 
-		$class      = array( 'wp-pointer' );
-		$slug_class = sanitize_html_class( $pointer->get_slug() );
-		$class[]    = $slug_class;
+		$class = array( 'wp-pointer', sanitize_html_class( $pointer->get_slug() ) );
 
 		if ( $pointer->get_class() ) {
 			$class[] = $pointer->get_class();
@@ -160,68 +202,14 @@ class Pointers {
 			'div'    => array( 'class' => array() ),
 		);
 
-		$tracking = $pointer->get_tracking();
-
-		$data = array(
-			'data-slug'      => $pointer->get_slug(),
-			'data-class'     => implode( ' ', $class ),
-			'data-target-id' => $pointer->get_target_id(),
-			'data-title'     => wp_kses( $pointer->get_title(), $kses_title ),
-			'data-content'   => wp_kses( $content, $kses_content ),
-			'data-position'  => wp_json_encode( $pointer->get_position() ),
-		);
-
-		if ( ! empty( $tracking ) ) {
-			$data['data-tracking'] = wp_json_encode( $tracking );
-		}
-
-		BC_Functions::wp_print_inline_script_tag(
-			<<<'JS'
-			(
-				function ( $, wp, config ) {
-					const tracking = config.tracking ? JSON.parse( config.tracking ) : null;
-					let trackingHandlers = null;
-
-					function initPointer() {
-						const options = {
-							content: '<h3>' + config.title + '</h3>' + config.content,
-							position: JSON.parse( config.position ),
-							pointerWidth: 420,
-							pointerClass: config.class,
-							close: function() {
-								wp.ajax.post( 'dismiss-wp-pointer', { pointer: config.slug } );
-								if ( trackingHandlers && trackingHandlers.onDismiss ) {
-									trackingHandlers.onDismiss();
-								}
-							},
-							buttons: function( event, container ) {
-								container.pointer.on( 'click', '[data-action="dismiss"]', function() {
-									container.element.pointer( 'close' );
-								} );
-							}
-						};
-
-						const target = $( '#' + config.targetId );
-						if ( ! target.length ) {
-							return;
-						}
-
-						target.pointer( options ).pointer( 'open' );
-
-						if ( tracking && window.googlesitekitAdminPointersTracking ) {
-							trackingHandlers = window.googlesitekitAdminPointersTracking.register(
-								config.slug,
-								tracking
-							);
-						}
-					}
-
-					$( initPointer );
-				}
-			)( window.jQuery, window.wp, { ...document.currentScript.dataset } );
-			JS
-			,
-			$data
+		return array(
+			'slug'     => $pointer->get_slug(),
+			'class'    => implode( ' ', $class ),
+			'targetID' => $pointer->get_target_id(),
+			'title'    => wp_kses( $pointer->get_title(), $kses_title ),
+			'content'  => wp_kses( $content, $kses_content ),
+			'position' => $pointer->get_position(),
+			'tracking' => $pointer->get_tracking() ?: null,
 		);
 	}
 }
