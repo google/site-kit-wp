@@ -1669,8 +1669,6 @@ exports[`KeyMetricsSetupApp initial setup flow should display the progress indic
 </div>
 `;
 
-exports[`KeyMetricsSetupApp should exclude the "Other" option from the options list 1`] = `<div />`;
-
 exports[`KeyMetricsSetupApp should render correctly 1`] = `
 <div>
   <header
