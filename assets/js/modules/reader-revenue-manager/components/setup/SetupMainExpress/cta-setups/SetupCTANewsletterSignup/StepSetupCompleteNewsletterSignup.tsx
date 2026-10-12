@@ -24,7 +24,11 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +37,12 @@ import { __ } from '@wordpress/i18n';
 import { type Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import useQueryArg from '@/js/hooks/useQueryArg';
+import useViewContext from '@/js/hooks/useViewContext';
+import {
+	useHasPreExistingCTAs,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -41,11 +50,18 @@ import {
 	CTA,
 	CTA_TYPES,
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { trackEvent } from '@/js/util';
 
 const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 
 const StepSetupCompleteNewsletterSignup: FC = () => {
+	const [ ctaSlug ] = useQueryArg( 'cta' );
+	const [ stepSlug ] = useStep();
+
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
+	const viewContext = useViewContext();
+
+	const eventCategory = `${ viewContext }_rrm-express-setup_${ ctaSlug }`;
 
 	/*
 	 * The newsletter CTA created in this flow is the most recent one of its
@@ -93,6 +109,30 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 		[]
 	);
 
+	const onClickChangeDisplayOrder = useCallback( () => {
+		trackEvent(
+			eventCategory,
+			'click_change_display_order_link',
+			stepSlug
+		);
+	}, [ eventCategory, stepSlug ] );
+
+	const onClickChangePlacementSettings = useCallback( () => {
+		trackEvent(
+			eventCategory,
+			'click_change_placement_settings_link',
+			stepSlug
+		);
+	}, [ eventCategory, stepSlug ] );
+
+	const onClickContactSupport = useCallback( () => {
+		trackEvent( eventCategory, 'click_contact_support_link', stepSlug );
+	}, [ eventCategory, stepSlug ] );
+
+	const onClickEditContent = useCallback( () => {
+		trackEvent( eventCategory, 'click_edit_content_link', stepSlug );
+	}, [ eventCategory, stepSlug ] );
+
 	return (
 		<Fragment>
 			{ hasPreExistingCTAs && (
@@ -108,6 +148,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 							a: (
 								<Link
 									href={ publisherCenterOverviewURL }
+									onClick={ onClickChangeDisplayOrder }
 									external
 								/>
 							),
@@ -124,7 +165,13 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 						'google-site-kit'
 					),
 					{
-						a: <Link href={ rrmSettingsURL } external />,
+						a: (
+							<Link
+								href={ rrmSettingsURL }
+								onClick={ onClickChangePlacementSettings }
+								external
+							/>
+						),
 					}
 				) }
 			</StepSetupCompleteDetail>
@@ -143,6 +190,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 									publisherCenterCTAEditURL ||
 									publisherCenterOverviewURL
 								}
+								onClick={ onClickEditContent }
 								external
 							/>
 						),
@@ -158,7 +206,13 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 						'google-site-kit'
 					),
 					{
-						a: <Link href={ SUPPORT_URL } external />,
+						a: (
+							<Link
+								href={ SUPPORT_URL }
+								onClick={ onClickContactSupport }
+								external
+							/>
+						),
 					}
 				) }
 			</StepSetupCompleteDetail>
