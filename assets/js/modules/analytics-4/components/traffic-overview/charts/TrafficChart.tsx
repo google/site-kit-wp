@@ -35,6 +35,7 @@ import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
 import { getTrafficChartData } from './getTrafficChartData';
@@ -110,10 +111,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		},
 	};
 
-	const propertyCreateDate = propertyCreateTime
-		? // eslint-disable-next-line sitekit/no-direct-date -- The date comes from the property's creation time, not from the reference date.
-		  getDateString( new Date( propertyCreateTime ) )
-		: undefined;
+	const propertyCreateDate = getPropertyCreateDate( propertyCreateTime );
 
 	// `GoogleChart` draws a marker only for a day inside the selected range.
 	// The screen-reader sentence about that day follows the same rule.
