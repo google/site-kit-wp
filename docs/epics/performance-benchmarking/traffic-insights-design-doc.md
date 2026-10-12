@@ -16,7 +16,7 @@
 
 ## **Objective**
 
-This epic makes the `analyticsTrafficOverview` widget interpret the site's traffic rather than only report it. It adds a generated insight to both of the widget's tabs, the week ahead to the expected range the Typical Traffic chart already draws, and markers on the Traffic Overview chart for recently published content that is gaining traffic — and it builds the plugin-side infrastructure needed to reach the Site Kit Service's generative endpoints.
+This epic makes the `analyticsTrafficOverview` widget interpret the site's traffic rather than only report it. It adds a generated insight to both of the widget's tabs, a way to rate each part of it, and markers on the Traffic Overview chart for recently published content that is gaining traffic — and it builds the plugin-side infrastructure needed to reach the Site Kit Service's generative and feedback endpoints.
 
 ## **Background**
 
@@ -24,7 +24,7 @@ The widget currently reports numbers well and says nothing about them. A reader 
 
 That last step is the one most site owners cannot take. A band under a chart says a day was unusual without saying why, and the ranked factors say *what* changed without saying whether the change was expected. Two capabilities close that gap.
 
-The first is an expectation the period as a whole can be measured against: the [expected range](./typical-traffic-design-doc.md#expected-range) the Typical Traffic epic fits for every day, read at the end of the period as a 28-day corridor, and the same fit carried a week forward, so that the days just ahead have a shape rather than being blank. That is arithmetic over a fit the plugin already computes.
+The first is an expectation the period as a whole can be measured against: the [expected range](./typical-traffic-design-doc.md#expected-range) the Typical Traffic epic fits for every day, read at the end of the period as a 28-day corridor. That is arithmetic over a fit the plugin already computes.
 
 The second is a natural-language reading of the comparison, in the site owner's own language, which is the job of the generative endpoint the Site Kit Service has built. **The generative component is new to Site Kit.** No part of the plugin currently calls a generative endpoint, and `Google_Proxy` has no method for one. This epic builds that path.
 
@@ -32,22 +32,21 @@ The second is a natural-language reading of the comparison, in the site owner's 
 
 ## **Overview**
 
-We will add five things to the widget, behind a new `trafficInsights` feature flag:
+We will add four things to the widget, behind a new `trafficInsights` feature flag:
 
 1. **A generated insight on both tabs.** A compact teaser at the top of Traffic Overview ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=740-40731&m=dev)), and the full insight — the period's traffic performance and its primary drivers — at the top of Typical Traffic ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10450&m=dev)). One generation serves both.  
-2. **The week ahead on the Typical Traffic chart**: the expected range the Typical Traffic epic draws under every plotted day continues seven days past the end of the period, band only, beyond a divider on its last day ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev)).  
-3. **Content markers on the Traffic Overview chart**: a dot on the traffic line for each day something was published, with a tooltip naming the posts.  
-4. **Insight-driven ordering of the key factors**, so the sections behind the service's own key factor cards go first, rather than the ones arithmetic alone ranks highest.  
-5. **A feedback prompt beneath the full insight on Typical Traffic** ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10477&m=dev)), asking whether the narration above it was helpful.
+2. **Content markers on the Traffic Overview chart**: a dot on the traffic line for each day something was published, with a tooltip naming the posts.  
+3. **Insight-driven ordering of the key factors**, so the sections behind the service's own key factor cards go first, rather than the ones arithmetic alone ranks highest.  
+4. **A thumbs up and a thumbs down on each part of the insight** — the teaser, the traffic performance and the primary drivers ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13136&m=dev)) — sent to the service's AI feedback endpoint against the generation that produced the text.
 
 Behind them, six new pieces:
 
-1. **Proxy access to the generative endpoint and to its operations.** `Google_Proxy` gains a method that posts to the service's `/v1/ai/benchmarking` endpoint in asynchronous mode and a second that reads a long-running operation back from `/v1/ai/operations/:operation_id`.  
-2. **Two datapoints that carry the generative call and nothing else.** `POST:benchmarking-insight` takes an encoded payload in a request body and submits it, answering with either an operation ID or the finished insight. `GET:benchmarking-insight` takes an operation ID and reads that operation back. Neither runs a report, and the pair is the whole of how the plugin waits — see [Waiting for the generation](#waiting-for-the-generation).  
-3. **Two more readings of the expected-range fit.** The Typical Traffic epic's `Expected_Baseline` fits each plotted day; this epic reads the fit at `endDate` twice more — carried seven days forward for the week ahead, and summarized as the 28-day corridor the generative request carries — see [Expected baseline](#expected-baseline).  
+1. **Proxy access to the generative endpoint, its operations and its feedback.** `Google_Proxy` gains a method that posts to the service's `/v1/ai/benchmarking` endpoint in asynchronous mode, a second that reads a long-running operation back from `/v1/ai/operations/:operation_id`, and a third that posts a vote to `/v1/ai/feedback`.  
+2. **Three datapoints that carry the service calls and nothing else.** `POST:benchmarking-insight` takes an encoded payload in a request body and submits it, answering with either an operation ID or the finished insight. `GET:benchmarking-insight` takes an operation ID and reads that operation back, and the pair is the whole of how the plugin waits — see [Waiting for the generation](#waiting-for-the-generation). `POST:benchmarking-insight-feedback` sends one vote on one part of a generation — see [Insight feedback](#insight-feedback). None of the three runs a report.  
+3. **One more reading of the expected-range fit.** The Typical Traffic epic's `Expected_Baseline` fits each plotted day; this epic reads the fit at `endDate` once more, summarized as the 28-day corridor the generative request carries — see [Expected baseline](#expected-baseline).  
 4. **The request payload, assembled in PHP.** `GET:benchmarking-data` gains one field on the response for the 28 days ending on `endDate`: the whole generative request, encoded as an opaque string that crosses the browser byte for byte and is handed back to `POST:benchmarking-insight` unread.  
-5. **The week ahead and the markers on the existing response.** The same datapoint gains the forward rows and the content markers, carried in the [wire format](#wire-format-additions) it already uses.  
-6. **A datastore slice that waits.** The `benchmarking` slice gains two fetch stores, a resolver that submits the payload once and polls the operation it gets back until the insight arrives, and its own browser cache entry for the result.
+5. **The markers on the existing response.** The same datapoint gains the content markers, carried in the [wire format](#wire-format-additions) it already uses.  
+6. **A datastore slice that waits.** The `benchmarking` slice gains three fetch stores, a resolver that submits the payload once and polls the operation it gets back until the insight arrives, its own browser cache entry for the result, and a record of the parts a reader has already rated.
 
 **Nothing about this feature is cached on the server.** The data response is cached by the API layer under the selected date range, the insight is cached by the slice itself under the end date and locale, and the service holds its own copy of the generation for 24 hours — see [Browser-side caching](#browser-side-caching).
 
@@ -57,17 +56,17 @@ Behind them, six new pieces:
 
 **The numbers and the narration are two independent requests, and that is the point.** Both charts, the totals, the factors and the baseline render as soon as the data response resolves, and the insight fills in behind them however long generation takes. No PHP request holds a report call and a model call together, so neither `max_execution_time` nor a proxy in front of the site can cost the widget its data. **A failed narration must never take the numbers down with it**, and after this epic that is structural rather than careful.
 
-**The whole widget, insight included, works in the view-only dashboard.** All three datapoints are shareable, so the reports and the generative call run under the module owner's credentials on a shared request, exactly as every other shared report does — see [Dashboard sharing](#dashboard-sharing).
+**The whole widget, insight included, works in the view-only dashboard.** The data datapoint and the two insight datapoints are shareable, so the reports and the generative call run under the module owner's credentials on a shared request, exactly as every other shared report does. The feedback controls are the one part a view-only reader does not get — see [Dashboard sharing](#dashboard-sharing).
 
 ![][image1]
 
 ## **Infrastructure**
 
-The front end is additive to a widget that already exists: two more sections, a few more chart columns and two overlays, in a card whose tabs, states, data flow and expected range are in place. The server-side gathering, the datapoint that does it and the fit behind the expected range are in place too; this epic extends them rather than introducing them.
+The front end is additive to a widget that already exists: two more sections, one more chart column and its tooltip, and a feedback control on each part of the insight, in a card whose tabs, states, data flow, expected range and feedback controls are in place. The server-side gathering, the datapoint that does it and the fit behind the expected range are in place too; this epic extends them rather than introducing them.
 
 Twelve reuses carry weight in the design, because it depends on a particular property of each:
 
-* **`Google_Proxy::request()`** already injects `site_id`/`site_secret` and the bearer header, which keeps the submit method thin. **It is `wp_remote_post()` only, and it puts the credentials in the request body**, so the operation read cannot use it as it stands — see [Google\_Proxy additions](#google_proxy-additions).  
+* **`Google_Proxy::request()`** already injects `site_id`/`site_secret` and the bearer header, which keeps the submit and feedback methods thin. **It is `wp_remote_post()` only, and it puts the credentials in the request body**, so the operation read cannot use it as it stands — see [Google\_Proxy additions](#google_proxy-additions).  
 * **`Module::set_data()` dispatches through the same `execute_data_request()` path `get_data()` does**, so `get_oauth_client_for_datapoint()` resolves the owner's client for a write on a shared request exactly as it does for a read. That is what carries the submit into the view-only dashboard.  
 * **`Site_Goals_Settings_Datapoint`** is the shape a `GET`/`POST` datapoint pair over a shared abstract base already takes on this module, and `POST:save-site-goals-settings` is already a shareable write datapoint declaring the dashboard-viewing capability.  
 * **The `EDITABLE` branch of the module data route defaults to `MANAGE_OPTIONS` where the `READABLE` branch defaults to the view-insights capability.** `resolve_datapoint_permission()` resolves `"{$method}:{$datapoint}"` and honors a `Permission_Aware_Datapoint`'s callback on both branches, which is what keeps the submit reachable by a view-only user at all.  
@@ -75,12 +74,12 @@ Twelve reuses carry weight in the design, because it depends on a particular pro
 * **`API.set()` clears the datapoint's whole cache group after the request returns**, matching every stored key that *begins* with `modules::analytics-4::<datapoint>`. That is a correct default for a write and a hazard for this one, and it is what decides the name the slice's own entry is stored under — see [Browser-side caching](#browser-side-caching).  
 * **`getItem` and `setItem` from `googlesitekit/api/cache` are the API cache's own storage, callable directly.** `modules/ads`'s `isWooCommerceRedirectModalDismissed()` resolver already reads one from inside a store. That is what the insight's cache entry is built from.  
 * **A control is where a `setTimeout` belongs in a datastore**, the way `scheduleSyncAvailableCustomDimensions()` on `modules/analytics-4` already schedules a deferred fetch. That is what the [wait between reads](#waiting-for-the-generation) is built out of.  
-* **`Expected_Baseline`, from the Typical Traffic epic, keeps its whole fit**, the trend the band does not read included. That is what lets this epic read the week ahead and the period-scale baseline off the fit at `endDate` rather than model anything itself — see [Expected baseline](#expected-baseline).  
-* **`GoogleChart` passes Google Charts interval roles through untouched and renders `children` inside its own positioned wrapper.** The first is what draws the week ahead's band, the second is what the divider and the marker tooltip hang off. Its `getChartOptions()` reinstating Google's own tooltip is the one behavior the Overview chart works around — see [Chart construction](#chart-construction).  
+* **`Expected_Baseline`, from the Typical Traffic epic, keeps its whole fit**, the trend the band does not read included. That is what lets this epic read the period-scale baseline off the fit at `endDate` rather than model anything itself — see [Expected baseline](#expected-baseline).  
+* **`GoogleChart` renders `children` inside its own positioned wrapper**, which is what the marker tooltip hangs off. Its `getChartOptions()` reinstating Google's own tooltip is the one behavior the Overview chart works around — see [Chart construction](#chart-construction).  
 * **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` is gathering data, which decides whether the content markers are derived at all.  
-* **`ThumbsSurveyTrigger` renders the "Tell us more" link only when `downvoteFormURL` is set**, which is what lets the feedback prompt beneath the insight carry no follow-up URL without a change to that component — see [Is this helpful?](#is-this-helpful).
+* **`FeedbackPrompt`, from the Typical Traffic epic, renders nothing on the view-only dashboard, and the `ThumbsSurveyTrigger` inside it calls `triggerSurvey()` on every vote, unconditionally.** The first is what keeps a view-only reader from rating the insight. The second is the one behavior the insight's control has to switch off, since its votes go to the service instead — see [Insight feedback](#insight-feedback).
 
-The new infrastructure is the generative transport and what feeds it: two `Google_Proxy` methods, two `Analytics_4` datapoints over a shared base, the two readings `Expected_Baseline` gains, the payload builder, and the slice's insight resolver. The external dependencies the plugin has not talked to before are the service's `/v1/ai/benchmarking` endpoint and its `/v1/ai/operations/:operation_id` companion; the GA4 Data API and the Search Console API are reached the way they always are.
+The new infrastructure is the generative transport, what feeds it and what reports back on it: three `Google_Proxy` methods, three `Analytics_4` datapoints, the period-scale reading `Expected_Baseline` gains, the payload builder, and the slice's insight resolver and vote record. The external dependencies the plugin has not talked to before are the service's `/v1/ai/benchmarking` endpoint, its `/v1/ai/operations/:operation_id` companion and its `/v1/ai/feedback` endpoint; the GA4 Data API and the Search Console API are reached the way they always are.
 
 ## **Detailed design**
 
@@ -88,20 +87,20 @@ The new infrastructure is the generative transport and what feeds it: two `Googl
 
 The epic is built behind a new `trafficInsights` feature flag.
 
-The two insight sections, the chart's forward band and divider, and the content-marker series are each rendered under the flag check, so with the flag off both tabs render exactly as they do today. The two insight datapoints are added to `Analytics_4::get_datapoint_definitions()` only when the flag is enabled, and `GET:benchmarking-data` derives the week ahead, the period-scale baseline, the markers and the payload only under the same check — **with the flag off the data response is byte-identical to what it is today**, which is what keeps the existing browser cache entries valid across a flag change.
+The two insight sections, their feedback controls and the content-marker series are each rendered under the flag check, so with the flag off both tabs render exactly as they do today. The two insight datapoints and the feedback datapoint are added to `Analytics_4::get_datapoint_definitions()` only when the flag is enabled, and `GET:benchmarking-data` derives the period-scale baseline, the markers and the payload only under the same check — **with the flag off the data response is byte-identical to what it is today**, which is what keeps the existing browser cache entries valid across a flag change.
 
 An issue to remove the flag and its conditional logic should be raised once the feature is stable at 100%.
 
 ### **Gating and visibility**
 
-Two of the five additions carry their own gate, and the two gates are not the same:
+Two of the four additions carry their own gate, and the two gates are not the same:
 
-1. **The insight and the week ahead need thirteen months of property history.** The generative request carries a baseline fitted on a year of the site's history and a seasonality check against the same 28 days a year earlier, neither of them meaningful on a younger property, and the week ahead continues a band only the Typical Traffic tab draws. The condition is the one the Typical Traffic tab already applies — `getPropertyCreateTime()` on `modules/analytics-4` at least 13 months back — evaluated once and read by both tabs.  
+1. **The insight needs thirteen months of property history.** The generative request carries a baseline fitted on a year of the site's history and a seasonality check against the same 28 days a year earlier, neither of them meaningful on a younger property. The condition is the one the Typical Traffic tab already applies — `getPropertyCreateTime()` on `modules/analytics-4` at least 13 months back — evaluated once and read by both tabs.  
 2. **The content markers need no history at all.** A publish date inside the selected range is a publish date, so the markers render on a property connected last month.
 
 **That difference makes the Traffic Overview tab request the data response even on a young property**, where before this epic it requested nothing from `GET:benchmarking-data` at all. Both panels now call the same selector with the same two dates, and the slice's fetch store answers both from one request, so the cost is one request per date range rather than one per panel — see [Panel data flow](#panel-data-flow).
 
-**Under the gate, the fit at `endDate` exists unless the property's first recorded traffic is less than four weeks old.** The [expected range](./typical-traffic-design-doc.md#expected-range) needs 28 days of recorded traffic behind a day, so only a property tagged long after it was created can pass the gate without that. Its response carries no week ahead and its payload no `baseline`, and the narration measures the period against the previous one instead — see [What the service is told](#what-the-service-is-told).
+**Under the gate, the fit at `endDate` exists unless the property's first recorded traffic is less than four weeks old.** The [expected range](./typical-traffic-design-doc.md#expected-range) needs 28 days of recorded traffic behind a day, so only a property tagged long after it was created can pass the gate without that. Its payload carries no `baseline`, and the narration measures the period against the previous one instead — see [What the service is told](#what-the-service-is-told).
 
 What is still open is the floor — how little daily volume leaves a baseline worth narrating at all — see the [open question](#what-are-the-minimum-data-thresholds-for-each-level-of-analysis?).
 
@@ -111,39 +110,32 @@ Both panels call `useBenchmarkingData()` with the selected date range, and the [
 
 **The insight selector takes the end date alone.** The narration covers the 28 days ending on it whatever the range, and which data response its payload comes from is the slice's business, not the panel's.
 
-The data response gains three fields:
+The data response gains two fields:
 
 | Field | Shape | Rendered by |
 | :---- | :---- | :---- |
-| `forecast` | seven rows past `endDate`: `{ date, expectedMin, expectedMax }`; omitted without a fit at `endDate` | the Typical Traffic chart's week ahead |
 | `contentMarkers` | `{ date, visitors, posts }` per publish date, already capped and ranked | the Traffic Overview chart's marker series |
 | `payload` | one opaque string, never read in the browser; only on the response for the 28 days ending on `endDate` | forwarded to `POST:benchmarking-insight` |
 
-The insight response carries the generated fields the widget reads, and nothing else:
+The insight response carries the generated fields the widget reads and the two that identify the generation they came from, and nothing else:
 
 | Field | Shape | Rendered by |
 | :---- | :---- | :---- |
-| `insight` | `{ scenario, teaser, text, driver, keyFactors }` | `GeneratedInsight` on both tabs, and the sections the key factors put first |
+| `insight` | `{ scenario, teaser, text, driver, keyFactors, interactionID, modelVersion }` | `GeneratedInsight` on both tabs, the sections the key factors put first, and the vote each part [sends](#insight-feedback) |
 
 **Nothing on the data response depends on the insight, and the ordering the key factors want is the one thing that crosses between them.** `keyFactors` decides which sections [Key factors](#insight-driven-factor-ordering) puts first; the section falls back to the order the response already carries while the insight is still generating, and stays on it if the insight never arrives. **A section must not appear, disappear or reorder when the insight lands mid-render** — it re-sorts, and the response's own ranking means the first ordering is a plausible one rather than a placeholder. On a range other than 28 days, the insight describes a different period from the factors it reorders — an [open question](#does-the-insight-reorder-the-key-factors-on-a-range-other-than-28-days?).
 
-`forecast` is its own array rather than seven more rows on `dailyTraffic`, and it is seven rows at every date range the selector offers. **Every other consumer of `dailyTraffic` reads days that happened** — the chart's measured line, the period totals, the band — and a forward row carrying no `visitors` value would have to be filtered out by each of them. Keeping the two apart is also what lets the horizon stay fixed while the window behind it changes.
-
 ### **Chart construction** {#chart-construction}
 
-Both charts gain work in this epic, and what they gain has three pieces in common. The [interval chart PoC](https://storage.googleapis.com/site-kit-github-artifacts/temp/performance-benchmarking-charts.html) is the reference implementation for all of it, drawn against the same chart version `GoogleChart` pins; the columns and the option values are in the [appendix](#chart-data-tables-and-options).
+The Overview chart gains a marker series and the tooltip it opens. The [charts PoC](https://storage.googleapis.com/site-kit-github-artifacts/temp/performance-benchmarking-charts.html) is the reference implementation for both, drawn against the same chart version `GoogleChart` pins; the columns and the option values are in the [appendix](#chart-data-tables-and-options).
 
-**A band is a pair of interval columns, not a second chart type.** The [Typical Traffic epic](./typical-traffic-design-doc.md#typical-traffic-chart) builds the measured band this way, and the week ahead is a second pair on the same pattern. Two columns declared with `role: 'interval'` follow the series they annotate, and `intervals` carries the fill: `style: 'area'`, the color and its opacity, and `lineWidth: 0` with `pointSize: 0` so the band is a filled region with no boundary lines or points along it. `curveType: 'function'` smooths the bounds with the same interpolation as the line, so the band follows the line's shape rather than reading as a separate envelope drawn near it. `getFilteredChartData()` passes the table through as long as no `selectedStats` is given, and `getChartOptions()` does not touch `intervals`, so **`GoogleChart` itself needs no change**. The exact colors are the design system's; what the chart code has to hold is the relationship — a band is a tint of the line it belongs to, the week ahead takes the tint of the band it continues, and anything drawn behind a band is lighter than the band, or the band stops being readable where it matters most.
+**Google's own tooltip is off, and the option that turns it off needs help.** `getChartOptions()` sets `tooltip.isHtml` and `tooltip.trigger: 'both'` on any `LineChart` whose options do not already declare `isHtml`, so passing `tooltip: { trigger: 'none' }` alone is silently overridden and the built-in tooltips come back. The Overview chart declares `isHtml` explicitly beside `trigger: 'none'`, and the marker tooltip replaces the built-in one.
 
-**The axis maximum is computed from the bands, not from the lines.** `viewWindow.max` has to clear the highest bound in the table — on a day the site underperforms, `expectedMax` sits well above the actual line, and in the [week ahead](#the-expected-range-seven-days-ahead) it climbs further wherever the site's trend is rising. An axis fitted to the line clips the band drawn around it.
+**The marker tooltip is a React child positioned in the `ready` handler**, from `chartWrapper.getChart().getChartLayoutInterface()` — `getChartAreaBoundingBox()` for the plot box and `getXLocation( date )` for a given day's x — the way the Typical Traffic chart already positions its selected-range region.
 
-**On the Overview chart, Google's own tooltip is off, and the option that turns it off needs help.** `getChartOptions()` sets `tooltip.isHtml` and `tooltip.trigger: 'both'` on any `LineChart` whose options do not already declare `isHtml`, so passing `tooltip: { trigger: 'none' }` alone is silently overridden and the built-in tooltips come back. The Overview chart declares `isHtml` explicitly beside `trigger: 'none'`, and the marker tooltip replaces the built-in one. The Typical Traffic chart keeps the tooltip it already has: the week ahead adds nothing to hover over.
+**The legend is HTML already.** `ChartLegend` renders one item per visible series beneath the chart, with a swatch matching its shape: the Typical Traffic epic gives it the block a band needs, and this epic adds the dot a marker needs. Rendering the legend ourselves is what lets an item appear only when its data does, so the marker item renders only when the range has a marker. The marker tooltip card lives under `traffic-overview/charts/` beside `ChartLegend`.
 
-**Overlays are React children positioned in the `ready` handler**, from `chartWrapper.getChart().getChartLayoutInterface()` — `getChartAreaBoundingBox()` for the plot box and `getXLocation( date )` for a given day's x. The Typical Traffic chart already positions its selected-range region this way and already gives its wrapper the `z-index: 0` modifier that an overlay painting behind the plotted line needs; the divider on `endDate` reuses both.
-
-**Both legends are HTML already.** `ChartLegend` renders one item per visible series or band beneath each chart, with a swatch matching its shape: the Typical Traffic epic gives it the block a band needs, and this epic adds the dot a marker needs. Rendering the legend ourselves is what lets an item appear only when its data does, so the Overview chart's marker item renders only when the range has a marker. The week ahead adds no item: it is the same expected range, continued, and the `Expected range` item already names it. The marker tooltip card lives under `traffic-overview/charts/` beside `ChartLegend`.
-
-### **Generated insight**
+### **Generated insight** {#generated-insight}
 
 `GeneratedInsight` takes the resolved insight and a variant prop. The service writes three strings for it: `teaser`, one line for the Traffic Overview banner, under 140 characters; `text`, the summary of the period, under 250; and `driver`, the concrete explanation with the numbers in it, under 230. Those are targets the service sets the model rather than limits it enforces, so the layout treats them as the expected case and not as a guarantee, and `teaser` can be absent.
 
@@ -160,11 +152,38 @@ The icon and emphasis treatment come from a lookup in `constants.ts` keyed by th
 
 The component has two absent states and they look different on purpose. While the generation is being waited on it renders `PreviewBlock` placeholders at its strings' heights, because an insight *is* coming and the block reserving its space is what stops the panel reflowing under the reader when it arrives. Once the insight is known not to be coming it returns `null`: no block, and no placeholder standing in for one.
 
-### **Is this helpful?** {#is-this-helpful}
+### **Insight feedback** {#insight-feedback}
 
-`InsightFeedbackPrompt` renders beneath the full insight block on Typical Traffic, with this widget's tracking event category and label. It renders the "Is this section helpful?" label, a `ThumbsSurveyTrigger` and the thank-you popper, and nothing else — there is no "Tell us more" link and no follow-up form URL, since `downvoteFormURL` is left unset.
+Each part of the insight asks the reader whether it helped: the teaser on Traffic Overview, and the traffic performance and the primary drivers that make up the full block on Typical Traffic. **The vote is per part, not per generation**, because a reader who trusts the summary and doubts the drivers has nothing to say with one vote for both — the reasoning that gives the Typical Traffic chart and each key factor column a [control of their own](./typical-traffic-design-doc.md#feedback).
 
-**It renders only in the [Narrated](#insight-states) state**, beside the text it is asking about — there is nothing to rate while the insight is generating, and nothing left to rate once it is known not to be coming. This is the epic's post-launch quality signal for the narration itself: the vote leaves the plugin as `triggerSurvey( 'vote:<voteID>:<direction>' )` and the service stores that trigger against the user, which is what lets it survey the users who voted down — the follow-up is a survey the service serves back into the dashboard, not a link out of the plugin. The widget passes a vote ID of its own, so its votes aggregate separately and the follow-up reaches only the people the insight disappointed.
+**The control is the Typical Traffic epic's `FeedbackPrompt`; what is new is where a vote goes.** `InsightFeedbackPrompt`, a new component in `traffic-overview/components/`, takes the resolved insight and the part it sits on, and renders `FeedbackPrompt` in its hover placement, in the part's top-right corner ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13136&m=dev)), with the part's reasons behind a thumbs down. **A vote on generated text goes to the service's `/v1/ai/feedback` endpoint, against the generation that produced the text, and never through `triggerSurvey()`.** A survey trigger can record that a reader disliked an insight; the feedback endpoint records which generation they disliked — its scenario, its model and its locale — beside the service's own record of that generation's request and output, which is what makes a vote usable for judging the narration. `ThumbsSurveyTrigger` calls `triggerSurvey()` on every vote, unconditionally, so `FeedbackPrompt` gains an option that hands the vote and the reason to callbacks in place of both survey triggers. The Typical Traffic chart and key factor columns pass nothing and keep sending survey triggers.
+
+A part's vote happens in three steps:
+
+1. **A thumbs up or down is sent the moment it is clicked.** `POST:benchmarking-insight-feedback` goes out with the sentiment and no reason, so a reader who votes and moves on has still voted.  
+2. **A reason is a second submission.** Choosing one of the part's reasons after a thumbs down sends the same vote again with that reason's token. The service stores every submission as a row of its own, joined to the generation by `interaction_id`; closing the menu without a choice leaves the vote as it was first sent.  
+3. **An answered part does not ask again.** Once the service has answered the vote with a `200`, the slice records its direction under the generation's `interaction_id` and the part. From then on the control renders that direction as pressed and sends no further vote — only the reason its thumbs down asks for. A failed submission records nothing, since a `500` means the service did not store the vote, so the next mount asks again.
+
+**That record lives in `localStorage`, not in the API cache's storage.** `setItem()` prefers `sessionStorage`, and the service serves one generation, under one `interaction_id`, from its cache for 24 hours — so a record held per tab would ask a reader who has already voted again in every tab they open. The slice writes the record to `localStorage` directly, under the API cache's user-hashed key prefix and outside every datapoint's cache group, and keeps it for two days: the 24 hours the service serves a generation, plus the day the slice keeps an insight.
+
+**The service cannot tell the three parts apart yet.** `/v1/ai/feedback` keys a vote on `interaction_id` alone, and one generation produces all three strings, so a thumbs down on the drivers and a thumbs up on the summary of the same generation would arrive as two rows nothing distinguishes. The feedback datapoint therefore sends one more field, `surface`, naming the response field the part renders — `teaser`, `text` or `driver`. The service ignores a field it does not recognize, so sending it early refuses no vote, and nothing can be read from the votes per part until the service stores it — see [Dependencies](#dependencies) and the [open question](#how-does-the-service-tell-the-three-parts-apart?).
+
+Each part's reasons are written for that part, and each travels as one of the service's reason tokens, since the endpoint accepts those and nothing else. Both popups ask `What seems off?`:
+
+| Part | Reason | Token |
+| :---- | :---- | :---- |
+| Traffic performance ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13378&m=dev)) | `My traffic didn’t change like this` | `INACCURATE_DATA` |
+|  | `Hard to understand` | none yet |
+|  | `Too obvious to be useful` | none yet |
+| Primary drivers ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13632&m=dev)) | `Leaves out an important traffic source or page` | none yet |
+|  | `Too obvious to be useful` | none yet |
+|  | `Too hard to understand` | none yet |
+
+The service's tokens are `ACCURATE`, `ACTIONABLE`, `CLEAR_EXPLANATION`, `FOUND_NEW_TREND`, `INACCURATE_DATA`, `OUTDATED`, `TOO_VAGUE`, `POOR_TONE`, `NOT_RELEVANT` and `OTHER`. Only the first reason above has a token that says what it says; whether the rest gain tokens or move to the ones there are, and what the teaser's thumbs down asks at all, is an [open question](#which-tokens-do-the-insight-reasons-send?). The map from a reason to its token lives in `constants.ts`, beside the scenario lookup.
+
+**A vote leaves the site with the generation it rates, and the reader is told so beside the prompt**: `Your feedback, the generated insight, and associated site metrics will be sent to Google and retained for up to 60 days to help improve Site Kit features.` A hover control has no room beside it for a sentence, and a thumbs up is sent the moment it is clicked, so where the notice sits for a reader to see it before voting is an [open question](#where-does-the-feedback-notice-go?).
+
+**The controls render only in the [Narrated](#insight-states) state**, beside the text they ask about — there is nothing to rate while the insight is generating, and nothing left to rate once it is known not to be coming. The teaser's control renders only when the service wrote a teaser. **None of them renders on the view-only dashboard**: `FeedbackPrompt` renders nothing there, and the feedback datapoint is the one write in this epic that is not shareable — see [Dashboard sharing](#dashboard-sharing).
 
 ### **Content markers on the Traffic Overview chart**
 
@@ -183,20 +202,6 @@ Clicking a dot opens that tooltip, through the chart's `select` event on `onSele
 
 Where the custom dimension is absent or still gathering data, `contentMarkers` is empty, the marker column is not added, and the chart renders as it does today.
 
-### **The expected range seven days ahead** {#the-expected-range-seven-days-ahead}
-
-The [Typical Traffic chart](./typical-traffic-design-doc.md#typical-traffic-chart) draws the expected range under every plotted day. This epic continues it seven days past `endDate`, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it: band only, with no line through it, beyond a one-pixel divider on `endDate`.
-
-**The week ahead is the fit at `endDate` carried forward, and nothing else.** Each forward day's band is the corridor fitted on `endDate`, moved along the fit's own monthly trend and spread onto the day with its weekday's factor — the arithmetic is under [The seven days ahead](#the-seven-days-ahead). It carries no projected line, as the design draws it: what the model can say about next Tuesday is the range a normal Tuesday would fall in if the site keeps its current course, and a line through the middle of that range would read as a prediction the band does not make.
-
-**The horizon is seven days at every range**, the same week whether the reader has 7 or 90 days selected, because it describes the site's current course rather than the selected period. `forecast` carries the seven rows, and the axis extends seven days past `endDate` to hold them.
-
-**The band runs on without a gap.** The forward band is an interval pair of its own, because interval columns bind to the series they follow, and the row for `endDate` carries that pair as well, set to the measured band's bounds on that day. The two bands therefore meet where the measured one ends, with neither a day's gap nor a step between them — which the arithmetic makes natural, since the measured band on `endDate` is the same fit with no distance travelled. The divider marks that day, drawn as a one-pixel overlay at `getXLocation( endDate )` per the [shared construction](#chart-construction); it is what tells the reader where the line stops because the days after it have not happened.
-
-**Without a fit at `endDate` there is no week ahead.** A property whose first recorded traffic is less than four weeks old has no band under its last day either, so the response carries no `forecast`, the table stops at the measured columns, and the divider is not drawn.
-
-The chart is unaffected by the generative call: `dailyTraffic` and `forecast` arrive in the data response, which no proxy call sits in front of.
-
 ### **Insight-driven factor ordering** {#insight-driven-factor-ordering}
 
 The key factors section already walks a set of dimension codes in an order the response supplies, off a catalog in `traffic-overview/factors/registry.ts` that holds each code's copy, its `contextualData` key and its renderer. This epic changes which sections go first, and nothing else about the catalog.
@@ -213,17 +218,7 @@ Three resolution rules, on top of the two the lookup already applies:
 
 ### **Expected baseline** {#expected-baseline}
 
-The expected range is the [Typical Traffic epic's](./typical-traffic-design-doc.md#expected-range): `Expected_Baseline` fits every plotted day on the history up to and including it, and the chart draws a band from each fit. This epic reads the fit at `endDate` two more ways and adds both readings to the same class, rather than modelling anything of its own.
-
-#### *The seven days ahead* {#the-seven-days-ahead}
-
-For each day `endDate + h`, with `h` from 1 to 7, the fit at `endDate` is carried forward along its own monthly trend: the center becomes `B * MAX( 0, 1 + slope / 100 * h / 30.4375 )`, where `slope` is the fit's monthly trend in percent; the margin stays `M`; and the band is spread onto the day with that day's weekday factor `S` exactly as a measured day's is, from `MAX( 0, center - M ) / 28 * S` to `( center + M ) / 28 * S`, rounded to one decimal.
-
-Three properties follow:
-
-1. **The band does not widen with distance.** The margin is the end-date fit's, unchanged, so the week ahead is drawn with the confidence of the weeks behind it — which a seven-day horizon can carry and a month could not.  
-2. **The trend is the only thing that moves.** A growing site's week ahead rises, a shrinking one's falls, and the clamp at zero stops a steep decline from projecting negative traffic.  
-3. **No report row is needed.** Everything the projection reads is already in the fit.
+The expected range is the [Typical Traffic epic's](./typical-traffic-design-doc.md#expected-range): `Expected_Baseline` fits every plotted day on the history up to and including it, the chart draws a band from each fit, and the fit at `endDate` carries the band through the [week ahead](./typical-traffic-design-doc.md#the-week-ahead). This epic reads the fit at `endDate` one more way and adds the reading to the same class, rather than modelling anything of its own.
 
 #### *What the service is told* {#what-the-service-is-told}
 
@@ -244,13 +239,13 @@ Each field is read off the fit at `endDate`:
 
 #### *Where the code lives*
 
-Both readings are methods on `Expected_Baseline`, beside the fit they read, under `includes/Modules/Analytics_4/Benchmarking/`. They have no dependencies beyond the rows — no settings, no options, no service client — so they are unit-testable against fixed daily series, as the fit is. The reference date comes from the same `Context` the rest of the datapoint uses, which is what keeps the fixtures deterministic: a projection is a claim about days that have not happened, and a model reading the clock itself would have no fixed answer to assert against.
+The reading is a method on `Expected_Baseline`, beside the fit it reads, under `includes/Modules/Analytics_4/Benchmarking/`. It has no dependencies beyond the rows — no settings, no options, no service client — so it is unit-testable against fixed daily series, as the fit is.
 
 ### **Generative endpoint infrastructure**
 
 #### *Google\_Proxy additions* {#google_proxy-additions}
 
-`Google_Proxy` gains two URI constants and two public methods. The first posts the payload to the generative endpoint through `request()` with `json_request => true` and `async` set, and returns whichever answer comes back — an operation ID, or the finished insight. The second reads an operation back by ID. The credentials and bearer header the helper already sends are exactly what both endpoints validate: a mismatched `site_secret` is a 400, an unverifiable token is a 403, and a user not registered against that site is a 403 on the submit and a 500 on the read\.
+`Google_Proxy` gains three URI constants and three public methods. The first posts the payload to the generative endpoint through `request()` with `json_request => true` and `async` set, and returns whichever answer comes back — an operation ID, or the finished insight. The second reads an operation back by ID. The third posts a vote to the feedback endpoint through `request()` as it stands, with `json_request => true`: the endpoint reads `site_id` and `site_secret` from a JSON body and the bearer token from its header, which is exactly what the helper sends. The credentials and bearer header are what all three endpoints validate: a mismatched `site_secret` is a 400, an unverifiable token is a 403, and a user not registered against that site is a 403 on the submit and on a vote, and a 500 on the read\.
 
 **The operation read is a `GET`, and `request()` cannot make one.** It calls `wp_remote_post()` unconditionally and injects `site_id`/`site_secret` into the request body, where the operations endpoint reads them from the query string. `request()` therefore gains an optional method argument: given `GET` it sends through `wp_remote_get()` and moves the credentials and any body arguments into the query string, and absent the argument it behaves exactly as it does today. **This is a change to a Core class every proxy call in the plugin goes through**, which is why it is additive by construction rather than a refactor of the existing path — the response handling, the JSON decode and the `WP_Error` shaping stay in one place, which is the reason for extending the helper rather than writing a second one beside it.
 
@@ -284,6 +279,10 @@ Both resolve a bearer token from the same `OAuth_Client` the reports run under �
 **A failed generation is visible rather than inferred**, which is the main thing the read buys beyond cost: the operation says `FAILED`, so the widget reaches its Reporting state at once instead of waiting out a deadline that cannot distinguish a failure from a slow model.
 
 The service's 429 carries no `Retry-After` header, so the hour is the plugin's own figure, taken from the refill rate rather than read off the response. **Where those failures are held is the slice's own cache entry**, not the API layer's — see [Browser-side caching](#browser-side-caching).
+
+**`POST:benchmarking-insight-feedback` is the third datapoint, and it does not extend their base.** It takes one vote inside the request body's `data` object: the generation's `interactionID`, `scenario` and `modelVersion`, echoed off the insight the slice holds, since nothing about a generation is stored on the site; the `surface` that was rated; the `sentiment`; and the optional `reasons`. It adds `feature: 'benchmarking'`, the user's locale and a client timestamp, and posts the vote through the third `Google_Proxy` method. The locale is resolved the way the submit's `hl` is, so a vote names the language its narration was written in. It takes the same token-resolving closure in its definition and maps the service's failures onto `WP_Error`s the same way, and **it differs in exactly the two things the base fixes for the other two: it declares the authenticated-dashboard capability rather than the dashboard-viewing one, and it is not shareable.** A view-only reader cannot reach it, and a vote never leaves the site under the module owner's identity. Declaring the check matters here as it does on the submit, because the `EDITABLE` branch's `MANAGE_OPTIONS` default would also admit an administrator viewing a shared dashboard without having connected Site Kit themselves.
+
+The datapoint checks a vote the way the service will, so a malformed one fails in the plugin rather than a round trip later: `interactionID` a 26-character ULID, `sentiment` `POSITIVE` or `NEGATIVE`, `surface` one of the three parts, and `scenario`, `modelVersion` and at most five `reasons` held to the shapes the service accepts. **It keeps no copy of the service's scenario or reason lists**: the service is the authority on both, and a value it adds later must not be refused by a plugin that has not heard of it yet. A rejected or failed vote is a `WP_Error` carrying the service's status — a 400, a 403, or a 500 when the service did not store the vote — and nothing about the insight changes.
 
 #### *Waiting for the generation* {#waiting-for-the-generation}
 
@@ -342,9 +341,9 @@ The assembly has to be deterministic — stable ordering, stable rounding, stabl
 
 #### *Wire format additions* {#wire-format-additions}
 
-The response's positional format gains members for the week ahead, the content markers and the resolved locale, and one member that is unlike every other: **the payload, as one opaque string**, which is `null` on every response but the one for the 28 days ending on `endDate`.
+The response's positional format gains members for the content markers and the resolved locale, and one member that is unlike every other: **the payload, as one opaque string**, which is `null` on every response but the one for the 28 days ending on `endDate`.
 
-Two rules the existing format already fixes carry the additions without change — a missing value is `null` rather than `0`, and every non-integer arrives already rounded, so the forward bounds need no new convention. The version integer that leads the envelope increments, and a decoder that does not recognize it treats the response as unusable rather than guessing.
+Two rules the existing format already fixes carry the additions without change — a missing value is `null` rather than `0`, and every non-integer arrives already rounded. The version integer that leads the envelope increments, and a decoder that does not recognize it treats the response as unusable rather than guessing.
 
 **The payload is opaque to the browser.** It is JSON of the same positional shape, base64url encoded, and it crosses the browser as one string field — read off the data response, put on the submit's body, never parsed. **The browser encodes nothing**, so the two-sided contract stays a decoder in JS against an encoder in PHP rather than a codec on each side.
 
@@ -381,12 +380,13 @@ What still costs a token and a generation is a payload the service has not seen:
 
 #### *Datastore slice* {#datastore-slice}
 
-The `benchmarking` slice gains two `createFetchStore`s beside the one it has:
+The `benchmarking` slice gains three `createFetchStore`s beside the one it has:
 
 | Fetch store | Params | Request |
 | :---- | :---- | :---- |
 | `submitBenchmarkingInsight` | `{ payload }` | `API.set`, which is uncached by construction |
 | `getBenchmarkingOperation` | `{ operationID }` | `API.get`, `useCache: false` |
+| `submitBenchmarkingInsightFeedback` | `{ interactionID, scenario, modelVersion, surface, sentiment, reasons }` | `API.set` |
 
 **The second is named for what it reads rather than for the datapoint it calls.** `GET:benchmarking-insight` answers it, but a fetch store called `getBenchmarkingInsight` would record its errors under the same selector name the public selector uses, distinguished only by having different arguments — a distinction that is real, invisible in a test failure, and not worth relying on.
 
@@ -399,7 +399,9 @@ The `benchmarking` slice gains two `createFetchStore`s beside the one it has:
   4. Wait, then read the operation, until it is done — see [Waiting for the generation](#waiting-for-the-generation). A 404 discards the handle and returns to step 3, once.  
   5. Write the outcome to the cache entry, replacing the pending marker: the insight for a day, a `429` or `403` as a marker for an hour, a failed operation or a 5xx not at all.  
 * `isLoadingBenchmarkingInsight( endDate )` — resolution state and **both** insight fetch stores' in-flight flags. It stays `true` across the whole wait — the intervals between reads included, when neither store is in flight. That is what the [Generating](#insight-states) state reads, and reading one flag rather than both is the mistake that makes the state flicker once per tick.  
-* The insight's failure is the error store's: `getErrorForSelector( 'getBenchmarkingInsight', [ endDate ] )` carries the status the [datapoints](#insight-datapoints) returned. **Two fetch stores mean two internal error keys**, each under its own base name and its own arguments, and the resolver is what normalizes whichever fired onto the one key the panels read. A deadline that passes is recorded there too, so a panel has one place to read from rather than a status field beside an error.
+* The insight's failure is the error store's: `getErrorForSelector( 'getBenchmarkingInsight', [ endDate ] )` carries the status the [datapoints](#insight-datapoints) returned. **The two insight fetch stores mean two internal error keys**, each under its own base name and its own arguments, and the resolver is what normalizes whichever fired onto the one key the panels read. A deadline that passes is recorded there too, so a panel has one place to read from rather than a status field beside an error.  
+* `getBenchmarkingInsightVote( interactionID, surface )` — the direction a reader has already given that part of that generation, read off the slice's [vote record](#insight-feedback), or `null`.  
+* `voteOnBenchmarkingInsight( { insight, surface, sentiment, reason } )` — sends one vote through the feedback fetch store and writes the vote record once the service answers `200`. It never touches the insight, its cache entry or its error key, so a vote that fails cannot change what either panel renders.
 
 **The operation ID lives in slice state as well as in the cache entry, and the two are not redundant.** State is what a remount inside one page load reads, and it is where the resolver's own loop holds the handle between ticks; the cache entry is what survives a reload. Only the second needs a lifetime, and it takes the hour an operation lives for rather than the day an insight does.
 
@@ -415,6 +417,7 @@ The service owns prompt-injection defense: the data travels inside `<data>` deli
 * Send structured fields only. The payload carries no free-text field a site visitor could reach, and the browser adds nothing to what the data datapoint derived.  
 * Treat `teaser`, `text` and `driver` as untrusted text on render — plain text into React children, with the `**…**` bold marker the only thing interpreted, never `dangerouslySetInnerHTML`. All three are model output.  
 * Treat `scenario` and every card's `entity_kind` as enums, and fall back to the default treatment or to no reordering for an unrecognized value, rather than assuming the server-side validation is the only gate.  
+* Send nothing a reader types. The feedback endpoint accepts a free-text `comment` beside a vote, and the plugin sends none: a vote is a direction, a part and reason tokens, so no text a reader writes leaves the site.  
 * Pass the service's response fields through the datapoint unchanged. The insight response is the plugin's own shape, but the three strings inside it are the model's, and re-encoding or wrapping them in PHP would only hide that from the components that have to treat them as untrusted.
 
 ### **Insight states** {#insight-states}
@@ -433,17 +436,17 @@ What the Reporting state says in place of the insight, and whether a 429 says so
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains `GeneratedInsight` and `InsightFeedbackPrompt` under `components/`, the marker tooltip card under `charts/` beside `ChartLegend`, which gains its dot swatch, the `DimensionType` map and the `HISTORICAL_BASELINE` entry under `factors/`, one hook, and the new field indices in `constants.ts`. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains `GeneratedInsight` and `InsightFeedbackPrompt` under `components/`, the marker tooltip card under `charts/` beside `ChartLegend`, which gains its dot swatch, the `DimensionType` map and the `HISTORICAL_BASELINE` entry under `factors/`, one hook, and the new field indices and the reason-to-token map in `constants.ts`. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
-New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the two insight datapoints and the abstract base they share, and `includes/Modules/Analytics_4/Benchmarking/` for the two readings `Expected_Baseline` gains, the payload builder and the wire format's new members. The two transport methods and the `GET` capability the second needs are added to `includes/Core/Authentication/Google_Proxy.php`.
+New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the two insight datapoints, the abstract base they share and the feedback datapoint, and `includes/Modules/Analytics_4/Benchmarking/` for the period-scale reading `Expected_Baseline` gains, the payload builder and the wire format's new members. The three transport methods and the `GET` capability the second needs are added to `includes/Core/Authentication/Google_Proxy.php`.
 
-Two existing files change outside this feature, and they are the ones to call out at review: `Analytics_4::get_datapoint_definitions()` gains the two datapoints under the flag check, and `Google_Proxy::request()` gains its optional method argument — the latter being the one every other proxy call in the plugin passes through.
+Four existing files change outside this feature, and they are the ones to call out at review: `Analytics_4::get_datapoint_definitions()` gains the three datapoints under the flag check; `Google_Proxy::request()` gains its optional method argument, which every other proxy call in the plugin passes through; and `ThumbsSurveyTrigger`, with `FeedbackPrompt` around it, gains the option to hand a vote and a reason to callbacks in place of `triggerSurvey()` — components Site Goals, Feature Discovery and the Typical Traffic tab already render, each of which keeps its survey triggers by passing nothing.
 
 ### **REST infrastructure**
 
-Two new datapoints, no new route. `GET:benchmarking-insight` is dispatched by the `READABLE` branch of the module datapoint route like any other read, `POST:benchmarking-insight` by the `EDITABLE` branch like any other write, and each implements `Permission_Aware_Datapoint` for its own permission check — which on the `EDITABLE` branch is what keeps the submit reachable by a view-only user at all.
+Three new datapoints, no new route. `GET:benchmarking-insight` is dispatched by the `READABLE` branch of the module datapoint route like any other read, `POST:benchmarking-insight` and `POST:benchmarking-insight-feedback` by the `EDITABLE` branch like any other write, and each implements `Permission_Aware_Datapoint` for its own permission check — which on the `EDITABLE` branch is what keeps the submit reachable by a view-only user at all, and the feedback reachable from the authenticated dashboard and from nowhere else.
 
-**A widget load becomes two requests plus one per tick of the wait**, and only the first is expensive. The rest exist because generation is asynchronous, and each is one short proxy call — the round trips are not the cost worth managing, the reports and the generations are.
+**A widget load becomes two requests plus one per tick of the wait**, and only the first is expensive. The rest exist because generation is asynchronous, and each is one short proxy call — the round trips are not the cost worth managing, the reports and the generations are. A vote adds one more short call, and only when a reader casts one.
 
 Three caches sit between the widget and the model. The [API layer](#browser-side-caching) holds the data response for an hour under the two dates. The [slice](#datastore-slice) holds the insight for a day under the end date and the locale. The service holds a generation for 24 hours under the site, the hashed user, `end_date`, the locale and the serialized payload — and **consults it before its rate limiter**, which is the fact the whole economics of this design rests on.
 
@@ -451,7 +454,7 @@ Three caches sit between the widget and the model. The [API layer](#browser-side
 
 ### **Dashboard sharing** {#dashboard-sharing}
 
-The widget follows the existing Dashboard Sharing rules for the `analytics-4` module. The data datapoint already decides whether a view-only user sees a widget at all; the two insight datapoints decide only whether that widget is narrated. **All three are shareable, and a view-only user gets the whole widget, insight included.**
+The widget follows the existing Dashboard Sharing rules for the `analytics-4` module. The data datapoint already decides whether a view-only user sees a widget at all; the two insight datapoints decide only whether that widget is narrated. **All three are shareable, and a view-only user gets the whole widget, insight included** — everything but the [feedback controls](#insight-feedback).
 
 None of them needs a branch for it. The reports and the generative call both run under the module owner's credentials, so the service sees the owner — a user it can verify and one registered against the site. `Module::set_data()` dispatches through the same `execute_data_request()` path as `get_data()`, so the submit delegates to the owner's client on a shared request exactly as the reads do; being a write changes the permission default, not the token resolution.
 
@@ -459,20 +462,23 @@ None of them needs a branch for it. The reports and the generative call both run
 
 **What is shared is the owner's identity at the service, and that turns out to help rather than to hurt.** Every viewer's submit is charged to the same site-and-owner rate-limit bucket — but it also resolves to the same key on the service's response cache, which its pipeline consults before that bucket. So the first viewer of an end date causes one generation and spends one token, and every viewer after them is answered out of that cache for free. **Fifty viewers of a shared dashboard cost what one costs.**
 
+**A view-only reader does not rate the insight, and the rule is `FeedbackPrompt`'s rather than this widget's.** The component renders nothing on the view-only dashboard, which is the rule the [Typical Traffic epic](./typical-traffic-design-doc.md#feedback) puts in it for every part of the widget, and `POST:benchmarking-insight-feedback` declares the authenticated-dashboard capability and is not shareable. The owner's identity at the service is spent on generating the narration a view-only reader sees, and never on a vote they did not cast.
+
 The alternative — shareable datapoints that skip generation on a shared request — is discussed under [Alternatives considered](#skipping-generation-on-a-shared-request).
 
 ### **Tester plugin** {#tester-plugin}
 
 The states that matter for QA are hard to produce on a real site: a property with a genuine seasonal pattern, a rate-limited response, a generation slow enough to run past the waiting deadline, and each of the eleven `scenario` codes, with each combination of cards that drives a different ordering.
 
-Two filters cover almost all of it, one per response, and each is the single point where the states behind it are reachable:
+Three filters cover almost all of it, one per response, and each is the single point where the states behind it are reachable:
 
-1. **Over the data response.** A week ahead on a steeply rising and a steeply falling trend, a payload whose `baseline` marks the period seasonal — which otherwise needs a property whose last two years happen to swing the same way at the same time — a response with no fit at `endDate`, a period that falls above, inside and below the expected range, and content markers on a chosen set of days including two posts sharing one.  
-2. **Over the insight response.** An arbitrary `scenario`, `teaser`, `text`, `driver` and set of key factor cards without calling the service, and the failure modes beside them: a 429, a 403, and a 500\.
+1. **Over the data response.** A payload whose `baseline` marks the period seasonal — which otherwise needs a property whose last two years happen to swing the same way at the same time — a response with no fit at `endDate`, a period that falls above, inside and below the expected range, and content markers on a chosen set of days including two posts sharing one.  
+2. **Over the insight response.** An arbitrary `scenario`, `teaser`, `text`, `driver` and set of key factor cards without calling the service, and the failure modes beside them: a 429, a 403, and a 500\.  
+3. **Over the feedback response.** A vote answered without calling the service, and the failures beside it: a 400, a 403, and a 500, each of which must leave the part unanswered.
 
 **Asynchronous generation is the part the tester plugin makes newly easy, and it needs its own control.** Answering the submit with an operation ID and then reporting that operation as running for a chosen number of reads is what exercises the **Generating** state; letting it run indefinitely is the deadline, and the case the deadline was written for — a give-up followed by a later mount that collects the finished generation in one submit the service's cache answers. Two more states are only reachable this way: an operation reported `FAILED`, which must reach the Reporting state at once rather than at the deadline, and a read answered `404`, which must produce one fresh submit rather than a loop.
 
-Reaching any forced state needs the browser cache out of the way — both entries, since the insight's is the slice's own rather than the API layer's. `setUsingCache( false )` covers the data response; the insight's entry needs `clearBenchmarkingData()` or a cleared session store. **There is nothing to clear on the server.**
+Reaching any forced state needs the browser cache out of the way — both entries, since the insight's is the slice's own rather than the API layer's. `setUsingCache( false )` covers the data response; the insight's entry needs `clearBenchmarkingData()` or a cleared session store; and a part already rated needs its vote record cleared from `localStorage` before it asks again. **There is nothing to clear on the server.**
 
 The view-only path needs its own coverage, since it is the same path rather than a reduced one: a shared request generating under the owner's token, and a shared request whose caller cannot read Search Console data, against the same date range.
 
@@ -488,7 +494,13 @@ The one thing that does need saying in the product is that the text is AI-genera
 
 ### **Internal Measurement: GA4 Events**
 
-The epic adds no tracking events of its own. The feedback prompt beneath the insight emits the thumbs events `ThumbsSurveyTrigger` already emits, unchanged, and whether a 429 is tracked as an error is part of [the rate-limit question](#what-does-the-widget-show-when-the-rate-limit-is-hit?) rather than a measurement plan of this epic's.
+The [feedback controls](#insight-feedback) emit the vote events `FeedbackPrompt` emits for every consumer, under a category of this epic's own, with the part as the label:
+
+| Category | Action | Label | When |
+| :---- | :---- | :---- | :---- |
+| `<viewContext>_traffic-insights-survey` | `vote_up`, `vote_down` | `teaser`, `text` or `driver` | A thumbs up or a thumbs down on a part of the insight |
+
+A reason travels to the service with its vote and not as a GA4 event. Whether a 429 is tracked as an error is part of [the rate-limit question](#what-does-the-widget-show-when-the-rate-limit-is-hit?) rather than a measurement plan of this epic's.
 
 ### **Internal Measurement: Feature Metrics**
 
@@ -552,15 +564,9 @@ We narrate the 28 days ending on `endDate`, whatever the range. The expected ran
 
 ### **Returning the expected baseline from the service instead of computing it in the plugin** {#returning-the-expected-baseline-from-the-service-instead-of-computing-it-in-the-plugin}
 
-The alternative was to grow the response schema with a per-day expected series and a forward one, so the model lived in one place, next to the reasoning that narrates it, and the plugin only plotted what it was handed.
+The alternative was to grow the response schema with a per-day expected series, so the model lived in one place, next to the reasoning that narrates it, and the plugin only plotted what it was handed.
 
-We compute it in the plugin — see [Expected range](./typical-traffic-design-doc.md#expected-range). The [fit](#expected-baseline) is arithmetic over a report the datapoint runs anyway; there is no state to keep and nothing to train. Computing it in the datapoint also keeps the chart independent of the generative call, which matters more than anything else here: the bounds and the week ahead are derived before the proxy request and returned whether it succeeds, so a 429 or a timeout cannot take away the band the tab is built around. The service would otherwise need either a two-year daily series in every request payload or the ability to query GA4 itself, and it does neither — it takes the finished `baseline` object from the plugin and narrates against it.
-
-### **A 28-day forecast with a projected line**
-
-An earlier design ran a forward model four weeks past `endDate`: a dashed projected line under a band widening by 5% a week, a tinted region behind it, a hover card over the projected half, and a one-line caption saying whether the next 28 days looked like a boom, a lull or an ordinary month.
-
-We draw the week the chart's design draws, as band only. The forward band carries the end-date fit along its trend and nothing else — the model has no seasonal term — so it says less the further it runs, and a week is the horizon it can hold without a widening rule the model does not have. A line through the band would read as a prediction the band does not make, and a caption would put a single figure on a statement the model makes only as a range. A forward-looking sentence, if one is wanted, is the service's to write, and its request has no forward-looking field to write it from — see [Future Work](#a-longer-projection-and-a-look-ahead-summary).
+We compute it in the plugin — see [Expected range](./typical-traffic-design-doc.md#expected-range). The [fit](#expected-baseline) is arithmetic over a report the datapoint runs anyway; there is no state to keep and nothing to train. Computing it in the datapoint also keeps the chart independent of the generative call, which matters more than anything else here: the bounds are derived before the proxy request and returned whether it succeeds, so a 429 or a timeout cannot take away the band the tab is built around. The service would otherwise need either a two-year daily series in every request payload or the ability to query GA4 itself, and it does neither — it takes the finished `baseline` object from the plugin and narrates against it.
 
 ### **Skipping generation on a shared request** {#skipping-generation-on-a-shared-request}
 
@@ -568,11 +574,19 @@ The narrower reading of dashboard sharing is that the generative call belongs to
 
 We generate on a shared request, under the owner's token. Every shared report in Site Kit already leaves the site under the owner's credentials, and the insight is derived from the same figures those reports return, so treating the narration differently from the numbers it narrates draws a line the data does not support. The cost of the narrow reading is the feature: the interpretation *is* what this epic adds, and a view-only dashboard showing two tabs of charts with the explanation removed is the state this epic exists to replace. What makes the exposure tolerable rather than unbounded is the service's 24-hour cache, which means repeat viewers spend tokens without causing generations.
 
+### **Sending the insight's votes as survey triggers** {#sending-the-insights-votes-as-survey-triggers}
+
+The insight's controls could send what every other thumbs in Site Kit sends: `vote:<voteID>:<direction>` through `triggerSurvey()`, and a reason as one more trigger. That needs no datapoint, no proxy method and no vote record, and the service's survey machinery can follow a thumbs down with a survey of its own.
+
+We send votes to the feedback endpoint. A survey trigger names a vote ID and a direction, so it can say that a reader disliked an insight but not which one — not the generation, its scenario, its model or its locale. The feedback endpoint stores a vote against the generation's `interaction_id`, beside the service's own record of that generation's request and output, which is what lets a vote be read against the text it rated. What it costs is the transport this design adds for it, and the option `ThumbsSurveyTrigger` needs to send nothing to `triggerSurvey()`.
+
+### **One vote per generation** {#one-vote-per-generation}
+
+The feedback endpoint keys a vote on `interaction_id` alone, so the insight could carry one control whose vote covers the whole generation — beneath the full block, mirrored under the teaser, the two sharing one vote record. That needs nothing from the service.
+
+We vote per part. The teaser, the traffic performance and the primary drivers are three pieces of writing, and any one of them can be wrong while the others are right; one vote for all three cannot say which failed, which is the reasoning that gives the Typical Traffic chart and each key factor column a vote of their own. What it costs is a field the service has to add before the votes can be told apart — see [Dependencies](#dependencies).
+
 ## **Future Work**
-
-### **A longer projection and a look-ahead summary** {#a-longer-projection-and-a-look-ahead-summary}
-
-The [week ahead](#the-expected-range-seven-days-ahead) stops at seven days and says nothing in words. A longer horizon needs a forward model with a seasonal term — this one carries the site's current course and nothing about the season it is heading into — and a sentence about the coming weeks belongs to the service, whose request has no forward-looking field to narrate from. Neither is a matter of raising a limit.
 
 ### **A generation shared across a site's admins** {#a-generation-shared-across-a-site's-admins}
 
@@ -584,15 +598,17 @@ Dropping the identity from that key would make a generation a site-level artifac
 
 Low-traffic sites need more cautious language and de-emphasized short-term change. The band handles its share of that already: its margin's floor grows with the square root of the expectation, which gives a 25-visitor-a-day site a band of about ±32% and a 10-visitor one about ±43%, so ordinary noise stays inside expectations — see [Expected range](./typical-traffic-design-doc.md#expected-range). What remains is the narration's language, which is generated service-side from the same payload and belongs in the service's prompt and heuristics.
 
-### **Richer feedback than thumbs up / down**
+### **A comment with a vote**
 
-Letting users say *why* an insight was not relevant — wrong data, out of date, not useful — is a stretch goal beyond the thumbs signal. The service's survey to downvoters is the hook for it; a structured in-product form is future work.
+A thumbs down already asks *why*, through reasons written for each part. What it does not take is the reader's own words: the feedback endpoint accepts a comment of up to 500 characters beside a vote, which the service sanitizes and strips of contact details before storing it, and the plugin sends none. Offering one is a design for the popup and a decision about what a reader may type into a dashboard for Google to keep, rather than a change to the transport.
 
 ## **Dependencies** {#dependencies}
 
-The epic depends on the Site Kit Service's `/v1/ai/benchmarking` endpoint, which in turn depends on the Agent Platform API. It is implemented — request and response schemas, scenario set, rate limiting, caching, output validation and asynchronous execution — and **its availability in production is the gating dependency** for every insight-rendering issue. The week ahead, the period-scale baseline, the divider, the content markers and their tooltip can all be built and tested against fixtures before then, and none of them calls the service at all.
+The epic depends on the Site Kit Service's `/v1/ai/benchmarking` endpoint, which in turn depends on the Agent Platform API. It is implemented — request and response schemas, scenario set, rate limiting, caching, output validation and asynchronous execution — and **its availability in production is the gating dependency** for every insight-rendering issue. The period-scale baseline, the content markers and their tooltip can all be built and tested against fixtures before then, and none of them calls the service at all.
 
-The epic also depends on the Typical Traffic epic's [expected range](./typical-traffic-design-doc.md#expected-range), which lands first: the fit both readings are taken from, and the band the week ahead continues.
+The epic also depends on the Typical Traffic epic, which lands first: its [expected range](./typical-traffic-design-doc.md#expected-range), the fit the period-scale reading is taken from, and its [feedback control](./typical-traffic-design-doc.md#feedback), the `FeedbackPrompt` each part of the insight renders.
+
+**The feedback controls depend on the service's `/v1/ai/feedback` endpoint, and on one field it does not have yet.** The endpoint is implemented — authentication, validation and storage, with no rate limiter in front of it, since it never calls a model — but it keys a vote on `interaction_id` alone, and one generation produces all three parts. Until it validates and stores a `surface` field beside each vote, votes on different parts of one generation cannot be told apart. It ignores a field it does not recognize, so the plugin can send `surface` before then without a vote being refused; **what cannot start before then is the rollout**, since every vote cast by the first cohort would be unattributable to the part it rated — see [the open question](#how-does-the-service-tell-the-three-parts-apart?).
 
 **The design rests on two properties of that endpoint's pipeline, and every economic claim in this document rests on the first:**
 
@@ -621,7 +637,7 @@ Three items:
 
 ## **Security** {#security}
 
-The new surface is two outbound proxy calls carrying the site's own analytics data, and one REST parameter that carries a payload back out of the browser. Four risks:
+The new surface is two outbound proxy calls carrying the site's own analytics data, a third carrying a reader's vote, and one REST parameter that carries a payload back out of the browser. Four risks:
 
 **Prompt injection.** Page titles and search queries in `contextual_data` originate from site content and from visitors' searches. The service separates system instructions from data, delimits the data, strips markup and truncates titles. The plugin contributes by sending structured fields only — there is no free-text field in the payload — and by validating what the public contextual-data filter hands back before it reaches the payload at all.
 
@@ -629,7 +645,9 @@ The new surface is two outbound proxy calls carrying the site's own analytics da
 
 **Rendered model output.** `teaser`, `text` and `driver` are all model-generated and all rendered in the dashboard. Each is treated as untrusted text and rendered as React children with only the `**…**` bold marker interpreted, never as HTML — the service's own narrative safety checks are a second line of defense, not a licence to trust the string. `scenario` and each card's `entity_kind` are validated against the known sets before they select a treatment or an order.
 
-**Authorization.** Both datapoints implement `Permission_Aware_Datapoint`, so the existing `REST_Modules_Controller` permission dispatch applies — and it applies on both branches of the route, resolving `"{$method}:{$datapoint}"` before deferring to the branch default. **The read and the submit declare the same capability for opposite reasons.** Left to the route, the read would inherit the `READABLE` branch's broader view-insights default, and the submit would inherit the `EDITABLE` branch's `MANAGE_OPTIONS` — too wide in one direction and too narrow in the other, the second of which fails closed and takes the narration out of every shared dashboard rather than leaking anything. The service independently verifies the bearer token, resolves it to a hashed Google user ID and requires that user to be registered against the requesting site, so a valid `site_id`/`site_secret` pair alone cannot buy an insight.
+**Authorization.** Both insight datapoints implement `Permission_Aware_Datapoint`, so the existing `REST_Modules_Controller` permission dispatch applies — and it applies on both branches of the route, resolving `"{$method}:{$datapoint}"` before deferring to the branch default. **The read and the submit declare the same capability for opposite reasons.** Left to the route, the read would inherit the `READABLE` branch's broader view-insights default, and the submit would inherit the `EDITABLE` branch's `MANAGE_OPTIONS` — too wide in one direction and too narrow in the other, the second of which fails closed and takes the narration out of every shared dashboard rather than leaking anything. The service independently verifies the bearer token, resolves it to a hashed Google user ID and requires that user to be registered against the requesting site, so a valid `site_id`/`site_secret` pair alone cannot buy an insight.
+
+**A vote is structured, and carries nothing a reader types.** `POST:benchmarking-insight-feedback` takes an ID, a direction, a part and reason tokens, each held to the shape the service accepts, and no free text — the endpoint's `comment` field is never sent. It declares the authenticated-dashboard capability, so it is out of reach of the view-only dashboard altogether. The `interactionID`, `scenario` and `modelVersion` it echoes are client-reported by construction, and the service treats them that way: it stores a vote under the site it has just verified, from a user it has just checked and does not record, and an `interaction_id` is a ULID no reader can guess for a generation they were not shown.
 
 **An operation is scoped to the site, not to the user who started it.** The service's operations endpoint verifies that the caller is registered against the site and that the operation belongs to it, and does not tie an operation to the user who started it, so any registered user of a site could read any operation of that site given its ID. The IDs are `shortuuid`s, are never rendered, and live an hour; what an operation holds is this site's aggregate Analytics data, which every reader of the widget already has access to by authentication or by sharing role.
 
@@ -637,7 +655,7 @@ The new surface is two outbound proxy calls carrying the site's own analytics da
 
 ## **Reliability**
 
-The generated insight is best-effort and the widget is designed to survive its absence: a failed, rate-limited or abandoned generation leaves every metric, chart, band and factor in place. This is the single most important reliability property of the design, and it is worth stating plainly — **the numbers must never disappear because the narration failed.**
+The generated insight is best-effort and the widget is designed to survive its absence: a failed, rate-limited or abandoned generation leaves every metric, chart, band and factor in place. This is the single most important reliability property of the design, and it is worth stating plainly — **the numbers must never disappear because the narration failed.** The same holds one level down: a vote the service fails to store is a `WP_Error` that leaves the part unanswered and the insight exactly as it was.
 
 **Splitting the requests is what makes that structural rather than careful.** The numbers arrive in a response that never touches the proxy, so no failure of the generative endpoint, no timeout, and no rate limit can reach them; there is no ordering to get right and no field to remember to omit.
 
@@ -651,21 +669,23 @@ Ordinary navigation does not consume the rate-limit budget. A repeat load over t
 
 The payload sends the site's own analytics data to the Site Kit Service: aggregate visitor counts; session counts by channel, device, visitor type, referrer and landing page; recently published URLs with their titles and publication ages; the most visited URLs with their category names; search queries with their clicks and positions; and the period-scale baseline summary. All of it is data the requesting user can already read in the dashboard, and all of it is derived from reports the plugin already runs.
 
-No personally identifiable information is sent. Search queries are Search Console's already aggregated and anonymized queries. Raw requests and model responses are not logged persistently by the service; the only retained telemetry is the privacy-safe thumbs signal — the vote ID, feedback direction and locale.
+No personally identifiable information is sent. Search queries are Search Console's already aggregated and anonymized queries.
+
+**The service keeps each generation for 60 days**: the sanitized request, the model's output, the scenario, the model version and the latency, under the generation's `interaction_id` and with no user identifier. A vote is kept on the same terms beside it — the `interaction_id`, the part, the direction, any reason tokens, the scenario, the model version and the locale, and no free text. That is what the notice beside the [feedback controls](#insight-feedback) tells a reader.
 
 No new OAuth scope is requested. No new custom dimension is created, so no additional data is collected from site visitors.
 
-**Nothing this feature reads or sends is stored on the site.** Both responses and the payload are assembled and discarded inside the PHP request that produced them. Where they are held is browser storage, under a key prefix hashing the WordPress user's login, their auth session token and the blog ID — so an entry does not outlive a logout and does not reach another user of the same browser. That applies to the insight's entry as much as to the data's: the slice writes it through the same storage helpers the API layer uses, so it inherits the same scoping rather than inventing its own.
+**Nothing this feature reads or sends is stored on the site.** Both responses and the payload are assembled and discarded inside the PHP request that produced them. Where they are held is browser storage, under a key prefix hashing the WordPress user's login, their auth session token and the blog ID — so an entry does not outlive a logout and does not reach another user of the same browser. That applies to the insight's entry as much as to the data's: the slice writes it through the same storage helpers the API layer uses, so it inherits the same scoping rather than inventing its own. The one value this epic keeps longer than a tab is the [vote record](#insight-feedback) — a direction per generation and part, in `localStorage` for two days under the same user-hashed prefix — so that a reader is not asked twice about the same text.
 
 ## **Scalability**
 
 **The unit that scales is the number of distinct end dates opened per identity per day.** A full miss costs two batched GA4 calls, one Search Console call, one rate-limit token and one generation — and, on a range other than 28 days, the data request for the 28 days ending on `endDate` on top. A repeat over the same dates in the same tab is answered from the [browser cache](#browser-side-caching) without reaching the server, and a repeat from anywhere else is answered from the service's cache without spending a token. **A shared dashboard's cost does not grow with its viewers**, since they all resolve to the module owner's identity; what does add a unit is a second admin, because the service's cache key carries the identity — see [Future Work](#a-generation-shared-across-a-site's-admins).
 
-Report count grows by three in this epic, on the response for the 28 days ending on `endDate` only — the channel breakdown, the channel landing pages and the top pages — and stays at two batched calls; the dimension reports the key factors already run gain a second metric rather than a second report. The daily series is the Typical Traffic epic's 759 rows, unchanged, and the readings this epic adds are arithmetic over a fit that already exists. The response grows only by the seven forward rows and the content markers, and on the response for the 28 days ending on `endDate` by the payload.
+Report count grows by three in this epic, on the response for the 28 days ending on `endDate` only — the channel breakdown, the channel landing pages and the top pages — and stays at two batched calls; the dimension reports the key factors already run gain a second metric rather than a second report. The daily series is the Typical Traffic epic's 759 rows, unchanged, and the reading this epic adds is arithmetic over a fit that already exists. The response grows only by the content markers, and on the response for the 28 days ending on `endDate` by the payload.
 
 The payload is the one thing that leaves the site, and its size is bounded by the row caps rather than by the site: a couple of kilobytes, base64url encoded, whether the site has ten posts or a hundred thousand.
 
-Waiting adds requests but not load worth counting: each is one proxy call answered from a memcache lookup, outside the rate limiter and starting no work. The submit happens once per generation.
+Waiting adds requests but not load worth counting: each is one proxy call answered from a memcache lookup, outside the rate limiter and starting no work. The submit happens once per generation. Voting adds one short call per part a reader rates and one more per reason, outside the rate limiter, and never a second vote on a part already answered.
 
 ## **Accessibility (a11y)**
 
@@ -673,7 +693,9 @@ Waiting adds requests but not load worth counting: each is one proxy call answer
 
 The insight block needs adequate contrast for the scenario-driven emphasis, and the fact that the text is AI-generated has to be conveyed in text rather than by an icon alone.
 
-Both charts gain information that must be reachable without sight of the plot and without hovering: the boundary between the measured days and the week ahead, and the content markers — whose tooltips carry post titles and links that must be reachable by keyboard, not only by clicking a four-pixel dot.
+The Overview chart gains information that must be reachable without sight of the plot and without hovering: the content markers, whose tooltips carry post titles and links that must be reachable by keyboard, not only by clicking a four-pixel dot.
+
+The [feedback controls](#insight-feedback) behave as they do on a Typical Traffic key factor column: keyboard focus reveals the pair as the pointer does, the buttons keep the accessible names `ThumbsSurveyTrigger` gives them, and the reasons are `FeedbackMenu`'s keyboard-navigable menu.
 
 ## **Internationalization (i18n)**
 
@@ -682,6 +704,8 @@ Plugin-side strings are translated as usual.
 The generated insight is a different matter: `teaser`, `text` and `driver` are produced by the model, in the language the plugin declares through the `hl` parameter, and none of them passes through the WordPress translation pipeline. Where plugin chrome wraps generated text, the two must not be concatenated into one translatable string. Numbers inside the insight are formatted by the service rather than by `numFmt()`, which is a consistency risk worth watching during QA — `driver` in particular exists to quote figures, so a locale where the model's number formatting diverges from `numFmt()` will show two conventions in one card.
 
 The character targets the service works to — 140, 250 and 230 — are counted on the localized string, and languages that expand under translation will sit at the top of that range. Both the teaser and the full block have to absorb the longest case rather than being tuned to the English one, and the teaser is the tighter of the two because it is one line in a card that has a chart under it.
+
+A part's reasons and the notice beside the controls are plugin strings, translated as usual. A reason travels as its token, so a vote reads the same in every language, and the locale a vote carries is the one its narration was generated in.
 
 # **Project management**
 
@@ -693,21 +717,21 @@ The character targets the service works to — 140, 250 and 230 — are counted 
 | 2 | Add the two generative proxy methods and the `GET` capability to `Google_Proxy` | 11 |  |
 | 3 | Add the `POST:benchmarking-insight` and `GET:benchmarking-insight` datapoints over their shared base | 15 |  |
 | 4 | Make both insight datapoints shareable | 7 |  |
-| 5 | Read the period-scale baseline and the week ahead off the expected-range fit | 11 |  |
+| 5 | Read the period-scale baseline off the expected-range fit | 7 |  |
 | 6 | Gather the payload's reports: sessions on the dimension reports, and the channel breakdown, channel landing page and top page reports | 11 |  |
 | 7 | Assemble the 28-day benchmarking request payload in PHP and extend the wire format to carry it | 15 |  |
 | 8 | Derive the content markers in `GET:benchmarking-data` | 7 |  |
 | 9 | Extend the `benchmarking` slice with the insight resolver, its wait loop and its own cache entry | 19 |  |
 | 10 | Traffic Overview: generated insight teaser | 11 |  |
 | 11 | Typical Traffic: generated insight block | 11 |  |
-| 12 | Add the "Is this helpful?" prompt beneath the insight | 3 |  |
-| 13 | Traffic Overview: content markers on the traffic chart | 15 |  |
-| 14 | Typical Traffic: the expected range seven days ahead | 7 |  |
+| 12 | Add the feedback proxy method and the `POST:benchmarking-insight-feedback` datapoint | 7 |  |
+| 13 | Feedback controls on each part of the insight, sent to the AI feedback endpoint | 11 |  |
+| 14 | Traffic Overview: content markers on the traffic chart | 15 |  |
 | 15 | Order the key factor sections by the insight's cards | 7 |  |
 | 16 | Generating, unavailable-insight and error states | 11 |  |
 | 17 | Add the support link for the insight | 3 |  |
 
-**TOTAL: 167 STORY POINTS across 17 issues**
+**TOTAL: 171 STORY POINTS across 17 issues**
 
 **The proxy work is separated from the datapoints deliberately.** `Google_Proxy` first, because the `GET` capability is a change to a Core class every proxy call in the plugin passes through and deserves reviewing as one rather than inside a feature issue; then the two datapoints over it, which is where the payload validation, the `WP_Error` statuses and the permission check each branch of the route needs live. Neither touches a report, so both are testable against a mocked proxy alone.
 
@@ -715,37 +739,39 @@ Sharing is critical path rather than a follow-up: without it the view-only dashb
 
 **The payload's reports are separate from its assembly.** Adding `sessions` to the reports the key factors already run, and the three reports only the payload needs, changes report options the Typical Traffic epic owns and is reviewable as report options. Shaping the rows into the service's contract, the 28-day rule and the encoding are the payload issue's, which lands on top of them.
 
-**The model is the Typical Traffic epic's, and this epic only reads it.** The fit and its fixtures land there. The readings issue adds the forward rows, the period-scale summary and the year-over-year check as methods beside the fit, asserted on fixed daily series the way the fit is, and the chart issue adds the forward interval pair, the joining row and the divider to a chart that already draws the band. The readings feed payload assembly as well, so they land before it is finished rather than after it.
+**The model is the Typical Traffic epic's, and this epic only reads it.** The fit, its fixtures and the week ahead land there. The readings issue adds the period-scale summary and the year-over-year check as methods beside the fit, asserted on fixed daily series the way the fit is. They feed payload assembly, so they land before it is finished rather than after it.
 
 **The datastore work is the epic's biggest single risk of an invisible mistake.** It owns two fetch stores, the resolver that chains the insight onto the data, its own cache entry with three kinds of value and two lifetimes, the handle it holds between ticks, the control that schedules the next read, the deadline, the 404-and-resubmit path, and the mapping from either fetch store's status onto the insight states. Every one of those is wrong-but-plausible in a way that looks identical on screen: a cache entry that never hits costs a generation per mount, a pending marker that is not written costs a second generation on every reload, an entry keyed on the payload quietly reverts the day-long lifetime, and an entry stored inside the datapoint's own cache group is evicted by the next range's submit. **Its acceptance criteria have to include request counts and cache reads, not only the rendered result** — which is what puts it at 19\.
 
-**The two chart issues are sized against the [PoC](#chart-construction), not against a plain `LineChart`.** The content-marker issue builds the tooltip card, the marker click handling and the legend's dot swatch on top of its own dot series. The week ahead's risk is the joining row and the divider: the two bands have to meet on `endDate` without a gap or a step, and the divider is positioned from the chart layout interface in a `ready` callback — the kind of thing that is invisible in review and obvious in VRT.
+**The chart issue is sized against the [PoC](#chart-construction), not against a plain `LineChart`.** The content-marker issue builds the tooltip card, the marker click handling and the legend's dot swatch on top of its own dot series.
+
+**The feedback work splits at the datapoint, the way the generative work does.** The server issue is the third proxy method and `POST:benchmarking-insight-feedback`, with its validation and the permission test that keeps a view-only reader out, and it is testable against a mocked proxy alone. The client issue is `InsightFeedbackPrompt` on all three parts: the option that takes `triggerSurvey()` out of `ThumbsSurveyTrigger`, the feedback fetch store, the vote record and the reason-to-token map. Like the slice's, its acceptance criteria have to count requests rather than only check what renders — one per vote, one more per reason, none for a part already answered — since a vote sent twice or a record never written looks identical on screen. Both can be built before the service stores `surface`; the client issue cannot be accepted against the live endpoint until it does, nor until the [reason tokens](#which-tokens-do-the-insight-reasons-send?) and the [notice's placement](#where-does-the-feedback-notice-go?) are settled.
 
 The factor-ordering issue is small in code and awkward in behavior: it owns the `entity_kind` map, and the rule that the section renders before the cards exist and re-sorts when they arrive without moving focus. That last part is what its brief has to name.
 
 The states issue lands late because it needs every other section present to be worth reviewing, and it owns the two absent states of the insight block — the placeholder while a generation is coming, and nothing at all once it is not.
 
-The server-side half is the critical path in full. Every band, marker and overlay can be built and tested against a fixture before the service endpoints are available in production; the two insight sections, the factor ordering and the unavailable-insight states are the ones whose acceptance needs the live endpoints, since the cards and the scenario codes drive what they order and render, and since only a real generation shows how long the **Generating** state actually lasts.
+The server-side half is the critical path in full. Every marker and overlay can be built and tested against a fixture before the service endpoints are available in production; the two insight sections, their feedback controls, the factor ordering and the unavailable-insight states are the ones whose acceptance needs the live endpoints, since the cards and the scenario codes drive what they order and render, and since only a real generation shows how long the **Generating** state actually lasts.
 
 ## **Documentation in-product** {#documentation-in-product}
 
 The widget needs one support link of its own, resolved through `getDocumentationLinkURL()` on `core/site`: **a "Learn more" link on the insight**, explaining what it is, how it is generated, and that it is AI-generated — the last part is not optional, and it belongs on both the teaser and the full block.
 
-The expected range is explained by the Typical Traffic epic's support page, behind the chart's info tooltip — see [its Documentation in-product](./typical-traffic-design-doc.md#documentation-in-product). This epic adds one point to that page: the band past the divider is the same range carried a week forward along the site's recent trend, and the days under it have not happened yet.
-
-The support team drafts these before rollout; the slugs are added with the links.
+The support team drafts it before rollout; the slug is added with the link.
 
 ## **Testing plan considerations**
 
-The hard part is data. A meaningful insight needs a property with a real seasonal shape, and the scenario mix depends on figures that fall above, inside and below the expected range. QA therefore depends on tester-plugin support for forcing both responses and the failure modes, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
+The hard part is data. A meaningful insight needs a property with a real seasonal shape, and the scenario mix depends on figures that fall above, inside and below the expected range. QA therefore depends on tester-plugin support for forcing each response and its failure modes, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
 
-**The [readings of the fit](#expected-baseline) are the part of the feature whose numbers can be asserted exactly**, the way the Typical Traffic epic's fit is: fixtures of daily rows paired with the forward bounds and the `baseline` fields they must produce. PHPUnit should cover a rising, a falling and a flat trend; a decline steep enough to clamp the projected center at zero; each side of the ±10% threshold behind `is_seasonal_period`, and a pair of changes just outside the concordance limit; and a year-ago window with missing days, which must read as not seasonal.
+**The [reading of the fit](#expected-baseline) is the part of the feature whose numbers can be asserted exactly**, the way the Typical Traffic epic's fit is: fixtures of daily rows paired with the `baseline` fields they must produce. PHPUnit should cover a rising, a falling and a flat trend, on either side of the ±4% that sets `trend_direction`; each side of the ±10% threshold behind `is_seasonal_period`, and a pair of changes just outside the concordance limit; and a year-ago window with missing days, which must read as not seasonal.
 
-PHPUnit also covers both insight datapoints: the payload validation each rejects a hand-written request with, and the mapping from a proxy status or a `FAILED` operation onto a `WP_Error`. **The submit needs a permission test of its own** — a view-only user must reach `POST:benchmarking-insight`, which is the assertion that fails if the datapoint ever stops declaring its own check and falls back to the `EDITABLE` branch's `MANAGE_OPTIONS`. The view-only path belongs here rather than only in manual QA: a shared request must resolve the owner's client for the submit and for the operation read, and the disconnected-owner case belongs beside it — the submit must not be attempted where no token resolves.
+PHPUnit also covers both insight datapoints: the payload validation each rejects a hand-written request with, and the mapping from a proxy status or a `FAILED` operation onto a `WP_Error`. **The submit needs a permission test of its own** — a view-only user must reach `POST:benchmarking-insight`, which is the assertion that fails if the datapoint ever stops declaring its own check and falls back to the `EDITABLE` branch's `MANAGE_OPTIONS`. The view-only path belongs here rather than only in manual QA: a shared request must resolve the owner's client for the submit and for the operation read, and the disconnected-owner case belongs beside it — the submit must not be attempted where no token resolves. **The feedback datapoint needs the opposite permission test**: a view-only user must *not* reach `POST:benchmarking-insight-feedback`, and an authenticated one must. Beside it go the validation a hand-written vote is rejected with, and the `surface` and `feature` fields on what the datapoint sends.
 
 **The wait loop and the slice's cache entry need tests that count requests and cache reads, not just states.** Every mistake available here renders correctly and costs tokens or generations, so Jest should assert: **one** submit and N operation reads for a generation that reports running N−1 times; **no request at all** when the slice's entry holds an insight; no request when it holds a 429 marker, and one once that marker has expired; a read rather than a submit when the entry holds a pending operation ID; exactly one fresh submit when a read answers 404; a single submit when both panels mount in sequence; no further read after the deadline; an entry written under the end date and locale rather than under the payload — which is the one that silently reverts the day-long lifetime if it regresses; **a submit for one end date leaving another end date's stored insight in place**, which is what `API.set()`'s prefix invalidation breaks if the slice's own key ever moves inside the datapoint's group; and **a 90-day range resolving the data response for the 28 days ending on its end date**, with a switch to another range ending on the same day causing no second submit.
 
-**The chart tables are unit-testable and the charts themselves are not.** The [column order](#chart-data-tables-and-options) the interval roles depend on, the joining row, the nulls each band relies on, the seven forward rows and the axis maximum computed over the bands are all outputs of pure functions, and each has an exact expected value. What is left — the week ahead continuing the measured band without a step, the divider landing on `endDate`, the marker dots' white stroke — is VRT's, which is why both charts carry Storybook stories at every state the response can put them in. Storybook should carry the Typical Traffic chart's week ahead on a rising and on a falling trend.
+**The vote record needs the same kind of test.** Jest should assert **one** request per vote and one more per reason; **no request** for a part whose record exists, on the mount that wrote it or a later one; the record written only on a `200`, so that a `500` leaves the part asking again; a vote on one part leaving the other two parts of the same generation unanswered; and a record that survives a new tab, read back from `localStorage` with the session store empty — the case a record kept in `sessionStorage` would fail without a sign.
+
+**The chart table is unit-testable and the chart itself is not.** The [marker column](#chart-data-tables-and-options) — the day's own value on a publish date and `null` on every other — is the output of a pure function with an exact expected value. What is left — the dots sitting on the line, their white stroke, the tooltip card above the dot it belongs to — is VRT's, which is why the Overview chart carries Storybook stories with markers and without.
 
 **The wire format is the one thing both suites test, and they test it against the same file.** The shared fixture gains the new members and one case beyond them: a payload that survives a PHP encode, a JSON round trip and a PHP decode byte for byte — the property both cache keys depend on. The version integer increments in this epic, so a fixture at the previous version must be rejected rather than guessed at.
 
@@ -757,7 +783,7 @@ One case the design removes is worth noting for what QA no longer has to constru
 
 The epic follows Site Kit's usual staged rollout. The `trafficInsights` flag is enabled for 20% of users through the Site Kit Service, and — absent critical issues — for the remaining 80% two weeks later.
 
-**The rollout cannot start before the service's `/v1/ai/benchmarking` endpoint is live in production**, since the insight is the defining half of what this epic adds. The plugin work can complete and ship behind the disabled flag ahead of that, and the week ahead, the period-scale baseline and the content markers are all testable without it.
+**The rollout cannot start before the service's `/v1/ai/benchmarking` endpoint is live in production**, since the insight is the defining half of what this epic adds, **nor before `/v1/ai/feedback` stores the part a vote rates** — see [Dependencies](#dependencies). The plugin work can complete and ship behind the disabled flag ahead of both, and the period-scale baseline and the content markers are testable without either.
 
 Two things to watch in the first cohort rather than after it: how long the **Generating** state actually lasts, which is what settles [the cadence question](#what-is-the-cadence-and-deadline-for-waiting?), and how often a 429 is reached, which is what settles [the rate-limit question](#what-does-the-widget-show-when-the-rate-limit-is-hit?). Both are measurable at 20% and neither is answerable before then.
 
@@ -811,19 +837,42 @@ Undecided: whether the ordering applies on every range, only on a 28-day range, 
 
 Blocked on this: the factor-ordering issue, and the insight blocks' copy.
 
+## **How does the service tell the three parts apart?** {#how-does-the-service-tell-the-three-parts-apart?}
+
+[Votes are per part](#insight-feedback), and `/v1/ai/feedback` keys a vote on `interaction_id`, which all three parts of one generation share. The plugin sends a `surface` field naming the response field the part renders — `teaser`, `text` or `driver` — for the service to validate against those three and store beside the vote.
+
+Undecided: the field's name and values as the service accepts them; whether it is required, which would refuse every vote from a plugin that does not send it; and whether the service's own reporting splits sentiment by it.
+
+Blocked on this: the feedback datapoint's request shape, and the rollout.
+
+## **Which tokens do the insight reasons send?** {#which-tokens-do-the-insight-reasons-send?}
+
+The feedback endpoint accepts ten reason tokens and rejects anything else. Of the reasons the two Typical Traffic parts offer, `My traffic didn’t change like this` is `INACCURATE_DATA`. `Hard to understand`, `Too obvious to be useful` and `Leaves out an important traffic source or page` have no token that says the same thing: `TOO_VAGUE`, `NOT_RELEVANT` and `OTHER` are the nearest, and each loses what the reason says. The teaser's thumbs down has no reasons designed at all.
+
+Undecided: whether the service gains tokens for those three — most cheaply in the same change that adds `surface` — or the popups move to tokens the service already has; and what the teaser's thumbs down asks, if anything.
+
+Blocked on this: the reasons' copy, the reason-to-token map, and the teaser's control.
+
+## **Where does the feedback notice go?** {#where-does-the-feedback-notice-go?}
+
+A vote leaves the site with the generation it rates, and the reader has to be told so beside the prompt, before they vote. The insight's controls are two unlabelled buttons revealed on hover in a part's corner, there is no room beside them for a sentence, and a thumbs up is sent the moment it is clicked.
+
+Undecided: whether the notice is a line under each part, one line under the insight as a whole, part of the buttons' tooltip, or inside the reasons menu — the last of which a thumbs up never opens.
+
+Blocked on this: the feedback controls' design, and their acceptance.
+
 # **Appendices**
 
 The following are implementation-level details that can be settled at the Implementation Brief stage of the individual issues.
 
 ### **Datapoint response shapes**
 
-What the response gains once decoded, and therefore the fixtures every front-end issue is built against. These are the plugin's own shapes: camelCase, flat, and unrelated to the service contract below except for the five generated fields.
+What the response gains once decoded, and therefore the fixtures every front-end issue is built against. These are the plugin's own shapes: camelCase, flat, and unrelated to the service contract below except for the five generated fields and the two that identify a generation.
 
 Added to `GET:benchmarking-data`:
 
 | Field | Type | Present |
 | :---- | :---- | :---: |
-| `forecast` | `Array<{ date, expectedMin, expectedMax }>`, 7 rows from the day after `endDate`, the bounds one-decimal floats | With a fit at `endDate` |
 | `contentMarkers` | `Array<{ date, visitors: int, posts: Array<{ title, url }> }>` | With the post-date custom dimension |
 | `payload` | `string`, base64url, opaque to the browser | On the response for the 28 days ending on `endDate` |
 | `locale` | `string`, resolved server-side | Always |
@@ -837,6 +886,7 @@ Added to `GET:benchmarking-data`:
 | `insight.teaser` | `string`, localized, with `**…**` bold | When the service answered from its own cache and wrote one |
 | `insight.text`, `insight.driver` | `string`, localized, with `**…**` bold | When the service answered from its own cache |
 | `insight.keyFactors` | `Array<EntityKind>`, the cards' `entity_kind` values in the service's order, up to 3 | When the service answered from its own cache with cards |
+| `insight.interactionID`, `insight.modelVersion` | `string`, the generation's identity, which a [vote](#insight-feedback) echoes | When the service answered from its own cache |
 
 `GET:benchmarking-insight`, given an `operationID`:
 
@@ -846,6 +896,17 @@ Added to `GET:benchmarking-data`:
 | `state` | `RUNNING` | `SUCCEEDED` | `FAILED` | Always |
 | `insight` | the fields above | On `SUCCEEDED` |
 
+`POST:benchmarking-insight-feedback`, given one vote in the request body's `data` object, answers `{ success: true }`:
+
+| Field | Type | Required |
+| :---- | :---- | :---: |
+| `interactionID` | `string`, the insight's, a 26-character ULID | Yes |
+| `scenario` | `string`, the insight's | Yes |
+| `modelVersion` | `string`, the insight's | No |
+| `surface` | `teaser`, `text` or `driver` | Yes |
+| `sentiment` | `POSITIVE` or `NEGATIVE` | Yes |
+| `reasons` | `Array<string>`, reason tokens, at most 5 | No |
+
 A failure is a `WP_Error` rather than a field — a `FAILED` operation included, so the slice reads one thing rather than a status and an error side by side. **The datapoints keep only what the widget reads off a card**: its `entity_kind`, which is all the [ordering](#insight-driven-factor-ordering) needs, rather than the titles, figures and shares the service puts on each.
 
 ### **Wire format additions**
@@ -854,42 +915,33 @@ The members the [format](#wire-format-additions) gains, beside the ones it alrea
 
 | Envelope member | Holds |
 | :---- | :---- |
-| existing | version, string table, first plotted date, daily series, period totals, contextual dimensions, dimension order, the expected range's per-day bounds |
-| new | the week ahead, one row of `[ expectedMin, expectedMax ]` per day for the seven days after `endDate`, or empty without a fit at `endDate` |
+| existing | version, string table, first plotted date, daily series, period totals, contextual dimensions, dimension order, the expected range's per-day bounds, the week ahead |
 | new | the content markers, one row of `[ dayOffset, visitors, [ titleRef, urlRef ], … ]` per publish date |
 | new | the resolved locale, as a string-table reference |
 | new | the encoded payload, as one opaque string, or `null` on a response for any range but the 28 days ending on `endDate` |
 
 The payload is the same positional layout restricted to what the service reads — the string table, the four `visitors` totals, the baseline and the nine `contextual_data` arrays — plus `end_date`, `days_in_period` and the resolved locale, JSON-encoded and then base64url-encoded, optionally deflated first with a one-character prefix saying which.
 
-### **Chart data tables and options** {#chart-data-tables-and-options}
+### **Chart data table and options** {#chart-data-tables-and-options}
 
-The two data tables, in column order. Interval columns annotate the series column they follow, so the order is load-bearing rather than cosmetic. `null` in a cell is a gap the chart must not interpolate across.
+The Overview chart's data table, in column order. `null` in a cell is a day without a marker.
 
-| \# | Traffic Overview chart | Typical Traffic chart |
-| :---- | :---- | :---- |
-| 0 | `date` | `date` |
-| 1 | `visitors` | `visitors`; `null` on the seven forward rows |
-| 2 | marker value — the day's `visitors` on a publish date, else `null` | `expectedMin`, `role: 'interval'`, as the Typical Traffic epic builds it; `null` on a day without a band and on the forward rows |
-| 3 | — | `expectedMax`, `role: 'interval'`, the same |
-| 4 | — | the forward series, drawn with no line: the midpoint of its row's forward band; `null` until the row for `endDate`, which carries the midpoint of that day's measured band |
-| 5 | — | forward `expectedMin`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMin` |
-| 6 | — | forward `expectedMax`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMax` |
+| \# | Traffic Overview chart |
+| :---- | :---- |
+| 0 | `date` |
+| 1 | `visitors` |
+| 2 | marker value — the day's `visitors` on a publish date, else `null` |
 
-Columns 4 to 6 and the seven forward rows are absent when the response carries no `forecast`. The marker column is absent when `contentMarkers` is empty.
+The marker column is absent when `contentMarkers` is empty.
 
 The options that carry a decision rather than a preference:
 
 | Option | Value | Why |
 | :---- | :---- | :---- |
-| `intervals` | `style: 'area'`, a fill color and opacity, `lineWidth: 0`, `pointSize: 0` | Draws each band as a filled region with no boundary lines or points. |
-| `interpolateNulls` | `false` | Keeps each band to the rows that carry it, and the visitors line to the days that happened. |
-| `tooltip` on the Overview chart | `trigger: 'none'` **with `isHtml` set explicitly** | `getChartOptions()` overrides `trigger` unless `isHtml` is already declared. |
+| `tooltip` | `trigger: 'none'` **with `isHtml` set explicitly** | `getChartOptions()` overrides `trigger` unless `isHtml` is already declared. |
 | `focusTarget` | `'datum'` | Makes `select` resolve to the point that was clicked, which is what the marker tooltip keys on. |
-| `legend` | `position: 'none'` | The legend is `ChartLegend`, since Google Charts cannot show a band in its own. |
-| `series` for the forward series | `lineWidth: 0`, `pointSize: 0` | Carries the week ahead's band without drawing a line or points of its own; the divider is what separates the measured days from it. |
+| `legend` | `position: 'none'` | The legend is `ChartLegend`, which draws the marker's dot swatch and shows its item only when the range has a marker. |
 | `series` for the marker column | `lineWidth: 0` with a `pointSize` | Renders the column as dots on the line rather than as a line of its own. |
-| `vAxis` viewWindow max | computed over the bands | An axis fitted to the lines clips the bands. |
 
 ### **Request and response field mapping**
 
@@ -934,6 +986,22 @@ The service contract, for reference while implementing the derivation. Every `co
 `site_id` and `site_secret` are injected by `Google_Proxy::request()` and are not part of the payload the data datapoint assembles. `hl` travels as a query parameter on the submit, not in the body, and the body must be sent as JSON. The service receives no ordering from the plugin: it selects its key factor cards from the rows themselves.
 
 Failure responses to distinguish: `400` for a missing or invalid field, including a `baseline` with a non-positive `period_months` and more than 50 `top_pages`; `403` for an unverifiable token, or for a user not registered against the site on the submit — the operation read answers that case with a `500`; `404` for an operation that does not exist or has expired; `429` when either rate limit is exhausted, with no `Retry-After` header; `500` for a parse or output-validation failure on the submit itself; and a non-JSON `503` when a request outlives the service's 15-second timeout. **A failure inside an asynchronous generation is not a status on any response** — it marks the operation `FAILED`, which the operation read reports and the datapoint turns into a `WP_Error`.
+
+`POST /v1/ai/feedback` authenticates as the submit does — `site_id` and `site_secret` in a JSON body, the bearer token as a header, the user registered against the site — and applies no rate limit. Its body:
+
+| Request field | Type | Required |
+| :---- | :---- | :---: |
+| `interaction_id` | `string`, a ULID, accepted in either case | Yes |
+| `feature` | `benchmarking` | Yes |
+| `scenario_code` | `string`, a scenario the service could have returned for `feature` | Yes |
+| `sentiment` | `POSITIVE` or `NEGATIVE` | Yes |
+| `model_version` | `string`, lowercase letters, digits, `.`, `_` and `-`, at most 64 characters | No |
+| `locale` | `string`, a language tag, `-` or `_` separated | No |
+| `reasons` | `Array<string>`, at most 5 of `ACCURATE`, `ACTIONABLE`, `CLEAR_EXPLANATION`, `FOUND_NEW_TREND`, `INACCURATE_DATA`, `OUTDATED`, `TOO_VAGUE`, `POOR_TONE`, `NOT_RELEVANT` and `OTHER` | No |
+| `comment` | `string`, at most 500 characters; never sent by the plugin | No |
+| `client_timestamp` | `string`, RFC 3339 | No |
+
+It answers `200` with `{ "success": true }`; `400` for any invalid field or a mismatched `site_secret`; `403` for an unverifiable token or a user not registered against the site; and `500` when the service could not look the user up or store the vote. It stores every submission as a row of its own and never looks the generation up, so the values a vote echoes are stored as sent. It ignores a field it does not recognize, which is what lets the plugin send `surface` before the service stores it.
 
 ### **Entity kind mapping** {#entity-kind-mapping}
 
