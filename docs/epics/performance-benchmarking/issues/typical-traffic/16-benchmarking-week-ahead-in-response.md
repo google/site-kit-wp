@@ -75,11 +75,83 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Expected_Baseline.php` (added in #13798):
+  * Add `FORECAST_DAYS`, set to `7`.
+  * Add `get_forecast()`. It returns the expected range for each of the `FORECAST_DAYS` days after the last day of the series the class holds, and it reads only the fit for that last day:
+    * When the last day has no fit, return an empty array.
+    * Get the center `B`, the margin `M`, the weekday shape `S` and the monthly trend of that fit from the same private method that fits a day for its bounds, so the fit has one implementation. If that method returns only the bounds, the trend and the direction, make it return `B`, `M` and `S` as well.
+    * Compute each forward day's bounds with the Center, Margin and Band steps in the acceptance criteria. Build the band with the code that builds a fitted day's band, with the forward center in place of `B`. Move that code into its own private method if it is not one yet.
+    * Read `S` for the weekday of the forward day, numbered the way the fit numbers weekdays. Take `30.4375` from the same constant the trend step uses.
+    * Write each formula with its terms in the order the acceptance criteria give them, and round with `round( $value, 1 )`, so the bounds match the tests to the decimal.
+    * Date the rows from the last date of the series. Start from a `DateTimeImmutable` in UTC and move one day forward with `modify( '+1 day' )` for each row, as `Response_Builder::get_daily_traffic()` does. Do not read the current time: no `time()`, no `current_time()`, and no `DateTimeImmutable` created without a date.
+    * Return the rows oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'expectedMin' => float, 'expectedMax' => float )`.
+
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Builder.php`:
+  * In `build()`, call `get_forecast()` on the same `Expected_Baseline` instance that fits the `dailyTraffic` bounds (#13799). That instance holds the daily series that ends on `$end_date`, so the rows it returns start on the day after `$end_date`.
+  * Add those rows to the returned array as `forecast`, right after `dailyTraffic`, only when `get_forecast()` returns rows. Add `forecast` to the `@return` description of `build()`.
+
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Wire_Format.php`:
+  * Add `MEMBER_FORECAST`, set to `8`, after the member `7` constant from #13799. Leave `FORMAT_VERSION` at `1`.
+
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Encoder.php`:
+  * In `encode()`, write member `Wire_Format::MEMBER_FORECAST`: one `array( expectedMin, expectedMax )` for each `forecast` row, in the order the rows arrive. Encode each bound the way member `7` encodes the `dailyTraffic` bounds (#13799). Do not write the rows' dates.
+  * When the response has no `forecast`, write an empty array for that member.
+  * Add `forecast` to the `@param` description of `encode()`.
+
+* [ ] In `assets/js/modules/analytics-4/utils/benchmarking/constants.ts`:
+  * Add `MEMBER_FORECAST`, set to `8`.
+  * Add `BENCHMARKING_FORECAST_DAYS`, set to `7`: the number of pairs in a member `8` that is not empty. It matches `Expected_Baseline::FORECAST_DAYS`.
+
+* [ ] In `assets/js/modules/analytics-4/utils/benchmarking/types.ts`:
+  * Add `BenchmarkingForecastRow`: `{ date: string; expectedMin: number; expectedMax: number }`.
+  * Add `forecast?: BenchmarkingForecastRow[]` to `DecodedBenchmarkingResponse`.
+
+* [ ] In `assets/js/modules/analytics-4/utils/benchmarking/decodeBenchmarkingResponse.ts`:
+  * Raise `MEMBER_COUNT` to `9`.
+  * Add three checks to `membersHoldTheirShapes`, so a response that fails any of them decodes to `null`:
+    * Member `MEMBER_FORECAST` is an array that is empty or holds exactly `BENCHMARKING_FORECAST_DAYS` entries.
+    * Each of its entries is an array of two numbers.
+    * When it is not empty, member `MEMBER_DAILY_VISITORS` is not empty either, because the pairs are dated from the last daily row.
+  * Add `decodeForecast( lastDate: string, pairs: [ number, number ][] ): BenchmarkingForecastRow[]` next to `decodeDailyTraffic()`. Start from `stringToDate( lastDate )`, and before each pair move the date one day forward with `setDate( date.getDate() + 1 )`, as `decodeDailyTraffic()` does. Give each row the pair's first number as `expectedMin` and its second as `expectedMax`, unchanged.
+  * In `decodeBenchmarkingResponse()`, when member `MEMBER_FORECAST` holds pairs, pass the date of the last decoded `dailyTraffic` row and the pairs to `decodeForecast()`, and add the result to the returned object as `forecast`. When the member is empty, leave the `forecast` key out.
+
+* [ ] In `assets/js/modules/analytics-4/datastore/benchmarking.ts`:
+  * Add `forecast` to the `@return` description of the `getBenchmarkingData()` selector.
+
+* [ ] In `assets/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json`:
+  * Add member `8`: seven different `[ expectedMin, expectedMax ]` pairs, each bound with one decimal. They stand for `2025-08-22` to `2025-08-28`, the seven days after the fixture's last daily count.
+
+#13799 adds the 759-day daily series, the `dailyTraffic` bounds and member `7`. Drawing `forecast` on the chart is #13842.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Expected_BaselineTest.php` (added in #13798), add cases for `get_forecast()`, on series that end on `2026-09-15` unless the case says otherwise:
+  * 365 days at `100` visitors give seven rows, dated `2026-09-16` to `2026-09-22` in that order, each `77.6` to `122.4`.
+  * On 365 days rising by one visitor a day, from `100` to `464`, both bounds of the seventh row are higher than the bounds of the last day. On the same days falling from `464` to `100`, both are lower.
+  * On 365 days of `120` visitors on weekdays and `50` at weekends, every forward weekday has higher bounds than every forward Saturday and Sunday.
+  * On 14 days at `1000` followed by 28 days at `5`, the seventh row is `0` to `2.8`, and no bound in any row is below `0`.
+  * A series with `0` visitors before `2026-08-19` and `100` from then on gives seven rows, each `69.7` to `130.3`. With visitors from `2026-08-20` on, it gives an empty array, and so does a series of zeros.
+  * 365 days at `100` visitors ending on `2024-02-27` give rows dated `2024-02-28`, `2024-02-29`, then `2024-03-01` to `2024-03-05`.
+* In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php`:
+  * With daily rows on every day from `2026-08-19` to `2026-09-15`, `build( '2026-08-19', '2026-09-15' )` returns seven `forecast` rows dated `2026-09-16` to `2026-09-22`, and the last `dailyTraffic` row is `2026-09-15`.
+  * With daily rows from `2026-08-20` on, the response has no `forecast` key.
+  * A response with `forecast` takes the same batch calls as before: one call when neither custom dimension has data.
+  * Make `test_build__does_not_return_a_number_with_decimals` allow the `forecast` bounds, as it allows the `dailyTraffic` bounds after #13799.
+* In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_EncoderTest.php`:
+  * Add seven `forecast` rows to `get_fixture_response()`, for `2025-08-22` to `2025-08-28`, with the bounds of the fixture's member `8`. The encoded response then has to match the checked-in file and still carry no date but the first.
+  * A response without `forecast` is encoded as nine members, with an empty member `8`.
+  * A forward bound with two decimals is encoded with one.
+* In `assets/js/modules/analytics-4/utils/benchmarking/decodeBenchmarkingResponse.test.ts`:
+  * The checked-in fixture decodes to seven `forecast` rows, dated `2025-08-22` to `2025-08-28`, with the bounds of member `8` unchanged.
+  * An empty member `8` decodes to a response with no `forecast` key.
+  * The pairs after a last daily row on `2026-09-28` are dated `2026-09-29` to `2026-10-05`.
+  * Each of these decodes to `null`: an envelope of eight or ten members, a member `8` of six or eight pairs, a member `8` that is not a list, a pair that is not two numbers, and seven pairs with no daily counts.
+  * Add an empty member `8` to every encoded response written out in the file.
+* In `assets/js/modules/analytics-4/datastore/benchmarking.test.ts`:
+  * Add an empty member `8` to every response body written out in the file.
+  * A response whose member `8` holds six pairs stores the `benchmarking_decode_failed` error.
+* No Storybook story is required, because nothing renders `forecast` until #13842.
+* No VRT changes expected.
 
 ## QA Brief
 
