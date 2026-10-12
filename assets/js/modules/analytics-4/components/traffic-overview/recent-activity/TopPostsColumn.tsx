@@ -50,7 +50,7 @@ const TopPostsColumn: FC = () => {
 		getTopPostsReportOptions
 	);
 
-	// Each row's `label` is the page path, until the title replaces it below.
+	// Each row's `label` is a page path.
 	const pathRows = useMemo(
 		() => getRecentTrafficBreakdownRows( report ),
 		[ report ]
@@ -61,10 +61,9 @@ const TopPostsColumn: FC = () => {
 		[ pathRows ]
 	);
 
-	// `getPageTitles` requests a title for every row of the report it gets, so
-	// it gets the report with only the rows the column shows. The report can
-	// also hold pages with no visitors, which the column leaves out, and the
-	// titles error below is read for the shown pages alone.
+	// `getPageTitles` requests a title for each row of its report, so it
+	// receives only the rows the column shows. `titlesError` is read for the
+	// same page paths.
 	const shownRowsReport = useMemo< Report | undefined >(
 		() =>
 			report && {
@@ -89,8 +88,8 @@ const TopPostsColumn: FC = () => {
 		[ shownRowsReport, reportOptions ]
 	);
 
-	// `getPageTitles` reads `undefined` both while the titles load and after
-	// their request fails, so the error of that request is read from the store.
+	// `getPageTitles` returns `undefined` both while the titles load and after
+	// their request fails, so the error is read from the store.
 	const titlesError = useSelect(
 		( select: Select ) =>
 			pagePaths.length
@@ -104,7 +103,7 @@ const TopPostsColumn: FC = () => {
 						]
 				  )
 				: undefined,
-		[ pagePaths, reportOptions ]
+		[ pagePaths, reportOptions, titles ]
 	);
 
 	const siteURL = useSelect(
@@ -122,7 +121,7 @@ const TopPostsColumn: FC = () => {
 
 				return {
 					...row,
-					// A page that Analytics has no title for keeps its path.
+					// A page that Analytics has no title for shows its path.
 					label:
 						title && title !== __( '(unknown)', 'google-site-kit' )
 							? title
@@ -145,8 +144,8 @@ const TopPostsColumn: FC = () => {
 					! titlesError )
 			}
 			error={ error || titlesError }
-			// The "Retry" button requests failed titles again on its own, but
-			// not a failed report of pages, which `retry` requests again.
+			// The "Retry" button requests failed titles again by itself. `retry`
+			// requests a failed report of pages again.
 			onRetry={ error ? retry : undefined }
 		/>
 	);

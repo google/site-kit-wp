@@ -63,15 +63,14 @@ export interface RecentTrafficBreakdownReports {
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
  * The visitors are strings, the way the API returns them. With
- * `totalVisitors`, the report also gets the total row the API returns, which
- * counts a visitor once even when the visitor appears in several rows.
+ * `totalVisitors`, the report also has the totals row the API returns.
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
  * @since n.e.x.t Added the `totalVisitors` parameter.
  *
  * @param {Array<Array>} pairs           `[ label, visitors ]` pairs.
- * @param {number}       [totalVisitors] The visitors in the report's total.
+ * @param {number}       [totalVisitors] Optional. The visitors in the report's total.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
@@ -116,15 +115,12 @@ export function getSectionClassNames( container: Element ): string[] {
 
 /**
  * Gets the options of the three reports of the Recent activity tab's traffic
- * breakdown.
- *
- * The options cover the date range of the tab for the registry's reference
- * date, the one `useFreshDataDateRange` returns.
+ * breakdown, for the registry's reference date.
  *
  * @since n.e.x.t
  *
  * @param {Object} registry The registry, with its reference date set.
- * @return {Object} The options of the posts, channels and referrals reports.
+ * @return {Object} The options of the posts, channels, and referrals reports.
  */
 export function getRecentTrafficBreakdownReportOptions(
 	registry: WPDataRegistry
@@ -141,21 +137,18 @@ export function getRecentTrafficBreakdownReportOptions(
 }
 
 /**
- * Puts the reports of the Recent activity tab's traffic breakdown in the
- * store, so the breakdown renders without sending a request.
- *
- * Each report is left out when it isn't given. With the posts report, the
- * function also puts in the report of titles that the posts column asks for,
- * which has a title for each page path of the posts the column shows.
+ * Puts the given reports of the Recent activity tab's traffic breakdown in the
+ * store, so the breakdown renders without sending a request. With the posts
+ * report, it also puts in the report of titles the posts column requests.
  *
  * @since n.e.x.t
  *
  * @param {Object} registry             The registry, with its reference date set.
  * @param {Object} reports              The reports.
- * @param {Object} [reports.posts]      The report of visitors for each page path.
- * @param {Object} [reports.postTitles] The title of each page path. A path with no title here gets none in the report of titles.
- * @param {Object} [reports.channels]   The report of visitors for each channel.
- * @param {Object} [reports.referrals]  The report of visitors for each site that referred them.
+ * @param {Object} [reports.posts]      Optional. The report of visitors for each page path.
+ * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
+ * @param {Object} [reports.channels]   Optional. The report of visitors for each channel.
+ * @param {Object} [reports.referrals]  Optional. The report of visitors for each site that referred them.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(

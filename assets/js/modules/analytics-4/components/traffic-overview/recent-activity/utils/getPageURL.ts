@@ -19,16 +19,15 @@
 /**
  * Gets the URL of a page on the site from the page path in an Analytics report.
  *
- * Analytics can record a value that isn't a path, such as `(not set)`. It can
- * also record a path that resolves to another site, such as `//example.org/`
- * or `/\example.org/`, when spam reaches the property. Neither gets a URL, so
- * a link never leaves the site.
+ * Analytics can record a value that isn't a path, such as `(not set)`, or a
+ * spam path that resolves to another site, such as `//example.org/` or
+ * `/\example.org/`. Neither has a URL, so a link never leaves the site.
  *
  * @since n.e.x.t
  *
  * @param {string} siteURL  The URL of the site, such as `https://example.com`.
  * @param {string} pagePath The page path, such as `/hello-world/`.
- * @return {(string|undefined)} The URL of the page, or `undefined` when the page path is not a path on the site.
+ * @return {(string|undefined)} The URL of the page, or `undefined` when the page path isn't a path on the site.
  */
 export function getPageURL(
 	siteURL: string,

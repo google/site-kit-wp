@@ -79,12 +79,16 @@ describe( 'useFreshDataReport', () => {
 			{ registry }
 		);
 
-		expect( result.current.reportOptions ).toEqual(
-			getTopChannelsReportOptions( {
-				startDate: '2025-02-03',
-				endDate: '2025-02-05',
-			} )
-		);
+		expect( result.current.reportOptions ).toEqual( {
+			startDate: '2025-02-03',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'totalUsers' } ],
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs',
+		} );
 	} );
 
 	it( 'should request the report with a cache of five minutes', async () => {
@@ -137,7 +141,18 @@ describe( 'useFreshDataReport', () => {
 		await waitForRegistry();
 
 		expect( result.current ).toMatchObject( {
-			report: channelsReport,
+			report: {
+				rows: [
+					{
+						dimensionValues: [ { value: 'Direct' } ],
+						metricValues: [ { value: '12' } ],
+					},
+					{
+						dimensionValues: [ { value: 'Referral' } ],
+						metricValues: [ { value: '4' } ],
+					},
+				],
+			},
 			loading: false,
 			error: undefined,
 		} );
@@ -160,7 +175,11 @@ describe( 'useFreshDataReport', () => {
 		expect( result.current ).toMatchObject( {
 			report: undefined,
 			loading: false,
-			error: errorResponse,
+			error: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 		} );
 	} );
 
@@ -183,7 +202,7 @@ describe( 'useFreshDataReport', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` settles once, so a new one waits for the retry.
+		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {
@@ -197,7 +216,18 @@ describe( 'useFreshDataReport', () => {
 			cacheTTL: 300,
 		} );
 		expect( result.current ).toMatchObject( {
-			report: channelsReport,
+			report: {
+				rows: [
+					{
+						dimensionValues: [ { value: 'Direct' } ],
+						metricValues: [ { value: '12' } ],
+					},
+					{
+						dimensionValues: [ { value: 'Referral' } ],
+						metricValues: [ { value: '4' } ],
+					},
+				],
+			},
 			loading: false,
 			error: undefined,
 		} );

@@ -44,8 +44,8 @@ export interface RecentTrafficBreakdownProps {
 const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 	hasNoPublishedPosts = false,
 } ) => {
-	// `useInstanceId` is typed as `string | number`, so it is read as a string
-	// the way `TextField` does.
+	// `useInstanceId` is typed as `string | number`, and `aria-labelledby`
+	// takes a string.
 	const instanceID = useInstanceId(
 		RecentTrafficBreakdown,
 		'googlesitekit-traffic-overview__recent-traffic-breakdown-heading'

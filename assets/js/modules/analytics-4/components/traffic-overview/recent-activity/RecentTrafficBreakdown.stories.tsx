@@ -86,11 +86,7 @@ const REFERRALS = createBreakdownReport(
 interface RecentTrafficBreakdownStoryProps extends RecentTrafficBreakdownProps {
 	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
-	/**
-	 * Whether the story pauses its animations. The loading placeholders get
-	 * their colour from an animation, which the visual regression tests turn
-	 * off unless it is paused.
-	 */
+	/** Whether to pause the animations at their first frame, so the loading placeholders keep their color in a visual regression test. */
 	pauseAnimation?: boolean;
 }
 
@@ -110,9 +106,9 @@ function Template( {
 		setupRegistry( registry );
 	}
 
-	// The section's styles are scoped to the widget and to the Recent activity
-	// panel, so the story renders inside both. The widget's white background
-	// lets the light rails and loading placeholders show.
+	// The section's styles apply only inside the widget and the Recent activity
+	// panel. The widget's white background shows the light rails and loading
+	// placeholders.
 	return (
 		<WithRegistrySetup func={ setup }>
 			<div

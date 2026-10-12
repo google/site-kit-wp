@@ -113,7 +113,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		] );
 	} );
 
-	it( 'should show 100% for a row that holds every visitor in the total, even when other rows have visitors', () => {
+	it( 'should show 100% for a row with as many visitors as the total, even when other rows have visitors', () => {
 		// Every visitor viewed the home page, and some of them read a post too.
 		const report = createBreakdownReport(
 			[
@@ -167,28 +167,28 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 	} );
 
 	it( 'should show no share when the report has no total, or a total of zero', () => {
-		const rows = [
-			{ label: 'Direct', value: '5', secondaryValue: undefined },
-		];
-
 		expect(
 			getRecentTrafficBreakdownRows(
 				createBreakdownReport( [ [ 'Direct', 5 ] ] )
 			)
-		).toEqual( rows );
+		).toEqual( [
+			{ label: 'Direct', value: '5', secondaryValue: undefined },
+		] );
 		expect(
 			getRecentTrafficBreakdownRows(
 				createBreakdownReport( [ [ 'Direct', 5 ] ], 0 )
 			)
-		).toEqual( rows );
+		).toEqual( [
+			{ label: 'Direct', value: '5', secondaryValue: undefined },
+		] );
 	} );
 
 	it( 'should sort the rows by visitors, most visitors first', () => {
 		const report = createBreakdownReport(
 			[
-				[ 'medium.com', 1 ],
-				[ 'substack.com', 5 ],
-				[ 'reddit.com', 3 ],
+				[ 'blog.example.com', 1 ],
+				[ 'news.example.com', 5 ],
+				[ 'forum.example.com', 3 ],
 			],
 			9
 		);
@@ -197,15 +197,19 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 			getRecentTrafficBreakdownRows( report ).map(
 				( { label } ) => label
 			)
-		).toEqual( [ 'substack.com', 'reddit.com', 'medium.com' ] );
+		).toEqual( [
+			'news.example.com',
+			'forum.example.com',
+			'blog.example.com',
+		] );
 	} );
 
 	it( 'should keep the order of the report for values with the same visitors', () => {
 		const report = createBreakdownReport(
 			[
-				[ 'reddit.com', 2 ],
-				[ 'medium.com', 2 ],
-				[ 'substack.com', 2 ],
+				[ 'forum.example.com', 2 ],
+				[ 'blog.example.com', 2 ],
+				[ 'news.example.com', 2 ],
 			],
 			6
 		);
@@ -214,7 +218,11 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 			getRecentTrafficBreakdownRows( report ).map(
 				( { label } ) => label
 			)
-		).toEqual( [ 'reddit.com', 'medium.com', 'substack.com' ] );
+		).toEqual( [
+			'forum.example.com',
+			'blog.example.com',
+			'news.example.com',
+		] );
 	} );
 
 	it( 'should show no more than three rows, picked after the sort', () => {

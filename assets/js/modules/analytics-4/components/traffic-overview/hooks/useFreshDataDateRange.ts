@@ -39,12 +39,9 @@ export interface FreshDataDateRange {
  * Gets the date range of the Recent activity tab for a reference date.
  *
  * The date range runs from two days before the reference date to the reference
- * date.
- *
- * The reference date is a date in the browser's time zone. Analytics reports
- * in the time zone of the Analytics property, and Search Console in Pacific
- * Time. The date range starts two days back to hold yesterday in both
- * reports.
+ * date. The reference date is in the browser's time zone, but Analytics reports
+ * in the property's time zone and Search Console in Pacific Time, so starting
+ * two days back includes yesterday in both reports.
  *
  * @since n.e.x.t
  *
@@ -61,11 +58,9 @@ export function getFreshDataDateRange(
 }
 
 /**
- * Gets the date range of the Recent activity tab.
+ * Gets the date range of the Recent activity tab for the user's reference date.
  *
- * The date range is the one `getFreshDataDateRange` returns for the user's
- * reference date, and stays the same when the user selects another date range
- * for the dashboard.
+ * The dashboard's date range doesn't change it.
  *
  * @since n.e.x.t
  *

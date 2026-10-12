@@ -152,13 +152,13 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and the reports of
+ * Puts the Search Console property, the site's latest post, and the reports of
  * the recent traffic breakdown in the store, so the Recent activity tab
  * renders without sending a request.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry to put the property, the post and the reports in.
+ * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
@@ -398,11 +398,9 @@ RecentActivityGatheringData.scenario = {
 };
 
 /**
- * This story sets no `scenario`, so it runs no visual check. When the site has
- * no published posts, the Recent activity tab omits the latest post
- * performance, which renders no content yet, and the "Top posts by visitors"
- * column, which the "No Published Posts" story of `RecentTrafficBreakdown`
- * captures.
+ * This story runs no visual check, because the "No Published Posts" story of
+ * `RecentTrafficBreakdown` captures the only visible difference, the missing
+ * "Top posts by visitors" column.
  */
 export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
 RecentActivityNoPublishedPosts.storyName =

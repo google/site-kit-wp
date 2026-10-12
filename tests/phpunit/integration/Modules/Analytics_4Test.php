@@ -3242,9 +3242,8 @@ class Analytics_4Test extends TestCase {
 		$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
 		$dimension->setName( 'sessionSource' );
 
-		// The Recent activity tab lists the sites that referred visitors by this
-		// dimension, and a view-only user can see that tab, so validating it for
-		// a shared request should not throw an exception.
+		// The Recent activity tab lists referring sites by this dimension, and a
+		// view-only user can see that tab.
 		$request_helpers->validate_shared_dimensions( array( $dimension ) );
 
 		$this->addToAssertionCount( 1 );

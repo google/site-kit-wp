@@ -65,20 +65,6 @@ describe( 'RecentActivityPanel', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	/**
-	 * Answers every report request with a report that has no rows, the way
-	 * `muteFetch` answers one request. The recent traffic breakdown requests
-	 * three reports, and the tests that call this check which sections render,
-	 * not their rows.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {void}
-	 */
-	function muteReportRequests() {
-		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
-	}
-
 	// `ActivateAnalyticsCTA` observes when it scrolls into view, and jsdom
 	// has no `IntersectionObserver`.
 	const { getObservedElements, simulateIntersection } =
@@ -122,7 +108,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -143,7 +129,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -302,7 +288,7 @@ describe( 'RecentActivityPanel', () => {
 			{ body: [], status: 200 },
 			{ overwriteRoutes: true }
 		);
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -319,7 +305,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the "Top posts by visitors" column of the recent traffic breakdown when the site has published posts', async () => {
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { waitForRegistry } = render( <RecentActivityPanel />, {
 			registry,
@@ -338,7 +324,7 @@ describe( 'RecentActivityPanel', () => {
 			{ body: [], status: 200 },
 			{ overwriteRoutes: true }
 		);
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { waitForRegistry } = render( <RecentActivityPanel />, {
 			registry,
@@ -358,7 +344,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the four sections when the request for the recent posts fails', async () => {
-		muteReportRequests();
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		fetchMock.get(
 			postsEndpoint,
 			{

@@ -31,30 +31,41 @@ import TileShell, { TileShellProps } from './TileShell';
 import TileZeroDataMessage, { MetricLabel } from './TileZeroDataMessage';
 
 export interface TableTileRow {
+	/** Row label, shown as a link when the row has a `url`. */
 	label: string;
+	/** Row value, such as a visitor count. */
 	value: string | number;
 	/** A second value shown after `value`, such as a share of the total. */
 	secondaryValue?: string | number;
+	/** URL the label links to, opened in a new tab. */
 	url?: string;
+	/** Page path of a row that lists a page, which `TableTile` itself doesn't render. */
 	pagePath?: string;
 }
 
 export interface TableTileProps {
+	/** Title shown at the top of the tile. */
 	title: string;
-	/** The heading element of the title, `h3` unless the tile sits under an `h3`. */
+	/** Heading element of the title, `h3` by default. */
 	titleAs?: TileShellProps[ 'titleAs' ];
+	/** Header label after the title, such as a column name. */
 	headerLabel?: string;
+	/** Rows to render, with the zero state shown when there are none. */
 	rows?: TableTileRow[];
+	/** Whether to show loading placeholders in place of the rows. */
 	loading?: boolean;
+	/** Error to show in place of the rows, as a `ReportError`. */
 	error?: unknown;
+	/** Most rows to show, or all of them when not set. */
 	limit?: number;
+	/** Metric the zero state message names: `visitors` by default, `sales`, or `leads`. */
 	noDataMetricLabel?: MetricLabel;
+	/** Content shown in place of the default zero state message. */
 	zeroState?: ReactNode;
 	/**
-	 * Called when the "Retry" button of the error state is clicked. The button
-	 * requests a failed report again only when the report was requested
-	 * without fetch options, so a report requested with a `cacheTTL` has to be
-	 * requested again here.
+	 * Called on a "Retry" click in the error state, and needed for a report
+	 * with fetch options, such as a `cacheTTL`, which the button doesn't
+	 * request again.
 	 */
 	onRetry?: () => void;
 }

@@ -135,14 +135,13 @@ describe( 'RecentTrafficBreakdown', () => {
 
 	const referralsReport = createBreakdownReport(
 		[
-			[ 'substack.com', 8 ],
-			[ 'reddit.com', 4 ],
+			[ 'news.example.com', 8 ],
+			[ 'forum.example.com', 4 ],
 		],
 		12
 	);
 
-	// `ReportError` shows its own message for some error codes, so this code
-	// keeps the message of the response.
+	// `ReportError` shows the message of an error with this code.
 	const errorResponse = {
 		code: 'test_error',
 		message: 'Test error message',
@@ -151,20 +150,20 @@ describe( 'RecentTrafficBreakdown', () => {
 
 	/**
 	 * Answers the four report requests of the section: the posts, their
-	 * titles, the channels and the referrals.
+	 * titles, the channels, and the referrals.
 	 *
-	 * Each request gets its report above, unless `responses` gives it another
-	 * response. A route registered before this call answers first, so a test
-	 * that needs a request to fail once, or to wait, registers that route
-	 * before calling this.
+	 * Each request is answered with its report, such as `postsReport`, unless
+	 * `responses` has another response for it. A route registered earlier
+	 * answers first, so a test that needs a request to fail once, or to wait,
+	 * registers that route before this call.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} [responses]           The responses that replace the reports above.
-	 * @param {Object} [responses.posts]     The response to the request for the posts.
-	 * @param {Object} [responses.titles]    The response to the request for the post titles.
-	 * @param {Object} [responses.channels]  The response to the request for the channels.
-	 * @param {Object} [responses.referrals] The response to the request for the referrals.
+	 * @param {Object} [responses]           Optional. The responses that replace the reports.
+	 * @param {Object} [responses.posts]     Optional. The response to the request for the posts.
+	 * @param {Object} [responses.titles]    Optional. The response to the request for the post titles.
+	 * @param {Object} [responses.channels]  Optional. The response to the request for the channels.
+	 * @param {Object} [responses.referrals] Optional. The response to the request for the referrals.
 	 * @return {void}
 	 */
 	function mockReportRequests(
@@ -309,8 +308,8 @@ describe( 'RecentTrafficBreakdown', () => {
 		expect(
 			getRowTexts( getColumn( 'Top referrals by visitors' ) )
 		).toEqual( [
-			[ 'substack.com', '8(66.7%)' ],
-			[ 'reddit.com', '4(33.3%)' ],
+			[ 'news.example.com', '8(66.7%)' ],
+			[ 'forum.example.com', '4(33.3%)' ],
 		] );
 	} );
 
@@ -346,8 +345,8 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should not request a title for a page that had no visitors', async () => {
-		// A report keeps the values with no visitors, so its three rows can
-		// hold a page that had none.
+		// A report includes values with no visitors, so one of its three rows
+		// can be a page with none.
 		mockReportRequests( {
 			posts: {
 				body: {
@@ -459,9 +458,9 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toBe( 'Referral' );
 		expect(
 			within( getColumn( 'Top referrals by visitors' ) )
-				.getAllByText( /\.com$/ )
+				.getAllByText( /\.example\.com$/ )
 				.map( ( label ) => label.textContent )
-		).toEqual( [ 'substack.com', 'reddit.com' ] );
+		).toEqual( [ 'news.example.com', 'forum.example.com' ] );
 	} );
 
 	it( 'should render a report error in the column whose report fails, and the rows of the other two columns', async () => {
@@ -488,7 +487,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toHaveLength( 3 );
 		expect(
 			within( getColumn( 'Top referrals by visitors' ) ).getByText(
-				'substack.com'
+				'news.example.com'
 			)
 		).toBeInTheDocument();
 	} );
@@ -512,8 +511,7 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// A `waitForRegistry` resolves only once, so a new one waits for the
-		// retry.
+		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -552,8 +550,7 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// A `waitForRegistry` resolves only once, so a new one waits for the
-		// retry.
+		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -615,8 +612,7 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// A `waitForRegistry` resolves only once, so a new one waits for the
-		// retry.
+		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -629,7 +625,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, titlesRequest );
-		// The report of pages had not failed, so it is not requested again.
+		// The report of pages didn't fail, so it isn't requested again.
 		expect( fetchMock ).toHaveFetchedTimes( 1, postsRequest );
 		expect(
 			within( getColumn( 'Top posts by visitors' ) ).getAllByRole(

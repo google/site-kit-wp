@@ -35,10 +35,7 @@ export interface TileShellProps {
 	className?: string;
 	/** Tile title, shown as the heading that `titleAs` names. */
 	title: ReactNode;
-	/**
-	 * The heading element of the title. A tile in a section that has an `h3`
-	 * heading of its own uses `h4`.
-	 */
+	/** Heading element of the title, `h3` by default, or `h4` for a tile under an `h3` heading. */
 	titleAs?: 'h3' | 'h4';
 	/** Label at the end of the header, such as a column name. */
 	headerLabel?: string;

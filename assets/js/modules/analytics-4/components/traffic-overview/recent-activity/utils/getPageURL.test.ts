@@ -40,13 +40,26 @@ describe( 'getPageURL', () => {
 		);
 	} );
 
-	it.each( [
-		[ 'a value that is not a path', '(not set)' ],
-		[ 'an empty value', '' ],
-		[ 'a path that starts with two slashes', '//example.org/offer/' ],
-		[ 'a path that starts with a backslash', '/\\example.org/offer/' ],
-	] )( 'should return no URL for %s', ( _, pagePath ) => {
-		expect( getPageURL( 'https://example.com', pagePath ) ).toBeUndefined();
+	it( 'should return no URL for a value that is not a path', () => {
+		expect(
+			getPageURL( 'https://example.com', '(not set)' )
+		).toBeUndefined();
+	} );
+
+	it( 'should return no URL for an empty value', () => {
+		expect( getPageURL( 'https://example.com', '' ) ).toBeUndefined();
+	} );
+
+	it( 'should return no URL for a path that starts with two slashes', () => {
+		expect(
+			getPageURL( 'https://example.com', '//example.org/offer/' )
+		).toBeUndefined();
+	} );
+
+	it( 'should return no URL for a path that starts with a slash and a backslash', () => {
+		expect(
+			getPageURL( 'https://example.com', '/\\example.org/offer/' )
+		).toBeUndefined();
 	} );
 
 	it( 'should return no URL when the site URL is not a URL', () => {

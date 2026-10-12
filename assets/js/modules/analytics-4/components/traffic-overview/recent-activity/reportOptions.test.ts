@@ -21,9 +21,6 @@
  */
 import {
 	FRESH_DATA_REPORT_FETCH_OPTIONS,
-	TOP_CHANNELS_REPORT_ID,
-	TOP_POSTS_REPORT_ID,
-	TOP_REFERRALS_REPORT_ID,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -38,7 +35,7 @@ describe( 'FRESH_DATA_REPORT_FETCH_OPTIONS', () => {
 } );
 
 describe( 'getTopPostsReportOptions', () => {
-	it( 'should return the visitors for the three pages with the most visitors over the date range, most visitors first', () => {
+	it( 'should build options that request the three pages with the most visitors over the date range, most visitors first', () => {
 		expect( getTopPostsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -46,13 +43,14 @@ describe( 'getTopPostsReportOptions', () => {
 			dimensions: [ 'pagePath' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
-			reportID: TOP_POSTS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
 		} );
 	} );
 } );
 
 describe( 'getTopChannelsReportOptions', () => {
-	it( 'should return the visitors for the three channels with the most visitors over the date range, most visitors first', () => {
+	it( 'should build options that request the three channels with the most visitors over the date range, most visitors first', () => {
 		expect( getTopChannelsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -60,13 +58,14 @@ describe( 'getTopChannelsReportOptions', () => {
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
-			reportID: TOP_CHANNELS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs',
 		} );
 	} );
 } );
 
 describe( 'getTopReferralsReportOptions', () => {
-	it( 'should return the visitors for the three sources of the "Referral" channel with the most visitors over the date range, most visitors first', () => {
+	it( 'should build options that request the three sources of the "Referral" channel with the most visitors over the date range, most visitors first', () => {
 		expect( getTopReferralsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -75,19 +74,20 @@ describe( 'getTopReferralsReportOptions', () => {
 			dimensionFilters: { sessionDefaultChannelGroup: 'Referral' },
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
-			reportID: TOP_REFERRALS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topReferralsArgs',
 		} );
 	} );
 
 	it( 'should filter on the same dimension that the channels report groups by, so the sources are those of its "Referral" row', () => {
-		const [ channelDimension ] =
-			getTopChannelsReportOptions( DATE_RANGE ).dimensions ?? [];
-
+		expect( getTopChannelsReportOptions( DATE_RANGE ).dimensions ).toEqual(
+			[ 'sessionDefaultChannelGroup' ]
+		);
 		expect(
 			Object.keys(
 				getTopReferralsReportOptions( DATE_RANGE ).dimensionFilters ??
 					{}
 			)
-		).toEqual( [ channelDimension ] );
+		).toEqual( [ 'sessionDefaultChannelGroup' ] );
 	} );
 } );

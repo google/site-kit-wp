@@ -166,8 +166,8 @@ describe( 'TableTile', () => {
 	} );
 
 	it( 'renders error state with actions', async () => {
-		// The error actions read the module list, so it is in the store
-		// before the tile renders, and no request for it outlives the test.
+		// The error actions read the module list, so the store has it and no
+		// request for it outlives the test.
 		const registry = createTestRegistry();
 		provideModules( registry );
 		provideModuleRegistrations( registry );

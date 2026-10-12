@@ -45,32 +45,28 @@ import {
 export interface FreshDataReport {
 	/** The options the report is requested with. */
 	reportOptions: ReportOptions;
-	/**
-	 * The report, or `undefined` until the request succeeds. The request waits
-	 * until the Traffic Overview widget first comes into view.
-	 */
+	/** The report, or `undefined` until it loads after the Traffic Overview widget comes into view. */
 	report?: Report;
 	/** `true` until the request has finished, whether it succeeded or failed. */
 	loading: boolean;
-	/** The error of the request, or `undefined` when the request has not failed. */
+	/** The error of the request, or `undefined` when the request hasn't failed. */
 	error?: ErrorObject;
 	/** Requests the report again. */
 	retry: () => void;
 }
 
 /**
- * Resolves one of the Recent activity tab's reports.
+ * Resolves one of the Recent activity tab's reports, for the tab's date range
+ * and with a five-minute cache.
  *
- * The hook builds the report options for the tab's date range, and requests
- * the report with a cache of five minutes. The store saves the request's
- * progress under both arguments of `getReport`, the options and the fetch
- * options, but saves its error under the options alone. So the hook reads each
- * under its own key, and `retry` restarts the request under both arguments,
- * which the "Retry" button of a report error does not do on its own.
+ * The store saves the error of a report under its options alone, so the error
+ * is read without the fetch options. `retry` requests the report again, which
+ * the "Retry" button of a report error doesn't do for a report with fetch
+ * options.
  *
  * @since n.e.x.t
  *
- * @param {Function} buildReportOptions Builds the report options from the tab's date range. Pass the same function on every render, such as one defined outside the component, so the options are built only when the date range changes.
+ * @param {Function} buildReportOptions Builds the report options from the tab's date range. Pass a function defined outside the component, so the options change only with the date range.
  * @return {Object} The report options, the report, whether it is loading, its error, and a function that requests it again.
  */
 export function useFreshDataReport(
@@ -98,7 +94,7 @@ export function useFreshDataReport(
 				'getReport',
 				[ reportOptions, FRESH_DATA_REPORT_FETCH_OPTIONS ]
 			),
-		[ reportOptions ]
+		[ report, reportOptions ]
 	);
 
 	const error = useSelect(
@@ -106,7 +102,7 @@ export function useFreshDataReport(
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
 				reportOptions,
 			] ),
-		[ reportOptions ]
+		[ report, reportOptions ]
 	);
 
 	const { invalidateResolution } = useDispatch( MODULES_ANALYTICS_4 );

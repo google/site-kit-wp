@@ -26,17 +26,10 @@ import { getBreakdownReportArgs } from '@/js/modules/analytics-4/components/traf
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { MINUTE_IN_SECONDS } from '@/js/util';
 
-export const TOP_POSTS_REPORT_ID =
-	'analytics-4_recent-traffic-breakdown_widget_topPostsArgs';
-export const TOP_CHANNELS_REPORT_ID =
-	'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs';
-export const TOP_REFERRALS_REPORT_ID =
-	'analytics-4_recent-traffic-breakdown_widget_topReferralsArgs';
-
 /**
- * The second argument the Recent activity tab passes to `getReport`. A cached
- * report is used for five minutes instead of the default hour, so the tab
- * stays near what is happening on the site.
+ * The fetch options of the Recent activity tab's reports. A cached report is
+ * used for five minutes instead of the default hour, so the tab shows recent
+ * traffic.
  */
 export const FRESH_DATA_REPORT_FETCH_OPTIONS: ReportFetchOptions = {
 	cacheTTL: 5 * MINUTE_IN_SECONDS,
@@ -45,8 +38,8 @@ export const FRESH_DATA_REPORT_FETCH_OPTIONS: ReportFetchOptions = {
 /**
  * Builds the options of the report of visitors for each page.
  *
- * The report holds only the pages with the most visitors, as many as a column
- * shows. Its total still counts every visitor, and the shares divide by it.
+ * The report has only the pages with the most visitors, as many as a column
+ * shows. Its total still counts every visitor.
  *
  * @since n.e.x.t
  *
@@ -62,7 +55,8 @@ export function getTopPostsReportOptions( {
 	return {
 		...getBreakdownReportArgs( {
 			dimensionName: 'pagePath',
-			reportID: TOP_POSTS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
 			startDate,
 			endDate,
 		} ),
@@ -73,9 +67,8 @@ export function getTopPostsReportOptions( {
 /**
  * Builds the options of the report of visitors for each channel.
  *
- * The report holds only the channels with the most visitors, as many as a
- * column shows. Its total still counts every visitor, and the shares divide
- * by it.
+ * The report has only the channels with the most visitors, as many as a
+ * column shows. Its total still counts every visitor.
  *
  * @since n.e.x.t
  *
@@ -91,7 +84,8 @@ export function getTopChannelsReportOptions( {
 	return {
 		...getBreakdownReportArgs( {
 			dimensionName: 'sessionDefaultChannelGroup',
-			reportID: TOP_CHANNELS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs',
 			startDate,
 			endDate,
 		} ),
@@ -103,12 +97,10 @@ export function getTopChannelsReportOptions( {
  * Builds the options of the report of visitors for each site that referred
  * them.
  *
- * The report keeps only the sessions of the "Referral" channel. Without that
- * filter, it lists a source for every channel, such as `google` for
- * "Organic Search" and `(direct)` for "Direct", which repeats the channels.
- * It holds only the sites with the most visitors, as many as a column shows.
- * Its total still counts every visitor of the "Referral" channel, and the
- * shares divide by it.
+ * The report counts only the "Referral" channel, so the column lists referring
+ * sites instead of repeating the channels column. It has only the sites with
+ * the most visitors, as many as a column shows. Its total still counts every
+ * visitor of the "Referral" channel.
  *
  * @since n.e.x.t
  *
@@ -124,7 +116,8 @@ export function getTopReferralsReportOptions( {
 	return {
 		...getBreakdownReportArgs( {
 			dimensionName: 'sessionSource',
-			reportID: TOP_REFERRALS_REPORT_ID,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topReferralsArgs',
 			startDate,
 			endDate,
 		} ),
