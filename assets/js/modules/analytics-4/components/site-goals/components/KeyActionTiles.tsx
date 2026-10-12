@@ -30,7 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Tile } from '@/js/modules/analytics-4/components/site-goals/components/Tile';
+import { Tile } from '@/js/modules/analytics-4/components/common/tiles';
 import {
 	NUMBER_FORMAT,
 	PERCENT_FORMAT,

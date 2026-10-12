@@ -82,7 +82,7 @@ const populatedFormValues = {
 };
 
 function Template() {
-	return <StepSignupForm />;
+	return <StepSignupForm onComplete={ () => {} } />;
 }
 
 export const Default = Template.bind( {} ) as StepSignupFormStory;

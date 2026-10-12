@@ -33,6 +33,7 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import Link from '@/js/components/Link';
 import ModuleIcon from '@/js/components/ModuleIcon';
 import NewBadge from '@/js/components/NewBadge.js';
@@ -125,12 +126,13 @@ export default function SetupModule( { slug, name, description } ) {
 					{ EXPERIMENTAL_MODULES.includes( slug ) && (
 						<Badge
 							label={ __( 'Experimental', 'google-site-kit' ) }
+							variant={ BADGE_VARIANTS.EXPERIMENTAL }
 						/>
 					) }
 					{ BETA_MODULES.includes( slug ) && (
 						<Badge
-							className="googlesitekit-badge--beta"
 							label={ __( 'Beta', 'google-site-kit' ) }
+							variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 						/>
 					) }
 					{ NEW_MODULES.includes( slug ) && (

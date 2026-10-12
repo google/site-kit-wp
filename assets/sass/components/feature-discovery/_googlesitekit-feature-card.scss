@@ -86,11 +86,6 @@
 	.googlesitekit-feature-card__dismiss-menu {
 		display: flex;
 		flex-shrink: 0;
-
-		.googlesitekit-feedback-menu {
-			inset-block-start: auto !important;
-			inset-inline: auto 0 !important;
-		}
 	}
 
 	.googlesitekit-feature-card__dismiss {
@@ -119,19 +114,6 @@
 			align-items: center;
 			display: flex;
 			justify-content: space-between;
-		}
-	}
-
-	.googlesitekit-feature-card__service {
-		align-items: center;
-		display: flex;
-		gap: var(--googlesitekit-feature-card-gap-m);
-
-		svg {
-			background: $c-neutral-n-10;
-			border-radius: 10px;
-			display: block;
-			padding: 6px;
 		}
 	}
 

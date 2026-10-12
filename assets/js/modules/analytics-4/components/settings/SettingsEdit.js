@@ -138,7 +138,7 @@ export default function SettingsEdit() {
 	}
 
 	return (
-		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics googlesitekit-feature--setupFlowRefresh">
+		<div className="googlesitekit-setup-module googlesitekit-setup-module--analytics">
 			{ viewComponent }
 		</div>
 	);

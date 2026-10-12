@@ -107,10 +107,8 @@ class Tag_PlacementTest extends TestCase {
 		$wp_version = '5.5';
 
 		$site_status = $this->tag_placement;
-		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'tag_placement_test' );
-		$check_if_tag_exists->setAccessible( true );
+		$check_if_tag_exists = $this->get_accessible_method( $site_status, 'tag_placement_test' );
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array() );
 
@@ -119,7 +117,6 @@ class Tag_PlacementTest extends TestCase {
 
 	public function test_get_active_modules_with_tags() {
 		$site_status = $this->tag_placement;
-		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
 		update_option(
 			Modules::OPTION_ACTIVE_MODULES,
@@ -131,8 +128,7 @@ class Tag_PlacementTest extends TestCase {
 			)
 		);
 
-		$get_active_modules = $reflection->getMethod( 'get_active_modules_with_tags' );
-		$get_active_modules->setAccessible( true );
+		$get_active_modules = $this->get_accessible_method( $site_status, 'get_active_modules_with_tags' );
 
 		$result = $get_active_modules->invokeArgs( $site_status, array() );
 
@@ -160,10 +156,8 @@ class Tag_PlacementTest extends TestCase {
 
 	public function test_check_if_tag_exists__no_tag() {
 		$site_status = $this->tag_placement;
-		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
-		$check_if_tag_exists->setAccessible( true );
+		$check_if_tag_exists = $this->get_accessible_method( $site_status, 'check_if_tag_exists' );
 
 		$result = $check_if_tag_exists->invokeArgs( $site_status, array( $this->analytics_4, 'body content' ) );
 
@@ -172,10 +166,8 @@ class Tag_PlacementTest extends TestCase {
 
 	public function test_check_if_tag_exists__has_tag_placed_by_sitekit() {
 		$site_status = $this->tag_placement;
-		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
-		$check_if_tag_exists->setAccessible( true );
+		$check_if_tag_exists = $this->get_accessible_method( $site_status, 'check_if_tag_exists' );
 
 		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript linter error.
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript
@@ -199,10 +191,8 @@ class Tag_PlacementTest extends TestCase {
 
 	public function test_check_if_tag_exists__has_tag_placed_no_sitekit_headers() {
 		$site_status = $this->tag_placement;
-		$reflection  = new \ReflectionClass( get_class( $site_status ) );
 
-		$check_if_tag_exists = $reflection->getMethod( 'check_if_tag_exists' );
-		$check_if_tag_exists->setAccessible( true );
+		$check_if_tag_exists = $this->get_accessible_method( $site_status, 'check_if_tag_exists' );
 
 		// Silence the WordPress.WP.EnqueuedResources.NonEnqueuedScript linter error.
 		// phpcs:disable WordPress.WP.EnqueuedResources.NonEnqueuedScript

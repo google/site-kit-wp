@@ -71,7 +71,6 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Query;
 use WP_User;
-use ReflectionMethod;
 
 /**
  * @group Modules
@@ -467,9 +466,7 @@ class Analytics_4Test extends TestCase {
 		$_GET['accountTicketId'] = '123456';
 		$_GET['nonce']           = wp_create_nonce( Analytics_4::PROVISION_ACCOUNT_TICKET_NONCE_ACTION );
 
-		$class  = new \ReflectionClass( Analytics_4::class );
-		$method = $class->getMethod( 'handle_provisioning_callback' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Analytics_4::class, 'handle_provisioning_callback' );
 
 		return array(
 			'method'                      => $method,
@@ -1124,8 +1121,7 @@ class Analytics_4Test extends TestCase {
 			'Analytics settings should be initialized with account ID and default values before property provisioning.'
 		);
 
-		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Analytics_4::class, 'provision_property_webdatastream' );
 		$method->invoke( $this->analytics, $account_id, new Analytics_4\Account_Ticket() );
 
 		$this->assertEqualSetsWithIndex(
@@ -1289,8 +1285,7 @@ class Analytics_4Test extends TestCase {
 			'Analytics settings should be initialized with account ID and default values before property provisioning with failing container lookup.'
 		);
 
-		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Analytics_4::class, 'provision_property_webdatastream' );
 		$method->invoke( $this->analytics, $account_id, new Analytics_4\Account_Ticket() );
 
 		$this->assertArrayIntersection(
@@ -1426,8 +1421,7 @@ class Analytics_4Test extends TestCase {
 		$account_ticket = new Analytics_4\Account_Ticket();
 		$account_ticket->set_enhanced_measurement_stream_enabled( true );
 
-		$method = new ReflectionMethod( Analytics_4::class, 'provision_property_webdatastream' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Analytics_4::class, 'provision_property_webdatastream' );
 		$method->invoke( $this->analytics, $account_id, $account_ticket );
 
 		$this->assertEqualSetsWithIndex(
@@ -3953,8 +3947,7 @@ class Analytics_4Test extends TestCase {
 			),
 		);
 
-		$method = new ReflectionMethod( Analytics_4::class, 'get_custom_dimensions_data' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Analytics_4::class, 'get_custom_dimensions_data' );
 
 		// Returns an empty array if the current page type is not singular.
 		$wp_query = new WP_Query();

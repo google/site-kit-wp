@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { ESCAPE } from '@wordpress/keycodes';
-
-/**
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
@@ -34,6 +29,7 @@ import {
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -46,6 +42,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 import FeatureCard from './FeatureCard';
 
 const TEST_OLD_VERSION = '1.84.0';
@@ -354,7 +351,10 @@ describe( 'FeatureCard', () => {
 		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
 
 		fireEvent.click( button );
-		fireEvent.keyDown( getByRole( 'menu' ), { keyCode: ESCAPE } );
+
+		fireEvent.keyDown( getByRole( 'menu' ), {
+			key: 'Escape',
+		} );
 
 		expect( button ).toHaveFocus();
 		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
@@ -416,4 +416,21 @@ describe( 'FeatureCard', () => {
 			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
 		}
 	);
+
+	it( 'should open the detail panel for its feature when Read more is clicked', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole } = render(
+			<FeatureCard slug={ TEST_FEATURE.slug } />,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Read more' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+		).toBe( TEST_FEATURE.slug );
+	} );
 } );

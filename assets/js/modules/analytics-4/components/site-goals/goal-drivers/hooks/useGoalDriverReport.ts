@@ -26,7 +26,7 @@ import { useEffect, useMemo } from '@wordpress/element';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { MetricLabel } from '@/js/modules/analytics-4/components/site-goals/components/ZeroDataMessage';
+import { MetricLabel } from '@/js/modules/analytics-4/components/common/tiles';
 import {
 	GOAL_DRIVER_ROW_LIMIT_COLLAPSED,
 	GOAL_DRIVER_ROW_LIMIT_EXPANDED,

@@ -644,17 +644,13 @@ class Sign_In_With_GoogleTest extends TestCase {
 	}
 
 	private function call_resolve_authenticator_class( $integration ) {
-		$class  = new \ReflectionClass( Sign_In_With_Google::class );
-		$method = $class->getMethod( 'resolve_authenticator_class' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Sign_In_With_Google::class, 'resolve_authenticator_class' );
 
 		return $method->invokeArgs( $this->module, array( $integration ) );
 	}
 
 	private function call_handle_auth_callback( $authenticator ) {
-		$class  = new \ReflectionClass( Sign_In_With_Google::class );
-		$method = $class->getMethod( 'handle_auth_callback' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Sign_In_With_Google::class, 'handle_auth_callback' );
 
 		return $method->invokeArgs( $this->module, array( $authenticator ) );
 	}

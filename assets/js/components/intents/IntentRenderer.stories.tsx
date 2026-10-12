@@ -44,8 +44,9 @@ import {
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import IntentRenderer from './IntentRenderer';
 
-// `IntentRenderer` shows its loading and error states only when a component is
-// registered for the slug, so the stories register `Null` for `example-intent`.
+// `IntentRenderer` shows its loading state only when a component is registered
+// for the slug, so the stories register `Null` for `example-intent`. The
+// intent component shows its own error, so the error stories live with it.
 Intents.registerIntent( 'example-intent', { Component: Null } );
 
 interface TemplateProps {
@@ -82,27 +83,6 @@ Loading.args = {
 		registry
 			.dispatch( CORE_INTENTS )
 			.startResolution( 'getIntent', [ 'example-intent', 'abc123' ] );
-	},
-};
-
-export const Error = Template.bind( {} ) as Story< TemplateProps >;
-Error.storyName = 'Error';
-Error.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry.dispatch( CORE_INTENTS ).setErrorForSelector(
-			{
-				code: 'intent_not_found',
-				message:
-					'This link can’t be used. Go back to where you started and try again.',
-				data: { status: 404 },
-			},
-			'getIntent',
-			[ 'example-intent', 'abc123' ]
-		);
-
-		registry
-			.dispatch( CORE_INTENTS )
-			.finishResolution( 'getIntent', [ 'example-intent', 'abc123' ] );
 	},
 };
 

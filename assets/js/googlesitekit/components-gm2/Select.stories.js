@@ -141,7 +141,6 @@ VRTStory.scenario = {
 	delay: 3000, // Sometimes the click doesn't work, waiting for everything to load.
 	clickSelector: '.googlesitekit-story-select-click',
 	postInteractionWait: 3000, // Wait for overlay and selects to animate.
-	onReadyScript: 'mouse.js',
 };
 
 export default {

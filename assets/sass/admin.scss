@@ -205,7 +205,6 @@
 @import "components/settings/googlesitekit-settings-meta";
 @import "components/settings/googlesitekit-settings-module";
 @import "components/settings/googlesitekit-settings-user-input";
-@import "components/settings/googlesitekit-settings-visitor-groups";
 
 // User Input
 @import "components/user-input/googlesitekit-user-input-module";
@@ -219,6 +218,7 @@
 
 // Feature Discovery
 @import "components/feature-discovery/googlesitekit-feature-discovery";
+@import "components/feature-discovery/googlesitekit-feature-discovery-callout";
 
 // Feature Tours
 @import "components/feature-tours/googlesitekit-dashboard-sharing";
@@ -227,6 +227,8 @@
 @import "components/feature-discovery/googlesitekit-all-services-tab";
 @import "components/feature-discovery/googlesitekit-effort-indicator";
 @import "components/feature-discovery/googlesitekit-feature-card";
+@import "components/feature-discovery/googlesitekit-feature-details-panel";
+@import "components/feature-discovery/googlesitekit-feature-service-identity";
 @import "components/feature-discovery/googlesitekit-whats-new";
 
 // Modules

@@ -80,6 +80,25 @@ export function requireCanViewSharedModule( slug ) {
 }
 
 /**
+ * Returns a function that checks if the current user has access to the given shareable module.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the given shareable module or not.
+ */
+export function requireAccessToShareableModule( slug ) {
+	return async ( { select, resolveSelect } ) => {
+		await Promise.all( [
+			resolveSelect( CORE_USER ).getAuthentication(),
+			resolveSelect( CORE_MODULES ).getModules(),
+		] );
+
+		return true === select( CORE_USER ).hasAccessToShareableModule( slug );
+	};
+}
+
+/**
  * Returns a function that checks if the given module is active.
  *
  * @since 1.170.0
@@ -188,23 +207,6 @@ export function requirePromptDismissed( prompt ) {
 		await resolveSelect( CORE_USER ).getDismissedPrompts();
 
 		return true === select( CORE_USER ).isPromptDismissed( prompt );
-	};
-}
-
-/**
- * Returns a function that checks if the audience segmentation widget is hidden.
- *
- * @since 1.166.0
- *
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the widget is hidden or not.
- */
-export function requireAudienceSegmentationWidgetHidden() {
-	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( CORE_USER ).getUserAudienceSettings();
-
-		return (
-			true === select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-		);
 	};
 }
 
