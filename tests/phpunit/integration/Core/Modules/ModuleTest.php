@@ -48,8 +48,7 @@ class ModuleTest extends TestCase {
 		$this->assertFalse( $module->internal, 'Magic getter should expose internal default.' );
 
 		// Can't use force_set_property here since the property is private on the base module.
-		$reflection_property = new \ReflectionProperty( self::MODULE_CLASS_NAME, 'info' );
-		$reflection_property->setAccessible( true );
+		$reflection_property = $this->get_accessible_property( self::MODULE_CLASS_NAME, 'info' );
 		$reflection_property->setValue(
 			$module,
 			array(
@@ -599,8 +598,7 @@ class ModuleTest extends TestCase {
 	public function test_parse_string_list() {
 		$module = new FakeModule( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 
-		$reflected_parse_string_list_method = new ReflectionMethod( 'Google\Site_Kit\Tests\Core\Modules\FakeModule', 'parse_string_list' );
-		$reflected_parse_string_list_method->setAccessible( true );
+		$reflected_parse_string_list_method = $this->get_accessible_method( FakeModule::class, 'parse_string_list' );
 
 		$empty_values = array( array(), '', 5 );
 		foreach ( $empty_values as $empty_value ) {

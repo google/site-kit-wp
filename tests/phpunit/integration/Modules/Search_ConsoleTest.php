@@ -25,6 +25,7 @@ use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Settings_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Service_Entity_ContractTests;
+use Google\Site_Kit\Tests\Authenticated_Search_Console_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\SearchConsole\SitesListResponse;
@@ -42,6 +43,7 @@ class Search_ConsoleTest extends TestCase {
 	use Module_With_Owner_ContractTests;
 	use Module_With_Service_Entity_ContractTests;
 	use Module_With_Data_Available_State_ContractTests;
+	use Authenticated_Search_Console_Trait;
 
 	public function test_magic_methods() {
 		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
@@ -276,6 +278,196 @@ class Search_ConsoleTest extends TestCase {
 		);
 
 		$this->assertFalse( $search_console->is_data_available(), 'Data should not be available after property change.' );
+	}
+
+	public function test_register__adds_the_search_query_rows_to_the_benchmarking_contextual_data() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$search_console = $this->create_authenticated_search_console(
+			fn( Request $request ) => new FulfilledPromise(
+				FakeHttp::create_batch_response(
+					$request,
+					fn( $identifier ) => new Response(
+						200,
+						array(),
+						wp_json_encode(
+							array(
+								'rows' => array(
+									array(
+										'keys'     => array( 'plant garlic' ),
+										'clicks'   => 'current' === $identifier ? 300 : 210,
+										'position' => 'current' === $identifier ? 3.4 : 4.8,
+									),
+								),
+							)
+						)
+					)
+				)
+			)
+		);
+		$search_console->get_settings()->merge( array( 'propertyID' => 'https://example.com/' ) );
+		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
+		$search_console->register();
+
+		$contextual_data = apply_filters(
+			'googlesitekit_benchmarking_contextual_data',
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+			),
+			array(
+				'start_date'         => '2026-08-19',
+				'end_date'           => '2026-09-15',
+				'compare_start_date' => '2026-07-22',
+				'compare_end_date'   => '2026-08-18',
+				'row_limit'          => 50,
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'channels'      => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+				'searchQueries' => array(
+					array(
+						'label'            => 'plant garlic',
+						'current'          => 300,
+						'previous'         => 210,
+						'positionCurrent'  => 3.4,
+						'positionPrevious' => 4.8,
+					),
+				),
+			),
+			$contextual_data,
+			'The filter should add the `plant garlic` query under `searchQueries`, and keep `channels` as it was.'
+		);
+	}
+
+	public function test_register__does_not_add_the_benchmarking_contextual_data_filter_without_the_typical_traffic_feature_flag() {
+		$search_console = new Search_Console( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$search_console->get_settings()->merge( array( 'propertyID' => 'https://example.com/' ) );
+		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
+		$search_console->register();
+
+		$this->assertFalse( has_filter( 'googlesitekit_benchmarking_contextual_data' ), 'Search Console should not add a `googlesitekit_benchmarking_contextual_data` callback with the `typicalTraffic` feature flag off.' );
+	}
+
+	public function test_register__returns_the_benchmarking_contextual_data_unchanged_without_a_property() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$request_count  = 0;
+		$search_console = $this->create_authenticated_search_console(
+			function () use ( &$request_count ) {
+				++$request_count;
+
+				return new FulfilledPromise( new Response( 200 ) );
+			}
+		);
+		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
+		$search_console->register();
+
+		$contextual_data = apply_filters(
+			'googlesitekit_benchmarking_contextual_data',
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+			),
+			array(
+				'start_date'         => '2026-08-19',
+				'end_date'           => '2026-09-15',
+				'compare_start_date' => '2026-07-22',
+				'compare_end_date'   => '2026-08-18',
+				'row_limit'          => 50,
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+			),
+			$contextual_data,
+			'The filter should return the contextual data unchanged, with no `searchQueries` key, when Search Console has no property.'
+		);
+		$this->assertSame( 0, $request_count, 'Search Console should not ask for a report when it has no property.' );
+	}
+
+	public function test_register__returns_the_benchmarking_contextual_data_unchanged_when_the_search_query_report_fails() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$search_console = $this->create_authenticated_search_console(
+			fn() => new FulfilledPromise(
+				new Response(
+					403,
+					array( 'Content-Type' => 'application/json' ),
+					wp_json_encode(
+						array(
+							'error' => array(
+								'code'    => 403,
+								'message' => 'User does not have sufficient permission for site.',
+							),
+						)
+					)
+				)
+			)
+		);
+		$search_console->get_settings()->merge( array( 'propertyID' => 'https://example.com/' ) );
+		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
+		$search_console->register();
+
+		$contextual_data = apply_filters(
+			'googlesitekit_benchmarking_contextual_data',
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+			),
+			array(
+				'start_date'         => '2026-08-19',
+				'end_date'           => '2026-09-15',
+				'compare_start_date' => '2026-07-22',
+				'compare_end_date'   => '2026-08-18',
+				'row_limit'          => 50,
+			)
+		);
+
+		$this->assertSame(
+			array(
+				'channels' => array(
+					array(
+						'label'    => 'Organic Search',
+						'current'  => 300,
+						'previous' => 200,
+					),
+				),
+			),
+			$contextual_data,
+			'The filter should return the contextual data unchanged, with no `searchQueries` key, when Search Console refuses the report.'
+		);
 	}
 
 	/**

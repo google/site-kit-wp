@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { fireEvent, render, screen } from '@tests/js/test-utils';
+import { fireEvent, render, screen, within } from '@tests/js/test-utils';
 import TrafficOverviewTabBar, {
 	TrafficOverviewTab,
 } from './TrafficOverviewTabBar';
@@ -128,6 +128,101 @@ describe( 'TrafficOverviewTabBar', () => {
 		).toHaveTextContent( 'Traffic overview' );
 	} );
 
+	it( 'should render the icon before the label, hidden from assistive technology', () => {
+		render(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'typical-traffic',
+						label: 'Typical traffic',
+						// The Jest mock for SVG files renders a bare `<svg />` and
+						// ignores its props, so this icon passes them on to show what
+						// the tab bar sets.
+						Icon: ( props ) => <svg { ...props } />,
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		const tab = screen.getByRole( 'tab', {
+			name: 'Typical traffic Beta',
+		} );
+		const icon =
+			tab.querySelector( '.mdc-tab__content' )?.firstElementChild;
+
+		expect( icon ).toHaveClass(
+			'googlesitekit-traffic-overview__tab-icon'
+		);
+		expect( icon ).toHaveAttribute( 'aria-hidden', 'true' );
+	} );
+
+	it( 'should call `onTabChange` with the tab `id` when the "Beta" badge is clicked', () => {
+		const onTabChange = jest.fn();
+
+		render(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'typical-traffic',
+						label: 'Typical traffic',
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ onTabChange }
+			/>
+		);
+
+		fireEvent.click( screen.getByText( 'Beta' ) );
+
+		expect( onTabChange ).toHaveBeenCalledTimes( 1 );
+		expect( onTabChange ).toHaveBeenCalledWith( 'typical-traffic' );
+	} );
+
+	it( 'should render no icon for a tab without an `Icon`', () => {
+		renderTabBar();
+
+		expect(
+			screen
+				.getByRole( 'tab', { name: 'Traffic overview' } )
+				.querySelector( '.googlesitekit-traffic-overview__tab-icon' )
+		).toBeNull();
+	} );
+
+	it( 'should select the tab whose `id` is `activeTabID` after a tab is added between two others', () => {
+		const { rerender } = render(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{ id: 'recent-activity', label: 'Recent activity' },
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		rerender(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{ id: 'typical-traffic', label: 'Typical traffic' },
+					{ id: 'recent-activity', label: 'Recent activity' },
+				] }
+				activeTabID="recent-activity"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveTextContent( 'Recent activity' );
+	} );
+
 	it( 'renders the tab bar inside the scrollable tabs wrapper', () => {
 		const { container } = renderTabBar();
 
@@ -136,5 +231,32 @@ describe( 'TrafficOverviewTabBar', () => {
 				'.googlesitekit-scrollable-tabs .mdc-tab-bar'
 			)
 		).not.toBeNull();
+	} );
+
+	it( 'should show a "Beta" badge only in the tab that is in beta', () => {
+		render(
+			<TrafficOverviewTabBar
+				tabs={ [
+					{ id: 'traffic-overview', label: 'Traffic overview' },
+					{
+						id: 'recent-activity',
+						label: 'Recent activity',
+						isBeta: true,
+					},
+				] }
+				activeTabID="traffic-overview"
+				onTabChange={ jest.fn() }
+			/>
+		);
+
+		const [ trafficOverviewTab, recentActivityTab ] =
+			screen.getAllByRole( 'tab' );
+
+		expect(
+			within( recentActivityTab ).getByText( 'Beta' )
+		).toBeInTheDocument();
+		expect(
+			within( trafficOverviewTab ).queryByText( 'Beta' )
+		).not.toBeInTheDocument();
 	} );
 } );

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { ESCAPE } from '@wordpress/keycodes';
-
-/**
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
@@ -356,7 +351,10 @@ describe( 'FeatureCard', () => {
 		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
 
 		fireEvent.click( button );
-		fireEvent.keyDown( getByRole( 'menu' ), { keyCode: ESCAPE } );
+
+		fireEvent.keyDown( getByRole( 'menu' ), {
+			key: 'Escape',
+		} );
 
 		expect( button ).toHaveFocus();
 		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );

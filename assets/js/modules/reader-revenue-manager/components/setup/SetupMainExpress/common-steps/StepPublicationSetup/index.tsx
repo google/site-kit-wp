@@ -35,8 +35,14 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_LABEL } from '@/js/components/Typography/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import {
+	SetupStep,
+	SetupStepProps,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import {
+	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 	READER_REVENUE_MANAGER_SETUP_FORM,
 	SHOW_PUBLICATION_CREATE,
@@ -46,10 +52,9 @@ import PlusIcon from '@/svg/icons/plus.svg';
 import ConnectPublication from './ConnectPublication';
 import CreatePublication from './CreatePublication';
 
-interface StepPublicationSetupProps {
+interface StepPublicationSetupProps extends SetupStepProps {
 	connectDescription?: string;
 	createDescription?: string;
-	onComplete: ( hasAcceptedTerms: boolean ) => void;
 }
 
 const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
@@ -156,6 +161,20 @@ const StepPublicationSetup: FC< StepPublicationSetupProps > = ( {
 			) : null }
 		</div>
 	);
+};
+
+export const publicationSetupStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION,
+	label: ( select: Select ) =>
+		select( CORE_FORMS ).getValue(
+			READER_REVENUE_MANAGER_SETUP_FORM,
+			SHOW_PUBLICATION_CREATE
+		)
+			? __( 'Create publication', 'google-site-kit' )
+			: __( 'Connect publication', 'google-site-kit' ),
+	Component: StepPublicationSetup,
+	isComplete: ( select: Select ) =>
+		!! select( MODULES_READER_REVENUE_MANAGER ).getPublicationID(),
 };
 
 export default StepPublicationSetup;

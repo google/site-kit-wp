@@ -12,6 +12,7 @@
 		"**/dist": true,
 		"coverage/": true,
 		"**/node_modules/": true,
+		"tests/vrt/__screenshots__/": true,
 		"third-party/": true,
 		"vendor/": true
 	},
