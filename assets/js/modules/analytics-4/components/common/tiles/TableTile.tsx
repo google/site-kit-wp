@@ -51,8 +51,10 @@ export interface TableTileProps {
 	noDataMetricLabel?: MetricLabel;
 	zeroState?: ReactNode;
 	/**
-	 * Called when the "Retry" button of the error state is clicked, after the
-	 * button requests the failed report again.
+	 * Called when the "Retry" button of the error state is clicked. The button
+	 * requests a failed report again only when the report was requested
+	 * without fetch options, so a report requested with a `cacheTTL` has to be
+	 * requested again here.
 	 */
 	onRetry?: () => void;
 }

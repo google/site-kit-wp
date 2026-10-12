@@ -48,13 +48,16 @@ import RecentTrafficBreakdown, {
 	RecentTrafficBreakdownProps,
 } from './RecentTrafficBreakdown';
 
-const POSTS = createBreakdownReport( [
-	[ '/ice-cream-is-good-for-your-health/', 82 ],
-	[ '/use-spf-every-day/', 21 ],
-	[ '/stay-hydrated/', 8 ],
-	[ '/summer-hats/', 5 ],
-	[ '/beach-reads/', 4 ],
-] );
+// The site had 170 visitors, and 12 of them came from other sites. Each
+// report's total counts a visitor once.
+const POSTS = createBreakdownReport(
+	[
+		[ '/ice-cream-is-good-for-your-health/', 82 ],
+		[ '/use-spf-every-day/', 21 ],
+		[ '/stay-hydrated/', 8 ],
+	],
+	170
+);
 
 const POST_TITLES = {
 	'/ice-cream-is-good-for-your-health/': 'Ice cream is good for your health',
@@ -62,19 +65,23 @@ const POST_TITLES = {
 	'/stay-hydrated/': 'Stay hydrated',
 };
 
-const CHANNELS = createBreakdownReport( [
-	[ 'Direct', 96 ],
-	[ 'Organic Search', 41 ],
-	[ 'Organic Social', 17 ],
-	[ 'Referral', 12 ],
-	[ 'Email', 4 ],
-] );
+const CHANNELS = createBreakdownReport(
+	[
+		[ 'Direct', 96 ],
+		[ 'Organic Search', 41 ],
+		[ 'Organic Social', 17 ],
+	],
+	170
+);
 
-const REFERRALS = createBreakdownReport( [
-	[ 'substack.com', 7 ],
-	[ 'reddit.com', 3 ],
-	[ 'medium.com', 2 ],
-] );
+const REFERRALS = createBreakdownReport(
+	[
+		[ 'substack.com', 7 ],
+		[ 'reddit.com', 3 ],
+		[ 'medium.com', 2 ],
+	],
+	12
+);
 
 interface RecentTrafficBreakdownStoryProps extends RecentTrafficBreakdownProps {
 	/** Sets the registry state the story needs before it renders. */
@@ -240,6 +247,8 @@ NoPublishedPosts.scenario = {
 /**
  * Titles and sources that have to be cut short, counts in the thousands, and
  * the widest shares, "(>99.9%)" and "(<0.1%)", whose counts still line up.
+ * Some visitors read both long posts, so their shares add up to more than
+ * 100%.
  */
 export const LongTitlesAndExtremeShares = Template.bind(
 	{}
@@ -248,11 +257,14 @@ LongTitlesAndExtremeShares.storyName = 'Long Titles and Extreme Shares';
 LongTitlesAndExtremeShares.args = {
 	setupRegistry: ( registry: WPDataRegistry ) =>
 		provideRecentTrafficBreakdownReports( registry, {
-			posts: createBreakdownReport( [
-				[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
-				[ '/sunscreen-myths/', 1206 ],
-				[ '/hydration/', 9 ],
-			] ),
+			posts: createBreakdownReport(
+				[
+					[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
+					[ '/sunscreen-myths/', 1206 ],
+					[ '/hydration/', 9 ],
+				],
+				3000
+			),
 			postTitles: {
 				'/how-to-choose-store-and-serve-ice-cream/':
 					'The complete guide to choosing, storing and serving ice cream on the hottest days of the summer',
@@ -260,18 +272,27 @@ LongTitlesAndExtremeShares.args = {
 					'Seven sunscreen myths that dermatologists wish you would stop believing',
 				'/hydration/': 'Stay hydrated',
 			},
-			channels: createBreakdownReport( [
-				[ 'Direct', 2999 ],
-				[ 'Mobile Push Notifications', 1 ],
-			] ),
-			referrals: createBreakdownReport( [
-				[ 'android-app://com.google.android.googlequicksearchbox', 46 ],
+			channels: createBreakdownReport(
 				[
-					'newsletter.an-example-publication-with-a-long-name.com',
-					31,
+					[ 'Direct', 2999 ],
+					[ 'Mobile Push Notifications', 1 ],
 				],
-				[ 'reddit.com', 3 ],
-			] ),
+				3000
+			),
+			referrals: createBreakdownReport(
+				[
+					[
+						'android-app://com.google.android.googlequicksearchbox',
+						46,
+					],
+					[
+						'newsletter.an-example-publication-with-a-long-name.com',
+						31,
+					],
+					[ 'reddit.com', 3 ],
+				],
+				80
+			),
 		} ),
 };
 LongTitlesAndExtremeShares.scenario = {};

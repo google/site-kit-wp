@@ -62,23 +62,39 @@ export interface RecentTrafficBreakdownReports {
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * The visitors are strings, the way the API returns them.
+ * The visitors are strings, the way the API returns them. With
+ * `totalVisitors`, the report also gets the total row the API returns, which
+ * counts a visitor once even when the visitor appears in several rows.
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
+ * @since n.e.x.t Added the `totalVisitors` parameter.
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @param {Array<Array>} pairs           `[ label, visitors ]` pairs.
+ * @param {number}       [totalVisitors] The visitors in the report's total.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >
+	pairs: Array< [ string, number ] >,
+	totalVisitors?: number
 ): Report {
-	return {
+	const report: Report = {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
 			metricValues: [ { value: String( visitors ) } ],
 		} ) ),
 	};
+
+	if ( totalVisitors !== undefined ) {
+		report.totals = [
+			{
+				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
+				metricValues: [ { value: String( totalVisitors ) } ],
+			},
+		];
+	}
+
+	return report;
 }
 
 /**

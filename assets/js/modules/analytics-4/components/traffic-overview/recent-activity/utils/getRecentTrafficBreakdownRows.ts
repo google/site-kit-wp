@@ -39,8 +39,8 @@ const SHARE_FORMAT = {
  *
  * A share that the format rounds to `0%` is shown as `<0.1%`, and a share below
  * one that it rounds to `100%` is shown as `>99.9%`. So a row with visitors
- * never reads `0%`, and a row reads `100%` only when no other value had
- * visitors.
+ * never reads `0%`, and a row reads `100%` only when its visitors reach the
+ * column's total.
  *
  * @since n.e.x.t
  *
@@ -70,40 +70,56 @@ function formatShare( share: number ): string {
 }
 
 /**
+ * Reads a report's visitor total.
+ *
+ * Analytics counts a visitor once in the total, even when the visitor appears
+ * in several rows, such as a visitor who read two posts.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} [report] A report with the `totalUsers` metric.
+ * @return {number} The visitors in the report's total, or `0` when the report has no total.
+ */
+function getTotalVisitors( report?: Report ): number {
+	return (
+		parseInt(
+			report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? '',
+			10
+		) || 0
+	);
+}
+
+/**
  * Shapes a report into the rows a column of the Recent activity tab's traffic
  * breakdown renders.
  *
  * Values with no visitors are left out. The rest are sorted by visitors, most
  * first, and the first `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` of them become rows.
- * Each row shows its visitors, and its share of the visitors of every value in
- * the report, not only of the rows shown. So the shares of all the values in
- * the report add up to 100%, and the shares shown add up to 100% only when the
- * report has no more values than the column shows.
+ * Each row shows its visitors, and its share of the report's visitor total.
+ * The total counts a visitor once, even when the visitor appears in several
+ * rows, so the shares in a column can add up to more than 100%. A row gets no
+ * share when the report has no total.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report] A report with one dimension and the `totalUsers` metric.
+ * @param {Object} [report] A report with one dimension and the `totalUsers` metric, and its `totals`.
  * @return {Array<Object>} The rows to render, each with the dimension value as its `label`, the visitors as its `value` and the share as its `secondaryValue`. Empty when no value in the report had visitors.
  */
 export function getRecentTrafficBreakdownRows(
 	report?: Report
 ): TableTileRow[] {
-	// A report keeps the values with no visitors unless it is asked not to,
-	// and a column lists only the values that had visitors.
-	const valueRows = ( report?.rows ?? [] )
-		.map( ( row ) => ( {
-			label: row.dimensionValues?.[ 0 ]?.value ?? '',
-			visitors: parseInt( row.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0,
-		} ) )
-		.filter( ( { visitors } ) => visitors > 0 );
-
-	const totalVisitors = valueRows.reduce(
-		( sum, { visitors } ) => sum + visitors,
-		0
-	);
+	const totalVisitors = getTotalVisitors( report );
 
 	return (
-		valueRows
+		( report?.rows ?? [] )
+			.map( ( row ) => ( {
+				label: row.dimensionValues?.[ 0 ]?.value ?? '',
+				visitors:
+					parseInt( row.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0,
+			} ) )
+			// A report keeps the values with no visitors unless it is asked
+			// not to, and a column lists only the values that had visitors.
+			.filter( ( { visitors } ) => visitors > 0 )
 			// `sort` is stable, so values with the same visitors keep the
 			// order of the report.
 			.sort( ( first, second ) => second.visitors - first.visitors )
@@ -111,11 +127,19 @@ export function getRecentTrafficBreakdownRows(
 			.map( ( { label, visitors } ) => ( {
 				label,
 				value: numFmt( visitors ),
-				secondaryValue: sprintf(
-					/* translators: %s: the row's share of the visitors in its column, such as "34.1%". */
-					__( '(%s)', 'google-site-kit' ),
-					formatShare( visitors / totalVisitors )
-				),
+				secondaryValue:
+					totalVisitors > 0
+						? sprintf(
+								/* translators: %s: the row's share of the visitors in its column, such as "34.1%". */
+								__( '(%s)', 'google-site-kit' ),
+								// Analytics visitor counts are estimates, so a
+								// row can come out a little above the total.
+								// Its share stops at 100%.
+								formatShare(
+									Math.min( visitors / totalVisitors, 1 )
+								)
+						  )
+						: undefined,
 			} ) )
 	);
 }

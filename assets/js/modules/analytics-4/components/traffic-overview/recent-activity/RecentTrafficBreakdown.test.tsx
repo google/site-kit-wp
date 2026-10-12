@@ -50,6 +50,13 @@ import {
 } from '@tests/js/utils';
 import RecentTrafficBreakdown from './RecentTrafficBreakdown';
 
+interface MockReportResponse {
+	/** The body of the response. */
+	body: object;
+	/** The HTTP status of the response. */
+	status: number;
+}
+
 describe( 'RecentTrafficBreakdown', () => {
 	let registry: WPDataRegistry;
 
@@ -93,14 +100,18 @@ describe( 'RecentTrafficBreakdown', () => {
 	const channelsRequest = forDimensions( 'sessionDefaultChannelGroup' );
 	const referralsRequest = forDimensions( 'sessionSource' );
 
+	// The site had 120 visitors, and 12 of them came from other sites. Each
+	// report's total counts a visitor once.
 	const postsReport: Report = {
 		dimensionHeaders: [ { name: 'pagePath' } ],
-		...createBreakdownReport( [
-			[ '/ice-cream/', 82 ],
-			[ '/spf/', 21 ],
-			[ '/hydration/', 8 ],
-			[ '/summer-hats/', 2 ],
-		] ),
+		...createBreakdownReport(
+			[
+				[ '/ice-cream/', 82 ],
+				[ '/spf/', 21 ],
+				[ '/hydration/', 8 ],
+			],
+			120
+		),
 	};
 
 	const titlesReport: Report = {
@@ -113,17 +124,22 @@ describe( 'RecentTrafficBreakdown', () => {
 		} ) ),
 	};
 
-	const channelsReport = createBreakdownReport( [
-		[ 'Direct', 82 ],
-		[ 'Organic Search', 21 ],
-		[ 'Organic Social', 8 ],
-		[ 'Email', 9 ],
-	] );
+	const channelsReport = createBreakdownReport(
+		[
+			[ 'Direct', 82 ],
+			[ 'Organic Search', 21 ],
+			[ 'Referral', 12 ],
+		],
+		120
+	);
 
-	const referralsReport = createBreakdownReport( [
-		[ 'substack.com', 30 ],
-		[ 'reddit.com', 10 ],
-	] );
+	const referralsReport = createBreakdownReport(
+		[
+			[ 'substack.com', 8 ],
+			[ 'reddit.com', 4 ],
+		],
+		12
+	);
 
 	// `ReportError` shows its own message for some error codes, so this code
 	// keeps the message of the response.
@@ -132,6 +148,50 @@ describe( 'RecentTrafficBreakdown', () => {
 		message: 'Test error message',
 		data: { status: 500, reason: 'internalError' },
 	};
+
+	/**
+	 * Answers the four report requests of the section: the posts, their
+	 * titles, the channels and the referrals.
+	 *
+	 * Each request gets its report above, unless `responses` gives it another
+	 * response. A route registered before this call answers first, so a test
+	 * that needs a request to fail once, or to wait, registers that route
+	 * before calling this.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} [responses]           The responses that replace the reports above.
+	 * @param {Object} [responses.posts]     The response to the request for the posts.
+	 * @param {Object} [responses.titles]    The response to the request for the post titles.
+	 * @param {Object} [responses.channels]  The response to the request for the channels.
+	 * @param {Object} [responses.referrals] The response to the request for the referrals.
+	 * @return {void}
+	 */
+	function mockReportRequests(
+		responses: Partial<
+			Record<
+				'posts' | 'titles' | 'channels' | 'referrals',
+				MockReportResponse
+			>
+		> = {}
+	) {
+		fetchMock.get(
+			postsRequest,
+			responses.posts ?? { body: postsReport, status: 200 }
+		);
+		fetchMock.get(
+			titlesRequest,
+			responses.titles ?? { body: titlesReport, status: 200 }
+		);
+		fetchMock.get(
+			channelsRequest,
+			responses.channels ?? { body: channelsReport, status: 200 }
+		);
+		fetchMock.get(
+			referralsRequest,
+			responses.referrals ?? { body: referralsReport, status: 200 }
+		);
+	}
 
 	/**
 	 * Gets the column with the given title.
@@ -147,6 +207,25 @@ describe( 'RecentTrafficBreakdown', () => {
 			.closest( '.googlesitekit-table-tile' ) as HTMLDivElement;
 	}
 
+	/**
+	 * Gets the label and the value of each row of a column, as they read.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {HTMLDivElement} column The column.
+	 * @return {Array<Array<string>>} The label and the value of each row.
+	 */
+	function getRowTexts( column: HTMLDivElement ) {
+		return Array.from(
+			column.querySelectorAll( '.googlesitekit-table-tile__row' )
+		).map( ( row ) => [
+			row.querySelector( '.googlesitekit-table-tile__cell--label' )
+				?.textContent,
+			row.querySelector( '.googlesitekit-table-tile__cell--value' )
+				?.textContent,
+		] );
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
@@ -159,13 +238,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the "What’s affecting recent traffic?" heading, then the posts, channels, and referrals columns', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { container, waitForRegistry } = render(
 			<RecentTrafficBreakdown />,
@@ -191,13 +264,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the titles of the columns as headings one level below the heading of the section', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -221,14 +288,8 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	} );
 
-	it( 'should render the visitors of each row with its share of the visitors in the column, for the three values with the most visitors', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+	it( "should render the visitors of each row with its share of the visitor total of the column's report", async () => {
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -236,39 +297,25 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		await waitForRegistry();
 
-		const channelsColumn = getColumn( 'Top channels by visitors' );
-
-		// The shares are of all 120 visitors, the 8 from "Organic Social"
-		// included, so the three shown add up to less than 100%.
+		// The channels divide by the site's 120 visitors, and the referrals by
+		// the 12 who came from other sites.
 		expect(
-			Array.from(
-				channelsColumn.querySelectorAll(
-					'.googlesitekit-table-tile__row'
-				)
-			).map( ( row ) => [
-				row.querySelector( '.googlesitekit-table-tile__cell--label' )
-					?.textContent,
-				row.querySelector( '.googlesitekit-table-tile__cell--value' )
-					?.textContent,
-			] )
+			getRowTexts( getColumn( 'Top channels by visitors' ) )
 		).toEqual( [
 			[ 'Direct', '82(68.3%)' ],
 			[ 'Organic Search', '21(17.5%)' ],
-			[ 'Email', '9(7.5%)' ],
+			[ 'Referral', '12(10%)' ],
 		] );
 		expect(
-			within( channelsColumn ).queryByText( 'Organic Social' )
-		).not.toBeInTheDocument();
+			getRowTexts( getColumn( 'Top referrals by visitors' ) )
+		).toEqual( [
+			[ 'substack.com', '8(66.7%)' ],
+			[ 'reddit.com', '4(33.3%)' ],
+		] );
 	} );
 
 	it( 'should render the post titles rather than their paths, each linking to its page', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -298,13 +345,24 @@ describe( 'RecentTrafficBreakdown', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should request titles only for the three posts the column shows', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
+	it( 'should not request a title for a page that had no visitors', async () => {
+		// A report keeps the values with no visitors, so its three rows can
+		// hold a page that had none.
+		mockReportRequests( {
+			posts: {
+				body: {
+					dimensionHeaders: [ { name: 'pagePath' } ],
+					...createBreakdownReport(
+						[
+							[ '/ice-cream/', 82 ],
+							[ '/spf/', 21 ],
+							[ '/summer-hats/', 0 ],
+						],
+						90
+					),
+				},
+				status: 200,
+			},
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -324,23 +382,15 @@ describe( 'RecentTrafficBreakdown', () => {
 			)
 			.map( ( [ , value ] ) => value );
 
-		expect( requestedPaths ).toEqual( [
-			'/hydration/',
-			'/ice-cream/',
-			'/spf/',
-		] );
+		expect( requestedPaths ).toEqual( [ '/ice-cream/', '/spf/' ] );
 	} );
 
 	it( 'should render a page that Analytics has no title for by its path', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, {
-			body: { rows: titlesReport.rows?.slice( 0, 2 ) },
-			status: 200,
-		} );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
+		mockReportRequests( {
+			titles: {
+				body: { rows: titlesReport.rows?.slice( 0, 2 ) },
+				status: 200,
+			},
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -357,21 +407,20 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render a page path that resolves to another site as text, with no link', async () => {
-		fetchMock.get( postsRequest, {
-			body: {
-				dimensionHeaders: [ { name: 'pagePath' } ],
-				...createBreakdownReport( [
-					[ '//spam.example/offer/', 90 ],
-					[ '/ice-cream/', 82 ],
-				] ),
+		mockReportRequests( {
+			posts: {
+				body: {
+					dimensionHeaders: [ { name: 'pagePath' } ],
+					...createBreakdownReport(
+						[
+							[ '//spam.example/offer/', 90 ],
+							[ '/ice-cream/', 82 ],
+						],
+						172
+					),
+				},
+				status: 200,
 			},
-			status: 200,
-		} );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -393,13 +442,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should request the referrals for the "Referral" channel alone', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -422,12 +465,8 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render a report error in the column whose report fails, and the rows of the other two columns', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: errorResponse, status: 500 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
+		mockReportRequests( {
+			channels: { body: errorResponse, status: 500 },
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -455,8 +494,6 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should request a failed report again, and render its rows, when "Retry" is clicked in its column', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
 		fetchMock.getOnce( channelsRequest, {
 			body: errorResponse,
 			status: 500,
@@ -465,10 +502,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -478,7 +512,8 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` settles once, so a new one waits for the retry.
+		// A `waitForRegistry` resolves only once, so a new one waits for the
+		// retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -498,13 +533,49 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render a report error in the posts column when the request for the post titles fails', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: errorResponse, status: 500 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
+	it( 'should request a failed report of posts again, and render its rows, when "Retry" is clicked in the posts column', async () => {
+		fetchMock.getOnce( postsRequest, {
+			body: errorResponse,
+			status: 500,
+		} );
+		fetchMock.getOnce( postsRequest, {
+			body: postsReport,
 			status: 200,
+		} );
+		mockReportRequests();
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		// A `waitForRegistry` resolves only once, so a new one waits for the
+		// retry.
+		const waitForRetry = createWaitForRegistry( registry );
+
+		fireEvent.click(
+			within( getColumn( 'Top posts by visitors' ) ).getByRole(
+				'button',
+				{ name: /retry/i }
+			)
+		);
+
+		await waitForRetry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 2, postsRequest );
+		expect(
+			within( getColumn( 'Top posts by visitors' ) ).getAllByRole(
+				'link'
+			)
+		).toHaveLength( 3 );
+	} );
+
+	it( 'should render a report error in the posts column when the request for the post titles fails', async () => {
+		mockReportRequests( {
+			titles: { body: errorResponse, status: 500 },
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -526,7 +597,6 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should request the post titles again, and render them, when "Retry" is clicked after their request fails', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
 		fetchMock.getOnce( titlesRequest, {
 			body: errorResponse,
 			status: 500,
@@ -535,11 +605,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			body: titlesReport,
 			status: 200,
 		} );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -549,7 +615,8 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` settles once, so a new one waits for the retry.
+		// A `waitForRegistry` resolves only once, so a new one waits for the
+		// retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -572,13 +639,8 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the loading state in the posts column, rather than the page paths, while the post titles load', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
 		freezeFetch( titlesRequest );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -612,10 +674,9 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the zero state in a column whose report has no visitors', async () => {
-		fetchMock.get( postsRequest, { body: postsReport, status: 200 } );
-		fetchMock.get( titlesRequest, { body: titlesReport, status: 200 } );
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, { body: {}, status: 200 } );
+		mockReportRequests( {
+			referrals: { body: {}, status: 200 },
+		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
 			registry,
@@ -638,11 +699,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should leave out the "Top posts by visitors" column, and should not request its report, when the site has no published posts', async () => {
-		fetchMock.get( channelsRequest, { body: channelsReport, status: 200 } );
-		fetchMock.get( referralsRequest, {
-			body: referralsReport,
-			status: 200,
-		} );
+		mockReportRequests();
 
 		const { container, waitForRegistry } = render(
 			<RecentTrafficBreakdown hasNoPublishedPosts />,

@@ -38,33 +38,35 @@ describe( 'FRESH_DATA_REPORT_FETCH_OPTIONS', () => {
 } );
 
 describe( 'getTopPostsReportOptions', () => {
-	it( 'should return the visitors for each page over the date range, most visitors first', () => {
+	it( 'should return the visitors for the three pages with the most visitors over the date range, most visitors first', () => {
 		expect( getTopPostsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
 			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'pagePath' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
 			reportID: TOP_POSTS_REPORT_ID,
 		} );
 	} );
 } );
 
 describe( 'getTopChannelsReportOptions', () => {
-	it( 'should return the visitors for each channel over the date range, most visitors first', () => {
+	it( 'should return the visitors for the three channels with the most visitors over the date range, most visitors first', () => {
 		expect( getTopChannelsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
 			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
 			reportID: TOP_CHANNELS_REPORT_ID,
 		} );
 	} );
 } );
 
 describe( 'getTopReferralsReportOptions', () => {
-	it( 'should return the visitors for each source of the "Referral" channel over the date range, most visitors first', () => {
+	it( 'should return the visitors for the three sources of the "Referral" channel with the most visitors over the date range, most visitors first', () => {
 		expect( getTopReferralsReportOptions( DATE_RANGE ) ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -72,6 +74,7 @@ describe( 'getTopReferralsReportOptions', () => {
 			dimensions: [ 'sessionSource' ],
 			dimensionFilters: { sessionDefaultChannelGroup: 'Referral' },
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
+			limit: 3,
 			reportID: TOP_REFERRALS_REPORT_ID,
 		} );
 	} );

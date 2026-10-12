@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
+import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { getBreakdownReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -44,6 +45,9 @@ export const FRESH_DATA_REPORT_FETCH_OPTIONS: ReportFetchOptions = {
 /**
  * Builds the options of the report of visitors for each page.
  *
+ * The report holds only the pages with the most visitors, as many as a column
+ * shows. Its total still counts every visitor, and the shares divide by it.
+ *
  * @since n.e.x.t
  *
  * @param {Object} dateRange           The date range of the Recent activity tab.
@@ -55,16 +59,23 @@ export function getTopPostsReportOptions( {
 	startDate,
 	endDate,
 }: FreshDataDateRange ): ReportOptions {
-	return getBreakdownReportArgs( {
-		dimensionName: 'pagePath',
-		reportID: TOP_POSTS_REPORT_ID,
-		startDate,
-		endDate,
-	} );
+	return {
+		...getBreakdownReportArgs( {
+			dimensionName: 'pagePath',
+			reportID: TOP_POSTS_REPORT_ID,
+			startDate,
+			endDate,
+		} ),
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
+	};
 }
 
 /**
  * Builds the options of the report of visitors for each channel.
+ *
+ * The report holds only the channels with the most visitors, as many as a
+ * column shows. Its total still counts every visitor, and the shares divide
+ * by it.
  *
  * @since n.e.x.t
  *
@@ -77,12 +88,15 @@ export function getTopChannelsReportOptions( {
 	startDate,
 	endDate,
 }: FreshDataDateRange ): ReportOptions {
-	return getBreakdownReportArgs( {
-		dimensionName: 'sessionDefaultChannelGroup',
-		reportID: TOP_CHANNELS_REPORT_ID,
-		startDate,
-		endDate,
-	} );
+	return {
+		...getBreakdownReportArgs( {
+			dimensionName: 'sessionDefaultChannelGroup',
+			reportID: TOP_CHANNELS_REPORT_ID,
+			startDate,
+			endDate,
+		} ),
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
+	};
 }
 
 /**
@@ -92,6 +106,9 @@ export function getTopChannelsReportOptions( {
  * The report keeps only the sessions of the "Referral" channel. Without that
  * filter, it lists a source for every channel, such as `google` for
  * "Organic Search" and `(direct)` for "Direct", which repeats the channels.
+ * It holds only the sites with the most visitors, as many as a column shows.
+ * Its total still counts every visitor of the "Referral" channel, and the
+ * shares divide by it.
  *
  * @since n.e.x.t
  *
@@ -114,5 +131,6 @@ export function getTopReferralsReportOptions( {
 		dimensionFilters: {
 			sessionDefaultChannelGroup: 'Referral',
 		},
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
 	};
 }

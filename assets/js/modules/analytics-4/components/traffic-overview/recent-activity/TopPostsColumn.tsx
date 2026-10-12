@@ -62,8 +62,9 @@ const TopPostsColumn: FC = () => {
 	);
 
 	// `getPageTitles` requests a title for every row of the report it gets, so
-	// it gets the report with only the rows the column shows, rather than with
-	// every page that had visitors.
+	// it gets the report with only the rows the column shows. The report can
+	// also hold pages with no visitors, which the column leaves out, and the
+	// titles error below is read for the shown pages alone.
 	const shownRowsReport = useMemo< Report | undefined >(
 		() =>
 			report && {
