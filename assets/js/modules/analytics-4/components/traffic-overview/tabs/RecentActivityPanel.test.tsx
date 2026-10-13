@@ -33,7 +33,10 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getSectionClassNames,
+	provideFreshMetricsReports,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -90,6 +93,10 @@ describe( 'RecentActivityPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
 		fetchMock.get( postsEndpoint, {
 			body: [
 				{
@@ -264,6 +271,10 @@ describe( 'RecentActivityPanel', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
 		freezeFetch( reportEndpoint );
 
 		const { container } = render( <RecentActivityPanel />, { registry } );
