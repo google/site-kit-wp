@@ -21,6 +21,7 @@
  */
 import {
 	getEngagementReportOptions,
+	getPostReportArgs,
 	getPurchasesReportOptions,
 	getTopChannelReportOptions,
 	getTopKeywordReportOptions,
@@ -38,6 +39,22 @@ const PLAIN_PERMALINK_REPORT_ARGS = {
 	...POST_REPORT_ARGS,
 	permalink: 'https://example.com/?p=42',
 };
+
+describe( 'getPostReportArgs', () => {
+	it( 'should combine the permalink of the post with the date range from the day before its publish day to the reference date', () => {
+		expect(
+			getPostReportArgs(
+				{
+					permalink: 'https://example.com/hello-world/',
+					// 12:30 on September 18 in the browser's time zone, so the test
+					// passes in any time zone.
+					publishedAt: new Date( 2026, 8, 18, 12, 30 ).toISOString(),
+				},
+				'2026-10-08'
+			)
+		).toEqual( POST_REPORT_ARGS );
+	} );
+} );
 
 describe( 'getVisitorsReportOptions', () => {
 	it( 'should split the total users of the post into new and returning visitors with a dimension filter', () => {

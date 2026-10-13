@@ -66,7 +66,11 @@ const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
 					moduleSlug={ moduleSlug }
 				/>
 			) : (
-				<div className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value">
+				<div
+					className="googlesitekit-table-tile__cell googlesitekit-table-tile__cell--value"
+					// A long value is cut off, so its title shows it in full.
+					title={ loading ? undefined : value }
+				>
 					{ loading ? (
 						<PreviewBlock width="48px" height="18px" />
 					) : (

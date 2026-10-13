@@ -168,6 +168,36 @@ describe( 'LatestPostPerformance', () => {
 		] );
 	} );
 
+	it( 'should set each value as the title of its cell, so a value that is cut off can be read in full', async () => {
+		provideLatestPostKeywordReport( registry );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-table-tile__cell--value'
+				),
+				( cell ) => cell.getAttribute( 'title' )
+			)
+		).toEqual( [
+			'94',
+			'66',
+			'28',
+			'Organic Social',
+			'substack.com',
+			'healthy ice cream',
+			'1m 16s',
+			'18',
+			'4',
+		] );
+	} );
+
 	it( 'should leave out the purchases row, rather than showing zero, when Site Goals has detected no conversion event', async () => {
 		provideLatestPostKeywordReport( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setDetectedEvents( [] );

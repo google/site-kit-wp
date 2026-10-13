@@ -29,13 +29,13 @@ import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/com
 import {
 	PostReportArgs,
 	getEngagementReportOptions,
+	getPostReportArgs,
 	getPurchasesReportOptions,
 	getTopChannelReportOptions,
 	getTopKeywordReportOptions,
 	getTopReferrerReportOptions,
 	getVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/postReportOptions';
-import { getPostWindow } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPostWindow';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import {
@@ -63,13 +63,10 @@ export const LATEST_POST: RecentContentItem = {
 export function getLatestPostReportArgs(
 	registry: WPDataRegistry
 ): PostReportArgs {
-	return {
-		permalink: LATEST_POST.permalink,
-		...getPostWindow(
-			LATEST_POST.publishedAt,
-			registry.select( CORE_USER ).getReferenceDate()
-		),
-	};
+	return getPostReportArgs(
+		LATEST_POST,
+		registry.select( CORE_USER ).getReferenceDate()
+	);
 }
 
 /**
@@ -123,20 +120,23 @@ function provideReport(
  * @since n.e.x.t
  *
  * @param {Object} registry The registry with the reference date.
- * @return {Array<Object>} The visitors, top channel, top referrer, engagement, and purchases report options, in that order.
+ * @return {Object} The report options, keyed by the report.
  */
 export function getLatestPostAnalyticsReportOptions(
 	registry: WPDataRegistry
-): ReportOptions[] {
+): Record<
+	'visitors' | 'topChannel' | 'topReferrer' | 'engagement' | 'purchases',
+	ReportOptions
+> {
 	const reportArgs = getLatestPostReportArgs( registry );
 
-	return [
-		getVisitorsReportOptions( reportArgs ),
-		getTopChannelReportOptions( reportArgs ),
-		getTopReferrerReportOptions( reportArgs ),
-		getEngagementReportOptions( reportArgs ),
-		getPurchasesReportOptions( reportArgs ),
-	];
+	return {
+		visitors: getVisitorsReportOptions( reportArgs ),
+		topChannel: getTopChannelReportOptions( reportArgs ),
+		topReferrer: getTopReferrerReportOptions( reportArgs ),
+		engagement: getEngagementReportOptions( reportArgs ),
+		purchases: getPurchasesReportOptions( reportArgs ),
+	};
 }
 
 /**
@@ -149,17 +149,12 @@ export function getLatestPostAnalyticsReportOptions(
  * @return {void}
  */
 export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
-	const [
-		visitorsOptions,
-		topChannelOptions,
-		topReferrerOptions,
-		engagementOptions,
-		purchasesOptions,
-	] = getLatestPostAnalyticsReportOptions( registry );
+	const { visitors, topChannel, topReferrer, engagement, purchases } =
+		getLatestPostAnalyticsReportOptions( registry );
 
 	const reports: Array< [ ReportOptions, Report ] > = [
 		[
-			visitorsOptions,
+			visitors,
 			{
 				rows: [
 					{
@@ -174,23 +169,17 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
 				totals: [ { metricValues: [ { value: '94' } ] } ],
 			},
 		],
+		[ topChannel, createBreakdownReport( [ [ 'Organic Social', 41 ] ] ) ],
+		[ topReferrer, createBreakdownReport( [ [ 'substack.com', 23 ] ] ) ],
 		[
-			topChannelOptions,
-			createBreakdownReport( [ [ 'Organic Social', 41 ] ] ),
-		],
-		[
-			topReferrerOptions,
-			createBreakdownReport( [ [ 'substack.com', 23 ] ] ),
-		],
-		[
-			engagementOptions,
+			engagement,
 			{
 				rows: [
 					{ metricValues: [ { value: '76' }, { value: '18' } ] },
 				],
 			},
 		],
-		[ purchasesOptions, createBreakdownReport( [ [ 'purchase', 4 ] ] ) ],
+		[ purchases, createBreakdownReport( [ [ 'purchase', 4 ] ] ) ],
 	];
 
 	reports.forEach( ( [ options, report ] ) =>

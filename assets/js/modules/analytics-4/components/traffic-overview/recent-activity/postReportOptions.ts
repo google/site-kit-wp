@@ -20,8 +20,9 @@
  * Internal dependencies
  */
 import { ENUM_CONVERSION_EVENTS } from '@/js/modules/analytics-4/datastore/constants';
+import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { PostWindow } from './utils/getPostWindow';
+import { PostWindow, getPostWindow } from './utils/getPostWindow';
 
 export interface PostReportArgs extends PostWindow {
 	/** The URL of the post, e.g. `https://example.com/hello-world/`. */
@@ -37,6 +38,25 @@ export interface SearchConsoleReportOptions extends PostWindow {
 	limit: number;
 	/** The ID that names the report in the request. */
 	reportID: string;
+}
+
+/**
+ * Gets the permalink and the date range of the reports about a post.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} post          The post, with its permalink and its publish time.
+ * @param {string} referenceDate The reference date, e.g. `2026-10-08`.
+ * @return {Object} The post's permalink, and the `startDate` and the `endDate` of its reports.
+ */
+export function getPostReportArgs(
+	post: Pick< RecentContentItem, 'permalink' | 'publishedAt' >,
+	referenceDate: string
+): PostReportArgs {
+	return {
+		permalink: post.permalink,
+		...getPostWindow( post.publishedAt, referenceDate ),
+	};
 }
 
 /**

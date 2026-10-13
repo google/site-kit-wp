@@ -24,6 +24,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
+import {
+	VIEW_CONTEXT_ENTITY_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+} from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
@@ -43,6 +48,7 @@ import {
 	provideLatestPostKeywordReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -87,7 +93,9 @@ function commonSetup( registry: WPDataRegistry ) {
 	registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
 	registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 	// Storing the creation time stops a request for the Analytics property.
-	// `2024-01-01` sits before the selected range, so the chart draws no marker.
+	// `2024-01-01` sits before the selected range, so the chart draws no marker,
+	// and more than thirteen months before the reference date, so the widget
+	// shows the Typical Traffic tab when `typicalTraffic` is on.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
@@ -180,12 +188,19 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 interface TrafficOverviewWidgetStoryProps {
 	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
+	/** The dashboard the widget renders on. Default is the main dashboard. */
+	viewContext?: string;
 }
 
-function Template( { setupRegistry }: TrafficOverviewWidgetStoryProps ) {
+function Template( {
+	setupRegistry,
+	viewContext = VIEW_CONTEXT_MAIN_DASHBOARD,
+}: TrafficOverviewWidgetStoryProps ) {
 	return (
 		<WithRegistrySetup func={ setupRegistry }>
-			<WidgetWithComponentProps />
+			<ViewContextProvider value={ viewContext }>
+				<WidgetWithComponentProps />
+			</ViewContextProvider>
 		</WithRegistrySetup>
 	);
 }
@@ -202,6 +217,41 @@ MainDashboard.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
+export const TypicalTraffic = Template.bind( {} ) as Story;
+TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
+TypicalTraffic.args = {
+	...MainDashboard.args,
+};
+TypicalTraffic.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+TypicalTraffic.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+};
+
+export const TypicalTrafficSelected = Template.bind( {} ) as Story;
+TypicalTrafficSelected.storyName =
+	'Typical Traffic Selected (typicalTraffic enabled)';
+TypicalTrafficSelected.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideBenchmarkingData(
+			registry,
+			registry.select( CORE_USER ).getDateRangeDates()
+		);
+	},
+};
+TypicalTrafficSelected.parameters = {
+	features: [ 'typicalTraffic' ],
+};
+TypicalTrafficSelected.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	// The mouse stays over the tab after the click, so the snapshot shows the
+	// tab's hover background.
+	clickSelector: '#googlesitekit-typical-traffic-tab',
+};
+
 /**
  * This story sets no `scenario`, so it runs no visual check. A current entity
  * URL changes only the report requests and the footer link's address, and
@@ -211,6 +261,7 @@ MainDashboard.scenario = {
 export const EntityDashboard = Template.bind( {} ) as Story;
 EntityDashboard.storyName = 'Entity Dashboard';
 EntityDashboard.args = {
+	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideSiteInfo( registry, {

@@ -43,9 +43,8 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import EngagementOutcomesGroup from './EngagementOutcomesGroup';
 import LatestPostHeader from './LatestPostHeader';
-import { PostReportArgs } from './postReportOptions';
+import { PostReportArgs, getPostReportArgs } from './postReportOptions';
 import TrafficSourcesGroup from './TrafficSourcesGroup';
-import { getPostWindow } from './utils/getPostWindow';
 import VisitorBreakdownGroup from './VisitorBreakdownGroup';
 
 const LatestPostPerformance: FC = () => {
@@ -79,13 +78,7 @@ const LatestPostPerformance: FC = () => {
 	const post = recentContent?.[ 0 ];
 
 	const reportArgs = useMemo< PostReportArgs | undefined >(
-		() =>
-			post
-				? {
-						permalink: post.permalink,
-						...getPostWindow( post.publishedAt, referenceDate ),
-				  }
-				: undefined,
+		() => ( post ? getPostReportArgs( post, referenceDate ) : undefined ),
 		[ post, referenceDate ]
 	);
 
