@@ -76,6 +76,20 @@
 			letter-spacing: 0;
 		}
 
+		// The label sets its color on its own span, so the icon repeats it, and
+		// Material's color transition for the label, to match the label in the
+		// selected and the unselected tab.
+		.mdc-tab .googlesitekit-traffic-overview__tab-icon {
+			color: $c-surfaces-on-background-variant;
+			margin-right: 4px;
+			transition: 150ms color linear;
+		}
+
+		.mdc-tab--active .googlesitekit-traffic-overview__tab-icon {
+			color: $c-content-primary;
+			transition-delay: 100ms;
+		}
+
 		.mdc-tab .googlesitekit-badge {
 			margin-left: 10px;
 		}

@@ -20,7 +20,7 @@
  * Internal dependencies
  */
 import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
-import { addDaysToDate, calculateChange } from '@/js/util';
+import { addDays, calculateChange } from '@/js/util';
 
 /**
  * How far the date range's visitors can move from the median of the
@@ -68,11 +68,7 @@ export function getDateDimensionValues(
 ): string[] {
 	const values = [];
 
-	for (
-		let date = startDate;
-		date <= endDate;
-		date = addDaysToDate( date, 1 )
-	) {
+	for ( let date = startDate; date <= endDate; date = addDays( date, 1 ) ) {
 		values.push( date.replace( /-/g, '' ) );
 	}
 
@@ -144,8 +140,8 @@ export function classifyInsight( {
 
 	const comparisonTotals = INSIGHT_COMPARISON_WEEK_OFFSETS.map( ( weeks ) =>
 		sumVisitors(
-			addDaysToDate( startDate, weeks * -7 ),
-			addDaysToDate( endDate, weeks * -7 )
+			addDays( startDate, weeks * -7 ),
+			addDays( endDate, weeks * -7 )
 		)
 	);
 

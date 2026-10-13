@@ -24,7 +24,7 @@ import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-
 import { INSIGHT_COMPARISON_WEEK_OFFSETS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { TOTAL_USERS_METRIC } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { MINUTE_IN_SECONDS, addDaysToDate } from '@/js/util';
+import { MINUTE_IN_SECONDS, addDays } from '@/js/util';
 
 export const INSIGHT_REPORT_ID =
 	'analytics-4_traffic-overview_recent-activity_insightArgs';
@@ -56,7 +56,7 @@ export function getInsightReportArgs( {
 	endDate,
 }: FreshDataDateRange ): ReportOptions {
 	return {
-		startDate: addDaysToDate(
+		startDate: addDays(
 			startDate,
 			Math.max( ...INSIGHT_COMPARISON_WEEK_OFFSETS ) * -7
 		),
