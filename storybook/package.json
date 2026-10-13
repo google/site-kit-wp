@@ -8,10 +8,10 @@
 		}
 	},
 	"scripts": {
-		"prebuild": "npm run remove-dist",
-		"build": "storybook build -c . -o ../dist --quiet --loglevel warn",
+		"prebuild": "npm run clean",
+		"build": "storybook build -c . -o ../storybook-static --quiet --loglevel warn",
 		"start": "storybook dev -p 9001 -c . --no-version-updates",
-		"remove-dist": "rimraf ../dist/",
+		"clean": "rimraf ../storybook-static/",
 		"test": "./bin/run-tests.sh"
 	},
 	"devDependencies": {
