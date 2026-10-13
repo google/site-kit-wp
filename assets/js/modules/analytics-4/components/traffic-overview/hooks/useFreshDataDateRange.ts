@@ -26,7 +26,7 @@ import { useMemo } from '@wordpress/element';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getPreviousDate } from '@/js/util';
+import { addDays } from '@/js/util';
 
 export interface FreshDataDateRange {
 	/** The first day of the date range, e.g. `2025-02-03`. */
@@ -55,7 +55,7 @@ export function getFreshDataDateRange(
 	referenceDate: string
 ): FreshDataDateRange {
 	return {
-		startDate: getPreviousDate( referenceDate, 2 ),
+		startDate: addDays( referenceDate, -2 ),
 		endDate: referenceDate,
 	};
 }
