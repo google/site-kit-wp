@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Exception;
