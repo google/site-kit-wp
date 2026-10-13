@@ -96,10 +96,18 @@ Classify **before** changing anything. Each class has a test that settles it:
 
 | Class | Test | Evidence it produces |
 | --- | --- | --- |
-| **Order-dependent / flaky** | Run the suite alone: `npm run test:js -- <pattern>`, or `npm run test:e2e -- --testPathPattern "<spec>"` | Passes in isolation, fails in a full run. Often a *different* subset each run — that variation is itself the evidence. |
+| **Order-dependent / flaky** | First check whether CI already retried the test (see below). For a suite that CI does not retry, run the test alone (`npm run test:e2e -- --testPathPattern "<spec>"`), run it several times on the same commit, and check the job's recent runs on `develop` for the same failure (see Step 4). | Passes in isolation, fails in a full run. Or passes on some runs of the same commit and fails on others. Often a *different* subset each run — that variation is itself the evidence. |
 | **Pre-existing** | Check out the merge base (`git merge-base HEAD origin/develop`) in a worktree or detached HEAD, reproduce there | Fails without any of this PR's changes |
 | **Environmental** | Compare local against CI for the same commit | Fails locally, passes in CI (or vice versa) |
-| **Caused by this PR** | Everything else, once the above are excluded | Green on `develop`, red here |
+| **Caused by this PR** | Everything else, once the above are excluded | Fails on every run here, and passes on every run at the merge base |
+
+**Most suites already retry in CI.** Check the job's workflow in `.github/workflows/` and the
+suite's test config to see how. For example, the JS Tests job reruns failed tests, and the VRT and
+Playwright suites retry failed tests. A test that failed every retry is very unlikely to be flaky,
+so don't spend time re-running it locally to prove otherwise. A VRT screenshot that failed and
+then passed on retry is not a failure: CI lists it as flaky in the PR comment and in the
+**VRT: flaky screenshots** check. Flakiness matters most for a suite with no retries, such as the
+`E2E (WordPress …)` jobs.
 
 Two further checks worth running before concluding anything:
 
@@ -110,8 +118,21 @@ Two further checks worth running before concluding anything:
 ## Step 4 — Apply the distinction that matters most
 
 **"The behaviour is pre-existing" and "the failure is unrelated to this PR" are different
-claims.** A test that is green on `develop` and red here is this PR's to resolve, even when the
-behaviour it trips over is older than the PR.
+claims.** Once Step 3 has ruled out flakiness, a test that passes on `develop` and fails here is
+this PR's to resolve, even when the behaviour it trips over is older than the PR.
+
+For a suite that CI does not retry, one green run on `develop` does not rule out flakiness. A
+flaky test can pass there by chance and fail here by chance. Before you call such a failure the
+PR's, make sure the result repeats: the test fails on every run here and passes on every run at
+the merge base. Then check whether the same job has recently failed on `develop`:
+
+```
+gh run list --workflow <workflow-file> --branch develop --status failure --limit 10
+gh run view <run-id> --log-failed
+```
+
+If any of those runs failed the same test, the test is flaky. Report it as flaky, with links to
+those runs.
 
 The common case: a suite runs against a different code path than production. For example, E2E
 sets feature flags through `tests/e2e/mu-plugins/e2e-rest-feature-flag.php`, which filters
