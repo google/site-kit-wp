@@ -381,53 +381,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should show the correct title and description for a secondary admin', async () => {
-		provideSiteConnection( registry, {
-			hasConnectedAdmins: true,
-			hasMultipleAdmins: true,
-		} );
-
-		registry.dispatch( CORE_MODULES ).receiveGetModules(
-			coreModulesFixture.map( ( module ) => {
-				if ( MODULE_SLUG_ANALYTICS_4 === module.slug ) {
-					return {
-						...module,
-						active: false,
-					};
-				}
-
-				return module;
-			} )
-		);
-
-		const { getByRole, getByText, queryByText, waitForRegistry } = render(
-			<SetupUsingProxyWithSignIn />,
-			{
-				registry,
-				viewContext: VIEW_CONTEXT_SPLASH,
-			}
-		);
-
-		await waitForRegistry();
-
-		expect(
-			getByRole( 'heading', { name: "Let's get started!" } )
-		).toBeInTheDocument();
-
-		expect(
-			getByText(
-				/Once you complete the setup, you’ll see stats from all connected Google services\./
-			)
-		).toBeInTheDocument();
-
-		expect(
-			queryByText(
-				/all connected Google services that are shared with you:/
-			)
-		).not.toBeInTheDocument();
-	} );
-
-	it( 'should show the correct title and description for a secondary admin when Analytics is not active with the setupFlowRefreshPhase4 feature flag enabled', async () => {
+	it( 'should show the correct title and description for a secondary admin when Analytics is not active', async () => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
 			hasMultipleAdmins: true,
@@ -455,7 +409,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} = render( <SetupUsingProxyWithSignIn />, {
 			registry,
 			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitForRegistry();
@@ -486,7 +439,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the correct title and description for a secondary admin when Analytics is active and shared services are viewable with the setupFlowRefreshPhase4 feature flag enabled', async () => {
+	it( 'should show the correct title and description for a secondary admin when Analytics is active and shared services are viewable', async () => {
 		provideSiteConnection( registry, {
 			hasConnectedAdmins: true,
 			hasMultipleAdmins: true,
@@ -519,7 +472,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -553,7 +505,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 	it( 'should navigate to the proxy setup URL with Analytics re-auth redirect URL and `showProgress` query argument on CTA click if chosen to connect Analytics', async () => {
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: false } },
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: false,
+					hasSitePurposeAnswer: false,
+				},
+			},
 		} );
 
 		fetchMock.postOnce(
@@ -623,7 +580,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 	it( 'should call saveInitialSetupSettings with isAnalyticsSetupComplete: false when starting setup with Analytics', async () => {
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: false } },
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: false,
+					hasSitePurposeAnswer: false,
+				},
+			},
 		} );
 
 		fetchMock.postOnce(
@@ -676,14 +638,17 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			expect( fetchMock ).toHaveFetched( initialSetupSettingsEndpoint, {
 				body: {
 					data: {
-						settings: { isAnalyticsSetupComplete: false },
+						settings: {
+							isAnalyticsSetupComplete: false,
+							hasSitePurposeAnswer: false,
+						},
 					},
 				},
 			} );
 		} );
 	} );
 
-	it( 'should show an error notification and prevent navigation when Analytics activation fails with setupFlowRefreshPhase4 enabled', async () => {
+	it( 'should show an error notification and prevent navigation when Analytics activation fails', async () => {
 		fetchMock.postOnce(
 			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
 			{
@@ -707,7 +672,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -729,7 +693,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
-	it( 'should show an error notification and prevent navigation when saving initial setup settings fails with setupFlowRefreshPhase4 enabled', async () => {
+	it( 'should show an error notification and prevent navigation when saving initial setup settings fails', async () => {
 		fetchMock.postOnce(
 			initialSetupSettingsEndpoint,
 			{
@@ -759,7 +723,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -798,7 +761,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		);
 
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: false } },
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: false,
+					hasSitePurposeAnswer: false,
+				},
+			},
 		} );
 
 		registry.dispatch( CORE_FORMS ).setValues( ANALYTICS_NOTICE_FORM_NAME, {
@@ -812,7 +780,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -856,13 +823,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
-	it( 'should save `hasSitePurposeAnswer: false` on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled', async () => {
+	it( 'should save `hasSitePurposeAnswer: false` on a "Sign in with Google" click', async () => {
 		const { getByRole, waitForRegistry } = render(
 			<SetupUsingProxyWithSignIn />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -886,7 +852,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		} );
 	} );
 
-	it( 'should not save a site purpose answer on a "Sign in with Google" click with the `setupFlowRefreshPhase4` feature flag enabled when the splash URL has `purpose=intent`', async () => {
+	it( 'should not save a site purpose answer on a "Sign in with Google" click when the splash URL has `purpose=intent`', async () => {
 		global.location.href =
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
 
@@ -895,7 +861,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -1035,7 +1000,12 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 
 	it( 'should track GA events on CTA click when chosen to connect Analytics', async () => {
 		fetchMock.postOnce( initialSetupSettingsEndpoint, {
-			body: { settings: { isAnalyticsSetupComplete: false } },
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: false,
+					hasSitePurposeAnswer: false,
+				},
+			},
 		} );
 
 		fetchMock.postOnce(
@@ -1141,7 +1111,7 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 		expect( segments.length ).toBe( 1 );
 	} );
 
-	it( 'should show the splash setup error notification when a setup error is present with setupFlowRefreshPhase4 enabled', async () => {
+	it( 'should show the splash setup error notification when a setup error is present', async () => {
 		provideSiteInfo( registry, {
 			setupErrorCode: 'access_denied',
 			setupErrorMessage:
@@ -1155,7 +1125,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -1207,7 +1176,6 @@ describe( 'SetupUsingProxyWithSignIn', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_SPLASH,
-					features: [ 'setupFlowRefreshPhase4' ],
 				}
 			);
 
