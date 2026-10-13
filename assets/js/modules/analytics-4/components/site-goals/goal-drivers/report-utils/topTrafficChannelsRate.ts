@@ -48,20 +48,20 @@ export function buildTopTrafficChannelsRateReportOptions(
  * Builds the Analytics 4 report options for each channel's total sessions.
  *
  * Each channel's rate is its sessions with a matching event out of this total.
+ * The breakdown filter is not applied: its dimension is only set on the
+ * goal events, so it would limit the total to sessions that already converted.
  *
  * @since n.e.x.t
  *
- * @param {Object}          args                   Builder args.
- * @param {Object}          [args.dates]           The date range.
- * @param {string|string[]} [args.primaryEvent]    The primary conversion event name(s).
- * @param {Object}          [args.breakdownFilter] Optional dimension filter scoping the report to a breakdown tab.
- * @param {string}          [args.context]         Identifies the caller, appended to the reportID.
+ * @param {Object}          args                Builder args.
+ * @param {Object}          [args.dates]        The date range.
+ * @param {string|string[]} [args.primaryEvent] The primary conversion event name(s).
+ * @param {string}          [args.context]      Identifies the caller, appended to the reportID.
  * @return {Object|undefined} The Analytics 4 `getReport` options, or `undefined` when there is no primary event.
  */
 export function buildTopTrafficChannelsSessionsReportOptions( {
 	dates,
 	primaryEvent,
-	breakdownFilter,
 	context,
 }: BuildGoalDriverReportOptionsArgs ): ReportOptions | undefined {
 	if ( ! dates || ! normalizePrimaryEvents( primaryEvent ).length ) {
@@ -72,12 +72,6 @@ export function buildTopTrafficChannelsSessionsReportOptions( {
 		...dates,
 		dimensions: [ 'sessionDefaultChannelGroup' ],
 		metrics: [ { name: 'sessions' } ],
-		...( breakdownFilter
-			? {
-					dimensionFilters:
-						breakdownFilter as ReportOptions[ 'dimensionFilters' ],
-			  }
-			: {} ),
 		reportID: withContextSuffix(
 			'analytics-4_goal-driver-reports_top-traffic-channels-sessions',
 			context

@@ -104,19 +104,17 @@ describe( 'buildTopTrafficChannelsSessionsReportOptions', () => {
 		} );
 	} );
 
-	it( 'should filter the sessions by the given breakdown filter', () => {
-		const breakdownFilter = {
-			'customEvent:googlesitekit_event_provider': 'woocommerce',
-		};
-
+	it( 'should not filter the sessions by the breakdown filter', () => {
 		expect(
 			buildTopTrafficChannelsSessionsReportOptions( {
 				dates,
 				primaryEvent: 'purchase',
-				breakdownFilter,
+				breakdownFilter: {
+					'customEvent:googlesitekit_event_provider': 'woocommerce',
+				},
 				limit: 6,
-			} )?.dimensionFilters
-		).toEqual( breakdownFilter );
+			} )
+		).not.toHaveProperty( 'dimensionFilters' );
 	} );
 } );
 

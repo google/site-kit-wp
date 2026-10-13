@@ -237,9 +237,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 			...dates,
 			dimensions: [ 'sessionDefaultChannelGroup' ],
 			metrics: [ { name: 'sessions' } ],
-			...( Object.keys( breakdownFilter ).length
-				? { dimensionFilters: breakdownFilter }
-				: {} ),
 			reportID:
 				'analytics-4_goal-driver-reports_top-traffic-channels-sessions_ecommerce',
 		};
