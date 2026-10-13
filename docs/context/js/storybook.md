@@ -154,7 +154,6 @@ VRTStory.storyName = 'All Links VRT';
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-cta-link--hover',
     postInteractionWait: 1000,
-    onReadyScript: 'mouse.js',
 };
 
 export default {
@@ -228,12 +227,9 @@ React + Webpack 5 framework). Stories are matched for both `.stories.js` and
 ```javascript
 module.exports = {
     framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
-    stories: [
-        path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
-        path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
-        path.resolve( rootDir, 'assets/js/**/*.stories.tsx' ),
-        path.resolve( rootDir, 'assets/blocks/**/*.stories.tsx' ),
-    ],
+    // The story globs, from `storybook/stories.js`, which the visual
+    // regression tests also read.
+    stories,
     addons: [
         getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
         getModuleAbsolutePath( '@storybook/addon-viewport' ),
@@ -262,14 +258,15 @@ The `parameters` export sets the `fullscreen` layout and a `storySort` function 
 
 ## Visual Regression Testing
 
-BackstopJS scenarios are generated automatically from stories by
-`tests/backstop/scenarios.js`, which parses every story file and emits one VRT
-scenario for each story that declares a `scenario` **object**. An empty
-`scenario = {}` opts a story in with default capture behaviour; properties on
-the object (such as `delay`, `readySelector`, `hoverSelector`, `clickSelector`,
-`postInteractionWait`, `onReadyScript`) customise the capture. A story with no
-`scenario` property — or one whose `scenario` is anything other than a plain
-object — is rendered in Storybook but not captured for VRT.
+Visual regression tests are generated automatically from stories by
+`tests/vrt/scenarios.js`, which parses every story file and creates one test for
+each story that declares a `scenario` object. An empty `scenario = {}` opts a
+story in with the default capture; options on the object (such as
+`readySelector`, `delay`, `hoverSelector`, `clickSelector`,
+`postInteractionWait` and `viewport`) customise the capture. An unknown option,
+or a value that isn't a literal, fails the run rather than being ignored. A story
+with no `scenario` is rendered in Storybook but not captured. See
+`tests/vrt/README.md` for every option and for running and approving the tests.
 
 ### VRT Story Patterns
 
@@ -299,7 +296,6 @@ VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-button--icon',
     postInteractionWait: 3000,
-    onReadyScript: 'mouse.js',
 };
 ```
 
@@ -319,7 +315,6 @@ HoverButton.args = {
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-button--icon',
     postInteractionWait: 3000,
-    onReadyScript: 'mouse.js',
 };
 ```
 
@@ -370,7 +365,7 @@ Storybook therefore sets the flags before the bundle runs, and the chain has thr
 Two things follow from that chain:
 
 - Selecting a story whose flags are different from those of the story on screen reloads the whole Storybook app. That reload is expected. Each change in the flag set costs a reload, so list only the flags the story needs in `parameters.features`.
-- The `tests/backstop/scenarios.js` file adds the story's flags to every visual test URL as `&features=`. A capture then loads with the flags already set, and never reloads while BackstopJS waits. Only a flag written as a plain string in the story file gets into that URL. For any other story, the page loads once more with the story's own flags.
+- The `tests/vrt/scenarios.js` file adds the story's flags to every visual test URL as `&features=`. A capture then loads with the flags already set, and never reloads. Flags must be written as string literals in `parameters.features`; anything else fails the scenario extraction, and a capture that reloads the page fails the test.
 
 ### Best Practices
 

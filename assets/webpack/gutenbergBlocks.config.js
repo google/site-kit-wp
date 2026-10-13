@@ -89,6 +89,11 @@ module.exports = ( mode, ANALYZE ) => ( {
 							implementation: require( 'sass' ),
 							sassOptions: {
 								includePaths: [ 'node_modules' ],
+								quietDeps: true,
+								fatalDeprecations: [
+									'slash-div',
+									'global-builtin',
+								],
 							},
 						},
 					},

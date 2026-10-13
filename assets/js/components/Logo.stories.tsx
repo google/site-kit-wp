@@ -39,8 +39,9 @@ function Template( { className }: LogoStoryProps ) {
 }
 
 /**
- * Backstop's smallest capture is 420px, and the style sheet hides the Site Kit
- * logo under 450px. This one story also catches the Google "G" alone.
+ * The smallest visual regression viewport is 420px, and the style sheet hides
+ * the Site Kit logo under 450px. This one story also catches the Google "G"
+ * alone.
  */
 export const Default = Template.bind( {} ) as Story< LogoStoryProps >;
 Default.storyName = 'Default';
@@ -52,13 +53,6 @@ SetupFlow.args = {
 	className: 'googlesitekit-setup-flow',
 };
 SetupFlow.scenario = {};
-
-export const SetupSplash = Template.bind( {} ) as Story< LogoStoryProps >;
-SetupSplash.storyName = 'Setup Splash';
-SetupSplash.args = {
-	className: 'googlesitekit-setup-splash',
-};
-SetupSplash.scenario = {};
 
 export default {
 	title: 'Components/Logo',

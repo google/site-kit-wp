@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { getQueryArg } from '@wordpress/url';
-
-/**
  * Internal dependencies
  */
 import AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification, {
@@ -34,8 +29,11 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import {
+	requireAccessToShareableModule,
+	requireModuleConnected,
+	requireQueryArg,
+} from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
@@ -45,12 +43,16 @@ import { createRegisterNotifications } from '@/js/googlesitekit/notifications/ut
 import AdBlockingRecoverySetupSuccessNotification from '@/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
-	ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS,
-	MODULES_ADSENSE,
-} from '@/js/modules/adsense/datastore/constants';
+	requireAdBlockingRecoverySetupStatus,
+	requireAdSenseRevenueInAnalytics,
+} from '@/js/modules/adsense/data-requirements';
+import { ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS } from '@/js/modules/adsense/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { isZeroReport } from '@/js/modules/analytics-4/utils';
+import {
+	requireAdSenseLinked,
+	requireAdSenseNotLinked,
+} from '@/js/modules/analytics-4/data-requirements';
+import { asyncRequireAll } from '@/js/util/async';
 
 export const ADSENSE_NOTIFICATIONS = {
 	'adsense-abr-success-notification': {
@@ -58,31 +60,17 @@ export const ADSENSE_NOTIFICATIONS = {
 		priority: 10,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: async ( { select, resolveSelect } ) => {
+		checkRequirements: asyncRequireAll(
 			// Check the query arg first as the simplest condition using global location.
-			const notification = getQueryArg( location.href, 'notification' );
-			if ( notification !== 'ad_blocking_recovery_setup_success' ) {
-				return false;
-			}
-
-			const { isModuleConnected } = resolveSelect( CORE_MODULES );
-			if ( ! ( await isModuleConnected( MODULE_SLUG_ADSENSE ) ) ) {
-				return false;
-			}
-
-			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adBlockingRecoverySetupStatus =
-				select( MODULES_ADSENSE ).getAdBlockingRecoverySetupStatus();
-
-			if (
-				adBlockingRecoverySetupStatus ===
+			requireQueryArg(
+				'notification',
+				'ad_blocking_recovery_setup_success'
+			),
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireAdBlockingRecoverySetupStatus(
 				ENUM_AD_BLOCKING_RECOVERY_SETUP_STATUS.SETUP_CONFIRMED
-			) {
-				return true;
-			}
-
-			return false;
-		},
+			)
+		),
 	},
 	[ ANALYTICS_ADSENSE_LINKED_OVERLAY_NOTIFICATION ]: {
 		Component:
@@ -95,83 +83,14 @@ export const ADSENSE_NOTIFICATIONS = {
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The hasAccessToShareableModule() selector relies on
-				// the resolution of getAuthentication().
-				resolveSelect( CORE_USER ).getAuthentication(),
-				// The isModuleConnected() and hasAccessToShareableModule() selectors
-				// rely on the resolution of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			const canViewSharedAdsense =
-				select( CORE_USER ).hasAccessToShareableModule(
-					MODULE_SLUG_ADSENSE
-				);
-
-			const canViewSharedAnalytics = select(
-				CORE_USER
-			).hasAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 );
-
-			if (
-				! (
-					adSenseModuleConnected &&
-					analyticsModuleConnected &&
-					canViewSharedAdsense &&
-					canViewSharedAnalytics
-				)
-			) {
-				return false;
-			}
-
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			if ( ! isAdSenseLinked ) {
-				return false;
-			}
-
-			// The getAccountID() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ADSENSE ).getSettings();
-			const adSenseAccountID = select( MODULES_ADSENSE ).getAccountID();
-
-			const { startDate, endDate } =
-				select( CORE_USER ).getDateRangeDates();
-
-			const reportArgs = {
-				startDate,
-				endDate,
-				dimensions: [ 'pagePath', 'adSourceName' ],
-				metrics: [ { name: 'totalAdRevenue' } ],
-				dimensionFilters: {
-					adSourceName: `Google AdSense account (${ adSenseAccountID })`,
-				},
-				orderby: [
-					{ metric: { metricName: 'totalAdRevenue' }, desc: true },
-				],
-				limit: 1,
-				reportID:
-					'notifications_analytics-adsense-linked-overlay_reportArgs',
-			};
-
-			const reportData = await resolveSelect(
-				MODULES_ANALYTICS_4
-			).getReport( reportArgs );
-
-			return isZeroReport( reportData ) === false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireAccessToShareableModule( MODULE_SLUG_ADSENSE ),
+			requireAccessToShareableModule( MODULE_SLUG_ANALYTICS_4 ),
+			requireAdSenseLinked(),
+			requireAdSenseRevenueInAnalytics()
+		),
 	},
 	[ LINK_ANALYTICS_ADSENSE_OVERLAY_NOTIFICATION ]: {
 		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
@@ -180,32 +99,11 @@ export const ADSENSE_NOTIFICATIONS = {
 		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			await Promise.all( [
-				// The isModuleConnected() selector relies on the resolution
-				// of the getModules() resolver.
-				resolveSelect( CORE_MODULES ).getModules(),
-			] );
-
-			const adSenseModuleConnected =
-				select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ADSENSE );
-
-			const analyticsModuleConnected = select(
-				CORE_MODULES
-			).isModuleConnected( MODULE_SLUG_ANALYTICS_4 );
-
-			if ( ! ( adSenseModuleConnected && analyticsModuleConnected ) ) {
-				return false;
-			}
-
-			// The getAdSenseLinked() selector relies on the resolution
-			// of the getSettings() resolver.
-			await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
-			const isAdSenseLinked =
-				select( MODULES_ANALYTICS_4 ).getAdSenseLinked();
-
-			return isAdSenseLinked === false;
-		},
+		checkRequirements: asyncRequireAll(
+			requireModuleConnected( MODULE_SLUG_ADSENSE ),
+			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
+			requireAdSenseNotLinked()
+		),
 	},
 };
 
