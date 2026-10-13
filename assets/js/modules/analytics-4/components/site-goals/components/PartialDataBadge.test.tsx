@@ -21,7 +21,13 @@
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { act, createTestRegistry, render } from '@tests/js/test-utils';
+import {
+	act,
+	createTestRegistry,
+	fireEvent,
+	render,
+	waitFor,
+} from '@tests/js/test-utils';
 import PartialDataBadge from './PartialDataBadge';
 
 describe( 'PartialDataBadge', () => {
@@ -42,6 +48,20 @@ describe( 'PartialDataBadge', () => {
 		return registry;
 	}
 
+	async function openTooltip( container: Element ) {
+		fireEvent.mouseOver(
+			container.querySelector( '.googlesitekit-info-tooltip' ) as Element
+		);
+
+		await waitFor( () => {
+			expect(
+				document.querySelector( '.googlesitekit-info-tooltip__content' )
+			).toBeInTheDocument();
+		} );
+
+		return document.querySelector( '.googlesitekit-info-tooltip__content' );
+	}
+
 	it( 'renders the partial data label with an info tooltip when partial', () => {
 		// An availability date after the reference range → partial data state.
 		const registry = setupRegistry( 20260519 );
@@ -55,6 +75,38 @@ describe( 'PartialDataBadge', () => {
 		expect(
 			container.querySelector( '.googlesitekit-info-tooltip' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'shows the date the dimension began collecting data in the tooltip', async () => {
+		const registry = setupRegistry( 20260728 );
+
+		const { container } = render(
+			<PartialDataBadge customDimensionSlug={ SLUG } />,
+			{ registry }
+		);
+
+		expect( await openTooltip( container ) ).toHaveTextContent(
+			'Breakdown data tracking began on July 28, 2026.'
+		);
+	} );
+
+	it( 'leaves the date out of the tooltip while the date the dimension began collecting data is unknown', async () => {
+		// Without an availability date, the dimension is assumed to be partial.
+		const registry = setupRegistry( 0 );
+
+		const { container } = render(
+			<PartialDataBadge customDimensionSlug={ SLUG } />,
+			{ registry }
+		);
+
+		const tooltip = await openTooltip( container );
+
+		expect( tooltip ).toHaveTextContent(
+			'We’re still collecting full data for your selected dashboard timeframe and previous period comparisons.'
+		);
+		expect( tooltip ).not.toHaveTextContent(
+			'Breakdown data tracking began on'
+		);
 	} );
 
 	it( 'shows the badge once the user picks a range starting before the dimension collected data', () => {

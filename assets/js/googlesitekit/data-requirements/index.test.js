@@ -45,6 +45,7 @@ import {
 } from '@tests/js/test-utils';
 import {
 	requireAccessToFeatureTour,
+	requireAccessToShareableModule,
 	requireAdsConnected,
 	requireAnyGoogleTagGatewayModuleConnected,
 	requireAuthError,
@@ -633,6 +634,63 @@ describe( 'data requirements', () => {
 
 			expect(
 				await requireModuleViewable( MODULE_SLUG_SEARCH_CONSOLE )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requireAccessToShareableModule', () => {
+		it( 'should return true when the user is authenticated', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return true when the module is shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_SEARCH_CONSOLE
+				) ]: true,
+			} );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is not shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the module is not available', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule( 'non-existent-module' )(
 					registry
 				)
 			).toBe( false );

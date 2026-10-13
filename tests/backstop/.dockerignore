@@ -1,6 +1,0 @@
-# Ignore everything by default
-*
-
-# Allow the Dockerfile and the entrypoint script
-!Dockerfile
-!backstop-entrypoint.sh

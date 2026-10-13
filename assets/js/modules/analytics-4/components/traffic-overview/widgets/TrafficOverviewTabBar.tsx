@@ -19,12 +19,19 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { ComponentType, FC, SVGAttributes } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
+import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import ScrollableTabs from '@/js/components/ScrollableTabs';
 
 export interface TrafficOverviewTab {
@@ -32,6 +39,10 @@ export interface TrafficOverviewTab {
 	id: string;
 	/** The text the tab shows. */
 	label: string;
+	/** An icon the tab shows before its label. It is hidden from assistive technology. */
+	Icon?: ComponentType< SVGAttributes< SVGElement > >;
+	/** Whether the tab shows a "Beta" badge after its label. */
+	isBeta?: boolean;
 }
 
 interface TrafficOverviewTabBarProps {
@@ -56,6 +67,11 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 	return (
 		<ScrollableTabs className="googlesitekit-traffic-overview__tabs">
 			<TabBar
+				// Material's tab bar lists its tabs in the order they mount, not
+				// in the order they render, so a tab added between two others
+				// would be selected by the wrong index. A new `key` for each
+				// list of tabs mounts the tab bar again, in the list's order.
+				key={ tabs.map( ( tab ) => tab.id ).join() }
 				activeIndex={ activeIndex < 0 ? 0 : activeIndex }
 				handleActiveIndexUpdate={ ( index: number ) => {
 					const tab = tabs[ index ];
@@ -72,9 +88,27 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 						className="mdc-tab--min-width"
 						focusOnActivate={ false }
 					>
+						{ tab.Icon && (
+							<tab.Icon
+								className="googlesitekit-traffic-overview__tab-icon"
+								width={ 18 }
+								height={ 18 }
+								aria-hidden="true"
+							/>
+						) }
 						<span className="mdc-tab__text-label">
 							{ tab.label }
 						</span>
+						{ tab.isBeta && (
+							// WCAG 2.5.3, Label in Name, requires the tab's accessible
+							// name to include "Beta", because the badge shows inside
+							// the tab.
+							// See: https://www.w3.org/WAI/WCAG22/Understanding/label-in-name.html
+							<Badge
+								label={ __( 'Beta', 'google-site-kit' ) }
+								variant={ BADGE_VARIANTS.ANNOUNCEMENT }
+							/>
+						) }
 					</Tab>
 				) ) }
 			</TabBar>

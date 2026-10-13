@@ -183,7 +183,7 @@
 		background-color: $c-surfaces-background;
 		flex-shrink: 0;
 		margin-top: auto;
-		padding: $grid-gap-desktop / 2 $grid-gap-desktop $grid-gap-desktop;
+		padding: $grid-gap-desktop * 0.5 $grid-gap-desktop $grid-gap-desktop;
 		width: 100%;
 	}
 
@@ -195,7 +195,7 @@
 			display: flex;
 			flex-wrap: wrap;
 			justify-content: space-between;
-			margin-top: $grid-gap-desktop / 2;
+			margin-top: $grid-gap-desktop * 0.5;
 		}
 	}
 
@@ -209,7 +209,7 @@
 
 	.googlesitekit-selection-panel-footer__actions {
 		align-items: center;
-		column-gap: $grid-gap-phone / 2;
+		column-gap: $grid-gap-phone * 0.5;
 		display: flex;
 		justify-content: flex-end;
 

@@ -58,7 +58,6 @@ import WelcomeModal, {
 	WELCOME_MODAL_NOTIFICATION,
 } from '@/js/components/WelcomeModal';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
@@ -298,9 +297,6 @@ export const DEFAULT_NOTIFICATIONS = {
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
 			VIEW_CONTEXT_SETTINGS,
-			...( isFeatureEnabled( 'setupFlowRefreshPhase4' )
-				? []
-				: [ VIEW_CONTEXT_SPLASH ] ),
 		],
 		checkRequirements: asyncRequireAll(
 			// A temporarily persisted permissions error can opt out of the
@@ -322,7 +318,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		viewContexts: [ VIEW_CONTEXT_SPLASH ],
 		checkRequirements: requireSetupError(),
 		isDismissible: false,
-		featureFlag: 'setupFlowRefreshPhase4',
 	},
 	'auth-error': {
 		Component: AuthError,

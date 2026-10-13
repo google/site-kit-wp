@@ -26,7 +26,7 @@ else
 	npx playwright install chromium
 fi
 
-# Build Storybook if the dist directory doesn't exist.
+# Build Storybook if there's no build yet.
 if [ ! -f "$DIST_DIR/index.html" ]; then
 	echo "Storybook build not found. Building..."
 	npm run -w storybook build
