@@ -148,7 +148,11 @@ const InsightNotice: FC = () => {
 		<div className="googlesitekit-traffic-overview__insight-notice">
 			<div className="googlesitekit-traffic-overview__insight-notice-content">
 				<span className="googlesitekit-traffic-overview__insight-notice-icon">
-					<MagnifyingGlassIcon width={ 18 } height={ 18 } />
+					<MagnifyingGlassIcon
+						width={ 18 }
+						height={ 18 }
+						aria-hidden="true"
+					/>
 				</span>
 				<P size={ SIZE_MEDIUM }>{ getInsightCopy( insight ) }</P>
 			</div>
