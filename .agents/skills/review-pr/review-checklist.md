@@ -1,8 +1,8 @@
 # Review Checklist — Conventions & Quality
 
 The shared rubric for judging a Site Kit change against project conventions. Used by the
-self-review step of `implement-issue.md`, by the Gemini `code-reviewer` agent, and (where it
-applies) by PR review. Check only the areas the change actually touches.
+self-review step of the `implement-issue` skill, by the Gemini `code-reviewer` agent, and by the
+`review-pr` skill. Check only the areas the change actually touches.
 
 Authoritative convention details live in `docs/context/js/` and `docs/context/php/` — cite
 the file + section when flagging a violation.

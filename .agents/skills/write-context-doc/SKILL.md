@@ -18,8 +18,8 @@ doing anything else.
 
 A context doc explains how a feature uses or extends one system: its public API, its arguments,
 its filters and actions, its rules, and the behavior to expect. AI tools load these docs before
-they change code (`docs/context/workflow/implement-issue.md` Step 3) and cite them when they
-review a PR (`docs/context/workflow/review-pr.md`). Write each doc so a reader can use the system
+they change code (Step 3 of the `implement-issue` skill) and cite them when they review a PR
+(the `review-pr` skill). Write each doc so a reader can use the system
 correctly without reading its implementation first.
 
 A context doc is **not** a copy of the code. Copied class bodies and private methods go stale
@@ -30,7 +30,7 @@ with the next refactor, and a stale doc teaches the wrong thing with full confid
 Work out which doc and which sections the job covers:
 
 - **A change to a documented system.** Update only the sections for the system the change
-  touches. Find them with the scope map in `docs/context/workflow/implement-issue.md` Step 3.
+  touches. Find them with the scope map in `.agents/skills/implement-issue/SKILL.md` Step 3.
 - **A new system with no doc.** Decide whether it belongs in an existing doc or needs a new file
   (see Step 6).
 - **A rewrite of stale sections.** Rewrite the sections the user named.
@@ -172,15 +172,15 @@ When a system needs a new file:
   (`admin-features.md`, `state-management.md`).
 - Start with a `#` title and a short paragraph on what the system is for, then the sections from
   Step 4.
-- Add a row for it to the scope map in `docs/context/workflow/implement-issue.md` Step 3, and add
-  the file name to the list in `docs/context/workflow/review-pr.md` Step 3. Without these
-  entries, no workflow loads the doc.
+- Add a row for it to the scope map in `.agents/skills/implement-issue/SKILL.md` Step 3, and add
+  the file name to the list in `.agents/skills/review-pr/SKILL.md` Step 3. Without these
+  entries, no skill loads the doc.
 
 ## Step 7 — Write in plain words
 
 The readers include engineers whose first language is not English, and AI tools that take every
 sentence literally. Follow the plain-words rules in
-`docs/context/workflow/write-implementation-brief.md` Step 5 ("Content"). In short:
+`.agents/skills/write-implementation-brief/SKILL.md` Step 5 ("Content"). In short:
 
 - Short sentences, one idea each. Use the simplest accurate word.
 - No idioms or metaphors. Say what the code does.
@@ -207,6 +207,6 @@ Report to the user:
   read in the code.
 - **Stay in scope.** Change only the sections the job covers.
 - **No line numbers and no history.** Describe the code as it is now.
-- **Keep the scope maps in sync.** A new doc gets an entry in `implement-issue.md` and
-  `review-pr.md`.
+- **Keep the scope maps in sync.** A new doc gets an entry in the `implement-issue` and
+  `review-pr` skills.
 - **Don't commit.** Do not commit, push or open a PR unless the user explicitly asks.
