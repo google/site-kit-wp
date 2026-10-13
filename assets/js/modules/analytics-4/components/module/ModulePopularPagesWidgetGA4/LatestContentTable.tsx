@@ -19,11 +19,13 @@
 /**
  * External dependencies
  */
-import { ElementType, FC, ReactNode } from 'react';
+import classnames from 'classnames';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -35,18 +37,23 @@ import PreviewTable from '@/js/components/PreviewTable';
 import ReportTable from '@/js/components/ReportTable';
 import TableOverflowContainer from '@/js/components/TableOverflowContainer';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	BREAKPOINT_SMALL,
+	BREAKPOINT_TABLET,
+	useBreakpoint,
+} from '@/js/hooks/useBreakpoint';
 import useViewOnly from '@/js/hooks/useViewOnly';
-import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 import { formatDate } from '@/js/util/dates';
 import { getLocale } from '@/js/util/i18n';
-import Footer from './Footer';
 import { getLatestContentReportArgs } from './latestContentReportOptions';
+import NoPublishedContentMessage from './NoPublishedContentMessage';
 import {
 	LatestContentRow,
+	hasUniquePagePath,
 	joinLatestContentRows,
 } from './utils/joinLatestContentRows';
 
@@ -55,33 +62,49 @@ const RECENT_CONTENT_OPTIONS = { count: 10 };
 const COLUMN_HEADER_CLASS_NAME =
 	'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';
 
-function formatPublishedTime( publishedAt: string ): string {
-	return new Intl.DateTimeFormat( getLocale(), {
-		hour: '2-digit',
-		minute: '2-digit',
-		hourCycle: 'h23',
-	} ).format( Date.parse( publishedAt ) );
+// `sitePublishedAt` is already in the site's time zone, so it is read and
+// formatted as UTC to stop the browser shifting it to its own time zone.
+function getSitePublishDate( { sitePublishedAt }: RecentContentItem ): Date {
+	// eslint-disable-next-line sitekit/no-direct-date -- Parses a stored publish time, not the current date.
+	return new Date( `${ sitePublishedAt }Z` );
 }
 
+function formatPublishedDate( item: RecentContentItem ): string {
+	return formatDate( getSitePublishDate( item ), {
+		year: undefined,
+		timeZone: 'UTC',
+	} );
+}
+
+function formatPublishedTime( item: RecentContentItem ): string {
+	return new Intl.DateTimeFormat( getLocale(), {
+		hour: 'numeric',
+		minute: '2-digit',
+		timeZone: 'UTC',
+	} ).format( getSitePublishDate( item ) );
+}
+
+/**
+ * Props for the Latest content table.
+ *
+ * @since n.e.x.t
+ */
 export interface LatestContentTableProps {
-	/** The widget wrapper the table renders in. */
-	Widget: ElementType;
 	/** The component the table renders when a request fails. */
 	WidgetReportError: ElementType;
-	/** The tab bar rendered above the table. */
-	tabBar?: ReactNode;
 }
 
 const LatestContentTable: FC< LatestContentTableProps > = ( {
-	Widget,
 	WidgetReportError,
-	tabBar,
 } ) => {
-	const widgetClassName = tabBar
-		? 'googlesitekit-analytics-popular-pages-widget--tabbed'
-		: undefined;
+	const breakpoint = useBreakpoint();
 
 	const viewOnlyDashboard = useViewOnly();
+
+	const isGatheringData: boolean | undefined = useInViewSelect(
+		( select: Select ) => select( MODULES_ANALYTICS_4 ).isGatheringData(),
+		[]
+	);
 
 	const dates = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
@@ -105,11 +128,12 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		[]
 	);
 
-	const args = recentContent?.length
-		? getLatestContentReportArgs(
-				dates,
-				recentContent.map( ( { pagePath } ) => pagePath )
-		  )
+	const pagePaths = ( recentContent ?? [] )
+		.filter( hasUniquePagePath )
+		.map( ( { pagePath } ) => pagePath );
+
+	const args = pagePaths.length
+		? getLatestContentReportArgs( dates, pagePaths )
 		: undefined;
 
 	const report: Report | undefined = useInViewSelect(
@@ -142,29 +166,75 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 
 	if ( recentContentError ) {
 		return (
-			<Widget className={ widgetClassName } Footer={ Footer }>
-				{ tabBar }
+			<div className="googlesitekit-analytics-popular-pages-widget__error">
 				<WidgetReportError
 					moduleSlug="analytics-4"
 					error={ recentContentError }
 				/>
-			</Widget>
+			</div>
 		);
 	}
 
-	if ( recentContent === undefined || ! reportLoaded ) {
-		return (
-			<Widget className={ widgetClassName } Footer={ Footer } noPadding>
-				{ tabBar }
-				<PreviewTable padding />
-			</Widget>
-		);
+	if (
+		recentContent === undefined ||
+		isGatheringData === undefined ||
+		! reportLoaded
+	) {
+		return <PreviewTable padding />;
 	}
 
 	const rows = joinLatestContentRows(
 		recentContent,
 		reportError ? undefined : report
 	);
+
+	// With no metric columns there is nothing to switch between, so the
+	// report error keeps the full layout on every screen size.
+	const tabbedLayout =
+		! reportError &&
+		( breakpoint === BREAKPOINT_SMALL || breakpoint === BREAKPOINT_TABLET );
+
+	const titleColumn = {
+		columnHeaderClassName: COLUMN_HEADER_CLASS_NAME,
+		title: __( 'Title', 'google-site-kit' ),
+		description: __( 'Page Title', 'google-site-kit' ),
+		primary: true,
+		className: 'googlesitekit-analytics-popular-pages-widget__title',
+		Component( { row }: { row: LatestContentRow } ) {
+			const serviceURL = useSelect(
+				( select: Select ) => {
+					if ( viewOnlyDashboard ) {
+						return null;
+					}
+
+					return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
+						'all-pages-and-screens',
+						{
+							filters: { unifiedPagePathScreen: row.pagePath },
+							dates,
+						}
+					);
+				},
+				[ row.pagePath ]
+			);
+
+			return (
+				<div>
+					{ tabbedLayout && (
+						<span className="googlesitekit-analytics-popular-pages-widget__posted-meta">
+							{ formatPublishedDate( row ) }{ ' ' }
+							{ formatPublishedTime( row ) }
+						</span>
+					) }
+					<DetailsPermaLinks
+						title={ row.title }
+						path={ row.pagePath }
+						serviceURL={ serviceURL }
+					/>
+				</div>
+			);
+		},
+	};
 
 	const postedColumns = [
 		{
@@ -174,56 +244,17 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 			className:
 				'googlesitekit-analytics-popular-pages-widget__posted-date',
 			Component( { row }: { row: LatestContentRow } ) {
-				return (
-					<span>
-						{ /* eslint-disable-next-line sitekit/no-direct-date -- Parses a stored publish time, not the current date. */ }
-						{ formatDate( new Date( row.publishedAt ), {
-							year: undefined,
-						} ) }
-					</span>
-				);
+				return <span>{ formatPublishedDate( row ) }</span>;
 			},
 		},
 		{
 			columnHeaderClassName: COLUMN_HEADER_CLASS_NAME,
-			title: '',
+			title: __( 'Time', 'google-site-kit' ),
 			description: __( 'Published time', 'google-site-kit' ),
 			className:
 				'googlesitekit-analytics-popular-pages-widget__posted-time',
 			Component( { row }: { row: LatestContentRow } ) {
-				return <span>{ formatPublishedTime( row.publishedAt ) }</span>;
-			},
-		},
-		{
-			columnHeaderClassName: COLUMN_HEADER_CLASS_NAME,
-			title: __( 'Title', 'google-site-kit' ),
-			description: __( 'Page Title', 'google-site-kit' ),
-			primary: true,
-			className: 'googlesitekit-analytics-popular-pages-widget__title',
-			Component( { row }: { row: LatestContentRow } ) {
-				const serviceURL = useSelect(
-					( select: Select ) => {
-						if ( viewOnlyDashboard ) {
-							return null;
-						}
-
-						return select(
-							MODULES_ANALYTICS_4
-						).getServiceReportURL( 'all-pages-and-screens', {
-							filters: { unifiedPagePathScreen: row.pagePath },
-							dates,
-						} );
-					},
-					[ row.pagePath ]
-				);
-
-				return (
-					<DetailsPermaLinks
-						title={ row.title }
-						path={ row.pagePath }
-						serviceURL={ serviceURL }
-					/>
-				);
+				return <span>{ formatPublishedTime( row ) }</span>;
 			},
 		},
 	];
@@ -257,13 +288,10 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 			columnHeaderClassName: COLUMN_HEADER_CLASS_NAME,
 			title: __( 'Engaged Sessions', 'google-site-kit' ),
 			description: __( 'Engaged Sessions', 'google-site-kit' ),
+			field: 'engagementRate',
 			className: 'googlesitekit-table__head-item--engaged-sessions',
-			Component( { row }: { row: LatestContentRow } ) {
-				const share = row.sessions
-					? row.engagedSessions / row.sessions
-					: 0;
-
-				return <span>{ numFmt( share, '%' ) }</span>;
+			Component( { fieldValue }: { fieldValue: number } ) {
+				return <span>{ numFmt( fieldValue, '%' ) }</span>;
 			},
 		},
 		{
@@ -277,13 +305,35 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		},
 	];
 
-	const columns = reportError
-		? postedColumns
-		: [ ...postedColumns, ...metricColumns ];
+	let columns;
+
+	if ( tabbedLayout ) {
+		columns = [ titleColumn, ...metricColumns ];
+	} else if ( reportError ) {
+		columns = [ ...postedColumns, titleColumn ];
+	} else {
+		columns = [ ...postedColumns, titleColumn, ...metricColumns ];
+	}
+
+	const reportTable = (
+		<ReportTable
+			className={ classnames(
+				'googlesitekit-analytics-popular-pages-widget__latest-content-table',
+				{
+					'googlesitekit-analytics-popular-pages-widget__report-table--tabbed-layout':
+						tabbedLayout,
+				}
+			) }
+			rows={ rows }
+			columns={ columns }
+			zeroState={ NoPublishedContentMessage }
+			gatheringData={ isGatheringData }
+			tabbedLayout={ tabbedLayout }
+		/>
+	);
 
 	return (
-		<Widget className={ widgetClassName } Footer={ Footer } noPadding>
-			{ tabBar }
+		<Fragment>
 			{ reportError && (
 				<div className="googlesitekit-analytics-popular-pages-widget__report-error">
 					<WidgetReportError
@@ -292,15 +342,12 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 					/>
 				</div>
 			) }
-			<TableOverflowContainer>
-				<ReportTable
-					className="googlesitekit-analytics-popular-pages-widget__latest-content-table"
-					rows={ rows }
-					columns={ columns }
-					zeroState={ ZeroDataMessage }
-				/>
-			</TableOverflowContainer>
-		</Widget>
+			{ tabbedLayout ? (
+				reportTable
+			) : (
+				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
+			) }
+		</Fragment>
 	);
 };
 

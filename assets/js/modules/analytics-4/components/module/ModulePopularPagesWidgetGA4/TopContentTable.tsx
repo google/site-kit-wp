@@ -21,7 +21,7 @@
  */
 import classnames from 'classnames';
 import { cloneDeep } from 'lodash';
-import { ElementType, FC, ReactNode } from 'react';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -47,30 +47,21 @@ import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
-import Footer from './Footer';
 import { getPopularPagesReportOptions } from './reportOptions';
 
+/**
+ * Props for the Top content table.
+ *
+ * @since n.e.x.t
+ */
 export interface TopContentTableProps {
-	/** The widget wrapper the table renders in. */
-	Widget: ElementType;
 	/** The component the table renders when the report fails. */
 	WidgetReportError: ElementType;
-	/** The widget header, if any. */
-	Header?: ElementType;
-	/** The tab bar rendered above the table, if any. */
-	tabBar?: ReactNode;
 }
 
 const TopContentTable: FC< TopContentTableProps > = ( {
-	Widget,
 	WidgetReportError,
-	Header,
-	tabBar,
 } ) => {
-	const widgetClassName = tabBar
-		? 'googlesitekit-analytics-popular-pages-widget--tabbed'
-		: undefined;
-
 	const breakpoint = useBreakpoint();
 
 	const isGatheringData = useInViewSelect( ( select: Select ) =>
@@ -126,29 +117,14 @@ const TopContentTable: FC< TopContentTableProps > = ( {
 	const loading = ! loaded || isGatheringData === undefined;
 
 	if ( loading ) {
-		return (
-			<Widget
-				className={ widgetClassName }
-				Header={ Header }
-				Footer={ Footer }
-				noPadding
-			>
-				{ tabBar }
-				<PreviewTable padding />
-			</Widget>
-		);
+		return <PreviewTable padding />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget
-				className={ widgetClassName }
-				Header={ Header }
-				Footer={ Footer }
-			>
-				{ tabBar }
+			<div className="googlesitekit-analytics-popular-pages-widget__error">
 				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			</div>
 		);
 	}
 
@@ -265,20 +241,10 @@ const TopContentTable: FC< TopContentTableProps > = ( {
 		/>
 	);
 
-	return (
-		<Widget
-			className={ widgetClassName }
-			Header={ Header }
-			Footer={ Footer }
-			noPadding
-		>
-			{ tabBar }
-			{ tabbedLayout ? (
-				reportTable
-			) : (
-				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
-			) }
-		</Widget>
+	return tabbedLayout ? (
+		reportTable
+	) : (
+		<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
 	);
 };
 

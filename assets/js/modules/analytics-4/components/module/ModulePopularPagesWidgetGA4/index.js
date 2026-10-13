@@ -25,18 +25,19 @@ import PropTypes from 'prop-types';
  * WordPress dependencies
  */
 import { useState } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import WidgetTabBar from '@/js/components/WidgetTabBar';
 import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import whenActive from '@/js/util/when-active';
-import ContentTabs, {
-	LATEST_CONTENT_TAB_ID,
-	TOP_CONTENT_TAB_ID,
-} from './ContentTabs';
+import { LATEST_CONTENT_TAB_ID, TOP_CONTENT_TAB_ID } from './constants';
+import Footer from './Footer';
 import Header from './Header';
+import LatestContentHeader from './LatestContentHeader';
 import LatestContentTable from './LatestContentTable';
 import TopContentTable from './TopContentTable';
 
@@ -49,32 +50,45 @@ function ModulePopularPagesWidgetGA4( props ) {
 
 	if ( ! freshDataEnabled ) {
 		return (
-			<TopContentTable
-				Widget={ Widget }
-				WidgetReportError={ WidgetReportError }
-				Header={ Header }
-			/>
+			<Widget Header={ Header } Footer={ Footer } noPadding>
+				<TopContentTable WidgetReportError={ WidgetReportError } />
+			</Widget>
 		);
 	}
 
-	const tabBar = (
-		<ContentTabs
-			activeTabID={ activeTabID }
-			onTabChange={ setActiveTabID }
-		/>
-	);
+	const isLatestContentActive = activeTabID === LATEST_CONTENT_TAB_ID;
 
-	const ActiveTable =
-		activeTabID === LATEST_CONTENT_TAB_ID
-			? LatestContentTable
-			: TopContentTable;
+	const ActiveTable = isLatestContentActive
+		? LatestContentTable
+		: TopContentTable;
+
+	const tabs = [
+		{
+			id: TOP_CONTENT_TAB_ID,
+			label: __( 'Top content', 'google-site-kit' ),
+		},
+		{
+			id: LATEST_CONTENT_TAB_ID,
+			label: __( 'Latest content', 'google-site-kit' ),
+		},
+	];
 
 	return (
-		<ActiveTable
-			Widget={ Widget }
-			WidgetReportError={ WidgetReportError }
-			tabBar={ tabBar }
-		/>
+		<Widget
+			className="googlesitekit-widget--footer-v2"
+			Header={ isLatestContentActive ? LatestContentHeader : Header }
+			Footer={ Footer }
+			noPadding
+		>
+			<WidgetTabBar
+				tabs={ tabs }
+				activeTabID={ activeTabID }
+				onTabChange={ setActiveTabID }
+			/>
+			<div role="tabpanel" aria-labelledby={ activeTabID }>
+				<ActiveTable WidgetReportError={ WidgetReportError } />
+			</div>
+		</Widget>
 	);
 }
 

@@ -98,16 +98,15 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		expect( container ).toMatchSnapshot();
 	} );
 
-	it( 'should render the tabs in place of the header title when freshData is enabled', async () => {
-		const { container, getAllByRole, queryByText, waitForRegistry } =
-			render(
-				<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-					features: [ 'freshData' ],
-				}
-			);
+	it( 'should render the tabs with the Top content header title when freshData is enabled', async () => {
+		const { getAllByRole, getByRole, getByText, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
 
 		await waitForRegistry();
 
@@ -119,15 +118,22 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		] );
 		expect( tabs[ 0 ] ).toHaveAttribute( 'aria-selected', 'true' );
 		expect(
-			container.querySelector( '.googlesitekit-widget__header' )
-		).toBeNull();
-		expect(
-			queryByText( 'Top content over the last 28 days' )
-		).not.toBeInTheDocument();
+			getByText( 'Top content over the last 28 days' )
+		).toBeInTheDocument();
+		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-top-content-tab'
+		);
 	} );
 
-	it( 'should render the Latest content table when its tab is selected', async () => {
-		const { getAllByRole, getByText, waitForRegistry } = render(
+	it( 'should switch the panel and the header title when the Latest content tab is selected', async () => {
+		const {
+			getAllByRole,
+			getByRole,
+			getByText,
+			queryByText,
+			waitForRegistry,
+		} = render(
 			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
@@ -147,6 +153,40 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 			'aria-selected',
 			'true'
 		);
+		expect(
+			getByText( 'Latest content performance over the last 28 days' )
+		).toBeInTheDocument();
+		expect(
+			queryByText( 'Top content over the last 28 days' )
+		).not.toBeInTheDocument();
+		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-latest-content-tab'
+		);
 		expect( getByText( 'Posted' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should keep the same tab element focused when the tab changes', async () => {
+		const { getAllByRole, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		const latestContentTab = getAllByRole( 'tab' )[ 1 ];
+
+		await act( async () => {
+			latestContentTab.focus();
+			fireEvent.click( latestContentTab );
+			await waitForRegistry();
+		} );
+
+		expect( getAllByRole( 'tab' )[ 1 ] ).toBe( latestContentTab );
+		expect( latestContentTab ).toHaveFocus();
 	} );
 } );

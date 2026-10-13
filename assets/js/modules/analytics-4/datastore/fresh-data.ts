@@ -60,6 +60,8 @@ export interface RecentContentItem {
 	pagePath: string;
 	/** The publish time in UTC, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
 	publishedAt: string;
+	/** The publish time in the site's time zone, with no time zone suffix, e.g. `2026-09-24T15:05:00`. */
+	sitePublishedAt: string;
 }
 
 interface RecentContentOptions {
@@ -75,6 +77,8 @@ interface RecentContentParams extends RecentContentOptions {
 interface WordPressPost {
 	/** The post ID. */
 	id: number;
+	/** The publish time in the site's time zone, e.g. `2026-09-24T15:05:00`, with no time zone suffix. */
+	date: string;
 	/** The publish time in UTC, e.g. `2026-09-24T14:05:00`, with no time zone suffix. */
 	// eslint-disable-next-line camelcase -- The WordPress REST API returns this field as `date_gmt`.
 	date_gmt: string;
@@ -112,7 +116,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 						orderby: 'date',
 						order: 'desc',
 						per_page: count,
-						_fields: 'id,date_gmt,link,title',
+						_fields: 'id,date,date_gmt,link,title',
 					} ),
 				} )
 			)
@@ -133,6 +137,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 				permalink: post.link,
 				pagePath: new URL( post.link ).pathname,
 				publishedAt: `${ post.date_gmt }Z`,
+				sitePublishedAt: post.date,
 			} ) )
 			.sort(
 				( itemA, itemB ) =>

@@ -212,12 +212,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 9,
+						date: '2026-09-21T09:30:00',
 						date_gmt: '2026-09-21T08:30:00',
 						link: 'http://example.com/summer-recap/',
 						title: { rendered: 'Summer recap' },
@@ -241,7 +243,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '2',
-					_fields: 'id,date_gmt,link,title',
+					_fields: 'id,date,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -255,6 +257,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 				{
 					id: 9,
@@ -262,6 +265,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/summer-recap/',
 					pagePath: '/summer-recap/',
 					publishedAt: '2026-09-21T08:30:00Z',
+					sitePublishedAt: '2026-09-21T09:30:00',
 				},
 			] );
 		} );
@@ -320,6 +324,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -341,12 +346,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 9,
+						date: '2026-09-21T09:30:00',
 						date_gmt: '2026-09-21T08:30:00',
 						link: 'http://example.com/summer-recap/',
 						title: { rendered: 'Summer recap' },
@@ -375,6 +382,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 			expect(
@@ -388,6 +396,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 				{
 					id: 9,
@@ -395,6 +404,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/summer-recap/',
 					pagePath: '/summer-recap/',
 					publishedAt: '2026-09-21T08:30:00Z',
+					sitePublishedAt: '2026-09-21T09:30:00',
 				},
 			] );
 		} );
@@ -412,12 +422,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 4,
+						date: '2026-09-20T12:00:00',
 						date_gmt: '2026-09-20T11:00:00',
 						link: 'http://example.com/store-opening/',
 						title: { rendered: 'Store opening' },
@@ -429,12 +441,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 31,
+						date: '2026-09-25T11:15:00',
 						date_gmt: '2026-09-25T10:15:00',
 						link: 'http://example.com/product/ceramic-mug/',
 						title: { rendered: 'Ceramic mug' },
 					},
 					{
 						id: 27,
+						date: '2026-09-22T17:40:00',
 						date_gmt: '2026-09-22T16:40:00',
 						link: 'http://example.com/product/tea-cup/',
 						title: { rendered: 'Tea cup' },
@@ -458,7 +472,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '3',
-					_fields: 'id,date_gmt,link,title',
+					_fields: 'id,date,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -472,6 +486,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/ceramic-mug/',
 					pagePath: '/product/ceramic-mug/',
 					publishedAt: '2026-09-25T10:15:00Z',
+					sitePublishedAt: '2026-09-25T11:15:00',
 				},
 				{
 					id: 12,
@@ -479,6 +494,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 				{
 					id: 27,
@@ -486,6 +502,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/tea-cup/',
 					pagePath: '/product/tea-cup/',
 					publishedAt: '2026-09-22T16:40:00Z',
+					sitePublishedAt: '2026-09-22T17:40:00',
 				},
 			] );
 		} );
@@ -503,6 +520,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -533,6 +551,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 		} );
@@ -570,6 +589,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -581,6 +601,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 31,
+						date: '2026-09-25T11:15:00',
 						date_gmt: '2026-09-25T10:15:00',
 						link: 'http://example.com/product/ceramic-mug/',
 						title: { rendered: 'Ceramic mug' },
@@ -609,6 +630,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/ceramic-mug/',
 					pagePath: '/product/ceramic-mug/',
 					publishedAt: '2026-09-25T10:15:00Z',
+					sitePublishedAt: '2026-09-25T11:15:00',
 				},
 				{
 					id: 12,
@@ -616,6 +638,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 		} );
@@ -637,6 +660,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -668,6 +692,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 		} );
@@ -681,6 +706,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 5,
+						date: '2026-09-23T18:45:00',
 						date_gmt: '2026-09-23T17:45:00',
 						link: 'http://example.com/blog/2026/09/coffee-and-cake/',
 						title: {
@@ -713,6 +739,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 						'http://example.com/blog/2026/09/coffee-and-cake/',
 					pagePath: '/blog/2026/09/coffee-and-cake/',
 					publishedAt: '2026-09-23T17:45:00Z',
+					sitePublishedAt: '2026-09-23T18:45:00',
 				},
 			] );
 		} );
@@ -778,6 +805,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -869,6 +897,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -908,6 +937,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 		} );
@@ -921,6 +951,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -942,12 +973,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 15,
+						date: '2026-09-26T08:20:00',
 						date_gmt: '2026-09-26T07:20:00',
 						link: 'http://example.com/first-frost/',
 						title: { rendered: 'First frost' },
 					},
 					{
 						id: 12,
+						date: '2026-09-24T15:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -981,6 +1014,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/first-frost/',
 					pagePath: '/first-frost/',
 					publishedAt: '2026-09-26T07:20:00Z',
+					sitePublishedAt: '2026-09-26T08:20:00',
 				},
 				{
 					id: 12,
@@ -988,6 +1022,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T15:05:00',
 				},
 			] );
 		} );

@@ -29,11 +29,11 @@ export const LATEST_CONTENT_REPORT_ID =
  *
  * @since n.e.x.t
  *
- * @param dates           Report date range.
- * @param dates.startDate Report start date (YYYY-MM-DD).
- * @param dates.endDate   Report end date (YYYY-MM-DD).
- * @param pagePaths       Paths of the posts and products the table lists.
- * @return GA4 getReport args.
+ * @param {Object}   dates           Report date range.
+ * @param {string}   dates.startDate Report start date (YYYY-MM-DD).
+ * @param {string}   dates.endDate   Report end date (YYYY-MM-DD).
+ * @param {string[]} pagePaths       Paths of the posts and products the table lists.
+ * @return {Object} GA4 getReport args.
  */
 export function getLatestContentReportArgs(
 	{ startDate, endDate }: Pick< ReportOptions, 'startDate' | 'endDate' >,
@@ -46,7 +46,7 @@ export function getLatestContentReportArgs(
 		metrics: [
 			{ name: 'screenPageViews' },
 			{ name: 'sessions' },
-			{ name: 'engagedSessions' },
+			{ name: 'engagementRate' },
 			{ name: 'averageSessionDuration' },
 		],
 		dimensionFilters: {

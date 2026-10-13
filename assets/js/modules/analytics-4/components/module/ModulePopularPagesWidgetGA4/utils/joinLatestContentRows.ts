@@ -32,23 +32,39 @@ export interface LatestContentRow extends RecentContentItem {
 	pageviews: number;
 	/** The `sessions` metric, or `0` when the report has no row for the path. */
 	sessions: number;
-	/** The `engagedSessions` metric, or `0` when the report has no row for the path. */
-	engagedSessions: number;
+	/** The `engagementRate` metric as a fraction, or `0` when the report has no row for the path. */
+	engagementRate: number;
 	/** The `averageSessionDuration` metric in seconds, or `0` when the report has no row for the path. */
 	averageSessionDuration: number;
+}
+
+/**
+ * Checks whether a post's `pagePath` identifies only that post.
+ *
+ * Analytics drops the query string from `pagePath`, so with plain permalinks
+ * (`/?p=123`) every post has the path `/`, which is the homepage's.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} item The post or product.
+ * @return {boolean} Whether the post's report row can be told apart from other pages'.
+ */
+export function hasUniquePagePath( item: RecentContentItem ): boolean {
+	return new URL( item.permalink ).search === '';
 }
 
 /**
  * Left-joins Analytics report rows onto recently published posts by path.
  *
  * Keeps every post in the order given, fills in zeros for a post the report
- * has no row for, and ignores report rows that match no post.
+ * has no row for or whose path is not unique, and ignores report rows that
+ * match no post.
  *
  * @since n.e.x.t
  *
- * @param recentContent The posts and products, newest first.
- * @param report        The report with the `pagePath` dimension and the `screenPageViews`, `sessions`, `engagedSessions` and `averageSessionDuration` metrics, in that order.
- * @return The rows for the Latest content table.
+ * @param {Object[]} recentContent The posts and products, newest first.
+ * @param {Object}   [report]      The report with the `pagePath` dimension and the `screenPageViews`, `sessions`, `engagementRate` and `averageSessionDuration` metrics, in that order.
+ * @return {Object[]} The rows for the Latest content table.
  */
 export function joinLatestContentRows(
 	recentContent: RecentContentItem[],
@@ -71,15 +87,18 @@ export function joinLatestContentRows(
 		const [
 			pageviews = 0,
 			sessions = 0,
-			engagedSessions = 0,
+			engagementRate = 0,
 			averageSessionDuration = 0,
-		] = metricsByPath.get( item.pagePath ) ?? [];
+		] =
+			( hasUniquePagePath( item ) &&
+				metricsByPath.get( item.pagePath ) ) ||
+			[];
 
 		return {
 			...item,
 			pageviews,
 			sessions,
-			engagedSessions,
+			engagementRate,
 			averageSessionDuration,
 		};
 	} );

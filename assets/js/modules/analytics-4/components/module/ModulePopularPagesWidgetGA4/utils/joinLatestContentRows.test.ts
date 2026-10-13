@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { joinLatestContentRows } from './joinLatestContentRows';
+import {
+	hasUniquePagePath,
+	joinLatestContentRows,
+} from './joinLatestContentRows';
 
 function buildItem( id: number, publishedAt: string ): RecentContentItem {
 	return {
@@ -29,6 +32,7 @@ function buildItem( id: number, publishedAt: string ): RecentContentItem {
 		permalink: `https://example.com/post-${ id }/`,
 		pagePath: `/post-${ id }/`,
 		publishedAt,
+		sitePublishedAt: publishedAt.replace( 'Z', '' ),
 	};
 }
 
@@ -46,7 +50,7 @@ describe( 'joinLatestContentRows', () => {
 
 	it( 'should keep a post with no report row and fill its metrics with zeros', () => {
 		const rows = joinLatestContentRows( [ newest, oldest ], {
-			rows: [ buildReportRow( '/post-1/', [ 120, 100, 80, 65.5 ] ) ],
+			rows: [ buildReportRow( '/post-1/', [ 120, 100, 0.8, 65.5 ] ) ],
 		} );
 
 		expect( rows ).toEqual( [
@@ -54,25 +58,25 @@ describe( 'joinLatestContentRows', () => {
 				...newest,
 				pageviews: 0,
 				sessions: 0,
-				engagedSessions: 0,
+				engagementRate: 0,
 				averageSessionDuration: 0,
 			},
 			{
 				...oldest,
 				pageviews: 120,
 				sessions: 100,
-				engagedSessions: 80,
+				engagementRate: 0.8,
 				averageSessionDuration: 65.5,
 			},
 		] );
 	} );
 
-	it( 'should order rows by publish time regardless of traffic', () => {
+	it( 'should keep the order of the posts regardless of traffic', () => {
 		const rows = joinLatestContentRows( [ newest, middle, oldest ], {
 			rows: [
-				buildReportRow( '/post-1/', [ 900, 800, 700, 60 ] ),
-				buildReportRow( '/post-2/', [ 500, 400, 300, 60 ] ),
-				buildReportRow( '/post-3/', [ 5, 4, 3, 60 ] ),
+				buildReportRow( '/post-1/', [ 900, 800, 0.7, 60 ] ),
+				buildReportRow( '/post-2/', [ 500, 400, 0.6, 60 ] ),
+				buildReportRow( '/post-3/', [ 5, 4, 0.5, 60 ] ),
 			],
 		} );
 
@@ -82,8 +86,8 @@ describe( 'joinLatestContentRows', () => {
 	it( 'should ignore a report row that matches no post', () => {
 		const rows = joinLatestContentRows( [ newest ], {
 			rows: [
-				buildReportRow( '/post-3/', [ 10, 8, 6, 30 ] ),
-				buildReportRow( '/unrelated/', [ 999, 999, 999, 999 ] ),
+				buildReportRow( '/post-3/', [ 10, 8, 0.6, 30 ] ),
+				buildReportRow( '/unrelated/', [ 999, 999, 0.9, 999 ] ),
 			],
 		} );
 
@@ -98,7 +102,7 @@ describe( 'joinLatestContentRows', () => {
 		const zeroMetrics = {
 			pageviews: 0,
 			sessions: 0,
-			engagedSessions: 0,
+			engagementRate: 0,
 			averageSessionDuration: 0,
 		};
 
@@ -109,5 +113,45 @@ describe( 'joinLatestContentRows', () => {
 		expect( joinLatestContentRows( [ newest ], undefined ) ).toEqual( [
 			{ ...newest, ...zeroMetrics },
 		] );
+	} );
+
+	it( 'should not give the homepage row to posts with plain permalinks', () => {
+		const plainPermalinkPosts = [ 1, 2 ].map( ( id ) => ( {
+			...buildItem( id, '2026-10-08T09:00:00Z' ),
+			permalink: `https://example.com/?p=${ id }`,
+			pagePath: '/',
+		} ) );
+
+		const rows = joinLatestContentRows( plainPermalinkPosts, {
+			rows: [ buildReportRow( '/', [ 5000, 4000, 0.5, 90 ] ) ],
+		} );
+
+		expect( rows ).toEqual(
+			plainPermalinkPosts.map( ( post ) => ( {
+				...post,
+				pageviews: 0,
+				sessions: 0,
+				engagementRate: 0,
+				averageSessionDuration: 0,
+			} ) )
+		);
+	} );
+} );
+
+describe( 'hasUniquePagePath', () => {
+	it( 'should return true for a pretty permalink', () => {
+		expect(
+			hasUniquePagePath( buildItem( 1, '2026-10-08T09:00:00Z' ) )
+		).toBe( true );
+	} );
+
+	it( 'should return false for a plain permalink with a query string', () => {
+		expect(
+			hasUniquePagePath( {
+				...buildItem( 1, '2026-10-08T09:00:00Z' ),
+				permalink: 'https://example.com/?p=1',
+				pagePath: '/',
+			} )
+		).toBe( false );
 	} );
 } );
