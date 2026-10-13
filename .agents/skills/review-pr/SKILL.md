@@ -54,17 +54,9 @@ not invent acceptance criteria.
 
 ## Step 3 — Load the relevant convention docs
 
-Read **only** the convention docs that the changed files touch — use the same scope map as
-`.agents/skills/implement-issue/SKILL.md` Step 3:
-
-- **JavaScript** (`docs/context/js/`): `component-conventions.md`, `module-architecture.md`,
-  `state-management.md`, `hooks.md`, `utils.md`, `widgets.md`, `notifications.md`,
-  `feature-tours.md`, `feature-flags.md`, `event-tracking.md`, `jsdoc.md`, `storybook.md`,
-  `tests.md`.
-- **PHP** (`docs/context/php/`): `module-architecture.md`, `naming-conventions.md`,
-  `dependency-injection.md`, `context-pattern.md`, `settings-management.md`,
-  `storage-patterns.md`, `rest-api.md`, `trait-composition.md`, `asset-management.md`,
-  `admin-features.md`, `prompts-and-dismissals.md`, `phpunit.md`.
+Read **only** the convention docs that the changed files touch. Use the scope map in
+`.agents/skills/implement-issue/SKILL.md` Step 3 to find them in `docs/context/js/` and
+`docs/context/php/`.
 
 The convention checklist in `review-checklist.md` (§2) maps each area to its authoritative doc.
 

@@ -1,8 +1,8 @@
 # Review Checklist — Conventions & Quality
 
 The shared rubric for judging a Site Kit change against project conventions. Used by the
-self-review step of the `implement-issue` skill, by the Gemini `code-reviewer` agent, and by the
-`review-pr` skill. Check only the areas the change actually touches.
+self-review step of the `implement-issue` skill and by the `review-pr` skill. Check only the areas
+the change actually touches.
 
 Authoritative convention details live in `docs/context/js/` and `docs/context/php/` — cite
 the file + section when flagging a violation.
@@ -68,8 +68,9 @@ the file + section when flagging a violation.
   the diff. Verify the exact state the issue describes (the element in its real context,
   e.g. badge *next to the title*), not just the component in isolation.
 - Responsive / `@media` changes are checked on **both sides** of each breakpoint they
-  touch; a rule gated below `$bp-tablet` (600px) is verified at mobile width, since the
-  default (desktop-only) VRT run does not exercise mobile-only rules.
+  touch (breakpoint variables such as `$bp-tablet` are defined in
+  `assets/sass/config/_variables.scss`). A rule gated below a breakpoint is verified at a width
+  below it.
 - For UI changes, add/update Storybook stories and the corresponding VRT reference images (run
   `npm run test:visualtest -- --grep "<story label>"` to check just that story, and
   `npm run test:visualapprove -- --grep "<story label>"` to accept the new images; see

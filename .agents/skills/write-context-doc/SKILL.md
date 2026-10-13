@@ -19,8 +19,17 @@ doing anything else.
 A context doc explains how a feature uses or extends one system: its public API, its arguments,
 its filters and actions, its rules, and the behavior to expect. AI tools load these docs before
 they change code (Step 3 of the `implement-issue` skill) and cite them when they review a PR
-(the `review-pr` skill). Write each doc so a reader can use the system
-correctly without reading its implementation first.
+(the `review-pr` skill). Write each doc so a reader can use the system correctly without reading
+its implementation first.
+
+**Aim for an evergreen doc**, where practical: one that stays true until the system's contract
+changes, not until the next refactor. Describe what is stable, such as the public API, the
+extension points and the rules. For a detail that changes often, name the constant, file or class
+that holds it instead of repeating its value. A useful test for each sentence: would it still be
+true after a refactor that keeps the public API the same? If not, prefer a stable wording when it
+serves the reader just as well. Keep a coupled detail when the reader needs it to act, such as an
+exact command or the values an argument accepts, and say where it comes from so the next writer
+can check it.
 
 A context doc is **not** a copy of the code. Copied class bodies and private methods go stale
 with the next refactor, and a stale doc teaches the wrong thing with full confidence.
@@ -81,6 +90,8 @@ Leave out:
 - registration code copied from `Plugin.php` or another bootstrap file;
 - lists that copy data from the code and change often, such as every registered screen or every
   asset handle, unless the list itself is the API;
+- values copied from the code, such as a breakpoint width, a cache lifetime or a limit, when
+  naming the constant or variable that holds the value tells the reader enough;
 - line numbers and `file:line` references;
 - history: what the code used to do, or what an earlier version of the doc said wrongly.
 
@@ -172,9 +183,12 @@ When a system needs a new file:
   (`admin-features.md`, `state-management.md`).
 - Start with a `#` title and a short paragraph on what the system is for, then the sections from
   Step 4.
-- Add a row for it to the scope map in `.agents/skills/implement-issue/SKILL.md` Step 3, and add
-  the file name to the list in `.agents/skills/review-pr/SKILL.md` Step 3. Without these
-  entries, no skill loads the doc.
+- Add a row for it to the scope map in `.agents/skills/implement-issue/SKILL.md` Step 3. The
+  `implement-issue`, `review-pr` and `write-implementation-brief` skills all use that map, so
+  without the row no skill loads the doc. If the doc defines conventions a reviewer should check,
+  also add a line for it to `.agents/skills/review-pr/review-checklist.md` §2.
+- Add it to the list of context docs in `.gemini/styleguide.md`. The Gemini Code Assist reviewer on
+  GitHub reads that file, not the skills, so it keeps its own list.
 
 ## Step 7 — Write in plain words
 
@@ -191,8 +205,8 @@ sentence literally. Follow the plain-words rules in
 ## Step 8 — Verify and report
 
 Before you finish, check every claim one more time against the code. Search for each symbol you
-name, and confirm each path exists. Then confirm with `git diff` that you changed only the
-sections in scope.
+name, and confirm each path exists. Apply the evergreen test to each sentence. Then confirm with
+`git diff` that you changed only the sections in scope.
 
 Report to the user:
 
@@ -202,11 +216,13 @@ Report to the user:
 
 ## Guardrails
 
+- **Evergreen where practical.** Describe the stable contract, and point to the code for details
+  that change often.
 - **Usage, not implementation.** Explain how a feature uses the system. Never copy internal code.
 - **Verify before naming.** Never describe a symbol, argument, default or behavior you have not
   read in the code.
 - **Stay in scope.** Change only the sections the job covers.
 - **No line numbers and no history.** Describe the code as it is now.
-- **Keep the scope maps in sync.** A new doc gets an entry in the `implement-issue` and
-  `review-pr` skills.
+- **Keep the doc lists in sync.** A new doc gets a row in the `implement-issue` skill's scope map
+  and an entry in `.gemini/styleguide.md`.
 - **Don't commit.** Do not commit, push or open a PR unless the user explicitly asks.

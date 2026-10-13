@@ -171,10 +171,12 @@ Run, and fix anything that fails:
   reproduction using the **real computed values** (typography from
   `assets/sass/components/global/_googlesitekit-typography.scss`, breakpoints/sizes from
   `assets/sass/config/`) and open it in the browser. For responsive / `@media` changes,
-  check **both sides** of every breakpoint you touch (`$bp-tablet` = 600px): a mobile-only
-  rule is invisible at desktop width, and the default VRT run is desktop-only so it will
-  not exercise it. Re-check the exact state described in the issue (e.g. the badge *next to
-  the title*, not just the component in isolation).
+  check **both sides** of every breakpoint you touch (the breakpoint variables, such as
+  `$bp-tablet`, are defined in `assets/sass/config/_variables.scss`). A mobile-only rule is
+  invisible at desktop width, so look at the change at a width on each side. Confirm that
+  the VRT viewports in `tests/vrt/README.md` cover both sides too. Re-check the exact state
+  described in the issue (e.g. the badge *next to the title*, not just the component in
+  isolation).
 - **VRT** — if you added/changed a Storybook story, check just that story rather than
   the full suite: `npm run test:visualtest -- --grep "<story label>"`, and
   `npm run test:visualapprove -- --grep "<story label>"` to write the new reference
