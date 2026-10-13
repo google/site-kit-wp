@@ -108,6 +108,29 @@ export function createTestRegistry() {
 }
 
 /**
+ * Sets the timezone and returns the original timezone for restoration.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {string|undefined} timezone Timezone to use, or undefined to restore the system default.
+ * @return {string|undefined} Original timezone.
+ */
+export function provideTimezone( timezone: string | undefined ) {
+	// Jest copies process.env; use the native process to change Date timezone handling.
+	const nodeProcess = process.getBuiltinModule( 'process' );
+	const originalTimezone = nodeProcess.env.TZ;
+
+	if ( timezone === undefined ) {
+		delete nodeProcess.env.TZ;
+	} else {
+		nodeProcess.env.TZ = timezone;
+	}
+
+	return originalTimezone;
+}
+
+/**
  * Provides site connection data to the given registry.
  *
  * By default the site will be set to connected.
