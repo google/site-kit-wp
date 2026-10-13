@@ -130,7 +130,7 @@ class PointersTest extends TestCase {
 						'target_id'       => 'test-target-buttons',
 						'active_callback' => '__return_true',
 						'class'           => 'custom-class',
-						'buttons'         => '<a class=\"googlesitekit-pointer-cta button-primary\" href="#">Set up</a>',
+						'buttons'         => '<a class="googlesitekit-pointer-cta button-primary" href="#">Set up</a>',
 					)
 				);
 				return $pointers;
