@@ -1,3 +1,6 @@
+// The `es5` target leaves `Intl.DateTimeFormat.prototype.formatRange` untyped.
+/// <reference lib="es2021.intl" />
+
 /**
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -88,7 +91,7 @@ declare global {
 			siteURL: string;
 			resetSession: boolean | null;
 		};
-		local: string;
+		locale?: string;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

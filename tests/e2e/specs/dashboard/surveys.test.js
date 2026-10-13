@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
+import { createURL } from '@wordpress/e2e-test-utils';
 
 /**
  * Internal dependencies
@@ -63,10 +63,16 @@ describe( 'dashboard surveys', () => {
 			text: surveyResponse.survey_payload.question[ 0 ].question_text,
 		};
 
-		await visitAdminPage( 'admin.php', 'page=googlesitekit-dashboard' );
+		// Resolve as soon as the DOM is ready, which is when the dashboard app
+		// renders and starts its survey delay. The page `load` event can fire
+		// several seconds later.
+		await page.goto(
+			createURL( 'wp-admin/admin.php', 'page=googlesitekit-dashboard' ),
+			{ waitUntil: 'domcontentloaded' }
+		);
 
-		// Wait for 3 seconds and check that we don't see the survey yet.
-		// The survey should appear only after 5 seconds, not earlier.
+		// Wait for 3 seconds after the DOM is ready and check that we don't see
+		// the survey yet. The survey should appear only after 5 seconds, not earlier.
 		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
 		await expect( page ).not.toMatchElement(
 			expectElemSelector,
@@ -74,7 +80,7 @@ describe( 'dashboard surveys', () => {
 		);
 
 		// Wait for 3 more seconds to ensure that the survey appears since
-		// the total waiting time is 6 seconds now.
+		// the total waiting time after the DOM is ready is 6 seconds now.
 		await new Promise( ( resolve ) => setTimeout( resolve, 3000 ) );
 		await expect( page ).toMatchElement(
 			expectElemSelector,

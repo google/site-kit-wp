@@ -64,6 +64,7 @@ import * as modulesReaderRevenueManager from '@/js/modules/reader-revenue-manage
 import * as modulesSearchConsole from '@/js/modules/search-console';
 import * as modulesSignInWithGoogle from '@/js/modules/sign-in-with-google';
 import * as modulesTagManager from '@/js/modules/tagmanager';
+import { USER_AVATAR_URL } from './user-avatar';
 
 const allCoreStores = [
 	coreFeatureDiscovery,
@@ -104,6 +105,29 @@ export function createTestRegistry() {
 	registerAllStoresOn( registry );
 
 	return registry;
+}
+
+/**
+ * Sets the timezone and returns the original timezone for restoration.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {string|undefined} timezone Timezone to use, or undefined to restore the system default.
+ * @return {string|undefined} Original timezone.
+ */
+export function provideTimezone( timezone: string | undefined ) {
+	// Jest copies process.env; use the native process to change Date timezone handling.
+	const nodeProcess = process.getBuiltinModule( 'process' );
+	const originalTimezone = nodeProcess.env.TZ;
+
+	if ( timezone === undefined ) {
+		delete nodeProcess.env.TZ;
+	} else {
+		nodeProcess.env.TZ = timezone;
+	}
+
+	return originalTimezone;
 }
 
 /**
@@ -257,8 +281,7 @@ export function provideUserInfo(
 		full_name: 'Wapuu WordPress PhD',
 		email: 'wapuu.wordpress@gmail.com',
 		wpEmail: 'wapuu.wordpress@gmail.com',
-		picture:
-			'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+		picture: USER_AVATAR_URL,
 	};
 
 	registry.dispatch( CORE_USER ).receiveUserInfo( {
