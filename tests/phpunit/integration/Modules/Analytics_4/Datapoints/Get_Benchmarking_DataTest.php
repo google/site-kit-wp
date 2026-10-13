@@ -312,10 +312,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
-	 * Makes the given user the current one, has the datapoint read from
-	 * Analytics and Search Console modules built for that user, and answers
-	 * their Google requests with the fake APIs, which refuse a request without
-	 * a token.
+	 * Makes the given user the current one, and builds the Analytics and Search
+	 * Console modules the datapoint reads, for that user. Their Google requests
+	 * go to fake APIs, which refuse a request without a token.
 	 *
 	 * A module reads the token of the user it was built for, so the
 	 * administrator and the reader each need modules built for them.

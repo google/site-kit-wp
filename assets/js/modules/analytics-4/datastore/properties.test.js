@@ -1801,6 +1801,10 @@ describe( 'modules/analytics-4 properties', () => {
 			} );
 
 			it( 'should not request the property for a user who is not authenticated', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
 				provideUserAuthentication( registry, { authenticated: false } );
 
 				registry
