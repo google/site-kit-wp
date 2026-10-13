@@ -285,7 +285,7 @@ describe( 'RecentActivityPanel', () => {
 
 	it( 'should render the other sections without the insight notice when the site has too few visitors to compare', async () => {
 		// The site had no visitors four weeks ago, so the insight notice has
-		// no median to compare against.
+		// only three weeks to compare against, and hides.
 		provideInsightReport( registry, 3, [ 2, 1, 1 ] );
 
 		const { container, waitForRegistry } = render(

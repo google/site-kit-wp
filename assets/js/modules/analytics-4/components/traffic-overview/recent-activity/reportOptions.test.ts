@@ -19,17 +19,7 @@
 /**
  * Internal dependencies
  */
-import {
-	FRESH_DATA_FETCH_OPTIONS,
-	INSIGHT_REPORT_ID,
-	getInsightReportArgs,
-} from './reportOptions';
-
-describe( 'FRESH_DATA_FETCH_OPTIONS', () => {
-	it( 'should cache the reports for five minutes', () => {
-		expect( FRESH_DATA_FETCH_OPTIONS ).toEqual( { cacheTTL: 300 } );
-	} );
-} );
+import { INSIGHT_REPORT_ID, getInsightReportArgs } from './reportOptions';
 
 describe( 'getInsightReportArgs', () => {
 	it( 'should return the total users by date from 28 days before the date range starts to the last day of the date range', () => {

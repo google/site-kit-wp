@@ -145,9 +145,9 @@ export function classifyInsight( {
 		)
 	);
 
-	// The report has a row for every day, with `0` for a day without
-	// visitors. So a comparison window without visitors is how a week the
-	// property has no data for shows up.
+	// The report returns `0` for each day the property has no data for, so a
+	// comparison window without visitors means the property has no data for
+	// that week.
 	if ( comparisonTotals.some( ( total ) => total === 0 ) ) {
 		return null;
 	}
