@@ -39,6 +39,7 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { provideFreshMetricsReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -156,18 +157,23 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property and the site's latest post in the store, so
- * the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the reports of the fresh figures and the
+ * site's latest post in the store, so the Recent activity tab renders without
+ * sending a request.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry to put the property and the post in.
+ * @param {Object} registry The registry to put the property, the reports and the post in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
+	provideFreshMetricsReports( registry, {
+		totalVisitors: 157,
+		searchPerformance: { clicks: 72, impressions: 8000 },
+	} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent(
 		[
 			{
