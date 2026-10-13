@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import WidgetTabBar, { WidgetTab } from '@/js/components/WidgetTabBar';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { WidgetProps } from '@/js/googlesitekit/widgets/components/Widget';
@@ -53,13 +54,10 @@ import TypicalTrafficPanel from '@/js/modules/analytics-4/components/traffic-ove
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import SparkleIcon from '@/svg/icons/sparkle.svg';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
-import TrafficOverviewTabBar, {
-	TrafficOverviewTab,
-} from './TrafficOverviewTabBar';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
-interface TrafficOverviewTabDescriptor extends TrafficOverviewTab {
+interface TrafficOverviewTabDescriptor extends WidgetTab {
 	/** The panel the widget renders while the tab is active. */
 	PanelComponent: ComponentType;
 	/** The footer the widget renders while the tab is active. */
@@ -188,7 +186,7 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
 			Footer={ Footer }
 			noPadding
 		>
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ tabs }
 				activeTabID={ activeTabID }
 				onTabChange={ setActiveTabID }
