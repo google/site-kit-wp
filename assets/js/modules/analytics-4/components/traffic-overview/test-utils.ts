@@ -30,7 +30,10 @@ import {
 	getFreshDataDateRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getDateDimensionValues } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import {
+	getComparisonDateRange,
+	getDateDimensionValues,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 
@@ -76,22 +79,21 @@ export function createInsightReport(
 	comparisons: number[]
 ): Report {
 	const { startDate, endDate } = getInsightReportArgs( dateRange );
-	const dates = getDateDimensionValues( startDate, endDate );
-	const weeklyVisitors = [ current, ...comparisons ];
+	const visitorsByDate = new Map< string, number >();
+
+	[ current, ...comparisons ].forEach( ( visitors, weeks ) => {
+		const comparison = getComparisonDateRange( dateRange, weeks );
+
+		visitorsByDate.set( comparison.endDate.replace( /-/g, '' ), visitors );
+	} );
 
 	return {
-		rows: dates.map( ( date, index ) => {
-			const daysBeforeEndDate = dates.length - 1 - index;
-			const visitors =
-				daysBeforeEndDate % 7 === 0
-					? weeklyVisitors[ daysBeforeEndDate / 7 ]
-					: 0;
-
-			return {
-				dimensionValues: [ { value: date } ],
-				metricValues: [ { value: String( visitors || 0 ) } ],
-			};
-		} ),
+		rows: getDateDimensionValues( startDate, endDate ).map( ( date ) => ( {
+			dimensionValues: [ { value: date } ],
+			metricValues: [
+				{ value: String( visitorsByDate.get( date ) || 0 ) },
+			],
+		} ) ),
 	};
 }
 

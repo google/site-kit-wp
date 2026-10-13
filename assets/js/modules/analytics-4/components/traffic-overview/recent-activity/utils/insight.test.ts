@@ -21,7 +21,11 @@
  */
 import { createInsightReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
-import { classifyInsight, getDateDimensionValues } from './insight';
+import {
+	classifyInsight,
+	getComparisonDateRange,
+	getDateDimensionValues,
+} from './insight';
 
 describe( 'getDateDimensionValues', () => {
 	it( 'should return every day of the date range as a `date` dimension value, from the first day to the last day', () => {
@@ -34,6 +38,18 @@ describe( 'getDateDimensionValues', () => {
 		expect( getDateDimensionValues( '2025-02-05', '2025-02-05' ) ).toEqual(
 			[ '20250205' ]
 		);
+	} );
+} );
+
+describe( 'getComparisonDateRange', () => {
+	it( 'should return the same weekdays the given number of weeks before the date range', () => {
+		// Monday 3 to Wednesday 5 February 2025.
+		expect(
+			getComparisonDateRange(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				4
+			)
+		).toEqual( { startDate: '2025-01-06', endDate: '2025-01-08' } );
 	} );
 } );
 
@@ -209,7 +225,7 @@ describe( 'classifyInsight', () => {
 		).toEqual( { classification: 'typical', changePercent: 0 } );
 	} );
 
-	it( 'should return `null` when the median of the comparison windows is 0', () => {
+	it( 'should return `null` when no comparison window has visitors', () => {
 		expect( classify( 100, [ 0, 0, 0, 0 ] ) ).toBeNull();
 	} );
 

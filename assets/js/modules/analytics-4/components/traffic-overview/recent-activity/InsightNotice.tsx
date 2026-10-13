@@ -154,7 +154,12 @@ const InsightNotice: FC = () => {
 						aria-hidden="true"
 					/>
 				</span>
-				<P size={ SIZE_MEDIUM }>{ getInsightCopy( insight ) }</P>
+				<P
+					className="googlesitekit-traffic-overview__insight-notice-text"
+					size={ SIZE_MEDIUM }
+				>
+					{ getInsightCopy( insight ) }
+				</P>
 			</div>
 		</div>
 	);

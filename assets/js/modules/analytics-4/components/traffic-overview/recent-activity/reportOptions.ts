@@ -21,10 +21,13 @@
  */
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
-import { INSIGHT_COMPARISON_WEEK_OFFSETS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import {
+	INSIGHT_COMPARISON_WEEK_OFFSETS,
+	getComparisonDateRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
-import { MINUTE_IN_SECONDS, addDays } from '@/js/util';
+import { MINUTE_IN_SECONDS } from '@/js/util';
 
 export const INSIGHT_REPORT_ID =
 	'analytics-4_traffic-overview_recent-activity_insightArgs';
@@ -42,7 +45,7 @@ export const FRESH_DATA_FETCH_OPTIONS: ReportFetchOptions = {
  *
  * The report holds the visitors per day, like the traffic chart's report,
  * from the start of the earliest comparison window to the last day of the date
- * range. So one report covers the date range and every comparison window.
+ * range, which covers the date range and every comparison window.
  *
  * @since n.e.x.t
  *
@@ -51,17 +54,18 @@ export const FRESH_DATA_FETCH_OPTIONS: ReportFetchOptions = {
  * @param {string} dateRange.endDate   The last day of the date range.
  * @return {Object} GA4 getReport args.
  */
-export function getInsightReportArgs( {
-	startDate,
-	endDate,
-}: FreshDataDateRange ): ReportOptions {
+export function getInsightReportArgs(
+	dateRange: FreshDataDateRange
+): ReportOptions {
+	const earliestComparison = getComparisonDateRange(
+		dateRange,
+		Math.max( ...INSIGHT_COMPARISON_WEEK_OFFSETS )
+	);
+
 	return {
 		...getGraphReportArgs( {
-			startDate: addDays(
-				startDate,
-				Math.max( ...INSIGHT_COMPARISON_WEEK_OFFSETS ) * -7
-			),
-			endDate,
+			startDate: earliestComparison.startDate,
+			endDate: dateRange.endDate,
 		} ),
 		reportID: INSIGHT_REPORT_ID,
 	};

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import { addDays, calculateChange } from '@/js/util';
 
@@ -76,6 +77,27 @@ export function getDateDimensionValues(
 }
 
 /**
+ * Gets the comparison window a number of whole weeks before a date range.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The date range.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @param {number} weeks               How many weeks before the date range the comparison window is.
+ * @return {Object} The `startDate` and the `endDate` of the comparison window.
+ */
+export function getComparisonDateRange(
+	{ startDate, endDate }: FreshDataDateRange,
+	weeks: number
+): FreshDataDateRange {
+	return {
+		startDate: addDays( startDate, weeks * -7 ),
+		endDate: addDays( endDate, weeks * -7 ),
+	};
+}
+
+/**
  * Gets the median of a list of numbers.
  *
  * @since n.e.x.t
@@ -125,34 +147,35 @@ export function classifyInsight( {
 		}
 	} );
 
-	function sumVisitors( windowStartDate: string, windowEndDate: string ) {
-		return getDateDimensionValues( windowStartDate, windowEndDate ).reduce(
+	function sumVisitors( dateRange: FreshDataDateRange ) {
+		return getDateDimensionValues(
+			dateRange.startDate,
+			dateRange.endDate
+		).reduce(
 			( total, date ) => total + ( visitorsByDate.get( date ) || 0 ),
 			0
 		);
 	}
 
-	const current = sumVisitors( startDate, endDate );
+	const current = sumVisitors( { startDate, endDate } );
 
 	if ( current === 0 ) {
 		return null;
 	}
 
 	const comparisonTotals = INSIGHT_COMPARISON_WEEK_OFFSETS.map( ( weeks ) =>
-		sumVisitors(
-			addDays( startDate, weeks * -7 ),
-			addDays( endDate, weeks * -7 )
-		)
+		sumVisitors( getComparisonDateRange( { startDate, endDate }, weeks ) )
 	);
 
-	// The report returns `0` for each day the property has no data for, so a
-	// comparison window without visitors means the property has no data for
-	// that week.
+	// The report returns `0` both for a day without visitors and for a day
+	// the property has no data for, so a comparison window without visitors
+	// can't be told apart from a missing one, and counts as missing.
 	if ( comparisonTotals.some( ( total ) => total === 0 ) ) {
 		return null;
 	}
 
-	// `calculateChange()` gives `null` when the median is `0`.
+	// `calculateChange()` only returns `null` for a median of `0`, which the
+	// check above already rules out.
 	const change = calculateChange( getMedian( comparisonTotals ), current );
 
 	if ( change === null ) {
