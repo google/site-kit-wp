@@ -37,7 +37,7 @@ Had the same fit measured a monthly trend of `+10%`, the center would grow by `1
 
 The checked-in fixture that both the PHP encoder test and the JavaScript decoder test read gains member `8`, so a change to the week ahead on one side without the other still fails one of the two tests.
 
-This issue needs `Expected_Baseline` from #13798, and the bounds in the response and member `7` of the wire format from #13799. The decoded `forecast` reaches the panel from #13599 with the rest of the response, through the `benchmarking` slice from #13598. Drawing the week ahead on the chart is #13842.
+This issue needs `Expected_Baseline` from #13798, and the bounds in the response and member `7` of the wire format from #13799. The `keyFactors` it leaves unchanged come from #13845. The decoded `forecast` reaches the panel from #13599 with the rest of the response, through the `benchmarking` slice from #13598. Drawing the week ahead on the chart is #13842.
 
 Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
 
@@ -63,8 +63,8 @@ _Do not alter or remove anything below. The following sections will be managed b
 * On a series of 365 days with `120` visitors on every weekday and `50` on every Saturday and Sunday, every forward weekday has higher bounds than every forward Saturday and Sunday.
 * No forward bound is below `0`, and a forward day whose center would fall below `0` takes a center of `0`. On a series of 14 days at `1000` visitors followed by 28 days at `5`, ending on `endDate`, the bounds on `endDate + 7` are `0` and `2.8`.
 * The same series and the same `endDate` give the same `forecast`, to the decimal, whatever day the request is made on.
-* Producing `forecast` runs no report, and the response still needs at most two calls to Analytics.
-* `visitors`, `dailyTraffic`, `dimensions` and `contextualData` are the same as before, and `dailyTraffic` holds no row after `endDate`.
+* Producing `forecast` runs no report, and the response takes no more calls to Analytics than it does without `forecast`.
+* `visitors`, `dailyTraffic` and `keyFactors` are the same as before, and `dailyTraffic` holds no row after `endDate`.
 * The encoded response is an array of nine members. Members `0` to `7` are unchanged, and member `8` holds the week ahead:
   * Seven `[ expectedMin, expectedMax ]` pairs, one for each day from `endDate + 1` to `endDate + 7` in order, when the response carries `forecast`.
   * An empty array when it carries none.
@@ -135,7 +135,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 * In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php`:
   * With daily rows on every day from `2026-08-19` to `2026-09-15`, `build( '2026-08-19', '2026-09-15' )` returns seven `forecast` rows dated `2026-09-16` to `2026-09-22`, and the last `dailyTraffic` row is `2026-09-15`.
   * With daily rows from `2026-08-20` on, the response has no `forecast` key.
-  * A response with `forecast` takes the same batch calls as before: one call when neither custom dimension has data.
+  * A response with `forecast` takes the same batch calls as before.
   * Make `test_build__does_not_return_a_number_with_decimals` allow the `forecast` bounds, as it allows the `dailyTraffic` bounds after #13799.
 * In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_EncoderTest.php`:
   * Add seven `forecast` rows to `get_fixture_response()`, for `2025-08-22` to `2025-08-28`, with the bounds of the fixture's member `8`. The encoded response then has to match the checked-in file and still carry no date but the first.
