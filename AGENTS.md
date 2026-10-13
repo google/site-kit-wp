@@ -33,6 +33,14 @@ When asked to review a pull request by number, follow **`docs/context/workflow/r
 grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
 comments, approve, or change the PR state unless explicitly asked.
 
+### Adding a skill
+New workflows are skills. Put the whole procedure in `.agents/skills/<name>/SKILL.md`, and add a
+symlink to it at `.claude/skills/<name>/SKILL.md`. Do not add a playbook in `docs/context/workflow/`
+or a workflow in `.agents/workflows/`. Do not add an entry to this file for a new skill either:
+every tool loads this file in full in every session, and it already finds skills in
+`.agents/skills/` by their `description`. Add a line here only for a rule that must hold even
+when the skill does not run.
+
 ## Architecture Essentials
 
 ### PHP Structure
