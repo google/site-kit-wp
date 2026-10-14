@@ -89,15 +89,8 @@
 			display: none;
 		}
 
-		// Preserve parent typography against the admin bar's descendant reset.
-		.googlesitekit-activate-analytics-cta__description .googlesitekit-cta-link,
-		.googlesitekit-cta-link__contents,
-		.googlesitekit-data-block__datapoint--resize,
-		.googlesitekit-data-block__title-inner,
-		.googlesitekit-notice__description > span,
-		.googlesitekit-notice__description > span > a {
-			font: inherit;
-			letter-spacing: inherit;
+		.googlesitekit-data-block__datapoint--resize {
+			font-size: inherit;
 		}
 
 		@include mdc-layout-grid-media-query_("phone") {
