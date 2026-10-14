@@ -54,7 +54,8 @@ $typography-font-families: (
 	label: $f-primary
 );
 
-.googlesitekit-plugin {
+.googlesitekit-plugin,
+#wpadminbar .googlesitekit-plugin {
 
 	.googlesitekit-typography {
 
