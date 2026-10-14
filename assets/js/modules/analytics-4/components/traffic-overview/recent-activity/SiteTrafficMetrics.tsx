@@ -47,7 +47,7 @@ import { ErrorObject } from '@/js/util/errors';
 import FreshMetric from './FreshMetric';
 import FreshMetricsGroup from './FreshMetricsGroup';
 import {
-	FRESH_DATA_REPORT_FETCH_OPTIONS,
+	FRESH_DATA_FETCH_OPTIONS,
 	getTimeZoneReportOptions,
 	getTotalVisitorsReportOptions,
 } from './reportOptions';
@@ -91,7 +91,7 @@ const SiteTrafficMetrics: FC< SiteTrafficMetricsProps > = ( {
 			totalVisitorsReportOptions
 				? select( MODULES_ANALYTICS_4 ).getReport(
 						totalVisitorsReportOptions,
-						FRESH_DATA_REPORT_FETCH_OPTIONS
+						FRESH_DATA_FETCH_OPTIONS
 				  )
 				: undefined,
 		[ totalVisitorsReportOptions ]
@@ -121,7 +121,7 @@ const SiteTrafficMetrics: FC< SiteTrafficMetricsProps > = ( {
 		if ( totalVisitorsReportOptions ) {
 			invalidateResolution( 'getReport', [
 				totalVisitorsReportOptions,
-				FRESH_DATA_REPORT_FETCH_OPTIONS,
+				FRESH_DATA_FETCH_OPTIONS,
 			] );
 		}
 	}

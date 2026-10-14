@@ -45,7 +45,7 @@ import { ErrorObject } from '@/js/util/errors';
 import FreshMetric from './FreshMetric';
 import FreshMetricsGroup from './FreshMetricsGroup';
 import {
-	FRESH_DATA_REPORT_FETCH_OPTIONS,
+	FRESH_DATA_FETCH_OPTIONS,
 	getSearchPerformanceReportOptions,
 } from './reportOptions';
 import {
@@ -70,7 +70,7 @@ const SearchPerformanceMetrics: FC< SearchPerformanceMetricsProps > = ( {
 		( select: Select ) =>
 			select( MODULES_SEARCH_CONSOLE ).getReport(
 				reportOptions,
-				FRESH_DATA_REPORT_FETCH_OPTIONS
+				FRESH_DATA_FETCH_OPTIONS
 			),
 		[ reportOptions ]
 	);
@@ -92,7 +92,7 @@ const SearchPerformanceMetrics: FC< SearchPerformanceMetricsProps > = ( {
 	function handleRetry() {
 		invalidateResolution( 'getReport', [
 			reportOptions,
-			FRESH_DATA_REPORT_FETCH_OPTIONS,
+			FRESH_DATA_FETCH_OPTIONS,
 		] );
 	}
 

@@ -20,10 +20,30 @@
  * Internal dependencies
  */
 import {
+	INSIGHT_REPORT_ID,
+	getInsightReportArgs,
 	getSearchPerformanceReportOptions,
 	getTimeZoneReportOptions,
 	getTotalVisitorsReportOptions,
 } from './reportOptions';
+
+describe( 'getInsightReportArgs', () => {
+	it( 'should return the total users by date from 28 days before the date range starts to the last day of the date range', () => {
+		expect(
+			getInsightReportArgs( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
+		).toEqual( {
+			startDate: '2025-01-06',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'totalUsers' } ],
+			dimensions: [ 'date' ],
+			orderby: [ { dimension: { dimensionName: 'date' } } ],
+			reportID: INSIGHT_REPORT_ID,
+		} );
+	} );
+} );
 
 describe( 'getTimeZoneReportOptions', () => {
 	it( 'should request `totalUsers` for the days of the window in UTC', () => {

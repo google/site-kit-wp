@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -31,6 +32,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Response_BuilderTest extends TestCase {
 
+	use Fake_Benchmarking_Reports_Trait;
 	use Saved_Site_Data_Trait;
 
 	/**
@@ -46,16 +48,6 @@ class Response_BuilderTest extends TestCase {
 	 * @var Response_Builder
 	 */
 	private $builder;
-
-	/**
-	 * Rows the fake Analytics API returns, keyed by the first dimension a report
-	 * asks for.
-	 *
-	 * Each row lists its dimension values, then its visitors.
-	 *
-	 * @var array
-	 */
-	private $report_rows = array();
 
 	/**
 	 * Body of each `batchRunReports` request the fake Analytics API received.
@@ -125,77 +117,12 @@ class Response_BuilderTest extends TestCase {
 					);
 				}
 
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'kind'    => 'analyticsData#batchRunReports',
-								'reports' => array_map(
-									fn( $report_request ) => $this->build_report( $report_request ),
-									$batch_request['requests']
-								),
-							)
-						)
-					)
-				);
+				return new FulfilledPromise( $this->create_analytics_batch_response( $batch_request ) );
 			}
 		);
 
 		$this->custom_dimensions_data_available = new Custom_Dimensions_Data_Available( new Transients( $context ) );
 		$this->builder                          = new Response_Builder( $analytics, $this->custom_dimensions_data_available );
-	}
-
-	/**
-	 * Builds the report the fake Analytics API returns for one report request,
-	 * from the rows in `$report_rows` for the report's first dimension.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $report_request The report request, as the batch call sent it.
-	 * @return array The report, in the shape Analytics returns it.
-	 */
-	private function build_report( array $report_request ) {
-		$dimension_names = array_column( $report_request['dimensions'], 'name' );
-
-		// Analytics adds a `dateRange` dimension to a report with two periods.
-		if ( count( $report_request['dateRanges'] ) > 1 ) {
-			$dimension_names[] = 'dateRange';
-		}
-
-		$report = array(
-			'dimensionHeaders' => array_map(
-				fn( $dimension_name ) => array( 'name' => $dimension_name ),
-				$dimension_names
-			),
-			'metricHeaders'    => array(
-				array(
-					'name' => 'totalUsers',
-					'type' => 'TYPE_INTEGER',
-				),
-			),
-		);
-
-		$rows = array_map(
-			fn( $row ) => array(
-				'dimensionValues' => array_map(
-					fn( $dimension_value ) => array( 'value' => $dimension_value ),
-					array_slice( $row, 0, -1 )
-				),
-				'metricValues'    => array(
-					array( 'value' => (string) $row[ count( $row ) - 1 ] ),
-				),
-			),
-			$this->report_rows[ $dimension_names[0] ] ?? array()
-		);
-
-		// Analytics omits the `rows` key from a report with no rows.
-		if ( ! empty( $rows ) ) {
-			$report['rows'] = $rows;
-		}
-
-		return $report;
 	}
 
 	/**

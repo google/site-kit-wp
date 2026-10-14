@@ -20,10 +20,18 @@
  * Internal dependencies
  */
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
-import { TOTAL_USERS_METRIC } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { getFreshDataWindow } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getFreshDataWindow';
+import {
+	INSIGHT_COMPARISON_WEEK_OFFSETS,
+	getComparisonDateRange,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import {
+	TOTAL_USERS_METRIC,
+	getGraphReportArgs,
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { MINUTE_IN_SECONDS } from '@/js/util';
-import { getFreshDataWindow } from './utils/getFreshDataWindow';
 
 interface SearchPerformanceReportOptions {
 	/** The day of the first hour of the window, in Pacific Time. */
@@ -36,14 +44,47 @@ interface SearchPerformanceReportOptions {
 	reportID: string;
 }
 
+export const INSIGHT_REPORT_ID =
+	'analytics-4_traffic-overview_recent-activity_insightArgs';
+
 /**
- * The fetch options of the Recent activity tab's reports. A cached report is
- * used for five minutes instead of the default hour, so the tab shows recent
- * traffic.
+ * The fetch options of the Recent activity reports. A five-minute cache keeps
+ * the figures fresh.
  */
-export const FRESH_DATA_REPORT_FETCH_OPTIONS: ReportFetchOptions = {
+export const FRESH_DATA_FETCH_OPTIONS: ReportFetchOptions = {
 	cacheTTL: 5 * MINUTE_IN_SECONDS,
 };
+
+/**
+ * Builds the GA4 `getReport` args for the insight notice's report.
+ *
+ * The report holds the visitors per day, like the traffic chart's report,
+ * from the start of the earliest comparison window to the last day of the date
+ * range, which covers the date range and every comparison window.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The Recent activity date range.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @return {Object} GA4 getReport args.
+ */
+export function getInsightReportArgs(
+	dateRange: FreshDataDateRange
+): ReportOptions {
+	const earliestComparison = getComparisonDateRange(
+		dateRange,
+		Math.max( ...INSIGHT_COMPARISON_WEEK_OFFSETS )
+	);
+
+	return {
+		...getGraphReportArgs( {
+			startDate: earliestComparison.startDate,
+			endDate: dateRange.endDate,
+		} ),
+		reportID: INSIGHT_REPORT_ID,
+	};
+}
 
 /**
  * Builds the options of the report that gives the time zone of the Analytics

@@ -43,7 +43,7 @@ import {
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FreshMetricsRow from './FreshMetricsRow';
 import {
-	FRESH_DATA_REPORT_FETCH_OPTIONS,
+	FRESH_DATA_FETCH_OPTIONS,
 	getSearchPerformanceReportOptions,
 	getTimeZoneReportOptions,
 } from './reportOptions';
@@ -148,7 +148,7 @@ Loading.args = {
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.startResolution( 'getReport', [
 				getSearchPerformanceReportOptions( windowStart ),
-				FRESH_DATA_REPORT_FETCH_OPTIONS,
+				FRESH_DATA_FETCH_OPTIONS,
 			] );
 	},
 };
@@ -238,7 +238,7 @@ SearchConsoleError.args = {
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.finishResolution( 'getReport', [
 				options,
-				FRESH_DATA_REPORT_FETCH_OPTIONS,
+				FRESH_DATA_FETCH_OPTIONS,
 			] );
 	},
 };

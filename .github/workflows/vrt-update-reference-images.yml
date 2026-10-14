@@ -84,8 +84,8 @@ jobs:
         with:
           name: storybook-vrt-update
           path: |
-            dist
-            !dist/**/*.map
+            storybook-static
+            !storybook-static/**/*.map
           retention-days: 1
       - name: Upload orphan list
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
@@ -114,7 +114,7 @@ jobs:
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: storybook-vrt-update
-          path: dist
+          path: storybook-static
       - name: npm install
         run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
       - name: Render changed reference images

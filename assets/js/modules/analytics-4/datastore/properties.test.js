@@ -1732,6 +1732,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.properties[ 0 ],
 					status: 200,
 				} );
+				provideUserAuthentication( registry );
 
 				const propertyID = '12345';
 				registry
@@ -1767,6 +1768,7 @@ describe( 'modules/analytics-4 properties', () => {
 					body: fixtures.properties[ 0 ],
 					status: 200,
 				} );
+				provideUserAuthentication( registry );
 
 				const propertyID = '12345';
 				registry
@@ -1796,6 +1798,32 @@ describe( 'modules/analytics-4 properties', () => {
 					fixtures.properties[ 0 ].createTime
 				);
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
+			} );
+
+			it( 'should not request the property for a user who is not authenticated', async () => {
+				fetchMock.get( propertyEndpoint, {
+					body: fixtures.properties[ 0 ],
+					status: 200,
+				} );
+				provideUserAuthentication( registry, { authenticated: false } );
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setPropertyID( '12345' );
+
+				registry.select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
+
+				await untilResolved(
+					registry,
+					MODULES_ANALYTICS_4
+				).getPropertyCreateTime();
+
+				expect( fetchMock ).not.toHaveFetched( propertyEndpoint );
+				expect(
+					registry
+						.select( MODULES_ANALYTICS_4 )
+						.getPropertyCreateTime()
+				).toBeUndefined();
 			} );
 
 			it( 'should not make a request to the API if the property creation time is cached', async () => {
