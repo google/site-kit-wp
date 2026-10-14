@@ -252,6 +252,84 @@ export const selectors = {
 	),
 
 	/**
+	 * Determines whether a feature setup is in progress.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Feature's slug.
+	 * @return {(boolean|undefined)} Whether the feature is in progress, or `undefined` if the feature is not registered or progress cannot yet be resolved.
+	 */
+	isFeatureInProgress: createRegistrySelector(
+		( select: Select ) => ( state: FeatureDiscoveryState, slug: string ) => {
+			const feature = select( CORE_FEATURE_DISCOVERY ).getFeature( slug );
+
+			if ( ! feature ) {
+				return undefined;
+			}
+
+			const { setup } = feature;
+
+			if ( typeof setup?.isInProgress !== 'function' ) {
+				return false;
+			}
+
+			const isConnected = select(
+				CORE_FEATURE_DISCOVERY
+			).isFeatureConnected( slug );
+
+			if ( isConnected === true ) {
+				return false;
+			}
+
+			const isInProgress = setup.isInProgress( select );
+
+			if ( isInProgress === undefined ) {
+				return undefined;
+			}
+
+			if ( isInProgress !== true ) {
+				return false;
+			}
+
+			return isConnected === undefined ? undefined : true;
+		}
+	),
+
+	/**
+	 * Gets the resume URL for a feature setup.
+	 *
+	 * Falls back to the setup URL where no dedicated resume URL exists.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Feature's slug.
+	 * @return {(string|undefined)} Resume URL, setup URL fallback, or `undefined` if neither can be resolved.
+	 */
+	getFeatureResumeURL: createRegistrySelector(
+		( select: Select ) => ( state: FeatureDiscoveryState, slug: string ) => {
+			const feature = select( CORE_FEATURE_DISCOVERY ).getFeature( slug );
+
+			if ( ! feature ) {
+				return undefined;
+			}
+
+			const { setup } = feature;
+
+			if ( typeof setup?.getResumeURL === 'function' ) {
+				return setup.getResumeURL( select );
+			}
+
+			if ( typeof setup?.getSetupURL === 'function' ) {
+				return setup.getSetupURL( select );
+			}
+
+			return undefined;
+		}
+	),
+
+	/**
 	 * Gets the features that are available to show.
 	 *
 	 * A feature is available while it is not set up, its prerequisite modules
@@ -332,9 +410,13 @@ export const selectors = {
 					} )
 					.sort( ( first: Feature, second: Feature ) => {
 						const firstInProgress =
-							first.setup?.isInProgress?.( select ) === true;
+							select(
+								CORE_FEATURE_DISCOVERY
+							).isFeatureInProgress( first.slug ) === true;
 						const secondInProgress =
-							second.setup?.isInProgress?.( select ) === true;
+							select(
+								CORE_FEATURE_DISCOVERY
+							).isFeatureInProgress( second.slug ) === true;
 
 						if ( firstInProgress !== secondInProgress ) {
 							return firstInProgress ? -1 : 1;
