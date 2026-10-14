@@ -32,6 +32,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { DESIGN_DAILY_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -39,8 +40,12 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
@@ -236,10 +241,18 @@ TypicalTrafficSelected.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
-		provideBenchmarkingData(
-			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
-		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+
+		// The checked-in response has only four days, so the chart gets the
+		// design's thirteen months instead.
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			dailyTraffic: createDailyTrafficRows(
+				dates.endDate,
+				( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ]
+			),
+		} );
 	},
 };
 TypicalTrafficSelected.parameters = {
