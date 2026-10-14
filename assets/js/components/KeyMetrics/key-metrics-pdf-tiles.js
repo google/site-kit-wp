@@ -2007,6 +2007,11 @@ export const KEY_METRICS_PDF_TILES = {
 					value: numFmt( currentPrimaryCount, {
 						style: 'decimal',
 					} ),
+					subtext: sprintf(
+						/* translators: %s: GA4 event name, e.g. "purchase". */
+						__( '“%s” events', 'google-site-kit' ),
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					),
 					...getPDFTileChange(
 						previousPrimaryCount,
 						currentPrimaryCount
