@@ -40,7 +40,10 @@ import {
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
-import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	createDailyTrafficRows,
+	provideInsightReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	decodedBenchmarkingResponse,
@@ -161,12 +164,13 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property and the site's latest post in the store, so
- * the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the site's latest post and the insight
+ * report in the store, so the Recent activity tab renders without sending a
+ * request.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry to put the property and the post in.
+ * @param {Object} registry The registry to put the property, the post and the report in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
@@ -188,6 +192,7 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
+	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 }
 
 interface TrafficOverviewWidgetStoryProps {

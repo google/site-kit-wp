@@ -25,10 +25,18 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Wire_Format;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
+use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
+use Google\Site_Kit\Tests\Authenticated_Search_Console_Trait;
+use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_REST_Request;
 
@@ -39,6 +47,8 @@ use WP_REST_Request;
  */
 class Get_Benchmarking_DataTest extends TestCase {
 
+	use Authenticated_Search_Console_Trait;
+	use Fake_Benchmarking_Reports_Trait;
 	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
 	use Saved_Site_Data_Trait;
@@ -80,6 +90,14 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * @var int
 	 */
 	private $admin_id;
+
+	/**
+	 * The `Authorization` header of each `batchRunReports` request the fake
+	 * Analytics API answered.
+	 *
+	 * @var array
+	 */
+	private $report_authorizations = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -223,6 +241,152 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->force_set_property( $datapoint, 'response_builder', $builder );
 
 		return $builder;
+	}
+
+	/**
+	 * Enables `typicalTraffic`, connects Analytics and Search Console under the
+	 * administrator's account, gives every report a row, and shares the given
+	 * modules with the Editor role.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $shared_module_slugs The modules shared with the Editor role, such as `array( Analytics_4::MODULE_SLUG )`.
+	 */
+	private function set_up_shared_dashboard( array $shared_module_slugs ) {
+		$this->enable_feature( 'typicalTraffic' );
+
+		// `set_up()` grants the administrator the Analytics scope only.
+		$oauth_client = ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $this->admin_id ) ) )->get_oauth_client();
+		$oauth_client->set_granted_scopes(
+			array_merge(
+				$oauth_client->get_required_scopes(),
+				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/webmasters' )
+			)
+		);
+
+		$this->analytics->get_settings()->merge(
+			array(
+				'accountID'       => '12345',
+				'propertyID'      => '67890',
+				'webDataStreamID' => '13579',
+				'measurementID'   => 'G-ABCDEF1234',
+				'ownerID'         => $this->admin_id,
+			)
+		);
+		$this->options->set(
+			Search_Console_Settings::OPTION,
+			array(
+				'propertyID' => 'https://example.com/',
+				'ownerID'    => $this->admin_id,
+			)
+		);
+		( new Module_Sharing_Settings( $this->options ) )->set(
+			array_fill_keys( $shared_module_slugs, array( 'sharedRoles' => array( 'editor' ) ) )
+		);
+
+		// The site doubles, from 200 visitors in the compare period to 400 in
+		// the selected one, while each row grows from 200 to 240. That change is
+		// big enough to count and far from the site's, so no row is left out.
+		$this->report_rows = array(
+			'date'                          => array(
+				array( '20260801', 200 ),
+				array( '20260901', 400 ),
+			),
+			'sessionDefaultChannelGrouping' => array(
+				array( 'Organic Search', 'date_range_0', 240 ),
+				array( 'Organic Search', 'date_range_1', 200 ),
+			),
+			'deviceCategory'                => array(
+				array( 'mobile', 'date_range_0', 240 ),
+				array( 'mobile', 'date_range_1', 200 ),
+			),
+			'newVsReturning'                => array(
+				array( 'new', 'date_range_0', 240 ),
+				array( 'new', 'date_range_1', 200 ),
+			),
+			'sessionSource'                 => array(
+				array( 'a.example.com', 'date_range_0', 240 ),
+				array( 'a.example.com', 'date_range_1', 200 ),
+			),
+		);
+	}
+
+	/**
+	 * Makes the given user the current one, and builds the Analytics and Search
+	 * Console modules the datapoint reads, for that user. Their Google requests
+	 * go to fake APIs, which refuse a request without a token.
+	 *
+	 * A module reads the token of the user it was built for, so the
+	 * administrator and the reader each need modules built for them.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int $user_id The user the modules are built for.
+	 */
+	private function switch_to_user( $user_id ) {
+		wp_set_current_user( $user_id );
+
+		$user_options   = new User_Options( $this->context, $user_id );
+		$authentication = new Authentication( $this->context, $this->options, $user_options );
+		$analytics      = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
+		$search_console = new Search_Console( $this->context, $this->options, $user_options, $authentication );
+
+		$handler = function ( Request $request ) {
+			if ( '' === $request->getHeaderLine( 'Authorization' ) ) {
+				return new FulfilledPromise( new Response( 401 ) );
+			}
+
+			if ( 'analyticsdata.googleapis.com' === $request->getUri()->getHost() ) {
+				$this->report_authorizations[] = $request->getHeaderLine( 'Authorization' );
+
+				return new FulfilledPromise( $this->create_analytics_batch_response( json_decode( (string) $request->getBody(), true ) ) );
+			}
+
+			return new FulfilledPromise( $this->create_plant_garlic_batch_response( $request ) );
+		};
+
+		// A module sends a request with the current user's token, or with its
+		// owner's token when the current user reads a shared module. Both
+		// modules send the current user's requests through the same client, so
+		// faking the Analytics module's client covers Search Console too.
+		foreach ( array(
+			$analytics->get_client(),
+			$analytics->get_owner_oauth_client()->get_client(),
+			$search_console->get_owner_oauth_client()->get_client(),
+		) as $client ) {
+			FakeHttp::fake_google_http_handler( $client, $handler );
+		}
+
+		$this->force_set_property(
+			$this->modules,
+			'modules',
+			array(
+				Analytics_4::MODULE_SLUG    => $analytics,
+				Search_Console::MODULE_SLUG => $search_console,
+			)
+		);
+
+		// Only the Search Console module built for this user should add the
+		// search query rows.
+		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
+		$search_console->register();
+
+		$this->register_permissions_for_user( $user_id );
+	}
+
+	/**
+	 * Creates an editor who can view the shared dashboard without an account of
+	 * their own.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return int The editor's user ID.
+	 */
+	private function create_view_only_reader() {
+		$reader_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		( new Dismissed_Items( new User_Options( $this->context, $reader_id ) ) )->add( 'shared_dashboard_splash', 0 );
+
+		return $reader_id;
 	}
 
 	/**
@@ -542,37 +706,39 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertCount( 1, $builder->calls, 'The request should reach the builder.' );
 	}
 
-	public function test_rest_endpoint__reaches_a_view_only_reader() {
-		$builder = $this->enable_datapoint();
+	public function test_rest_endpoint__answers_a_view_only_reader_with_the_response_the_owner_gets() {
+		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG, Search_Console::MODULE_SLUG ) );
 
-		// The module has to be connected and shared before a reader without an
-		// account of their own can read from it.
-		$this->analytics->get_settings()->merge(
-			array(
-				'accountID'       => '12345',
-				'propertyID'      => '67890',
-				'webDataStreamID' => '13579',
-				'measurementID'   => 'G-ABCDEF1234',
-				'ownerID'         => $this->admin_id,
-			)
-		);
-		( new Module_Sharing_Settings( $this->options ) )->set(
-			array( Analytics_4::MODULE_SLUG => array( 'sharedRoles' => array( 'editor' ) ) )
-		);
+		$this->switch_to_user( $this->admin_id );
+		$owner_response = $this->request();
 
-		$reader_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		( new Dismissed_Items( new User_Options( $this->context, $reader_id ) ) )->add( 'shared_dashboard_splash', 0 );
+		$reader_id = $this->create_view_only_reader();
+		$this->switch_to_user( $reader_id );
 
-		wp_set_current_user( $reader_id );
-		$this->register_permissions_for_user( $reader_id );
+		$this->assertFalse( ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $reader_id ) ) )->is_authenticated(), 'The reader should not have connected a Google account of their own.' );
 
-		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'The reader should be able to view the dashboard.' );
-		$this->assertFalse( current_user_can( Permissions::MANAGE_OPTIONS ), 'The reader should not be able to manage options.' );
+		$reader_response = $this->request();
+		$dimension_order = $reader_response->get_data()[ Wire_Format::MEMBER_DIMENSION_ORDER ];
+		sort( $dimension_order );
 
-		$response = $this->request();
+		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
+		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->report_authorizations, 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
+		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
+		$this->assertSame( array( 0, 1, 2, 3, 4 ), $dimension_order, 'The response should list the channels, devices, visitor mix, referrers, and search queries.' );
+	}
 
-		$this->assertSame( 200, $response->get_status(), 'A view-only reader should reach the datapoint.' );
-		$this->assertCount( 1, $builder->calls, 'The view-only request should reach the builder.' );
+	public function test_rest_endpoint__answers_a_view_only_reader_without_search_console_shared_with_every_dimension_except_the_search_queries() {
+		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG ) );
+		$this->switch_to_user( $this->create_view_only_reader() );
+
+		$response        = $this->request();
+		$data            = $response->get_data();
+		$dimension_order = $data[ Wire_Format::MEMBER_DIMENSION_ORDER ];
+		sort( $dimension_order );
+
+		$this->assertSame( 200, $response->get_status(), 'A reader without Search Console shared should get the benchmarking data.' );
+		$this->assertSame( array( 0, 1, 2, 3 ), $dimension_order, 'The response should list the channels, devices, visitor mix, and referrers, without the search queries.' );
+		$this->assertNotContains( 'plant garlic', $data[ Wire_Format::MEMBER_STRINGS ], 'The response should not contain any search query.' );
 	}
 
 	public function test_rest_endpoint__refuses_an_administrator_who_is_not_authenticated() {

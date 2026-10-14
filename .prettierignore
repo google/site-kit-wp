@@ -1,6 +1,7 @@
 bin
 build
 dist
+storybook-static
 node_modules
 third-party
 vendor
