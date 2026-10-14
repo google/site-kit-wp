@@ -124,6 +124,7 @@ describe( 'RecentActivityPanel', () => {
 			body: [
 				{
 					id: 12,
+					date: '2026-09-24T10:05:00',
 					date_gmt: '2026-09-24T14:05:00',
 					link: 'http://example.com/autumn-recipes/',
 					title: { rendered: 'Autumn recipes' },

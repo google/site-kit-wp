@@ -26,7 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { LATEST_POST } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { createTestRegistry, render } from '@tests/js/test-utils';
-import { provideSiteInfo } from '@tests/js/utils';
+import { provideSiteInfo, provideTimezone } from '@tests/js/utils';
 import LatestPostHeader from './LatestPostHeader';
 
 describe( 'LatestPostHeader', () => {
@@ -56,8 +56,8 @@ describe( 'LatestPostHeader', () => {
 			<LatestPostHeader
 				post={ {
 					...LATEST_POST,
-					// 14:30 on July 14 in the site's `America/Detroit` time zone.
 					publishedAt: '2026-07-14T18:30:00Z',
+					sitePublishedAt: '2026-07-14T14:30:00',
 				} }
 			/>,
 			{ registry }
@@ -68,23 +68,28 @@ describe( 'LatestPostHeader', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the publish date and time in the browser time zone when the site time zone is a UTC offset', () => {
+	it( 'should show the publish time in the site time zone, rather than the browser time zone, when the site time zone is a UTC offset', () => {
 		provideSiteInfo( registry, { timezone: '' } );
+		// The browser is on UTC+8, so the browser time would be 3:59 PM.
+		const originalTimezone = provideTimezone( 'Asia/Singapore' );
 
-		const { getByText } = render(
-			<LatestPostHeader
-				post={ {
-					...LATEST_POST,
-					// 14:30 on July 14 in the browser's time zone, so the test
-					// passes in any time zone.
-					publishedAt: new Date( 2026, 6, 14, 14, 30 ).toISOString(),
-				} }
-			/>,
-			{ registry }
-		);
+		try {
+			const { getByText } = render(
+				<LatestPostHeader
+					post={ {
+						...LATEST_POST,
+						publishedAt: '2026-09-17T07:59:00Z',
+						sitePublishedAt: '2026-09-17T07:59:00',
+					} }
+				/>,
+				{ registry }
+			);
 
-		expect(
-			getByText( /^posted July 14 at 2:30\sPM$/ )
-		).toBeInTheDocument();
+			expect(
+				getByText( /^posted September 17 at 7:59\sAM$/ )
+			).toBeInTheDocument();
+		} finally {
+			provideTimezone( originalTimezone );
+		}
 	} );
 } );

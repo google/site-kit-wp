@@ -59,6 +59,7 @@ export const LATEST_POST: RecentContentItem = {
 	permalink: 'https://example.com/ice-cream/',
 	pagePath: '/ice-cream/',
 	publishedAt: '2026-09-17T12:30:00Z',
+	sitePublishedAt: '2026-09-17T08:30:00',
 };
 
 /**

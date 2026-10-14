@@ -52,20 +52,16 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 		[ post.permalink ]
 	);
 
-	const timezone = useSelect(
-		( select: Select ) => select( CORE_SITE ).getTimezone(),
-		[]
-	);
-
+	// The site time has no time zone suffix, so reading it as UTC and
+	// formatting it in UTC shows it unchanged, as WordPress shows it. This
+	// also works for a site set to a UTC offset, which has no named time zone.
 	// eslint-disable-next-line sitekit/no-direct-date -- The date comes from the post's publish time, not from the reference date.
-	const publishTime = formatDate( new Date( post.publishedAt ), {
+	const publishTime = formatDate( new Date( `${ post.sitePublishedAt }Z` ), {
 		year: undefined,
 		month: 'long',
 		hour: 'numeric',
 		minute: '2-digit',
-		// A site set to a UTC offset rather than a named time zone has an
-		// empty time zone, which `Intl` rejects, so the browser's is used.
-		...( timezone && { timeZone: timezone } ),
+		timeZone: 'UTC',
 	} );
 
 	return (
