@@ -62,7 +62,7 @@ import {
 	getCombinedChartEvents,
 	getChartOptions,
 } from './utils';
-import { stringToDate, getDateString, getLocale } from '@/js/util';
+import { stringToDate, getLocale } from '@/js/util';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 
 export default function GoogleChart( props ) {
@@ -82,6 +82,8 @@ export default function GoogleChart( props ) {
 		onMouseOut,
 		onReady,
 		onSelect,
+		plottedEndDate,
+		plottedStartDate,
 		selectedStats,
 		width,
 		options,
@@ -215,33 +217,24 @@ export default function GoogleChart( props ) {
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
-	// Checks to see if the date is within the date range.
+	// A chart that plots days outside the selected date range passes its own
+	// first and last day, so its markers on those days are still drawn.
+	const firstPlottedDate = plottedStartDate || startDate;
+	const lastPlottedDate = plottedEndDate || endDate;
+
+	// Every date here is a `YYYY-MM-DD` string, so comparing the strings
+	// compares the days in any time zone.
 	function isDateWithinRange( date ) {
-		// If any of the dates are not set, return false.
-		if ( ! date || ! startDate || ! endDate ) {
+		if ( ! date || ! firstPlottedDate || ! lastPlottedDate ) {
 			return false;
 		}
 
-		if (
-			// Don't render this marker if the date is before the first date
-			// in the current date range.
-			date.getTime() < stringToDate( startDate ).getTime() ||
-			// Don't render this marker if the date is after the last date
-			// in the current date range.
-			date.getTime() > stringToDate( endDate ).getTime()
-		) {
-			return false;
-		}
-
-		return true;
+		return date >= firstPlottedDate && date <= lastPlottedDate;
 	}
 
-	// Only use markers if the date is within the current date range.
-	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) => {
-		// Valid use of `new Date()` with an argument.
-		// eslint-disable-next-line sitekit/no-direct-date
-		return isDateWithinRange( new Date( dateMarker.date ) );
-	} );
+	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) =>
+		isDateWithinRange( dateMarker.date )
+	);
 
 	/**
 	 * Adds any "key date" vertical lines/tooltips to the charts.
@@ -266,10 +259,6 @@ export default function GoogleChart( props ) {
 
 		// Add the dotted line and tooltip for each date marker.
 		dateMarkersInRange.forEach( ( dateMarker, index ) => {
-			// Valid use of `new Date()` with an argument.
-			// eslint-disable-next-line sitekit/no-direct-date
-			const dateFromMarker = new Date( dateMarker.date );
-
 			const chartLine = document.getElementById(
 				`googlesitekit-chart__date-marker-line--${ instanceID }-${ index }`
 			);
@@ -281,13 +270,15 @@ export default function GoogleChart( props ) {
 			// We need to make sure the dates we use on the chart and on
 			// this line are exactly the same, so we get the position on the
 			// chart that matches the date we create from the date string.
+			// `stringToDate()` reads the day in the browser's time zone, the
+			// way the plotted days are read.
 			//
 			// This prevents the line and the chart data from being
 			// slightly out-of-alignment, see:
 			// https://github.com/google/site-kit-wp/pull/6822#pullrequestreview-1376066844.
 			const dateCoordinateX = Math.floor(
 				chartLayoutInterface.getXLocation(
-					stringToDate( getDateString( dateFromMarker ) )
+					stringToDate( dateMarker.date )
 				)
 			);
 
@@ -501,6 +492,16 @@ GoogleChart.propTypes = {
 	onMouseOver: PropTypes.func,
 	onReady: PropTypes.func,
 	onSelect: PropTypes.func,
+	/**
+	 * The last day the chart plots, in the format `'YYYY-MM-DD'`. Default is
+	 * the last day of the selected date range.
+	 */
+	plottedEndDate: PropTypes.string,
+	/**
+	 * The first day the chart plots, in the format `'YYYY-MM-DD'`. Default is
+	 * the first day of the selected date range.
+	 */
+	plottedStartDate: PropTypes.string,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	width: PropTypes.string,
 	options: PropTypes.object,
