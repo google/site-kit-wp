@@ -171,37 +171,34 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
+	// The posts column requests its report only once the setting to include
+	// products has loaded.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setFreshDataIncludesWooCommerceProducts( true );
 	// The site had 100 visitors, and 12 of them came from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
-		posts: createBreakdownReport(
-			[
-				[ '/autumn-recipes/', 64 ],
-				[ '/winter-soups/', 23 ],
-				[ '/spring-salads/', 9 ],
-			],
-			100
-		),
+		posts: createBreakdownReport( [
+			[ '/autumn-recipes/', 64 ],
+			[ '/winter-soups/', 23 ],
+			[ '/spring-salads/', 9 ],
+		] ),
 		postTitles: {
 			'/autumn-recipes/': 'Autumn recipes',
 			'/winter-soups/': 'Winter soups',
 			'/spring-salads/': 'Spring salads',
 		},
-		channels: createBreakdownReport(
-			[
-				[ 'Direct', 52 ],
-				[ 'Organic Search', 31 ],
-				[ 'Referral', 12 ],
-			],
-			100
-		),
-		referrals: createBreakdownReport(
-			[
-				[ 'substack.com', 7 ],
-				[ 'reddit.com', 3 ],
-				[ 'medium.com', 2 ],
-			],
-			12
-		),
+		channels: createBreakdownReport( [
+			[ 'Direct', 52 ],
+			[ 'Organic Search', 31 ],
+			[ 'Referral', 12 ],
+		] ),
+		referrals: createBreakdownReport( [
+			[ 'substack.com', 7 ],
+			[ 'reddit.com', 3 ],
+			[ 'medium.com', 2 ],
+		] ),
+		siteVisitors: 100,
 	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )

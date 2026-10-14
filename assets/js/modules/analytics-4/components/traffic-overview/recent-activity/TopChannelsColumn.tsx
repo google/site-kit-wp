@@ -30,12 +30,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
-import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
-import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
+import { getTopChannelsReportOptions } from './reportOptions';
 
 const TopChannelsColumn: FC = () => {
-	const { report, loading, error, retry } = useFreshDataReport(
+	const { rows, loading, error, retry } = useRecentTrafficBreakdownColumn(
 		getTopChannelsReportOptions
 	);
 
@@ -43,7 +42,7 @@ const TopChannelsColumn: FC = () => {
 		<TableTile
 			title={ __( 'Top channels by visitors', 'google-site-kit' ) }
 			titleAs="h4"
-			rows={ getRecentTrafficBreakdownRows( report ) }
+			rows={ rows }
 			loading={ loading }
 			error={ error }
 			onRetry={ retry }

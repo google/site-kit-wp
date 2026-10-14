@@ -343,7 +343,7 @@ describe( 'RecentActivityPanel', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should leave out the "Top posts by visitors" column of the recent traffic breakdown when the site has no published posts', async () => {
+	it( 'should omit the "Top posts by visitors" column of the recent traffic breakdown when the site has no published posts', async () => {
 		fetchMock.get(
 			postsEndpoint,
 			{ body: [], status: 200 },

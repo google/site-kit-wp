@@ -378,7 +378,7 @@
 				grid-template-columns: repeat(3, minmax(0, 1fr));
 			}
 
-			// The left padding holds the rail and its dot.
+			// The left padding makes room for the rail and its dot.
 			.googlesitekit-table-tile {
 				padding: 8px 16px 8px $tile-content-offset;
 				position: relative;
@@ -413,8 +413,8 @@
 				margin-top: 4px;
 			}
 
-			// The padding keeps a post link's focus outline visible. The
-			// negative margin keeps the text in place.
+			// The 4px padding keeps a post link's focus outline visible, and
+			// the -4px margin cancels it, so the text stays in place.
 			.googlesitekit-table-tile__cell--label {
 				margin: -4px;
 				padding: 4px;

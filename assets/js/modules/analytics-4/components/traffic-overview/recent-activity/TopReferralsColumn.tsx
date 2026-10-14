@@ -30,12 +30,11 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
-import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
-import { getTopReferralsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
+import { getTopReferralsReportOptions } from './reportOptions';
 
 const TopReferralsColumn: FC = () => {
-	const { report, loading, error, retry } = useFreshDataReport(
+	const { rows, loading, error, retry } = useRecentTrafficBreakdownColumn(
 		getTopReferralsReportOptions
 	);
 
@@ -43,10 +42,18 @@ const TopReferralsColumn: FC = () => {
 		<TableTile
 			title={ __( 'Top referrals by visitors', 'google-site-kit' ) }
 			titleAs="h4"
-			rows={ getRecentTrafficBreakdownRows( report ) }
+			rows={ rows }
 			loading={ loading }
 			error={ error }
 			onRetry={ retry }
+			zeroState={
+				<span>
+					{ __(
+						'No data to display: no traffic from other sites to yours',
+						'google-site-kit'
+					) }
+				</span>
+			}
 		/>
 	);
 };

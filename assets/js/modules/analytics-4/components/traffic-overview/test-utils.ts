@@ -31,6 +31,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
 	getInsightReportArgs,
+	getSiteVisitorsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -54,6 +55,8 @@ export interface RecentTrafficBreakdownReportOptions {
 	channels: ReportOptions;
 	/** The options of the "Top referrals by visitors" report. */
 	referrals: ReportOptions;
+	/** The options of the report of the site's visitors, which each share divides by. */
+	siteVisitors: ReportOptions;
 }
 
 export interface RecentTrafficBreakdownReports {
@@ -65,43 +68,48 @@ export interface RecentTrafficBreakdownReports {
 	channels?: Report;
 	/** The report of visitors for each site that referred them. */
 	referrals?: Report;
+	/** The site's visitors over the date range, which each share divides by. */
+	siteVisitors?: number;
 }
 
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * The visitors are strings, the way the API returns them. With
- * `totalVisitors`, the report also has the totals row the API returns.
+ * The visitors are strings, the way the API returns them.
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
- * @since n.e.x.t Added the `totalVisitors` parameter.
  *
- * @param {Array<Array>} pairs           `[ label, visitors ]` pairs.
- * @param {number}       [totalVisitors] Optional. The visitors in the report's total.
+ * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >,
-	totalVisitors?: number
+	pairs: Array< [ string, number ] >
 ): Report {
-	const report: Report = {
+	return {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
 			metricValues: [ { value: String( visitors ) } ],
 		} ) ),
 	};
+}
 
-	if ( totalVisitors !== undefined ) {
-		report.totals = [
-			{
-				dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
-				metricValues: [ { value: String( totalVisitors ) } ],
-			},
-		];
-	}
-
-	return report;
+/**
+ * Builds a report of the site's visitors, with no dimension.
+ *
+ * The report has the visitors in its one row and in its total, the way the API
+ * returns them, as a string.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number} visitors The site's visitors.
+ * @return {Object} The report of the site's visitors.
+ */
+export function createSiteVisitorsReport( visitors: number ): Report {
+	return {
+		rows: [ { metricValues: [ { value: String( visitors ) } ] } ],
+		totals: [ { metricValues: [ { value: String( visitors ) } ] } ],
+	};
 }
 
 /**
@@ -188,13 +196,16 @@ export function getSectionClassNames( container: Element ): string[] {
 }
 
 /**
- * Gets the options of the three reports of the Recent activity tab's traffic
+ * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
+ *
+ * The posts report omits the pages under the path that
+ * `getExcludedProductPathPrefix()` returns, the way the posts column does.
  *
  * @since n.e.x.t
  *
  * @param {Object} registry The registry, with its reference date set.
- * @return {Object} The options of the posts, channels, and referrals reports.
+ * @return {Object} The options of the posts, channels, and referrals reports, and of the report of the site's visitors.
  */
 export function getRecentTrafficBreakdownReportOptions(
 	registry: WPDataRegistry
@@ -204,25 +215,33 @@ export function getRecentTrafficBreakdownReportOptions(
 	);
 
 	return {
-		posts: getTopPostsReportOptions( dateRange ),
+		posts: getTopPostsReportOptions(
+			dateRange,
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getExcludedProductPathPrefix()
+		),
 		channels: getTopChannelsReportOptions( dateRange ),
 		referrals: getTopReferralsReportOptions( dateRange ),
+		siteVisitors: getSiteVisitorsReportOptions( dateRange ),
 	};
 }
 
 /**
  * Puts the given reports of the Recent activity tab's traffic breakdown in the
- * store, so the breakdown renders without sending a request. With the posts
- * report, it also puts in the report of titles the posts column requests.
+ * store, so the breakdown renders without sending a request. When
+ * `reports.posts` is given, the report of titles that the posts column
+ * requests goes in the store too.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry             The registry, with its reference date set.
- * @param {Object} reports              The reports.
- * @param {Object} [reports.posts]      Optional. The report of visitors for each page path.
- * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
- * @param {Object} [reports.channels]   Optional. The report of visitors for each channel.
- * @param {Object} [reports.referrals]  Optional. The report of visitors for each site that referred them.
+ * @param {Object} registry               The registry, with its reference date set.
+ * @param {Object} reports                The reports.
+ * @param {Object} [reports.posts]        Optional. The report of visitors for each page path.
+ * @param {Object} [reports.postTitles]   Optional. The title of each page path. A path with no title here has none in the report of titles.
+ * @param {Object} [reports.channels]     Optional. The report of visitors for each channel.
+ * @param {Object} [reports.referrals]    Optional. The report of visitors for each site that referred them.
+ * @param {number} [reports.siteVisitors] Optional. The site's visitors over the date range.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(
@@ -232,6 +251,7 @@ export function provideRecentTrafficBreakdownReports(
 		postTitles = {},
 		channels,
 		referrals,
+		siteVisitors,
 	}: RecentTrafficBreakdownReports
 ) {
 	const reportOptions = getRecentTrafficBreakdownReportOptions( registry );
@@ -277,5 +297,11 @@ export function provideRecentTrafficBreakdownReports(
 
 	if ( referrals ) {
 		receiveGetReport( referrals, { options: reportOptions.referrals } );
+	}
+
+	if ( siteVisitors !== undefined ) {
+		receiveGetReport( createSiteVisitorsReport( siteVisitors ), {
+			options: reportOptions.siteVisitors,
+		} );
 	}
 }

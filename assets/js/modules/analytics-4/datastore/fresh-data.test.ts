@@ -53,31 +53,47 @@ describe( 'modules/analytics-4 fresh data', () => {
 		registry = createTestRegistry();
 	} );
 
+	/**
+	 * Puts the module list, the site info, and the Analytics settings in the
+	 * store, so the selectors that decide whether to include products can read
+	 * them.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object}  [state]                    Optional. The state to put in the store.
+	 * @param {boolean} [state.analyticsConnected] Optional. If true, Analytics is connected. If false, Analytics is disconnected. Default `true`.
+	 * @param {boolean} [state.wooCommerceActive]  Optional. If true, WooCommerce is active. If false, WooCommerce is inactive. Default `true`.
+	 * @param {boolean} [state.setting]            Optional. If true, the setting to include products is on. If false, the setting is off. Default `true`.
+	 * @param {string}  [state.productPathPrefix]  Optional. The path that product URLs start with. Default `null`.
+	 * @return {void}
+	 */
+	function receiveState( {
+		analyticsConnected = true,
+		wooCommerceActive = true,
+		setting = true,
+		productPathPrefix = null,
+	}: {
+		analyticsConnected?: boolean;
+		wooCommerceActive?: boolean;
+		setting?: boolean;
+		productPathPrefix?: string | null;
+	} = {} ) {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: true,
+				connected: analyticsConnected,
+			},
+		] );
+
+		provideSiteInfo( registry, { wooCommerceActive, productPathPrefix } );
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+			[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
+		} );
+	}
+
 	describe( 'shouldIncludeWooCommerceProducts', () => {
-		function receiveState( {
-			analyticsConnected = true,
-			wooCommerceActive = true,
-			setting = true,
-		}: {
-			analyticsConnected?: boolean;
-			wooCommerceActive?: boolean;
-			setting?: boolean;
-		} = {} ) {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: analyticsConnected,
-				},
-			] );
-
-			provideSiteInfo( registry, { wooCommerceActive } );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
-			} );
-		}
-
 		it( 'should return true when the flag is enabled, Analytics is connected, WooCommerce is active, and the setting is on', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
@@ -180,6 +196,90 @@ describe( 'modules/analytics-4 fresh data', () => {
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.shouldIncludeWooCommerceProducts()
+			).toBeUndefined();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+		} );
+	} );
+
+	describe( 'getExcludedProductPathPrefix', () => {
+		it( 'should return the path that product URLs start with when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( { setting: false, productPathPrefix: '/product/' } );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getExcludedProductPathPrefix()
+			).toBe( '/product/' );
+		} );
+
+		it( 'should return null when the setting to include products is on', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( { setting: true, productPathPrefix: '/product/' } );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getExcludedProductPathPrefix()
+			).toBeNull();
+		} );
+
+		it( 'should return null when the setting to include products is off and product URLs share no path', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( { setting: false, productPathPrefix: null } );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getExcludedProductPathPrefix()
+			).toBeNull();
+		} );
+
+		it( 'should return null when WooCommerce is not active, even when the setting to include products is off and product URLs share a path', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( {
+				wooCommerceActive: false,
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getExcludedProductPathPrefix()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the setting to include products loads', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			fetchMock.getOnce( analytics4SettingsEndpoint, {
+				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false },
+				status: 200,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getExcludedProductPathPrefix()
 			).toBeUndefined();
 
 			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();

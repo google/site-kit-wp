@@ -106,9 +106,9 @@ export function buildRankedReportOptions( {
 		breakdownFilter
 	);
 
-	// Assigned to a variable, rather than returned directly, so a
-	// `notExpression` filter field (missing from `ReportOptions`, but
-	// accepted by the Analytics 4 report endpoint) isn't rejected by an
+	// The report options are assigned to `options`, rather than returned
+	// directly, so the `keepEmptyRows` field (missing from `ReportOptions`,
+	// but accepted by the Analytics 4 report endpoint) isn't rejected by an
 	// excess property check against the function's declared return type.
 	const options = {
 		...dates,

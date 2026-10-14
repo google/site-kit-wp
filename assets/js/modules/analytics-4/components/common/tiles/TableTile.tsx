@@ -56,16 +56,16 @@ export interface TableTileProps {
 	loading?: boolean;
 	/** Error to show in place of the rows, as a `ReportError`. */
 	error?: unknown;
-	/** Most rows to show, or all of them when not set. */
+	/** Maximum number of rows to show, or every row when not set. */
 	limit?: number;
 	/** Metric the zero state message names: `visitors` by default, `sales`, or `leads`. */
 	noDataMetricLabel?: MetricLabel;
 	/** Content shown in place of the default zero state message. */
 	zeroState?: ReactNode;
 	/**
-	 * Called on a "Retry" click in the error state, and needed for a report
-	 * with fetch options, such as a `cacheTTL`, which the button doesn't
-	 * request again.
+	 * Called on a "Retry" click in the error state. A report with fetch
+	 * options, such as a `cacheTTL`, needs `onRetry`, because the "Retry"
+	 * button doesn't request that report again.
 	 */
 	onRetry?: () => void;
 }

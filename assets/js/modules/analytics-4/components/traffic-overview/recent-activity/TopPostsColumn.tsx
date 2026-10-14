@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -36,25 +36,44 @@ import {
 	TableTile,
 	TableTileRow,
 } from '@/js/modules/analytics-4/components/common/tiles';
-import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
-import { getTopPostsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPageURL';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
+import { getTopPostsReportOptions } from './reportOptions';
+import { getPageURL } from './utils/getPageURL';
 
 const TopPostsColumn: FC = () => {
-	const { reportOptions, report, loading, error, retry } = useFreshDataReport(
-		getTopPostsReportOptions
+	const excludedProductPathPrefix = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getExcludedProductPathPrefix(),
+		[]
 	);
 
-	// Each row's `label` is a page path.
-	const pathRows = useMemo(
-		() => getRecentTrafficBreakdownRows( report ),
-		[ report ]
+	// The report waits until the column knows whether to omit product pages,
+	// so it isn't requested once without the filter and again with it.
+	const buildReportOptions = useCallback(
+		( dateRange: FreshDataDateRange ) =>
+			excludedProductPathPrefix === undefined
+				? undefined
+				: getTopPostsReportOptions(
+						dateRange,
+						excludedProductPathPrefix
+				  ),
+		[ excludedProductPathPrefix ]
 	);
+
+	const {
+		reportOptions,
+		report,
+		// Each row's `label` is a page path.
+		rows: pathRows,
+		loading,
+		error,
+		retry,
+	} = useRecentTrafficBreakdownColumn( buildReportOptions );
 
 	const pagePaths = useMemo(
 		() => pathRows.map( ( { label } ) => label ),
@@ -62,8 +81,8 @@ const TopPostsColumn: FC = () => {
 	);
 
 	// `getPageTitles` requests a title for each row of its report, so it
-	// receives only the rows the column shows. `titlesError` is read for the
-	// same page paths.
+	// receives only the rows the column shows, and `titlesError` is read for
+	// those same page paths.
 	const shownRowsReport = useMemo< Report | undefined >(
 		() =>
 			report && {
@@ -79,7 +98,7 @@ const TopPostsColumn: FC = () => {
 
 	const titles = useInViewSelect< Record< string, string > | undefined >(
 		( select: Select ) =>
-			shownRowsReport
+			shownRowsReport && reportOptions
 				? select( MODULES_ANALYTICS_4 ).getPageTitles(
 						shownRowsReport,
 						reportOptions
@@ -92,15 +111,9 @@ const TopPostsColumn: FC = () => {
 	// their request fails, so the error is read from the store.
 	const titlesError = useSelect(
 		( select: Select ) =>
-			pagePaths.length
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[
-							getPageTitlesReportOptions(
-								reportOptions,
-								pagePaths
-							),
-						]
+			pagePaths.length && reportOptions
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						getPageTitlesReportOptions( reportOptions, pagePaths )
 				  )
 				: undefined,
 		[ pagePaths, reportOptions, titles ]
@@ -111,26 +124,20 @@ const TopPostsColumn: FC = () => {
 		[]
 	);
 
-	const rows = useMemo(
-		(): TableTileRow[] =>
-			pathRows.map( ( row ) => {
-				const pagePath = row.label;
-				const title = decodeAmpersand(
-					titles?.[ pagePath ] ?? ''
-				).trim();
+	const rows: TableTileRow[] = pathRows.map( ( row ) => {
+		const pagePath = row.label;
+		const title = decodeAmpersand( titles?.[ pagePath ] ?? '' ).trim();
 
-				return {
-					...row,
-					// A page that Analytics has no title for shows its path.
-					label:
-						title && title !== __( '(unknown)', 'google-site-kit' )
-							? title
-							: pagePath,
-					url: getPageURL( siteURL, pagePath ),
-				};
-			} ),
-		[ pathRows, titles, siteURL ]
-	);
+		return {
+			...row,
+			// A page that Analytics has no title for shows its path.
+			label:
+				title && title !== __( '(unknown)', 'google-site-kit' )
+					? title
+					: pagePath,
+			url: getPageURL( siteURL, pagePath ),
+		};
+	} );
 
 	return (
 		<TableTile
@@ -145,7 +152,8 @@ const TopPostsColumn: FC = () => {
 			}
 			error={ error || titlesError }
 			// The "Retry" button requests failed titles again by itself. `retry`
-			// requests a failed report of pages again.
+			// requests a failed report of pages, or of the site's visitors,
+			// again.
 			onRetry={ error ? retry : undefined }
 		/>
 	);

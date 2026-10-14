@@ -30,7 +30,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	createBreakdownReport,
 	getRecentTrafficBreakdownReportOptions,
@@ -47,17 +46,19 @@ import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import RecentTrafficBreakdown, {
 	RecentTrafficBreakdownProps,
 } from './RecentTrafficBreakdown';
+import { FRESH_DATA_FETCH_OPTIONS } from './reportOptions';
 
-// The site had 170 visitors, and 12 of them came from other sites. Each
-// report's total counts a visitor once.
-const POSTS = createBreakdownReport(
-	[
-		[ '/ice-cream-is-good-for-your-health/', 82 ],
-		[ '/use-spf-every-day/', 21 ],
-		[ '/stay-hydrated/', 8 ],
-	],
-	170
-);
+/**
+ * The site's visitors over the date range, which each share divides by,
+ * with 12 of them from other sites.
+ */
+const SITE_VISITORS = 157;
+
+const POSTS = createBreakdownReport( [
+	[ '/ice-cream-is-good-for-your-health/', 82 ],
+	[ '/use-spf-every-day/', 21 ],
+	[ '/stay-hydrated/', 8 ],
+] );
 
 const POST_TITLES = {
 	'/ice-cream-is-good-for-your-health/': 'Ice cream is good for your health',
@@ -65,23 +66,17 @@ const POST_TITLES = {
 	'/stay-hydrated/': 'Stay hydrated',
 };
 
-const CHANNELS = createBreakdownReport(
-	[
-		[ 'Direct', 96 ],
-		[ 'Organic Search', 41 ],
-		[ 'Organic Social', 17 ],
-	],
-	170
-);
+const CHANNELS = createBreakdownReport( [
+	[ 'Direct', 96 ],
+	[ 'Organic Search', 41 ],
+	[ 'Organic Social', 17 ],
+] );
 
-const REFERRALS = createBreakdownReport(
-	[
-		[ 'substack.com', 7 ],
-		[ 'reddit.com', 3 ],
-		[ 'medium.com', 2 ],
-	],
-	12
-);
+const REFERRALS = createBreakdownReport( [
+	[ 'substack.com', 7 ],
+	[ 'reddit.com', 3 ],
+	[ 'medium.com', 2 ],
+] );
 
 interface RecentTrafficBreakdownStoryProps extends RecentTrafficBreakdownProps {
 	/** Sets the registry state the story needs before it renders. */
@@ -129,8 +124,8 @@ function Template( {
 }
 
 /**
- * The three columns side by side from the desktop breakpoint, and stacked
- * below it, as the `medium` and `small` captures show.
+ * Shows the three columns side by side from the desktop breakpoint, and
+ * stacked below it, as the `medium` and `small` captures show.
  */
 export const Loaded = Template.bind(
 	{}
@@ -143,6 +138,7 @@ Loaded.args = {
 			postTitles: POST_TITLES,
 			channels: CHANNELS,
 			referrals: REFERRALS,
+			siteVisitors: SITE_VISITORS,
 		} ),
 };
 Loaded.scenario = {};
@@ -180,6 +176,7 @@ OneColumnErrored.args = {
 			posts: POSTS,
 			postTitles: POST_TITLES,
 			referrals: REFERRALS,
+			siteVisitors: SITE_VISITORS,
 		} );
 
 		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
@@ -206,7 +203,11 @@ OneColumnErrored.scenario = {
 	viewport: 'large',
 };
 
-/** A report with no rows is what the API returns for a range with no traffic. */
+/**
+ * A report with no rows is what the API returns for a range with no traffic.
+ * The referrals column says no traffic came from other sites, and the other
+ * two columns say the site had no visitors.
+ */
 export const ZeroRows = Template.bind(
 	{}
 ) as Story< RecentTrafficBreakdownStoryProps >;
@@ -217,6 +218,7 @@ ZeroRows.args = {
 			posts: {},
 			channels: {},
 			referrals: {},
+			siteVisitors: 0,
 		} ),
 };
 ZeroRows.scenario = {
@@ -234,6 +236,7 @@ NoPublishedPosts.args = {
 		provideRecentTrafficBreakdownReports( registry, {
 			channels: CHANNELS,
 			referrals: REFERRALS,
+			siteVisitors: SITE_VISITORS,
 		} ),
 };
 NoPublishedPosts.scenario = {
@@ -241,8 +244,8 @@ NoPublishedPosts.scenario = {
 };
 
 /**
- * Titles and sources that have to be cut short, counts in the thousands, and
- * the widest shares, "(>99.9%)" and "(<0.1%)", whose counts still line up.
+ * Shows titles and sources cut short, counts in the thousands, and the widest
+ * shares, "(>99.9%)" and "(<0.1%)", with every count still lined up.
  * Some visitors read both long posts, so their shares add up to more than
  * 100%.
  */
@@ -253,14 +256,11 @@ LongTitlesAndExtremeShares.storyName = 'Long Titles and Extreme Shares';
 LongTitlesAndExtremeShares.args = {
 	setupRegistry: ( registry: WPDataRegistry ) =>
 		provideRecentTrafficBreakdownReports( registry, {
-			posts: createBreakdownReport(
-				[
-					[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
-					[ '/sunscreen-myths/', 1206 ],
-					[ '/hydration/', 9 ],
-				],
-				3000
-			),
+			posts: createBreakdownReport( [
+				[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
+				[ '/sunscreen-myths/', 1206 ],
+				[ '/hydration/', 9 ],
+			] ),
 			postTitles: {
 				'/how-to-choose-store-and-serve-ice-cream/':
 					'The complete guide to choosing, storing and serving ice cream on the hottest days of the summer',
@@ -268,27 +268,19 @@ LongTitlesAndExtremeShares.args = {
 					'Seven sunscreen myths that dermatologists wish you would stop believing',
 				'/hydration/': 'Stay hydrated',
 			},
-			channels: createBreakdownReport(
+			channels: createBreakdownReport( [
+				[ 'Direct', 2999 ],
+				[ 'Mobile Push Notifications', 1 ],
+			] ),
+			referrals: createBreakdownReport( [
+				[ 'android-app://com.google.android.googlequicksearchbox', 46 ],
 				[
-					[ 'Direct', 2999 ],
-					[ 'Mobile Push Notifications', 1 ],
+					'newsletter.an-example-publication-with-a-long-name.com',
+					31,
 				],
-				3000
-			),
-			referrals: createBreakdownReport(
-				[
-					[
-						'android-app://com.google.android.googlequicksearchbox',
-						46,
-					],
-					[
-						'newsletter.an-example-publication-with-a-long-name.com',
-						31,
-					],
-					[ 'reddit.com', 3 ],
-				],
-				80
-			),
+				[ 'reddit.com', 3 ],
+			] ),
+			siteVisitors: 3000,
 		} ),
 };
 LongTitlesAndExtremeShares.scenario = {};

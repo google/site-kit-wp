@@ -40,29 +40,29 @@ describe( 'getPageURL', () => {
 		);
 	} );
 
-	it( 'should return no URL for a value that is not a path', () => {
+	it( 'should not return a URL for a value that is not a path', () => {
 		expect(
 			getPageURL( 'https://example.com', '(not set)' )
 		).toBeUndefined();
 	} );
 
-	it( 'should return no URL for an empty value', () => {
+	it( 'should not return a URL for an empty string', () => {
 		expect( getPageURL( 'https://example.com', '' ) ).toBeUndefined();
 	} );
 
-	it( 'should return no URL for a path that starts with two slashes', () => {
+	it( 'should not return a URL for a path that starts with two slashes', () => {
 		expect(
 			getPageURL( 'https://example.com', '//example.org/offer/' )
 		).toBeUndefined();
 	} );
 
-	it( 'should return no URL for a path that starts with a slash and a backslash', () => {
+	it( 'should not return a URL for a path that starts with a slash and a backslash', () => {
 		expect(
 			getPageURL( 'https://example.com', '/\\example.org/offer/' )
 		).toBeUndefined();
 	} );
 
-	it( 'should return no URL when the site URL is not a URL', () => {
+	it( 'should not return a URL when the site URL is not a URL', () => {
 		expect( getPageURL( '', '/hello-world/' ) ).toBeUndefined();
 	} );
 } );

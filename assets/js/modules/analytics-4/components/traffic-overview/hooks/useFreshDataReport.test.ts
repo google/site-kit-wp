@@ -233,7 +233,29 @@ describe( 'useFreshDataReport', () => {
 		} );
 	} );
 
-	it( 'should not request the report while the Traffic Overview widget is out of view', async () => {
+	it( 'should be loading, and should not request a report, while `buildReportOptions` returns `undefined`', async () => {
+		fetchMock.get( reportEndpoint, {
+			body: channelsReport,
+			status: 200,
+		} );
+
+		const { result } = renderHook(
+			() => useFreshDataReport( () => undefined ),
+			{ registry }
+		);
+
+		await waitForDefaultTimeouts();
+
+		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+		expect( result.current ).toMatchObject( {
+			reportOptions: undefined,
+			report: undefined,
+			loading: true,
+			error: undefined,
+		} );
+	} );
+
+	it( 'should be loading, and should not request the report, while the Traffic Overview widget is out of view', async () => {
 		fetchMock.get( reportEndpoint, {
 			body: channelsReport,
 			status: 200,
@@ -247,6 +269,10 @@ describe( 'useFreshDataReport', () => {
 		await waitForDefaultTimeouts();
 
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
-		expect( result.current.report ).toBeUndefined();
+		expect( result.current ).toMatchObject( {
+			report: undefined,
+			loading: true,
+			error: undefined,
+		} );
 	} );
 } );

@@ -277,6 +277,40 @@ const baseSelectors = {
 			return analyticsConnected && wooCommerceActive && setting === true;
 		}
 	),
+
+	/**
+	 * Gets the path that the URL of every product starts with, when the
+	 * Recent activity tab hides products from its lists of pages.
+	 *
+	 * The tab hides products only while WooCommerce is active and the setting
+	 * to include products is off. Without WooCommerce, the setting doesn't
+	 * show, so the tab lists every page.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when the tab lists products or the site has no such path. Returns `undefined` if not yet loaded.
+	 */
+	getExcludedProductPathPrefix: createRegistrySelector(
+		( select: Select ) => (): string | null | undefined => {
+			const shouldIncludeProducts =
+				select(
+					MODULES_ANALYTICS_4
+				).shouldIncludeWooCommerceProducts();
+
+			if ( shouldIncludeProducts === undefined ) {
+				return undefined;
+			}
+
+			if (
+				shouldIncludeProducts ||
+				! select( CORE_SITE ).isWooCommerceActivated()
+			) {
+				return null;
+			}
+
+			return select( CORE_SITE ).getProductPathPrefix();
+		}
+	),
 };
 
 const store = combineStores( fetchGetRecentContentStore, {

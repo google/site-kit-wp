@@ -165,9 +165,9 @@ describe( 'TableTile', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders error state with actions', async () => {
-		// The error actions read the module list, so the store has it and no
-		// request for it outlives the test.
+	it( 'should render the error message and the "Get help" link in the error state', async () => {
+		// Storing the module list and the Analytics settings stops a request
+		// for them when `ReportError` renders.
 		const registry = createTestRegistry();
 		provideModules( registry );
 		provideModuleRegistrations( registry );
@@ -227,7 +227,7 @@ describe( 'TableTile', () => {
 
 		await waitForRegistry();
 
-		fireEvent.click( getByRole( 'button', { name: /retry/i } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );
 	} );

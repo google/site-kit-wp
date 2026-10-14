@@ -43,11 +43,11 @@ import {
 } from './useFreshDataDateRange';
 
 export interface FreshDataReport {
-	/** The options the report is requested with. */
-	reportOptions: ReportOptions;
+	/** The options the report is requested with, or `undefined` until the options can be built. */
+	reportOptions?: ReportOptions;
 	/** The report, or `undefined` until it loads after the Traffic Overview widget comes into view. */
 	report?: Report;
-	/** `true` until the request has finished, whether it succeeded or failed. */
+	/** `true` until the request has finished, whether it succeeded or failed, and while the options can't be built. */
 	loading: boolean;
 	/** The error of the request, or `undefined` when the request hasn't failed. */
 	error?: ErrorObject;
@@ -59,18 +59,18 @@ export interface FreshDataReport {
  * Resolves one of the Recent activity tab's reports, for the tab's date range
  * and with a five-minute cache.
  *
- * The store saves the error of a report under its options alone, so the error
- * is read without the fetch options. `retry` requests the report again, which
- * the "Retry" button of a report error doesn't do for a report with fetch
- * options.
+ * `retry` requests the report again, which the "Retry" button of a report
+ * error doesn't do for a report with fetch options.
  *
  * @since n.e.x.t
  *
- * @param {Function} buildReportOptions Builds the report options from the tab's date range. Pass a function defined outside the component, so the options change only with the date range.
+ * @param {Function} buildReportOptions A function that builds the report options from the tab's date range, or returns `undefined` while the options depend on data that is still loading. Pass a function defined outside the component, or one that changes only when that data does.
  * @return {Object} The report options, the report, whether it is loading, its error, and a function that requests it again.
  */
 export function useFreshDataReport(
-	buildReportOptions: ( dateRange: FreshDataDateRange ) => ReportOptions
+	buildReportOptions: (
+		dateRange: FreshDataDateRange
+	) => ReportOptions | undefined
 ): FreshDataReport {
 	const dateRange = useFreshDataDateRange();
 
@@ -79,15 +79,20 @@ export function useFreshDataReport(
 		[ buildReportOptions, dateRange ]
 	);
 
+	// `getReport()` throws an error when it receives no options.
 	const report = useInViewSelect< Report | undefined >(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport(
-				reportOptions,
-				FRESH_DATA_FETCH_OPTIONS
-			),
+			reportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport(
+						reportOptions,
+						FRESH_DATA_FETCH_OPTIONS
+				  )
+				: undefined,
 		[ reportOptions ]
 	);
 
+	// The report resolves with its fetch options, which `areReportsLoading()`
+	// never passes, so that selector would read the report as loading forever.
 	const loading = useSelect(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
@@ -97,11 +102,10 @@ export function useFreshDataReport(
 		[ report, reportOptions ]
 	);
 
+	// The store saves a report's error under its options alone.
 	const error = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-				reportOptions,
-			] ),
+			select( MODULES_ANALYTICS_4 ).getFirstReportError( reportOptions ),
 		[ report, reportOptions ]
 	);
 

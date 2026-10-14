@@ -37,7 +37,7 @@ import TopPostsColumn from './TopPostsColumn';
 import TopReferralsColumn from './TopReferralsColumn';
 
 export interface RecentTrafficBreakdownProps {
-	/** Whether the site has no published posts, which leaves out the "Top posts by visitors" column. */
+	/** Whether the site has no published posts, which omits the "Top posts by visitors" column. */
 	hasNoPublishedPosts?: boolean;
 }
 

@@ -29,6 +29,7 @@ import {
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
+	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { MINUTE_IN_SECONDS } from '@/js/util';
@@ -76,10 +77,11 @@ export function getInsightReportArgs(
 }
 
 /**
- * Builds the options of the report of visitors for each page.
+ * Builds the options of the report of the site's visitors over the date range
+ * of the Recent activity tab.
  *
- * The report has only the pages with the most visitors, as many as a column
- * shows. Its total still counts every visitor.
+ * Each row of the traffic breakdown shows its share of this report's total,
+ * which counts each visitor once.
  *
  * @since n.e.x.t
  *
@@ -88,10 +90,36 @@ export function getInsightReportArgs(
  * @param {string} dateRange.endDate   The last day of the date range.
  * @return {Object} The report options.
  */
-export function getTopPostsReportOptions( {
+export function getSiteVisitorsReportOptions( {
 	startDate,
 	endDate,
 }: FreshDataDateRange ): ReportOptions {
+	return {
+		...getTotalsReportArgs( { startDate, endDate } ),
+		reportID:
+			'analytics-4_recent-traffic-breakdown_widget_siteVisitorsArgs',
+	};
+}
+
+/**
+ * Builds the options of the report of visitors for each page.
+ *
+ * The report has only the pages with the most visitors, as many as a column
+ * shows. With `excludedPathPrefix`, the report omits the pages whose path
+ * starts with that prefix, such as the products under `/product/`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      dateRange            The date range of the Recent activity tab.
+ * @param {string}      dateRange.startDate  The first day of the date range.
+ * @param {string}      dateRange.endDate    The last day of the date range.
+ * @param {string|null} [excludedPathPrefix] Optional. The start of the paths of the pages to omit, such as `/product/`.
+ * @return {Object} The report options.
+ */
+export function getTopPostsReportOptions(
+	{ startDate, endDate }: FreshDataDateRange,
+	excludedPathPrefix?: string | null
+): ReportOptions {
 	return {
 		...getBreakdownReportArgs( {
 			dimensionName: 'pagePath',
@@ -100,6 +128,18 @@ export function getTopPostsReportOptions( {
 			startDate,
 			endDate,
 		} ),
+		...( excludedPathPrefix
+			? {
+					dimensionFilters: {
+						pagePath: {
+							filterType: 'stringFilter',
+							matchType: 'BEGINS_WITH',
+							value: excludedPathPrefix,
+							notExpression: true,
+						},
+					},
+			  }
+			: {} ),
 		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
 	};
 }
@@ -108,7 +148,7 @@ export function getTopPostsReportOptions( {
  * Builds the options of the report of visitors for each channel.
  *
  * The report has only the channels with the most visitors, as many as a
- * column shows. Its total still counts every visitor.
+ * column shows.
  *
  * @since n.e.x.t
  *
@@ -138,9 +178,8 @@ export function getTopChannelsReportOptions( {
  * them.
  *
  * The report counts only the "Referral" channel, so the column lists referring
- * sites instead of repeating the channels column. It has only the sites with
- * the most visitors, as many as a column shows. Its total still counts every
- * visitor of the "Referral" channel.
+ * sites instead of repeating the channels column. The report has only the
+ * sites with the most visitors, as many as a column shows.
  *
  * @since n.e.x.t
  *

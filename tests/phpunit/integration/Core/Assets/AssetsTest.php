@@ -440,6 +440,78 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
 	}
 
+	public function test_base_data__product_path_prefix__no_product_post_type() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the site has no product post type.' );
+	}
+
+	public function test_base_data__product_path_prefix__plain_permalinks() {
+		$this->set_permalink_structure( '' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the site uses plain permalinks.' );
+	}
+
+	public function test_base_data__product_path_prefix() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/product/', $data['productPathPrefix'], 'productPathPrefix should be the path before the product slug in a product URL.' );
+	}
+
+	public function test_base_data__product_path_prefix__rewrite_tag_in_slug() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type(
+			'product',
+			array(
+				'public'  => true,
+				'rewrite' => array(
+					'slug'       => 'shop/%product_cat%',
+					'with_front' => false,
+				),
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/shop/', $data['productPathPrefix'], 'productPathPrefix should end before `%product_cat%`, the first rewrite tag of the product permalink structure.' );
+	}
+
+	public function test_base_data__product_path_prefix__rewrite_tag_at_start_of_slug() {
+		$this->set_permalink_structure( '/%postname%/' );
+		register_post_type(
+			'product',
+			array(
+				'public'  => true,
+				'rewrite' => array(
+					'slug'       => '%product_cat%',
+					'with_front' => false,
+				),
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the product permalink structure starts with a rewrite tag, such as `%product_cat%`.' );
+	}
+
+	public function test_base_data__product_path_prefix__home_in_subdirectory() {
+		$this->set_permalink_structure( '/%postname%/' );
+		add_filter( 'pre_option_home', fn() => 'http://example.org/blog' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/blog/product/', $data['productPathPrefix'], 'productPathPrefix should start with the path of the home URL.' );
+	}
+
 	public function test_base_data__woocommerce_not_installed() {
 		$this->set_installed_plugins( array() );
 

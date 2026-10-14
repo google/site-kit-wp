@@ -21,7 +21,8 @@
  *
  * Analytics can record a value that isn't a path, such as `(not set)`, or a
  * spam path that resolves to another site, such as `//example.org/` or
- * `/\example.org/`. Neither has a URL, so a link never leaves the site.
+ * `/\example.org/`. The function returns `undefined` for both, so a link
+ * never leaves the site.
  *
  * @since n.e.x.t
  *

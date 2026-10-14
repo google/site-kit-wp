@@ -1,5 +1,5 @@
 /**
- * Recent traffic breakdown row shaping.
+ * Recent traffic breakdown rows helper.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -35,11 +35,11 @@ const SHARE_FORMAT = {
 } as const;
 
 /**
- * Formats a row's share of the visitors in its column.
+ * Formats a row's share of the site's visitors.
  *
  * A share that rounds to `0%` shows as `<0.1%`, and a share below `1` that
  * rounds to `100%` shows as `>99.9%`. So a row shows `100%` only when its
- * visitors reach the column's total.
+ * visitors reach the site's total.
  *
  * @since n.e.x.t
  *
@@ -51,7 +51,7 @@ function formatShare( share: number ): string {
 
 	if ( formattedShare === numFmt( 0, SHARE_FORMAT ) ) {
 		return sprintf(
-			/* translators: %s: a tenth of one percent, such as "0.1%". Reads as "less than 0.1%" */
+			/* translators: %s: a tenth of one percent, such as "0.1%", in a string that reads as "less than 0.1%" */
 			__( '<%s', 'google-site-kit' ),
 			numFmt( 0.001, SHARE_FORMAT )
 		);
@@ -59,7 +59,7 @@ function formatShare( share: number ): string {
 
 	if ( share < 1 && formattedShare === numFmt( 1, SHARE_FORMAT ) ) {
 		return sprintf(
-			/* translators: %s: a share just below one hundred percent, such as "99.9%". Reads as "more than 99.9%" */
+			/* translators: %s: a share just below one hundred percent, such as "99.9%", in a string that reads as "more than 99.9%" */
 			__( '>%s', 'google-site-kit' ),
 			numFmt( 0.999, SHARE_FORMAT )
 		);
@@ -69,8 +69,7 @@ function formatShare( share: number ): string {
 }
 
 /**
- * Reads a report's visitor total, which counts a visitor once even when the
- * visitor appears in several rows.
+ * Gets the visitors in a report's total, which counts each visitor once.
  *
  * @since n.e.x.t
  *
@@ -88,22 +87,24 @@ function getTotalVisitors( report?: Report ): number {
 
 /**
  * Builds the rows a column of the Recent activity tab's traffic breakdown
- * renders from a report.
+ * renders from its report.
  *
- * Values with no visitors are left out, and the rest are sorted by visitors,
+ * Values with no visitors are omitted, and the rest are sorted by visitors,
  * most first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is of
- * the report's visitor total, which counts a visitor once, so the shares can
- * add up to more than 100%.
+ * the site's visitors, so a column's shares can add up to more than 100% when
+ * a visitor is counted in two rows.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report] Optional. A report with one dimension, the `totalUsers` metric, and its `totals`.
- * @return {Array<Object>} The rows, each with the dimension value as its `label`, the visitors as its `value`, and the share as its `secondaryValue`. A row has no share when the report has no total.
+ * @param {Object} [report]             Optional. A report with one dimension and the `totalUsers` metric.
+ * @param {Object} [siteVisitorsReport] Optional. The report of the site's visitors, with its `totals`.
+ * @return {Array<Object>} The rows, each with the dimension value as its `label`, the visitors as its `value`, such as `'12K'` rather than `12345`, and the share as its `secondaryValue`, such as `'(52.2%)'` rather than `0.522`. A row has no share when the report of the site's visitors has no total, or a total of zero.
  */
 export function getRecentTrafficBreakdownRows(
-	report?: Report
+	report?: Report,
+	siteVisitorsReport?: Report
 ): TableTileRow[] {
-	const totalVisitors = getTotalVisitors( report );
+	const siteVisitors = getTotalVisitors( siteVisitorsReport );
 
 	return (
 		( report?.rows ?? [] )
@@ -112,8 +113,7 @@ export function getRecentTrafficBreakdownRows(
 				visitors:
 					parseInt( row.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0,
 			} ) )
-			// A report includes values with no visitors, which a column leaves
-			// out.
+			// A report includes values with no visitors, which a column omits.
 			.filter( ( { visitors } ) => visitors > 0 )
 			.sort( ( first, second ) => second.visitors - first.visitors )
 			.slice( 0, RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS )
@@ -121,14 +121,15 @@ export function getRecentTrafficBreakdownRows(
 				label,
 				value: numFmt( visitors ),
 				secondaryValue:
-					totalVisitors > 0
+					siteVisitors > 0
 						? sprintf(
-								/* translators: %s: the row's share of the visitors in its column, such as "34.1%" */
+								/* translators: %s: the row's share of the site's visitors, such as "52.2%" */
 								__( '(%s)', 'google-site-kit' ),
 								// Analytics visitor counts are estimates, so a
-								// row can come out a little above the total.
+								// row's count can be a little higher than the
+								// total.
 								formatShare(
-									Math.min( visitors / totalVisitors, 1 )
+									Math.min( visitors / siteVisitors, 1 )
 								)
 						  )
 						: undefined,
