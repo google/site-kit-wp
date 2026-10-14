@@ -33,7 +33,6 @@ import { Select, useSelect } from 'googlesitekit-data';
 import GoogleChart from '@/js/components/GoogleChart';
 import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
@@ -59,8 +58,6 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	loaded = true,
 	gatheringData = false,
 } ) => {
-	const viewOnly = useViewOnly();
-
 	const { startDate, endDate } = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
@@ -72,16 +69,9 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	);
 
 	const propertyCreateTime = useSelect(
-		( select: Select ) => {
-			// A view-only dashboard never receives the Analytics property's
-			// creation time.
-			if ( viewOnly ) {
-				return undefined;
-			}
-
-			return select( MODULES_ANALYTICS_4 ).getPropertyCreateTime();
-		},
-		[ viewOnly ]
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getPropertyCreateTime(),
+		[]
 	);
 
 	const { chartData, ticks, hasVisitors } = getTrafficChartData( {
