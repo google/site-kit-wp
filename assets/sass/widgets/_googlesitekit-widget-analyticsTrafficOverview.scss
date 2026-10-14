@@ -149,6 +149,59 @@
 			margin-top: 70px;
 		}
 
+		// The `z-index` creates a stacking context for the chart, so the
+		// selected-range region's `z-index: -1` puts it behind the line rather
+		// than behind the whole widget.
+		.googlesitekit-traffic-overview__chart--typical-traffic {
+			margin-top: 4px;
+			position: relative;
+			z-index: 0;
+		}
+
+		// The title and the info icon flow as one line of text, so the icon
+		// follows the title's last word, even where the title wraps. The 22px
+		// end padding leaves room for the icon after any line.
+		.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			font-size: $fs-title-md;
+			line-height: 20px;
+			margin-bottom: 12px;
+			padding-inline-end: 22px;
+
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 2px;
+			}
+
+			.googlesitekit-typography {
+				color: $c-surfaces-on-surface;
+				display: inline;
+				margin: 0;
+			}
+
+			// The -22px end margin cancels the header's 22px end padding, so the
+			// icon never wraps onto a line of its own.
+			.googlesitekit-info-tooltip {
+				color: $c-surfaces-on-background-variant;
+				display: inline-flex;
+				height: 16px;
+				margin-inline: 6px -22px;
+				margin-top: 2px;
+				vertical-align: top;
+			}
+		}
+
+		.googlesitekit-traffic-overview__chart--has-date-marker
+			.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 12px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__selected-range-region {
+			background-color: rgba($c-violet-v-50, 0.25);
+			position: absolute;
+			z-index: -1;
+		}
+
 		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
 			margin-left: -$grid-gap-phone;
 		}
@@ -171,10 +224,21 @@
 			width: 1px;
 		}
 
+		.googlesitekit-traffic-overview__chart--typical-traffic div[dir]::after {
+			right: 28px;
+		}
+
 		.googlesitekit-traffic-overview__chart-legend {
 			list-style: none;
 			margin: 4px 0 0;
 			padding: 0;
+		}
+
+		.googlesitekit-traffic-overview__chart--typical-traffic
+			.googlesitekit-traffic-overview__chart-legend {
+			@media (min-width: $bp-desktop) {
+				margin-top: 7px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-item {
@@ -351,4 +415,11 @@
 			margin-left: 4px;
 		}
 	}
+}
+
+// The info tooltip's popup renders outside the widget, so a rule nested under
+// the widget doesn't reach it. The design's width includes the padding.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content--typical-traffic {
+	box-sizing: border-box;
+	max-width: 235px;
 }
