@@ -383,7 +383,7 @@ describe( 'core/feature-discovery selectors', () => {
 		} );
 	} );
 
-	describe( 'getFeaturesByGoal', () => {
+	describe( 'getFeaturesFilteredByGoal', () => {
 		beforeEach( () => {
 			provideModules( registry, [
 				{ slug: 'analytics-4', active: false, connected: false },
@@ -392,8 +392,12 @@ describe( 'core/feature-discovery selectors', () => {
 
 		it( 'should require a category', () => {
 			expect( () =>
-				registry.select( CORE_FEATURE_DISCOVERY ).getFeaturesByGoal()
-			).toThrow( 'category is required to get features by goal.' );
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal()
+			).toThrow(
+				'category is required to get filtered features by goal.'
+			);
 		} );
 
 		it( 'should return features whose primary category matches, in registration order', () => {
@@ -406,9 +410,52 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'audience-one', 'audience-two' ] );
+		} );
+
+		it( 'should place in-progress features first and keep registration order within each group', () => {
+			registerFeature( 'not-started-first', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => false,
+				},
+			} );
+			registerFeature( 'in-progress-first', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+			registerFeature( 'not-started-second', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => false,
+				},
+			} );
+			registerFeature( 'in-progress-second', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [
+				'in-progress-first',
+				'in-progress-second',
+				'not-started-first',
+				'not-started-second',
+			] );
 		} );
 
 		it( 'should not match on a secondary category', () => {
@@ -422,7 +469,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -437,7 +484,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -453,7 +500,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -472,7 +519,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'needs-analytics' ] );
 		} );
@@ -485,7 +532,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -497,7 +544,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'visible' ] );
 			expect( checkRequirements ).toHaveBeenCalled();
@@ -509,7 +556,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'default-visible' ] );
 		} );
@@ -526,26 +573,8 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				loadingRegistry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
-		} );
-	} );
-
-	describe( 'getFeaturesFilteredByGoal', () => {
-		beforeEach( () => {
-			provideModules( registry, [
-				{ slug: 'analytics-4', active: false, connected: false },
-			] );
-		} );
-
-		it( 'should require a category', () => {
-			expect( () =>
-				registry
-					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesFilteredByGoal()
-			).toThrow(
-				'category is required to get filtered features by goal.'
-			);
 		} );
 
 		it( 'should match only primary category when no categories are selected', () => {

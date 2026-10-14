@@ -90,6 +90,8 @@ export interface FeatureSetup {
 	getSetupURL?: ( select: Select ) => string | undefined;
 	// The enable routine for `background-toggle` features.
 	activate?: ( ...args: never[] ) => unknown;
+	// In-progress check for setups that have started but are unfinished.
+	isInProgress?: ( select: Select ) => boolean | undefined;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
 	open?: ( ...args: never[] ) => unknown;
 	// Completion check, overriding the default module-connected check.

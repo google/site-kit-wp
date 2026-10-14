@@ -293,45 +293,14 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets the available features to show under a goal category.
-	 *
-	 * Features are listed under their primary goal category only.
-	 *
-	 * @since 1.186.0
-	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} category Goal category slug.
-	 * @return {Array.<Object>} Features to show, in registration order.
-	 */
-	getFeaturesByGoal: createRegistrySelector(
-		( select: Select ) =>
-			(
-				state: FeatureDiscoveryState,
-				category: FeatureCategorySlug
-			): Feature[] => {
-				invariant(
-					category,
-					'category is required to get features by goal.'
-				);
-
-				return select( CORE_FEATURE_DISCOVERY )
-					.getAvailableFeatures()
-					.filter(
-						( feature: Feature ) =>
-							feature.goalCategories?.[ 0 ] === category
-					);
-			}
-	),
-
-	/**
 	 * Gets available features to show under a category for the current filter.
 	 *
-	 * @since 1.186.0
+	 * @since n.e.x.t
 	 *
 	 * @param {Object} state              Data store's state.
 	 * @param {string} category           Goal category slug.
 	 * @param {Array}  selectedCategories Selected filter category slugs.
-	 * @return {Array.<Object>} Filtered features in registration order.
+	 * @return {Array.<Object>} Filtered features with in-progress items first.
 	 */
 	getFeaturesFilteredByGoal: createRegistrySelector(
 		( select: Select ) =>
@@ -360,6 +329,18 @@ export const selectors = {
 							);
 
 						return firstSelectedCategory === category;
+					} )
+					.sort( ( first: Feature, second: Feature ) => {
+						const firstInProgress =
+							first.setup?.isInProgress?.( select ) === true;
+						const secondInProgress =
+							second.setup?.isInProgress?.( select ) === true;
+
+						if ( firstInProgress !== secondInProgress ) {
+							return firstInProgress ? -1 : 1;
+						}
+
+						return 0;
 					} );
 			}
 	),
