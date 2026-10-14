@@ -223,8 +223,10 @@ export const selectors = {
 						)
 				)
 				.sort( ( first: Feature, second: Feature ) => {
-					const firstInProgress = isFeatureInProgress( first.slug );
-					const secondInProgress = isFeatureInProgress( second.slug );
+					const firstInProgress =
+						isFeatureInProgress( first.slug ) === true;
+					const secondInProgress =
+						isFeatureInProgress( second.slug ) === true;
 
 					if ( firstInProgress !== secondInProgress ) {
 						return firstInProgress ? -1 : 1;

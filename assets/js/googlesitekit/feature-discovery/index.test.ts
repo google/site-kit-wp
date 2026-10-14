@@ -112,16 +112,11 @@ describe( 'createFeatureDiscovery', () => {
 			expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
 		} );
 
-		it( 'does nothing while dismissal data is still loading', async () => {
+		it( 'loads dismissed items first and removes reminder once loaded', async () => {
 			const key = getFeatureIncompleteSetupReminderKey( 'newsletter' );
-
-			await createFeatureDiscovery(
-				registry
-			).resetIncompleteSetupReminder( 'newsletter' );
-
-			expect( fetchMock ).not.toHaveFetched( dismissedItemsEndpoint );
-
-			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [ key ] );
+			fetchMock.getOnce( dismissedItemsEndpoint, {
+				body: [ key ],
+			} );
 
 			fetchMock.postOnce(
 				dismissedItemsEndpoint,
@@ -139,7 +134,10 @@ describe( 'createFeatureDiscovery', () => {
 				registry
 			).resetIncompleteSetupReminder( 'newsletter' );
 
-			expect( fetchMock ).toHaveFetched( dismissedItemsEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( registry.select( CORE_USER ).getDismissedItems() ).toEqual(
+				[]
+			);
 		} );
 
 		it( 'surfaces user-store removal failures', async () => {

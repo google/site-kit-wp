@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Registry } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -94,8 +95,11 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 				return;
 			}
 
+			const dataRegistry = registry as unknown as Registry;
+			await dataRegistry.resolveSelect( CORE_USER ).getDismissedItems();
+
 			const key = getFeatureIncompleteSetupReminderKey( slug );
-			const dismissed = registry
+			const dismissed = dataRegistry
 				.select( CORE_USER )
 				.isItemDismissed( key );
 

@@ -256,7 +256,11 @@ export const selectors = {
 				return undefined;
 			}
 
-			return isInProgress === true && isConnected === false;
+			if ( isInProgress !== true ) {
+				return false;
+			}
+
+			return isConnected === undefined ? undefined : true;
 		}
 	),
 

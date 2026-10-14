@@ -378,6 +378,23 @@ describe( 'core/feature-discovery selectors', () => {
 			).toBe( false );
 		} );
 
+		it( 'should return undefined while connection state is loading and isInProgress returns true', () => {
+			freezeModules();
+			registerFeature( 'connection-loading', {
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					moduleSlug: 'analytics-4',
+					isInProgress: () => true,
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.isFeatureInProgress( 'connection-loading' )
+			).toBeUndefined();
+		} );
+
 		it( 'should return undefined while in-progress state is unresolved', () => {
 			registerFeature( 'unresolved', {
 				setup: {
