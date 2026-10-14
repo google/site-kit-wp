@@ -32,6 +32,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
 import {
 	ENUM_CONVERSION_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -46,7 +47,6 @@ import {
 	getEngagementReportOptions,
 	getPurchasesReportOptions,
 } from './postReportOptions';
-import { getMetricValue } from './utils/getMetricValue';
 
 interface EngagementOutcomesGroupProps {
 	/** The post's permalink and the date range of its reports. */

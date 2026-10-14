@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useReportState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportState';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
@@ -38,7 +39,6 @@ import LatestPostMetricRow from './LatestPostMetricRow';
 import LatestPostReportError from './LatestPostReportError';
 import LatestPostTile from './LatestPostTile';
 import { PostReportArgs, getVisitorsReportOptions } from './postReportOptions';
-import { getMetricValue } from './utils/getMetricValue';
 
 interface VisitorBreakdownGroupProps {
 	/** The post's permalink and the date range of its reports. */

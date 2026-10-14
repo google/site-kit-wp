@@ -1,5 +1,5 @@
 /**
- * Recent activity `getMetricValue` utility.
+ * Traffic Overview `getMetricValue` utility.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

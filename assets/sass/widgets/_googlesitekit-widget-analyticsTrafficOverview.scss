@@ -393,12 +393,11 @@
 
 		.googlesitekit-traffic-overview__latest-post-tile {
 			background: $c-surfaces-background;
-			border-radius: 8px;
+			border-radius: $br-xs;
 			padding: 22px;
 		}
 
 		.googlesitekit-table-tile__title.googlesitekit-typography {
-			font-size: $fs-body-md;
 			margin-bottom: 12px;
 		}
 

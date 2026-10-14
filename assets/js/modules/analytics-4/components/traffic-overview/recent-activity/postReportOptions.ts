@@ -106,10 +106,7 @@ export function getVisitorsReportOptions(
 		startDate: args.startDate,
 		endDate: args.endDate,
 		dimensions: [ 'newVsReturning' ],
-		dimensionFilters: {
-			...getPostFilter( args.permalink ),
-			newVsReturning: [ 'new', 'returning' ],
-		},
+		dimensionFilters: getPostFilter( args.permalink ),
 		metrics: [ { name: 'totalUsers' } ],
 		reportID: 'analytics-4_latest-post-performance_visitors',
 	};

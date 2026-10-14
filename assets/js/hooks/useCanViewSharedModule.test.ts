@@ -32,7 +32,11 @@ import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { provideModules, provideUserCapabilities } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideUserCapabilities,
+} from '@tests/js/utils';
 import useCanViewSharedModule from './useCanViewSharedModule';
 
 describe( 'useCanViewSharedModule', () => {
@@ -96,5 +100,18 @@ describe( 'useCanViewSharedModule', () => {
 		);
 
 		expect( result.current ).toBe( false );
+	} );
+
+	it( 'should return undefined on a view-only dashboard while the user capabilities load', () => {
+		freezeFetch(
+			new RegExp( '^/google-site-kit/v1/core/user/data/permissions' )
+		);
+
+		const { result } = renderHook(
+			() => useCanViewSharedModule( MODULE_SLUG_SEARCH_CONSOLE ),
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
+		);
+
+		expect( result.current ).toBeUndefined();
 	} );
 } );

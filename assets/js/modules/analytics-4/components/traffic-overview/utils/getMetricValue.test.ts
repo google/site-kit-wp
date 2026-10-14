@@ -1,5 +1,5 @@
 /**
- * Recent activity `getMetricValue` utility tests.
+ * Traffic Overview `getMetricValue` utility tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -22,18 +22,30 @@
 import { getMetricValue } from './getMetricValue';
 
 describe( 'getMetricValue', () => {
-	const row = { metricValues: [ { value: '76.5' }, { value: '18' } ] };
-
 	it( 'should return the first metric of the row as a number by default', () => {
-		expect( getMetricValue( row ) ).toBe( 76.5 );
+		expect(
+			getMetricValue( {
+				metricValues: [ { value: '76.5' }, { value: '18' } ],
+			} )
+		).toBe( 76.5 );
 	} );
 
 	it( 'should return the metric at the given index', () => {
-		expect( getMetricValue( row, 1 ) ).toBe( 18 );
+		expect(
+			getMetricValue(
+				{ metricValues: [ { value: '76.5' }, { value: '18' } ] },
+				1
+			)
+		).toBe( 18 );
 	} );
 
 	it( 'should return 0 for a row that has not loaded or has no such metric', () => {
 		expect( getMetricValue( undefined ) ).toBe( 0 );
-		expect( getMetricValue( row, 2 ) ).toBe( 0 );
+		expect(
+			getMetricValue(
+				{ metricValues: [ { value: '76.5' }, { value: '18' } ] },
+				2
+			)
+		).toBe( 0 );
 	} );
 } );

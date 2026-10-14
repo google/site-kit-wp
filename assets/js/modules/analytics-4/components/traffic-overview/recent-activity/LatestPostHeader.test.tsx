@@ -64,7 +64,7 @@ describe( 'LatestPostHeader', () => {
 		);
 
 		expect(
-			getByText( /^posted July 14\b.*\b2:30\sPM$/ )
+			getByText( /^posted July 14 at 2:30\sPM$/ )
 		).toBeInTheDocument();
 	} );
 
@@ -84,7 +84,7 @@ describe( 'LatestPostHeader', () => {
 		);
 
 		expect(
-			getByText( /^posted July 14\b.*\b2:30\sPM$/ )
+			getByText( /^posted July 14 at 2:30\sPM$/ )
 		).toBeInTheDocument();
 	} );
 } );

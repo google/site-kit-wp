@@ -31,6 +31,7 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
+	getLatestPostAnalyticsReportOptions,
 	getLatestPostKeywordReportOptions,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
@@ -42,22 +43,13 @@ import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constant
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
+	freezeFetch,
 	provideModules,
 	provideSiteInfo,
 	provideUserCapabilities,
+	waitForDefaultTimeouts,
 } from '@tests/js/utils';
 import LatestPostPerformance from './LatestPostPerformance';
-
-const VISITOR_BREAKDOWN_ROWS = [
-	[ 'Total visitors', '94' ],
-	[ 'New visitors', '66' ],
-	[ 'Returning visitors', '28' ],
-];
-
-const ANALYTICS_TRAFFIC_SOURCES_ROWS = [
-	[ 'Top traffic source', 'Organic Social' ],
-	[ 'Top referring site', 'substack.com' ],
-];
 
 describe( 'LatestPostPerformance', () => {
 	let registry: WPDataRegistry;
@@ -148,12 +140,17 @@ describe( 'LatestPostPerformance', () => {
 		expect( getTiles( container ) ).toEqual( [
 			{
 				title: 'Visitor breakdown',
-				rows: VISITOR_BREAKDOWN_ROWS,
+				rows: [
+					[ 'Total visitors', '94' ],
+					[ 'New visitors', '66' ],
+					[ 'Returning visitors', '28' ],
+				],
 			},
 			{
 				title: 'Traffic sources',
 				rows: [
-					...ANALYTICS_TRAFFIC_SOURCES_ROWS,
+					[ 'Top traffic source', 'Organic Social' ],
+					[ 'Top referring site', 'substack.com' ],
 					[ 'Top keyword', 'healthy ice cream' ],
 				],
 			},
@@ -297,9 +294,14 @@ describe( 'LatestPostPerformance', () => {
 
 		const tiles = getTiles( container );
 
-		expect( tiles[ 0 ].rows ).toEqual( VISITOR_BREAKDOWN_ROWS );
+		expect( tiles[ 0 ].rows ).toEqual( [
+			[ 'Total visitors', '94' ],
+			[ 'New visitors', '66' ],
+			[ 'Returning visitors', '28' ],
+		] );
 		expect( tiles[ 1 ].rows ).toEqual( [
-			...ANALYTICS_TRAFFIC_SOURCES_ROWS,
+			[ 'Top traffic source', 'Organic Social' ],
+			[ 'Top referring site', 'substack.com' ],
 			[
 				'Top keyword',
 				expect.stringContaining( 'Search Console is unavailable.' ),
@@ -310,8 +312,253 @@ describe( 'LatestPostPerformance', () => {
 		).toHaveLength( 1 );
 	} );
 
+	it( 'should render a report error in place of the visitor breakdown rows only, and should keep the other tiles, when the visitors report fails', async () => {
+		provideLatestPostKeywordReport( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The visitors report is unavailable.',
+				data: {},
+			},
+			'getReport',
+			[ getLatestPostAnalyticsReportOptions( registry ).visitors ]
+		);
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const tiles = getTiles( container );
+
+		expect( tiles[ 0 ].rows ).toEqual( [] );
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__latest-post-tile'
+			)[ 0 ]
+		).toHaveTextContent( 'The visitors report is unavailable.' );
+		expect( tiles[ 1 ].rows ).toEqual( [
+			[ 'Top traffic source', 'Organic Social' ],
+			[ 'Top referring site', 'substack.com' ],
+			[ 'Top keyword', 'healthy ice cream' ],
+		] );
+		expect( tiles[ 2 ].rows ).toEqual( [
+			[ 'Session Duration', '1m 16s' ],
+			[ 'Engaged sessions', '18' ],
+			[ 'Purchases affected by post', '4' ],
+		] );
+		expect(
+			container.querySelectorAll( '.googlesitekit-cta--error' )
+		).toHaveLength( 1 );
+	} );
+
+	it( 'should render a report error in place of the engagement rows only, and should keep the purchases row, when the engagement report fails', async () => {
+		provideLatestPostKeywordReport( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The engagement report is unavailable.',
+				data: {},
+			},
+			'getReport',
+			[ getLatestPostAnalyticsReportOptions( registry ).engagement ]
+		);
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const tiles = getTiles( container );
+
+		expect( tiles[ 0 ].rows ).toEqual( [
+			[ 'Total visitors', '94' ],
+			[ 'New visitors', '66' ],
+			[ 'Returning visitors', '28' ],
+		] );
+		expect( tiles[ 1 ].rows ).toEqual( [
+			[ 'Top traffic source', 'Organic Social' ],
+			[ 'Top referring site', 'substack.com' ],
+			[ 'Top keyword', 'healthy ice cream' ],
+		] );
+		expect( tiles[ 2 ].rows ).toEqual( [
+			[ 'Purchases affected by post', '4' ],
+		] );
+		expect(
+			container.querySelectorAll(
+				'.googlesitekit-traffic-overview__latest-post-tile'
+			)[ 2 ]
+		).toHaveTextContent( 'The engagement report is unavailable.' );
+		expect(
+			container.querySelectorAll( '.googlesitekit-cta--error' )
+		).toHaveLength( 1 );
+	} );
+
+	it( 'should render a report error in the top traffic source and top referring site rows only, and should keep the top keyword row, when their reports fail', async () => {
+		provideLatestPostKeywordReport( registry );
+		const { topChannel, topReferrer } =
+			getLatestPostAnalyticsReportOptions( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The top channel report is unavailable.',
+				data: {},
+			},
+			'getReport',
+			[ topChannel ]
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
+			{
+				code: 'test_error',
+				message: 'The top referrer report is unavailable.',
+				data: {},
+			},
+			'getReport',
+			[ topReferrer ]
+		);
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const tiles = getTiles( container );
+
+		expect( tiles[ 0 ].rows ).toEqual( [
+			[ 'Total visitors', '94' ],
+			[ 'New visitors', '66' ],
+			[ 'Returning visitors', '28' ],
+		] );
+		expect( tiles[ 1 ].rows ).toEqual( [
+			[
+				'Top traffic source',
+				expect.stringContaining(
+					'The top channel report is unavailable.'
+				),
+			],
+			[
+				'Top referring site',
+				expect.stringContaining(
+					'The top referrer report is unavailable.'
+				),
+			],
+			[ 'Top keyword', 'healthy ice cream' ],
+		] );
+		expect( tiles[ 2 ].rows ).toEqual( [
+			[ 'Session Duration', '1m 16s' ],
+			[ 'Engaged sessions', '18' ],
+			[ 'Purchases affected by post', '4' ],
+		] );
+		expect(
+			container.querySelectorAll( '.googlesitekit-cta--error' )
+		).toHaveLength( 2 );
+	} );
+
+	it( 'should render a loading block in the top traffic source row only while the top channel report loads', async () => {
+		provideLatestPostKeywordReport( registry );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.startResolution( 'getReport', [
+				getLatestPostAnalyticsReportOptions( registry ).topChannel,
+			] );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		const tiles = getTiles( container );
+
+		expect( tiles[ 0 ].rows ).toEqual( [
+			[ 'Total visitors', '94' ],
+			[ 'New visitors', '66' ],
+			[ 'Returning visitors', '28' ],
+		] );
+		expect( tiles[ 1 ].rows ).toEqual( [
+			[ 'Top traffic source', '' ],
+			[ 'Top referring site', 'substack.com' ],
+			[ 'Top keyword', 'healthy ice cream' ],
+		] );
+		expect( tiles[ 2 ].rows ).toEqual( [
+			[ 'Session Duration', '1m 16s' ],
+			[ 'Engaged sessions', '18' ],
+			[ 'Purchases affected by post', '4' ],
+		] );
+		expect(
+			container.querySelectorAll( '.googlesitekit-preview-block' )
+		).toHaveLength( 1 );
+	} );
+
+	it( 'should render a report error in place of the tiles when the latest post request fails', async () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideModules( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		fetchMock.get( new RegExp( '^/wp/v2/posts' ), {
+			body: {
+				code: 'internal_server_error',
+				message: 'The posts are unavailable.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toHaveTextContent( 'Data error in Analytics' );
+		expect( getTiles( container ) ).toEqual( [] );
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should render a loading block in place of the tiles while the latest post loads', async () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideModules( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		freezeFetch( new RegExp( '^/wp/v2/posts' ) );
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			container.querySelector( '.googlesitekit-preview-block' )
+		).toBeInTheDocument();
+		expect( getTiles( container ) ).toEqual( [] );
+	} );
+
 	it( 'should keep the reports on the date range of the post when the dashboard date range changes', async () => {
 		provideLatestPostKeywordReport( registry );
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{ body: {}, status: 200 }
+		);
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+			),
+			{ body: [], status: 200 }
+		);
 
 		const { container, waitForRegistry } = render(
 			<LatestPostPerformance />,
@@ -324,7 +571,7 @@ describe( 'LatestPostPerformance', () => {
 
 		registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 
-		await waitForRegistry();
+		await waitForDefaultTimeouts();
 
 		expect( getTiles( container ) ).toEqual( tilesBefore );
 		expect( fetchMock ).not.toHaveFetched();
@@ -349,8 +596,9 @@ describe( 'LatestPostPerformance', () => {
 
 		await waitForRegistry();
 
-		expect( getTiles( container )[ 1 ].rows ).toEqual(
-			ANALYTICS_TRAFFIC_SOURCES_ROWS
-		);
+		expect( getTiles( container )[ 1 ].rows ).toEqual( [
+			[ 'Top traffic source', 'Organic Social' ],
+			[ 'Top referring site', 'substack.com' ],
+		] );
 	} );
 } );
