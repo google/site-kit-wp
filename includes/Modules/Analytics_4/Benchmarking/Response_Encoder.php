@@ -18,7 +18,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * range in browser storage. The encoded response drops the repeated field
  * names, the date of every day but the first, and every repeated string.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */
@@ -27,7 +27,7 @@ final class Response_Encoder {
 	/**
 	 * Encodes an assembled response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param array $response Assembled response, with `visitors`, `dailyTraffic`, `dimensions` and `contextualData`.
 	 * @return array The encoded response.
@@ -91,7 +91,7 @@ final class Response_Encoder {
 	/**
 	 * Encodes one dimension row in the layout its dimension travels in.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $dimension Dimension code the row belongs to.
 	 * @param array  $row       Row to encode.
@@ -126,7 +126,7 @@ final class Response_Encoder {
 	 * Stores a string in the table and returns its position, so a string two
 	 * rows share travels once.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string|null $value   String to store.
 	 * @param array       $strings String table, added to when the string is new.
@@ -152,7 +152,7 @@ final class Response_Encoder {
 	/**
 	 * Encodes a count as an integer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param mixed $value Value to encode.
 	 * @return int|null The value as an integer, or null when there is no value.
@@ -164,7 +164,7 @@ final class Response_Encoder {
 	/**
 	 * Encodes an average position, the only number the format keeps decimals for.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param mixed $value Value to encode.
 	 * @return float|null The rounded value, or null when there is no value.

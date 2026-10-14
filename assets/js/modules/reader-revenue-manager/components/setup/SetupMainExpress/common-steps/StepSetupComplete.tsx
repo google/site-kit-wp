@@ -37,8 +37,12 @@ import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
+// Does not extend `SetupStepProps`: this step ends the flow, so it ignores the
+// `onComplete` callback the flow passes to every step.
 interface StepSetupCompleteProps {
 	title?: string;
 	children?: ReactNode;
@@ -111,6 +115,12 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 			</div>
 		</div>
 	);
+};
+
+export const setupCompleteStep: SetupStep = {
+	slug: EXPRESS_SETUP_STEPS.SETUP_COMPLETE,
+	label: __( 'Setup complete', 'google-site-kit' ),
+	Component: StepSetupComplete,
 };
 
 export default StepSetupComplete;

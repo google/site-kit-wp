@@ -73,8 +73,8 @@ export default function AdsModuleSetupCTABanner( { id, Notification } ) {
 	);
 
 	const shouldShowWooCommerceRedirectModal = useSelect( ( select ) => {
+		const { isWooCommerceActivated } = select( CORE_SITE );
 		const {
-			isWooCommerceActivated,
 			isGoogleForWooCommerceActivated,
 			hasGoogleForWooCommerceAdsAccount,
 		} = select( MODULES_ADS );

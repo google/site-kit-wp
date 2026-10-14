@@ -86,7 +86,7 @@ import {
 /**
  * Requires the Reader Revenue Manager setup success notification to be showing.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(): Promise<boolean>} Whether the setup success notification is being shown or not.
  */
@@ -104,7 +104,7 @@ function requireShowingSetupSuccessNotification() {
  * it is set, so that the publication approved overlay is not shown again for
  * this reason.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(): Promise<boolean>} Whether the publication onboarding state has just changed or not.
  */
@@ -136,7 +136,7 @@ function requirePublicationOnboardingStateChanged() {
  * The publication must be onboarded and offer at least one product, while its
  * default `openaccess` product ID must still be the selected one.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} paymentOption Payment option the notification is for.
  * @return {function(): Promise<boolean>} Whether the product ID notification should be shown or not.

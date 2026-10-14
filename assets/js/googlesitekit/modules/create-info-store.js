@@ -112,15 +112,23 @@ export function createInfoStore(
 		 *
 		 * @since 1.10.0
 		 *
-		 * @param {Object}  options                     Options object.
-		 * @param {boolean} options.reAuth              The module activation status. Default is true.
-		 * @param {Object}  [options.redirectQueryArgs] Optional. Additional query arguments to add to the redirect URL.
+		 * @param {Object}   options                     Options object.
+		 * @param {boolean}  options.reAuth              The module activation status. Default is true.
+		 * @param {Object}   [options.redirectQueryArgs] Optional. Additional query arguments to add to the redirect URL.
+		 * @param {string[]} [options.additionalScopes]  Optional. Additional scopes required for setup.
 		 * @return {(string|undefined)} The admin reauthentication URL, or
 		 *                              undefined if not loaded yet.
 		 */
 		getAdminReauthURL: createRegistrySelector(
 			( select ) =>
-				( state, { reAuth = true, redirectQueryArgs = {} } = {} ) => {
+				(
+					state,
+					{
+						reAuth = true,
+						redirectQueryArgs = {},
+						additionalScopes = [],
+					} = {}
+				) => {
 					const needsReauthentication =
 						select( CORE_USER ).needsReauthentication();
 					if ( needsReauthentication === undefined ) {
@@ -144,11 +152,19 @@ export function createInfoStore(
 						return undefined;
 					}
 
-					if ( ! needsReauthentication ) {
+					const unsatisfiedAdditionalScopes = additionalScopes.filter(
+						( scope ) => ! select( CORE_USER ).hasScope( scope )
+					);
+
+					if (
+						! needsReauthentication &&
+						! unsatisfiedAdditionalScopes.length
+					) {
 						return redirectURL;
 					}
 
 					const connectURL = select( CORE_USER ).getConnectURL( {
+						additionalScopes: unsatisfiedAdditionalScopes,
 						redirectURL,
 					} );
 

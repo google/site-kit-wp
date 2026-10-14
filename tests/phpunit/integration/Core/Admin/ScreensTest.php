@@ -28,6 +28,7 @@ use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\MutableInput;
+use stdClass;
 use WPDieException;
 
 /**
@@ -36,7 +37,6 @@ use WPDieException;
  * @group Admin
  */
 class ScreensTest extends TestCase {
-
 	use Fake_Site_Connection_Trait;
 
 	/**
@@ -109,10 +109,9 @@ class ScreensTest extends TestCase {
 	public function test_removal_of_admin_notices( $hookname ) {
 		// Set current hook suffix to fake Site Kit admin page.
 		$GLOBALS['hook_suffix'] = 'fake_sitekit_admin_page';
-		$reflection_property    = new \ReflectionProperty( 'Google\Site_Kit\Core\Admin\Screens', 'screens' );
-		$reflection_property->setAccessible( true );
-		$reflection_property->setValue(
+		$this->force_set_property(
 			$this->screens,
+			'screens',
 			array(
 				$GLOBALS['hook_suffix'] => true,
 			)
@@ -358,16 +357,7 @@ class ScreensTest extends TestCase {
 		return null;
 	}
 
-	public function test_dashboard_initialize() {
-		$this->set_analytics_setup_complete( false );
-
-		$redirect = $this->load_dashboard_screen();
-
-		$this->assertNull( $redirect, 'Should not redirect.' );
-	}
-
-	public function test_dashboard_initialize__no_redirect_when_setup_complete_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__no_redirect_when_setup_complete() {
 		$this->set_analytics_setup_complete( true );
 
 		$redirect = $this->load_dashboard_screen();
@@ -376,7 +366,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__redirect_to_key_metrics_setup_when_site_purpose_is_unanswered() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( false );
 
@@ -388,7 +377,6 @@ class ScreensTest extends TestCase {
 	}
 
 	public function test_dashboard_initialize__no_redirect_when_site_purpose_is_answered() {
-		$this->enable_feature( 'setupFlowRefresh' );
 		$this->set_analytics_setup_complete( true );
 		$this->set_has_site_purpose_answer( true );
 
@@ -397,8 +385,45 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Should not redirect when the site purpose question is answered.' );
 	}
 
-	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__no_redirect_to_key_metrics_setup_for_an_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( false );
+
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Key Metrics setup when the request has an intent.' );
+	}
+
+	public function test_dashboard_initialize__no_redirect_to_analytics_setup_for_an_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( false );
+
+		$_GET['intent']      = 'ads-conversion-tracking';
+		$_GET['intent_code'] = 'abc123';
+
+		$this->assertNull( $this->load_dashboard_screen(), 'Should not redirect to Analytics setup when the request has an intent.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_for_an_unregistered_intent() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+		$this->set_analytics_setup_complete( true );
+		$this->set_has_site_purpose_answer( false );
+
+		$_GET['intent']      = 'not-a-registered-intent';
+		$_GET['intent_code'] = 'abc123';
+
+		$redirect = $this->load_dashboard_screen();
+
+		$this->assertNotNull( $redirect, 'Should redirect when the intent is not registered.' );
+		$this->assertStringContainsString( 'page=googlesitekit-key-metrics-setup', $redirect->get_location(), 'An unregistered intent should not skip the Key Metrics setup redirect.' );
+	}
+
+	public function test_dashboard_initialize__redirect_to_analytics_setup_screen_when_setup_incomplete_and_ga4_not_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		$redirect = $this->load_dashboard_screen();
@@ -410,8 +435,7 @@ class ScreensTest extends TestCase {
 		$this->assertStringContainsString( 'reAuth=true', $redirect->get_location(), 'Redirect should include reAuth.' );
 	}
 
-	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete() {
 		$this->set_analytics_setup_complete( false );
 
 		// Recreate Screens with MutableInput context so query params are accessible.
@@ -432,8 +456,7 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
 
-	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__analytics_setup_screen_does_not_redirect_when_setup_incomplete_and_ga4_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		// Recreate Screens with MutableInput context so query params are accessible.
@@ -468,8 +491,7 @@ class ScreensTest extends TestCase {
 		$this->assertNull( $redirect, 'Analytics setup screen should not redirect.' );
 	}
 
-	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected_with_setupFlowRefresh_enabled() {
-		$this->enable_feature( 'setupFlowRefresh' );
+	public function test_dashboard_initialize__redirect_to_key_metrics_setup_screen_when_setup_incomplete_and_ga4_connected() {
 		$this->set_analytics_setup_complete( false );
 
 		// Activate the `analytics-4` module.
@@ -505,21 +527,13 @@ class ScreensTest extends TestCase {
 	}
 
 	/**
-	 * Makes the given editor a view-only dashboard user and the current user.
+	 * Makes the given editor the current user, with Site Kit permissions of their own.
 	 *
 	 * @param int $user_id Editor to switch to.
+	 * @return Dismissed_Items Dismissed items of the editor.
 	 */
-	private function switch_to_view_only_user( $user_id ) {
+	private function switch_to_editor( $user_id ) {
 		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-
-		( new Module_Sharing_Settings( new Options( $context ) ) )->set(
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'editor' ),
-					'management'  => 'all_admins',
-				),
-			)
-		);
 
 		// The permissions registered at plugin load stay bound to the admin, so this user needs their own.
 		remove_all_filters( 'map_meta_cap' );
@@ -532,6 +546,26 @@ class ScreensTest extends TestCase {
 		$dismissed_items = new Dismissed_Items( $user_options );
 
 		( new Permissions( $context, $authentication, $modules, $user_options, $dismissed_items ) )->register();
+
+		return $dismissed_items;
+	}
+
+	/**
+	 * Makes the given editor a view-only dashboard user and the current user.
+	 *
+	 * @param int $user_id Editor to switch to.
+	 */
+	private function switch_to_view_only_user( $user_id ) {
+		( new Module_Sharing_Settings( new Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) ) )->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		$dismissed_items = $this->switch_to_editor( $user_id );
 
 		// Until the splash is dismissed a shared role lands on the splash screen instead of the dashboard.
 		$dismissed_items->add( 'shared_dashboard_splash' );
@@ -735,5 +769,193 @@ class ScreensTest extends TestCase {
 		} catch ( WPDieException $e ) {
 			$this->assertStringContainsString( 'has not been activated', $e->getMessage(), 'The 403 message should say the module is not activated.' );
 		}
+	}
+
+	/**
+	 * Makes a new administrator who has not signed in with Google the current user.
+	 */
+	private function switch_to_signed_out_admin() {
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'A signed-out admin should not reach the dashboard.' );
+		$this->assertTrue( current_user_can( Permissions::VIEW_SPLASH ), 'A signed-out admin should reach the splash screen.' );
+	}
+
+	/**
+	 * Denies access to the given screen and captures the redirect.
+	 *
+	 * @param string $screen_slug Slug of the screen to deny access to, e.g. `googlesitekit-dashboard`.
+	 * @return \Google\Site_Kit\Tests\Exception\RedirectException|null
+	 */
+	private function deny_access( $screen_slug ) {
+		global $plugin_page;
+
+		// The plugin registered its own Screens at plugin load, and that one would redirect first.
+		remove_all_actions( 'admin_page_access_denied' );
+
+		$this->screens->register();
+
+		$previous_plugin_page = $plugin_page;
+		$plugin_page          = $screen_slug;
+
+		try {
+			do_action( 'admin_page_access_denied' );
+		} catch ( \Google\Site_Kit\Tests\Exception\RedirectException $e ) {
+			return $e;
+		} finally {
+			$plugin_page = $previous_plugin_page;
+		}
+
+		return null;
+	}
+
+	/**
+	 * Wraps the wp_die() handler to record the arguments it is called with.
+	 *
+	 * Before WordPress 5.9 the test suite leaves the response code out of WPDieException, so tests read it from these arguments.
+	 *
+	 * @return stdClass Spy whose `args` property holds the message, title and arguments of the last wp_die() call.
+	 */
+	private function spy_on_wp_die_handler() {
+		$spy = new stdClass();
+
+		add_filter(
+			'wp_die_handler',
+			function ( $handler ) use ( $spy ) {
+				return function ( ...$args ) use ( $handler, $spy ) {
+					$spy->args = $args;
+
+					return $handler( ...$args );
+				};
+			}
+		);
+
+		return $spy;
+	}
+
+	public function test_dashboard_access_denied__redirect_to_splash_with_the_intent_purpose() {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->switch_to_signed_out_admin();
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		$_GET['intent']      = Ads_Conversion_Tracking_Intent::INTENT_ID;
+		$_GET['intent_code'] = 'abc123';
+
+		$redirect = $this->deny_access( 'googlesitekit-dashboard' );
+
+		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
+		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
+		$this->assertStringContainsString( 'purpose=intent', $redirect->get_location(), 'Redirect should keep the sign-in for the intent.' );
+		$this->assertStringNotContainsString( 'intent_code=', $redirect->get_location(), 'The service adds the intent arguments back, so the redirect should not carry them.' );
+	}
+
+	/**
+	 * @dataProvider data_requests_without_a_usable_intent
+	 */
+	public function test_dashboard_access_denied__redirect_to_splash_without_the_intent_purpose( $query_args ) {
+		$this->enable_feature( 'adsConversionTrackingIntent' );
+		$this->switch_to_signed_out_admin();
+		$this->set_up_screens_with_intents( $this->get_intents_with_ads_intent() );
+
+		foreach ( $query_args as $key => $value ) {
+			$_GET[ $key ] = $value;
+		}
+
+		$redirect = $this->deny_access( 'googlesitekit-dashboard' );
+
+		$this->assertNotNull( $redirect, 'Should redirect a signed-out admin to the splash screen.' );
+		$this->assertStringContainsString( 'page=googlesitekit-splash', $redirect->get_location(), 'Redirect should go to the splash screen.' );
+		$this->assertStringNotContainsString( 'purpose=', $redirect->get_location(), 'A request without a usable intent should not get the intent purpose.' );
+	}
+
+	public function test_splash_access_denied__explain_the_intent_to_an_editor_without_dashboard_access() {
+		$this->switch_to_editor( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_SPLASH ), 'An editor with no shared role should not reach the splash screen.' );
+		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'An editor with no shared role should not reach the dashboard.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		$wp_die_handler_spy = $this->spy_on_wp_die_handler();
+
+		try {
+			$this->deny_access( 'googlesitekit-splash' );
+			$this->fail( 'The request should end with the message.' );
+		} catch ( WPDieException $error ) {
+			$this->assertStringContainsString( 'You need administrator access to continue', $error->getMessage(), 'The message should say administrator access is needed.' );
+			$this->assertStringContainsString( 'Only administrators of this site can sign in to Site Kit and finish this setup.', $error->getMessage(), 'The message should say why.' );
+			$this->assertStringNotContainsString( 'page=googlesitekit-dashboard', $error->getMessage(), 'An editor who cannot use the dashboard should not get a link to it.' );
+
+			list( , , $args ) = $wp_die_handler_spy->args;
+			$this->assertSame( 403, $args['response'], 'The response should be a 403.' );
+		}
+	}
+
+	public function test_splash_access_denied__explain_the_intent_to_a_view_only_user_with_a_link_to_the_dashboard() {
+		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		$this->assertFalse( current_user_can( Permissions::VIEW_SPLASH ), 'A view-only user who dismissed the splash screen should not reach it again.' );
+		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'A view-only user should reach the dashboard.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		try {
+			$this->deny_access( 'googlesitekit-splash' );
+			$this->fail( 'The request should end with the message instead of redirecting to the dashboard.' );
+		} catch ( WPDieException $e ) {
+			$this->assertStringContainsString( 'You need administrator access to continue', $e->getMessage(), 'The message should say administrator access is needed.' );
+			$this->assertStringContainsString( 'page=googlesitekit-dashboard', $e->getMessage(), 'A view-only user should get a link to the dashboard.' );
+			$this->assertStringContainsString( 'Go to dashboard', $e->getMessage(), 'The link to the dashboard should be labeled.' );
+		}
+	}
+
+	public function data_splash_requests_without_the_intent_purpose() {
+		return array(
+			'no purpose'      => array( array() ),
+			'another purpose' => array( array( 'purpose' => 'something-else' ) ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_splash_requests_without_the_intent_purpose
+	 */
+	public function test_splash_access_denied__redirect_a_view_only_user_to_the_dashboard_without_the_intent_purpose( $query_args ) {
+		$this->switch_to_view_only_user( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+		$this->set_up_screens_with_intents( new Intents() );
+
+		foreach ( $query_args as $key => $value ) {
+			$_GET[ $key ] = $value;
+		}
+
+		$redirect = $this->deny_access( 'googlesitekit-splash' );
+
+		$this->assertNotNull( $redirect, 'Should redirect a view-only user to the dashboard.' );
+		$this->assertStringContainsString( 'page=googlesitekit-dashboard', $redirect->get_location(), 'Redirect should go to the dashboard.' );
+	}
+
+	public function test_splash_access_denied__no_message_for_a_user_who_can_sign_in() {
+		$this->switch_to_editor( $this->factory()->user->create( array( 'role' => 'editor' ) ) );
+
+		// A site can give the capability to sign in to a role that can't otherwise reach the splash screen.
+		add_filter(
+			'user_has_cap',
+			function ( $allcaps ) {
+				$allcaps[ Permissions::AUTHENTICATE ] = true;
+
+				return $allcaps;
+			}
+		);
+
+		$this->assertTrue( current_user_can( Permissions::AUTHENTICATE ), 'The editor should be able to sign in.' );
+
+		$this->set_up_screens_with_intents( new Intents() );
+
+		$_GET['purpose'] = 'intent';
+
+		$this->assertNull( $this->deny_access( 'googlesitekit-splash' ), 'A user who can sign in should get the usual WordPress error, not the message.' );
 	}
 }

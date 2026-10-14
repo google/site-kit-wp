@@ -17,7 +17,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * `assets/js/modules/analytics-4/utils/benchmarking/constants.ts`, and the two
  * must agree: a number here is a position in the response the browser decodes.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */

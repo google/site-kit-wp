@@ -30,18 +30,17 @@ import {
 	TYPE_BODY,
 	TYPE_LABEL,
 } from '@/js/components/Typography/constants';
-import { numFmt } from '@/js/util';
 
 export interface TrafficBreakdownRowProps {
 	/** The dimension value, rendered exactly as GA4 returned it. */
 	label: string;
-	/** The row's share of the column's total, as a `0`–`1` fraction. */
-	percentage: number;
+	/** The row's share, already formatted, such as `27%` or `<1%`. */
+	formattedPercentage: string;
 }
 
 const TrafficBreakdownRow: FC< TrafficBreakdownRowProps > = ( {
 	label,
-	percentage,
+	formattedPercentage,
 } ) => {
 	return (
 		<div className="googlesitekit-traffic-overview__breakdown-row">
@@ -57,10 +56,7 @@ const TrafficBreakdownRow: FC< TrafficBreakdownRowProps > = ( {
 				size={ SIZE_MEDIUM }
 				className="googlesitekit-traffic-overview__breakdown-row-percentage"
 			>
-				{ numFmt( percentage, {
-					style: 'percent',
-					maximumFractionDigits: 0,
-				} ) }
+				{ formattedPercentage }
 			</Typography>
 		</div>
 	);

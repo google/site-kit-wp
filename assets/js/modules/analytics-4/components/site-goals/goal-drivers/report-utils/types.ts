@@ -42,7 +42,10 @@ export type GoalDriverReportOptionsBuilder = (
 	args: BuildGoalDriverReportOptionsArgs
 ) => ReportOptions | undefined;
 
-export type GoalDriverRowMapper = ( rows: ReportRow[] ) => GoalDriverRow[];
+export type GoalDriverRowMapper = (
+	rows: ReportRow[],
+	secondaryReport?: { rows?: ReportRow[] }
+) => GoalDriverRow[];
 
 export interface HeadlineMetricReportDates {
 	startDate: string;

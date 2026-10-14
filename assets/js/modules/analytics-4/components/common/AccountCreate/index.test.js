@@ -408,7 +408,6 @@ describe( 'AccountCreate', () => {
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MODULE_SETUP,
-						features: [ 'setupFlowRefresh' ],
 					}
 				) );
 
@@ -460,7 +459,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByText, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -468,22 +466,6 @@ describe( 'AccountCreate', () => {
 			expect(
 				getByText( 'Analytics account creation failed' )
 			).toBeInTheDocument();
-		} );
-
-		it( 'should not render the error notice when the `setupFlowRefresh` feature flag is disabled', async () => {
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
-
-			const { queryByText, waitForRegistry } = render(
-				<AccountCreate />,
-				{ registry }
-			);
-
-			await waitForRegistry();
-
-			expect(
-				queryByText( 'Analytics account creation failed' )
-			).not.toBeInTheDocument();
 		} );
 
 		it( 'should retry the account creation process when the Retry button is clicked', async () => {
@@ -503,7 +485,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -548,7 +529,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -592,7 +572,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			} );
 
@@ -620,7 +599,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -641,7 +619,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -654,7 +631,7 @@ describe( 'AccountCreate', () => {
 				).not.toBeInTheDocument();
 			} );
 
-			it( 'should navigate to the dashboard when clicked', async () => {
+			it( 'should navigate to the key metrics setup when clicked', async () => {
 				global.location.href =
 					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
 
@@ -670,60 +647,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
-					}
-				);
-
-				await waitForRegistry();
-
-				fireEvent.click(
-					getByRole( 'button', {
-						name: /continue without analytics/i,
-					} )
-				);
-
-				await waitForRegistry();
-
-				// Verify the initial setup settings were saved before navigation.
-				expect( fetchMock ).toHaveFetched(
-					initialSetupSettingsEndpoint,
-					{
-						method: 'POST',
-						body: {
-							data: {
-								settings: {
-									isAnalyticsSetupComplete: true,
-								},
-							},
-						},
-					}
-				);
-
-				expect( global.location.assign ).toHaveBeenCalledWith(
-					expect.stringContaining( 'page=googlesitekit-dashboard' )
-				);
-			} );
-
-			it( 'should navigate to the key metrics setup when clicked with the setupFlowRefreshPhase4 feature flag enabled', async () => {
-				global.location.href =
-					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&showProgress=true&accountCreationErrorCode=user_cancel';
-
-				const initialSetupSettingsEndpoint = new RegExp(
-					'^/google-site-kit/v1/core/user/data/initial-setup-settings'
-				);
-				fetchMock.postOnce( initialSetupSettingsEndpoint, {
-					body: { isAnalyticsSetupComplete: true },
-					status: 200,
-				} );
-
-				const { getByRole, waitForRegistry } = render(
-					<AccountCreate />,
-					{
-						registry,
-						features: [
-							'setupFlowRefresh',
-							'setupFlowRefreshPhase4',
-						],
 					}
 				);
 

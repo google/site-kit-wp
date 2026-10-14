@@ -47,7 +47,7 @@ Individual components that render specific data:
 
 ```javascript
 // Individual widgets display specific metrics or functionality
-const widgetSlug = 'analyticsAllTraffic';
+const widgetSlug = 'analyticsTrafficOverview';
 const widgetSlug = 'adsenseTopEarningContent';
 const widgetSlug = 'searchConsolePopularKeywords';
 ```

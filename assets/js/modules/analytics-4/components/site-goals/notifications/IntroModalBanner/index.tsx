@@ -38,8 +38,8 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { getSiteGoalsTour } from '@/js/modules/analytics-4/components/site-goals/feature-tours/site-goals';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/components/site-goals/utils/isSiteGoalsWidgetShowingContent';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { useSiteGoalsSectionReady } from '@/js/modules/analytics-4/hooks/useSiteGoalsSectionReady';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import { hasGoalTypeBreakdownNotice } from './hasGoalTypeBreakdownNotice';
@@ -115,21 +115,17 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		SITE_GOALS_INTRO_MODAL_BANNER
 	) as IntroModalTrackingEvents;
 
-	// Whether each goal type's widget renders. The modal introduces those
-	// widgets, so it follows the exact conditions they apply.
-	const isEcommerceWidgetRenderable = useSelect(
+	// The modal introduces the Site Goals widgets, so it leaves out a widget
+	// that doesn't render or shows the removal notice.
+	const isEcommerceWidgetShowingContent = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-				GOAL_TYPES.ECOMMERCE
-			),
+			isSiteGoalsWidgetShowingContent( select, GOAL_TYPES.ECOMMERCE ),
 		[]
 	);
 
-	const isLeadWidgetRenderable = useSelect(
+	const isLeadWidgetShowingContent = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable(
-				GOAL_TYPES.LEAD
-			),
+			isSiteGoalsWidgetShowingContent( select, GOAL_TYPES.LEAD ),
 		[]
 	);
 
@@ -164,15 +160,15 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 	}, [] );
 
 	// All the checks the modal needs, apart from the section being ready.
-	// At least one Site Goals widget must render. If none does, the modal never
-	// shows, so the hook below should not load the widget areas or wait.
+	// When no Site Goals widget shows its own content, the modal never shows,
+	// so `useSiteGoalsSectionReady()` shouldn't load the widget areas or wait.
 	//
 	// The dismissed-item check is intentionally omitted here: `isDismissible`
 	// on the notification registration keeps the framework from mounting this
 	// component while the modal is dismissed.
 	const canShowSiteGoalsIntroModal =
-		( isEcommerceWidgetRenderable === true ||
-			isLeadWidgetRenderable === true ) &&
+		( isEcommerceWidgetShowingContent === true ||
+			isLeadWidgetShowingContent === true ) &&
 		! hasInsufficientAnalyticsAccess;
 
 	// While the modal can show, the hook loads the widget areas above and
@@ -257,7 +253,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		handleView
 	);
 
-	if ( isEcommerceWidgetRenderable && isLeadWidgetRenderable ) {
+	if ( isEcommerceWidgetShowingContent && isLeadWidgetShowingContent ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {
@@ -269,7 +265,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		);
 	}
 
-	if ( isEcommerceWidgetRenderable ) {
+	if ( isEcommerceWidgetShowingContent ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {
@@ -281,7 +277,7 @@ const IntroModal: FC< IntroModalProps > = ( { id, Notification } ) => {
 		);
 	}
 
-	if ( isLeadWidgetRenderable ) {
+	if ( isLeadWidgetShowingContent ) {
 		return (
 			<Notification
 				gaTrackingEventArgs={ {

@@ -61,5 +61,19 @@
 		.mdc-list-item {
 			height: 44px;
 		}
+
+		// In the menu the pill spans the list's full content width, inset to
+		// the same 24px as the items below it. The margins top it up to the
+		// 24px above and the 19px between rows the design calls for, on top of
+		// the list's own 12px padding and the 12px each row centres its icon by.
+		.googlesitekit-add-features-button-wrapper {
+			display: flex;
+			margin: 12px 24px 7px;
+		}
+
+		.googlesitekit-add-features-button {
+			flex: 1;
+			justify-content: center;
+		}
 	}
 }

@@ -44,11 +44,11 @@ import {
 } from '@tests/js/utils';
 import TopAuthorsDrivingSalesWidget from './TopAuthorsDrivingSalesWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 describe( 'TopAuthorsDrivingSalesWidget', () => {
 	let registry: WPDataRegistry;
@@ -134,7 +134,7 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 		// Freeze the report fetch to keep the widget in loading state. Two
 		// reports are requested (the ranked list and the site-wide total),
 		// so this must match twice.
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<TopAuthorsDrivingSalesWidget { ...widgetProps } />,
@@ -150,13 +150,15 @@ describe( 'TopAuthorsDrivingSalesWidget', () => {
 	testGenericReportError(
 		() => registry,
 		TopAuthorsDrivingSalesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
 		TopAuthorsDrivingSalesWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {

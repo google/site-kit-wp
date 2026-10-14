@@ -32,6 +32,9 @@
       "googlesitekit-notifications": [
         "./assets/js/googlesitekit-notifications"
       ],
+      "googlesitekit-intents": [
+        "./assets/js/googlesitekit-intents"
+      ],
       "googlesitekit-widgets": [
         "./assets/js/googlesitekit-widgets"
       ],

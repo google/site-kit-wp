@@ -20,7 +20,6 @@
  * Internal dependencies
  */
 import { Registry, Select } from 'googlesitekit-data';
-import { isFeatureEnabled } from '@/js/features';
 import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
@@ -48,10 +47,6 @@ export function shouldHideSetupCTAs(
 	select: Select,
 	viewContext: string
 ): boolean {
-	if ( ! isFeatureEnabled( 'setupFlowRefresh' ) ) {
-		return false;
-	}
-
 	const initialSetupNotificationTimeoutDismissed = select(
 		CORE_USER
 	).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );

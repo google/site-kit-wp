@@ -33,7 +33,7 @@ function baseConfig(
 ): ContentEventsConfig {
 	return {
 		postID: 42,
-		isSinglePost: true,
+		isReadableSinglePost: true,
 		hasVimeoEmbed: false,
 		wordCount: 0,
 		estimatedReadTimeSeconds: 0,

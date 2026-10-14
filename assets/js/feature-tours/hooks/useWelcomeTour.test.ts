@@ -338,10 +338,7 @@ describe( 'useWelcomeTour', () => {
 
 		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
 			keyMetricsSetupCompletedBy: 1,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			isWidgetHidden: true,
+			keyMetricsSetupIsWidgetAreaHidden: true,
 		} );
 
 		const { result } = await renderHook( () => useWelcomeTour(), {
@@ -384,38 +381,6 @@ describe( 'useWelcomeTour', () => {
 			isActivateAnalyticsNotificationPresent: false,
 			isKeyMetricsWidgetPresent: false,
 			isAudienceSegmentationWidgetPresent: true,
-		} );
-	} );
-
-	it( 'should not include the audience segmentation step if it has been set up but its widget is hidden', async () => {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: true,
-			},
-		] );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			audienceSegmentationSetupCompletedBy: 1,
-		} );
-
-		registry.dispatch( CORE_USER ).receiveGetUserAudienceSettings( {
-			isAudienceSegmentationWidgetHidden: true,
-		} );
-
-		const { result } = await renderHook( () => useWelcomeTour(), {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-		} );
-
-		expectMatchesWelcomeTour( result.current, {
-			isViewOnly: false,
-			canAuthenticate: true,
-			isAnalyticsConnected: true,
-			isActivateAnalyticsNotificationPresent: false,
-			isKeyMetricsWidgetPresent: false,
-			isAudienceSegmentationWidgetPresent: false,
 		} );
 	} );
 

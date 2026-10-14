@@ -42,8 +42,10 @@ import { MDCMenu } from '@/js/material-components';
 const Menu = forwardRef(
 	(
 		{
+			'aria-labelledby': ariaLabelledBy,
 			children,
 			className,
+			heading,
 			menuOpen,
 			menuItems,
 			onSelected,
@@ -106,8 +108,10 @@ const Menu = forwardRef(
 				) }
 				ref={ mergedRefs }
 			>
+				{ heading }
 				<ul
 					aria-hidden={ ! menuOpen }
+					aria-labelledby={ ariaLabelledBy }
 					aria-orientation="vertical"
 					className={ classnames( 'mdc-list', {
 						'mdc-list--non-interactive': nonInteractive,
@@ -138,8 +142,10 @@ const Menu = forwardRef(
 Menu.displayName = 'Menu';
 
 Menu.propTypes = {
+	'aria-labelledby': PropTypes.string,
 	className: PropTypes.string,
 	children: PropTypes.node,
+	heading: PropTypes.node,
 	menuOpen: PropTypes.bool.isRequired,
 	menuItems: PropTypes.array,
 	id: PropTypes.string.isRequired,

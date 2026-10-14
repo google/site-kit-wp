@@ -35,9 +35,6 @@
 		}
 
 		.googlesitekit-analytics-cta--description {
-			color: $c-surfaces-on-background;
-			font-size: $fs-body-md;
-			letter-spacing: $ls-s;
 			margin: 0;
 		}
 
@@ -132,11 +129,6 @@
 		.googlesitekit-activate-analytics-cta__description {
 			color: $c-surfaces-on-surface;
 			flex: 1;
-			font-family: $f-primary;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: $lh-body-md;
 			margin: 0;
 
 			a {

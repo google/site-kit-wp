@@ -2,6 +2,7 @@
 	"search.exclude": {
 		"storybook/data": true,
 		"**/dist": true,
+		"storybook-static": true,
 		"**/node_modules/": true,
 		"**/composer.lock": true,
 		"**/package-lock.json": true,
@@ -10,8 +11,10 @@
 	},
 	"files.exclude": {
 		"**/dist": true,
+		"storybook-static": true,
 		"coverage/": true,
 		"**/node_modules/": true,
+		"tests/vrt/__screenshots__/": true,
 		"third-party/": true,
 		"vendor/": true
 	},

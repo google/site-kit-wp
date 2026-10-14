@@ -47,14 +47,10 @@ describe( 'getBreakdownReportArgs', () => {
 				reportID: 'test-channels-breakdown',
 				startDate: '2025-01-08',
 				endDate: '2025-02-04',
-				compareStartDate: '2024-12-11',
-				compareEndDate: '2025-01-07',
 			} )
 		).toEqual( {
 			startDate: '2025-01-08',
 			endDate: '2025-02-04',
-			compareStartDate: '2024-12-11',
-			compareEndDate: '2025-01-07',
 			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'sessionDefaultChannelGrouping' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
@@ -69,15 +65,11 @@ describe( 'getBreakdownReportArgs', () => {
 				reportID: 'test-devices-breakdown',
 				startDate: '2025-01-08',
 				endDate: '2025-02-04',
-				compareStartDate: '2024-12-11',
-				compareEndDate: '2025-01-07',
 				url: 'https://example.com/about/',
 			} )
 		).toEqual( {
 			startDate: '2025-01-08',
 			endDate: '2025-02-04',
-			compareStartDate: '2024-12-11',
-			compareEndDate: '2025-01-07',
 			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'deviceCategory' ],
 			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
@@ -86,7 +78,7 @@ describe( 'getBreakdownReportArgs', () => {
 		} );
 	} );
 
-	it( 'omits the comparison dates and the URL when it receives neither', () => {
+	it( 'omits the URL when it receives no entity URL', () => {
 		const args = getBreakdownReportArgs( {
 			dimensionName: 'deviceCategory',
 			reportID: 'test-devices-breakdown',
@@ -94,8 +86,6 @@ describe( 'getBreakdownReportArgs', () => {
 			endDate: '2025-02-04',
 		} );
 
-		expect( args ).not.toHaveProperty( 'compareStartDate' );
-		expect( args ).not.toHaveProperty( 'compareEndDate' );
 		expect( args ).not.toHaveProperty( 'url' );
 	} );
 } );

@@ -71,6 +71,7 @@ class Create_CTATest extends TestCase {
 					'data'           => array(
 						'type'        => 'NEWSLETTER_SIGNUP',
 						'displayName' => 'Newsletter sign-up',
+						'state'       => 'ACTIVE',
 						'config'      => array(
 							'title'         => 'Subscribe to our newsletter',
 							'customMessage' => 'Join our mailing list.',
@@ -94,6 +95,7 @@ class Create_CTATest extends TestCase {
 						'title'         => 'Subscribe to our newsletter',
 						'customMessage' => 'Join our mailing list.',
 					),
+					'state'            => 'ACTIVE',
 					'type'             => 'NEWSLETTER_SIGNUP',
 				)
 			),
@@ -129,6 +131,7 @@ class Create_CTATest extends TestCase {
 			wp_json_encode(
 				array(
 					'newsletterConfig' => array( 'title' => 'Subscribe' ),
+					'state'            => 'ACTIVE',
 					'type'             => 'NEWSLETTER_SIGNUP',
 				)
 			),
@@ -145,6 +148,35 @@ class Create_CTATest extends TestCase {
 		$this->expectExceptionMessage( 'Request parameter is empty: data.' );
 
 		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function test_create_request__requires_state() {
+		$data = $this->get_valid_data();
+		unset( $data['data']['state'] );
+
+		$this->expectException( Missing_Required_Param_Exception::class );
+		$this->expectExceptionMessage( 'Request parameter is empty: data.state.' );
+
+		$this->datapoint->create_request( $this->get_data_request( $data ) );
+	}
+
+	public function test_create_request__passes_draft_state() {
+		$data                  = $this->get_valid_data();
+		$data['data']['state'] = 'DRAFT';
+
+		$request = $this->datapoint->create_request( $this->get_data_request( $data ) );
+
+		$this->assertJsonStringEqualsJsonString(
+			wp_json_encode(
+				array(
+					'newsletterConfig' => array( 'title' => 'Subscribe' ),
+					'state'            => 'DRAFT',
+					'type'             => 'NEWSLETTER_SIGNUP',
+				)
+			),
+			(string) $request->getBody(),
+			'The request body should pass through an explicit DRAFT state.'
+		);
 	}
 
 	/**
@@ -194,21 +226,29 @@ class Create_CTATest extends TestCase {
 			'unsupported type'         => array(
 				array(
 					'type'   => 'SUBSCRIPTION',
+					'state'  => 'ACTIVE',
 					'config' => array( 'title' => 'Subscribe' ),
 				),
 				'data.type',
 			),
 			'missing type'             => array(
-				array( 'config' => array( 'title' => 'Subscribe' ) ),
+				array(
+					'state'  => 'ACTIVE',
+					'config' => array( 'title' => 'Subscribe' ),
+				),
 				'data.type',
 			),
 			'missing config'           => array(
-				array( 'type' => 'NEWSLETTER_SIGNUP' ),
+				array(
+					'type'  => 'NEWSLETTER_SIGNUP',
+					'state' => 'ACTIVE',
+				),
 				'data.config',
 			),
 			'non-array config'         => array(
 				array(
 					'type'   => 'NEWSLETTER_SIGNUP',
+					'state'  => 'ACTIVE',
 					'config' => 'not-an-array',
 				),
 				'data.config',
@@ -216,14 +256,32 @@ class Create_CTATest extends TestCase {
 			'non-string display name'  => array(
 				array(
 					'type'        => 'NEWSLETTER_SIGNUP',
+					'state'       => 'ACTIVE',
 					'config'      => array( 'title' => 'Subscribe' ),
 					'displayName' => 123,
 				),
 				'data.displayName',
 			),
+			'unsupported state'        => array(
+				array(
+					'type'   => 'NEWSLETTER_SIGNUP',
+					'state'  => 'ENABLED',
+					'config' => array( 'title' => 'Subscribe' ),
+				),
+				'data.state',
+			),
+			'non-string state'         => array(
+				array(
+					'type'   => 'NEWSLETTER_SIGNUP',
+					'state'  => 123,
+					'config' => array( 'title' => 'Subscribe' ),
+				),
+				'data.state',
+			),
 			'unsupported config field' => array(
 				array(
 					'type'   => 'NEWSLETTER_SIGNUP',
+					'state'  => 'ACTIVE',
 					'config' => array( 'unknownSetting' => 'value' ),
 				),
 				'config',
@@ -250,6 +308,7 @@ class Create_CTATest extends TestCase {
 			'publicationID'  => 'publication-1',
 			'data'           => array(
 				'type'   => 'NEWSLETTER_SIGNUP',
+				'state'  => 'ACTIVE',
 				'config' => array( 'title' => 'Subscribe' ),
 			),
 		);

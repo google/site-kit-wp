@@ -24,7 +24,7 @@ exports[`ActivateAnalyticsNotification should render correctly 1`] = `
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--headline googlesitekit-typography--medium"
                 >
                   Understand how visitors interact with your content
                 </p>
@@ -98,7 +98,7 @@ exports[`ActivateAnalyticsNotification should render with a "Don’t show again"
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--headline googlesitekit-typography--medium"
                 >
                   Understand how visitors interact with your content
                 </p>

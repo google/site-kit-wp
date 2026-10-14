@@ -46,6 +46,7 @@ import { AVAILABILITY_SYNC_CACHE_KEY } from '@/js/modules/analytics-4/components
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	ENUM_CONVERSION_EVENTS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
@@ -731,18 +732,9 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		} );
 	} );
 
-	it( 'creates the author custom dimension when setup is clicked with edit scope', async () => {
+	it( 'creates every custom dimension when setup is clicked with edit scope', async () => {
 		provideUserAuthentication( registry, {
 			grantedScopes: [ EDIT_SCOPE ],
-		} );
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
-			purpose: { values: [], scope: 'site' },
-			postFrequency: { values: [], scope: 'user' },
-			goals: { values: [], scope: 'user' },
 		} );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			propertyID: '12345',
@@ -754,27 +746,20 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetCustomDimensions( [], { propertyID: '12345' } );
-		fetchMock.postOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			),
-			{
-				body: {
-					parameterName: 'googlesitekit_post_author',
-					displayName: 'WordPress Post Author',
-					description:
-						'Created by Site Kit: WordPress name of the post author',
-					scope: 'EVENT',
-				},
-				status: 200,
-			}
+		const createEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 		);
+		// Respond to each create request with the dimension it was sent.
+		fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+			body: JSON.parse( body as string ).data.customDimension,
+			status: 200,
+		} ) );
 		fetchMock.postOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 			),
 			{
-				body: [ 'googlesitekit_post_author' ],
+				body: ALL_CUSTOM_DIMENSIONS,
 				status: 200,
 			}
 		);
@@ -794,9 +779,15 @@ describe( 'SiteGoalsSelectionPanel', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Set up' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes(
+				ALL_CUSTOM_DIMENSIONS.length + 1
+			);
 		} );
 
+		expect( fetchMock ).toHaveFetchedTimes(
+			ALL_CUSTOM_DIMENSIONS.length,
+			createEndpoint
+		);
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
 		).toBeNull();
@@ -804,7 +795,7 @@ describe( 'SiteGoalsSelectionPanel', () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )
 				.getAvailableCustomDimensions()
-		).toEqual( [ 'googlesitekit_post_author' ] );
+		).toEqual( ALL_CUSTOM_DIMENSIONS );
 		expect(
 			registry
 				.select( CORE_FORMS )

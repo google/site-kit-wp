@@ -6,7 +6,7 @@ exports[`PolicyViolationSettingsNotice should render error notice with extreme v
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-policy-violation-settings-notice"
+      class="googlesitekit-notice googlesitekit-notice--error googlesitekit-notice--default googlesitekit-policy-violation-settings-notice"
       role="status"
     >
       <div
@@ -15,15 +15,15 @@ exports[`PolicyViolationSettingsNotice should render error notice with extreme v
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Action needed: Your Reader Revenue Manager account is terminated
         </p>
         <p
-          class="googlesitekit-notice__description"
+          class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
         >
           Your account is terminated because your site content doesn’t follow the rules. Visit Publisher Center for more information.
         </p>
@@ -57,7 +57,7 @@ exports[`PolicyViolationSettingsNotice should render warning notice with pending
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-policy-violation-settings-notice"
+      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--default googlesitekit-policy-violation-settings-notice"
       role="status"
     >
       <div
@@ -66,15 +66,15 @@ exports[`PolicyViolationSettingsNotice should render warning notice with pending
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Action needed: fix a policy issue with Reader Revenue Manager
         </p>
         <p
-          class="googlesitekit-notice__description"
+          class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
         >
           Your site has content that breaks the rules for Reader Revenue Manager. To keep your account active and CTAs public, you must resolve all policy violations.
         </p>

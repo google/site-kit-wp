@@ -64,30 +64,7 @@ describe( 'ChangeGroupsLink', () => {
 		expect( button ).not.toBeInTheDocument();
 	} );
 
-	it( 'should render a button to change groups', () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
-			availableAudiences,
-		} );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
-			resourceAvailabilityDates: {
-				audience: availableAudiences.reduce( ( acc, { name } ) => {
-					acc[ name ] = 20201220;
-					return acc;
-				}, {} ),
-				customDimension: {},
-				property: {},
-			},
-		} );
-
-		const { queryByRole } = render( <ChangeGroupsLink />, { registry } );
-
-		const button = queryByRole( 'button' );
-		expect( button ).toBeInTheDocument();
-		expect( button ).toHaveTextContent( 'Change groups' );
-	} );
-
-	it( 'should render a button to select groups when setupFlowRefresh is enabled', () => {
+	it( 'should render a button to select groups', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetAudienceSettings( {
 			availableAudiences,
 		} );
@@ -105,7 +82,6 @@ describe( 'ChangeGroupsLink', () => {
 
 		const { getByRole } = render( <ChangeGroupsLink />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 		} );
 
 		expect( getByRole( 'button' ) ).toHaveTextContent( 'Select groups' );
@@ -136,7 +112,7 @@ describe( 'ChangeGroupsLink', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
-		const button = getByRole( 'button', { name: /change groups/i } );
+		const button = getByRole( 'button', { name: /select groups/i } );
 
 		fireEvent.click( button );
 

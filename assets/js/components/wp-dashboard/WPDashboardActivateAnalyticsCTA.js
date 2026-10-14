@@ -17,43 +17,15 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { __ } from '@wordpress/i18n';
-
-/**
  * Internal dependencies
  */
 import AnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
-import PreviewGraph from '@/js/components/PreviewGraph';
-import { useFeature } from '@/js/hooks/useFeature';
-import TrafficGraph from '@/svg/graphics/cta-graph-traffic.svg';
-import MostPopularContent from '@/svg/graphics/cta-most-popular-content.svg';
 
 export default function WPDashboardActivateAnalyticsCTA() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
-
-	if ( setupFlowRefreshEnabled ) {
-		return (
-			<AnalyticsCTA
-				analyticsEventLabel="wp_dashboard"
-				dismissedItemSlug="analytics-setup-cta-wp-dashboard"
-			/>
-		);
-	}
-
 	return (
-		<AnalyticsCTA dismissedItemSlug="analytics-setup-cta-wp-dashboard">
-			<PreviewGraph
-				title={ __( 'Traffic', 'google-site-kit' ) }
-				GraphSVG={ TrafficGraph }
-				showIcons={ false }
-			/>
-			<PreviewGraph
-				title={ __( 'Most popular content', 'google-site-kit' ) }
-				GraphSVG={ MostPopularContent }
-				showIcons={ false }
-			/>
-		</AnalyticsCTA>
+		<AnalyticsCTA
+			analyticsEventLabel="wp_dashboard"
+			dismissedItemSlug="analytics-setup-cta-wp-dashboard"
+		/>
 	);
 }

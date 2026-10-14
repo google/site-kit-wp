@@ -77,4 +77,40 @@ class IntentsTest extends TestCase {
 
 		$this->assertSame( $first, $this->intents->get_intent( 'test-intent' ), 'The intent registered first should stay.' );
 	}
+
+	public function test_get_query_args__returns_both_arguments_encoded() {
+		$this->assertSame(
+			array(
+				'intent'      => 'ads-conversion-tracking',
+				'intent_code' => 'ab%2Bc%2Fd%3D',
+			),
+			Intents::get_query_args( 'ads-conversion-tracking', 'ab+c/d=' ),
+			'Both intent arguments should be returned, encoded for `add_query_arg()`.'
+		);
+	}
+
+	public function data_incomplete_intent_query_args() {
+		return array(
+			'no intent'           => array( null, 'abc123' ),
+			'no intent code'      => array( 'ads-conversion-tracking', null ),
+			'empty intent'        => array( '', 'abc123' ),
+			'empty intent code'   => array( 'ads-conversion-tracking', '' ),
+			'array intent'        => array( array( 'ads-conversion-tracking' ), 'abc123' ),
+			'false from `filter`' => array( false, false ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_incomplete_intent_query_args
+	 *
+	 * @param mixed $intent      Intent ID.
+	 * @param mixed $intent_code One-time code for the intent.
+	 */
+	public function test_get_query_args__returns_empty_array_without_both_arguments( $intent, $intent_code ) {
+		$this->assertSame(
+			array(),
+			Intents::get_query_args( $intent, $intent_code ),
+			'An empty array should be returned unless both intent arguments are non-empty strings.'
+		);
+	}
 }

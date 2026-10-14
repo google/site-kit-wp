@@ -46,7 +46,6 @@ import {
 import { isActivePDFWidget } from '@/js/components/pdf-export/pdf-widget-eligibility';
 import { SelectionPanelContent } from '@/js/components/SelectionPanel';
 import SelectionPanelNotice from '@/js/components/SelectionPanel/SelectionPanelNotice';
-import Typography from '@/js/components/Typography';
 import { CORE_PDF } from '@/js/googlesitekit/datastore/pdf/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -287,33 +286,26 @@ const PanelContent: FC< PanelContentProps > = ( { closePanel } ) => {
 			</SelectionPanelContent>
 			{ ! hasSelection && (
 				<SelectionPanelNotice
-					// @ts-expect-error - The `SelectionPanelNotice` component is not yet typed.
-					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
+					className="googlesitekit-pdf-download-panel__notice"
+					description={ __(
+						'Select at least 1 topic',
+						'google-site-kit'
+					) }
 					type={ NOTICE_TYPES.ERROR }
-					description={
-						/* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */
-						<Typography type="label" size="small" as="span">
-							{ __(
-								'Select at least 1 topic',
-								'google-site-kit'
-							) }
-						</Typography>
-					}
 				/>
 			) }
 			{ showGeneratingReportNotice && (
 				<SelectionPanelNotice
-					// @ts-expect-error - The `SelectionPanelNotice` component isn't typed yet.
-					className="googlesitekit-notice--side-panel googlesitekit-pdf-download-panel__notice"
-					type={ NOTICE_TYPES.WARNING }
-					title={ __(
-						'Your report is being generated',
-						'google-site-kit'
-					) }
+					className="googlesitekit-pdf-download-panel__notice"
 					description={ __(
 						'To create another report, please wait for the current download to complete.',
 						'google-site-kit'
 					) }
+					title={ __(
+						'Your report is being generated',
+						'google-site-kit'
+					) }
+					type={ NOTICE_TYPES.WARNING }
 					hideIcon
 				/>
 			) }

@@ -347,9 +347,9 @@ describe( 'TourTooltips', () => {
 		);
 	} );
 
-	it( 'should not display the step indicator when there is only one step and `setupFlowRefresh` is enabled', () => {
+	it( 'should not display the step indicator when there is only one step', () => {
 		const { queryByText } = renderTourTooltipsWithMockUI(
-			{ registry, features: [ 'setupFlowRefresh' ] },
+			{ registry },
 			{
 				steps: MOCK_STEPS.slice( 0, 1 ),
 			}

@@ -91,8 +91,8 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
-						label: 'All Visitors',
+						slug: 'analyticsTrafficOverview',
+						label: 'Site traffic over time',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -118,7 +118,7 @@ describe( 'DashboardReport', () => {
 						data: null,
 					},
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -141,7 +141,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: null,
 						data: null,
 					},
@@ -174,7 +174,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -215,7 +215,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: null,
 						data: null,
 					},
@@ -267,7 +267,7 @@ describe( 'DashboardReport', () => {
 					areaTitle: 'Traffic area',
 					widgets: [
 						{
-							slug: 'analyticsAllTrafficGA4',
+							slug: 'analyticsTrafficOverview',
 							Component: FakeWidget,
 							data: 'visitors',
 						},
@@ -363,7 +363,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -383,7 +383,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -407,7 +407,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -455,7 +455,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},
@@ -477,7 +477,7 @@ describe( 'DashboardReport', () => {
 				areaTitle: 'Traffic',
 				widgets: [
 					{
-						slug: 'analyticsAllTrafficGA4',
+						slug: 'analyticsTrafficOverview',
 						Component: FakeWidget,
 						data: 'visitors',
 					},

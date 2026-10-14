@@ -20,7 +20,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_
  * subclass turns the ICU word count off, so the tests cover the path a server
  * without `intl` takes.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */
@@ -29,7 +29,7 @@ class Content_Events_Without_Intl extends Content_Events {
 	/**
 	 * Reports ICU as missing, even where PHP has the `intl` extension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param string $text Text with the tags and shortcodes already removed.
 	 * @return null Always `null`, so the provider counts words without ICU.

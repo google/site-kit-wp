@@ -76,6 +76,7 @@ module.exports = function ( mode, rules, ANALYZE ) {
 			'googlesitekit-datastore-pdf':
 				'./js/googlesitekit-datastore-pdf.ts',
 			'googlesitekit-modules': './js/googlesitekit-modules.ts',
+			'googlesitekit-intents': './js/googlesitekit-intents.ts',
 			'googlesitekit-notifications':
 				'./js/googlesitekit-notifications.ts',
 			'googlesitekit-widgets': './js/googlesitekit-widgets.ts',

@@ -33,6 +33,8 @@ import { __ } from '@wordpress/i18n';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import Typography from '@/js/components/Typography';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -96,7 +98,10 @@ export default function PlaceholderTile( { Widget } ) {
 									'google-site-kit'
 							  ) }
 					</Typography>
-					<p className="googlesitekit-audience-segmentation-tile-placeholder__description">
+					<P
+						className="googlesitekit-audience-segmentation-tile-placeholder__description"
+						size={ SIZE_SMALL }
+					>
 						{ hasConfigurableNonDefaultAudiences
 							? createInterpolateElement(
 									__(
@@ -127,7 +132,7 @@ export default function PlaceholderTile( { Widget } ) {
 										AnalyticsLink,
 									}
 							  ) }
-					</p>
+					</P>
 				</div>
 			</div>
 		</Widget>

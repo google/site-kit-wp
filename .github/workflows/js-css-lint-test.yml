@@ -45,6 +45,9 @@ on:
       - reopened
       - synchronize
 
+permissions:
+  contents: read
+
 concurrency:
   group: js-css-lint-test-${{ github.ref }}
   cancel-in-progress: true

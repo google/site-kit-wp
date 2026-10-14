@@ -33,7 +33,12 @@ import { __ } from '@wordpress/i18n';
 import UserRoleSelect from '@/js/components/dashboard-sharing/UserRoleSelect';
 import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
-import { NOTICE_TYPES } from '@/js/components/Notice/constants';
+import {
+	NOTICE_TYPES,
+	NOTICE_VARIANTS,
+} from '@/js/components/Notice/constants';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 
 const ModuleViewAccess = forwardRef(
 	(
@@ -59,8 +64,6 @@ const ModuleViewAccess = forwardRef(
 		if ( recoverable ) {
 			return (
 				<Notice
-					className="googlesitekit-notice--small"
-					type={ NOTICE_TYPES.WARNING }
 					description={ createInterpolateElement(
 						__(
 							'Managing user required to manage view access. <a>Learn more</a>',
@@ -76,18 +79,23 @@ const ModuleViewAccess = forwardRef(
 							),
 						}
 					) }
+					type={ NOTICE_TYPES.WARNING }
+					variant={ NOTICE_VARIANTS.SMALL }
 					hideIcon
 				/>
 			);
 		}
 
 		return (
-			<p className="googlesitekit-dashboard-sharing-settings__note">
+			<P
+				className="googlesitekit-dashboard-sharing-settings__note"
+				size={ SIZE_SMALL }
+			>
 				{ __(
 					'Contact managing user to manage view access',
 					'google-site-kit'
 				) }
-			</p>
+			</P>
 		);
 	}
 );

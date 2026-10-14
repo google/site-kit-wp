@@ -40,6 +40,16 @@ import { actions as errorStoreActions } from './create-error-store';
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 
 /**
+ * Fetch options for the `getReport` resolver and selector.
+ *
+ * @since n.e.x.t
+ */
+export type ReportFetchOptions = {
+	signal?: AbortSignal;
+	cacheTTL?: number;
+};
+
+/**
  * Creates the `getReport` resolver for a report datastore.
  *
  * The Analytics 4, Search Console, and AdSense report stores share this
@@ -57,6 +67,7 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
  * one call's cancellation abort another call's report.
  *
  * @since 1.183.0
+ * @since n.e.x.t Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
  *
  * @param storeName Report datastore name, such as `modules/analytics-4`.
  * @return Generator resolver for the store's `getReport` selector.
@@ -86,7 +97,7 @@ export function createGetReportResolver( storeName: string ) {
 	// caller sent.
 	return function* getReport(
 		options?: ReportRequestOptions,
-		fetchOptions?: { signal?: AbortSignal }
+		fetchOptions?: ReportFetchOptions
 	): Generator< unknown, void, unknown > {
 		const registryResult = yield commonActions.getRegistry();
 		const registry = registryResult as WPDataRegistry;

@@ -30,6 +30,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 
@@ -44,7 +45,7 @@ export default function UserInputQuestionAuthor( { slug } ) {
 
 	return (
 		<div className="googlesitekit-user-input__author">
-			<P>
+			<P size={ SIZE_SMALL }>
 				{ __(
 					'This question has been answered by:',
 					'google-site-kit'

@@ -59,6 +59,24 @@ function hasNewnessState( select: Select ) {
 
 export const actions = {
 	/**
+	 * Dismisses a feature permanently for the current user.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param {string} slug Feature slug.
+	 * @return {Object} Generator instance.
+	 */
+	*dismissFeature(
+		slug: string
+	): Generator< unknown, unknown, WPDataRegistry > {
+		const registry = yield commonActions.getRegistry();
+
+		return registry
+			.dispatch( CORE_USER )
+			.dismissItem( getFeatureDismissalKey( slug ) );
+	},
+
+	/**
 	 * Marks features as seen by starting each feature's newness timer.
 	 *
 	 * @since 1.188.0
@@ -150,6 +168,18 @@ export const selectors = {
 	 */
 	isFeatureUnread: createRegistrySelector(
 		( select: Select ) => ( state: FeatureDiscoveryState, slug: string ) => {
+			const isInProgress = select(
+				CORE_FEATURE_DISCOVERY
+			).isFeatureInProgress( slug );
+
+			if ( isInProgress === undefined ) {
+				return undefined;
+			}
+
+			if ( isInProgress ) {
+				return false;
+			}
+
 			const isFeatureNew = select( CORE_FEATURE_DISCOVERY ).isFeatureNew(
 				slug
 			);
@@ -180,9 +210,8 @@ export const selectors = {
 				return undefined;
 			}
 
-			const { isFeatureNew, isFeatureUnread } = select(
-				CORE_FEATURE_DISCOVERY
-			);
+			const { isFeatureInProgress, isFeatureNew, isFeatureUnread } =
+				select( CORE_FEATURE_DISCOVERY );
 
 			return select( CORE_FEATURE_DISCOVERY )
 				.getAvailableFeatures()
@@ -194,6 +223,15 @@ export const selectors = {
 						)
 				)
 				.sort( ( first: Feature, second: Feature ) => {
+					const firstInProgress =
+						isFeatureInProgress( first.slug ) === true;
+					const secondInProgress =
+						isFeatureInProgress( second.slug ) === true;
+
+					if ( firstInProgress !== secondInProgress ) {
+						return firstInProgress ? -1 : 1;
+					}
+
 					const firstUnread = isFeatureUnread( first.slug );
 					const secondUnread = isFeatureUnread( second.slug );
 

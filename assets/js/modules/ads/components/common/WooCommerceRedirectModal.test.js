@@ -80,12 +80,9 @@ describe( 'WooCommerceRedirectModal', () => {
 		googleForWooCommerceActive = false,
 		adsConnected = false,
 	} = {} ) {
+		provideSiteInfo( registry, { wooCommerceActive } );
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				[ PLUGINS.WOOCOMMERCE ]: {
-					active: wooCommerceActive,
-					installed: wooCommerceActive,
-				},
 				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: googleForWooCommerceActive,
 					installed: googleForWooCommerceActive,

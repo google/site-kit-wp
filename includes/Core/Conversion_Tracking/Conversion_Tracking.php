@@ -284,6 +284,7 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 	 * Returns events supported by active providers from the conversion tracking infrastructure.
 	 *
 	 * @since 1.163.0 Moved this method here from the Ads class.
+	 * @since n.e.x.t Reindexed the events, so they are JSON-encoded as an array rather than an object.
 	 *
 	 * @return array Array of supported conversion events, or empty array.
 	 */
@@ -300,7 +301,8 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			$events = array_merge( $events, array_values( $provider->get_event_names() ) );
 		}
 
-		return array_unique( $events );
+		// `array_unique()` keeps the keys, so a duplicate followed by another event leaves a gap.
+		return array_values( array_unique( $events ) );
 	}
 
 	/**

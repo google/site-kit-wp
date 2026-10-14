@@ -94,17 +94,6 @@ final class Plugin {
 		// Set up remote features before anything else.
 		( new Remote_Features_Provider( $this->context, $options ) )->register();
 
-		if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
-			// TODO: Remove this filter once `setupFlowRefresh` is fully rolled out
-			// and we no longer need to force it on for all users.
-			add_filter(
-				'googlesitekit_is_feature_enabled',
-				array( $this, 'force_setup_flow_refresh_feature_enabled' ),
-				10,
-				2
-			);
-		}
-
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -189,6 +178,8 @@ final class Plugin {
 				// Modules add their intent listeners during $modules->register() above, so collecting intents earlier would come up empty.
 				$intents = new Core\Intents\Intents();
 				$intents->register();
+
+				( new Core\Intents\REST_Intents_Controller( $intents, $authentication ) )->register();
 
 				$dismissals = new Core\Dismissals\Dismissals( $this->context, $user_options );
 				$dismissals->register();
@@ -324,24 +315,6 @@ final class Plugin {
 	 */
 	public static function instance() {
 		return self::$instance;
-	}
-
-	/**
-	 * Forces the Setup Flow Refresh feature flags to be enabled.
-	 *
-	 * @since 1.183.0
-	 * @since 1.185.0 Force-enable the `setupFlowRefreshPhase4` flag in addition to `setupFlowRefresh`.
-	 *
-	 * @param bool   $feature_enabled The current status of this feature flag.
-	 * @param string $feature_name    The feature name.
-	 * @return bool True for setupFlowRefresh or setupFlowRefreshPhase4, otherwise the original value.
-	 */
-	public function force_setup_flow_refresh_feature_enabled( $feature_enabled, $feature_name ) {
-		if ( in_array( $feature_name, array( 'setupFlowRefresh', 'setupFlowRefreshPhase4' ), true ) ) {
-			return true;
-		}
-
-		return $feature_enabled;
 	}
 
 	/**

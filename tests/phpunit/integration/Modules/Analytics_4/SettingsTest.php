@@ -92,6 +92,52 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get_default__with_fresh_data_flag() {
+		$this->enable_feature( 'freshData' );
+		$this->settings->register();
+
+		$this->assertTrue(
+			$this->settings->get()[ Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ],
+			'freshDataIncludesWooCommerceProducts should default to true when the flag is enabled.'
+		);
+	}
+
+	public function test_get_view_only_keys__with_fresh_data_flag() {
+		$this->enable_feature( 'freshData' );
+
+		$this->assertContains(
+			Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
+			$this->settings->get_view_only_keys(),
+			'freshDataIncludesWooCommerceProducts should be a view-only key when the flag is enabled.'
+		);
+	}
+
+	public function test_get_view_only_keys__without_fresh_data_flag() {
+		$this->assertNotContains(
+			Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
+			$this->settings->get_view_only_keys(),
+			'freshDataIncludesWooCommerceProducts should not be a view-only key when the flag is disabled.'
+		);
+	}
+
+	public function test_get_view_only_keys__includes_the_property_create_time_without_the_typical_traffic_flag() {
+		$this->assertContains(
+			'propertyCreateTime',
+			$this->settings->get_view_only_keys(),
+			'The `propertyCreateTime` setting should be a view-only key when the `typicalTraffic` flag is disabled.'
+		);
+	}
+
+	public function test_get_view_only_keys__includes_the_property_create_time_with_the_typical_traffic_flag() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$this->assertContains(
+			'propertyCreateTime',
+			$this->settings->get_view_only_keys(),
+			'The `propertyCreateTime` setting should be a view-only key when the `typicalTraffic` flag is enabled.'
+		);
+	}
+
 	public function data_tag_ids() {
 		return array(
 			'googleTagID is valid G-XXXX string'           => array( 'googleTagID', 'G-XXXX', 'G-XXXX' ),
@@ -192,6 +238,8 @@ class SettingsTest extends SettingsTestCase {
 			array( 'adSenseLinked', false, false ),
 			array( 'adsLinked', true, true ),
 			array( 'adsLinked', false, false ),
+			array( Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS, '1', true ),
+			array( Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS, 0, false ),
 		);
 
 		foreach ( $test_cases as $case ) {

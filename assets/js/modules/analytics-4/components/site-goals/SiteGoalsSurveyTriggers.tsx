@@ -38,6 +38,7 @@ import {
 	SITE_GOALS_SURVEY_TRIGGER_NO_BREAKDOWN,
 } from './constants';
 import { GOAL_TYPES } from './goal-drivers/constants';
+import { useIsSiteGoalsBreakdownEnabled } from './hooks/useIsSiteGoalsBreakdownEnabled';
 import {
 	SITE_GOALS_INTRO_MODAL_BANNER,
 	SITE_GOALS_INTRO_MODAL_BANNER_CONFIRMED,
@@ -112,6 +113,9 @@ const SiteGoalsSurveyTriggers: FC = () => {
 		},
 		[ isGA4Connected ]
 	);
+	const isBreakdownEnabled = useIsSiteGoalsBreakdownEnabled(
+		hasBreakdownDimensions
+	);
 
 	// Render nothing until Analytics is connected. `isGA4Connected` is
 	// `undefined` while loading and `false` when not connected.
@@ -142,14 +146,15 @@ const SiteGoalsSurveyTriggers: FC = () => {
 	if (
 		isIntroModalDismissed === undefined ||
 		isIntroModalConfirmed === undefined ||
-		hasBreakdownDimensions === undefined
+		isBreakdownEnabled === undefined
 	) {
 		return null;
 	}
 
-	// The custom dimensions exist, so the breakdown is enabled. This is the
-	// strongest engagement signal, so check it first.
-	if ( hasBreakdownDimensions ) {
+	// The custom dimensions exist and plugin conversion tracking is on, so the
+	// breakdown is enabled. This is the strongest engagement signal, so check
+	// it first.
+	if ( isBreakdownEnabled ) {
 		return (
 			<SurveyViewTrigger
 				triggerID={ SITE_GOALS_SURVEY_TRIGGER_BREAKDOWN_ENABLED }

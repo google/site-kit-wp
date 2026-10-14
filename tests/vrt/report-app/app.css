@@ -1,0 +1,514 @@
+/*
+ * Visual regression test report styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+:root {
+	--bg: #f3f4f6;
+	--surface: #fff;
+	--surface-muted: #f8f9fa;
+	--text: #1f2328;
+	--text-muted: #59636e;
+	--border: #d8dee4;
+	--accent: #0b57d0;
+	--checker: #e8eaed;
+	--failed: #c5221f;
+	--new: #6f42c1;
+	--flaky: #b06000;
+	--not-run: #6e7781;
+	--passed: #188038;
+	color-scheme: light dark;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root {
+		--bg: #111418;
+		--surface: #1b1f24;
+		--surface-muted: #22272e;
+		--text: #e6edf3;
+		--text-muted: #9198a1;
+		--border: #3d444d;
+		--accent: #7cacf8;
+		--checker: #2d333b;
+		--failed: #ff7b72;
+		--new: #d2a8ff;
+		--flaky: #f2cc60;
+		--not-run: #9198a1;
+		--passed: #56d364;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	background: var(--bg);
+	color: var(--text);
+	font: 14px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+	margin: 0;
+}
+
+body.vrt-has-dialog {
+	overflow: hidden;
+}
+
+button,
+input,
+select {
+	color: inherit;
+	font: inherit;
+}
+
+a {
+	color: var(--accent);
+}
+
+code,
+pre {
+	font: 12px/1.5 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+/* Header */
+
+.vrt-header {
+	background: var(--surface);
+	border-bottom: 1px solid var(--border);
+	display: grid;
+	gap: 12px;
+	padding: 16px;
+}
+
+/* Keep the filters in view, where they leave room for the list. */
+@media (width >= 768px) and (height >= 600px) {
+	.vrt-header {
+		padding: 16px 24px;
+		position: sticky;
+		top: 0;
+		z-index: 2;
+	}
+}
+
+.vrt-header__intro {
+	align-items: baseline;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 16px;
+}
+
+.vrt-header h1 {
+	font-size: 20px;
+	margin: 0;
+}
+
+.vrt-run {
+	color: var(--text-muted);
+	margin: 0;
+}
+
+.vrt-errors {
+	background: var(--surface-muted);
+	border-left: 4px solid var(--failed);
+	padding: 8px 12px;
+	white-space: pre-wrap;
+}
+
+.vrt-filters {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.vrt-chip {
+	align-items: center;
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 999px;
+	cursor: pointer;
+	display: inline-flex;
+	gap: 6px;
+	padding: 4px 12px;
+}
+
+.vrt-chip[aria-pressed="true"] {
+	border-color: var(--accent);
+	box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+.vrt-chip:disabled {
+	cursor: default;
+	opacity: 0.45;
+}
+
+.vrt-chip__count {
+	font-weight: 600;
+}
+
+.vrt-controls {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 16px;
+}
+
+.vrt-search {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	flex: 1 1 280px;
+	max-width: 480px;
+	padding: 6px 10px;
+}
+
+.vrt-viewport-filter {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	padding: 6px 8px;
+}
+
+.vrt-count {
+	color: var(--text-muted);
+}
+
+.vrt-playwright-link {
+	margin-left: auto;
+}
+
+/* Status */
+
+.vrt-status {
+	border-radius: 999px;
+	color: #fff;
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 1px 8px;
+}
+
+.vrt-status--failed {
+	background: var(--failed);
+}
+
+.vrt-status--new {
+	background: var(--new);
+}
+
+.vrt-status--flaky {
+	background: var(--flaky);
+}
+
+.vrt-status--notRun {
+	background: var(--not-run);
+}
+
+.vrt-status--passed {
+	background: var(--passed);
+}
+
+@media (prefers-color-scheme: dark) {
+	.vrt-status {
+		color: #111418;
+	}
+}
+
+/* List */
+
+.vrt-list {
+	display: grid;
+	gap: 16px;
+	grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr));
+	padding: 16px 16px 48px;
+}
+
+@media (width >= 768px) {
+	.vrt-list {
+		padding: 16px 24px 48px;
+	}
+}
+
+.vrt-empty {
+	color: var(--text-muted);
+	grid-column: 1 / -1;
+}
+
+.vrt-card {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 8px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	min-width: 0;
+	padding: 12px;
+}
+
+.vrt-card--problem {
+	grid-column: 1 / -1;
+}
+
+.vrt-card__header {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px 8px;
+}
+
+.vrt-card__title {
+	font-size: 14px;
+	font-weight: 600;
+	margin: 0;
+	overflow-wrap: anywhere;
+}
+
+.vrt-viewport {
+	color: var(--text-muted);
+}
+
+.vrt-card__summary {
+	margin: 0;
+}
+
+.vrt-card__images {
+	display: grid;
+	gap: 12px;
+	grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+}
+
+.vrt-figure {
+	margin: 0;
+	min-width: 0;
+}
+
+.vrt-figure figcaption {
+	color: var(--text-muted);
+	font-size: 12px;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	margin-bottom: 4px;
+	text-transform: uppercase;
+}
+
+.vrt-thumb {
+	background: var(--checker);
+	border: 1px solid var(--border);
+	border-radius: 4px;
+	cursor: zoom-in;
+	display: block;
+	overflow: hidden;
+	padding: 0;
+	width: 100%;
+}
+
+.vrt-thumb img {
+	display: block;
+	height: auto;
+	max-height: 480px;
+	object-fit: contain;
+	object-position: top;
+	width: 100%;
+}
+
+.vrt-thumb--missing {
+	color: var(--text-muted);
+	cursor: default;
+	padding: 24px 12px;
+}
+
+.vrt-card__error summary {
+	color: var(--text-muted);
+	cursor: pointer;
+}
+
+.vrt-card__error pre {
+	background: var(--surface-muted);
+	border-radius: 4px;
+	margin: 8px 0 0;
+	max-height: 320px;
+	overflow: auto;
+	padding: 8px;
+	white-space: pre-wrap;
+}
+
+.vrt-card__actions {
+	align-items: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px;
+}
+
+.vrt-command {
+	background: var(--surface-muted);
+	border-radius: 4px;
+	flex: 1 1 320px;
+	min-width: 0;
+	overflow-x: auto;
+	padding: 4px 8px;
+	white-space: nowrap;
+}
+
+.vrt-button {
+	background: var(--surface);
+	border: 1px solid var(--border);
+	border-radius: 6px;
+	cursor: pointer;
+	padding: 4px 10px;
+}
+
+.vrt-button:disabled {
+	cursor: default;
+	opacity: 0.45;
+}
+
+.vrt-button[aria-pressed="true"] {
+	border-color: var(--accent);
+	box-shadow: inset 0 0 0 1px var(--accent);
+}
+
+/* Compare dialog */
+
+.vrt-compare {
+	background: var(--bg);
+	display: flex;
+	flex-direction: column;
+	inset: 0;
+	position: fixed;
+	z-index: 3;
+}
+
+.vrt-compare[hidden] {
+	display: none;
+}
+
+.vrt-compare__bar {
+	align-items: center;
+	background: var(--surface);
+	border-bottom: 1px solid var(--border);
+	display: flex;
+	flex-wrap: wrap;
+	gap: 8px 12px;
+	padding: 12px 16px;
+}
+
+.vrt-compare__title {
+	flex: 1 1 240px;
+	font-weight: 600;
+	min-width: 0;
+	overflow-wrap: anywhere;
+}
+
+.vrt-compare__modes {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px;
+}
+
+.vrt-compare__actual-size {
+	align-items: center;
+	display: inline-flex;
+	gap: 4px;
+}
+
+.vrt-compare__summary {
+	color: var(--text-muted);
+	margin: 0;
+	padding: 8px 16px 0;
+}
+
+.vrt-compare__summary:empty {
+	display: none;
+}
+
+.vrt-compare__stage {
+	flex: 1;
+	overflow: auto;
+	padding: 16px;
+}
+
+.vrt-compare__stage img {
+	background: var(--checker);
+	display: block;
+}
+
+.vrt-compare--fit .vrt-compare__stage img {
+	height: auto;
+	max-width: 100%;
+}
+
+.vrt-side-by-side {
+	align-items: start;
+	display: grid;
+	gap: 16px;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.vrt-compare:not(.vrt-compare--fit) .vrt-side-by-side {
+	grid-template-columns: repeat(2, max-content);
+}
+
+/* Slider: the screenshot covers the reference image to the right of the divider. */
+
+.vrt-slider {
+	--position: 50%;
+	cursor: ew-resize;
+	display: inline-grid;
+	position: relative;
+	touch-action: none;
+	user-select: none;
+}
+
+.vrt-compare--fit .vrt-slider {
+	max-width: 100%;
+}
+
+.vrt-slider__reference,
+.vrt-slider__test {
+	grid-area: 1 / 1;
+}
+
+.vrt-slider__test {
+	clip-path: inset(0 0 0 var(--position));
+}
+
+.vrt-slider__handle {
+	background: var(--accent);
+	bottom: 0;
+	left: var(--position);
+	margin-left: -1px;
+	pointer-events: none;
+	position: absolute;
+	top: 0;
+	width: 2px;
+}
+
+.vrt-slider__label {
+	background: rgba(0, 0, 0, 0.65);
+	border-radius: 4px;
+	color: #fff;
+	font-size: 12px;
+	padding: 2px 6px;
+	pointer-events: none;
+	position: absolute;
+	top: 8px;
+}
+
+.vrt-slider__label--reference {
+	left: 8px;
+}
+
+.vrt-slider__label--test {
+	right: 8px;
+}

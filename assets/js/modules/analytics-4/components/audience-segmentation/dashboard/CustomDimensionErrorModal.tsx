@@ -36,8 +36,8 @@ import useFormValue from '@/js/hooks/useFormValue';
 import useViewContext from '@/js/hooks/useViewContext';
 import useCreateCustomDimension from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/hooks/useCreateCustomDimension';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
 import AudienceErrorModal from './AudienceErrorModal';
@@ -49,14 +49,14 @@ interface ErrorObject {
 const CustomDimensionErrorModal: FC = () => {
 	const viewContext: string = useViewContext();
 
-	const postTypeDimension: string =
-		CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type.parameterName;
-
-	const customDimensionError: ErrorObject | undefined = useSelect(
+	// The CTA creates every custom dimension, so any of them may have failed.
+	const customDimensionErrors: ErrorObject[] = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
-				postTypeDimension
-			),
+			ALL_CUSTOM_DIMENSIONS.map( ( customDimension ) =>
+				select( MODULES_ANALYTICS_4 ).getCreateCustomDimensionError(
+					customDimension
+				)
+			).filter( Boolean ),
 		[]
 	);
 
@@ -79,7 +79,7 @@ const CustomDimensionErrorModal: FC = () => {
 
 	return (
 		<AudienceErrorModal
-			apiErrors={ [ customDimensionError ] }
+			apiErrors={ customDimensionErrors }
 			title={ __( 'Failed to enable metric', 'google-site-kit' ) }
 			description={ __(
 				'Oops! Something went wrong. Retry enabling the metric.',

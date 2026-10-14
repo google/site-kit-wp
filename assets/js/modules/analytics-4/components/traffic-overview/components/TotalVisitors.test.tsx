@@ -155,8 +155,6 @@ describe( 'TotalVisitors', () => {
 		const title = getByRole( 'heading', { name: 'Total visitors' } );
 
 		expect( title ).toBeInTheDocument();
-		// The card this replaces put an "All Visitors ›" breadcrumb here, so
-		// the title must hold the string and nothing else.
 		expect( title ).toHaveTextContent( 'Total visitors' );
 		expect( title.querySelector( 'svg' ) ).toBeNull();
 

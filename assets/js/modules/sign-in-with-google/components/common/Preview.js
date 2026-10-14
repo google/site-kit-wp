@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { MODULES_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/datastore/constants';
 import { getLocale } from '@/js/util';
 
@@ -79,9 +81,12 @@ export default function Preview() {
 
 	return (
 		<div className="googlesitekit-sign-in-with-google__preview">
-			<p className="googlesitekit-sign-in-with-google__preview--label">
+			<P
+				className="googlesitekit-sign-in-with-google__preview--label"
+				size={ SIZE_MEDIUM }
+			>
 				{ __( 'Preview', 'google-site-kit' ) }
-			</p>
+			</P>
 			<div ref={ containerRef } />
 			<div className="googlesitekit-sign-in-with-google__preview--protector" />
 		</div>

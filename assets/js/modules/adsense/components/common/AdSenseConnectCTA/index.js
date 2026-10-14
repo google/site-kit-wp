@@ -119,7 +119,11 @@ export default function AdSenseConnectCTA( {
 			MODULE_SLUG_ADSENSE
 		);
 
-		await setItem( 'module_setup', MODULE_SLUG_ADSENSE, { ttl: 300 } );
+		await setItem(
+			'module_setup',
+			{ slug: MODULE_SLUG_ADSENSE, options: {} },
+			{ ttl: 300 }
+		);
 
 		navigateTo( response.moduleReauthURL );
 		return null;

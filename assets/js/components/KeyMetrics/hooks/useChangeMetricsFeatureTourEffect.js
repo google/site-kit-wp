@@ -27,7 +27,6 @@ import { useEffect } from '@wordpress/element';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import sharedKeyMetrics from '@/js/feature-tours/shared-key-metrics';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 
 /**
@@ -42,18 +41,17 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 export function useChangeMetricsFeatureTourEffect() {
 	const { dismissTour } = useDispatch( CORE_USER );
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const isTourDismissed = useSelect( ( select ) =>
 		select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
 	);
 
 	useEffect( () => {
-		if ( ! setupFlowRefreshEnabled || ! isInitialWelcomeModalActive() ) {
+		if ( ! isInitialWelcomeModalActive() ) {
 			return;
 		}
 
 		if ( isTourDismissed === false ) {
 			dismissTour( sharedKeyMetrics.slug );
 		}
-	}, [ dismissTour, isTourDismissed, setupFlowRefreshEnabled ] );
+	}, [ dismissTour, isTourDismissed ] );
 }

@@ -17,3 +17,5 @@
  */
 
 export const MODULE_SLUG_ADS = 'ads';
+
+export const ADS_CONVERSION_TRACKING_INTENT_SLUG = 'ads-conversion-tracking';

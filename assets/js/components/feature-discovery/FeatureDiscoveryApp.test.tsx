@@ -26,6 +26,7 @@ import { HashRouter } from 'react-router-dom';
  */
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { dismissItemEndpoint } from '@tests/js/mock-dismiss-item-endpoints';
 import {
 	act,
 	createTestRegistry,
@@ -44,6 +45,7 @@ function provideHeader( registry: ReturnType< typeof createTestRegistry > ) {
 	registry.dispatch( CORE_USER ).receiveGetCapabilities( {} );
 	registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+	fetchMock.post( dismissItemEndpoint, { body: [] } );
 
 	// The What’s new? tab reads the user's newness state, which is left empty
 	// here so that no feature is listed.

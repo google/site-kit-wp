@@ -55,4 +55,26 @@ class Verification_FileTest extends TestCase {
 		$user_options->set( Verification_File::OPTION, 'a1b2c3d4f5' );
 		$this->assertTrue( $verification_file->has(), 'Verification file should exist after being set.' );
 	}
+
+	/**
+	 * @dataProvider data_is_supported
+	 */
+	public function test_is_supported( $home_url, $expected ) {
+		add_filter(
+			'googlesitekit_canonical_home_url',
+			function () use ( $home_url ) {
+				return $home_url;
+			}
+		);
+
+		$this->assertSame( $expected, Verification_File::is_supported( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ), 'File verification support should depend on the home URL path.' );
+	}
+
+	public function data_is_supported() {
+		return array(
+			'no path'      => array( 'https://example.com', true ),
+			'root path'    => array( 'https://example.com/', true ),
+			'subdirectory' => array( 'https://example.com/subdirectory/', false ),
+		);
+	}
 }

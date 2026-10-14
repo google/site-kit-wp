@@ -32,6 +32,8 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
@@ -97,7 +99,10 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 					) }
 
 					<div className="googlesitekit-km-connect-module-cta-tile__content">
-						<p className="googlesitekit-km-connect-module-cta-tile__text">
+						<P
+							className="googlesitekit-km-connect-module-cta-tile__text"
+							size={ SIZE_MEDIUM }
+						>
 							{ combinedMetrics
 								? sprintf(
 										/* translators: %s: module name */
@@ -115,7 +120,7 @@ export default function ConnectModuleCTATile( { moduleSlug } ) {
 										),
 										module.name
 								  ) }
-						</p>
+						</P>
 						{ ! isViewOnly && (
 							<Link onClick={ handleConnectModule } secondary>
 								{ sprintf(

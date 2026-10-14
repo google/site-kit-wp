@@ -18,6 +18,7 @@
  * Internal dependencies
  */
 import { CHART_VERSION } from '@/js/components/GoogleChart/constants';
+import { getLocale } from '@/js/util/i18n';
 
 const GOOGLE_CHARTS_LOADER_SRC = 'https://www.gstatic.com/charts/loader.js';
 
@@ -25,7 +26,7 @@ interface GoogleChartsGlobal {
 	charts?: {
 		load?: (
 			version: string,
-			options: { packages: string[] }
+			options: { packages: string[]; language: string }
 		) => Promise< void >;
 	};
 	visualization?: {
@@ -70,6 +71,7 @@ function injectLoaderScript(): Promise< void > {
  * Loads the CDN loader (if needed) and the `corechart` package.
  *
  * @since 1.182.0
+ * @since n.e.x.t Loaded Google Charts in the site language.
  *
  * @return {Promise<void>} Resolves once Google Charts is ready to draw.
  */
@@ -98,6 +100,9 @@ async function loadGoogleCharts(): Promise< void > {
 
 	await loadedGoogle.charts.load( CHART_VERSION, {
 		packages: [ 'corechart' ],
+		// The dashboard's `GoogleChart` component loads Google Charts in the site
+		// language too, so the report's labels match the dashboard's.
+		language: getLocale(),
 	} );
 }
 

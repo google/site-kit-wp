@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Modules\Module_With_Deactivation;
 use Google\Site_Kit\Core\Modules\Module_With_Inline_Data;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Permission_Aware_Request;
+use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Schema_Aware_Request;
 use Google\Site_Kit\Tests\Core\Modules\Datapoints\FakeModule_Test_Request;
 use WP_Error;
 use Exception;
@@ -49,6 +50,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 * @var bool|null
 	 */
 	protected $made_shared_data_request = null;
+
+	/**
+	 * The Google client the latest request ran with.
+	 *
+	 * @var Google_Site_Kit_Client|null
+	 */
+	protected $request_client = null;
 
 	/**
 	 * Callback to invoke on activation.
@@ -130,6 +138,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 				$this->made_shared_data_request = $this->is_shared_data_request( $data );
 			}
 		);
+
+		add_action(
+			'googlesitekit_fake_module_request_client',
+			function ( Google_Site_Kit_Client $client ) {
+				$this->request_client = $client;
+			}
+		);
 	}
 
 	/**
@@ -157,6 +172,8 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 					},
 				)
 			),
+			'GET:schema-aware-request'               => new FakeModule_Schema_Aware_Request( array( 'service' => '' ) ),
+			'POST:schema-aware-request'              => new FakeModule_Schema_Aware_Request( array( 'service' => '' ) ),
 		);
 	}
 
@@ -169,6 +186,17 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	public function made_shared_data_request() {
 		return $this->made_shared_data_request;
+	}
+
+	/**
+	 * Gets the Google client the latest request ran with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Site_Kit_Client|null The client, or null if no request has run yet.
+	 */
+	public function get_request_client() {
+		return $this->request_client;
 	}
 
 	/**

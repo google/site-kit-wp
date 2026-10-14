@@ -28,6 +28,7 @@ import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
@@ -114,7 +115,7 @@ describe( 'TopAuthorsGoalDriver', () => {
 		} );
 	} );
 
-	it( 'creates the author custom dimension when update is clicked with edit scope', async () => {
+	it( 'creates every custom dimension when update is clicked with edit scope', async () => {
 		const registry = createTestRegistry();
 
 		provideUserAuthentication( registry, {
@@ -128,18 +129,6 @@ describe( 'TopAuthorsGoalDriver', () => {
 			},
 		] );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetAdvancedDataBreakdownsSettings( {} );
-		registry.dispatch( CORE_USER ).receiveGetKeyMetricsSettings( {
-			widgetSlugs: [],
-			isWidgetHidden: false,
-		} );
-		registry.dispatch( CORE_USER ).receiveGetUserInputSettings( {
-			purpose: { values: [], scope: 'site' },
-			postFrequency: { values: [], scope: 'user' },
-			goals: { values: [], scope: 'user' },
-		} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
@@ -160,27 +149,20 @@ describe( 'TopAuthorsGoalDriver', () => {
 			{ propertyID: '12345' }
 		);
 
-		fetchMock.postOnce(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			),
-			{
-				body: {
-					parameterName: 'googlesitekit_post_author',
-					displayName: 'Post author',
-					description: 'Post author',
-					scope: 'EVENT',
-					disallowAdsPersonalization: true,
-				},
-				status: 200,
-			}
+		const createEndpoint = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
 		);
+		// Respond to each create request with the dimension it was sent.
+		fetchMock.post( createEndpoint, ( _url, { body } ) => ( {
+			body: JSON.parse( body as string ).data.customDimension,
+			status: 200,
+		} ) );
 		fetchMock.postOnce(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
 			),
 			{
-				body: [ 'googlesitekit_post_author' ],
+				body: ALL_CUSTOM_DIMENSIONS,
 				status: 200,
 			}
 		);
@@ -209,13 +191,14 @@ describe( 'TopAuthorsGoalDriver', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Update' } ) );
 
 		await waitFor( () => {
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect( fetchMock ).toHaveFetchedTimes(
+				ALL_CUSTOM_DIMENSIONS.length + 1
+			);
 		} );
 
-		expect( fetchMock ).toHaveFetched(
-			new RegExp(
-				'^/google-site-kit/v1/modules/analytics-4/data/create-custom-dimension'
-			)
+		expect( fetchMock ).toHaveFetchedTimes(
+			ALL_CUSTOM_DIMENSIONS.length,
+			createEndpoint
 		);
 		expect(
 			registry.select( CORE_USER ).getPermissionScopeError()
@@ -224,12 +207,14 @@ describe( 'TopAuthorsGoalDriver', () => {
 			registry
 				.select( MODULES_ANALYTICS_4 )
 				.getAvailableCustomDimensions()
-		).toEqual( [ 'googlesitekit_post_author' ] );
-		expect(
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.isCustomDimensionGatheringData( 'googlesitekit_post_author' )
-		).toBe( true );
+		).toEqual( ALL_CUSTOM_DIMENSIONS );
+		ALL_CUSTOM_DIMENSIONS.forEach( ( customDimension ) => {
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.isCustomDimensionGatheringData( customDimension )
+			).toBe( true );
+		} );
 	} );
 
 	it( "renders each author's share of the site-wide total as a percentage", async () => {

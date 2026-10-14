@@ -77,7 +77,7 @@ describe( 'content-events', () => {
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
-			isSinglePost: false,
+			isReadableSinglePost: false,
 			hasVimeoEmbed: false,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
@@ -98,7 +98,7 @@ describe( 'content-events', () => {
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 0,
-			isSinglePost: false,
+			isReadableSinglePost: false,
 			hasVimeoEmbed: false,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
@@ -114,7 +114,7 @@ describe( 'content-events', () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
-				isSinglePost: true,
+				isReadableSinglePost: true,
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
@@ -129,7 +129,7 @@ describe( 'content-events', () => {
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 42,
-			isSinglePost: true,
+			isReadableSinglePost: true,
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
@@ -142,12 +142,11 @@ describe( 'content-events', () => {
 	} );
 
 	it( 'returns the defaults for the keys a configuration from an older release omits', async () => {
-		// A page cached by an older release has these three keys and nothing
-		// else.
+		// A page cached before Site Kit added the `read_article` keys, such as
+		// `isReadableSinglePost`, has none of them.
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
-				isSinglePost: true,
 				hasVimeoEmbed: true,
 			},
 		};
@@ -156,7 +155,7 @@ describe( 'content-events', () => {
 
 		expect( getContentEventsConfig() ).toEqual( {
 			postID: 42,
-			isSinglePost: true,
+			isReadableSinglePost: false,
 			hasVimeoEmbed: true,
 			wordCount: 0,
 			estimatedReadTimeSeconds: 0,
@@ -170,7 +169,7 @@ describe( 'content-events', () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
-				isSinglePost: true,
+				isReadableSinglePost: true,
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
@@ -186,7 +185,7 @@ describe( 'content-events', () => {
 
 		expect( mockInitializeVimeo ).toHaveBeenCalledWith( {
 			postID: 42,
-			isSinglePost: true,
+			isReadableSinglePost: true,
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
@@ -200,7 +199,7 @@ describe( 'content-events', () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
-				isSinglePost: true,
+				isReadableSinglePost: true,
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
@@ -214,7 +213,7 @@ describe( 'content-events', () => {
 
 		expect( mockInitializePagination ).toHaveBeenCalledWith( {
 			postID: 42,
-			isSinglePost: true,
+			isReadableSinglePost: true,
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,
@@ -228,7 +227,7 @@ describe( 'content-events', () => {
 		global._googlesitekit = {
 			contentEvents: {
 				postID: 42,
-				isSinglePost: true,
+				isReadableSinglePost: true,
 				hasVimeoEmbed: true,
 				wordCount: 476,
 				estimatedReadTimeSeconds: 120,
@@ -242,7 +241,7 @@ describe( 'content-events', () => {
 
 		expect( mockInitializeReadArticleEventTracker ).toHaveBeenCalledWith( {
 			postID: 42,
-			isSinglePost: true,
+			isReadableSinglePost: true,
 			hasVimeoEmbed: true,
 			wordCount: 476,
 			estimatedReadTimeSeconds: 120,

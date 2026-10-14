@@ -1,3 +1,6 @@
+// The `es5` target leaves `Intl.DateTimeFormat.prototype.formatRange` untyped.
+/// <reference lib="es2021.intl" />
+
 /**
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -23,6 +26,10 @@ import { GATrackingEventArgs } from './GATrackingEventArgs';
 /* eslint-disable no-var */
 
 declare global {
+	var _googlesitekitFeaturesBadgeData: import('@/js/util/features-badge').FeatureCountFingerprint & {
+		resetSession: boolean;
+	};
+
 	interface Window {
 		gtag: ( ...args: unknown[] ) => void;
 		_googlesitekitAnalyticsTrackingData?: import('@/js/analytics-advanced-tracking/types').AdvancedTrackingEvent[];
@@ -84,7 +91,7 @@ declare global {
 			siteURL: string;
 			resetSession: boolean | null;
 		};
-		local: string;
+		locale?: string;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.
@@ -92,6 +99,7 @@ declare global {
 		assetsURL: string;
 		wpPrivacyURL?: string;
 		enabledFeatures?: string[];
+		wooCommerceActive?: boolean;
 	};
 
 	// This is not fully typed yet. We will keep improving it as we migrate more files that use it.

@@ -22,7 +22,10 @@
 import Modules from 'googlesitekit-modules';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { convertDateStringToUNIXTimestamp } from '@/js/util';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import {
 	rollbackChanges,
 	submitChanges,
@@ -63,6 +66,7 @@ const baseModuleStore = Modules.createModuleStore( MODULE_SLUG_ANALYTICS_4, {
 		'detectedEvents',
 		'newConversionEventsLastUpdateAt',
 		'lostConversionEventsLastUpdateAt',
+		FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	],
 	submitChanges,
 	rollbackChanges,

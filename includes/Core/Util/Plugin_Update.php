@@ -16,7 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 /**
  * Class recording the plugin version the site is running.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ class Plugin_Update {
 	/**
 	 * Options instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 * @var Options
 	 */
 	protected Options $options;
@@ -43,7 +43,7 @@ class Plugin_Update {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param Context $context Plugin context instance.
 	 * @param Options $options Optional. Options instance.
@@ -68,7 +68,7 @@ class Plugin_Update {
 	 * for the next admin request, which matters on sites whose administrator is not the one who
 	 * triggered the update.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	public function register() {
 		add_action( 'admin_init', array( $this, 'update_version' ), 20 );
@@ -86,7 +86,7 @@ class Plugin_Update {
 	 * deferred to a one-off cron event instead, which runs in a later request that loads the new
 	 * release.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param \WP_Upgrader $upgrader   Upgrader instance. Unused.
 	 * @param array        $hook_extra Arguments describing what was updated.
@@ -109,7 +109,7 @@ class Plugin_Update {
 	 * WordPress names a single plugin in `plugin` and a bulk selection in `plugins`. A fresh
 	 * install reports `install` without naming the plugin at all, so it is left to `admin_init`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param array $hook_extra Arguments describing what was updated.
 	 * @return bool TRUE if this plugin was updated, FALSE otherwise.
@@ -140,7 +140,7 @@ class Plugin_Update {
 	/**
 	 * Stores the running plugin version when the site has no version stored or stores another one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 */
 	public function update_version() {
 		if ( GOOGLESITEKIT_VERSION === $this->options->get( self::VERSION_OPTION ) ) {

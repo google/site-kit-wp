@@ -17,14 +17,20 @@
  */
 
 /**
- * External dependencies
- */
-import { useWindowScroll } from 'react-use';
-
-/**
  * WordPress dependencies
  */
 import { useEffect, useState } from '@wordpress/element';
+
+/**
+ * Checks whether the window is scrolled down from the top.
+ *
+ * @since n.e.x.t
+ *
+ * @return {boolean} `true` if the window is scrolled, `false` otherwise.
+ */
+function isScrolled(): boolean {
+	return global.pageYOffset > 0;
+}
 
 /**
  * Returns whether the user has scrolled the page and adds/remove the googlesitekit-plugin--has-scrolled class to the body.
@@ -34,9 +40,20 @@ import { useEffect, useState } from '@wordpress/element';
  * @return {boolean} `true` if the user has scrolled the page, `false` otherwise.
  */
 export function useHasScrolledEffect(): boolean {
-	const { y } = useWindowScroll();
-	const [ hasScrolled, setHasScrolled ] = useState( false );
+	const [ hasScrolled, setHasScrolled ] = useState( isScrolled );
 	const className = 'googlesitekit-plugin--has-scrolled';
+
+	useEffect( () => {
+		function handleScroll() {
+			setHasScrolled( isScrolled() );
+		}
+
+		global.addEventListener( 'scroll', handleScroll, { passive: true } );
+
+		return () => {
+			global.removeEventListener( 'scroll', handleScroll );
+		};
+	}, [] );
 
 	useEffect( () => {
 		if ( hasScrolled ) {
@@ -45,12 +62,6 @@ export function useHasScrolledEffect(): boolean {
 			global.document.body.classList.remove( className );
 		}
 	}, [ hasScrolled ] );
-
-	if ( y > 0 && ! hasScrolled ) {
-		setHasScrolled( true );
-	} else if ( y === 0 && hasScrolled ) {
-		setHasScrolled( false );
-	}
 
 	return hasScrolled;
 }

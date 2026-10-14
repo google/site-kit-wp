@@ -113,7 +113,7 @@ const selectors = {
 	/**
 	 * Returns the publisher center overview URL.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @return {string} Publisher center overview URL.
 	 */

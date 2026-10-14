@@ -35,8 +35,8 @@ async function proceedToSetUpAnalytics() {
 
 async function assertSetupSuccessful() {
 	await step( 'see setup success notification', async () => {
-		// Completing setup redirects to the dashboard where the success notice
-		// is shown. Wait for that navigation to finish before querying for the
+		// Completing setup redirects to the Key Metrics setup screen, where the
+		// success toast is shown. Wait for that navigation to finish before querying for the
 		// notice, otherwise the execution context can be destroyed mid-query
 		// ("Cannot find context with specified id"). Mirrors the pattern used
 		// in setup-with-account-no-tag.test.js.
@@ -46,7 +46,7 @@ async function assertSetupSuccessful() {
 			timeout: 10_000,
 		} );
 		await expect( page ).toMatchElement( '.googlesitekit-notice__title', {
-			text: /Congrats on completing the setup for Analytics!/i,
+			text: /Google Analytics was successfully set up/i,
 		} );
 	} );
 }
@@ -90,6 +90,10 @@ function getRequestResponseMappings() {
 			body: JSON.stringify( fixtures.properties[ 0 ] ),
 		},
 		'analytics-4/data/sync-custom-dimensions': {
+			status: 200,
+			body: '[]',
+		},
+		'analytics-4/data/sync-audiences': {
 			status: 200,
 			body: '[]',
 		},
@@ -220,7 +224,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			}
 		);
 
-		await step( 'complete setup', async () => {
+		await step( 'set up', async () => {
 			// Wait for the enhanced measurement switch to finish loading before
 			// clicking. While it loads it renders a short progress bar that is
 			// later replaced by a taller switch, which shifts the "Complete
@@ -230,7 +234,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			);
 
 			await expect( page ).toClick( 'button:not([disabled])', {
-				text: /complete setup/i,
+				text: /^set up$/i,
 			} );
 		} );
 
@@ -246,7 +250,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 		await setAnalyticsExistingPropertyID( existingTag.propertyID );
 		await proceedToSetUpAnalytics();
 
-		await step( 'complete setup', async () => {
+		await step( 'set up', async () => {
 			// Wait for the enhanced measurement switch to finish loading before
 			// clicking. While it loads it renders a short progress bar that is
 			// later replaced by a taller switch, which shifts the "Complete
@@ -256,7 +260,7 @@ describe( 'setting up the Analytics module with an existing account and existing
 			);
 
 			await expect( page ).toClick( 'button:not([disabled])', {
-				text: /complete setup/i,
+				text: /^set up$/i,
 			} );
 		} );
 

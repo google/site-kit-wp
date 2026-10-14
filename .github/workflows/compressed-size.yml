@@ -13,12 +13,26 @@ on:
     paths:
       - '.github/workflows/compressed-size.yml'
       - 'assets/**/*.js'
+      - 'assets/**/*.jsx'
+      - 'assets/**/*.ts'
+      - 'assets/**/*.tsx'
+      - 'assets/**/*.json'
       - '!assets/**/*.test.js'
+      - '!assets/**/*.test.jsx'
+      - '!assets/**/*.test.ts'
+      - '!assets/**/*.test.tsx'
+      - '!assets/**/*.stories.js'
+      - '!assets/**/*.stories.jsx'
+      - '!assets/**/*.stories.ts'
+      - '!assets/**/*.stories.tsx'
       - '!assets/**/test/**'
       - 'assets/**/*.scss'
       - 'assets/svg/**/*.svg'
       - '**/*.config.js'
+      - 'webpack/**/*.js'
+      - 'package.json'
       - 'package-lock.json'
+      - 'patches/**/*.patch'
 
 concurrency:
   group: compressed-size-${{ github.ref }}

@@ -525,7 +525,6 @@ describe( 'KeyMetricsSetupApp', () => {
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
-					features: [ 'setupFlowRefresh' ],
 				}
 			);
 

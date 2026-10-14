@@ -499,12 +499,6 @@ export function Repeatable() {
 	);
 }
 
-export const SetupFlowRefresh = Template.bind( {} );
-SetupFlowRefresh.storyName = 'Setup Flow Refresh';
-SetupFlowRefresh.parameters = {
-	features: [ 'setupFlowRefresh' ],
-};
-
 export default {
 	title: 'Components/TourTooltips',
 	component: TourTooltips,

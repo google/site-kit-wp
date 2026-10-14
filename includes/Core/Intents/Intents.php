@@ -79,4 +79,27 @@ class Intents {
 
 		return $intent->is_available() ? $intent : null;
 	}
+
+	/**
+	 * Gets the query arguments that pass an intent on to the next screen of a flow.
+	 *
+	 * An intent is only handled with both its ID and its code, so an empty array is returned unless both are non-empty strings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $intent      Intent ID.
+	 * @param mixed $intent_code One-time code for the intent.
+	 * @return array<string, string> Encoded `intent` and `intent_code` query arguments for `add_query_arg()`, or an empty array.
+	 */
+	public static function get_query_args( $intent, $intent_code ) {
+		if ( ! is_string( $intent ) || ! is_string( $intent_code ) || '' === $intent || '' === $intent_code ) {
+			return array();
+		}
+
+		// `add_query_arg()` expects new values to be encoded already.
+		return array(
+			'intent'      => rawurlencode( $intent ),
+			'intent_code' => rawurlencode( $intent_code ),
+		);
+	}
 }

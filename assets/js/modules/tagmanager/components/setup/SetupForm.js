@@ -136,9 +136,11 @@ export default function SetupForm( { finishSetup } ) {
 						throw error;
 					}
 
-					await setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4, {
-						ttl: 300,
-					} );
+					await setItem(
+						'module_setup',
+						{ slug: MODULE_SLUG_ANALYTICS_4, options: {} },
+						{ ttl: 300 }
+					);
 
 					// Reauth/setup URL needs to come from async activateModule action to be fresh.
 					finishSetup( response.moduleReauthURL );

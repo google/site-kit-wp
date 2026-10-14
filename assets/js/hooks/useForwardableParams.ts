@@ -29,18 +29,24 @@ import useQueryArg from '@/js/hooks/useQueryArg';
 export interface ForwardableParams {
 	notification?: string;
 	panel?: string;
+	intent?: string;
+	// eslint-disable-next-line camelcase -- The keys are query argument names passed to `addQueryArgs()`.
+	intent_code?: string;
 }
 
 /**
  * Gets splash/auth params that should be forwarded to dashboard URLs.
  *
  * @since 1.174.0
+ * @since n.e.x.t Added the `intent` and `intent_code` params.
  *
  * @return {Object} Forwardable query params.
  */
 export default function useForwardableParams(): ForwardableParams {
 	const [ notification ] = useQueryArg( 'notification' );
 	const [ panel ] = useQueryArg( 'panel' );
+	const [ intent ] = useQueryArg( 'intent' );
+	const [ intentCode ] = useQueryArg( 'intent_code' );
 
 	// `useMemo` is used here to avoid unnecessary re-renders of
 	// components that consume this hook when the query params
@@ -56,6 +62,14 @@ export default function useForwardableParams(): ForwardableParams {
 			params.panel = panel;
 		}
 
+		if ( intent ) {
+			params.intent = intent;
+		}
+
+		if ( intentCode ) {
+			params.intent_code = intentCode;
+		}
+
 		return params;
-	}, [ notification, panel ] );
+	}, [ notification, panel, intent, intentCode ] );
 }

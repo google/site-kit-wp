@@ -27,10 +27,7 @@ import {
 /**
  * Internal dependencies
  */
-import {
-	VIEW_CONTEXT_MAIN_DASHBOARD,
-	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-} from '@/js/googlesitekit/constants';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -187,20 +184,9 @@ describe( 'AudienceSelectionPanel', () => {
 	} );
 
 	describe( 'Header', () => {
-		it( 'should display a settings link to deactivate the widget', () => {
-			const { getByText } = render( <AudienceSelectionPanel />, {
-				registry,
-			} );
-
-			expect(
-				getByText( /You can deactivate this widget in/i )
-			).toBeInTheDocument();
-		} );
-
-		it( 'should not display a settings link to deactivate the widget for a view-only user', () => {
+		it( 'should not display a settings link to deactivate the widget', () => {
 			const { container } = render( <AudienceSelectionPanel />, {
 				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 			} );
 
 			expect( container ).not.toHaveTextContent(

@@ -1,0 +1,88 @@
+/**
+ * AddFeaturesButton styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+	// The wrapper positions the new-features dot over the link's top-right
+	// corner, and keeps the pill from being squashed by the header's flex row.
+	.googlesitekit-add-features-button-wrapper {
+		display: inline-flex;
+		flex-shrink: 0;
+		position: relative;
+	}
+
+	.googlesitekit-add-features-button {
+		align-items: center;
+		background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-50 120.31%);
+		border: 1px solid $c-site-kit-sk-100;
+		border-radius: 30px;
+		box-sizing: border-box;
+		color: $c-content-on-primary-container;
+		display: flex;
+		gap: 8px;
+		height: 32px;
+		padding: 6px 12px;
+		text-decoration: none;
+		transition: background $t-default ease-in-out, border-color $t-default ease-in-out;
+
+		// WordPress admin colours and underlines links, and rings them on
+		// focus, so each interactive state has to restate the design's own
+		// treatment.
+		&:active,
+		&:focus,
+		&:hover {
+			color: $c-content-on-primary-container;
+			text-decoration: none;
+		}
+
+		// Every state deepens the gradient's end stop and the border by one
+		// step of the Site Kit green ramp, per the GM2 design system.
+		&:hover {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-100 120.31%);
+			border-color: $c-site-kit-sk-200;
+		}
+
+		&:focus {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-200 120.31%);
+			border-color: $c-site-kit-sk-300;
+			outline: none;
+		}
+
+		&:active {
+			background: linear-gradient(180deg, $c-white 10.94%, $c-site-kit-sk-300 120.31%);
+			border-color: $c-site-kit-sk-400;
+		}
+	}
+
+	.googlesitekit-add-features-button__icon {
+		color: $c-site-kit-sk-300;
+		flex-shrink: 0;
+	}
+
+	// The white ring keeps the dot legible where it overlaps the pill's border.
+	.googlesitekit-add-features-button__new-indicator {
+		background-color: $c-red-r-400;
+		border-radius: 50%;
+		box-shadow: 0 0 0 3px $c-white;
+		height: 8px;
+		inset-block-start: 0;
+		inset-inline-end: 0;
+		pointer-events: none;
+		position: absolute;
+		width: 8px;
+	}
+}

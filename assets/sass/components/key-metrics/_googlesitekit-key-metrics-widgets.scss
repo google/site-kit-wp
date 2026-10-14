@@ -16,12 +16,14 @@
  * limitations under the License.
  */
 
+@use "sass:map";
+
 .googlesitekit-plugin {
 
 	.googlesitekit-widget-area--mainDashboardKeyMetricsPrimary {
 		@include mdc-layout-grid-media-query_("phone") {
 			.mdc-layout-grid__cell--span-2-phone {
-				$gutter: map-get($mdc-layout-grid-default-gutter, "phone");
+				$gutter: map.get($mdc-layout-grid-default-gutter, "phone");
 
 				// Override the default span for the phone viewport to be 4 instead of 2,
 				// so that the widget takes up the full width of the grid.

@@ -238,9 +238,6 @@
 
 	p.googlesitekit-dashboard-sharing-settings__note {
 		color: $c-boulder;
-		font-size: $fs-body-sm;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
 		margin: 0;
 	}
 
@@ -294,9 +291,6 @@
 			align-items: flex-end;
 			display: flex;
 			flex-wrap: wrap;
-			font-size: $fs-body-sm;
-			letter-spacing: $ls-xs;
-			line-height: $lh-body-sm;
 
 			span:not(.googlesitekit-dashboard-sharing-settings__tooltip-icon) {
 				width: 100%;
@@ -373,9 +367,6 @@
 		background-color: $c-surfaces-surface-2;
 		border-radius: $br-xs;
 		color: $c-surfaces-on-surface;
-		font-size: $fs-body-sm;
-		letter-spacing: $ls-xs;
-		line-height: $lh-body-sm;
 		margin: 0;
 		padding: 12px 24px;
 		width: 100%;

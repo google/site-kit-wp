@@ -22,12 +22,24 @@
  */
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
+/**
+ * The DOM `id` of the Typical Traffic tab. The panel points its
+ * `aria-labelledby` at this `id`, so the tab names the panel.
+ */
+export const TYPICAL_TRAFFIC_TAB_ID = 'googlesitekit-typical-traffic-tab';
+
+/**
+ * The DOM `id` of the Recent activity tab. The Recent activity panel points
+ * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
+ */
+export const RECENT_ACTIVITY_TAB_ID = 'googlesitekit-recent-activity-tab';
+
+/** The dismissed item slug of the Analytics setup CTA in the Recent activity tab. */
+export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
+	'analytics-setup-cta-recent-activity';
+
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 
-/**
- * The most rows a breakdown column shows, counting the trailing "Others" row.
- * It matches the donut chart's `maxSlices`, so the same values stay at the top
- * of a dimension as before.
- */
+/** The most rows a breakdown column shows, counting the trailing "Others" row. */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;

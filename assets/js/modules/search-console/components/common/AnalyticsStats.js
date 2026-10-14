@@ -37,7 +37,7 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { extractAnalytics4DashboardData } from '@/js/modules/analytics-4/utils';
-import { getDateString } from '@/js/util';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 
 export default function AnalyticsStats( props ) {
 	const {
@@ -77,9 +77,7 @@ export default function AnalyticsStats( props ) {
 	if ( propertyCreateTime ) {
 		dateMarkers = [
 			{
-				// Valid use of `new Date()` with an argument.
-				// eslint-disable-next-line sitekit/no-direct-date
-				date: getDateString( new Date( propertyCreateTime ) ),
+				date: getPropertyCreateDate( propertyCreateTime ),
 				text: __(
 					'Google Analytics property created',
 					'google-site-kit'

@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`AddFeaturesButton does not show the new features indicator when there are no new features 1`] = `
+<div>
+  <div
+    class="googlesitekit-add-features-button-wrapper"
+  >
+    <a
+      class="googlesitekit-add-features-button"
+      href="http://example.com/wp-admin/admin.php?page=googlesitekit-features"
+    >
+      <svg />
+      <span
+        class="googlesitekit-typography googlesitekit-add-features-button__label googlesitekit-typography--label googlesitekit-typography--small"
+      >
+        Add features
+      </span>
+    </a>
+  </div>
+</div>
+`;
+
+exports[`AddFeaturesButton renders correctly 1`] = `
+<div>
+  <div
+    class="googlesitekit-add-features-button-wrapper"
+  >
+    <a
+      aria-describedby="googlesitekit-add-features-button-description-0"
+      class="googlesitekit-add-features-button"
+      href="http://example.com/wp-admin/admin.php?page=googlesitekit-features"
+    >
+      <svg />
+      <span
+        class="googlesitekit-typography googlesitekit-add-features-button__label googlesitekit-typography--label googlesitekit-typography--small"
+      >
+        Add features
+      </span>
+    </a>
+    <span
+      class="googlesitekit-add-features-button__new-indicator"
+      id="googlesitekit-add-features-button-description-0"
+    >
+      <span
+        class="screen-reader-text"
+      >
+        New features available
+      </span>
+    </span>
+  </div>
+</div>
+`;

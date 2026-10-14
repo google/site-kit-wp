@@ -26,18 +26,25 @@ import classnames from 'classnames';
  */
 import { __ } from '@wordpress/i18n';
 
+/**
+ * Internal dependencies
+ */
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+
 export default function UserInputQuestionNotice( { className } ) {
 	return (
-		<p
+		<P
 			className={ classnames(
 				className,
 				'googlesitekit-user-input__question-notice'
 			) }
+			size={ SIZE_SMALL }
 		>
 			{ __(
 				'You can always edit your answers later in Settings',
 				'google-site-kit'
 			) }
-		</p>
+		</P>
 	);
 }

@@ -82,9 +82,6 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 		registry.dispatch( MODULES_ADS ).receiveModuleData( {
 			plugins: {
-				[ PLUGINS.WOOCOMMERCE ]: {
-					active: false,
-				},
 				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					adsConnected: false,
@@ -113,11 +110,12 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when WooCommerce is active but Google For WooCommerce is not', async () => {
+			provideSiteInfo( registry, {
+				usingProxy: false,
+				wooCommerceActive: true,
+			} );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: false,
 						adsConnected: false,
@@ -149,11 +147,12 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		} );
 
 		it( 'should trigger WooCommerce redirect modal when both WooCommerce and Google For WooCommerce are active but Ads account is not connected', async () => {
+			provideSiteInfo( registry, {
+				usingProxy: false,
+				wooCommerceActive: true,
+			} );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: false,
@@ -188,11 +187,12 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		it( 'should dismiss the notification, suppress the modal and activate the Ads module when "Continue with Site Kit" is clicked in the modal', async () => {
 			provideModuleRegistrations( registry );
 
+			provideSiteInfo( registry, {
+				usingProxy: false,
+				wooCommerceActive: true,
+			} );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: false,
 						adsConnected: false,
@@ -358,11 +358,12 @@ describe( 'AdsModuleSetupCTABanner', () => {
 		} );
 
 		it( 'is not active when Google for WooCommerce Ads account is linked', async () => {
+			provideSiteInfo( registry, {
+				usingProxy: false,
+				wooCommerceActive: true,
+			} );
 			registry.dispatch( MODULES_ADS ).receiveModuleData( {
 				plugins: {
-					[ PLUGINS.WOOCOMMERCE ]: {
-						active: true,
-					},
 					[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 						active: true,
 						adsConnected: true,

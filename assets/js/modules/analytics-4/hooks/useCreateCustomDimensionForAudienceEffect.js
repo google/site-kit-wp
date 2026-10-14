@@ -29,7 +29,6 @@ import useFormValue from '@/js/hooks/useFormValue';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	AUDIENCE_TILE_CUSTOM_DIMENSION_CREATE,
-	CUSTOM_DIMENSION_DEFINITIONS,
 	EDIT_SCOPE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
@@ -37,10 +36,6 @@ import {
 export default function useCreateCustomDimensionForAudienceEffect() {
 	const isGA4Connected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
-	);
-
-	const propertyID = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getPropertyID()
 	);
 
 	const hasAnalyticsEditScope = useSelect( ( select ) =>
@@ -60,28 +55,13 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		'isRetrying'
 	);
 
-	const {
-		fetchCreateCustomDimension,
-		receiveIsCustomDimensionGatheringData,
-		fetchSyncAvailableCustomDimensions,
-	} = useDispatch( MODULES_ANALYTICS_4 );
+	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
 
 	useEffect( () => {
 		async function createDimensionsAndUpdateForm() {
-			await fetchCreateCustomDimension(
-				propertyID,
-				CUSTOM_DIMENSION_DEFINITIONS.googlesitekit_post_type
-			);
-
-			// If the custom dimension was created successfully, mark it as gathering
-			// data immediately so that it doesn't cause unnecessary report requests.
-			receiveIsCustomDimensionGatheringData( {
-				customDimension: 'googlesitekit_post_type',
-				gatheringData: true,
-			} );
-
-			// Resync available custom dimensions to ensure the newly created custom dimension is available.
-			await fetchSyncAvailableCustomDimensions();
+			// Create every Site Kit custom dimension, not just the one this tile
+			// needs, so the other custom dimension notices are cleared too.
+			await createCustomDimensions();
 
 			setIsAutoCreatingCustomDimensionsForAudience( false );
 			setIsRetrying( false );
@@ -93,12 +73,9 @@ export default function useCreateCustomDimensionForAudienceEffect() {
 		}
 	}, [
 		autoSubmit,
-		fetchCreateCustomDimension,
-		fetchSyncAvailableCustomDimensions,
+		createCustomDimensions,
 		hasAnalyticsEditScope,
 		isGA4Connected,
-		propertyID,
-		receiveIsCustomDimensionGatheringData,
 		setAutoSubmit,
 		setIsAutoCreatingCustomDimensionsForAudience,
 		setIsRetrying,

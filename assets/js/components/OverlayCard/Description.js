@@ -21,9 +21,22 @@
  */
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+
 export default function Description( { children } ) {
+	const breakpoint = useBreakpoint();
+
+	const size = breakpoint === BREAKPOINT_SMALL ? SIZE_SMALL : SIZE_MEDIUM;
+
 	return (
-		<p className="googlesitekit-overlay-card__description">{ children }</p>
+		<P className="googlesitekit-overlay-card__description" size={ size }>
+			{ children }
+		</P>
 	);
 }
 

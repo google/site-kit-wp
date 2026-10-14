@@ -6,7 +6,7 @@ exports[`CompatibilityChecks renders warning with multiple conflicting plugins 1
     class="googlesitekit-notice-container"
   >
     <div
-      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-sign-in-with-google-compatibility-notice"
+      class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--default googlesitekit-sign-in-with-google-compatibility-notice"
       role="status"
     >
       <div
@@ -15,30 +15,26 @@ exports[`CompatibilityChecks renders warning with multiple conflicting plugins 1
         <svg />
       </div>
       <div
-        class="googlesitekit-notice__content"
+        class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
       >
         <p
-          class="googlesitekit-notice__title"
+          class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
         >
           Your site may not be ready for Sign in with Google
         </p>
-        <div
-          class="googlesitekit-notice__description"
+        <p
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
         >
-          <p
-            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
-          >
-            The following plugins may prevent Sign in with Google from working properly:
-          </p>
-          <ul>
-            <li>
-              Hide Login
-            </li>
-            <li>
-              Hide Login 2
-            </li>
-          </ul>
-        </div>
+          The following plugins may prevent Sign in with Google from working properly:
+        </p>
+        <ul>
+          <li>
+            Hide Login
+          </li>
+          <li>
+            Hide Login 2
+          </li>
+        </ul>
       </div>
     </div>
   </div>

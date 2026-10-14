@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Key_Metrics\Key_Metrics_Setup_Is_Widget_Area_Hidden;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Remote_Features;
 
 /**
@@ -148,7 +147,7 @@ class Setup {
 	 * @since 1.48.0
 	 */
 	public function handle_action_setup_start() {
-		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) ?? '' );
+		$nonce        = htmlspecialchars( $this->context->input()->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 		$redirect_url = $this->context->input()->filter( INPUT_GET, 'redirect', FILTER_DEFAULT );
 
 		$this->verify_nonce( $nonce, Google_Proxy::ACTION_SETUP_START );
@@ -214,12 +213,10 @@ class Setup {
 			$this->user_options->set( OAuth_Client::OPTION_REDIRECT_URL, $redirect_url );
 		}
 
-		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$options = new Options( $this->context );
+		$options = new Options( $this->context );
 
-			$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
-			$key_metrics_setup_is_widget_area_hidden->set( true );
-		}
+		$key_metrics_setup_is_widget_area_hidden = new Key_Metrics_Setup_Is_Widget_Area_Hidden( $options );
+		$key_metrics_setup_is_widget_area_hidden->set( true );
 
 		wp_safe_redirect( $oauth_setup_redirect );
 		exit;
@@ -233,12 +230,12 @@ class Setup {
 	 */
 	public function handle_action_verify() {
 		$input               = $this->context->input();
-		$step                = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) ?? '' );
-		$nonce               = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) ?? '' );
-		$code                = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) ?? '' );
-		$site_code           = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) ?? '' );
-		$verification_token  = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token' ) ?? '' );
-		$verification_method = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token_type' ) ?? '' );
+		$step                = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$nonce               = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$code                = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$site_code           = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$verification_token  = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$verification_method = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_verification_token_type' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 
 		$this->verify_nonce( $nonce );
 
@@ -292,10 +289,10 @@ class Setup {
 	 */
 	public function handle_action_exchange_site_code() {
 		$input     = $this->context->input();
-		$step      = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) ?? '' );
-		$nonce     = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) ?? '' );
-		$code      = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) ?? '' );
-		$site_code = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) ?? '' );
+		$step      = htmlspecialchars( $input->filter( INPUT_GET, 'step' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$nonce     = htmlspecialchars( $input->filter( INPUT_GET, 'nonce' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$code      = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
+		$site_code = htmlspecialchars( $input->filter( INPUT_GET, 'googlesitekit_site_code' ) ?? '', ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401 );
 
 		$this->verify_nonce( $nonce );
 

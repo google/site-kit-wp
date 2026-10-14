@@ -21,6 +21,7 @@
  */
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { getAnalytics4MockResponse } from '@/js/modules/analytics-4/utils/data-mock';
+import { DAY_IN_SECONDS } from '@/js/util';
 import { getTrafficChartData } from './getTrafficChartData';
 
 describe( 'getTrafficChartData', () => {
@@ -139,5 +140,62 @@ describe( 'getTrafficChartData', () => {
 		} );
 
 		expect( hasVisitors ).toBe( false );
+	} );
+
+	it( 'should draw a flat line at zero while the property is gathering data, even though the report has visitors', () => {
+		const { chartData, hasVisitors } = getTrafficChartData( {
+			report: getAnalytics4MockResponse( reportOptions ),
+			startDate: '2025-01-13',
+			endDate: '2025-01-16',
+			gatheringData: true,
+		} );
+
+		expect( chartData.slice( 1 ) ).toEqual( [
+			[ new Date( 2025, 0, 13 ), 0 ],
+			[ new Date( 2025, 0, 14 ), 0 ],
+			[ new Date( 2025, 0, 16 ), 0 ],
+		] );
+		expect( hasVisitors ).toBe( false );
+	} );
+
+	it( 'should show a date label under every day except the first while the property is gathering data', () => {
+		const { ticks } = getTrafficChartData( {
+			startDate: '2025-01-10',
+			endDate: '2025-01-16',
+			gatheringData: true,
+		} );
+
+		expect( ticks ).toEqual( [
+			new Date( 2025, 0, 11 ),
+			new Date( 2025, 0, 12 ),
+			new Date( 2025, 0, 13 ),
+			new Date( 2025, 0, 14 ),
+			new Date( 2025, 0, 15 ),
+			new Date( 2025, 0, 16 ),
+		] );
+	} );
+
+	it( 'should space the date labels one day apart across a 90 day range while the property is gathering data', () => {
+		const { ticks } = getTrafficChartData( {
+			startDate: '2024-10-19',
+			endDate: '2025-01-16',
+			gatheringData: true,
+		} );
+
+		expect( ticks ).toHaveLength( 89 );
+		expect( ticks[ 0 ] ).toEqual( new Date( 2024, 9, 20 ) );
+		expect( ticks[ 88 ] ).toEqual( new Date( 2025, 0, 16 ) );
+
+		// Rounding absorbs the hour a daylight-saving change adds or removes.
+		const daysBetweenTicks = ticks
+			.slice( 1 )
+			.map( ( tick, index ) =>
+				Math.round(
+					( tick.getTime() - ticks[ index ].getTime() ) /
+						( DAY_IN_SECONDS * 1000 )
+				)
+			);
+
+		expect( daysBetweenTicks ).toEqual( Array( 88 ).fill( 1 ) );
 	} );
 } );

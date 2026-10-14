@@ -101,7 +101,6 @@ describe( 'WPDashboardWidgets', () => {
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
 		const { waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -143,7 +142,6 @@ describe( 'WPDashboardWidgets', () => {
 	it( 'should track the `dismiss_cta` event when the "Maybe later" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -165,7 +163,6 @@ describe( 'WPDashboardWidgets', () => {
 	it( 'should track the `confirm_cta` event when the "Set up Analytics" button is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -187,7 +184,6 @@ describe( 'WPDashboardWidgets', () => {
 	it( 'should track the `click_learn_more_link` event when the "Learn more" link is clicked in the Activate Analytics CTA', async () => {
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -216,7 +212,6 @@ describe( 'WPDashboardWidgets', () => {
 			<WPDashboardWidgets />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -267,7 +262,6 @@ describe( 'WPDashboardWidgets', () => {
 
 		const { getByRole, waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 
@@ -296,7 +290,6 @@ describe( 'WPDashboardWidgets', () => {
 
 		const { waitForRegistry } = render( <WPDashboardWidgets />, {
 			registry,
-			features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 		} );
 

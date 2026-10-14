@@ -26,6 +26,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { useSelect } from 'googlesitekit-data';
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import UseSnippetSwitch from '@/js/modules/analytics-4/components/common/UseSnippetSwitch';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -41,7 +42,7 @@ export default function SetupUseSnippetSwitch() {
 	const description =
 		existingTag === measurementID ? (
 			<Fragment>
-				<P>
+				<P size={ SIZE_SMALL }>
 					{ sprintf(
 						/* translators: %s: existing tag ID */
 						__(
@@ -51,7 +52,7 @@ export default function SetupUseSnippetSwitch() {
 						existingTag
 					) }
 				</P>
-				<P>
+				<P size={ SIZE_SMALL }>
 					{ __(
 						'Consider removing the existing tag to avoid loading both tags on your site',
 						'google-site-kit'
@@ -60,7 +61,7 @@ export default function SetupUseSnippetSwitch() {
 			</Fragment>
 		) : (
 			<Fragment>
-				<P>
+				<P size={ SIZE_SMALL }>
 					{ sprintf(
 						/* translators: %s: existing tag ID */
 						__(
@@ -70,7 +71,7 @@ export default function SetupUseSnippetSwitch() {
 						existingTag
 					) }
 				</P>
-				<P>
+				<P size={ SIZE_SMALL }>
 					{ __(
 						'If you prefer to collect data using that existing Analytics tag, please select the corresponding account and property above',
 						'google-site-kit'
