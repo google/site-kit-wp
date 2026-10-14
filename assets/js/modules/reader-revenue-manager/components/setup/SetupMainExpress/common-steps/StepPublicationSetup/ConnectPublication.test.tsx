@@ -315,7 +315,7 @@ describe( 'ConnectPublication', () => {
 			mockTrackEvent.mockRestore();
 		} );
 
-		it( 'should track a click on the Learn more link', async () => {
+		it( 'should track a click on the "Learn more" link', async () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=connect-publication';
 

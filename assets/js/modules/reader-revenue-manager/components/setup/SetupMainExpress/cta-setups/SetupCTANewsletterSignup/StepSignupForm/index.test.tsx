@@ -371,7 +371,7 @@ describe( 'StepSignupForm', () => {
 			mockTrackEvent.mockRestore();
 		} );
 
-		it( 'should track a click on the Learn more link', () => {
+		it( 'should track a click on the "Learn more" link', () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
 
