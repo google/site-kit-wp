@@ -190,7 +190,7 @@ exports[`SetupForm renders the form correctly 1`] = `
         <div
           class="mdc-switch__track"
         >
-           
+           
         </div>
         <div
           class="mdc-switch__thumb-underlay"
@@ -448,7 +448,7 @@ exports[`SetupForm renders the form correctly with the "Set up" CTA 1`] = `
         <div
           class="mdc-switch__track"
         >
-           
+           
         </div>
         <div
           class="mdc-switch__thumb-underlay"
