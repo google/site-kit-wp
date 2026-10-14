@@ -126,7 +126,7 @@ class Site_VerificationTest extends TestCase {
 	/**
 	 * @dataProvider data_register_head_verification_tags
 	 */
-	public function test_register_head_verification_tags( $saved_tag, $expected_output ) {
+	public function test_register_head_verification_tags( $saved_tag, $expected_content ) {
 		remove_all_actions( 'wp_head' );
 		remove_all_actions( 'login_head' );
 		$user_id           = $this->factory()->user->create( array( 'role' => 'administrator' ) );
@@ -139,15 +139,15 @@ class Site_VerificationTest extends TestCase {
 			array( 'user_tags' => array( $user_id => $saved_tag ) )
 		);
 
-		$this->assertStringContainsString(
-			$expected_output,
-			$this->capture_action( 'wp_head' ),
+		$this->assertSame(
+			array( $expected_content ),
+			$this->get_verification_meta_contents( $this->capture_action( 'wp_head' ) ),
 			'Verification tag should be rendered in wp_head.'
 		);
 
-		$this->assertStringContainsString(
-			$expected_output,
-			$this->capture_action( 'login_head' ),
+		$this->assertSame(
+			array( $expected_content ),
+			$this->get_verification_meta_contents( $this->capture_action( 'login_head' ) ),
 			'Verification tag should be rendered in login_head.'
 		);
 	}
@@ -190,13 +190,34 @@ class Site_VerificationTest extends TestCase {
 		return array(
 			array( // Full meta tag stored.
 				'<meta name="google-site-verification" content="test-verification-content">',
-				'<meta name="google-site-verification" content="test-verification-content">',
+				'test-verification-content',
 			),
 			array(
 				// Only verification token stored.
 				'test-verification-content-2',
-				'<meta name="google-site-verification" content="test-verification-content-2">',
+				'test-verification-content-2',
 			),
+		);
+	}
+
+	/**
+	 * Gets the `content` of each Google site verification meta tag in the given HTML.
+	 *
+	 * The attributes are read from the parsed tag, because WordPress can print them
+	 * in any order.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $html HTML printed in the document head.
+	 * @return array List of `content` attribute values, in the order the tags appear.
+	 */
+	private function get_verification_meta_contents( $html ) {
+		$dom = new \DOMDocument();
+		$dom->loadHTML( $html );
+
+		return array_map(
+			fn( $meta ) => $meta->getAttribute( 'content' ),
+			iterator_to_array( ( new \DOMXPath( $dom ) )->query( '//meta[@name="google-site-verification"]' ) )
 		);
 	}
 

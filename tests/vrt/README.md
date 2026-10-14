@@ -37,7 +37,7 @@ what CI renders.
 `Components/Button/All Buttons VRT`. Projects are the viewports: `small` (420×580), `medium`
 (868×1124) and `large` (1124×1124).
 
-`tests/vrt/bin/vrt` uses the Storybook build in `dist/`, and warns when sources have changed
+`tests/vrt/bin/vrt` uses the Storybook build in `storybook-static/`, and warns when sources have changed
 since it was built. Set `VRT_BUILD=1` to rebuild first. Other variables:
 
 - `VRT_WORKERS=<n>`: parallel browsers (default: half your CPU cores).
@@ -149,11 +149,11 @@ requests to other hosts fail and are listed as notes on the test in Playwright's
 
 - **"The story reloaded the page"**: the story's feature flags weren't known when the test
   loaded it. Set them as literal `parameters.features` on the story or its default export.
-- **"isn't in the Storybook build"**: the build in `dist/` is older than the story. Rebuild with
+- **"isn't in the Storybook build"**: the build in `storybook-static/` is older than the story. Rebuild with
   `VRT_BUILD=1`.
-- **"wasn't made for visual regression tests"**: `dist/` was built without `VRT=1`. Run
+- **"wasn't made for visual regression tests"**: `storybook-static/` was built without `VRT=1`. Run
   `VRT=1 npm run build:storybook`, or set `VRT_BUILD=1`.
-- **The test passes in CI but not locally, or the other way round**: make sure `dist/` is up to
+- **The test passes in CI but not locally, or the other way round**: make sure `storybook-static/` is up to
   date, and try `VRT_PLATFORM=linux/amd64` to compare exactly as CI does. CI decides whether the
   check passes.
 - **Port 3000 is in use**: set `VRT_PORT` to another port.
