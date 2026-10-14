@@ -33,7 +33,7 @@ import {
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { getDateString } from '@/js/util';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import {
 	CUSTOM_DIMENSION_DEFINITIONS,
 	MODULES_ANALYTICS_4,
@@ -541,9 +541,7 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			// Valid use of `new Date()` with an argument.
-			// eslint-disable-next-line sitekit/no-direct-date
-			const startDate = getDateString( new Date( propertyCreateTime ) );
+			const startDate = getPropertyCreateDate( propertyCreateTime );
 			const endDate = select( CORE_USER ).getReferenceDate();
 
 			switch ( resourceType ) {

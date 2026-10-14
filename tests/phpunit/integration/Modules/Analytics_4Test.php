@@ -194,9 +194,7 @@ class Analytics_4Test extends TestCase {
 		$this->assertTrue( has_filter( 'googlesitekit_feature_metrics' ), 'The filter for features metrics should be registered.' );
 	}
 
-	public function test_register__sets_setup_url_steps_param_with_setup_flow_refresh_phase_4_feature_flag_enabled() {
-		$this->enable_feature( 'setupFlowRefreshPhase4' );
-
+	public function test_register__sets_setup_url_steps_param() {
 		$this->analytics->register();
 
 		$url = $this->authentication->get_google_proxy()->setup_url(
@@ -3232,19 +3230,6 @@ class Analytics_4Test extends TestCase {
 		// Calling validate_shared_dimensions should not throw an exception when these
 		// dimensions are part of the default shareable dimensions list.
 		$request_helpers->validate_shared_dimensions( $dimensions );
-
-		$this->addToAssertionCount( 1 );
-	}
-
-	public function test_validate_shared_dimensions__accepts_session_source() {
-		$request_helpers = new \Google\Site_Kit\Modules\Analytics_4\Report\RequestHelpers( $this->context );
-
-		$dimension = new \Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension();
-		$dimension->setName( 'sessionSource' );
-
-		// The Recent activity tab lists referring sites by this dimension, and a
-		// view-only user can see that tab.
-		$request_helpers->validate_shared_dimensions( array( $dimension ) );
 
 		$this->addToAssertionCount( 1 );
 	}

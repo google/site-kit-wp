@@ -30,7 +30,7 @@ import {
 	useInViewSelect,
 	useSelect,
 } from 'googlesitekit-data';
-import { FRESH_DATA_REPORT_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
@@ -83,7 +83,7 @@ export function useFreshDataReport(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getReport(
 				reportOptions,
-				FRESH_DATA_REPORT_FETCH_OPTIONS
+				FRESH_DATA_FETCH_OPTIONS
 			),
 		[ reportOptions ]
 	);
@@ -92,7 +92,7 @@ export function useFreshDataReport(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getReport',
-				[ reportOptions, FRESH_DATA_REPORT_FETCH_OPTIONS ]
+				[ reportOptions, FRESH_DATA_FETCH_OPTIONS ]
 			),
 		[ report, reportOptions ]
 	);
@@ -110,7 +110,7 @@ export function useFreshDataReport(
 	const retry = useCallback( () => {
 		invalidateResolution( 'getReport', [
 			reportOptions,
-			FRESH_DATA_REPORT_FETCH_OPTIONS,
+			FRESH_DATA_FETCH_OPTIONS,
 		] );
 	}, [ invalidateResolution, reportOptions ] );
 

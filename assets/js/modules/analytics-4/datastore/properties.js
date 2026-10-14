@@ -829,6 +829,16 @@ const baseResolvers = {
 			return;
 		}
 
+		yield commonActions.await(
+			registry.resolveSelect( CORE_USER ).getAuthentication()
+		);
+
+		// Only a user with their own Google account can read the property, and an
+		// administrator viewing a shared dashboard may not have one.
+		if ( ! registry.select( CORE_USER ).isAuthenticated() ) {
+			return;
+		}
+
 		const property = yield commonActions.await(
 			registry
 				.resolveSelect( MODULES_ANALYTICS_4 )

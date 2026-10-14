@@ -436,6 +436,7 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since n.e.x.t Validates the parameters of a `Schema_Aware_Datapoint` before running it.
+	 * @since n.e.x.t Passes the Google client the request is sent with to a closure request.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.
@@ -459,7 +460,8 @@ abstract class Module {
 			$this->validate_base_scopes( $oauth_client );
 
 			// In order for a request to leverage a client other than the default
-			// it must return a RequestInterface (Google Services return this when defer = true).
+			// it must return a RequestInterface (Google Services return this when defer = true),
+			// or a closure that sends its requests with the client it is called with.
 			// If not deferred, the request will be executed immediately with the client
 			// the service instance was instantiated with, which will always be the
 			// default client, configured for the current user and provided in `get_service`.
@@ -483,7 +485,7 @@ abstract class Module {
 			if ( is_wp_error( $request ) ) {
 				return $request;
 			} elseif ( $request instanceof Closure ) {
-				$response = $request();
+				$response = $request( $oauth_client->get_client() );
 			} elseif ( $request instanceof RequestInterface ) {
 				$response = $oauth_client->get_client()->execute( $request );
 			} else {

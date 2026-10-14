@@ -76,6 +76,20 @@
 			letter-spacing: 0;
 		}
 
+		// The label sets its color on its own span, so the icon repeats it, and
+		// Material's color transition for the label, to match the label in the
+		// selected and the unselected tab.
+		.mdc-tab .googlesitekit-traffic-overview__tab-icon {
+			color: $c-surfaces-on-background-variant;
+			margin-right: 4px;
+			transition: 150ms color linear;
+		}
+
+		.mdc-tab--active .googlesitekit-traffic-overview__tab-icon {
+			color: $c-content-primary;
+			transition-delay: 100ms;
+		}
+
 		.mdc-tab .googlesitekit-badge {
 			margin-left: 10px;
 		}
@@ -299,6 +313,33 @@
 
 				padding-top: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
 			}
+		}
+
+		.googlesitekit-traffic-overview__insight-notice-content {
+			align-items: center;
+			background-color: $c-blue-b-50;
+			border-radius: $br-xxs;
+			color: $c-blue-b-700;
+			display: flex;
+			gap: 16px;
+			min-height: 72px;
+			padding: 16px 24px;
+		}
+
+		.googlesitekit-traffic-overview__insight-notice-text {
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__insight-notice-icon {
+			align-items: center;
+			background-color: $c-blue-b-100;
+			border-radius: 50%;
+			color: $c-blue-b-500;
+			display: flex;
+			flex-shrink: 0;
+			height: 30px;
+			justify-content: center;
+			width: 30px;
 		}
 
 		.googlesitekit-traffic-overview__fresh-metrics-row:not(:first-child) {

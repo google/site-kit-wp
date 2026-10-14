@@ -30,7 +30,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { FRESH_DATA_REPORT_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	createBreakdownReport,
 	getRecentTrafficBreakdownReportOptions,
@@ -161,7 +161,7 @@ Loading.args = {
 				.dispatch( MODULES_ANALYTICS_4 )
 				.startResolution( 'getReport', [
 					options,
-					FRESH_DATA_REPORT_FETCH_OPTIONS,
+					FRESH_DATA_FETCH_OPTIONS,
 				] )
 		),
 };
@@ -198,7 +198,7 @@ OneColumnErrored.args = {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.finishResolution( 'getReport', [
 				channels,
-				FRESH_DATA_REPORT_FETCH_OPTIONS,
+				FRESH_DATA_FETCH_OPTIONS,
 			] );
 	},
 };

@@ -26,7 +26,7 @@ import { useMemo } from '@wordpress/element';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getPreviousDate } from '@/js/util';
+import { addDays } from '@/js/util';
 
 export interface FreshDataDateRange {
 	/** The first day of the date range, e.g. `2025-02-03`. */
@@ -39,28 +39,32 @@ export interface FreshDataDateRange {
  * Gets the date range of the Recent activity tab for a reference date.
  *
  * The date range runs from two days before the reference date to the reference
- * date. The reference date is in the browser's time zone, but Analytics reports
- * in the property's time zone and Search Console in Pacific Time, so starting
- * two days back includes yesterday in both reports.
+ * date.
+ *
+ * The reference date is a date in the browser's time zone. Analytics reports
+ * in the time zone of the Analytics property, and Search Console in Pacific
+ * Time. The date range starts two days back to hold yesterday in both
+ * reports.
  *
  * @since n.e.x.t
  *
- * @param {string} referenceDate The reference date, such as `2025-02-05`.
+ * @param {string} referenceDate The reference date, e.g. `2025-02-05`.
  * @return {Object} The `startDate` and the `endDate` of the date range.
  */
 export function getFreshDataDateRange(
 	referenceDate: string
 ): FreshDataDateRange {
 	return {
-		startDate: getPreviousDate( referenceDate, 2 ),
+		startDate: addDays( referenceDate, -2 ),
 		endDate: referenceDate,
 	};
 }
 
 /**
- * Gets the date range of the Recent activity tab for the user's reference date.
+ * Gets the date range of the Recent activity tab.
  *
- * The dashboard's date range doesn't change it.
+ * The date range stays the same when the user selects another date range for
+ * the dashboard. See `getFreshDataDateRange()` for the days it holds.
  *
  * @since n.e.x.t
  *

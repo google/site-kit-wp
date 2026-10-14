@@ -194,20 +194,6 @@
 		}
 	}
 
-	.googlesitekit-setup__icon {
-		text-align: center;
-
-		svg {
-			height: auto;
-			max-width: 100%;
-		}
-
-		@media (min-width: $bp-nonTablet) {
-			align-self: center;
-			order: 2;
-		}
-	}
-
 	.googlesitekit-setup-analytics-notice {
 		background-color: $c-setup-analytics-notice-bg;
 		border-radius: 16px;

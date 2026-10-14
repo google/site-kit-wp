@@ -20,7 +20,8 @@
  * Internal dependencies
  */
 import {
-	FRESH_DATA_REPORT_FETCH_OPTIONS,
+	INSIGHT_REPORT_ID,
+	getInsightReportArgs,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -28,9 +29,21 @@ import {
 
 const DATE_RANGE = { startDate: '2025-02-03', endDate: '2025-02-05' };
 
-describe( 'FRESH_DATA_REPORT_FETCH_OPTIONS', () => {
-	it( 'should cache a report for five minutes', () => {
-		expect( FRESH_DATA_REPORT_FETCH_OPTIONS ).toEqual( { cacheTTL: 300 } );
+describe( 'getInsightReportArgs', () => {
+	it( 'should return the total users by date from 28 days before the date range starts to the last day of the date range', () => {
+		expect(
+			getInsightReportArgs( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
+		).toEqual( {
+			startDate: '2025-01-06',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'totalUsers' } ],
+			dimensions: [ 'date' ],
+			orderby: [ { dimension: { dimensionName: 'date' } } ],
+			reportID: INSIGHT_REPORT_ID,
+		} );
 	} );
 } );
 

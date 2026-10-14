@@ -43,6 +43,8 @@ export const DAY_IN_SECONDS = 24 * HOUR_IN_SECONDS;
 export const WEEK_IN_SECONDS = 7 * DAY_IN_SECONDS;
 export const MONTH_IN_SECONDS = 30 * DAY_IN_SECONDS;
 
+export const DATE_PICKER_LOOKBACK_MONTHS = 14;
+
 const DATE_FORMAT_OPTIONS: Intl.DateTimeFormatOptions = {
 	year: 'numeric',
 	month: 'short',
@@ -53,6 +55,16 @@ interface DateRangeOption {
 	slug: string;
 	label: string;
 	days: number;
+}
+
+export type DateRangeSelection =
+	| { type: 'preset'; slug: string }
+	| { type: 'calendarMonth'; month: string }
+	| { type: 'custom'; startDate: string; endDate: string };
+
+interface ResolvedDateRange {
+	startDate: string;
+	endDate: string;
 }
 
 /**
@@ -250,6 +262,255 @@ export function dateSub( relativeDate: unknown, duration: number ): Date {
 	// Valid use of `new Date()` using calculations.
 	// eslint-disable-next-line sitekit/no-direct-date
 	return new Date( timestamp - duration * 1000 );
+}
+
+/**
+ * Gets the first day of a date's month.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateString Date in YYYY-MM-DD format.
+ * @return {string} First day of the month.
+ */
+export function getMonthStart( dateString: string ): string {
+	const date = stringToDate( dateString );
+
+	date.setDate( 1 );
+
+	return getDateString( date );
+}
+
+/**
+ * Gets the last day of a date's month.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateString Date in YYYY-MM-DD format.
+ * @return {string} Last day of the month.
+ */
+export function getMonthEnd( dateString: string ): string {
+	const date = stringToDate( dateString );
+
+	date.setMonth( date.getMonth() + 1, 0 );
+
+	return getDateString( date );
+}
+
+/**
+ * Adds calendar months, clamping the day to the last day of the target month.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateString Date in YYYY-MM-DD format.
+ * @param {number} months     Number of months to add (may be negative).
+ * @return {string} Resulting date in YYYY-MM-DD format.
+ */
+export function addMonths( dateString: string, months: number ): string {
+	const date = stringToDate( dateString );
+	const day = date.getDate();
+
+	// Day zero of the following month is the last day of the target month.
+	date.setMonth( date.getMonth() + months + 1, 0 );
+	date.setDate( Math.min( day, date.getDate() ) );
+
+	return getDateString( date );
+}
+
+/**
+ * Adds calendar days without shifting dates at daylight saving transitions.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} dateString Date in YYYY-MM-DD format.
+ * @param {number} days       Number of days to add (may be negative).
+ * @return {string} Resulting date in YYYY-MM-DD format.
+ */
+export function addDays( dateString: string, days: number ): string {
+	const date = stringToDate( dateString );
+
+	date.setDate( date.getDate() + days );
+
+	return getDateString( date );
+}
+
+/**
+ * Counts calendar days inclusively, independent of daylight saving changes.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate Start date in YYYY-MM-DD format.
+ * @param {string} endDate   End date in YYYY-MM-DD format.
+ * @return {number} Inclusive day count.
+ */
+export function getDayCount( startDate: string, endDate: string ): number {
+	// ISO date-only strings parse as UTC, so DST cannot introduce fractional days.
+	return (
+		( Date.parse( endDate ) - Date.parse( startDate ) ) /
+			( DAY_IN_SECONDS * 1000 ) +
+		1
+	);
+}
+
+/**
+ * Gets all calendar months touched by a date range, oldest first.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} startDate Start date in YYYY-MM-DD format.
+ * @param {string} endDate   End date in YYYY-MM-DD format.
+ * @return {string[]} Months in YYYY-MM format.
+ */
+export function getMonthsInRange(
+	startDate: string,
+	endDate: string
+): string[] {
+	const months = [];
+	for (
+		let date = getMonthStart( startDate );
+		date <= endDate;
+		date = addMonths( date, 1 )
+	) {
+		months.push( date.slice( 0, 7 ) );
+	}
+	return months;
+}
+
+/**
+ * Resolves a committed or draft selection against a reference date.
+ *
+ * Clamps both endpoints to the reference date. Unknown selection types resolve
+ * to the reference date.
+ *
+ * @since n.e.x.t
+ *
+ * @param {DateRangeSelection} selection     Date range selection.
+ * @param {string}             referenceDate Reference date in YYYY-MM-DD format.
+ * @return {ResolvedDateRange} Resolved start and end dates.
+ */
+export function resolveDateRangeSelection(
+	selection: DateRangeSelection,
+	referenceDate: string
+): ResolvedDateRange {
+	const resolvedDateRange = {
+		startDate: referenceDate,
+		endDate: referenceDate,
+	};
+
+	switch ( selection.type ) {
+		case 'preset': {
+			const days = selection.slug.split( '-' )[ 1 ];
+
+			resolvedDateRange.startDate = addDays(
+				referenceDate,
+				1 - Number( days )
+			);
+
+			break;
+		}
+		case 'calendarMonth': {
+			const monthStart = `${ selection.month }-01`;
+
+			if ( monthStart < referenceDate ) {
+				resolvedDateRange.startDate = monthStart;
+			}
+
+			const monthEnd = getMonthEnd( monthStart );
+
+			if ( monthEnd < referenceDate ) {
+				resolvedDateRange.endDate = monthEnd;
+			}
+
+			break;
+		}
+		case 'custom':
+			if ( selection.startDate < referenceDate ) {
+				resolvedDateRange.startDate = selection.startDate;
+			}
+
+			if ( selection.endDate < referenceDate ) {
+				resolvedDateRange.endDate = selection.endDate;
+			}
+
+			break;
+	}
+
+	return resolvedDateRange;
+}
+
+/**
+ * Checks for an actual calendar date in strict YYYY-MM-DD format.
+ *
+ * @since n.e.x.t
+ *
+ * @param {unknown} dateString Value to validate.
+ * @return {boolean} Whether the value is a valid calendar date.
+ */
+function isValidCalendarDate( dateString: unknown ): dateString is string {
+	return (
+		typeof dateString === 'string' &&
+		/^\d{4}-\d{2}-\d{2}$/.test( dateString ) &&
+		isValidDateString( dateString ) &&
+		getDateString( stringToDate( dateString ) ) === dateString
+	);
+}
+
+/**
+ * Validates a selection's shape and explicit dates against the selectable window.
+ *
+ * @since n.e.x.t
+ *
+ * @param {unknown} selection     Value to validate.
+ * @param {string}  referenceDate Reference date in YYYY-MM-DD format.
+ * @return {boolean} Whether the selection is valid and selectable.
+ */
+export function isValidDateRangeSelection(
+	selection: unknown,
+	referenceDate: string
+): selection is DateRangeSelection {
+	if ( ! selection || typeof selection !== 'object' ) {
+		return false;
+	}
+	const range = selection as Partial< DateRangeSelection >;
+
+	switch ( range.type ) {
+		case 'preset':
+			return (
+				typeof range.slug === 'string' && isValidDateRange( range.slug )
+			);
+		case 'calendarMonth':
+			if (
+				typeof range.month !== 'string' ||
+				! /^\d{4}-(0[1-9]|1[0-2])$/.test( range.month ) ||
+				`${ range.month }-01` > referenceDate
+			) {
+				return false;
+			}
+			break;
+		case 'custom':
+			if (
+				! isValidCalendarDate( range.startDate ) ||
+				! isValidCalendarDate( range.endDate ) ||
+				range.startDate > range.endDate ||
+				range.endDate > referenceDate
+			) {
+				return false;
+			}
+			break;
+		default:
+			return false;
+	}
+
+	const { startDate, endDate } = resolveDateRangeSelection(
+		range as DateRangeSelection,
+		referenceDate
+	);
+
+	const earliestDate = addMonths(
+		getMonthStart( referenceDate ),
+		1 - DATE_PICKER_LOOKBACK_MONTHS
+	);
+
+	return startDate >= earliestDate && startDate <= endDate;
 }
 
 /**
