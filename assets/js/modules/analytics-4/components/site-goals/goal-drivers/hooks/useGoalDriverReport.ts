@@ -46,6 +46,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 export interface UseGoalDriverReportArgs extends GoalDriverComponentProps {
 	id: GoalDriverID;
 	buildReportOptions: GoalDriverReportOptionsBuilder;
+	buildSecondaryReportOptions?: GoalDriverReportOptionsBuilder;
 	mapRows: GoalDriverRowMapper;
 }
 
@@ -57,34 +58,36 @@ export interface UseGoalDriverReportResult {
 }
 
 /**
- * Fetches and maps the report for a single-report goal driver.
+ * Fetches and maps the report for a goal driver, plus an optional second
+ * report its row mapper reads.
  *
- * Covers the drivers that need nothing beyond "fetch one report for this
- * driver's builder, map its rows, report loading/error state" - `CitiesGoalDriver`,
- * `CountriesGoalDriver`, `DeviceTypeGoalDriver`, `TopTrafficChannelsRateGoalDriver`
- * and `VisitorTypeGoalDriver` all delegate to this hook. Drivers with extra
- * concerns (a second report for a site-wide total, page titles, custom
- * dimensions gating) still have their own component, but can start from this
- * hook rather than re-deriving the same report/error/loading wiring.
+ * Used by `CitiesGoalDriver`, `CountriesGoalDriver`, `DeviceTypeGoalDriver`
+ * and `VisitorTypeGoalDriver`, and by `TopTrafficChannelsRateGoalDriver` with
+ * a second report for each channel's total sessions. Drivers that need more
+ * (a site-wide total, page titles, custom dimensions) have their own
+ * component.
  *
  * @since 1.188.0
+ * @since n.e.x.t Added the optional `buildSecondaryReportOptions` argument.
  *
- * @param {Object}          args                          Hook args.
- * @param {string}          args.id                       The driver's `GOAL_DRIVER_IDS` id.
- * @param {Function}        args.buildReportOptions       Builds this driver's Analytics 4 report options.
- * @param {Function}        args.mapRows                  Maps this driver's report rows to `GoalDriverRow[]`.
- * @param {string}          args.goalType                 The current goal type (ecommerce or lead-generation).
- * @param {Object[]}        [args.rows]                   Rows provided by the caller, used instead of the fetched report.
- * @param {boolean}         [args.loading]                Loading state provided by the caller, used instead of the report's own loading state.
- * @param {*}               [args.error]                  Error provided by the caller, used instead of the report's own error.
- * @param {string|string[]} [args.primaryEvent]           The primary conversion event name(s).
- * @param {Object}          [args.breakdownFilter]        Optional dimension filter scoping the report to a breakdown tab.
- * @param {Function}        [args.onExpandableRowsChange] Called with the driver id and whether it has more rows than the collapsed limit.
+ * @param {Object}          args                               Hook args.
+ * @param {string}          args.id                            The driver's `GOAL_DRIVER_IDS` id.
+ * @param {Function}        args.buildReportOptions            Builds this driver's Analytics 4 report options.
+ * @param {Function}        [args.buildSecondaryReportOptions] Builds a second report's options, passed to `mapRows` alongside the rows.
+ * @param {Function}        args.mapRows                       Maps this driver's report rows to `GoalDriverRow[]`.
+ * @param {string}          args.goalType                      The current goal type (ecommerce or lead-generation).
+ * @param {Object[]}        [args.rows]                        Rows provided by the caller, used instead of the fetched report.
+ * @param {boolean}         [args.loading]                     Loading state provided by the caller, used instead of the report's own loading state.
+ * @param {*}               [args.error]                       Error provided by the caller, used instead of the report's own error.
+ * @param {string|string[]} [args.primaryEvent]                The primary conversion event name(s).
+ * @param {Object}          [args.breakdownFilter]             Optional dimension filter scoping the report to a breakdown tab.
+ * @param {Function}        [args.onExpandableRowsChange]      Called with the driver id and whether it has more rows than the collapsed limit.
  * @return {Object} The rows, loading state, error and no-data metric label.
  */
 export default function useGoalDriverReport( {
 	id,
 	buildReportOptions,
+	buildSecondaryReportOptions,
 	mapRows,
 	goalType,
 	rows: providedRows,
@@ -98,16 +101,27 @@ export default function useGoalDriverReport( {
 		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
 		[]
 	);
+	const builderArgs = useMemo(
+		() => ( {
+			dates,
+			primaryEvent,
+			breakdownFilter,
+			limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
+			context: goalType,
+		} ),
+		[ dates, primaryEvent, breakdownFilter, goalType ]
+	);
 	const reportOptions = useMemo(
-		() =>
-			buildReportOptions( {
-				dates,
-				primaryEvent,
-				breakdownFilter,
-				limit: GOAL_DRIVER_ROW_LIMIT_EXPANDED,
-				context: goalType,
-			} ),
-		[ buildReportOptions, dates, primaryEvent, breakdownFilter, goalType ]
+		() => buildReportOptions( builderArgs ),
+		[ buildReportOptions, builderArgs ]
+	);
+	const secondaryReportOptions = useMemo(
+		() => buildSecondaryReportOptions?.( builderArgs ),
+		[ buildSecondaryReportOptions, builderArgs ]
+	);
+	const allReportOptions = useMemo(
+		() => [ reportOptions, secondaryReportOptions ].filter( Boolean ),
+		[ reportOptions, secondaryReportOptions ]
 	);
 	const report = useSelect(
 		( select: Select ) =>
@@ -116,15 +130,23 @@ export default function useGoalDriverReport( {
 				: undefined,
 		[ reportOptions ]
 	);
+	const secondaryReport = useSelect(
+		( select: Select ) =>
+			secondaryReportOptions
+				? select( MODULES_ANALYTICS_4 ).getReport(
+						secondaryReportOptions
+				  )
+				: undefined,
+		[ secondaryReportOptions ]
+	);
 	const reportError = useSelect(
 		( select: Select ) =>
 			reportOptions
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getReport',
-						[ reportOptions ]
+				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
+						...allReportOptions
 				  )
 				: undefined,
-		[ reportOptions ]
+		[ reportOptions, allReportOptions ]
 	);
 	const reportLoading = useSelect(
 		( select: Select ) => {
@@ -132,15 +154,14 @@ export default function useGoalDriverReport( {
 				return false;
 			}
 
-			return ! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-				'getReport',
-				[ reportOptions ]
+			return select( MODULES_ANALYTICS_4 ).areReportsLoading(
+				...allReportOptions
 			);
 		},
-		[ reportOptions ]
+		[ reportOptions, allReportOptions ]
 	);
 	const sourceRows = report?.rows || [];
-	const mappedRows = mapRows( sourceRows );
+	const mappedRows = mapRows( sourceRows, secondaryReport );
 	const rows = providedRows || mappedRows;
 	const loading = providedLoading ?? reportLoading;
 	const error = providedError ?? reportError;

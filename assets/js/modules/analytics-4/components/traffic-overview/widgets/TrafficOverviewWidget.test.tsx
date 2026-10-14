@@ -34,6 +34,7 @@ import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
@@ -92,7 +93,8 @@ describe( 'TrafficOverviewWidget', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '1234567890' );
 		// Storing the creation time stops a request for the Analytics property.
 		// `2024-01-01` sits before the selected range, so the chart draws no
-		// marker.
+		// marker, and more than thirteen months before the reference date, so
+		// the widget shows the Typical Traffic tab when `typicalTraffic` is on.
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.setPropertyCreateTime( '2024-01-01T00:00:00Z' );
@@ -645,5 +647,158 @@ describe( 'TrafficOverviewWidget', () => {
 		);
 
 		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'should render the "Traffic overview" tab, then the "Typical traffic" tab with its icon, with "Traffic overview" selected, when the `typicalTraffic` feature flag is enabled and the property is at least thirteen months old', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 2 );
+		expect( tabs[ 0 ] ).toHaveAccessibleName( 'Traffic overview' );
+		expect( tabs[ 1 ] ).toHaveAccessibleName( 'Typical traffic Beta' );
+		expect( tabs[ 0 ].querySelector( 'svg' ) ).toBeNull();
+		expect( tabs[ 1 ].querySelector( 'svg' ) ).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'tab', { selected: true } )
+		).toHaveAccessibleName( 'Traffic overview' );
+	} );
+
+	it( 'should render "Typical traffic" between "Traffic overview" and "Recent activity" when the `typicalTraffic` and `freshData` feature flags are enabled', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic', 'freshData' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			screen.getAllByRole( 'tab' ).map( ( tab ) => tab.textContent )
+		).toEqual( [
+			'Traffic overview',
+			'Typical trafficBeta',
+			'Recent activityBeta',
+		] );
+	} );
+
+	it( 'should render the "Traffic overview" tab alone, with its panel and the "Source: Analytics" footer, on the entity dashboard when the `typicalTraffic` feature flag is enabled', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		const tabs = screen.getAllByRole( 'tab' );
+
+		expect( tabs ).toHaveLength( 1 );
+		expect( tabs[ 0 ] ).toHaveAccessibleName( 'Traffic overview' );
+		expect(
+			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+		).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
+	} );
+
+	it( 'should send the benchmarking request only once the user selects "Typical traffic" when the `typicalTraffic` feature flag is enabled', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			),
+			{ body: benchmarkingData, status: 200 }
+		);
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( fetchMock ).not.toHaveFetched(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			)
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetchedTimes(
+				1,
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+				)
+			)
+		);
+	} );
+
+	it( 'should swap in the Typical Traffic panel and keep the "Source: Analytics" footer when the user selects "Typical traffic", and swap it back for "Traffic overview", when the `typicalTraffic` feature flag is enabled', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			),
+			{ body: benchmarkingData, status: 200 }
+		);
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		);
+
+		expect(
+			screen.getByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole( 'tabpanel', { name: 'Traffic overview' } )
+		).not.toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-widget__footer' )
+		).toHaveTextContent( 'Source: Analytics' );
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Traffic overview' } )
+		);
+
+		expect(
+			screen.getByRole( 'tabpanel', { name: 'Traffic overview' } )
+		).toBeInTheDocument();
+		expect(
+			screen.queryByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
+		).not.toBeInTheDocument();
 	} );
 } );
