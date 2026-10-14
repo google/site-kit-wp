@@ -207,7 +207,9 @@ function Template( {
 	);
 }
 
-export const MainDashboard = Template.bind( {} ) as Story;
+export const MainDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 MainDashboard.storyName = 'Main Dashboard';
 MainDashboard.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -219,7 +221,9 @@ MainDashboard.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-export const TypicalTraffic = Template.bind( {} ) as Story;
+export const TypicalTraffic = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
 TypicalTraffic.args = {
 	...MainDashboard.args,
@@ -231,7 +235,9 @@ TypicalTraffic.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-export const TypicalTrafficSelected = Template.bind( {} ) as Story;
+export const TypicalTrafficSelected = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTrafficSelected.storyName =
 	'Typical Traffic Selected (typicalTraffic enabled)';
 TypicalTrafficSelected.args = {
@@ -260,7 +266,9 @@ TypicalTrafficSelected.scenario = {
  * `useTrafficOverviewReports.test.ts` and `TrafficOverviewSourceLink.test.tsx`
  * already cover both.
  */
-export const EntityDashboard = Template.bind( {} ) as Story;
+export const EntityDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 EntityDashboard.storyName = 'Entity Dashboard';
 EntityDashboard.args = {
 	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -273,7 +281,9 @@ EntityDashboard.args = {
 	},
 };
 
-export const Loading = Template.bind( {} ) as Story;
+export const Loading = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -286,7 +296,9 @@ Loading.args = {
 	},
 };
 
-export const GatheringData = Template.bind( {} ) as Story;
+export const GatheringData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -299,7 +311,9 @@ GatheringData.scenario = {
 	viewport: 'large',
 };
 
-export const ZeroData = Template.bind( {} ) as Story;
+export const ZeroData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -327,7 +341,9 @@ ZeroData.args = {
 	},
 };
 
-export const ReportFailure = Template.bind( {} ) as Story;
+export const ReportFailure = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 ReportFailure.storyName = 'Report Failure';
 ReportFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -351,7 +367,9 @@ ReportFailure.args = {
 	},
 };
 
-export const RecentActivity = Template.bind( {} ) as Story;
+export const RecentActivity = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivity.storyName = 'Recent Activity (freshData enabled)';
 RecentActivity.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -368,7 +386,9 @@ RecentActivity.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
-export const RecentActivityAnalyticsNotConnected = Template.bind( {} ) as Story;
+export const RecentActivityAnalyticsNotConnected = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityAnalyticsNotConnected.storyName =
 	'Recent Activity, Analytics Not Connected (freshData enabled)';
 RecentActivityAnalyticsNotConnected.args = {
@@ -394,7 +414,9 @@ RecentActivityAnalyticsNotConnected.scenario = {
 	viewport: 'large',
 };
 
-export const RecentActivityGatheringData = Template.bind( {} ) as Story;
+export const RecentActivityGatheringData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityGatheringData.storyName =
 	'Recent Activity, Gathering Data (freshData enabled)';
 RecentActivityGatheringData.args = {
@@ -413,7 +435,9 @@ RecentActivityGatheringData.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
-export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
+export const RecentActivityNoPublishedPosts = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityNoPublishedPosts.storyName =
 	'Recent Activity, No Published Posts (freshData enabled)';
 RecentActivityNoPublishedPosts.args = {
