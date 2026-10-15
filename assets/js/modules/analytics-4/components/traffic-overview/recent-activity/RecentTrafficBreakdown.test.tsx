@@ -82,14 +82,11 @@ describe( 'RecentTrafficBreakdown', () => {
 
 	// The site had 120 visits and 200 views, and 12 of the visits came from
 	// other sites.
-	const postsReport = createBreakdownReport(
-		[
-			[ '/ice-cream/', 82 ],
-			[ '/spf/', 21 ],
-			[ '/hydration/', 8 ],
-		],
-		'pagePath'
-	);
+	const postsReport = createBreakdownReport( [
+		[ '/ice-cream/', 82 ],
+		[ '/spf/', 21 ],
+		[ '/hydration/', 8 ],
+	] );
 
 	const titlesReport = createTitlesReport( [
 		[ '/ice-cream/', 'Ice cream is good for your health' ],
@@ -211,8 +208,6 @@ describe( 'RecentTrafficBreakdown', () => {
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideModuleRegistrations( registry );
-		// Storing the settings stops a request for them when a column renders a
-		// report error.
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	} );
@@ -268,7 +263,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	} );
 
-	it( "should render the views of each post with its share of the site's views, and the visits of each channel and referring site with its share of the site's visits", async () => {
+	it( "should render each row's share of the site's views in the posts column, and of its visits in the other two columns", async () => {
 		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -335,14 +330,11 @@ describe( 'RecentTrafficBreakdown', () => {
 		// be a page with none.
 		mockReportRequests( {
 			posts: {
-				body: createBreakdownReport(
-					[
-						[ '/ice-cream/', 82 ],
-						[ '/spf/', 21 ],
-						[ '/summer-hats/', 0 ],
-					],
-					'pagePath'
-				),
+				body: createBreakdownReport( [
+					[ '/ice-cream/', 82 ],
+					[ '/spf/', 21 ],
+					[ '/summer-hats/', 0 ],
+				] ),
 				status: 200,
 			},
 		} );
@@ -386,13 +378,10 @@ describe( 'RecentTrafficBreakdown', () => {
 	it( 'should render a page path that resolves to another site as text, with no link', async () => {
 		mockReportRequests( {
 			posts: {
-				body: createBreakdownReport(
-					[
-						[ '//spam.example/offer/', 90 ],
-						[ '/ice-cream/', 82 ],
-					],
-					'pagePath'
-				),
+				body: createBreakdownReport( [
+					[ '//spam.example/offer/', 90 ],
+					[ '/ice-cream/', 82 ],
+				] ),
 				status: 200,
 			},
 		} );
@@ -485,7 +474,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -528,7 +516,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			)
 		);
 
-		// The three columns read the same report of the site's totals, which
+		// The three columns use the same report of the site's totals, which
 		// didn't fail, so the other two columns keep their rows.
 		expect(
 			getColumn( 'Top posts by visitors' ).querySelector(
@@ -563,7 +551,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -625,7 +612,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -801,7 +787,6 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		fireEvent.click(
@@ -814,9 +799,6 @@ describe( 'RecentTrafficBreakdown', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
-		// The `getReport` resolver sends no request for a report the store
-		// already has, so the column reports, which didn't fail, aren't
-		// requested again.
 		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
 		expect(
 			getRowTexts( getColumn( 'Top channels by visitors' ) )
@@ -888,8 +870,8 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	it( 'should render the loading state in the posts column, and should not request the posts, while the setting to include products loads', async () => {
-		// We create a registry whose Analytics settings haven't loaded, and the
-		// request that would load them never finishes.
+		// The registry from `beforeEach()` has the Analytics settings, so this
+		// test builds one without them.
 		registry = createTestRegistry();
 		provideSiteInfo( registry, {
 			wooCommerceActive: true,
@@ -928,7 +910,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should omit the "Top posts by visitors" column, and should not request its report, when the site has no published posts', async () => {
+	it( 'should not render the "Top posts by visitors" column, and should not request its report, when the site has no published posts', async () => {
 		mockReportRequests();
 
 		const { container, waitForRegistry } = render(
@@ -953,7 +935,8 @@ describe( 'RecentTrafficBreakdown', () => {
 			)
 		).toBeInTheDocument();
 	} );
-	it( 'should request the views of every path and query string on plain permalinks, and render each post once, with its title, linking to its permalink', async () => {
+
+	it( 'should request the views of every path and query string on plain permalinks, and render each post once, with its title, linked to its permalink', async () => {
 		provideSiteInfo( registry, { usingPlainPermalinks: true } );
 		mockReportRequests();
 		fetchMock.get( plainPermalinkPostsRequest, {
@@ -989,7 +972,7 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		const postsColumn = getColumn( 'Top posts by visitors' );
 
-		// The home page at `/` shows no post, so the column omits it.
+		// The home page at `/` shows no post, so the column leaves it out.
 		expect( getRowTexts( postsColumn ) ).toEqual( [
 			[ 'Ice cream is good for your health', '80(40%)' ],
 			[ 'About us', '20(10%)' ],
@@ -1129,7 +1112,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		} );
 	} );
 
-	it( 'should request the posts without the views of products, by the `googlesitekit_post_type` custom dimension, when product URLs share no path and the setting to include products is off', async () => {
+	it( 'should request the posts without product views, by the `googlesitekit_post_type` dimension, when product URLs share no path and the setting to include products is off', async () => {
 		receiveState( registry, {
 			setting: false,
 			availableCustomDimensions: [ 'googlesitekit_post_type' ],

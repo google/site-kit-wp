@@ -33,7 +33,7 @@ export interface TileShellProps {
 	baseClassName: string;
 	/** Extra class for the outer element. */
 	className?: string;
-	/** Tile title, shown as the heading that `titleAs` names. */
+	/** Tile title, shown as the heading element that `titleAs` sets. */
 	title: ReactNode;
 	/** Heading element of the title, `h3` by default, or `h4` for a tile under an `h3` heading. */
 	titleAs?: 'h3' | 'h4';

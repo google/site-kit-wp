@@ -61,7 +61,7 @@ describe( 'TableTile', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render the title as the heading element that `titleAs` names', () => {
+	it( 'should render the title as the heading element that `titleAs` sets', () => {
 		const { getByRole } = render(
 			<TableTile
 				title="Top channels by visitors"
@@ -166,8 +166,6 @@ describe( 'TableTile', () => {
 	} );
 
 	it( 'should render the error message and the "Get help" link in the error state', async () => {
-		// Storing the module list and the Analytics settings stops a request
-		// for them when `ReportError` renders.
 		const registry = createTestRegistry();
 		provideModules( registry );
 		provideModuleRegistrations( registry );

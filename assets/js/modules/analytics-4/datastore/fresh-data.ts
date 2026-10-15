@@ -94,13 +94,13 @@ export type ExcludedProducts =
 			by: 'queryVar';
 			/** The product post type, such as `product`, which a product URL can name in `post_type=product`. */
 			postType: string;
-			/** The query var that holds the slug of a product, such as `product` in `/?product=hoodie`, or `null` when WordPress reads none. */
+			/** The query var whose value is a product's slug, such as `product` in `/?product=hoodie`, or `null` when WordPress reads none. */
 			queryVar: string | null;
 	  }
 	| {
 			/** The way to recognize a product page: by the `googlesitekit_post_type` custom dimension. */
 			by: 'postTypeDimension';
-			/** The product post type, such as `product`, which the custom dimension holds for a product page. */
+			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
 			postType: string;
 	  };
 
@@ -132,7 +132,7 @@ interface FreshDataState {
  * Gets the text of a title that the WordPress REST API returns as HTML.
  *
  * `wptexturize()` writes an apostrophe as `&#8217;`, and an author can add HTML
- * tags, so the function reads the title's text.
+ * tags.
  *
  * @since n.e.x.t
  *
@@ -483,8 +483,7 @@ const baseSelectors = {
 
 			// `hasCustomDimensions()` stays `undefined` when nobody has synced
 			// the property's custom dimensions and the user can't sync them,
-			// such as a view-only user. Once `getAvailableCustomDimensions()`
-			// has resolved, the tab can't recognize products.
+			// such as a view-only user.
 			if ( hasPostTypeDimension === undefined ) {
 				return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 					'getAvailableCustomDimensions'

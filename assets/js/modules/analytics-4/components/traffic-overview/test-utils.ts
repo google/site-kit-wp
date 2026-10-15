@@ -80,14 +80,14 @@ export interface RecentTrafficBreakdownReportOptions {
 	channels: ReportOptions;
 	/** The options of the "Top referrals by visitors" report. */
 	referrals: ReportOptions;
-	/** The options of the report of the site's totals, which each share divides. */
+	/** The options of the report of the site's totals, which each share is a percentage of. */
 	siteTotals: ReportOptions;
 }
 
 export interface SiteTotals {
-	/** The site's visits over the date range, which each share of the channels and referrals columns divides. */
+	/** The site's visits over the date range, which each share in the channels and referrals columns is a percentage of. */
 	visits: number;
-	/** The site's views over the date range, which each share of the posts column divides. */
+	/** The site's views over the date range, which each share in the posts column is a percentage of. */
 	views: number;
 }
 
@@ -100,7 +100,7 @@ export interface RecentTrafficBreakdownReports {
 	channels?: Report;
 	/** The report of visits for each site that referred them. */
 	referrals?: Report;
-	/** The site's visits and views over the date range, which each share divides. */
+	/** The site's visits and views over the date range, which each share is a percentage of. */
 	siteTotals?: SiteTotals;
 }
 
@@ -286,24 +286,19 @@ export function provideLatestPostKeywordReport( registry: WPDataRegistry ) {
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
- * @since n.e.x.t Added the optional `dimension` parameter, which names the dimension of the report in its `dimensionHeaders`.
  *
- * @param {Array<Array>} pairs       `[ label, visitors ]` pairs.
- * @param {string}       [dimension] Optional. The name of the dimension, such as `pagePath`. Without it, the report has no `dimensionHeaders`.
+ * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >,
-	dimension?: string
+	pairs: Array< [ string, number ] >
 ): Report {
-	const rows = pairs.map( ( [ label, visitors ] ) => ( {
-		dimensionValues: [ { value: label } ],
-		metricValues: [ { value: String( visitors ) } ],
-	} ) );
-
-	return dimension
-		? { dimensionHeaders: [ { name: dimension } ], rows }
-		: { rows };
+	return {
+		rows: pairs.map( ( [ label, visitors ] ) => ( {
+			dimensionValues: [ { value: label } ],
+			metricValues: [ { value: String( visitors ) } ],
+		} ) ),
+	};
 }
 
 /**
@@ -503,12 +498,7 @@ export function provideRecentTrafficBreakdownReports(
 	const { receiveGetReport } = registry.dispatch( MODULES_ANALYTICS_4 );
 
 	if ( posts ) {
-		// A report from the API names its dimensions in `dimensionHeaders`,
-		// and `getPageTitles` finds the page paths by that name.
-		receiveGetReport(
-			{ dimensionHeaders: [ { name: 'pagePath' } ], ...posts },
-			{ options: reportOptions.posts }
-		);
+		receiveGetReport( posts, { options: reportOptions.posts } );
 
 		const pagePaths = getRecentTrafficBreakdownRows( posts ).map(
 			( { label } ) => label
@@ -557,13 +547,13 @@ export function provideRecentTrafficBreakdownReports(
  *
  * @param {Object}  registry                          The registry to put the state in.
  * @param {Object}  [state]                           Optional. The state to put in the store.
- * @param {boolean} [state.analyticsConnected]        Optional. If true, Analytics is connected. If false, Analytics is disconnected. Default `true`.
- * @param {boolean} [state.wooCommerceActive]         Optional. If true, WooCommerce is active. If false, WooCommerce is inactive. Default `true`.
- * @param {boolean} [state.setting]                   Optional. If true, the setting to include products is on. If false, the setting is off. Default `true`.
+ * @param {boolean} [state.analyticsConnected]        Optional. Whether Analytics is connected. Default `true`.
+ * @param {boolean} [state.wooCommerceActive]         Optional. Whether WooCommerce is active. Default `true`.
+ * @param {boolean} [state.setting]                   Optional. Whether the setting to include products is on. Default `true`.
  * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
  * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
  * @param {string}  [state.productQueryVar]           Optional. The query var of the product post type. Default `product`.
- * @param {boolean} [state.usingPlainPermalinks]      Optional. If true, the site uses plain permalinks. If false, the site has a permalink structure. Default `false`.
+ * @param {boolean} [state.usingPlainPermalinks]      Optional. Whether the site uses plain permalinks. Default `false`.
  * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
  * @return {void}
  */

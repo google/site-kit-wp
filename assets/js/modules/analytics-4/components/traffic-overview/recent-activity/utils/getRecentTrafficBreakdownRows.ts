@@ -47,21 +47,21 @@ import { numFmt } from '@/js/util';
  * Splits a thousand tenths of a percent between the given counts and the
  * rest of the total, with `getRoundedShares()`.
  *
- * The rest of the total, which no row shows, takes part as the last count. So
- * the shares of the rows can add up to less than 100%, but never to more.
+ * The rest of the total, which no row shows, is the last part. So the shares of
+ * the rows can add up to less than 100%, but never to more.
  *
  * @since n.e.x.t
  *
  * @param {Array<number>} counts The count of each row, in display order, each above zero.
- * @param {number}        total  The total that the shares divide, above zero.
+ * @param {number}        total  The total that each share is a percentage of, above zero.
  * @return {Array<number>} The tenths of a percent of each row, in the same order, from `0` to `1000`.
  */
 function getTenthPercentages( counts: number[], total: number ): number[] {
 	const countsTotal = sum( counts );
-	// A column's report and the report of the site's totals are separate
-	// requests. So the rows can count a little more than the total, such as a
-	// view Analytics counted between the two requests. The shares then divide
-	// the rows' sum, so neither a row nor a column shows more than 100%.
+	// The rows and the site's total come from separate requests, so the rows
+	// can count a little more than the total, such as a view Analytics counted
+	// between the two. The shares then use the rows' sum, so no row or column
+	// shows more than 100%.
 	const sharedTotal = Math.max( total, countsTotal );
 
 	return getRoundedShares(
@@ -96,18 +96,17 @@ export function getSiteTotal(
  * Builds the rows a column of the Recent activity tab's traffic breakdown
  * renders from its report.
  *
- * With `getRowLabel`, each row of the report takes the label that the
- * function returns, and rows with the same label add up to one row. Values
- * with no count are left out, and the rest are sorted by count, most first, up
- * to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is of the site's
- * total. The shares of a column, with the share of the rest of the total, add
- * up to 100%.
+ * With `getRowLabel`, the rows of the report that the function returns the same
+ * label for add up to one row. Values with no count are left out, and the rest
+ * are sorted by count, most first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS`
+ * rows. Each share is a percentage of the site's total. With the share of the
+ * rest of the total, the shares of a column add up to 100%.
  *
  * @since n.e.x.t
  *
  * @param {Object}   [report]      Optional. A report with one dimension and one metric.
  * @param {number}   [siteTotal]   Optional. The site's total of the metric, such as its visits. A row has no share when the total is `0`. Default `0`.
- * @param {Function} [getRowLabel] Optional. A function that gets the label of a row from its dimension value, or `undefined` to leave the row out. Without it, a row's label is its dimension value.
+ * @param {Function} [getRowLabel] Optional. A function that returns the label of a row from its dimension value, or `undefined` to leave the row out. Without it, a row's label is its dimension value.
  * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`.
  */
 export function getRecentTrafficBreakdownRows(

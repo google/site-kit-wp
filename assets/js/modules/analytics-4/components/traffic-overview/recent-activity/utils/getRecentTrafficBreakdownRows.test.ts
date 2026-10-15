@@ -66,7 +66,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		).toEqual( [ '(6.7%)', '(3.3%)' ] );
 	} );
 
-	it( 'should give a tenth of a percent still missing to the share with the largest remainder, so the shares and the rest of the total add up to 100%', () => {
+	it( 'should add the missing tenth of a percent to the share with the largest remainder', () => {
 		// 96, 41, and 17 of 157 visits are 61.15%, 26.11%, and 10.83%, and the
 		// other 3 visits are 1.91%. Their whole tenths add up to 99.9%, and
 		// 61.15% has the largest remainder.
@@ -97,7 +97,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		).toEqual( [ '(33.4%)', '(33.3%)', '(33.3%)' ] );
 	} );
 
-	it( 'should give a tenth of a percent still missing to the rest of the total when the rest has the largest remainder, and show a share that gets no tenth as "<0.1%"', () => {
+	it( 'should show "<0.1%" for a share under a tenth of a percent when the rest of the total gets the missing tenth', () => {
 		// 5,000 and 1 of 10,000 views are 50% and 0.01%, and the other 4,999
 		// views are 49.99%.
 		const report = createBreakdownReport( [
@@ -112,7 +112,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		).toEqual( [ '(50%)', '(<0.1%)' ] );
 	} );
 
-	it( 'should show "99.9%" rather than "100%" for a row below the total, and give the tenth still missing to another row', () => {
+	it( 'should show "99.9%" rather than "100%" for a row below the total, and add the missing tenth to another row', () => {
 		const report = createBreakdownReport( [
 			[ 'Direct', 2999 ],
 			[ 'Email', 1 ],
@@ -162,7 +162,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		] );
 	} );
 
-	it( 'should add up the rows that `getRowLabel` gives the same label, and leave out the rows it gives no label', () => {
+	it( 'should add up the rows that `getRowLabel` returns the same label for, and leave out the rows it returns no label for', () => {
 		const report = createBreakdownReport( [
 			[ '/', 50 ],
 			[ '/?p=12', 30 ],

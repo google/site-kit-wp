@@ -1013,7 +1013,7 @@ export const selectors = {
 	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
 
 	/**
-	 * Gets the query var that holds the slug of a product in a product URL on
+	 * Gets the query var whose value is a product's slug in a product URL on
 	 * plain permalinks, such as `product` in `/?product=hoodie`.
 	 *
 	 * @since n.e.x.t

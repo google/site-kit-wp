@@ -202,7 +202,6 @@ describe( 'useFreshDataReport', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {

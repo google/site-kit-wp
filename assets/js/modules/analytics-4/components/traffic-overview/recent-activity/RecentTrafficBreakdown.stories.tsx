@@ -49,8 +49,8 @@ import RecentTrafficBreakdown, {
 import { FRESH_DATA_FETCH_OPTIONS } from './reportOptions';
 
 /**
- * The site's visits and views over the date range, which each share divides.
- * 12 of the visits came from other sites.
+ * The site's visits and views over the date range, which each share is a
+ * percentage of. 12 of the visits came from other sites.
  */
 const SITE_TOTALS = { visits: 157, views: 268 };
 
@@ -91,22 +91,22 @@ function Template( {
 	pauseAnimation = false,
 	...props
 }: RecentTrafficBreakdownStoryProps ) {
-	function setup( registry: WPDataRegistry ) {
-		provideSiteInfo( registry );
-		// A column with a report error reads the module list and the
-		// Analytics settings.
-		provideModules( registry );
-		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
-		setupRegistry( registry );
-	}
-
-	// The section's styles apply only inside the widget and the Recent activity
-	// panel. The widget's white background shows the light rails and loading
-	// placeholders.
+	// The section's styles need the widget and panel classes, and the light
+	// rails show only on the widget's white background.
 	return (
-		<WithRegistrySetup func={ setup }>
+		<WithRegistrySetup
+			func={ ( registry: WPDataRegistry ) => {
+				provideSiteInfo( registry );
+				provideModules( registry );
+				provideModuleRegistrations( registry );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSettings( {} );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+
+				setupRegistry( registry );
+			} }
+		>
 			<div
 				className={ classnames(
 					'googlesitekit-widget',

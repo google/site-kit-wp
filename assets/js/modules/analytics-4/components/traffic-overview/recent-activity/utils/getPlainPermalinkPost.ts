@@ -31,8 +31,8 @@ export interface PlainPermalinkPost {
  * The function reads the query string the way `WP_Query::parse_query()` reads
  * it for a post or a page:
  *
- * - `p` holds the ID of a post, or of a page with `post_type=page`.
- * - `page_id` holds the ID of a page.
+ * - `p` is the ID of a post, or of a page with `post_type=page`.
+ * - `page_id` is the ID of a page.
  *
  * So `/?p=123` and `/?p=123&utm_source=newsletter` show the same post. The
  * function finds no post or page for:

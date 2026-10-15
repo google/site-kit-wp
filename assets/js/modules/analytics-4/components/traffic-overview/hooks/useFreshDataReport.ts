@@ -64,7 +64,7 @@ export interface FreshDataReport {
  *
  * @since n.e.x.t
  *
- * @param {Function} buildReportOptions A function that builds the report options from the tab's date range, or returns `undefined` while the options depend on data that is still loading. Pass a function defined outside the component, or one that changes only when that data does.
+ * @param {Function} buildReportOptions A function that builds the report options from the tab's date range, or returns `undefined` while the data they need loads. Pass a function defined outside the component, or one that changes only when that data does.
  * @return {Object} The report options, the report, whether it is loading, its error, and a function that requests it again.
  */
 export function useFreshDataReport(
@@ -91,8 +91,8 @@ export function useFreshDataReport(
 		[ reportOptions ]
 	);
 
-	// The report resolves with its fetch options, which `areReportsLoading()`
-	// never passes, so that selector would read the report as loading forever.
+	// `areReportsLoading()` passes no fetch options, so it would read this
+	// report as loading forever.
 	const loading = useSelect(
 		( select: Select ) =>
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(

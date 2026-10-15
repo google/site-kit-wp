@@ -90,8 +90,8 @@ export function usePlainPermalinkPostTitles(
 		[ options ]
 	);
 
-	// `getPostTitles` returns `undefined` both while the titles load and after
-	// their request fails, so the end of the request is read from the store.
+	// `getPostTitles()` returns `undefined` both while the titles load and after
+	// their request fails.
 	const hasRequestFinished = useSelect(
 		( select: Select ) =>
 			! options ||

@@ -79,8 +79,8 @@ export function useReportPageTitles(
 								pagePath,
 								decodeAmpersand( title ).trim(),
 							] )
-							// `getPageTitleMap()` gives "(unknown)" as the title of a
-							// page that Analytics has no title for.
+							// `getPageTitleMap()` returns "(unknown)" as the title of
+							// a page that Analytics has no title for.
 							.filter(
 								( [ , title ] ) =>
 									title &&

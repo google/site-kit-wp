@@ -55,13 +55,13 @@ export interface RecentTrafficBreakdownColumn {
 
 /**
  * Resolves the report of a column of the Recent activity tab's traffic
- * breakdown. It also resolves the report of the site's totals, which each
- * share in the column divides.
+ * breakdown, and the report of the site's totals that each share in the column
+ * is a percentage of.
  *
  * @since n.e.x.t
  *
- * @param {Function} buildReportOptions The function that builds the column's report options from the tab's date range, the way `useFreshDataReport()` takes it.
- * @param {Function} [getRowLabel]      Optional. A function that gets the label of a row from its dimension value, the way `getRecentTrafficBreakdownRows()` takes it. Pass a function defined outside the component, or one that changes only when the data it reads does.
+ * @param {Function} buildReportOptions The function that builds the column's report options from the tab's date range, as `useFreshDataReport()` expects.
+ * @param {Function} [getRowLabel]      Optional. A function that gets the label of a row from its dimension value, as `getRecentTrafficBreakdownRows()` expects. Pass a function defined outside the component, or one that changes only when the data it reads does.
  * @return {Object} The column's report options and report, its rows, whether it is loading, its error, and a function that requests each failed report again.
  */
 export function useRecentTrafficBreakdownColumn(
@@ -100,7 +100,7 @@ export function useRecentTrafficBreakdownColumn(
 		// column's report is requested again only after it failed.
 		retryReport();
 
-		// Every column reads the same report of the site's totals, so
+		// Every column uses the same report of the site's totals, so
 		// requesting it again shows the loading state in all of them.
 		if ( siteTotalsReportError ) {
 			retrySiteTotalsReport();

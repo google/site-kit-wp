@@ -22,19 +22,19 @@
 import { getPlainPermalinkPost } from './getPlainPermalinkPost';
 
 describe( 'getPlainPermalinkPost', () => {
-	it( 'returns the post that the `p` query var names', () => {
+	it( 'should return the post whose ID is in the `p` query var', () => {
 		expect(
 			getPlainPermalinkPost( '/?p=123', 'https://example.com' )
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'returns the page that the `page_id` query var names', () => {
+	it( 'should return the page whose ID is in the `page_id` query var', () => {
 		expect(
 			getPlainPermalinkPost( '/?page_id=45', 'https://example.com' )
 		).toEqual( { type: 'page', id: 45, path: '/?page_id=45' } );
 	} );
 
-	it( 'returns the post with the permalink that WordPress builds for it when the URL has more query vars', () => {
+	it( 'should return the post with the permalink that WordPress builds for it when the URL has more query vars', () => {
 		expect(
 			getPlainPermalinkPost(
 				'/?utm_source=newsletter&p=123&utm_medium=email',
@@ -43,7 +43,7 @@ describe( 'getPlainPermalinkPost', () => {
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'returns the post that the `p` query var names when `post_type` is `post`', () => {
+	it( 'should return the post whose ID is in the `p` query var when `post_type` is `post`', () => {
 		expect(
 			getPlainPermalinkPost(
 				'/?post_type=post&p=123',
@@ -52,7 +52,7 @@ describe( 'getPlainPermalinkPost', () => {
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'returns the page that the `p` query var names when `post_type` is `page`', () => {
+	it( 'should return the page whose ID is in the `p` query var when `post_type` is `page`', () => {
 		expect(
 			getPlainPermalinkPost(
 				'/?post_type=page&p=45',
@@ -61,43 +61,43 @@ describe( 'getPlainPermalinkPost', () => {
 		).toEqual( { type: 'page', id: 45, path: '/?page_id=45' } );
 	} );
 
-	it( 'returns the post that the `p` query var names when the URL also has the `page_id` query var, the way WordPress reads it', () => {
+	it( 'should return the post whose ID is in the `p` query var when the URL also has the `page_id` query var, the way WordPress reads it', () => {
 		expect(
 			getPlainPermalinkPost( '/?page_id=45&p=123', 'https://example.com' )
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'reads the last value of a query var that the URL repeats, the way PHP reads it', () => {
+	it( 'should read the last value of a query var that the URL repeats, the way PHP reads it', () => {
 		expect(
 			getPlainPermalinkPost( '/?p=12&p=123', 'https://example.com' )
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'returns the post for a URL at the `index.php` file of the home URL', () => {
+	it( 'should return the post for a URL at the `index.php` file of the home URL', () => {
 		expect(
 			getPlainPermalinkPost( '/index.php?p=123', 'https://example.com' )
 		).toEqual( { type: 'post', id: 123, path: '/?p=123' } );
 	} );
 
-	it( 'returns the post with the path of a home URL in a folder', () => {
+	it( 'should return the post with the path of a home URL in a folder', () => {
 		expect(
 			getPlainPermalinkPost( '/blog/?p=123', 'https://example.com/blog' )
 		).toEqual( { type: 'post', id: 123, path: '/blog/?p=123' } );
 	} );
 
-	it( 'returns the post for a URL at a home URL in a folder without its last slash', () => {
+	it( 'should return the post for a URL at a home URL in a folder without its last slash', () => {
 		expect(
 			getPlainPermalinkPost( '/blog?p=123', 'https://example.com/blog/' )
 		).toEqual( { type: 'post', id: 123, path: '/blog/?p=123' } );
 	} );
 
-	it( 'returns `undefined` for a URL outside the folder of the home URL', () => {
+	it( 'should return `undefined` for a URL outside the folder of the home URL', () => {
 		expect(
 			getPlainPermalinkPost( '/?p=123', 'https://example.com/blog' )
 		).toBeUndefined();
 	} );
 
-	it( "returns `undefined` for a URL at another path, which WordPress doesn't answer", () => {
+	it( "should return `undefined` for a URL at a path that WordPress doesn't serve, such as `/forum/viewtopic.php`", () => {
 		expect(
 			getPlainPermalinkPost(
 				'/forum/viewtopic.php?p=123',
@@ -106,7 +106,7 @@ describe( 'getPlainPermalinkPost', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a page path that resolves to another site', () => {
+	it( 'should return `undefined` for a page path that resolves to another site', () => {
 		expect(
 			getPlainPermalinkPost(
 				'//spam.example/?p=123',
@@ -115,13 +115,13 @@ describe( 'getPlainPermalinkPost', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a product, which the product query var names', () => {
+	it( 'should return `undefined` for a URL with the product query var, such as `/?product=hoodie`', () => {
 		expect(
 			getPlainPermalinkPost( '/?product=hoodie', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a post of another post type, such as a product', () => {
+	it( 'should return `undefined` for a post of another post type, such as a product', () => {
 		expect(
 			getPlainPermalinkPost(
 				'/?post_type=product&p=31',
@@ -130,43 +130,43 @@ describe( 'getPlainPermalinkPost', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for the home page', () => {
+	it( 'should return `undefined` for the home page', () => {
 		expect(
 			getPlainPermalinkPost( '/', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a search', () => {
+	it( 'should return `undefined` for a search', () => {
 		expect(
 			getPlainPermalinkPost( '/?s=ice+cream', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a `p` query var of `0`', () => {
+	it( 'should return `undefined` for a `p` query var of `0`', () => {
 		expect(
 			getPlainPermalinkPost( '/?p=0', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( 'returns `undefined` for a negative `p` query var', () => {
+	it( 'should return `undefined` for a negative `p` query var', () => {
 		expect(
 			getPlainPermalinkPost( '/?p=-123', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( "returns `undefined` for a `p` query var that isn't a number", () => {
+	it( "should return `undefined` for a `p` query var that isn't a number", () => {
 		expect(
 			getPlainPermalinkPost( '/?p=hello', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( "returns `undefined` for a page path that isn't a URL path, such as `(not set)`", () => {
+	it( "should return `undefined` for a page path that isn't a URL path, such as `(not set)`", () => {
 		expect(
 			getPlainPermalinkPost( '(not set)', 'https://example.com' )
 		).toBeUndefined();
 	} );
 
-	it( "returns `undefined` when the site URL isn't a URL", () => {
+	it( "should return `undefined` when the site URL isn't a URL", () => {
 		expect( getPlainPermalinkPost( '/?p=123', '' ) ).toBeUndefined();
 	} );
 } );

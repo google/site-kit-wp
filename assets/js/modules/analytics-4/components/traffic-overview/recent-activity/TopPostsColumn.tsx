@@ -44,8 +44,7 @@ import { getPlainPermalinkPost } from './utils/getPlainPermalinkPost';
 
 /**
  * No page paths, for the titles hook of the permalink structure the site
- * doesn't use. The array stays the same between renders, so the hook's
- * memoized values do too.
+ * doesn't use. The same array on every render keeps that hook's memoized values.
  */
 const NO_PAGE_PATHS: string[] = [];
 
@@ -66,9 +65,8 @@ const TopPostsColumn: FC = () => {
 		[]
 	);
 
-	// The report waits until the column knows the permalink structure and
-	// whether to leave out product pages. So it isn't requested once with the
-	// wrong options and again with the right ones.
+	// The options wait for both values, so the report isn't requested first
+	// with the wrong options.
 	const buildReportOptions = useCallback(
 		( dateRange: FreshDataDateRange ) =>
 			usingPlainPermalinks === undefined || excludedProducts === undefined
@@ -80,9 +78,9 @@ const TopPostsColumn: FC = () => {
 		[ usingPlainPermalinks, excludedProducts ]
 	);
 
-	// On plain permalinks, each row of the report is a path and query string,
-	// such as `/?p=123&utm_source=newsletter`. A row takes the permalink of the
-	// post it shows, such as `/?p=123`, so rows of the same post add up.
+	// On plain permalinks, a row of the report is a path and query string, such
+	// as `/?p=123&utm_source=newsletter`. Labeling each row with the permalink
+	// of its post, such as `/?p=123`, adds up the rows of the same post.
 	const getRowLabel = useMemo(
 		() =>
 			usingPlainPermalinks
@@ -138,8 +136,8 @@ const TopPostsColumn: FC = () => {
 			rows={ rows }
 			loading={ loading || titlesLoading }
 			error={ error || titlesError }
-			// The "Retry" button requests failed titles again by itself. `retry`
-			// requests a failed report of pages, or of the site's totals, again.
+			// The "Retry" button requests failed titles again by itself, so
+			// `retry` is only for a failed report of pages or of the site's totals.
 			onRetry={ error ? retry : undefined }
 		/>
 	);

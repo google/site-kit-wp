@@ -47,7 +47,7 @@ describe( 'useReportPageTitles', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'returns the title that Analytics records for each page path', async () => {
+	it( 'should return the title that Analytics records for each page path', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: createTitlesReport( [
 				[ '/ice-cream/', 'Ice cream is good for your health' ],
@@ -77,7 +77,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( 'requests the titles of the given page paths only', async () => {
+	it( 'should request the titles of the given page paths only', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: createTitlesReport( [
 				[ '/ice-cream/', 'Ice cream is good for your health' ],
@@ -99,7 +99,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( 'returns a title with `&amp;` written as `&`', async () => {
+	it( 'should return a title with `&amp;` written as `&`', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: createTitlesReport( [
 				[ '/spf/', 'Use SPF every day &amp; in winter' ],
@@ -119,7 +119,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( 'gives no title to a page path that Analytics has no title for', async () => {
+	it( 'should return no title for a page path that Analytics has no title for', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: createTitlesReport( [
 				[ '/ice-cream/', 'Ice cream is good for your health' ],
@@ -143,7 +143,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( 'is loading while the titles load', async () => {
+	it( 'should be loading while the titles load', async () => {
 		freezeFetch( titlesEndpoint );
 
 		const { result } = renderHook(
@@ -161,7 +161,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( "returns the error of the request for the titles, and isn't loading, when it fails", async () => {
+	it( 'should return the error of the request for the titles, and should not be loading, when that request fails', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: {
 				code: 'internal_server_error',
@@ -190,7 +190,7 @@ describe( 'useReportPageTitles', () => {
 		} );
 	} );
 
-	it( "doesn't request titles, and isn't loading, when there are no page paths", async () => {
+	it( 'should not request titles, and should not be loading, when there are no page paths', async () => {
 		const { result } = renderHook(
 			() => useReportPageTitles( [], reportOptions ),
 			{ registry }

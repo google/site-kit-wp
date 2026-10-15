@@ -1275,11 +1275,10 @@ final class Assets {
 	/**
 	 * Gets the path that the URL of every post of a post type starts with.
 	 *
-	 * WordPress builds such a URL in `get_post_permalink()`, from the post
-	 * type's permalink structure, such as `product/%product%`. The part before
-	 * the first rewrite tag, such as `%product%`, is the same for every post of
-	 * the type. The path starts with the path of the reference site URL, which
-	 * the dashboard also builds its page links from.
+	 * The part of the post type's permalink structure before its first rewrite
+	 * tag, such as `product/` in `product/%product%`, is the same in the URL of
+	 * every post of the type. The path starts with the path of the reference
+	 * site URL, which the dashboard builds its page links from.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -1316,7 +1315,7 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the query var that holds the slug of a post of a post type in a
+	 * Gets the query var whose value is the slug of a post of a post type in a
 	 * URL, such as `product` in `/?product=hoodie`.
 	 *
 	 * On plain permalinks, `get_post_permalink()` builds the URL of such a
@@ -1329,10 +1328,6 @@ final class Assets {
 	 * @return string|null The query var, such as `product`, or `null` when WordPress reads no query var of the post type from a URL.
 	 */
 	protected function get_post_type_query_var( $post_type ) {
-		if ( ! $post_type ) {
-			return null;
-		}
-
 		$post_type_object = get_post_type_object( $post_type );
 
 		if ( ! $post_type_object || ! is_post_type_viewable( $post_type_object ) ) {

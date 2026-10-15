@@ -48,22 +48,6 @@ import {
 import { FreshDataDateRange } from './useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from './useRecentTrafficBreakdownColumn';
 
-/**
- * Gets the path of a post from a path and query string, such as `/?p=12` from
- * `/?p=12&utm_source=newsletter`, or `undefined` for the home page.
- *
- * @since n.e.x.t
- *
- * @param {string} pagePathPlusQueryString The path and query string.
- * @return {(string|undefined)} The path of the post.
- */
-function getPostPath( pagePathPlusQueryString: string ) {
-	return getPlainPermalinkPost(
-		pagePathPlusQueryString,
-		'http://example.com'
-	)?.path;
-}
-
 describe( 'useRecentTrafficBreakdownColumn', () => {
 	let registry: WPDataRegistry;
 
@@ -160,7 +144,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		] );
 	} );
 
-	it( 'should add up the rows that `getRowLabel` gives the same label, and leave out the rows it gives no label', async () => {
+	it( 'should add up the rows that `getRowLabel` returns the same label for, and leave out the rows it returns no label for', async () => {
 		fetchMock.get( pagesRequest, {
 			body: createBreakdownReport( [
 				[ '/?p=12', 82 ],
@@ -174,11 +158,18 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 			status: 200,
 		} );
 
+		function getRowLabel( pagePathPlusQueryString: string ) {
+			return getPlainPermalinkPost(
+				pagePathPlusQueryString,
+				'http://example.com'
+			)?.path;
+		}
+
 		const { result, waitForRegistry } = renderHook(
 			() =>
 				useRecentTrafficBreakdownColumn(
 					getPagesReportOptions,
-					getPostPath
+					getRowLabel
 				),
 			{ registry }
 		);
@@ -296,7 +287,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {
@@ -305,8 +295,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 
 		await waitForRetry();
 
-		// `retry` invalidates the column's report too, but the `getReport`
-		// resolver sends no request for a report the store already has.
 		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
 		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
@@ -343,7 +331,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 
 		expect( console ).toHaveErrored();
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {
@@ -364,13 +351,39 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 	} );
 
-	it( "should return the error of the column's report, and should request both reports again on `retry`, when both requests fail", async () => {
+	it( "should return the error of the column's report when both requests fail", async () => {
 		fetchMock.getOnce( channelsRequest, {
 			body: {
 				code: 'channels_error',
 				message: 'Channels error',
 				data: { status: 500 },
 			},
+			status: 500,
+		} );
+		fetchMock.getOnce( siteTotalsRequest, {
+			body: errorResponse,
+			status: 500,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() =>
+				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect( result.current.error ).toEqual( {
+			code: 'channels_error',
+			message: 'Channels error',
+			data: { status: 500 },
+		} );
+	} );
+
+	it( 'should request both reports again when `retry` is called after both requests fail', async () => {
+		fetchMock.getOnce( channelsRequest, {
+			body: errorResponse,
 			status: 500,
 		} );
 		fetchMock.getOnce( channelsRequest, {
@@ -395,13 +408,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect( result.current.error ).toEqual( {
-			code: 'channels_error',
-			message: 'Channels error',
-			data: { status: 500 },
-		} );
 
-		// `waitForRegistry` resolves only once, so a new one waits for the retry.
 		const waitForRetry = createWaitForRegistry( registry );
 
 		act( () => {
@@ -413,6 +420,10 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 2, channelsRequest );
 		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
+			rows: [
+				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
+			],
 			loading: false,
 			error: undefined,
 		} );

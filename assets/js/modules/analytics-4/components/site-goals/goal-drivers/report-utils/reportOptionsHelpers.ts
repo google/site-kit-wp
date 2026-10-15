@@ -106,10 +106,9 @@ export function buildRankedReportOptions( {
 		breakdownFilter
 	);
 
-	// The report options are assigned to `options`, rather than returned
-	// directly, so the `keepEmptyRows` field (missing from `ReportOptions`,
-	// but accepted by the Analytics 4 report endpoint) isn't rejected by an
-	// excess property check against the function's declared return type.
+	// Assigned to `options` first, so the excess property check on the return
+	// type doesn't reject `keepEmptyRows`, which the report endpoint accepts
+	// but `ReportOptions` lacks.
 	const options = {
 		...dates,
 		dimensions,

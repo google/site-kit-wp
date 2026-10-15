@@ -38,7 +38,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'returns the title of each post and page by its plain permalink', async () => {
+	it( 'should return the title of each post and page by its plain permalink', async () => {
 		fetchMock.getOnce( postsEndpoint, {
 			body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
 			status: 200,
@@ -68,7 +68,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( 'requests the title of a post from the posts and the title of a page from the pages', async () => {
+	it( 'should request the title of a post from `/wp/v2/posts` and the title of a page from `/wp/v2/pages`', async () => {
 		fetchMock.getOnce( postsEndpoint, {
 			body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
 			status: 200,
@@ -97,7 +97,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( 'requests the titles once for the same posts in another order', async () => {
+	it( 'should request the titles once for the same posts in another order', async () => {
 		fetchMock.getOnce( postsEndpoint, {
 			body: [
 				{ id: 5, title: { rendered: 'Spring recipes' } },
@@ -135,7 +135,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( "gives no title to a post that WordPress doesn't return, such as a deleted post", async () => {
+	it( "should return no title for a post that WordPress doesn't return, such as a deleted post", async () => {
 		fetchMock.getOnce( postsEndpoint, {
 			body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
 			status: 200,
@@ -158,7 +158,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( "gives no title to any plain permalink, and isn't loading, when the request for the titles fails", async () => {
+	it( 'should return no titles, and should not be loading, when the request for the titles fails', async () => {
 		fetchMock.getOnce( postsEndpoint, {
 			body: {
 				code: 'rest_forbidden',
@@ -185,7 +185,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( 'is loading while the titles load', async () => {
+	it( 'should be loading while the titles load', async () => {
 		freezeFetch( postsEndpoint );
 
 		const { result } = renderHook(
@@ -206,7 +206,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		} );
 	} );
 
-	it( "is loading, and doesn't request the titles, while the Traffic Overview widget is out of view", async () => {
+	it( 'should be loading, and should not request the titles, while the Traffic Overview widget is out of view', async () => {
 		const { result } = renderHook(
 			() =>
 				usePlainPermalinkPostTitles(
@@ -222,7 +222,7 @@ describe( 'usePlainPermalinkPostTitles', () => {
 		expect( result.current.loading ).toBe( true );
 	} );
 
-	it( "doesn't request titles, and isn't loading, when there are no plain permalinks", async () => {
+	it( 'should not request titles, and should not be loading, when there are no plain permalinks', async () => {
 		const { result } = renderHook(
 			() => usePlainPermalinkPostTitles( [], 'http://example.com' ),
 			{ registry }

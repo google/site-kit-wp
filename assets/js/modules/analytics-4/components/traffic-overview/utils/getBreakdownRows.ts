@@ -88,8 +88,8 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
 			remainder: ( part * steps ) % total,
 		} ) )
 		// Only a part one step short of the whole can reach it. The other
-		// parts then add up to less than one step, so they take the missing
-		// step.
+		// parts then add up to less than one step, so one of them gets the
+		// missing step.
 		.filter( ( { index } ) => shares[ index ] < steps - 1 )
 		// `sort` is stable, so equal remainders keep the order of the parts.
 		.sort( ( first, second ) => second.remainder - first.remainder )
@@ -102,8 +102,8 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
 }
 
 /**
- * Formats a share that `getRoundedShares()` gave a part with a count above
- * zero, such as `27%` or `52.2%`.
+ * Formats a share that `getRoundedShares()` returned for a part with a count
+ * above zero, such as `27%` or `52.2%`.
  *
  * @since 1.189.0
  * @since n.e.x.t Renamed from `formatWholePercentage()`, and takes the number of steps in the whole, so it formats tenths of a percent too.
@@ -115,12 +115,12 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
 export function formatRoundedShare( share: number, steps: number ): string {
 	const format = {
 		style: 'percent',
-		// `100` steps take no decimal place, and `1000` steps take one.
+		// `100` steps need no decimal place, and `1000` steps need one.
 		maximumFractionDigits: Math.log10( steps ) - 2,
 	} as const;
 
-	// The part has a count above zero, so a part given no step is above zero
-	// but below one step.
+	// The part has a count above zero, so a share of no step is above zero but
+	// below one step.
 	if ( share === 0 ) {
 		return sprintf(
 			/* translators: %s: the smallest share a breakdown shows, such as "1%" or "0.1%". The string reads "less than 1%" */

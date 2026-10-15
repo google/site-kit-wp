@@ -445,7 +445,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the site has no product post type.' );
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the site has no product post type.' );
 	}
 
 	public function test_base_data__product_path_prefix__plain_permalinks() {
@@ -454,7 +454,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the site uses plain permalinks.' );
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the site uses plain permalinks.' );
 	}
 
 	public function test_base_data__product_path_prefix() {
@@ -463,7 +463,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( '/product/', $data['productPathPrefix'], 'productPathPrefix should be the path before the product slug in a product URL.' );
+		$this->assertEquals( '/product/', $data['productPathPrefix'], '`productPathPrefix` should be the path before the product slug in a product URL.' );
 	}
 
 	public function test_base_data__product_path_prefix__rewrite_tag_in_slug() {
@@ -481,7 +481,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( '/shop/', $data['productPathPrefix'], 'productPathPrefix should end before `%product_cat%`, the first rewrite tag of the product permalink structure.' );
+		$this->assertEquals( '/shop/', $data['productPathPrefix'], '`productPathPrefix` should end before `%product_cat%`, the first rewrite tag of the product permalink structure.' );
 	}
 
 	public function test_base_data__product_path_prefix__rewrite_tag_at_start_of_slug() {
@@ -499,7 +499,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productPathPrefix'], 'productPathPrefix should be null when the product permalink structure starts with a rewrite tag, such as `%product_cat%`.' );
+		$this->assertNull( $data['productPathPrefix'], '`productPathPrefix` should be `null` when the product permalink structure starts with a rewrite tag, such as `%product_cat%`.' );
 	}
 
 	public function test_base_data__product_path_prefix__home_in_subdirectory() {
@@ -509,7 +509,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( '/blog/product/', $data['productPathPrefix'], 'productPathPrefix should start with the path of the home URL.' );
+		$this->assertEquals( '/blog/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the home URL.' );
 	}
 
 	public function test_base_data__product_path_prefix__reference_site_url() {
@@ -519,13 +519,13 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], 'productPathPrefix should start with the path of the reference site URL.' );
+		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the reference site URL.' );
 	}
 
 	public function test_base_data__product_query_var__no_product_post_type() {
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when the site has no product post type.' );
+		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the site has no product post type.' );
 	}
 
 	public function test_base_data__product_query_var() {
@@ -533,7 +533,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( 'product', $data['productQueryVar'], 'productQueryVar should be the name of the product post type, which WordPress uses as its query var by default.' );
+		$this->assertEquals( 'product', $data['productQueryVar'], '`productQueryVar` should be the name of the product post type, which WordPress uses as its query var by default.' );
 	}
 
 	public function test_base_data__product_query_var__custom_query_var() {
@@ -547,7 +547,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( 'item', $data['productQueryVar'], 'productQueryVar should be the query var that the product post type registers.' );
+		$this->assertEquals( 'item', $data['productQueryVar'], '`productQueryVar` should be the query var that the product post type registers.' );
 	}
 
 	public function test_base_data__product_query_var__no_query_var() {
@@ -561,7 +561,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when the product post type has no query var.' );
+		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the product post type has no query var.' );
 	}
 
 	public function test_base_data__product_query_var__not_publicly_queryable() {
@@ -575,7 +575,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when WordPress doesn\'t read the query var from a URL, because products aren\'t publicly queryable.' );
+		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when WordPress doesn\'t read the query var from a URL, because products aren\'t publicly queryable.' );
 	}
 
 	public function test_base_data__using_plain_permalinks() {
@@ -583,7 +583,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertTrue( $data['usingPlainPermalinks'], 'usingPlainPermalinks should be true when the site has no permalink structure.' );
+		$this->assertTrue( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `true` when the site has no permalink structure.' );
 	}
 
 	public function test_base_data__using_plain_permalinks__permalink_structure() {
@@ -591,7 +591,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertFalse( $data['usingPlainPermalinks'], 'usingPlainPermalinks should be false when the site has a permalink structure.' );
+		$this->assertFalse( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `false` when the site has a permalink structure.' );
 	}
 
 	public function test_base_data__woocommerce_not_installed() {

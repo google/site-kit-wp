@@ -143,8 +143,8 @@ function getColumnReportOptions(
 }
 
 /**
- * Builds the filter that leaves the product pages out of the report of views
- * for each page.
+ * Builds the filter that removes the product pages from the report of views for
+ * each page.
  *
  * @since n.e.x.t
  *
@@ -169,7 +169,7 @@ function getExcludedProductsFilters(
 		const { postType, queryVar } = excludedProducts;
 		// `get_post_permalink()` puts the slug of a product in the product
 		// query var, such as `?product=hoodie`. For a draft, or a post type
-		// with no query var, it names the post type instead, such as
+		// with no query var, it uses the post type and the ID instead, such as
 		// `?post_type=product&p=123`.
 		const productParameters = [
 			...( queryVar ? [ `${ escapeRegExp( queryVar ) }=[^&]` ] : [] ),
