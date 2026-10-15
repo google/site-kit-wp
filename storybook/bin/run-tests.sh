@@ -16,7 +16,7 @@
 
 SCRIPT_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 ROOT_DIR="$SCRIPT_DIR/../../"
-DIST_DIR="$ROOT_DIR/dist"
+DIST_DIR="$ROOT_DIR/storybook-static"
 PORT=9001
 
 # Install the appropriate Playwright browser.
@@ -26,7 +26,7 @@ else
 	npx playwright install chromium
 fi
 
-# Build Storybook if the dist directory doesn't exist.
+# Build Storybook if there's no build yet.
 if [ ! -f "$DIST_DIR/index.html" ]; then
 	echo "Storybook build not found. Building..."
 	npm run -w storybook build

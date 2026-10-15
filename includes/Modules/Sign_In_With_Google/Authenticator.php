@@ -56,6 +56,7 @@ class Authenticator implements Authenticator_Interface {
 	const ERROR_INVALID_REQUEST    = 'googlesitekit_auth_invalid_request';
 	const ERROR_SIGNIN_FAILED      = 'googlesitekit_auth_failed';
 	const ERROR_TWO_FACTOR_ENABLED = 'googlesitekit_auth_two_factor_enabled';
+	const ERROR_DUPLICATE_EMAIL    = 'googlesitekit_auth_duplicate_email';
 
 	/**
 	 * User meta key marking users created via Sign in with Google.
@@ -256,11 +257,14 @@ class Authenticator implements Authenticator_Interface {
 	 *
 	 * @since 1.145.0
 	 * @since 1.185.0 Returns a WP_Error when the email-matched user uses two-factor authentication and isn't connected to the Google account.
+	 * @since n.e.x.t Returns a WP_Error when more than one user has the email address of the Google account.
 	 *
 	 * @param array $payload Google auth payload.
-	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first, null otherwise.
+	 * @return WP_User|WP_Error|null User object when found, WP_Error when the matched user has to connect their Google account first or more than one user has the email address, null otherwise.
 	 */
 	protected function find_user( $payload ) {
+		global $wpdb;
+
 		// Check if there are any existing WordPress users connected to this Google account.
 		// The user ID is used as the unique identifier because users can change the email on their Google account.
 		$google_user_hashed_id = $this->get_hashed_google_user_id( $payload );
@@ -279,7 +283,26 @@ class Authenticator implements Authenticator_Interface {
 		}
 
 		// Find an existing user that matches the email and link to their Google account by store their user ID in user meta.
-		$user = get_user_by( 'email', $payload['email'] );
+		// WordPress only blocks duplicate emails in `wp_insert_user()`, so more than one user can have the
+		// same email. Fetch up to two matches, using the same comparison as `get_user_by( 'email', ... )`,
+		// so that a Google account is never linked to one of several users that share its email.
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+		$user_ids = $wpdb->get_col(
+			$wpdb->prepare(
+				"SELECT ID FROM $wpdb->users WHERE user_email = %s LIMIT 2",
+				$payload['email']
+			)
+		);
+
+		if ( empty( $user_ids ) ) {
+			return null;
+		}
+
+		if ( count( $user_ids ) > 1 ) {
+			return new WP_Error( self::ERROR_DUPLICATE_EMAIL );
+		}
+
+		$user = get_user_by( 'id', $user_ids[0] );
 		if ( ! $user ) {
 			return null;
 		}

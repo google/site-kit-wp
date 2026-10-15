@@ -45,7 +45,7 @@ set -eo pipefail
 BIN_DIR=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &> /dev/null && pwd)
 VRT_DIR=$(dirname "$BIN_DIR")
 ROOT_DIR=$(cd -- "$VRT_DIR/../.." &> /dev/null && pwd)
-DIST_DIR="$ROOT_DIR/dist"
+DIST_DIR="$ROOT_DIR/storybook-static"
 
 usage() {
 	sed -n '/^# Runs the visual/,/^# *VRT_TRACE/p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
@@ -116,7 +116,7 @@ if [ "$VRT_BUILD" = "1" ] || [ ! -f "$DIST_DIR/iframe.html" ]; then
 fi
 
 if ! grep -q 'dataset.vrt' "$DIST_DIR/iframe.html"; then
-	echo "The Storybook build in dist/ wasn't made for visual regression tests."
+	echo "The Storybook build in storybook-static/ wasn't made for visual regression tests."
 	echo "Rebuild it with: VRT_BUILD=1 $0 $COMMAND"
 	exit 1
 fi
@@ -126,7 +126,7 @@ STALE_FILE=$(
 		-type f -newer "$DIST_DIR/iframe.html" -not -path '*/node_modules/*' -print -quit 2> /dev/null || true
 )
 if [ -n "$STALE_FILE" ]; then
-	echo "Warning: ${STALE_FILE#"$ROOT_DIR"/} changed after the Storybook build in dist/."
+	echo "Warning: ${STALE_FILE#"$ROOT_DIR"/} changed after the Storybook build in storybook-static/."
 	echo "Screenshots won't include the change. Set VRT_BUILD=1 to rebuild first."
 	echo
 fi

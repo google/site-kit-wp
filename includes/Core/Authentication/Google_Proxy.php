@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Authentication;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Authentication\Clients\OAuth_Client;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Exception;
@@ -130,6 +129,7 @@ class Google_Proxy {
 	 * @since 1.49.0
 	 * @since 1.71.0 Uses the V2 setup flow by default.
 	 * @since 1.189.0 Includes the `verification_evidence` query parameter.
+	 * @since n.e.x.t Uses the V3 setup flow by default.
 	 *
 	 * @param array $query_params Query parameters to include in the URL.
 	 * @return string URL to the setup page on the authentication proxy.
@@ -144,23 +144,21 @@ class Google_Proxy {
 			throw new Exception( __( 'Missing site_id or site_code parameter for setup URL.', 'google-site-kit' ) ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Returned to the browser as JSON via WP_Error, escaping would show HTML entities to the user.
 		}
 
-		if ( Feature_Flags::enabled( 'setupFlowRefreshPhase4' ) ) {
-			$query_params['service_version']       = 'v3';
-			$query_params['steps']                 = 5;
-			$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
+		$query_params['service_version']       = 'v3';
+		$query_params['steps']                 = 5;
+		$query_params['verification_evidence'] = ( new Verification_Evidence( $this->context ) )->get();
 
-			/**
-			 * Filters parameters included in the proxy setup URL.
-			 *
-			 * @since 1.184.0
-			 *
-			 * @param array $query_params Query parameters.
-			 */
-			$query_params = apply_filters(
-				'googlesitekit_proxy_setup_url_params',
-				$query_params,
-			);
-		}
+		/**
+		 * Filters parameters included in the proxy setup URL.
+		 *
+		 * @since 1.184.0
+		 *
+		 * @param array $query_params Query parameters.
+		 */
+		$query_params = apply_filters(
+			'googlesitekit_proxy_setup_url_params',
+			$query_params,
+		);
 
 		return add_query_arg(
 			$query_params,
@@ -242,7 +240,7 @@ class Google_Proxy {
 	 * Sanitizes the given base URL.
 	 *
 	 * @since 1.154.0
-	 * @since n.e.x.t Allows URLs on the `.local` TLD.
+	 * @since 1.190.0 Allows URLs on the `.local` TLD.
 	 *
 	 * @param string $url Base URL to sanitize.
 	 * @return string Sanitized base URL.
@@ -439,7 +437,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.68.0
 	 * @since 1.189.0 Added the `verification_evidence` field.
-	 * @since n.e.x.t Added the `intent-step` mode for requests with `purpose=intent`.
+	 * @since 1.190.0 Added the `intent-step` mode for requests with `purpose=intent`.
 	 *
 	 * @return array Metadata fields array.
 	 */
@@ -460,7 +458,7 @@ class Google_Proxy {
 		 * Filters the setup mode.
 		 *
 		 * @since 1.68.0
-		 * @since n.e.x.t The initial mode is `intent-step` when the setup flow fulfills an intent.
+		 * @since 1.190.0 The initial mode is `intent-step` when the setup flow fulfills an intent.
 		 *
 		 * @param string $mode An initial setup mode.
 		 */

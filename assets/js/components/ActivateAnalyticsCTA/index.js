@@ -40,7 +40,6 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ANALYTICS_SETUP_ERROR,
@@ -56,9 +55,6 @@ export default function ActivateAnalyticsCTA( {
 	dismissedItemSlug,
 	analyticsEventLabel,
 } ) {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const viewContext = useViewContext();
 
 	const trackEvents = useNotificationEvents(
@@ -108,10 +104,6 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	const hasActivationError = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshPhase4Enabled ) {
-			return false;
-		}
-
 		const internalServerError =
 			select( CORE_SITE ).getInternalServerError();
 

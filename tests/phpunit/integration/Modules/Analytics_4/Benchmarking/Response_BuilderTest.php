@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -31,6 +32,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Response_BuilderTest extends TestCase {
 
+	use Fake_Benchmarking_Reports_Trait;
 	use Saved_Site_Data_Trait;
 
 	/**
@@ -46,16 +48,6 @@ class Response_BuilderTest extends TestCase {
 	 * @var Response_Builder
 	 */
 	private $builder;
-
-	/**
-	 * Rows the fake Analytics API returns, keyed by the first dimension a report
-	 * asks for.
-	 *
-	 * Each row lists its dimension values, then its visitors.
-	 *
-	 * @var array
-	 */
-	private $report_rows = array();
 
 	/**
 	 * Body of each `batchRunReports` request the fake Analytics API received.
@@ -125,21 +117,7 @@ class Response_BuilderTest extends TestCase {
 					);
 				}
 
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'kind'    => 'analyticsData#batchRunReports',
-								'reports' => array_map(
-									fn( $report_request ) => $this->build_report( $report_request ),
-									$batch_request['requests']
-								),
-							)
-						)
-					)
-				);
+				return new FulfilledPromise( $this->create_analytics_batch_response( $batch_request ) );
 			}
 		);
 
@@ -151,7 +129,7 @@ class Response_BuilderTest extends TestCase {
 	 * Builds the report the fake Analytics API returns for one report request,
 	 * from the rows in `$report_rows` for the report's first dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
@@ -202,7 +180,7 @@ class Response_BuilderTest extends TestCase {
 	 * Gets the dimensions of each report `Response_Builder` asked for, grouped by
 	 * batch call.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array List of batch calls, each a list of reports, each a list of dimension names.
 	 */
@@ -222,7 +200,7 @@ class Response_BuilderTest extends TestCase {
 	 *
 	 * Two channels score the same, and two pages score the same.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	private function provide_reports_for_every_dimension() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );

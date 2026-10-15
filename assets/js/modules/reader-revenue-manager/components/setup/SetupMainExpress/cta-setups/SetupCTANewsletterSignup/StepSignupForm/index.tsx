@@ -41,6 +41,7 @@ import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/co
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -57,6 +58,8 @@ import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
 const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isPublishing, setIsPublishing ] = useState( false );
 
 	const { createCTA, submitChanges } = useDispatch(
@@ -168,7 +171,17 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 			'google-site-kit'
 		),
 		{
-			a: <DocumentationLink slug="rrm-newsletter-signup" />,
+			a: (
+				<DocumentationLink
+					slug="rrm-newsletter-signup"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM
+						)
+					}
+				/>
+			),
 		}
 	);
 

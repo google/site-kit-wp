@@ -17,7 +17,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 /**
  * Builds the options of the Analytics reports for the benchmarking response.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -26,21 +26,21 @@ class Report_Options {
 	/**
 	 * Days in the daily series, the 13 months the Typical Traffic chart shows.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const DAILY_SERIES_DAYS = 395;
 
 	/**
 	 * The most rows a dimension report asks Analytics for in each of its periods.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const REPORT_ROW_LIMIT = 50;
 
 	/**
 	 * First day of the selected period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $start_date;
@@ -48,7 +48,7 @@ class Report_Options {
 	/**
 	 * Last day of the selected period, as `YYYY-MM-DD`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string
 	 */
 	private $end_date;
@@ -56,7 +56,7 @@ class Report_Options {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $start_date The first day of the selected period, as `YYYY-MM-DD`.
 	 * @param string $end_date   The last day of the selected period, as `YYYY-MM-DD`.
@@ -70,7 +70,7 @@ class Report_Options {
 	 * Gets the compare period, which has as many days as the selected period
 	 * and ends the day before the selected period starts.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Compare period, with `startDate` and `endDate` as `YYYY-MM-DD`.
 	 */
@@ -88,7 +88,7 @@ class Report_Options {
 	 * Gets the options of the report that counts visitors by day, over the
 	 * `DAILY_SERIES_DAYS` days that end on the last day of the selected period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -115,7 +115,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts visitors by channel.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -126,7 +126,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts visitors by device category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -137,7 +137,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts new and returning visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -157,7 +157,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts visitors by referring source.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -180,7 +180,7 @@ class Report_Options {
 	 * Gets the options of the report that counts visitors by post, with each
 	 * post's title and publication date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -202,7 +202,7 @@ class Report_Options {
 	/**
 	 * Gets the options of the report that counts visitors by post category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Report request options array.
 	 */
@@ -226,7 +226,7 @@ class Report_Options {
 	 * Gets the options of a report that counts visitors by one or more
 	 * dimensions, for the selected period and the compare period in one request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $dimension_names   The dimensions to count visitors by, such as `array( 'deviceCategory' )`.
 	 * @param array $dimension_filters Optional. The dimension filters, keyed by dimension name. Default empty array.
@@ -266,7 +266,7 @@ class Report_Options {
 	/**
 	 * Creates a date at midnight UTC, where every day is 24 hours long.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $date The date, as `YYYY-MM-DD`.
 	 * @return DateTimeImmutable The date.

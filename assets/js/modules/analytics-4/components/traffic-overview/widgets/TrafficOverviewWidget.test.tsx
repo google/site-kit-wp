@@ -71,6 +71,10 @@ describe( 'TrafficOverviewWidget', () => {
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
+
 	// When Analytics is not connected, the widget renders
 	// `ActivateAnalyticsCTA`, which needs an `IntersectionObserver` that jsdom
 	// doesn't have.
@@ -334,6 +338,7 @@ describe( 'TrafficOverviewWidget', () => {
 			body: [
 				{
 					id: 12,
+					date: '2026-09-24T10:05:00',
 					date_gmt: '2026-09-24T14:05:00',
 					link: 'http://example.com/autumn-recipes/',
 					title: { rendered: 'Autumn recipes' },
@@ -341,6 +346,7 @@ describe( 'TrafficOverviewWidget', () => {
 			],
 			status: 200,
 		} );
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,

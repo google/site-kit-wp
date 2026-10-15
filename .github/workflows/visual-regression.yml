@@ -99,8 +99,8 @@ jobs:
         with:
           name: storybook-vrt
           path: |
-            dist
-            !dist/**/*.map
+            storybook-static
+            !storybook-static/**/*.map
           retention-days: 1
 
   test:
@@ -125,7 +125,7 @@ jobs:
         uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
         with:
           name: storybook-vrt
-          path: dist
+          path: storybook-static
       - name: npm install
         run: SKIP_PATCH_PACKAGE=1 npm ci -w tests/vrt --ignore-scripts
       - name: Run VR tests
