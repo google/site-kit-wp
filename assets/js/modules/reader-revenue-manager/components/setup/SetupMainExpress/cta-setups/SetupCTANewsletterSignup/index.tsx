@@ -44,7 +44,7 @@ import {
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
-import ViewOnSiteCTA from './ViewOnSiteCTA';
+import ViewOnSiteCTANewsletterSignup from './ViewOnSiteCTANewsletterSignup';
 
 const STEPS: SetupStep[] = [
 	publicationSetupStep,
@@ -82,7 +82,7 @@ const SetupCTANewsletterSignup: FC = () => {
 				'Your newsletter signup form is ready!',
 				'google-site-kit'
 			),
-			secondaryCTA: <ViewOnSiteCTA />,
+			secondaryCTA: <ViewOnSiteCTANewsletterSignup />,
 			children: <StepSetupCompleteNewsletterSignup />,
 		},
 	};

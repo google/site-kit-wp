@@ -1,5 +1,5 @@
 /**
- * Reader Revenue Manager newsletter signup "View on your site" CTA.
+ * Reader Revenue Manager express setup "View on your site" CTA.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -32,12 +32,10 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { type Select, useSelect } from 'googlesitekit-data';
-import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExternalIcon from '@/svg/icons/external.svg';
 
 const ViewOnSiteCTA: FC = () => {
-	const hasPreExistingCTAs = useHasPreExistingCTAs();
 	const viewOnSiteURL = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).getViewOnSiteURL(),
@@ -48,9 +46,7 @@ const ViewOnSiteCTA: FC = () => {
 		global.open( viewOnSiteURL, '_blank' );
 	}, [ viewOnSiteURL ] );
 
-	// When the publication already had CTAs, the new form is displayed last,
-	// so there is nothing useful to preview.
-	if ( hasPreExistingCTAs !== false || ! viewOnSiteURL ) {
+	if ( ! viewOnSiteURL ) {
 		return null;
 	}
 
