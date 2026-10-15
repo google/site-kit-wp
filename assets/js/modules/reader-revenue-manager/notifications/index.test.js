@@ -58,6 +58,7 @@ describe( 'Reader Revenue Manager notifications checkRequirements', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		global.location.href = 'http://example.com/wp-admin/admin.php';
 
 		provideModules( registry, [

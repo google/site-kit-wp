@@ -27,10 +27,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
@@ -165,10 +162,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -185,10 +179,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -205,10 +196,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -225,10 +213,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD_VIEW_ONLY,
@@ -245,10 +230,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		provideAnalytics4MockReport( registry, reportOptions );
 
 		const { container, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
@@ -272,10 +254,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 
 		const { container, getByRole, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
@@ -308,10 +287,7 @@ describe( 'AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification', () =
 		} );
 
 		const { container, getByRole, waitForRegistry } = render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

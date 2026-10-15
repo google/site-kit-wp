@@ -75,6 +75,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		activateModuleCallbackMock = jest.fn();
 		activateModuleMock = jest.fn( () => activateModuleCallbackMock );
 

@@ -46,10 +46,7 @@ import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-dis
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import whatsNewEmptyURL from '@/svg/graphics/whats-new-empty.svg?path';
 
 const WhatsNewTab: FC = () => {
@@ -110,7 +107,6 @@ const WhatsNewTab: FC = () => {
 					areaSlug={
 						NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP
 					}
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
 				/>
 			</div>
 			{ visibleFeatures.length === 0 ? (

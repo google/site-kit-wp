@@ -46,6 +46,7 @@ describe( 'ConsentModeSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		provideSiteInfo( registry );
 		provideUserInfo( registry );

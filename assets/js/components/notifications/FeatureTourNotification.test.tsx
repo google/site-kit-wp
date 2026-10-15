@@ -29,10 +29,7 @@ import createFeatureTourNotification, {
 } from '@/js/components/notifications/FeatureTourNotification';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { act, createTestRegistry, render } from '@tests/js/test-utils';
 
@@ -63,7 +60,6 @@ describe( 'FeatureTourNotification', () => {
 			.registerNotification( TOUR_NOTIFICATION_ID, {
 				Component: FeatureTourNotification,
 				areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				isDismissible: false,
 			} );

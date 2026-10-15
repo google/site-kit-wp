@@ -112,7 +112,7 @@ function SetupCTABanner( { id, Notification } ) {
 	}, [ setShowErrorModal ] );
 
 	const onOAuthNavigation = useCallback(
-		() => pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS ),
+		() => pinNotification( id, NOTIFICATION_GROUPS.DEFAULT ),
 		[ id, pinNotification ]
 	);
 

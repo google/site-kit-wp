@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { ENHANCED_CONVERSIONS_NOTIFICATION_ADS } from '@/js/modules/ads/components/notifications/EnhancedConversionsNotification';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { PAX_SETUP_SUCCESS_NOTIFICATION } from '@/js/modules/ads/pax/constants';
@@ -41,6 +42,7 @@ describe( 'ADS_NOTIFICATIONS checkRequirements', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		global.location.href = 'http://example.com/wp-admin/admin.php';
 	} );
 

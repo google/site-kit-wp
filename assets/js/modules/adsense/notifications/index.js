@@ -36,10 +36,10 @@ import {
 } from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { requireSetupCTAsNotMuted } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import AdBlockingRecoverySetupSuccessNotification from '@/js/modules/adsense/components/dashboard/AdBlockingRecoverySetupSuccessNotification';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import {
@@ -77,13 +77,13 @@ export const ADSENSE_NOTIFICATIONS = {
 			AnalyticsAndAdSenseAccountsDetectedAsLinkedOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_ADSENSE ),
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			requireAccessToShareableModule( MODULE_SLUG_ADSENSE ),
@@ -96,10 +96,10 @@ export const ADSENSE_NOTIFICATIONS = {
 		Component: LinkAnalyticsAndAdSenseAccountsOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_ADSENSE ),
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			requireAdSenseNotLinked()

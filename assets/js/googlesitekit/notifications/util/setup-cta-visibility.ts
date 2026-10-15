@@ -24,69 +24,43 @@ import {
 	CORE_USER,
 	INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	ACTIVATE_ANALYTICS_NOTIFICATION,
-	CONNECT_MORE_SERVICES_NOTIFICATION,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 
 /**
- * Determines whether the setup CTAs and feature introduction overlays should be hidden.
+ * Determines whether the setup CTAs are muted.
  *
- * They stay hidden on the first dashboard landing so they don't stack on top of the
- * setup notifications that are already competing for the user's attention there.
+ * Setup CTAs, overlays and the queued feature tour are muted for one week after
+ * the welcome modal, so they don't stack on top of the setup notifications that
+ * are already competing for the user's attention on the first dashboard landing.
  *
  * @since 1.187.0
+ * @since n.e.x.t Only checks the one-week mute; the queue now decides what shows.
  *
- * @param {Function} select      Data store select function.
- * @param {string}   viewContext Current view context.
- * @return {boolean} True when the setup CTAs should be hidden, false otherwise.
+ * @param {Function} select Data store select function.
+ * @return {boolean} True when the setup CTAs are muted, false otherwise.
  */
-export function shouldHideSetupCTAs(
-	select: Select,
-	viewContext: string
-): boolean {
-	const initialSetupNotificationTimeoutDismissed = select(
-		CORE_USER
-	).isItemDismissed( INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG );
-	const queuedHeaderNotifications = select(
-		CORE_NOTIFICATIONS
-	).getQueuedNotifications( viewContext, NOTIFICATION_GROUPS.DEFAULT );
-	const firstHeaderNotificationID =
-		queuedHeaderNotifications?.[ 0 ]?.id || null;
-
-	return (
-		initialSetupNotificationTimeoutDismissed ||
-		firstHeaderNotificationID === ACTIVATE_ANALYTICS_NOTIFICATION ||
-		firstHeaderNotificationID === CONNECT_MORE_SERVICES_NOTIFICATION
+export function areSetupCTAsMuted( select: Select ): boolean {
+	return !! select( CORE_USER ).isItemDismissed(
+		INITIAL_SETUP_NOTIFICATION_TIMEOUT_SLUG
 	);
 }
 
 /**
- * Builds a `checkRequirements` callback that keeps a notification out of the
- * queue while the setup CTAs are hidden.
+ * Builds a `checkRequirements` callback that keeps a setup CTA out of the
+ * queue while the setup CTAs are muted.
  *
- * @since 1.187.0
+ * @since n.e.x.t
  *
- * @return {Function} Callback resolving to `true` when the setup CTAs are shown.
+ * @return {Function} Callback resolving to `true` when the setup CTAs are not muted.
  */
-export function requireSetupCTAsNotHidden() {
-	return async (
-		{ select, resolveSelect }: Registry,
-		viewContext: string
-	): Promise< boolean > => {
-		// Both selectors `shouldHideSetupCTAs()` reads report `undefined` until
-		// they resolve, which would otherwise read as "nothing to hide" and let
-		// the overlay through on the very load it is meant to stay off.
-		await Promise.all( [
-			resolveSelect( CORE_USER ).getDismissedItems(),
-			resolveSelect( CORE_NOTIFICATIONS ).getQueuedNotifications(
-				viewContext,
-				NOTIFICATION_GROUPS.DEFAULT
-			),
-		] );
+export function requireSetupCTAsNotMuted() {
+	return async ( {
+		select,
+		resolveSelect,
+	}: Registry ): Promise< boolean > => {
+		// `isItemDismissed()` reports `undefined` until the dismissed items
+		// resolve, which would otherwise read as "not muted".
+		await resolveSelect( CORE_USER ).getDismissedItems();
 
-		return ! shouldHideSetupCTAs( select as Select, viewContext );
+		return ! areSetupCTAsMuted( select as Select );
 	};
 }

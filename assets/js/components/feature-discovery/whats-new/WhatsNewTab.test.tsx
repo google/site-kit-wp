@@ -36,7 +36,6 @@ import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-disco
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
@@ -118,7 +117,6 @@ describe( 'WhatsNewTab', () => {
 				Component: EnableAutoUpdateBannerNotification,
 				priority: PRIORITY.SETUP_CTA_LOW,
 				areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 				viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
 				checkRequirements: () => true,
 				isDismissible: true,

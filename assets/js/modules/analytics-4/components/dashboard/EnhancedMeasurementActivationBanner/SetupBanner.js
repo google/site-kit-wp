@@ -99,7 +99,7 @@ export default function SetupBanner( props ) {
 		if ( scopes.length > 0 ) {
 			setValues( FORM_SETUP, { autoSubmit: true } );
 
-			await pinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
+			await pinNotification( id, NOTIFICATION_GROUPS.DEFAULT );
 
 			setPermissionScopeError( {
 				code: ERROR_CODE_MISSING_REQUIRED_SCOPE,

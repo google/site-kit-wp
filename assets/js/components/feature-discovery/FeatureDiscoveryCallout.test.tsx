@@ -31,10 +31,7 @@ import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
@@ -89,10 +86,7 @@ describe( 'FeatureDiscoveryCallout', () => {
 
 	function renderNotifications() {
 		return render(
-			<Notifications
-				areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-				groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-			/>,
+			<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 			{
 				features: [ 'featureDiscoveryHub' ],
 				registry,

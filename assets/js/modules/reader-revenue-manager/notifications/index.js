@@ -31,10 +31,10 @@ import {
 } from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { requireSetupCTAsNotMuted } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import {
 	PolicyViolationNotification,
 	RRMSetupSuccessSubtleNotification,
@@ -152,9 +152,9 @@ export const NOTIFICATIONS = {
 		Component: ReaderRevenueManagerSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			// The prompt with the legacy key, used before the banner was
 			// refactored to use the notification ID as its dismissal key, must
 			// not be dismissed.
@@ -203,10 +203,10 @@ export const NOTIFICATIONS = {
 		Component: PublicationApprovedOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			requirePublicationOnboardingState(
 				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE
@@ -229,10 +229,10 @@ export const NOTIFICATIONS = {
 		Component: RRMIntroductoryOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_READER_REVENUE_MANAGER ),
 			asyncRequire( false, requireShowingSetupSuccessNotification() ),
 			requirePublicationOnboardingState(

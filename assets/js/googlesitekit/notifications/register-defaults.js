@@ -129,12 +129,11 @@ import {
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 	SITE_KIT_SETUP_SUCCESS_NOTIFICATION,
 } from './constants';
 import { CORE_NOTIFICATIONS } from './datastore/constants';
-import { requireSetupCTAsNotHidden } from './util/setup-cta-visibility';
+import { requireSetupCTAsNotMuted } from './util/setup-cta-visibility';
 
 /**
  * Requires the current page load to be the one directly following the initial
@@ -419,12 +418,12 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			// If the user just set up Site Kit (i.e. just returned from the
 			// initial OAuth sign-in flow) and is seeing the dashboard for the
 			// first time, we want to hide (dismiss) this notification for 10
@@ -473,7 +472,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: EnableAutoUpdateBannerNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
 		checkRequirements: asyncRequireAll(
 			requireCapability( PERMISSION_UPDATE_PLUGINS ),
@@ -559,10 +557,10 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: ConsentModeSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireConsentModeDisabled(),
 			requireAdsConnected()
 		),
@@ -572,9 +570,9 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: GoogleTagGatewaySetupBanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireAnyGoogleTagGatewayModuleConnected(),
 			asyncRequire( false, requireGoogleTagGatewayEnabled() ),
 			// The health and script access statuses are tri-state: they are
@@ -618,14 +616,13 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: SetUpEmailReportingOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
-			requireSetupCTAsNotHidden(),
+			requireSetupCTAsNotMuted(),
 			// Check if email reporting is enabled at site level.
 			requireSiteEmailReportingNotDisabled(),
 			// The user's own email reporting settings need to have loaded
@@ -650,7 +647,6 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: FeatureDiscoveryCallout,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -658,7 +654,7 @@ export const DEFAULT_NOTIFICATIONS = {
 		isDismissible: true,
 		featureFlag: 'featureDiscoveryHub',
 		checkRequirements: asyncRequireAll(
-			requireSetupCTAsNotHidden(),
+			requireSetupCTAsNotMuted(),
 			requireCapability( PERMISSION_MANAGE_OPTIONS )
 		),
 	},
@@ -666,67 +662,70 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: PDFIntroductionOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
-		checkRequirements: requireSetupCTAsNotHidden(),
+		checkRequirements: requireSetupCTAsNotMuted(),
 	},
 	[ sharedKeyMetrics.slug ]: {
 		Component: createFeatureTourNotification( sharedKeyMetrics ),
 		priority: PRIORITY.FEATURE_TOUR,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: sharedKeyMetrics.contexts,
 		// `TourTooltips` records the dismissal itself through `dismissTour`, so
 		// this stays false to avoid writing a second dismissal record.
 		isDismissible: false,
-		checkRequirements: async ( { select, resolveSelect } ) => {
-			if ( isInitialWelcomeModalActive() ) {
-				return false;
+		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
+			async ( { select, resolveSelect } ) => {
+				if ( isInitialWelcomeModalActive() ) {
+					return false;
+				}
+
+				await Promise.all( [
+					resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
+					// These two back `getKeyMetrics()`, which returns before its own
+					// data arrives and would drop the tour for an eligible user.
+					resolveSelect( CORE_USER ).getKeyMetricsSettings(),
+					resolveSelect( CORE_USER ).getUserInputSettings(),
+					resolveSelect( CORE_USER ).getUser(),
+					resolveSelect( CORE_SITE ).getSiteInfo(),
+				] );
+
+				if (
+					select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
+				) {
+					return false;
+				}
+
+				const keyMetrics = select( CORE_USER ).getKeyMetrics();
+
+				if (
+					! Array.isArray( keyMetrics ) ||
+					keyMetrics.length === 0
+				) {
+					return false;
+				}
+
+				const keyMetricsSetupCompletedBy =
+					select( CORE_SITE ).getKeyMetricsSetupCompletedBy();
+				const currentUserID = select( CORE_USER ).getID();
+
+				return (
+					Number.isInteger( keyMetricsSetupCompletedBy ) &&
+					keyMetricsSetupCompletedBy > 0 &&
+					Number.isInteger( currentUserID ) &&
+					currentUserID !== keyMetricsSetupCompletedBy
+				);
 			}
-
-			await Promise.all( [
-				resolveSelect( CORE_USER ).getDismissedFeatureTourSlugs(),
-				// These two back `getKeyMetrics()`, which returns before its own
-				// data arrives and would drop the tour for an eligible user.
-				resolveSelect( CORE_USER ).getKeyMetricsSettings(),
-				resolveSelect( CORE_USER ).getUserInputSettings(),
-				resolveSelect( CORE_USER ).getUser(),
-				resolveSelect( CORE_SITE ).getSiteInfo(),
-			] );
-
-			if (
-				select( CORE_USER ).isTourDismissed( sharedKeyMetrics.slug )
-			) {
-				return false;
-			}
-
-			const keyMetrics = select( CORE_USER ).getKeyMetrics();
-
-			if ( ! Array.isArray( keyMetrics ) || keyMetrics.length === 0 ) {
-				return false;
-			}
-
-			const keyMetricsSetupCompletedBy =
-				select( CORE_SITE ).getKeyMetricsSetupCompletedBy();
-			const currentUserID = select( CORE_USER ).getID();
-
-			return (
-				Number.isInteger( keyMetricsSetupCompletedBy ) &&
-				keyMetricsSetupCompletedBy > 0 &&
-				Number.isInteger( currentUserID ) &&
-				currentUserID !== keyMetricsSetupCompletedBy
-			);
-		},
+		),
 	},
 	[ WELCOME_MODAL_NOTIFICATION ]: {
 		Component: WelcomeModal,
 		priority: PRIORITY.SETUP_CTA_WELCOME_MODAL,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_MODALS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

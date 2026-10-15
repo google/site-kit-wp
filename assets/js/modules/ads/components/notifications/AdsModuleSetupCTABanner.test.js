@@ -68,6 +68,7 @@ describe( 'AdsModuleSetupCTABanner', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		provideModules( registry, [
 			{

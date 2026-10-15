@@ -31,10 +31,10 @@ import {
 } from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { requireSetupCTAsNotMuted } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import CompatibilityWarningSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/CompatibilityWarningSubtleNotification';
 import SetupSuccessSubtleNotification from '@/js/modules/sign-in-with-google/components/dashboard/SetupSuccessSubtleNotification';
 import SignInWithGoogleSetupCTABanner from '@/js/modules/sign-in-with-google/components/dashboard/SignInWithGoogleSetupCTABanner';
@@ -47,9 +47,9 @@ export const SIGN_IN_WITH_GOOGLE_NOTIFICATIONS = {
 		Component: SignInWithGoogleSetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			asyncRequire(
 				false,
 				requireModuleConnected( MODULE_SLUG_SIGN_IN_WITH_GOOGLE )

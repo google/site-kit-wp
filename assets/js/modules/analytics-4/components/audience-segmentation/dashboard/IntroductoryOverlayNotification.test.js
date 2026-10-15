@@ -79,6 +79,7 @@ describe( 'IntroductoryOverlayNotification', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 
 		provideUserInfo( registry );
 		provideModules( registry, [

@@ -38,11 +38,11 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { requireSetupCTAsNotMuted } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import IntroductoryOverlayNotification, {
 	AUDIENCE_SEGMENTATION_INTRODUCTORY_OVERLAY_NOTIFICATION,
@@ -93,9 +93,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: SetupCTABanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			asyncRequireAny(
 				requireIsAuthenticated(),
@@ -142,10 +142,10 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: EnhancedMeasurementActivationBanner,
 		priority: PRIORITY.SETUP_CTA_LOW,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			// Check if the prompt with the legacy key used before the banner was refactored
 			// to use the `notification ID` as the dismissal key, is dismissed.
@@ -166,13 +166,13 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: IntroductoryOverlayNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		],
 		isDismissible: true,
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			( { select, dispatch } ) => {
 				if ( ! isInitialWelcomeModalActive() ) {
 					return true;
@@ -206,9 +206,9 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		Component: EnhancedConversionsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 			requireModuleNotConnected( MODULE_SLUG_ADS )
 		),
@@ -221,7 +221,6 @@ export const ANALYTICS_4_NOTIFICATIONS = {
 		// number), so the two modals never appear at the same time.
 		priority: PRIORITY.SETUP_CTA_SITE_GOALS_INTRO_MODAL,
 		areaSlug: NOTIFICATION_AREAS.OVERLAYS,
-		groupID: NOTIFICATION_GROUPS.SETUP_MODALS,
 		viewContexts: [
 			VIEW_CONTEXT_MAIN_DASHBOARD,
 			VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,

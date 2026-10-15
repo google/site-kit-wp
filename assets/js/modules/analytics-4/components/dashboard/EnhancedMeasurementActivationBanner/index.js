@@ -103,7 +103,7 @@ export default function EnhancedMeasurementActivationBanner( {
 			return;
 		}
 
-		await unpinNotification( id, NOTIFICATION_GROUPS.SETUP_CTAS );
+		await unpinNotification( id, NOTIFICATION_GROUPS.DEFAULT );
 
 		setStep( ACTIVATION_STEP_SUCCESS );
 	}, [

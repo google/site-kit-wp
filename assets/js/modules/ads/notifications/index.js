@@ -30,10 +30,10 @@ import {
 } from '@/js/googlesitekit/data-requirements';
 import {
 	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
 	PRIORITY,
 } from '@/js/googlesitekit/notifications/constants';
 import { createRegisterNotifications } from '@/js/googlesitekit/notifications/util/create-register-notifications';
+import { requireSetupCTAsNotMuted } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
 import {
 	AccountLinkedViaGoogleForWooCommerceSubtleNotification,
 	AdsModuleSetupCTABanner,
@@ -96,9 +96,9 @@ export const ADS_NOTIFICATIONS = {
 		// which has priority of PRIORITY.SETUP_CTA_LOW
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
 			requireModuleNotConnected( MODULE_SLUG_ADS ),
 			requireNoGoogleForWooCommerceAdsAccount()
 		),
@@ -109,9 +109,11 @@ export const ADS_NOTIFICATIONS = {
 		Component: EnhancedConversionsNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
 		viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-		checkRequirements: requireModuleConnected( MODULE_SLUG_ADS ),
+		checkRequirements: asyncRequireAll(
+			requireSetupCTAsNotMuted(),
+			requireModuleConnected( MODULE_SLUG_ADS )
+		),
 		isDismissible: true,
 		featureFlag: 'gtagUserData',
 	},

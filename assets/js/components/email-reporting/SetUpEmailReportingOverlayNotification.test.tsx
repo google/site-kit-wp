@@ -35,10 +35,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { mockSurveyEndpoints } from '@tests/js/mock-survey-endpoints';
@@ -286,10 +283,7 @@ describe( 'SetUpEmailReportingOverlayNotification', () => {
 
 		function renderNotifications() {
 			return render(
-				<Notifications
-					areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-				/>,
+				<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />,
 				{
 					registry,
 					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,

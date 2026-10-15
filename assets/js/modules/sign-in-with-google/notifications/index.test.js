@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import {
 	createTestRegistry,
@@ -43,6 +44,7 @@ describe( 'SIGN_IN_WITH_GOOGLE_NOTIFICATIONS checkRequirements', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 		global.location.href = 'http://example.com/wp-admin/admin.php';
 	} );
 

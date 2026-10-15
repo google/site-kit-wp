@@ -43,6 +43,7 @@ import {
 } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -66,8 +67,8 @@ import HelpMenu from './help/HelpMenu';
 import Layout from './layout/Layout';
 import Link from './Link';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
+import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
-import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PageHeader from './PageHeader';
 import P from './Typography/P';
 import VisuallyHidden from './VisuallyHidden';
@@ -253,7 +254,7 @@ function DashboardEntityApp() {
 			</Header>
 
 			<div className="googlesitekit-page-content">
-				<SetupCTAOverlays />
+				<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />
 
 				<WidgetContextRenderer
 					id={ ANCHOR_ID_TRAFFIC }

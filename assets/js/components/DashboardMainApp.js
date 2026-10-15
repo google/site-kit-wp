@@ -32,7 +32,6 @@ import { Fragment, useEffect, useState } from '@wordpress/element';
  */
 import { useSelect } from 'googlesitekit-data';
 import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCountCache';
-import { WELCOME_TOUR } from '@/js/feature-tours/constants';
 import {
 	ANCHOR_ID_CONTENT,
 	ANCHOR_ID_KEY_METRICS,
@@ -46,11 +45,7 @@ import {
 	CORE_USER,
 	FORM_TEMPORARY_PERSIST_PERMISSION_ERROR,
 } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	NOTIFICATION_AREAS,
-	NOTIFICATION_GROUPS,
-} from '@/js/googlesitekit/notifications/constants';
-import { shouldHideSetupCTAs } from '@/js/googlesitekit/notifications/util/setup-cta-visibility';
+import { NOTIFICATION_AREAS } from '@/js/googlesitekit/notifications/constants';
 import WidgetContextRenderer from '@/js/googlesitekit/widgets/components/WidgetContextRenderer';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import {
@@ -65,7 +60,6 @@ import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useFormValue from '@/js/hooks/useFormValue';
 import { useMonitorInternetConnection } from '@/js/hooks/useMonitorInternetConnection';
 import useQueryArg from '@/js/hooks/useQueryArg';
-import useViewContext from '@/js/hooks/useViewContext';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { AudienceSelectionPanel } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard';
 import SiteGoalsSelectionPanel from '@/js/modules/analytics-4/components/site-goals/selection-panel';
@@ -92,7 +86,6 @@ import MetricsSelectionPanel from './KeyMetrics/MetricsSelectionPanel';
 import ModuleDashboardEffects from './ModuleDashboardEffects';
 import Notifications from './notifications/Notifications';
 import OfflineNotification from './notifications/OfflineNotification';
-import SetupCTAOverlays from './notifications/SetupCTAOverlays';
 import PDFDownloadButton from './pdf-export/PDFDownloadButton';
 import PDFExportRoot from './pdf-export/PDFExportRoot';
 import PDFSectionsSelectionPanel from './pdf-export/PDFSectionsSelectionPanel';
@@ -140,7 +133,6 @@ export default function DashboardMainApp() {
 
 	const [ showSurveyPortal, setShowSurveyPortal ] = useState( false );
 
-	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	// On mobile and tablet, or when the "Add features" button would otherwise
 	// overlap the logo, the individual feature action icons collapse into the
@@ -309,28 +301,7 @@ export default function DashboardMainApp() {
 		select( CORE_USER ).hasAccessToFeatureTour()
 	);
 
-	const hideSetupCTAs = useSelect( ( select ) =>
-		shouldHideSetupCTAs( select, viewContext )
-	);
-
 	useMonitorInternetConnection();
-
-	// The welcome tour renders its own overlay, so any queued overlays are
-	// hidden while it runs.
-	const isWelcomeTourActive = useSelect( ( select ) => {
-		const currentTour = select( CORE_USER ).getCurrentTour();
-
-		return [
-			WELCOME_TOUR.WITHOUT_ANALYTICS,
-			WELCOME_TOUR.WITH_ANALYTICS,
-		].includes( currentTour?.slug );
-	} );
-
-	// The setup modals (Welcome and Site Goals intro) are intentionally
-	// decoupled from `hideSetupCTAs`: unlike the feature-introduction overlays,
-	// they are meant to appear during the initial setup flow (that's when the
-	// Welcome modal shows). They're only hidden while the welcome tour runs.
-	const showSetupModals = ! isWelcomeTourActive;
 
 	const lastWidgetAnchor = getLastWidgetAnchor( {
 		isMonetizationActive,
@@ -375,27 +346,11 @@ export default function DashboardMainApp() {
 
 			<div className="googlesitekit-page-content">
 				{ /*
-					These notifications are rendered at the top of the dashboard,
-					but are not attached to the header. The first component renders the
-					default queue which mainly contains setup success notices. The
-					second renders the Setup CTA Widgets.
+					All notifications share one queue. Only its head renders, in
+					whichever of these areas (or the header) it belongs to.
 				*/ }
 				<Notifications areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP } />
-				{ ! hideSetupCTAs && (
-					<Notifications
-						areaSlug={ NOTIFICATION_AREAS.DASHBOARD_TOP }
-						groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
-					/>
-				) }
-
-				{ showSetupModals && (
-					<Notifications
-						areaSlug={ NOTIFICATION_AREAS.OVERLAYS }
-						groupID={ NOTIFICATION_GROUPS.SETUP_MODALS }
-					/>
-				) }
-
-				{ ! hideSetupCTAs && <SetupCTAOverlays /> }
+				<Notifications areaSlug={ NOTIFICATION_AREAS.OVERLAYS } />
 
 				{ isKeyMetricsWidgetHidden !== true && (
 					<WidgetContextRenderer

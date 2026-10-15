@@ -57,6 +57,7 @@ describe( 'EnableAutoUpdateBannerNotification', () => {
 		registry
 			.dispatch( CORE_USER )
 			.receiveGetNonces( { updates: '751b9198d2' } );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 	} );
 
 	afterEach( () => {
