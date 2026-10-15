@@ -19,7 +19,7 @@ use Google\Site_Kit\Modules\Search_Console;
 /**
  * Trait for testing Search Console reports with a fake Search Console API.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ trait Authenticated_Search_Console_Trait {
 	 * The administrator becomes the current user, since the module reads the
 	 * token of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param callable $handler The handler each request to the Search Console API goes to.
 	 * @return Search_Console The module, with no property.

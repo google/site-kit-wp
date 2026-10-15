@@ -36,7 +36,7 @@ import useStep from './useStep';
  * A step without completion criteria is never complete, so it is always a
  * valid target.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Array.<Object>} steps       Ordered step definitions.
  * @param {Function}       select      Registry select function.
@@ -59,7 +59,7 @@ export function resolveStep(
  * Steps without completion criteria are ignored, so they never hold the flow
  * back.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Array.<Object>} steps  Ordered step definitions.
  * @param {Function}       select Registry select function.
@@ -82,7 +82,7 @@ export function findBlockingStep(
  * earlier in the flow has unmet completion criteria, in which case the flow
  * redirects back to it.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.

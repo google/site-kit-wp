@@ -47,7 +47,7 @@ export interface FreshDataDateRange {
  * Time. The date range starts two days back to hold yesterday in both
  * reports.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Object} The `startDate` and the `endDate` of the date range.
  */

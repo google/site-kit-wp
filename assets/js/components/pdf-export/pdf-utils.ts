@@ -33,7 +33,7 @@ const RESERVED_FILENAME_CHARACTERS = /[\\/:*?"<>|]/g;
  * Checks whether a character is a control character (U+0000–U+001F or
  * U+007F), which filesystems also reject in filenames.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} character A single character.
  * @return {boolean} Whether the character is a control character.
@@ -50,7 +50,7 @@ function isControlCharacter( character: string ): boolean {
  * Used for the site address in both the PDF header and the PDF filename.
  *
  * @since 1.182.0
- * @since n.e.x.t Moved from `PDFHeader` and added the `fallback` parameter.
+ * @since 1.190.0 Moved from `PDFHeader` and added the `fallback` parameter.
  *
  * @param {string} siteURL            The reference site URL.
  * @param {string} [fallback=siteURL] The value to return when the URL cannot be parsed.
@@ -72,7 +72,7 @@ export function getSiteHost(
  * `Site Kit Dashboard - example.com - Mar 1 – 7, 2026.pdf`.
  *
  * @since 1.181.0
- * @since n.e.x.t Takes the site URL and the report dates instead of the site name and date range slug.
+ * @since 1.190.0 Takes the site URL and the report dates instead of the site name and date range slug.
  *
  * @param {string} siteURL             The reference site URL.
  * @param {Object} dateRange           The report date range.

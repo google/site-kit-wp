@@ -47,7 +47,7 @@ export function createBreakdownReport(
  * Gets the class names of the direct children of a tab panel of
  * `TrafficOverviewWidget`, in order.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Element} container The element the tab panel rendered into.
  * @return {Array<string>} The class names.

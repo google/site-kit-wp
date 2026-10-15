@@ -711,7 +711,7 @@ describe( 'IntroModal', () => {
 		/**
 		 * Creates an event count report whose total is the given count.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 *
 		 * @param {string} eventCount The total, as the string Analytics sends, e.g. `'12'`, not `12`.
 		 * @return {Object} The report.

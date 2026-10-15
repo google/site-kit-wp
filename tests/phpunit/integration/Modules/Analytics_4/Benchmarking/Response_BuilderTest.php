@@ -151,7 +151,7 @@ class Response_BuilderTest extends TestCase {
 	 * Builds the report the fake Analytics API returns for one report request,
 	 * from the rows in `$report_rows` for the report's first dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.
@@ -202,7 +202,7 @@ class Response_BuilderTest extends TestCase {
 	 * Gets the dimensions of each report `Response_Builder` asked for, grouped by
 	 * batch call.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array List of batch calls, each a list of reports, each a list of dimension names.
 	 */
@@ -222,7 +222,7 @@ class Response_BuilderTest extends TestCase {
 	 *
 	 * Two channels score the same, and two pages score the same.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	private function provide_reports_for_every_dimension() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );

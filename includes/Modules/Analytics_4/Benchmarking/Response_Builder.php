@@ -23,7 +23,7 @@ use WP_Error;
  * Everything the Typical Traffic tab renders comes from here, so the tab makes
  * one request and has one loading state instead of eight.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -32,14 +32,14 @@ class Response_Builder {
 	/**
 	 * The most rows a dimension keeps in the response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const MAX_ROWS_PER_DIMENSION = 5;
 
 	/**
 	 * Analytics 4 module instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Analytics_4
 	 */
 	private $analytics_4;
@@ -47,7 +47,7 @@ class Response_Builder {
 	/**
 	 * Custom_Dimensions_Data_Available instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var Custom_Dimensions_Data_Available
 	 */
 	private $custom_dimensions_data_available;
@@ -55,7 +55,7 @@ class Response_Builder {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Analytics_4                      $analytics_4                      The Analytics 4 module instance, which runs the reports.
 	 * @param Custom_Dimensions_Data_Available $custom_dimensions_data_available The Custom_Dimensions_Data_Available instance.
@@ -70,7 +70,7 @@ class Response_Builder {
 	 *
 	 * Nothing is saved to the site, so every call builds the response again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -129,7 +129,7 @@ class Response_Builder {
 	 * of their row scores, which counts the rows past the cut too. A dimension
 	 * with no row left is in neither `dimensions` nor `contextualData`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows, keyed by `contextualData` key, such as `channels`. Every row has its `current` and `previous` visitors.
 	 * @param array $visitors        The site's visitors, with `current` and `previous`.
@@ -202,7 +202,7 @@ class Response_Builder {
 	 * The `CONTENT` and `CATEGORIES` reports count visitors by a custom dimension,
 	 * so each one runs only while its dimension has data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Report_Options $report_options The report options for the selected period.
 	 * @return array Report request options, keyed by `dailyTraffic` or by dimension code, such as `CHANNELS`. The daily series is first.
@@ -233,7 +233,7 @@ class Response_Builder {
 	 * Runs the reports in batch calls, because one `GET:batch-report` call takes
 	 * at most five reports.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $requests The report request options, keyed by `dailyTraffic` or by dimension code.
 	 * @return array|WP_Error Report rows, keyed like the requests, or the error the first failed call returned.
@@ -266,7 +266,7 @@ class Response_Builder {
 	/**
 	 * Gets the rows of a report, as plain arrays.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $report A report from a batch call.
 	 * @return array List of rows, each with its dimension `values` in the order the report asked for them, its `dateRange`, and its `visitors`.
@@ -308,7 +308,7 @@ class Response_Builder {
 	 * with `0` visitors. `Response_Encoder` keeps only the first date, so every
 	 * day has to be in the list.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
@@ -339,7 +339,7 @@ class Response_Builder {
 	/**
 	 * Adds up each day's visitors from one date to another.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
@@ -361,7 +361,7 @@ class Response_Builder {
 	/**
 	 * Builds each dimension's rows from its report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $reports  The report rows, keyed by `dailyTraffic` or by dimension code.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
@@ -407,7 +407,7 @@ class Response_Builder {
 	 * and the `all` hook don't see the filter. They still run in the order of
 	 * their priority, since `WP_Hook` keeps them sorted by it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $contextual_data The rows built from Analytics reports, keyed by `contextualData` key.
 	 * @param array $args            The dates and the row limit the callbacks receive.
@@ -449,7 +449,7 @@ class Response_Builder {
 		 * out, each key keeps at most its 5 highest scoring rows, and a key
 		 * with no row left is left out of the response.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.190.0
 		 *
 		 * @param array $contextual_data The rows, keyed by `contextualData` key.
 		 * @param array $args {
@@ -491,7 +491,7 @@ class Response_Builder {
 	 * keeps the `values` of its first row, such as a page's title, and the rows
 	 * of the selected period are read first.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $report_rows The rows of a dimension report.
 	 * @return array List of pairs, one per value. Each pair has `current` and `previous`, and the `values` of the first row read for that value.
@@ -531,7 +531,7 @@ class Response_Builder {
 	 * Analytics returns the post date as `YYYYMMDD`, and a page whose post date
 	 * isn't a real day is skipped, since it has no age to report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array  $pairs    The pairs from the content report, each with the page path, the page title, and the post date as its values.
 	 * @param string $end_date The end date, as `YYYY-MM-DD`.
@@ -575,7 +575,7 @@ class Response_Builder {
 	 * A `CONTENT` row reports the visitors of the selected period as
 	 * `visitors`, without the `previous` count that only its score used.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $dimension_code The dimension code the row belongs to, such as `CONTENT`.
 	 * @param array  $row            The row, with its `current` and `previous` visitors.

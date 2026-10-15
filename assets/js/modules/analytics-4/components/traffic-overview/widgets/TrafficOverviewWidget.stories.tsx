@@ -159,7 +159,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * Puts the Search Console property and the site's latest post in the store, so
  * the Recent activity tab renders without sending a request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} registry The registry to put the property and the post in.
  * @return {void}

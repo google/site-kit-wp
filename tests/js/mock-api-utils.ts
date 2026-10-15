@@ -19,7 +19,7 @@
 /**
  * Returns the `googlesitekit-api` module with `get()` wrapped in a spy, for `jest.mock()`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Object} The API module, with `get` wrapped in `jest.fn()`.
  */

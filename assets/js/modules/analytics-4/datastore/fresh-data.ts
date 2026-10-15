@@ -228,7 +228,7 @@ const baseSelectors = {
 	 * `shouldIncludeWooCommerceProducts()` returns `true`. Read a request error
 	 * with `getErrorForSelector( 'getRecentContent', [ options ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
@@ -246,7 +246,7 @@ const baseSelectors = {
 	 * Determines whether WooCommerce products should be included alongside
 	 * WordPress posts for "Fresh Data" cards/widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {(boolean|undefined)} `true` if WooCommerce products should be included, `false` if not. Returns `undefined` if not yet loaded.
 	 */

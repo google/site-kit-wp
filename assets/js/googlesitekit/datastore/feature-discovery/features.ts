@@ -171,7 +171,7 @@ export const actions = {
 	 * simply activated and the user stays on the hub.
 	 *
 	 * @since 1.189.0
-	 * @since n.e.x.t Implemented the `setup-flow` setup type.
+	 * @since 1.190.0 Implemented the `setup-flow` setup type.
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated.
@@ -240,7 +240,7 @@ export const actions = {
 	 * Stores the setup the user left the hub to complete, as consumed from
 	 * the cache when the hub mounted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {(Object|null)} pendingSetup             The pending setup, or `null` if there is none.
 	 * @param {string}        pendingSetup.featureSlug Slug of the feature being set up.

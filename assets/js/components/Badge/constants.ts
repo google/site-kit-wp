@@ -22,7 +22,7 @@
  * Each group covers the badges that tell the user the same kind of thing, so a
  * badge takes its colour from what it says rather than from where it appears.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export const enum BADGE_VARIANTS {
 	/**

@@ -110,7 +110,7 @@ export function createTestRegistry() {
 /**
  * Sets the timezone and returns the original timezone for restoration.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @private
  *
  * @param {string|undefined} timezone Timezone to use, or undefined to restore the system default.

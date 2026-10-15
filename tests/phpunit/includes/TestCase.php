@@ -146,7 +146,7 @@ class TestCase extends WP_UnitTestCase {
 	/**
 	 * Gets a reflection of a method that can be invoked even when it is private or protected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param object|string $class_instance Class instance, or name of the class that has the method.
 	 * @param string        $method_name    Method name.
@@ -166,7 +166,7 @@ class TestCase extends WP_UnitTestCase {
 	/**
 	 * Gets a reflection of a property that can be read and written even when it is private or protected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param object|string $class_instance Class instance, or name of the class that has the property.
 	 * @param string        $property_name  Property name.

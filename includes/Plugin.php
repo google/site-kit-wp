@@ -332,7 +332,7 @@ final class Plugin {
 	 *
 	 * @since 1.183.0
 	 * @since 1.185.0 Force-enable the `setupFlowRefreshPhase4` flag in addition to the initial Setup Flow Refresh flag.
-	 * @since n.e.x.t Renamed from `force_setup_flow_refresh_feature_enabled()`, and now only force-enables the `setupFlowRefreshPhase4` flag.
+	 * @since 1.190.0 Renamed from `force_setup_flow_refresh_feature_enabled()`, and now only force-enables the `setupFlowRefreshPhase4` flag.
 	 *
 	 * @param bool   $feature_enabled The current status of this feature flag.
 	 * @param string $feature_name    The feature name.

@@ -77,7 +77,7 @@ export function getFeatureRelevancyTriggerID(
 /**
  * Gets the dismissed item slug for a feature relevancy vote.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string}        slug      Feature slug.
  * @param {VoteDirection} direction Vote direction.
