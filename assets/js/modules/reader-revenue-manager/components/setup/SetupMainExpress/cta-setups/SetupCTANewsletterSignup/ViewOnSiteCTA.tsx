@@ -32,22 +32,20 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { type Select, useSelect } from 'googlesitekit-data';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import useViewContext from '@/js/hooks/useViewContext';
 import {
+	useExpressSetupTrackEvent,
 	useHasPreExistingCTAs,
 	useStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { trackEvent } from '@/js/util';
 import ExternalIcon from '@/svg/icons/external.svg';
 
 const ViewOnSiteCTA: FC = () => {
-	const [ ctaSlug ] = useQueryArg( 'cta' );
 	const [ stepSlug ] = useStep();
 
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
-	const viewContext = useViewContext();
 
 	const viewOnSiteURL = useSelect(
 		( select: Select ) =>
@@ -56,14 +54,10 @@ const ViewOnSiteCTA: FC = () => {
 	);
 
 	const onClick = useCallback( () => {
-		trackEvent(
-			`${ viewContext }_rrm-express-setup_${ ctaSlug }`,
-			'click_view_on_your_site_link',
-			stepSlug
-		);
+		trackEvent( 'click_view_on_your_site_link', stepSlug );
 
 		global.open( viewOnSiteURL, '_blank' );
-	}, [ ctaSlug, stepSlug, viewContext, viewOnSiteURL ] );
+	}, [ stepSlug, trackEvent, viewOnSiteURL ] );
 
 	// When the publication already had CTAs, the new form is displayed last,
 	// so there is nothing useful to preview.

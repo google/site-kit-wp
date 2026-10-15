@@ -37,9 +37,8 @@ import { __ } from '@wordpress/i18n';
 import { type Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import useQueryArg from '@/js/hooks/useQueryArg';
-import useViewContext from '@/js/hooks/useViewContext';
 import {
+	useExpressSetupTrackEvent,
 	useHasPreExistingCTAs,
 	useStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
@@ -50,18 +49,15 @@ import {
 	CTA,
 	CTA_TYPES,
 } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
-import { trackEvent } from '@/js/util';
 
 const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 
 const StepSetupCompleteNewsletterSignup: FC = () => {
-	const [ ctaSlug ] = useQueryArg( 'cta' );
 	const [ stepSlug ] = useStep();
 
-	const hasPreExistingCTAs = useHasPreExistingCTAs();
-	const viewContext = useViewContext();
+	const trackEvent = useExpressSetupTrackEvent();
 
-	const eventCategory = `${ viewContext }_rrm-express-setup_${ ctaSlug }`;
+	const hasPreExistingCTAs = useHasPreExistingCTAs();
 
 	/*
 	 * The newsletter CTA created in this flow is the most recent one of its
@@ -110,28 +106,20 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 	);
 
 	const onClickChangeDisplayOrder = useCallback( () => {
-		trackEvent(
-			eventCategory,
-			'click_change_display_order_link',
-			stepSlug
-		);
-	}, [ eventCategory, stepSlug ] );
+		trackEvent( 'click_change_display_order_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
 
 	const onClickChangePlacementSettings = useCallback( () => {
-		trackEvent(
-			eventCategory,
-			'click_change_placement_settings_link',
-			stepSlug
-		);
-	}, [ eventCategory, stepSlug ] );
+		trackEvent( 'click_change_placement_settings_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
 
 	const onClickContactSupport = useCallback( () => {
-		trackEvent( eventCategory, 'click_contact_support_link', stepSlug );
-	}, [ eventCategory, stepSlug ] );
+		trackEvent( 'click_contact_support_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
 
 	const onClickEditContent = useCallback( () => {
-		trackEvent( eventCategory, 'click_edit_content_link', stepSlug );
-	}, [ eventCategory, stepSlug ] );
+		trackEvent( 'click_edit_content_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
 
 	return (
 		<Fragment>

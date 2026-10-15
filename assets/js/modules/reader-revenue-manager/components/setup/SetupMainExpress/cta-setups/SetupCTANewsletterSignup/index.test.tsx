@@ -448,6 +448,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 			] )(
 				'should track $action only when clicked',
 				async ( { action, name, hasPreExistingCTAs } ) => {
+					const eventCategory = `${ viewContext }_rrm-express-setup_newsletter-signup`;
+
 					setupRegistry( {
 						ctas: hasPreExistingCTAs
 							? [ preExistingCTA, newsletterCTA ]
@@ -465,7 +467,12 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 					await waitForRegistry();
 
-					expect( mockTrackEvent ).not.toHaveBeenCalled();
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						eventCategory,
+						'start_setup',
+						undefined
+					);
+
 					expect( global.open ).not.toHaveBeenCalled();
 
 					const isViewOnSite =
@@ -483,12 +490,13 @@ describe( 'SetupCTANewsletterSignup', () => {
 						} )[ 0 ]
 					);
 
-					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 					expect( mockTrackEvent ).toHaveBeenCalledWith(
-						`${ viewContext }_rrm-express-setup_newsletter-signup`,
+						eventCategory,
 						action,
 						'setup-complete'
 					);
+
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
 
 					if ( isViewOnSite ) {
 						expect( global.open ).toHaveBeenCalledTimes( 1 );
