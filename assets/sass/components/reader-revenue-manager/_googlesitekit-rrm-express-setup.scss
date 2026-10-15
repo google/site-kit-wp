@@ -73,6 +73,31 @@
 			}
 		}
 
+		// Single-column layout without the stepper or footer.
+		.googlesitekit-rrm-express-setup__layout--full-width {
+			@media (min-width: $bp-nonTablet) {
+				grid-template-columns: minmax(0, 1fr);
+			}
+
+			.googlesitekit-rrm-express-setup__content {
+				min-height: calc( 100vh - 118px ); // 46px admin bar + 72px header.
+
+				@media (min-width: $bp-wpAdminBarTablet) {
+					min-height: calc( 100vh - 104px ); // 32px admin bar + 72px header.
+				}
+
+				@media (min-width: $bp-nonTablet) {
+					grid-column: 1;
+					min-height: calc(100vh - 120px); // 32px admin bar + 88px header.
+				}
+			}
+		}
+
+		.googlesitekit-rrm-express-setup__error {
+			display: grid;
+			gap: $grid-gap-desktop;
+		}
+
 		.googlesitekit-rrm-express-setup__footer {
 			background-color: $c-surfaces-surface;
 		}
