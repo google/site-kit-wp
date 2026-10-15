@@ -279,6 +279,7 @@ class ModuleTest extends TestCase {
 
 		// Verify that the response returned data as expected.
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data, 'Owner with shared role should still receive direct response.' );
+		$this->assertSame( $module->get_client(), $module->get_request_client(), "The owner's request should run with the module's own Google client." );
 
 		// The module should not have made a shared request, even though the user does have a shared role, as it still doesn't need to because it's owned by the current user.
 		$this->assertFalse( $module->made_shared_data_request(), 'Owner with shared role should not use shared-data path.' );
@@ -349,6 +350,7 @@ class ModuleTest extends TestCase {
 
 		// Verify that the response returned data as expected.
 		$this->assertEquals( array( 'foo' => 'bar' ), (array) $response->data, 'Shared-role non-owner should receive module response.' );
+		$this->assertSame( $module->get_owner_oauth_client()->get_client(), $module->get_request_client(), "A shared request should run with the module owner's Google client." );
 
 		// The module should have made a shared request, as the user doesn't own the module and does have a shared role.
 		$this->assertTrue( $module->made_shared_data_request(), 'Shared-role non-owner should use shared-data path.' );

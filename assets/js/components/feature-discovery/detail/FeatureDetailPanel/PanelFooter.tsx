@@ -31,6 +31,9 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import FeatureCTA from '@/js/components/feature-discovery/FeatureCTA';
+import FeatureThumbsSurveyTrigger from '@/js/components/feature-discovery/FeatureThumbsSurveyTrigger';
+import Typography from '@/js/components/Typography';
+import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 
 interface PanelFooterProps {
@@ -41,8 +44,14 @@ interface PanelFooterProps {
 const PanelFooter: FC< PanelFooterProps > = ( { feature, onClose } ) => (
 	<footer className="googlesitekit-feature-details-panel__footer">
 		<div className="googlesitekit-feature-details-panel__relevancy">
-			{ /* TODO: #13337 -- Add relevancy feedback controls. */ }
-			<code>&lt;ThumbsSurveyTrigger /&gt;</code>
+			<FeatureThumbsSurveyTrigger slug={ feature.slug } />
+
+			<Typography size={ SIZE_SMALL } type={ TYPE_BODY }>
+				{ __(
+					'Is this service relevant to you? Let us know to help us improve our tailored suggestions',
+					'google-site-kit'
+				) }
+			</Typography>
 		</div>
 
 		<div className="googlesitekit-feature-details-panel__actions">

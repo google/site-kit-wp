@@ -29,9 +29,8 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import ThumbsSurveyTrigger, {
-	VoteDirection,
-} from '@/js/components/surveys/ThumbsSurveyTrigger';
+import { VoteDirection } from '@/js/components/surveys/constants';
+import ThumbsSurveyTrigger from '@/js/components/surveys/ThumbsSurveyTrigger';
 import Typography from '@/js/components/Typography';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
 import { GATrackingEventArgs } from '@/js/types/GATrackingEventArgs';

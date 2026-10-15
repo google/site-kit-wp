@@ -26,7 +26,9 @@ import { createMemoryHistory } from 'history';
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	dismissItemEndpoint,
 	dismissedItemsEndpoint,
@@ -64,6 +66,10 @@ const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
 		panelID: 'whats-new-panel',
 	},
 ];
+
+jest.mock( './all-services/CategoryFilterChips', () =>
+	mockCreateComponent( 'CategoryFilterChips' )
+);
 
 const ALL_SERVICES_SELECTOR = '.googlesitekit-all-services-tab';
 const WHATS_NEW_SELECTOR = '.googlesitekit-whats-new';
@@ -189,6 +195,34 @@ describe( 'FeatureDiscoveryContent', () => {
 			expect( history.action ).toBe( 'POP' );
 
 			await waitForRegistry();
+		} );
+	} );
+
+	describe( 'returning from a setup started on the hub', () => {
+		beforeEach( () => {
+			registry
+				.dispatch( CORE_USER )
+				.receiveGetDismissedItems( [
+					FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+				] );
+		} );
+
+		it( 'should redirect to the pending setup return tab in place of the computed default', async () => {
+			// A returning user would otherwise land on /whats-new.
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'adsense',
+				returnTab: '/all-services',
+			} );
+
+			const { container, history, waitForRegistry } =
+				renderContent( '/' );
+
+			await waitForRegistry();
+
+			expect( history.location.pathname ).toBe( '/all-services' );
+			expect(
+				container.querySelector( ALL_SERVICES_SELECTOR )
+			).toBeInTheDocument();
 		} );
 	} );
 

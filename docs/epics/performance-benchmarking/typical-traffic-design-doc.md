@@ -16,15 +16,15 @@
 
 ## **Objective**
 
-This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard: thirteen months of the site's own daily traffic in one chart, drawn against the range the site's own history says to expect on each day, and a section naming the factors that moved traffic in the selected period — together with the server-side datapoint that gathers and derives everything the tab draws.
+This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard: thirteen months of the site's own daily traffic in one chart, drawn against the range the site's own history says to expect on each day and continued a week past the end of the period, and a section naming the factors that moved traffic in the selected period — together with the server-side datapoint that gathers and derives everything the tab draws.
 
 ## **Background**
 
 The Traffic Overview tab answers "how many visitors did I get, and where did they come from?" over the selected date range. What it cannot answer is whether the number is normal.
 
-Most site owners have neither the analytics background nor the historical context to judge a 12% dip. Without a sense of their own seasonality, a normal January decline reads as a crisis and a seasonal December spike reads as a growth trend. Answering that needs three things the Overview tab does not have. The first is the site's own history well beyond the 90-day maximum of the header date-range selector, so that the current period can be read against the shape of the year around it. The second is an expectation for every day of that history — a range derived from the site's own trailing year and adjusted for the day of the week and the site's recent trend — so that a dip reads against what this site normally does rather than against the reader's memory of it. The third is a comparison across every dimension at once — channels, devices, visitor mix, referrers, content, categories and search queries — so that a movement can be attributed rather than only observed.
+Most site owners have neither the analytics background nor the historical context to judge a 12% dip. Without a sense of their own seasonality, a normal January decline reads as a crisis and a seasonal December spike reads as a growth trend. Answering that needs three things the Overview tab does not have. The first is the site's own history well beyond the 90-day maximum of the header date-range selector, so that the current period can be read against the shape of the year around it. The second is an expectation for every day of that history — a range derived from the site's own trailing year and adjusted for the day of the week and the site's recent trend — so that a dip reads against what this site normally does rather than against the reader's memory of it. The third is a comparison across every driver of traffic at once — channels, the pages visits land on, referring sites, campaigns and search keywords, each qualified by the devices and the kind of visitor behind it — so that a movement can be attributed to the few things that carried it rather than only observed.
 
-None of the three is something the browser should be computing. Twenty-five months of daily rows, a model fitted to each of the 395 days the chart plots, and seven comparison reports across two modules is eight requests and four hundred fits to compose one view, and one of those requests belongs to Search Console and would be issued from inside an Analytics widget. This epic puts that gathering on the server, in one datapoint whose only parameters are the two dates the dashboard already has.
+None of the three is something the browser should be computing. Twenty-five months of daily rows, a model fitted to each of the 395 days the chart plots, and a dozen comparison reports across two modules is a dozen requests and four hundred fits to compose one view, and some of those requests belong to Search Console and would be issued from inside an Analytics widget. This epic puts that gathering on the server, in one datapoint whose only parameters are the two dates the dashboard already has.
 
 # **Design**
 
@@ -32,20 +32,20 @@ None of the three is something the browser should be computing. Twenty-five mont
 
 We will add a second tab to the existing `analyticsTrafficOverview` widget, behind a new `typicalTraffic` feature flag. The tab renders two sections:
 
-1. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers, and the expected range runs under the line as a band, so every day reads against what the site's own history expected of it.
-2. **Key factors** — what moved traffic in the selected period, one section per dimension, ordered by how much of the site's movement each dimension accounts for.
+1. **Typical traffic chart** — daily visitors across the trailing thirteen months, ending where the selected date range ends. It is the site's own shape over a year, not the 28 or 90 days the header selector offers, and the expected range runs under the line as a band, so every day reads against what the site's own history expected of it. The band continues seven days past the end of the period, beyond a divider, so the days just ahead have a shape rather than being blank.
+2. **Key factors** — what moved traffic in the selected period: up to three cards, each naming one driver — a channel, a landing page, a search keyword, a referring site or a campaign — with its share of the site's movement and the two attributes that best explain it.
 
 Behind it, five new pieces:
 
-1. **A datapoint that gathers and derives.** `GET:benchmarking-data` on `Analytics_4` runs the GA4 reports, collects Search Console rows through a filter, derives the daily series, its expected range and the ranked dimension rows, and returns everything the tab draws.  
-2. **An expected-range model.** `Expected_Baseline`, a PHP class, fits each plotted day on the history up to and including it and returns that day's band — see [Expected range](#expected-range).  
-3. **A filter Search Console answers.** `googlesitekit_benchmarking_contextual_data` is where the search-query rows come from, so no module holds a reference to another.  
-4. **A flat wire format.** One positional encoding, written in PHP and read in JS, which is what keeps a response of four hundred daily rows, their bounds and seven dimension arrays affordable in browser storage.  
+1. **A datapoint that gathers and derives.** `GET:benchmarking-data` on `Analytics_4` runs the GA4 reports, collects Search Console rows through a filter, derives the daily series, its expected range, the week ahead and the key factor cards, and returns everything the tab draws.  
+2. **An expected-range model.** `Expected_Baseline`, a PHP class, fits each plotted day on the history up to and including it and returns that day's band, and carries the fit at `endDate` seven days forward — see [Expected range](#expected-range).  
+3. **A filter Search Console answers.** `googlesitekit_benchmarking_contextual_data` is where the search-keyword rows come from, so no module holds a reference to another.  
+4. **A flat wire format.** One positional encoding, written in PHP and read in JS, which is what keeps a response of four hundred daily rows, their bounds and the key factor cards affordable in browser storage.  
 5. **A datastore slice.** `modules/analytics-4` gains a `benchmarking` slice that resolves the response and decodes it.
 
 **Nothing about this feature is cached on the server.** Search Console and Analytics report data is not stored server-side, which rules out a transient in front of the datapoint. The response is cached by the API layer in browser storage under the two dates it depends on, like any other `GET`.
 
-**The expected range is derived in PHP, from the daily series the datapoint already gathers.** It arrives in the same response as the line it is drawn under and costs no request of its own, and the browser draws bounds it is handed rather than computing any — see [Expected range](#expected-range).
+**The expected range is derived in PHP, from the daily series the datapoint already gathers, and so is its week ahead.** Both arrive in the same response as the line they are drawn beside and cost no request of their own, and the browser draws bounds it is handed rather than computing any — see [Expected range](#expected-range). **Nothing about either is generated**: the week ahead is the fit at `endDate` carried forward along the site's own trend, which is arithmetic, not a model call.
 
 **The tab is gated on thirteen months of property history and the Traffic Overview tab is not.** A property younger than that cannot support a year of context, and the gate is on the tab rather than on the widget so that a young site keeps the traffic card it already has — see [Gating and visibility](#gating-and-visibility).
 
@@ -53,7 +53,7 @@ Behind it, five new pieces:
 
 **The whole tab works in the view-only dashboard.** The datapoint is shareable, so the reports run under the module owner's credentials on a shared request exactly as every other shared report does — see [Dashboard sharing](#dashboard-sharing).
 
-**Every part of the tab asks whether it helped.** The chart and each key factor column carry a thumbs up and a thumbs down, and a thumbs down asks the reader what seems off — see [Feedback](#feedback).
+**Every part of the tab asks whether it helped.** The chart and each key factor card carry a thumbs up and a thumbs down, and a thumbs down asks the reader what seems off — see [Feedback](#feedback).
 
 ![][image1]
 
@@ -61,15 +61,14 @@ Behind it, five new pieces:
 
 Almost nothing on the front end is new. The tab is one more descriptor in the widget shell that already holds its tabs as a list; the chart, the loading placeholders, the change badges and the error state are the ones the rest of the dashboard uses. The server-side half has a working precedent in Email Reporting, which already runs GA4 and Search Console reports to compose a payload rather than to answer a single report request.
 
-Seven reuses carry weight in the design, because it depends on a particular property of each:
+Six reuses carry weight in the design, because it depends on a particular property of each:
 
 * **`Module::get_data()` and `Module::set_data()` dispatch a datapoint in-process.** That is how the data datapoint runs its reports: no HTTP hop and no REST round trip, using the module's own service client — see [Report gathering](#report-gathering).  
 * **`Module::get_oauth_client_for_datapoint()` resolves the client per datapoint**, including for a nested in-process dispatch, which is what carries the datapoint into the view-only dashboard — see [Dashboard sharing](#dashboard-sharing).  
-* **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The reports the response needs therefore cost two round trips rather than seven, chunked the way `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.  
-* **`POST:searchanalytics-batch` on `Search_Console`** answers the query rows the same way, which is what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on a shared request too.  
+* **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The five reports every response needs therefore cost one round trip, and the reports behind the selected cards' attributes at most two more, chunked the way `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.  
+* **`POST:searchanalytics-batch` on `Search_Console`** answers the search-keyword rows and their page and device breakdowns in one call, which is what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on a shared request too.  
 * **The API layer caches `GET` responses in browser storage, keyed on the datapoint and an MD5 of its query parameters.** That is what holds the response, under the two dates it depends on, with no cache of the slice's own.  
-* **`GoogleChart` passes Google Charts interval roles through untouched.** `getFilteredChartData()` returns the table as given when no `selectedStats` is passed, and `getChartOptions()` does not touch `intervals`, so the expected range is two interval columns and an option rather than a change to the component — see [Typical traffic chart](#typical-traffic-chart).  
-* **`Custom_Dimensions_Data_Available`** answers server-side whether `googlesitekit_post_date` and `googlesitekit_post_categories` are gathering data, which decides whether those two reports are run at all — see [Response assembly](#response-assembly).
+* **`GoogleChart` passes Google Charts interval roles through untouched.** `getFilteredChartData()` returns the table as given when no `selectedStats` is passed, and `getChartOptions()` does not touch `intervals`, so the expected range and its week ahead are interval columns and an option rather than a change to the component — see [Typical traffic chart](#typical-traffic-chart).
 
 The new infrastructure is the gathering, the model and the transport in front of them: one `Analytics_4` datapoint, the [expected-range model](#expected-range), the filter Search Console answers, the [wire format](#wire-format) both languages read, and the `benchmarking` datastore slice behind them. The external dependencies are the GA4 Data API and the Search Console API, reached the way they always are.
 
@@ -81,7 +80,7 @@ The epic is built behind a new `typicalTraffic` feature flag.
 
 The tab descriptor is added to the widget shell's tab list under the flag check, so with the flag off the widget carries the tabs it carries today and nothing about the Traffic section changes. The datapoint is added to `Analytics_4::get_datapoint_definitions()` only when the flag is enabled, and Search Console adds its [contextual-data callback](#cross-module-contextual-data) under the same check — with the flag off neither module carries any benchmarking code into a request.
 
-Two additions sit outside the flag: `sessionSource` among the [shareable dimensions](#report-gathering) and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility). Both are single entries in allow-lists the rest of the plugin reads on every request, and making what a shared report may query depend on a feature flag is a worse property than the widening itself. Neither is reachable by the tab with the flag off.
+Two additions sit outside the flag: `sessionSource`, `landingPage` and `sessionCampaignName` among the [shareable dimensions](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility). Both are entries in allow-lists the rest of the plugin reads on every request, and making what a shared report may query depend on a feature flag is a worse property than the widening itself. Neither is reachable by the tab with the flag off.
 
 ### **Gating and visibility** {#gating-and-visibility}
 
@@ -99,7 +98,7 @@ The tab is present when all of:
 
 The gate and [what the chart plots](#typical-traffic-chart) do not measure the same history. The gate asks for 13 months from the property's creation; the chart asks for 13 months before the selected range's `endDate`. A property that has only just passed the gate therefore has a chart whose earliest weeks are the property's own first weeks, which is where the property-creation marker on the chart earns its place. **The chart draws whatever the property has rather than waiting for a full window**; what the gate buys is that there is a year of shape to look at at all.
 
-The [expected range](#expected-range) measures history a third way: from the first day the series records any traffic. A day needs 28 days of that history behind it to have a band, so on a property that has only just passed the gate the band starts four weeks into the line rather than at its left edge, and on a property tagged long after it was created it starts four weeks after the tagging. Both gaps sit beside the property-creation marker or the flat run that explains them, and **neither hides the line**: a day without a band is a day the model has nothing to say about, not a day the chart leaves out.
+The [expected range](#expected-range) measures history a third way: from the first day the series records any traffic. A day needs 28 days of that history behind it to have a band, so on a property that has only just passed the gate the band starts four weeks into the line rather than at its left edge, and on a property tagged long after it was created it starts four weeks after the tagging. Both gaps sit beside the property-creation marker or the flat run that explains them, and **neither hides the line**: a day without a band is a day the model has nothing to say about, not a day the chart leaves out. A property whose first recorded traffic is less than four weeks old has no band under `endDate` either, and therefore no [week ahead](#the-week-ahead).
 
 Where the property is old enough but the traffic is thin, the tab still renders. Whether it should — and what "too thin to call anything typical" means — is an [open question](#what-is-the-minimum-history-and-volume-for-the-typical-traffic-tab?).
 
@@ -123,10 +122,10 @@ The response decodes into the fields the sections render:
 
 | Field | Shape | Rendered by |
 | :---- | :---- | :---- |
-| `visitors` | `{ current, previous }` totals for the selected period | `KeyFactors`, for the site-level movement each factor is measured against |
+| `visitors` | `{ current, previous }` visitor totals for the selected period | no section; the period totals the [generated insight's payload](./traffic-insights-design-doc.md#payload-assembly) sends |
 | `dailyTraffic` | one row per day across the thirteen-month window: `{ date, visitors, expectedMin, expectedMax }`, the bounds `null` on a day the [expected range](#expected-range) cannot fit | `TypicalTrafficChart` |
-| `dimensions` | dimension codes ordered by absolute movement, highest first | the order `KeyFactors` walks its sections in |
-| `contextualData` | the dimension arrays, keyed by code, each row `{ label, current, previous }` | `KeyFactors` |
+| `forecast` | seven rows past `endDate`: `{ date, expectedMin, expectedMax }`; omitted without a fit at `endDate` | `TypicalTrafficChart`'s [week ahead](#the-week-ahead) |
+| `keyFactors` | up to three cards, ranked: `{ kind, label, current, previous, sharePct, attributes }`, each attribute `{ kind, label, current, previous, sharePct }`, at most two | `KeyFactors` |
 
 Both the response's shape and its field names are the plugin's own: camelCase, flat, and unrelated to anything the reports return. What crosses the wire is the positional [wire format](#wire-format); the table above is what the slice's decoder produces from it, and it is the shape every section component is written against.
 
@@ -134,14 +133,14 @@ Every section component takes rows and numbers as props and touches no store, wh
 
 ### **Typical traffic chart** {#typical-traffic-chart}
 
-`TypicalTrafficChart` renders `GoogleChart` with `chartType="LineChart"` over a four-column table — date, daily visitors, and the expected range's lower and upper bounds — built by a pure function in `traffic-overview/charts/`, with a header above the plot and a legend below it, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them.
+`TypicalTrafficChart` renders `GoogleChart` with `chartType="LineChart"` over a four-column table — date, daily visitors, and the expected range's lower and upper bounds — and three more columns for the [week ahead](#the-week-ahead), built by a pure function in `traffic-overview/charts/`, with a header above the plot and a legend below it, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them.
 
-**The window is thirteen months and it is not the header's.** The selected date range decides where the window ends and nothing else about it: the chart plots the 395 days up to and including the selected range's `endDate` whether the reader has 28 or 90 days selected. That independence is the tab's whole point — a chart that shrank to the selected range would answer the same question the Overview tab already answers — and it is the one thing about this chart a reader has to understand, which is what the support page behind the chart's info tooltip covers — see [Documentation in-product](#documentation-in-product).
+**The window is thirteen months and it is not the header's.** The selected date range decides where the window ends and nothing else about it: the chart plots the 395 days up to and including the selected range's `endDate`, and the week after it, whether the reader has 28 or 90 days selected. That independence is the tab's whole point — a chart that shrank to the selected range would answer the same question the Overview tab already answers — and it is the one thing about this chart a reader has to understand, which is what the support page behind the chart's info tooltip covers — see [Documentation in-product](#documentation-in-product).
 
 Three consequences follow from the window rather than from the series:
 
 * **The x axis carries monthly ticks**, formatted `MMM`, over transparent gridlines. Weekly ticks at this width are unreadable and daily ticks are not tick marks at all.  
-* **The value axis is fitted to the whole window, line and band both.** Its maximum clears the higher of the largest daily value and the largest upper bound, since on a day the site underperforms the band sits well above the line and an axis fitted to the line alone clips it. A seasonal peak eleven months back therefore sets the scale the current period is read against. That is the comparison the chart exists to make, and it is also why a site with one viral week has a flat-looking year — a property of the data rather than of the chart.  
+* **The value axis is fitted to the whole window, line and band both.** Its maximum clears the higher of the largest daily value and the largest upper bound, the week ahead's included, since on a day the site underperforms the band sits well above the line, and in the week ahead it climbs further wherever the site's trend is rising; an axis fitted to the line alone clips it. A seasonal peak eleven months back therefore sets the scale the current period is read against. That is the comparison the chart exists to make, and it is also why a site with one viral week has a flat-looking year — a property of the data rather than of the chart.  
 * **The selected range is marked rather than isolated.** A shaded region spanning the selected range's `startDate` to `endDate` shows the reader where the rest of the dashboard is looking inside the year. It is drawn as a React child positioned in `GoogleChart`'s `ready` handler from `getChartLayoutInterface()` — `getChartAreaBoundingBox()` for the plot box and `getXLocation( date )` for the two edges — the way `DateMarker` already positions its line, and it re-positions on redraw because `ready` fires again. An overlay that paints *behind* the plotted line needs a negative `z-index`, which only works inside a stacking context, so the chart's wrapper takes a modifier class giving it `z-index: 0` and the chart declares `backgroundColor: 'transparent'`.
 
 **The expected range runs under the whole line.** The two bound columns are declared with `role: 'interval'` and follow the visitors column they annotate, and the `intervals` option draws them as a filled area — `style: 'area'`, with `lineWidth: 0` and `pointSize: 0` so the band has no edge lines or points of its own — the way the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it. A day the [model](#expected-range) cannot fit carries `null` in both columns, and `interpolateNulls: false` is what keeps the band from being drawn straight across such days. The band is a tint of the line's violet, and the selected-range region behind it is lighter still, so the band stays legible inside the region, where the reader is looking. Every bound comes from the response; the chart computes none of its own.
@@ -156,44 +155,86 @@ The property-creation marker carries over from the Overview chart, through `date
 
 Whether the series is plotted as raw daily counts or smoothed is an [open question](#is-the-thirteen-month-series-plotted-daily-or-smoothed?).
 
-### **Key factors**
+#### *The week ahead* {#the-week-ahead}
 
-`KeyFactors` ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=702-24771&m=dev)) renders one section per dimension that moved traffic in the selected period, in the order the response gives them, each naming the values that moved and by how much. Every value comes from `contextualData`; the section derives nothing.
+The expected range continues seven days past `endDate`, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it: band only, with no line through it, beyond a one-pixel divider on `endDate`. The [charts PoC](https://storage.googleapis.com/site-kit-github-artifacts/temp/performance-benchmarking-charts.html) is the reference implementation, drawn against the same chart version `GoogleChart` pins; the columns are in the [appendix](#chart-table-and-options).
 
-Seven dimensions can appear, each with a code:
+**The week ahead is the fit at `endDate` carried forward, and nothing else.** Each forward day's band is the corridor fitted on `endDate`, moved along the fit's own monthly trend and spread onto the day with its weekday's factor — the arithmetic is under [The seven days ahead](#the-seven-days-ahead). It carries no projected line, as the design draws it: what the model can say about next Tuesday is the range a normal Tuesday would fall in if the site keeps its current course, and a line through the middle of that range would read as a prediction the band does not make.
 
-| Code | Rows | Source |
+**The horizon is seven days at every range**, the same week whether the reader has 7 or 90 days selected, because it describes the site's current course rather than the selected period. `forecast` carries the seven rows, and the axis extends seven days past `endDate` to hold them. **`forecast` is its own array rather than seven more rows on `dailyTraffic`**: every other consumer of `dailyTraffic` reads days that happened — the line, the period totals, the band — and a forward row carrying no `visitors` value would have to be filtered out by each of them. Keeping the two apart is also what lets the horizon stay fixed while the window behind it changes.
+
+**The band runs on without a gap.** The forward band is an interval pair of its own, because interval columns bind to the series they follow, and the row for `endDate` carries that pair as well, set to the measured band's bounds on that day. The two bands therefore meet where the measured one ends, with neither a day's gap nor a step between them — which the arithmetic makes natural, since the measured band on `endDate` is the same fit with no distance travelled. The forward band takes the measured band's tint, because it is the same range.
+
+**The divider marks `endDate`**, a one-pixel overlay at `getXLocation( endDate )`, positioned in the `ready` handler the way the selected-range region is and painted behind the line inside the same `z-index: 0` wrapper. It is what tells the reader where the line stops because the days after it have not happened. The week ahead adds nothing to hover over, so the chart's tooltip is unchanged.
+
+**Without a fit at `endDate` there is no week ahead.** A property whose first recorded traffic is less than four weeks old has no band under its last day either, so the response carries no `forecast`, the table stops at the measured columns, and the divider is not drawn.
+
+### **Key factors** {#key-factors}
+
+`KeyFactors` ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev)) renders up to three cards under the heading `Key factors behind your traffic`, in the order the response gives them. Each card names one **driver** — the thing that moved traffic in the selected period — and qualifies it with at most two **attributes**: the values inside the driver that carried its movement. Every value comes from `keyFactors`; the section derives nothing.
+
+**Drivers and attributes are two strict classes, and only a driver becomes a card.** Five kinds can be a driver:
+
+| Kind | A card names | Counted in |
 | :---- | :---- | :---- |
-| `CHANNELS` | channel name, current and previous visitors | `sessionDefaultChannelGrouping` |
-| `DEVICES` | device category, current and previous visitors | `deviceCategory` |
-| `VISITOR_MIX` | new or returning, current and previous visitors | `newVsReturning` |
-| `REFERRERS` | referring source, current and previous visitors | `sessionSource` |
-| `SEARCH_QUERIES` | query, current and previous clicks, current and previous position | the [contextual-data filter](#cross-module-contextual-data) |
-| `CONTENT` | page path and title, visitors, days since publication | `pagePath` filtered on `customEvent:googlesitekit_post_date` |
-| `CATEGORIES` | category name, current and previous visitors | `customEvent:googlesitekit_post_categories` |
+| `CHANNEL` | a channel of the default channel grouping | sessions |
+| `CONTENT` | a landing page, by its path | sessions |
+| `SEARCH_KEYWORD` | a Search Console query | clicks |
+| `REFERRING_SITE` | an external site whose visits arrive through `Referral` or `Organic Social` | sessions |
+| `CAMPAIGN` | a marketing campaign or newsletter, by its campaign name | sessions |
 
-Each code maps to an entry in a catalog in `traffic-overview/factors/registry.ts`: its title copy, the `contextualData` key it reads, and the component that renders it. **The catalog is what a code resolves to, and three rules live in the lookup rather than in the components:**
+**Device and visitor type are never drivers.** A device or a new-versus-returning split describes visits that some driver already accounts for, so a card of its own would only mirror the channel behind it — and compete with that channel for one of three places. Both appear only as attributes, beside the driver they qualify. **A post category is not a driver either.** The page that moved is the specific thing, and a category card would count the same visits a second time; the categories report is not run.
 
-* A code with no catalog entry is dropped, so a code the response adds later costs one section rather than the panel.  
-* A code whose `contextualData` key is absent from the response is dropped as well. The response orders only the dimensions it carries, so this should not arise; the lookup treats it as no section rather than as an empty one.  
-* Sections render in the response's order and the panel shows the top few. Which few, and whether the rest are reachable at all, is a layout decision the catalog does not make.
+**Which attributes a card can carry depends on its driver**, and for a channel on which channel:
 
-**The ordering is derived server-side, not in the browser.** The datapoint ranks the dimensions by the absolute change each accounts for and returns that order — see [Response assembly](#response-assembly). Ranking in the browser would mean every consumer of these rows re-deriving the same arithmetic over the same numbers, and it would put the decision about what counts as movement on the side of the wire with the weakest guarantees about how a number is printed.
+| Driver | Attribute candidates, in order |
+| :---- | :---- |
+| `Organic Search` | search keyword, landing page, user type, device |
+| `Direct` | landing page, user type, device |
+| `Referral` | referring site, landing page, user type, device |
+| `Organic Social` | referring site, campaign, landing page, user type, device |
+| a paid channel: `Paid Search`, `Paid Social`, `Paid Shopping`, `Paid Video`, `Paid Other`, `Display` or `Cross-network` | campaign, platform, user type, landing page, device |
+| `Email` | campaign, landing page, user type, device |
+| `Organic Video` | platform, landing page, device |
+| `Unassigned` | landing page |
+| any other channel | landing page, user type, device |
+| a landing page | traffic channel, search keyword, user type, device, referring site |
+| a campaign | traffic channel, landing page, user type, device |
+| a referring site | landing page, user type, device |
+| a search keyword | landing page, device |
 
-Each section's copy is the plugin's own: translated patterns filled with `sprintf` over values formatted through `numFmt`, with a `ChangeBadge` per row. The rows carry a label, a value and a change, and no shared row component in the plugin has a column for the change, so the row list is a new component — shared with nothing, since the Overview tab's breakdown columns render a different shape.
+A card shows at most two of its candidates: the two whose leading value moved most in the card's own direction, with the order above breaking a tie — see [Attribute selection](#attribute-selection). A candidate with no qualifying value is skipped, so a card can carry one attribute or none, and the list is what a card *may* say rather than what it must.
 
-`SEARCH_QUERIES` is the one entry whose rows are not a label and two numbers: a query carries clicks and average position, and a position that *fell* numerically is an improvement. Its renderer is the reason a catalog entry carries a component rather than only a `contextualData` key.
+**Direct traffic leads with its landing page.** A direct visit carries no referrer to name, and the page it lands on is the clue that is left: the homepage reads as brand recall, a bookmark or a typed address, and a deep post or product as a link shared somewhere that drops the referrer — a messaging app, a workplace chat, an email client. Device is the other clue, since sharing in a mobile messaging app and in a desktop workplace chat leave different shapes, which is why it stays on the Direct card's list. Whether a Direct card also reads click identifiers off its landing URLs is an [open question](#should-a-direct-card-read-click-identifiers-off-its-landing-urls?).
 
-Each factor section carries its own [feedback control](#feedback) in its top-right corner.
+**A referring site and a platform are the same dimension under two titles.** Both are the session's source: a `Referral` or `Organic Social` card titles it `Referring site`, a paid or `Organic Video` card `Platform`. They are separate attribute kinds in the response so that a row is titled from its kind alone, without the renderer knowing which channel it sits under. **Facebook's source variants collapse into one value** — `facebook.com`, `m.facebook.com`, `l.facebook.com`, `lm.facebook.com` and `fb` become `Facebook` before anything is summed or ranked — so a surge split across them is one referring site rather than five small ones. Where an AI assistant's visits come from, and therefore whether a channel card for them carries an `Assistant` attribute, is an [open question](#where-does-ai-assistant-traffic-come-from?).
+
+New components live in `traffic-overview/factors/`, each taking its values as props:
+
+* `KeyFactors` — the heading and one `KeyFactorCard` per entry of `keyFactors`. With no entries it renders nothing, heading included.  
+* `KeyFactorCard` — the driver kind's title, the driver's label, its change in its own unit, a `KeyFactorShareBadge`, and one `KeyFactorAttribute` per attribute, with the card's [feedback control](#feedback) in its top-right corner.  
+* `KeyFactorAttribute` — the attribute kind's title, its value, its change and a small `KeyFactorShareBadge`.  
+* `KeyFactorShareBadge` — `9.8% of traffic growth` or `71.4% of traffic drop` on a card, `4.3% of growth` on an attribute, its direction taken from the sign of the row's own change. `ChangeBadge` prints a percentage change between two values, which is a different number with different copy.  
+* `KeyFactorLabel` and `KeyFactorChange` — a label, linked when it is a path, and a signed change in its unit, which the card and the attribute row both render.
+
+The panel passes the site's reference URL down with `keyFactors`, so a path can be linked without any of these components reading a store.
+
+**Every card has one shape, so there is one renderer.** A channel, a page, a query, a site and a campaign each carry a label, a change and a share, and so does every attribute. What differs by kind is copy and unit, and `traffic-overview/factors/registry.ts` holds both: each driver kind's title and unit — `visits`, or `clicks` for a search keyword — and each attribute kind's title. An attribute counts in clicks when it is a search keyword or sits on a search keyword's card, since Search Console is the only source of either. **A kind with no catalog entry is dropped**: an unknown driver kind renders no card and an unknown attribute kind renders no row, so a kind the response adds later costs one card or one row rather than the panel.
+
+A landing page — as a `CONTENT` card's label or as a `Landing page` attribute — renders as a link to that path on the site, opening in a new tab, as `DetailsPermaLinks` links a page's path. Device and visitor-type values are translated by the plugin: GA4 reports them as fixed tokens, so `mobile` renders as `Mobile` and `new` as `New visitors`, and a token the plugin does not know renders as GA4 gave it. Channel names, paths, hostnames, campaign names and queries render exactly as the response gives them.
+
+**The selection, the order and every share are derived server-side, not in the browser.** The datapoint scores every candidate driver, keeps three, and picks each card's attributes — see [Key factor scoring](#key-factor-scoring). Ranking in the browser would mean every consumer of these rows re-deriving the same arithmetic over the same numbers, and it would put the decision about what counts as movement on the side of the wire with the weakest guarantees about how a number is printed.
+
+Each card's copy is the plugin's own: translated patterns filled with `sprintf` over values formatted through `numFmt` — `%s visits`, `%s of traffic growth` — with the plural form chosen by `_n()` on the change's absolute value.
 
 ### **Feedback** {#feedback}
 
-Every part of the widget asks the reader whether it helped: the chart, each key factor column, and each insight block the Traffic Insights epic adds to the tab. A part carries a thumbs up and a thumbs down, and a thumbs down opens a popup asking what seems off, with three reasons written for that part. **The vote is per part, not per tab**, because a reader who trusts the chart and doubts one factor has nothing to say with a single vote for both.
+Every part of the widget asks the reader whether it helped: the chart, each key factor card, and each insight block the Traffic Insights epic adds to the tab. A part carries a thumbs up and a thumbs down, and a thumbs down opens a popup asking what seems off, with three reasons written for that part. **The vote is per part, not per tab**, because a reader who trusts the chart and doubts one factor has nothing to say with a single vote for both.
 
 The control takes two forms:
 
 * **On the chart it is always visible.** It sits at the right end of the legend row, after a `Help us improve` label ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1755-25930&m=dev)), so the legend and the control are laid out as one row under the plot.  
-* **On a key factor column and on an insight block it appears on hover.** The two buttons carry no label and sit in the part's top-right corner ([key factor columns](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1741-11863&m=dev), [insight block](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13136&m=dev)). They show while the pointer is over the part, so three columns side by side do not carry six permanent buttons. They also show while focus is on them and while the part's popup or thank-you message is open, and they are always shown on a device without hover, where nothing else would reveal them.
+* **On a key factor card and on an insight block it appears on hover.** The two buttons carry no label and sit in the part's top-right corner ([key factor cards](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev), [insight block](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13136&m=dev)). They show while the pointer is over the part, so three cards side by side do not carry six permanent buttons. They also show while focus is on them and while the part's popup or thank-you message is open, and they are always shown on a device without hover, where nothing else would reveal them.
 
 **The control is the shared `FeedbackPrompt` from \#13679, not a second set of thumbs.** That issue generalizes the Site Goals prompt to take a vote ID and a tracking context. This epic adds three things to it: an optional label, the hover placement, and a list of reasons that a thumbs down opens in place of the thank-you popper. The reasons render in `FeedbackMenu`, the menu a feature card's dismiss action already opens, whose fixed `Help us improve` heading becomes a prop so that each part asks its own question. Choosing a reason closes the menu and shows the thank-you popper; closing it without a choice keeps the thumbs down.
 
@@ -202,24 +243,24 @@ The control takes two forms:
 | Part | Popup heading | Reasons |
 | :---- | :---- | :---- |
 | The chart ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13886&m=dev)) | `What seems off about this chart?` | `The expected range feels too high or too low`; `Doesn’t reflect a seasonal change or recent event`; `Not sure how to read this` |
-| A key factor column ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-12871&m=dev)) | `What seems off about this?` | `This didn’t really drive my recent traffic change`; `An important page or traffic source is missing`; `The numbers or percentages are confusing` |
-| The Traffic performance insight block ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13378&m=dev)) | `What seems off?` | `My traffic didn’t change like this`; `Hard to understand`; `Too obvious to be useful` |
-| The Primary drivers insight block ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-13632&m=dev)) | `What seems off?` | `Leaves out an important traffic source or page`; `Too obvious to be useful`; `Too hard to understand` |
+| A key factor card ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-12871&m=dev)) | `What seems off about this?` | `This didn’t really drive my recent traffic change`; `An important page or traffic source is missing`; `The numbers or percentages are confusing` |
 
-**A vote and a reason are sent the way existing feedback is.** A vote is the survey trigger `ThumbsSurveyTrigger` already sends, `vote:<voteID>:<direction>`, plus the GA4 event `FeedbackPrompt` already sends — see [Internal Measurement: GA4 Events](#internal-measurement-ga4-events). A reason is one more survey trigger, `feedback:<voteID>:<reason>`, the shape a feature card's dismiss menu sends its reasons in. The chart has a vote ID of its own and the key factor columns share one, with the column's dimension code as the GA4 event's label: the survey a downvoter is shown follows the kind of part they voted on, and GA4 records which factor it was.
+The insight blocks' reasons are listed with [Traffic Insights' feedback](./traffic-insights-design-doc.md#insight-feedback), since they travel as the AI feedback endpoint's reason tokens.
 
-The insight blocks are rendered by the Traffic Insights epic, and they carry the control from the day they render. This epic builds the control and puts it on the chart and the key factor columns.
+**On the chart and the key factor cards, a vote and a reason are sent the way existing feedback is.** A vote is the survey trigger `ThumbsSurveyTrigger` already sends, `vote:<voteID>:<direction>`, plus the GA4 event `FeedbackPrompt` already sends — see [Internal Measurement: GA4 Events](#internal-measurement-ga4-events). A reason is one more survey trigger, `feedback:<voteID>:<reason>`, the shape a feature card's dismiss menu sends its reasons in. The chart has a vote ID of its own and the key factor cards share one, with the card's driver kind as the GA4 event's label: the survey a downvoter is shown follows the kind of part they voted on, and GA4 records which kind of driver it was.
+
+The insight blocks are rendered by the Traffic Insights epic, and they carry the control from the day they render, with one difference that is that epic's to build: **a vote on generated text goes to the service's AI feedback endpoint, against the generation that produced the text, and not to `triggerSurvey()`**. Traffic Insights gives `FeedbackPrompt` the option that hands a vote and a reason to callbacks in place of the survey triggers — see [Insight feedback](./traffic-insights-design-doc.md#insight-feedback). This epic builds the control and puts it on the chart and the key factor cards.
 
 ### **Data datapoint** {#data-datapoint}
 
 `GET:benchmarking-data` is a `Shareable_Datapoint` implementing `Executable_Datapoint` under `includes/Modules/Analytics_4/Datapoints/`, taking the module instance, `Credentials` and `Context` through its `$definition` array.
 
-**Its only request parameters are `startDate` and `endDate`**, the two every report datapoint already takes. The thirteen-month window, the comparison window, the reports, the expected range, the ranked rows and the dimension order are all derived from them.
+**Its only request parameters are `startDate` and `endDate`**, the two every report datapoint already takes. The thirteen-month window, the comparison window, the reports, the expected range and its week ahead, and the key factor cards are all derived from them.
 
 Unlike the module's other datapoints it is not a wrapper over one service call, so it does not use `create_request()`/`parse_response()` to shape a single Google API call. It returns a closure over three steps:
 
-1. **Gather.** Two batched GA4 report calls, and one Search Console call through the filter — see [Report gathering](#report-gathering). A GA4 failure ends the request with the module's own `WP_Error`, which is what puts the tab in its error state. A Search Console failure costs one `contextualData` key and nothing else.  
-2. **Derive.** The zero-filled daily series and its [expected range](#expected-range), the period totals, the ranked dimension rows and the dimension order — see [Response assembly](#response-assembly).  
+1. **Gather.** One batched GA4 report call and one Search Console call through the filter, then at most two more GA4 calls for the selected cards' attributes — see [Report gathering](#report-gathering). A GA4 failure ends the request with the module's own `WP_Error`, which is what puts the tab in its error state. A Search Console failure costs the search-keyword candidates and attributes and nothing else.  
+2. **Derive.** The zero-filled daily series, its [expected range](#expected-range) and the week ahead, the period totals, and the key factor cards with their attributes — see [Response assembly](#response-assembly).  
 3. **Encode.** The [wire format](#wire-format): the positional arrays the tab decodes.
 
 The datapoint implements `Permission_Aware_Datapoint`, and the check it declares is the dashboard-viewing capability rather than the authenticated-dashboard one, so a view-only user reaches it.
@@ -232,23 +273,35 @@ It lives on the Analytics module rather than in a new core controller because ev
 
 The datapoint runs reports through `Module::get_data()` and `Module::set_data()`, which dispatch a datapoint in-process against the module's own service client — the same path Email Reporting uses to compose its payload, with no HTTP hop and no REST permission round trip.
 
-GA4 reports go through `GET:batch-report`, which takes up to five report requests per call. `Analytics_4` therefore answers the response in two calls rather than seven:
+GA4 reports go through `GET:batch-report`, which takes up to five report requests per call. **Every response needs five reports, and they are one call:**
 
 | Report | Feeds |
 | :---- | :---- |
 | `totalUsers` by `date`, ascending, over 759 days ending on `endDate` | `dailyTraffic` from its trailing 395 days, the [expected range](#expected-range) from all of it, and the `visitors` totals for both windows |
-| `totalUsers` by `sessionDefaultChannelGrouping`, both windows | `CHANNELS` |
-| `totalUsers` by `newVsReturning`, both windows | `VISITOR_MIX` |
-| `totalUsers` by `deviceCategory`, both windows | `DEVICES` |
-| `totalUsers` by `sessionSource`, both windows | `REFERRERS` |
-| `screenPageViews`/`totalUsers` by `pagePath`, filtered on `customEvent:googlesitekit_post_date` | `CONTENT` |
-| `totalUsers` by `customEvent:googlesitekit_post_categories`, both windows | `CATEGORIES` |
+| `sessions` by `sessionDefaultChannelGrouping`, `deviceCategory` and `newVsReturning`, both windows | the `CHANNEL` candidates, the site's session totals, and a channel card's device and user-type attributes |
+| `sessions` by `sessionDefaultChannelGrouping` and `sessionSource`, both windows | the `REFERRING_SITE` candidates, and a channel card's referring-site and platform attributes |
+| `sessions` by `sessionDefaultChannelGrouping` and `landingPage`, both windows | the `CONTENT` candidates, a channel card's landing-page attribute, and a landing page's traffic-channel attribute |
+| `sessions` by `sessionDefaultChannelGrouping` and `sessionCampaignName`, both windows | the `CAMPAIGN` candidates, a channel card's campaign attribute, and a campaign's traffic-channel attribute |
 
-Each dimension report carries its current and comparison window as two date ranges in one request rather than as two requests. The last two are requested only where `Custom_Dimensions_Data_Available` says the dimension is not gathering data, so a site without either issues five reports rather than seven — one batched call instead of two.
+Each breakdown carries its current and comparison window as two date ranges in one request rather than as two requests, and asks for 250 rows ordered by sessions.
 
-**Both `visitors` totals come out of the daily series rather than out of a totals report.** The selected period and the one before it are at most 180 days together, comfortably inside the 759 the series spans, so summing is free and — more usefully — guarantees the headline the tab compares against cannot disagree with the chart above it.
+**The breakdowns count sessions because sessions add up.** A session has exactly one channel, one landing page, one source, one campaign, one device and one visitor type, so the rows of any of these reports sum to the channel, page, source or campaign they break down. That is what makes a landing page's total the sum of its rows across channels, a card's attributes parts of the card, and a share of the site's movement a share of something that adds up to the site's movement. `totalUsers` has none of these properties — one visitor can arrive through two channels and land on two pages — and a session is what the card calls a visit. The daily series stays on `totalUsers`, because the chart plots visitors.
 
-**`sessionSource` is added to the shareable dimension list in `RequestHelpers::validate_shared_dimensions()`.** Every other dimension above is already in it; without this one a shared request fails as a whole batch rather than losing the `REFERRERS` rows, and the tab's error state is what a view-only user sees. Widening the list is the deliberate choice over dropping `REFERRERS` on a shared request, which would make the response depend on which kind of user loaded the dashboard first. A traffic-source name is the same class of data as the channel grouping already on the list.
+**Every breakdown is keyed on the channel as well.** That is what assigns each page, source and campaign to the channels its visits came through — the parent a [suppression](#key-factor-scoring) needs — and what lets a channel card read every one of its attributes out of the same four reports, with no report of its own.
+
+**A second pass fills the attributes the first cannot**, and it runs only for the cards the [selection](#key-factor-scoring) has kept. A landing page's device, visitor type and referring site, and a campaign's or a referring site's landing page, device and visitor type, come from reports filtered to the card's own driver:
+
+| Card | Reports, filtered on the card's driver, both windows |
+| :---- | :---- |
+| A landing page | `sessions` by `deviceCategory` and `newVsReturning`, filtered on `landingPage`; `sessions` by `sessionDefaultChannelGrouping` and `sessionSource`, filtered the same way, so that its referring sites are the `Referral` and `Organic Social` sources only |
+| A campaign | `sessions` by `deviceCategory` and `newVsReturning`, filtered on `sessionCampaignName`; `sessions` by `landingPage`, filtered the same way |
+| A referring site | `sessions` by `deviceCategory` and `newVsReturning`, filtered on every source value the site collapses from; `sessions` by `landingPage`, filtered the same way |
+
+That is at most six reports for three cards, in at most two more calls, and none at all for a response whose cards are channels and search keywords. Running them for three kept cards rather than for every candidate is what keeps the response from paying for breakdowns of drivers it will not show. The search keyword's attributes come from Search Console in the [first pass](#cross-module-contextual-data), so it needs no second.
+
+**Both `visitors` totals come out of the daily series rather than out of a totals report.** The selected period and the one before it are at most 180 days together, comfortably inside the 759 the series spans, so summing is free and — more usefully — guarantees the period totals cannot disagree with the chart above them.
+
+**`sessionSource`, `landingPage` and `sessionCampaignName` are added to the shareable dimension list in `RequestHelpers::validate_shared_dimensions()`.** Every other dimension above is already in it, and so is `sessions` among the shareable metrics; without these three a shared request fails as a whole batch rather than losing the cards that need them, and the tab's error state is what a view-only user sees. Widening the list is the deliberate choice over dropping those drivers on a shared request, which would make the response depend on which kind of user loaded the dashboard first. A traffic-source name, a landing path and a campaign name are the same class of data as the channel grouping and the page path already on the list.
 
 The report options live in `includes/Modules/Analytics_4/Benchmarking/Report_Options.php`, following the `Email_Reporting/Report_Options.php` precedent, which keeps every window and dimension in one readable place rather than spread through the datapoint.
 
@@ -270,13 +323,17 @@ $contextual_data = apply_filters(
 );
 ```
 
-`Search_Console::register()` adds the callback that answers with the `SEARCH_QUERIES` rows, deriving them through its own `POST:searchanalytics-batch` datapoint and its own settings, in a `Benchmarking\Report_Data_Builder` alongside the `Email_Reporting` one. The callback returns the array untouched unless the module `is_connected()`, so a site without a verified property simply omits the key — the same degradation the response already defines for a missing custom dimension. Search Console is force-active, so its `register()` always runs and the connection check is the only gate that matters.
+`$contextual_data` is every row a candidate driver or an attribute is read from, keyed by what it breaks down — the four GA4 breakdowns of the [first pass](#report-gathering) under `channelBreakdowns`, `channelSources`, `channelPages` and `channelCampaigns` — and the filter runs before anything is scored, so a contributed row is a candidate like any other. The keys and their row shapes are in the [appendix](#contextual-data-keys).
 
-Sharing is the second gate, and it is Search Console's own rather than Analytics'. The callback's report runs under the Search Console owner's credentials for a view-only caller, but only where `search-console` is shared with that caller's role; where it is not, the report fails and the key is omitted for that request. **No cache pools that difference across callers**: every stored copy of a response lives in the requesting user's own browser, so two callers who assemble different responses are never served each other's.
+`Search_Console::register()` adds the callback that answers with three more keys: `searchKeywords`, each query's clicks in both windows; `searchKeywordPages`, the same clicks broken down by page; and `searchKeywordDevices`, broken down by device. It derives all three through one call to its own `POST:searchanalytics-batch` datapoint, with its own settings, in a `Benchmarking\Report_Data_Builder` alongside the `Email_Reporting` one. **Search Console's rows are written in GA4's vocabulary.** A page becomes the path GA4's `landingPage` reports, so a landing-page card finds its keywords and a keyword card names a page the site serves; a device becomes GA4's lowercase token, so one translation in the browser serves both modules.
 
-**No module holds a reference to another.** Analytics owns the extension point and the response shape; Search Console owns its own reports, credentials and connection state; a later module with something to contribute adds a callback rather than an edit to the Analytics datapoint. The cost is that the response's contents are not readable from one file alone, which is why the keys and their row shapes are specified under [Response assembly](#response-assembly) rather than left to the callbacks.
+The callback returns the array untouched unless the module has a property, so a site without a verified property has no search-keyword candidates and no search-keyword attributes, and an `Organic Search` card draws its attributes from the rest of its list. Search Console is force-active, so its `register()` always runs and the property check is the only gate that matters.
 
-The datapoint validates the returned array against those keys and shapes before it encodes — unknown keys dropped, scalars cast, the same row cap applied — because the filter is public and what comes back reaches the dashboard. A callback that errors or returns something unusable costs its key, not the request.
+Sharing is the second gate, and it is Search Console's own rather than Analytics'. The callback's report runs under the Search Console owner's credentials for a view-only caller, but only where `search-console` is shared with that caller's role; where it is not, the report fails and the three keys are omitted for that request. **No cache pools that difference across callers**: every stored copy of a response lives in the requesting user's own browser, so two callers who assemble different responses are never served each other's.
+
+**No module holds a reference to another.** Analytics owns the extension point and the response shape; Search Console owns its own reports, credentials and connection state; a later module with something to contribute adds a callback rather than an edit to the Analytics datapoint. The cost is that the response's contents are not readable from one file alone, which is why the keys and their row shapes are specified in the [appendix](#contextual-data-keys) rather than left to the callbacks.
+
+The datapoint validates the returned array against those keys and shapes before it scores anything — unknown keys dropped, scalars cast, each key held to the 250 rows a report asks for — because the filter is public and what comes back reaches the dashboard. A callback that errors or returns something unusable costs its keys, not the request.
 
 ### **Response assembly** {#response-assembly}
 
@@ -285,17 +342,18 @@ Every field is derived in PHP by [the data datapoint](#data-datapoint), from the
 | Response field | Derived from |
 | :---- | :---- |
 | `dailyTraffic` | the daily series' trailing 395 days, zero-filled, each with the bounds the [expected range](#expected-range) fits for it |
+| `forecast` | the fit at `endDate`, carried seven days forward — see [The seven days ahead](#the-seven-days-ahead) |
 | `visitors` | the same series, summed over the selected window and the one before it |
-| `contextualData` | each dimension report, paired across its two date ranges, ranked and capped |
-| `dimensions` | the dimension codes, ordered by the absolute movement each accounts for |
+| `keyFactors` | the [contextual data](#cross-module-contextual-data): every candidate driver scored, gated and ranked, the first three kept, and each given its attributes — see [Key factor scoring](#key-factor-scoring) |
 
-Five rules the assembly holds to:
+Six rules the assembly holds to:
 
 * **GA4 returns no row for a day with no traffic**, so the series is keyed by date and the gaps are filled with zeros before anything is computed. A missing day must not shorten the window or shift every later row's position, which in a format whose [date axis is implicit](#wire-format) it otherwise would.  
 * **Each plotted day's bounds are fitted on the series as it stood on that day.** A fit reads the rows up to and including its own day, from the first day with recorded traffic, so no bound is computed from a day after the one it describes — see [Expected range](#expected-range).  
-* **A dimension's two windows are paired by value, not by row index.** A value present in one window and absent from the other has no counterpart row, so the pairing is a lookup keyed on the dimension value and a missing counterpart is a previous value of zero.  
-* **Each dimension's rows are scored, filtered, ranked and capped** before they are encoded — see [Key factor scoring](#key-factor-scoring) for the score and the filters. The rows the response carries are the rows the tab renders, so the cap bounds both what a reader sees and what browser storage holds — an [open question](#how-many-rows-does-each-dimension-carry?).  
-* **The dimension order is the sum of its surviving rows' scores**, descending. A dimension whose values all moved a little ranks below one where a single value moved a lot and explains the site's own trend, which is the ordering a reader wants: the section that explains the most goes first.
+* **A breakdown's two windows are paired by value, not by row index.** A value present in one window and absent from the other has no counterpart row, so the pairing is a lookup keyed on the row's dimension values and a missing counterpart is a count of zero.  
+* **A placeholder value is never a driver or an attribute.** GA4 reports an empty value, or a value in parentheses — `(not set)`, `(direct)`, `(organic)`, `(referral)` and the like — for a session that has no such value. Its sessions still count toward its channel and the site's totals; it is never a card and never a row.  
+* **The response carries at most three cards and two attributes on each**, so what a reader sees and what browser storage holds are bounded by the design rather than by a cap to tune.  
+* **Facebook's source variants are collapsed before anything is summed** — see [Key factors](#key-factors) — and a referring site keeps the raw values it was collapsed from, which is what its [second-pass](#report-gathering) reports filter on.
 
 The comparison window is the preceding window of the same length, computed off the two request parameters. The tab sends dates rather than the date-range slug, so the cache key changes when the reference date rolls over instead of holding yesterday's answer under today's range.
 
@@ -305,24 +363,41 @@ Assembly lives in `includes/Modules/Analytics_4/Benchmarking/` — `Report_Optio
 
 ### **Key factor scoring** {#key-factor-scoring}
 
-One formula scores every row in every dimension, so a query, a channel and a device are ranked on the same scale. For a row with `current` and `previous` visitor (or click) counts, against the selected period's site-wide `visitors.current` and `visitors.previous`:
+The cards come out of one pass over every candidate driver in the [contextual data](#cross-module-contextual-data): each channel, summed across its devices and visitor types; each landing page, campaign and referring site, summed across the channels its visits came through; and each search keyword. Five steps, in order, decide which three become cards.
+
+**1. Score.** One formula scores every candidate, so a channel, a page and a query are ranked on the same scale. For a candidate with `current` and `previous` counts — sessions, or clicks for a search keyword — against the site's session totals `sessions.current` and `sessions.previous`, the sums of every `channelBreakdowns` row in each window:
 
 1. **`delta`** `= current - previous`.  
-2. **`trafficImpactPct`** `= delta / MAX( visitors.previous, visitors.current ) * 100` — the row's own change as a percentage of the larger of the two site-wide totals, so a rapidly growing site doesn't inflate a row that only kept pace with it.  
-3. **`selfChangePct`** `= delta / previous * 100`, or `100` when `previous` is `0` and `current` is greater than `0` — how much the row itself moved, independent of the site.  
-4. **`siteGrowthRate`** `= ( visitors.current - visitors.previous ) / visitors.previous` for the period as a whole.  
-5. **`excessImpactPct`** `= ( delta - previous * siteGrowthRate ) / MAX( visitors.previous, visitors.current ) * 100` — how far the row's own movement departs from what the site's overall growth rate alone would have predicted for it, as a percentage of the site-wide total.  
+2. **`trafficImpactPct`** `= delta / MAX( sessions.previous, sessions.current ) * 100` — the candidate's own change as a percentage of the larger of the two site-wide totals, so a rapidly growing site doesn't inflate a candidate that only kept pace with it.  
+3. **`selfChangePct`** `= delta / previous * 100`, or `100` when `previous` is `0` and `current` is greater than `0` — how much the candidate itself moved, independent of the site.  
+4. **`siteGrowthRate`** `= ( sessions.current - sessions.previous ) / sessions.previous` for the period as a whole.  
+5. **`excessImpactPct`** `= ( delta - previous * siteGrowthRate ) / MAX( sessions.previous, sessions.current ) * 100` — how far the candidate's own movement departs from what the site's overall growth rate alone would have predicted for it, as a percentage of the site-wide total.  
 6. **`score`** `= ( 0.6 * ABS( trafficImpactPct ) + 0.4 * ABS( excessImpactPct ) ) * weight * boost`.
 
-`weight` is fixed per dimension — `CONTENT` 1.5, `SEARCH_QUERIES` 1.4, `REFERRERS` 1.3, `CATEGORIES` 1.2, `CHANNELS` 1.1, `DEVICES` 1.0, `VISITOR_MIX` 1.0 — so a specific driver outweighs a broad one of equal raw impact, on the reasoning that `DEVICES` and `VISITOR_MIX` usually only mirror a channel or referrer shift counted elsewhere. `boost` is `1.25` when the row's own direction agrees with the site's overall direction and `1.0` otherwise; the site's direction is `UP` when its period-over-period change is at least `3%`, `DOWN` at `-3%` or below, and `STABLE` between them, and a row's own direction follows the same sign convention on its `delta`.
+`weight` is fixed per kind — `CONTENT` 1.5, `SEARCH_KEYWORD` 1.4, `REFERRING_SITE` 1.3, `CAMPAIGN` 1.2, `CHANNEL` 1.1 — so a specific driver outweighs a broad one of equal raw impact. `boost` is `1.25` when the candidate's own direction agrees with the site's overall direction and `1.0` otherwise; the site's direction is `UP` when its period-over-period change in sessions is at least `3%`, `DOWN` at `-3%` or below, and `STABLE` between them, and a candidate's own direction follows the same sign convention on its `delta`.
 
-A row is dropped — scored but never ranked, capped or summed into its dimension's total — when any of these hold:
+**2. Drop.** A candidate is dropped when either of these holds:
 
-* **The significance floor.** `ABS( delta ) < 5` or `ABS( trafficImpactPct ) < 0.40`. Below this a row is noise on any site's traffic.  
-* **The counter-trend filter.** The row's direction opposes the site's overall direction, and it clears neither `ABS( trafficImpactPct ) >= 1.0` nor ( `ABS( selfChangePct ) >= 10` and `ABS( delta ) >= 25` ). A site growing overall can still have individual values that fell; this is what keeps a handful of visitors moving the wrong way out of an ordering built to explain the site's own trend.  
-* **The macro-divergence filter, on `DEVICES` and `VISITOR_MIX` rows only.** `ABS( selfChangePct - totalPctChange ) < 5`, where `totalPctChange` is the site's own period-over-period percentage change. A device or segment that only tracks the site's overall change explains nothing beyond it.
+* **The significance floor.** `ABS( delta ) < 5` or `ABS( trafficImpactPct ) < 0.40`. Below this a candidate is noise on any site's traffic.  
+* **The counter-trend filter.** The candidate's direction opposes the site's overall direction, and it clears neither `ABS( trafficImpactPct ) >= 1.0` nor ( `ABS( selfChangePct ) >= 10` and `ABS( delta ) >= 25` ). A site growing overall can still have drivers that fell; this is what keeps a handful of visits moving the wrong way out of a selection built to explain the site's own trend.
 
-Within a dimension, its surviving rows are ranked by `score`, descending, and capped per [the row-cap open question](#how-many-rows-does-each-dimension-carry?). Across dimensions, `dimensions` orders on the sum of each dimension's surviving row scores, descending — an empty dimension, every one of whose rows was dropped, carries no entry.
+**3. Gate the specific drivers.** A landing page, a search keyword, a referring site or a campaign stays a candidate only when it clears both elevation thresholds: `ABS( delta ) >= 10`, and a `sharePct` of at least `15`. Below either, its movement is a scattered part of its channel's, and the channel is the honest thing to name. A channel has no gate beyond step 2.
+
+`sharePct` is the share the badges print, and it is measured against the site's movement **in the candidate's own direction**: `ABS( delta )` over `gain` for a candidate that rose and over `loss` for one that fell, `* 100`, held at `100` and rounded to one decimal. `gain` is the sum of every channel's `delta` above zero, and `loss` the sum of every channel's `delta` below zero, as a positive number. Because sessions partition across channels, `gain - loss` is the site's own change in sessions, and a channel that fell on a growing site reads as a share of everything the site lost — `71.4% of traffic drop` — rather than as a negative share of a net gain. A search keyword's clicks are measured against the same basis. The hold at `100` is for a page that gained more than its channel did in net, which happens when the channel's other pages fell.
+
+**4. Suppress the parent.** A specific driver that clears the gate suppresses its parent channel: the channel stops being a candidate, so the same visits are never shown as two cards. A search keyword's parent is `Organic Search`. A landing page's, a campaign's or a referring site's is the channel whose row in its breakdown moved most in the driver's own direction, ties by channel name. Where no specific driver clears the gate, the channel stands: its movement was spread across too many pages or sources for any one of them to be named.
+
+**5. Rank and keep three.** The candidates left are ordered by `score`, descending, and the first three are `keyFactors`. Two candidates with the same score are ordered by kind, in the order the [wire format](#wire-format-layout) lists the kinds, and then by label with `strcmp()`. An empty selection is a valid answer, and the [section](#key-factors) renders nothing for it.
+
+#### *Attribute selection* {#attribute-selection}
+
+Each kept card then takes its attributes from its candidate list in [Key factors](#key-factors). For each candidate attribute kind, the card's own visits are broken down by that kind's dimension — from the first-pass breakdowns, the [second-pass](#report-gathering) reports or Search Console's rows — and a value qualifies when all of these hold:
+
+* It moved in the card's own direction by at least the significance floor of `5`.  
+* It is not a placeholder value.  
+* For a device or a visitor type, its own `selfChangePct` differs from the card's by at least `5` points. A device that grew at the same rate as its channel only says where the channel's visitors already were, and explains nothing beyond the card.
+
+Each candidate kind is represented by its qualifying value with the largest `ABS( delta )`, ties by label. The card's attributes are the two kinds whose representatives have the largest `ABS( delta )`, ties by the kind's position in the candidate list, and each carries a `sharePct` on the same basis as the card's. **The selection is by movement rather than by the list's order** because the list is what a card may say, and the two things that moved most are what it should.
 
 ### **Expected range** {#expected-range}
 
@@ -347,25 +422,37 @@ The band on a day `t` spreads the 28-day corridor onto that day with its weekday
 | `400` visitors | 18% to 24%, by how steady the last 28 days were |
 | `10,000` visitors | 14% to 24%, by how steady the last 28 days were |
 
-The fit also measures a trend — a recency-weighted line through the window's 28-day totals, sampled every 14 days — which the band does not read. [Traffic Insights](./traffic-insights-design-doc.md#expected-baseline) reads it from the same fit at `endDate`, to continue the band past `endDate` and to summarize the period; keeping the fit whole in one class is what lets that epic add to it without a second model. Where a window holds too few 28-day totals for a trend at all, the fit falls back to the raw total of its last 28 days as the center and a wider margin.
+The fit also measures a trend — a recency-weighted line through the window's 28-day totals, sampled every 14 days — which the band does not read. The [week ahead](#the-seven-days-ahead) reads it from the fit at `endDate`, and so does [Traffic Insights](./traffic-insights-design-doc.md#expected-baseline), to summarize the period; keeping the fit whole in one class is what lets both read it without a second model. Where a window holds too few 28-day totals for a trend at all, the fit falls back to the raw total of its last 28 days as the center and a wider margin.
 
 **The model is deterministic to one decimal, and its tests hold it there.** Every step is fixed arithmetic — the quartile positions, the clamps, the order of the sums, the guard on each division — so a daily series has exactly one set of bounds. The PHPUnit fixtures pair daily series with those bounds, and the arithmetic order is part of the specification: a sum taken in a different order can move a bound across a rounding boundary. Every step and constant is in the [appendix](#expected-range-model).
 
 The cost is a sort and a handful of linear passes over at most 365 values for each of the 395 plotted days, in the request that already holds the rows. It is small beside the report calls that precede it.
 
+#### *The seven days ahead* {#the-seven-days-ahead}
+
+For each day `endDate + h`, with `h` from 1 to 7, the fit at `endDate` is carried forward along its own monthly trend: the center becomes `B * MAX( 0, 1 + slope / 100 * h / 30.4375 )`, where `slope` is the fit's monthly trend in percent; the margin stays `M`; and the band is spread onto the day with that day's weekday factor `S` exactly as a measured day's is, from `MAX( 0, center - M ) / 28 * S` to `( center + M ) / 28 * S`, rounded to one decimal.
+
+Three properties follow:
+
+1. **The band does not widen with distance.** The margin is the end-date fit's, unchanged, so the week ahead is drawn with the confidence of the weeks behind it — which a seven-day horizon can carry and a month could not.  
+2. **The trend is the only thing that moves.** A growing site's week ahead rises, a shrinking one's falls, and the clamp at zero stops a steep decline from projecting negative traffic.  
+3. **No report row is needed.** Everything the projection reads is already in the fit.
+
+The projection is a method on `Expected_Baseline`, beside the fit it reads, and it reads no clock: it counts its days from `endDate`, which is what keeps its fixtures deterministic. A projection is a claim about days that have not happened, and one that read the clock itself would have no fixed answer to assert against.
+
 ### **Wire format** {#wire-format}
 
 The response is positional rather than keyed: a row is an array whose index `n` means the same field on both sides of the wire, rather than an object repeating its keys once per row.
 
-Volume is what forces it. Thirteen months of daily rows is 395 of them, each carrying two bounds beside its count, and beside them up to seven capped dimension arrays whose labels are page titles, search queries and referrer hostnames. As objects with per-row date strings and repeated keys that is tens of kilobytes of browser storage per date range, held for an hour, per date range a reader opens.
+Volume is what forces it. Thirteen months of daily rows is 395 of them, each carrying two bounds beside its count, and beside them up to three cards and six attributes whose labels are page paths, search queries, hostnames and campaign names. As objects with per-row date strings and repeated keys that is tens of kilobytes of browser storage per date range, held for an hour, per date range a reader opens.
 
 Six rules define the format:
 
 1. **Positions, not keys.** A `constants.ts` on the JS side and a matching set of class constants on the PHP side name every index. Neither a component nor a builder ever writes a literal index.  
 2. **The date axis is implicit.** One start date, then one row per day. The derivation already zero-fills the days GA4 omits, so the row count is the day count and 395 date strings become one.  
-3. **A string table at the head.** Labels, URLs and post titles are hoisted into one array and referenced by index, so a URL appearing in two dimensions is stored once.  
-4. **PHP rounds once.** Every non-integer is rounded server-side before encoding — the expected range's bounds to one decimal — and the browser never re-rounds or re-serializes a number.  
-5. **An enum travels as its index in a fixed list**, not as its string. A dimension code is a number; a decoder that does not recognize one falls back the way an unrecognized catalog entry does.  
+3. **A string table at the head.** Labels and paths are hoisted into one array and referenced by index, so a path that is both a card and another card's attribute is stored once.  
+4. **PHP rounds once.** Every non-integer is rounded server-side before encoding — the expected range's bounds and every `sharePct` to one decimal — and the browser never re-rounds or re-serializes a number.  
+5. **An enum travels as its index in a fixed list**, not as its string. A driver kind and an attribute kind are each a number; a decoder that does not recognize one drops the card or the attribute, the way an unrecognized catalog entry is dropped.  
 6. **A version integer leads the encoded structure**, and a decoder that does not recognize it treats the response as unusable rather than guessing. The browser cache prefix already carries `GOOGLESITEKIT_VERSION`, so a cached response cannot outlive a plugin update; the version is insurance for a request already in flight across one.
 
 **The contract is a decoder in JS against an encoder in PHP, not a codec on each side.** The browser never encodes anything, so half of the ways two implementations of one format can disagree do not exist. What is left is checked in as one JSON fixture that **both** the PHP encoder's PHPUnit test and the JS decoder's Jest test read. That shared file is the mechanism that keeps the two sides honest; a description of the layout in prose is not.
@@ -394,17 +481,17 @@ Three states the panel distinguishes, all decided by the one request:
 
 * **Loading** — `PreviewBlock` placeholders sized per section, held until the response resolves. This is the state the tab is in the first time a reader selects it.  
 * **Error** — the request failed: the GA4 reports behind it errored, or the datapoint itself did. Renders `WidgetReportError` with the module slug, so the existing retry and request-access affordances apply.  
-* **Ready** — the chart and every factor section are on screen.
+* **Ready** — the chart and the key factor cards are on screen.
 
-There is no separate gathering-data state. A property gathering data cannot be 13 months old, so the [history gate](#gating-and-visibility) has already removed the tab. There is no zero-data state either: a property with 13 months of history and no traffic in the selected period gets a chart showing exactly that, against the band its own history expected, and factor sections whose rows are zeros, which is a more honest answer than a CTA.
+There is no separate gathering-data state. A property gathering data cannot be 13 months old, so the [history gate](#gating-and-visibility) has already removed the tab. There is no zero-data state either: a property with 13 months of history and no traffic in the selected period gets a chart showing exactly that, against the band its own history expected, which is a more honest answer than a CTA. Whether it also gets key factor cards depends on what moved: a period with no traffic after one that had some is a drop every channel accounts for, and a period with none on either side has no candidate that clears the significance floor, so the [section](#key-factors) renders nothing.
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the factor catalog and its renderers under `factors/`, one hook, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the key factor catalog and its card components under `factors/`, one hook, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
 New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint, and `includes/Modules/Analytics_4/Benchmarking/` for the report options, `Expected_Baseline`, the response builder and the wire format's encoder — with `includes/Modules/Search_Console/Benchmarking/` for the callback that answers the [contextual-data filter](#cross-module-contextual-data), the same per-module layout `Email_Reporting/` already uses on both modules.
 
-Three existing files change outside this feature, and they are the ones to call out at review: `Analytics_4\Settings::get_view_only_keys()` gains `propertyCreateTime`, `Analytics_4\Report\RequestHelpers::validate_shared_dimensions()` gains `sessionSource`, and `Analytics_4::get_datapoint_definitions()` gains the datapoint under the flag check. On the front end, the [feedback control](#feedback) changes two shared components, `FeedbackPrompt` and `FeedbackMenu`, which Site Goals and Feature Discovery already render, and the [chart's legend](#typical-traffic-chart) changes a third, `ChartLegend`, which the Overview chart renders, by giving an item a swatch shape.
+Three existing files change outside this feature, and they are the ones to call out at review: `Analytics_4\Settings::get_view_only_keys()` gains `propertyCreateTime`, `Analytics_4\Report\RequestHelpers::validate_shared_dimensions()` gains `sessionSource`, `landingPage` and `sessionCampaignName`, and `Analytics_4::get_datapoint_definitions()` gains the datapoint under the flag check. On the front end, the [feedback control](#feedback) changes two shared components, `FeedbackPrompt` and `FeedbackMenu`, which Site Goals and Feature Discovery already render, and the [chart's legend](#typical-traffic-chart) changes a third, `ChartLegend`, which the Overview chart renders, by giving an item a swatch shape.
 
 ### **REST infrastructure**
 
@@ -418,19 +505,19 @@ One new datapoint, no new route. `GET:benchmarking-data` is dispatched by the `R
 
 The tab follows the existing Dashboard Sharing rules for the `analytics-4` module. It renders wherever the widget does, and **`GET:benchmarking-data` is shareable**, so a view-only user gets the whole tab.
 
-It needs no branch for it: the reports run under the module owner's credentials through `get_oauth_client_for_datapoint()`, exactly as every other shared report does. Two changes are what make that work, specified where each belongs — `sessionSource` in the [shareable dimension list](#report-gathering) and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility).
+It needs no branch for it: the reports run under the module owner's credentials through `get_oauth_client_for_datapoint()`, exactly as every other shared report does. Two changes are what make that work, specified where each belongs — `sessionSource`, `landingPage` and `sessionCampaignName` in the [shareable dimension list](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility).
 
-**Nothing is pooled across users, so no sharing boundary runs through a cache.** Every stored copy of every response lives in the requesting user's own browser, behind a key prefix that hashes their login and session. A view-only user with Analytics but not Search Console shared gets a response without the `SEARCH_QUERIES` key and a tab built on that response and no other — which follows from where the cache lives rather than from anything the datapoint does.
+**Nothing is pooled across users, so no sharing boundary runs through a cache.** Every stored copy of every response lives in the requesting user's own browser, behind a key prefix that hashes their login and session. A view-only user with Analytics but not Search Console shared gets a response built without the search-keyword rows and a tab built on that response and no other — which follows from where the cache lives rather than from anything the datapoint does.
 
-The consequence to state plainly is that **two view-only users of the same dashboard can see different factor sections**, where one's role has Search Console shared and the other's does not. That is the correct outcome — a reader should not be shown rows they have no access to — and it is visible rather than hidden, because a dimension with no data has no section.
+The consequence to state plainly is that **two view-only users of the same dashboard can see different key factor cards**, where one's role has Search Console shared and the other's does not. That is the correct outcome — a reader should not be shown rows they have no access to: one reader can get a search keyword card where the other gets the `Organic Search` card behind it, and an `Organic Search` card that names a keyword for one names a landing page for the other.
 
 The [feedback controls](#feedback) are the one part of the tab a view-only reader does not get. `FeedbackPrompt` renders nothing on the view-only dashboard, because `triggerSurvey()` on `core/user` sends nothing for a user who is not authenticated.
 
 ### **Tester plugin** {#tester-plugin}
 
-The states that matter for QA are hard to produce on a real site: a property with 13+ months of history and a genuine seasonal shape, and each combination of dimensions that drives a different ordering of the factor sections.
+The states that matter for QA are hard to produce on a real site: a property with 13+ months of history and a genuine seasonal shape, and each combination of drivers that produces a different set of key factor cards.
 
-One filter over the response covers almost all of it, and it is the single point where the states behind it are reachable: an absent `contextualData` key, a dimension with rows but no movement, a dimension order that puts an unusual code first, a daily series with gaps GA4 would have omitted, a series whose earliest months predate the property, a band the line leaves both above and below, and a band that starts late because the series' first months record no traffic.
+One filter over the response covers almost all of it, and it is the single point where the states behind it are reachable: no cards at all, one card, three cards of three different kinds, a card with no attributes and one with two, a falling card on a growing site, a card whose label is a long path or query, a daily series with gaps GA4 would have omitted, a series whose earliest months predate the property, a band the line leaves both above and below, a band that starts late because the series' first months record no traffic, a week ahead on a steeply rising and on a steeply falling trend, and a response with no fit at `endDate`, and therefore no week ahead.
 
 The history gate should be forceable on and off, so the tab is reachable without a mature property and absent with one.
 
@@ -454,7 +541,7 @@ The [feedback controls](#feedback) emit the vote events `FeedbackPrompt` emits f
 
 | Category | Action | Label | When |
 | :---- | :---- | :---- | :---- |
-| `<viewContext>_typical-traffic-survey` | `vote_up`, `vote_down` | `chart`, or the key factor column's dimension code | A thumbs up or a thumbs down on the chart or on a key factor column |
+| `<viewContext>_typical-traffic-survey` | `vote_up`, `vote_down` | `chart`, or the key factor card's driver kind: `CHANNEL`, `CONTENT`, `SEARCH_KEYWORD`, `REFERRING_SITE` or `CAMPAIGN` | A thumbs up or a thumbs down on the chart or on a key factor card |
 
 A reason chosen in a feedback popup is sent as a survey trigger and not as a GA4 event, as a feature card's dismissal reason is. The insight blocks' votes are the Traffic Insights epic's to name.
 
@@ -470,9 +557,9 @@ The alternative was to derive everything client-side: the panel fetches the GA4 
 
 We derive in PHP. Three properties of this particular data decide it:
 
-* **The derived data has exactly one consumer.** Shared report caching pays off when several widgets read the same report, and nothing else on the dashboard reads a 395-day daily series or six dimension reports with comparison windows. One derived response cached under the date range serves this tab better than seven reports the rest of the dashboard never asks for.  
+* **The derived data has exactly one consumer.** Shared report caching pays off when several widgets read the same report, and nothing else on the dashboard reads a 395-day daily series or four channel breakdowns with comparison windows. One derived response cached under the date range serves this tab better than a dozen reports the rest of the dashboard never asks for.  
 * **The cross-module dependency leaves the front end.** Client-side, the tab issues a Search Console request from inside an Analytics widget, wiring one module's reporting into another's component tree. Server-side it is a filter Search Console answers on its own terms, and neither module holds a reference to the other — see [Cross-module contextual data](#cross-module-contextual-data).  
-* **One language owns the ranking.** The pairing, the ranking, the row caps and the rounding happen once, in PHP, and the browser renders the result. Deriving them in JS would put the same arithmetic on the side of the wire that has the weakest guarantees about number formatting, and would put the dimension order — which decides what a reader sees first — in the component that renders it.
+* **One language owns the ranking.** The pairing, the ranking, the row caps and the rounding happen once, in PHP, and the browser renders the result. Deriving them in JS would put the same arithmetic on the side of the wire that has the weakest guarantees about number formatting, and would put the card selection — which decides what a reader sees at all — in the component that renders it.
 
 The costs are real. The daily series is fetched twice on the Traffic section — once client-side for the Overview chart, once inside the benchmarking request — because the two paths do not share a cache. Loading is all-or-nothing across the tab rather than per section. And a reader who opens the tab pays for seven reports where the Overview tab's five are already warm.
 
@@ -480,7 +567,7 @@ The costs are real. The daily series is fetched twice on the Traffic section —
 
 The response could be the flat camelCase shape the components read, with no encoding step: readable in devtools, no version integer, no shared fixture, and no format implemented twice.
 
-We encode. 395 daily rows with a date string and a key per field, beside seven capped dimension arrays, is several times the bytes in browser storage — held for an hour, per date range a reader opens, in a store the plugin shares with every other cached response. **A format is the cheapest thing in this design to get right and the most expensive to change later**, which is the argument for fixing it now rather than after the response has more in it.
+We encode. 395 daily rows with a date string and a key per field, beside the key factor cards, is several times the bytes in browser storage — held for an hour, per date range a reader opens, in a store the plugin shares with every other cached response. **A format is the cheapest thing in this design to get right and the most expensive to change later**, which is the argument for fixing it now rather than after the response has more in it.
 
 What it costs is named under [Technical debt](#technical-debt): one format, two languages, and a field added to one without the other is a silent misread rather than a type error. The shared fixture both test suites read is the mitigation, and it is a convention this epic introduces rather than one the repo already enforces.
 
@@ -510,19 +597,35 @@ The chart could follow the header selector like every other chart in the dashboa
 
 We fix the window at thirteen months. A chart that shrinks to 28 days plots the same series the Overview tab already plots and answers the same question, which leaves the tab with nothing of its own; and the comparison the tab exists to support — is this period normal for this site? — needs a year of the site's own shape behind the period to be a comparison at all. The cost is one chart in the dashboard that does not follow the selector, which the shaded selected-range region and the support page behind the chart's info tooltip are what make legible.
 
+### **One section per dimension instead of driver cards**
+
+The key factors could be one section per dimension — channels, devices, visitor mix, referrers, search queries, content and categories — each listing its values that moved, ranked within the section, with the sections ordered by how much movement each explains. That needs one report per dimension and no cross reports, and every row is the same arithmetic.
+
+We build driver cards. Seven parallel lists put the same visits in front of a reader several times over: a referral surge from one site is a `Referral` row, a referrer row, a `desktop` row, a `returning` row and a row for the page it landed on, each competing with the others for attention and none saying they are one event. A device or a visitor type, standing alone, also crowds out the specific drivers it only mirrors. Cards answer a different question — which few things moved traffic — and put device and visitor type where they explain something, under the driver they qualify. The cost is the cross reports, the parent-child suppression and a second pass for the kept cards' attributes, all of it in PHP.
+
+### **Counting visitors instead of sessions in the breakdowns**
+
+The breakdowns could count `totalUsers`, the metric the chart plots, so that the card and the line above it speak the same unit.
+
+We count sessions. A visitor who arrives through two channels, or lands on two pages, is one visitor in the site's total and one in each breakdown row, so no breakdown adds up: a channel's referring sites can exceed the channel, a card's attributes are not parts of it, and a share of the site's movement is a share of a number nothing sums to. Sessions partition across every dimension the cards read, and a session is what the card calls a visit. The cost is a second unit in the tab, which the card's copy names.
+
 ## **Future Work**
 
 ### **The Typical Traffic tab on the entity dashboard**
 
-The tab is main-dashboard only. A per-URL version is a different analysis rather than the same one filtered: a single page's traffic over thirteen months is dominated by its own publication date, and the dimension breakdown behind the factor sections is thin for most URLs. If it is wanted, it needs its own design for what "typical" means for one page.
+The tab is main-dashboard only. A per-URL version is a different analysis rather than the same one filtered: a single page's traffic over thirteen months is dominated by its own publication date, and the breakdowns behind the key factor cards are thin for most URLs. If it is wanted, it needs its own design for what "typical" means for one page.
 
 ### **Low-traffic handling**
 
-Low-traffic sites need rolling averages, more cautious language and de-emphasized short-term change. The chart already does part of that: its thirteen-month window puts a week's noise next to a year's shape, and the [expected range](#expected-range)'s margin floor keeps a small site's band wide enough that ordinary noise stays inside it. The factor sections still report a change on rows whose absolute numbers are small enough for the change to be meaningless. What that should do — suppress the badge, widen the cap, or say something different — is a follow-up, and it overlaps with [the smoothing question](#is-the-thirteen-month-series-plotted-daily-or-smoothed?).
+Low-traffic sites need rolling averages, more cautious language and de-emphasized short-term change. The chart already does part of that: its thirteen-month window puts a week's noise next to a year's shape, and the [expected range](#expected-range)'s margin floor keeps a small site's band wide enough that ordinary noise stays inside it. The key factor cards' floors are absolute — ten sessions to name a specific driver, five to keep any candidate — so on a small site a card can still name a change of a dozen visits. Whether the floors should scale with the site, or the cards say something different, is a follow-up, and it overlaps with [the smoothing question](#is-the-thirteen-month-series-plotted-daily-or-smoothed?).
 
 ### **Published posts on the chart** {#published-posts-on-the-chart}
 
-The chart's design carries one element beyond the line, the band and the [feedback control](#feedback): a marker for each published post, with a legend item of its own beside the line's and the band's. It is built separately from this epic. The design also continues the band seven days past `endDate`; that week ahead is [Traffic Insights'](./traffic-insights-design-doc.md#the-expected-range-seven-days-ahead), read off the same fit at `endDate`.
+The chart's design carries one element beyond the line, the band, the week ahead and the [feedback control](#feedback): a marker for each published post, with a legend item of its own beside the line's and the band's. It is built separately from this epic.
+
+### **A longer projection and a look-ahead summary** {#a-longer-projection-and-a-look-ahead-summary}
+
+The [week ahead](#the-week-ahead) stops at seven days and says nothing in words. A longer horizon needs a forward model with a seasonal term — this one carries the site's current course and nothing about the season it is heading into — and a sentence about the coming weeks belongs to the [generated insight](./traffic-insights-design-doc.md#generated-insight), whose request has no forward-looking field to narrate from. Neither is a matter of raising a limit.
 
 ## **Dependencies**
 
@@ -532,7 +635,7 @@ The main internal dependency is the widget this tab is added to: the shell that 
 
 The [feedback controls](#feedback) depend on \#13679, which turns the Site Goals feedback prompt into the shared `FeedbackPrompt`. They are the one part of the epic that changes components other features render: `FeedbackPrompt` itself, and `FeedbackMenu`, which a feature card's dismiss action opens.
 
-Search Console is a soft dependency rather than a hard one. Where it is disconnected, or shared with a role that a view-only reader does not have, the `SEARCH_QUERIES` section is absent and the rest of the tab is unaffected.
+Search Console is a soft dependency rather than a hard one. Where it is disconnected, or shared with a role that a view-only reader does not have, no card names a search keyword and no card carries one as an attribute, and the rest of the tab is unaffected.
 
 ## **Migrations**
 
@@ -543,7 +646,7 @@ No migrations are required. Nothing the tab reads or draws is persisted: the res
 Two items:
 
 1. **One format is implemented twice, in two languages.** The [wire format](#wire-format)'s encoder is PHP and its decoder is JS, and a field added to one without the other is a silent misread rather than a type error. The shared fixture both test suites run against is the mitigation, and it is a convention this epic introduces rather than one the repo already enforces. The debt is real and the alternative — keyed objects on the wire — costs several times the bytes in browser storage.  
-2. **The plugin derives analytical inputs on behalf of one tab.** `Benchmarking/` exists because the browser is the wrong place to pair, rank and cap seven dimension reports. If those rows ever gain a second consumer, the derivation is in the right place already; if the tab is removed, it is dead weight and should be deleted rather than maintained. Keeping it in classes with no REST or widget dependencies is what makes that removal a deletion rather than an unpicking.
+2. **The plugin derives analytical inputs on behalf of one tab.** `Benchmarking/` exists because the browser is the wrong place to pair, score and select drivers across a dozen reports. If those rows ever gain a second consumer, the derivation is in the right place already; if the tab is removed, it is dead weight and should be deleted rather than maintained. Keeping it in classes with no REST or widget dependencies is what makes that removal a deletion rather than an unpicking.
 
 # **Quality attributes**
 
@@ -553,15 +656,15 @@ The new surface is one read datapoint and one public filter. Two risks:
 
 **A public filter feeding the dashboard.** `googlesitekit_benchmarking_contextual_data` lets any plugin on the site contribute rows, and any string it returns is rendered in the dashboard. **The data datapoint validates what the filter hands back rather than forwarding it**: known keys only, the row shape each key declares, scalars cast, and the same row cap applied to filtered rows as to derived ones. That keeps a third-party callback to the same contract Search Console's own is held to.
 
-**Rendered report data.** Page titles and search-query strings originate from site content and from visitors' searches. Every one of them is rendered as a React child rather than as HTML, and no string in the response reaches `dangerouslySetInnerHTML`.
+**Rendered report data.** Landing paths, campaign names, source hostnames and search-query strings originate from visitors' URLs, from whoever tagged a link, and from visitors' searches. Every one of them is rendered as a React child rather than as HTML, and no string in the response reaches `dangerouslySetInnerHTML`.
 
 **Authorization.** The datapoint implements `Permission_Aware_Datapoint` and declares the dashboard-viewing capability, so the existing `REST_Modules_Controller` permission dispatch applies and a view-only user reaches it. Left to the route it would inherit the `READABLE` branch's broader default; declaring the check is what makes it correct rather than merely permissive.
 
-**A view-only user's request runs under the owner's identity**, which is the same delegation every shared GA4 report already performs, under the same conditions and widened by nothing here beyond the one dimension added to the shareable list.
+**A view-only user's request runs under the owner's identity**, which is the same delegation every shared GA4 report already performs, under the same conditions and widened by nothing here beyond the three dimensions added to the shareable list.
 
 ## **Reliability**
 
-The tab is one request, and it either resolves or it does not. A GA4 failure puts the panel in `WidgetReportError`, which is what that component exists for; a Search Console failure costs one factor section and nothing else, because the filter's contribution is optional by construction.
+The tab is one request, and it either resolves or it does not. A GA4 failure puts the panel in `WidgetReportError`, which is what that component exists for; a Search Console failure costs the search-keyword candidates and attributes and nothing else, because the filter's contribution is optional by construction. A failure in the second pass is a GA4 failure like any other and puts the panel in the same state.
 
 **The request is reports and arithmetic, and nothing in it waits on a third party the plugin does not already depend on.** Two batched GA4 calls and one Search Console call complete well inside `max_execution_time` on the hosting the plugin runs on, and there is no outbound call whose duration the plugin cannot predict.
 
@@ -573,7 +676,7 @@ Local data loss is not a concern: nothing about the feature is persisted anywher
 
 ## **Privacy**
 
-The response carries the site's own analytics data to the browser: aggregate visitor counts, top URLs with their titles and publication ages, channel and category names, referrer hostnames, and search queries with their clicks and positions. All of it is data the requesting user can already read in the dashboard.
+The response carries the site's own analytics data to the browser: aggregate visitor and session counts, channel names, landing paths, referrer hostnames, campaign names, and search queries with their clicks. All of it is data the requesting user can already read in the dashboard.
 
 No new OAuth scope is requested. No new custom dimension is created, so no additional data is collected from site visitors. Search queries are Search Console's already aggregated and anonymized queries.
 
@@ -583,9 +686,9 @@ No new OAuth scope is requested. No new custom dimension is created, so no addit
 
 **The unit that scales is the number of distinct date ranges opened per reader per hour.** A full miss costs two batched GA4 calls and one Search Console call. A repeat over the same dates in the same tab is answered from browser storage without reaching the server.
 
-Report count does not grow with the size of the site: every query is aggregated, each dimension report carries its current and comparison window as two date ranges in one request, and the [row caps](#how-many-rows-does-each-dimension-carry?) bound what comes back. Batching is what keeps the seven reports to two calls, which matters here more than it does elsewhere because they are serial inside one PHP request rather than parallel across the browser's connection pool.
+Report count does not grow with the size of the site: every query is aggregated, each breakdown carries its current and comparison window as two date ranges in one request and asks for at most 250 rows, and the second pass runs for at most three cards whatever the number of candidates. Batching is what keeps the five first-pass reports to one call and the second pass to at most two, which matters here more than it does elsewhere because they are serial inside one PHP request rather than parallel across the browser's connection pool.
 
-The largest of them is the daily series: 759 rows, well inside the GA4 Data API's default row limit, and linear to zero-fill and sum. The [expected range](#expected-range) fits each of the 395 plotted days on at most 365 of them — a sort and a few linear passes per day, small beside the report calls. Only the plotted days cross the wire, as one count and two one-decimal bounds each, and the [wire format](#wire-format) is what keeps those to a few kilobytes in the response rather than tens.
+The largest of them is the daily series: 759 rows, well inside the GA4 Data API's default row limit, and linear to zero-fill and sum. The [expected range](#expected-range) fits each of the 395 plotted days on at most 365 of them — a sort and a few linear passes per day, small beside the report calls. Only the plotted days cross the wire, as one count and two one-decimal bounds each, followed by seven pairs of bounds for the week ahead, and the [wire format](#wire-format) is what keeps those to a few kilobytes in the response rather than tens. The projection is seven multiplications over a fit that already exists.
 
 Nothing in the feature iterates posts, users or terms, so a site with 100k posts behaves the same as a small one.
 
@@ -593,21 +696,21 @@ Nothing in the feature iterates posts, users or terms, so a site with 100k posts
 
 The tab panel needs correct `role="tabpanel"` and `aria-labelledby` wiring, and the tab bar's own keyboard behavior is `TabBar`'s and already correct.
 
-The chart's title is a heading inside the tab panel. Its info tooltip opens on keyboard focus as well as on hover and touch, so its copy does not need a pointer, and it stays open while the pointer is over it, so the `Learn more` link can be clicked; `InfoTooltip` already behaves both ways. The legend names the line and the band in text, each beside a swatch of its own shape — a bar for the line, a block for the band — so neither is identified by its color alone.
+The chart's title is a heading inside the tab panel. Its info tooltip opens on keyboard focus as well as on hover and touch, so its copy does not need a pointer, and it stays open while the pointer is over it, so the `Learn more` link can be clicked; `InfoTooltip` already behaves both ways. The legend names the line and the band in text, each beside a swatch of its own shape — a bar for the line, a block for the band — so neither is identified by its color alone. The boundary between the measured days and the [week ahead](#the-week-ahead) has to be conveyed in text as well as by the divider, so that a reader who cannot see the plot knows the band past `endDate` describes days that have not happened.
 
-The factor sections are text in reading order, which is the easy case — each is a labelled region, and each row pairs its label with its value and change. The change badges need a non-visual equivalent so that direction is not carried by color and an arrow glyph alone, and the `SEARCH_QUERIES` rows need one for position as well, where a numerically lower value is an improvement and no color convention conveys that.
+The key factor cards are text in reading order, which is the easy case — each card is a labelled region named by its driver, and each attribute row pairs its title with its value, its change and its share. A change carries its sign in text, and a share badge says `growth` or `drop` in words, so direction is never carried by color alone. The vertical rule and dot beside each card are decorative.
 
-The [feedback buttons](#feedback) keep the accessible names `ThumbsSurveyTrigger` gives them and announce which of the two is pressed. On a key factor column, keyboard focus reveals the pair as the pointer does, so the buttons are in the tab order rather than reachable only with a mouse. The reasons popup is a menu labelled by its heading: the arrow keys move between reasons, Enter chooses one, and Escape closes the menu and returns focus to the thumbs down. `FeedbackMenu` already behaves this way.
+The [feedback buttons](#feedback) keep the accessible names `ThumbsSurveyTrigger` gives them and announce which of the two is pressed. On a key factor card, keyboard focus reveals the pair as the pointer does, so the buttons are in the tab order rather than reachable only with a mouse. The reasons popup is a menu labelled by its heading: the arrow keys move between reasons, Enter chooses one, and Escape closes the menu and returns focus to the thumbs down. `FeedbackMenu` already behaves this way.
 
 ## **Internationalization (i18n)**
 
-Every string in the tab is a plugin string translated as usual, and every number and percentage is formatted through `numFmt`, including inside the factor copy. The factor sections are `sprintf` over translated patterns rather than concatenated fragments, so a language that orders a sentence differently can. The chart's tooltip is one translated string with its `Learn more` link as a tag inside it, for the same reason, and the chart's legend reuses the Overview chart's plural forms for the line and adds one string, `Expected range`, for the band.
+Every string in the tab is a plugin string translated as usual, and every number and percentage is formatted through `numFmt`, including inside the key factor copy. The cards' changes and share badges are `sprintf` over translated patterns rather than concatenated fragments, so a language that orders a sentence differently can. The chart's tooltip is one translated string with its `Learn more` link as a tag inside it, for the same reason, and the chart's legend reuses the Overview chart's plural forms for the line and adds one string, `Expected range`, for the band.
 
 Three constraints worth naming:
 
 1. **The chart's monthly tick labels** are the shortest form of a month name in the reader's locale and there are thirteen of them across the plot width. A locale whose abbreviated month names are long is the case the tick density has to survive.  
-2. **GA4 returns channel, device and country names in the property's own language**, not the plugin's, so a factor section can carry API-supplied labels beside translated chrome. The two must not be concatenated into one translatable string.  
-3. **Page titles and search queries are the site's and its visitors' own**, in any script and any direction, and the row component has to truncate them without assuming a writing direction.
+2. **Channel names, hostnames and campaign names are API-supplied labels**, not the plugin's strings, so a card carries them beside translated chrome. The two must not be concatenated into one translatable string. Device and visitor type are the exception: the plugin translates the tokens it knows — `desktop`, `mobile`, `tablet`, `new`, `returning` — and shows any other value as given.  
+3. **Paths, campaign names and search queries are the site's and its visitors' own**, in any script and any direction, and the card has to truncate them without assuming a writing direction.
 
 # **Project management**
 
@@ -624,14 +727,19 @@ Three constraints worth naming:
 | 7 | Add the `benchmarking` datastore slice | 11 |  |
 | 8 | Add the Typical Traffic tab to the widget shell with its history gate | 11 |  |
 | 9 | Typical Traffic: the thirteen-month traffic chart | 15 |  |
-| 10 | Typical Traffic: key factors section | 15 |  |
+| 10 | Typical Traffic: key factor cards | 15 |  |
 | 11 | Loading and error states for the Typical Traffic tab | 11 |  |
-| 12 | Typical Traffic: feedback controls on the chart and the key factor columns | 11 |  |
+| 12 | Typical Traffic: feedback controls on the chart and the key factor cards | 11 |  |
 | 13 | Add the expected-range model in PHP | 15 |  |
 | 14 | Carry the expected range in the benchmarking response and the wire format | 11 |  |
 | 15 | Typical Traffic: the expected range on the chart | 11 |  |
+| 16 | Project the expected range seven days past `endDate` and carry it in the response and the wire format | 7 |  |
+| 17 | Typical Traffic: the expected range seven days ahead on the chart | 7 |  |
+| 18 | Add `landingPage` and `sessionCampaignName` to the shareable Analytics dimensions | 3 |  |
+| 19 | Carry key factor cards in the benchmarking wire format in place of the dimension arrays | 11 |  |
+| 20 | Select the key factor cards and their attributes in the benchmarking response | 19 |  |
 
-**TOTAL: 177 STORY POINTS across 15 issues**
+**TOTAL: 224 STORY POINTS across 20 issues**
 
 **The wire format is the first thing to land after the flag and the contract everything else is built against.** The encoder, the decoder and the [shared fixture](#wire-format) are a small, self-contained issue with no dependency on a report, a datapoint or a component, and once it exists the server-side half writes against the encoder while the panel and its sections read a decoded fixture. Agreeing the layout early is what lets the two halves proceed in parallel, and the [panel data flow](#panel-data-flow) table is the version to agree.
 
@@ -641,7 +749,11 @@ Sharing is critical path rather than a follow-up: without it the view-only dashb
 
 **The chart is sized for its window rather than for its series.** Two columns and a line is the easy part; the monthly tick selection, the axis fitted to thirteen months, and the selected-range overlay positioned from the chart layout interface are the work — and the stacking-context rule that makes the overlay visible is the kind of thing that is invisible in review and obvious in VRT.
 
-The key factors section carries the catalog, seven renderers and the `SEARCH_QUERIES` row shape that is unlike the other six. It renders whatever order the response gives it, so its brief has to name the cases that are awkward to reach naturally: a dimension whose key is absent, and an order whose first entry is one of the two custom-dimension codes.
+**The week ahead lands after the band it continues, as two issues.** The projection issue adds the forward reading beside the fit, asserted on fixed series the way the fit is, with the `forecast` field and its wire-format member. The chart issue adds the forward interval pair, the joining row and the divider, sized against the [PoC](#the-week-ahead) rather than against a plain band. Its risk is the join: the two bands have to meet on `endDate` without a gap or a step, and the divider is positioned from the chart layout interface in a `ready` callback — the same kind of thing VRT catches and review does not.
+
+**The driver cards replace the per-dimension sections in work that has already started, and three issues carry them there.** The wire format, the response builder, the contextual-data filter and the datastore slice shipped against seven ranked dimension arrays, and the sharing issue was already in progress with `sessionSource` as its only new shareable dimension. Rather than reopening any of them, the change lands as three. The first adds `landingPage` and `sessionCampaignName` to the shareable dimensions, beside the `sessionSource` the sharing issue adds; it is small and lands first, because without it the server-side change fails every shared request. The other two follow in the order the format went in originally. The first of those replaces wire members `5` and `6` with the cards and their attributes and moves the decoder, the decoded type and the shared fixture with them, so the front end has the contract before the server fills it. The second does everything server-side: the session breakdowns in place of the seven dimension reports, the scoring by driver kind, the gate, the suppression, the selection, the second pass, and Search Console's keyword breakdowns through the existing filter. It is the larger of the two, and the one to split by pass — candidates and selection first, attributes second — if its brief needs splitting.
+
+The key factors issue carries the catalog and one card renderer for every kind. It renders whatever the response gives it, so its brief has to name the cases that are awkward to reach naturally: no cards at all, a card with no attributes, a falling card on a growing site, and a kind the catalog does not know.
 
 The states issue lands last because it needs both sections present to be worth reviewing, and it owns the decision to render a chart of zeros rather than a zero-data CTA.
 
@@ -649,29 +761,31 @@ The states issue lands last because it needs both sections present to be worth r
 
 The tab needs support links in two places, resolved through `getDocumentationLinkURL()` on `core/site`:
 
-1. **Behind the `Learn more` link in the chart's info tooltip**, explaining the thirteen-month window and the band under it: that the window does not follow the date-range selector; that the shaded region is the selected period; that the earliest months of a recently created property are the property's own first weeks rather than a quiet season; and that the band is the range the site's own last 12 months make normal for each day, adjusted for the day of the week and the site's recent trend — wider on a small site because a small site's traffic genuinely varies more, starting four weeks after the first recorded traffic, and marking a normal day rather than a good one.  
+1. **Behind the `Learn more` link in the chart's info tooltip**, explaining the thirteen-month window and the band under it: that the window does not follow the date-range selector; that the shaded region is the selected period; that the earliest months of a recently created property are the property's own first weeks rather than a quiet season; that the band is the range the site's own last 12 months make normal for each day, adjusted for the day of the week and the site's recent trend — wider on a small site because a small site's traffic genuinely varies more, starting four weeks after the first recorded traffic, and marking a normal day rather than a good one; and that the band past the divider is the same range carried a week forward along the site's recent trend, over days that have not happened yet.  
 2. **An explanation of why the tab does not appear for properties with insufficient history**, reachable from support rather than from the dashboard, since the tab is absent in that case. This is where the exact eligibility rule belongs — thirteen months from property creation — for the reader who wonders why their site has one tab and a colleague's has two.
 
 The support team drafts these before rollout; the slugs are added with the links. Until then, the tooltip's link points at `#`.
 
 ## **Testing plan considerations**
 
-The hard part is data. The tab needs a property with 13+ months of history and a real seasonal shape for the chart to show anything worth looking at, and the two custom-dimension sections need `googlesitekit_post_date` and `googlesitekit_post_categories` to have been collecting long enough to return rows. QA therefore depends on tester-plugin support for forcing the response, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
+The hard part is data. The tab needs a property with 13+ months of history and a real seasonal shape for the chart to show anything worth looking at, and the key factor cards need a period in which one channel, page, source, campaign or query genuinely moved. QA therefore depends on tester-plugin support for forcing the response, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
 
-**The derivation is PHPUnit's and the rendering is Jest's**, and the response is the seam between them. PHPUnit covers the assembly on hand-built report fixtures: the zero-fill over days GA4 omitted, a dimension value present in one window and absent from the other, the ranking and the caps, the dimension order, and the filter contract — including a callback that errors and one that returns the wrong shape. Jest covers the panel's states and the sections, driven from decoded fixtures rather than from report responses. Storybook stories cover the tab in loading, error and ready states, which also gives VRT coverage.
+**The derivation is PHPUnit's and the rendering is Jest's**, and the response is the seam between them. PHPUnit covers the assembly on hand-built report fixtures: the zero-fill over days GA4 omitted, a value present in one window and absent from the other, the score and the floors, the gate at exactly `10` sessions and exactly `15%`, the suppression of a parent channel, the selection of three, the share against `gain` and `loss`, the attribute choice and its device rule, the second pass running only for the kept cards, and the filter contract — including a callback that errors and one that returns the wrong shape. Jest covers the panel's states and the cards, driven from decoded fixtures rather than from report responses. Storybook stories cover the tab in loading, error and ready states, which also gives VRT coverage.
 
-**The [expected range](#expected-range) is asserted to the decimal.** Its arithmetic is fixed, so a daily series has exactly one set of bounds, and PHPUnit asserts every one of them on series that each exercise a rule: flat traffic, which must sit inside its band; a strong weekday pattern, which the band must follow; a viral day and a tracking outage, which the clamp must contain; a spike on the last day, which must leave every earlier day's band unchanged; a series with fewer than 28 days of history, which must have no band; leading zeros, which must be dropped before fitting; and a series that is zero throughout. Jest covers the chart's side: the table builder puts the bounds in two interval columns, leaves `null` where a day has no band and fits the axis over the band, and the legend carries the band's item with a block swatch. VRT covers the band itself, at a small, a medium and a large site's traffic, so the band's proportional width is in the reference images.
+**The [expected range](#expected-range) is asserted to the decimal.** Its arithmetic is fixed, so a daily series has exactly one set of bounds, and PHPUnit asserts every one of them on series that each exercise a rule: flat traffic, which must sit inside its band; a strong weekday pattern, which the band must follow; a viral day and a tracking outage, which the clamp must contain; a spike on the last day, which must leave every earlier day's band unchanged; a series with fewer than 28 days of history, which must have no band; leading zeros, which must be dropped before fitting; and a series that is zero throughout. The [week ahead](#the-seven-days-ahead) is asserted the same way, on a rising, a falling and a flat trend, and on a decline steep enough to clamp the projected center at zero. Jest covers the chart's side: the table builder puts the bounds in two interval columns, leaves `null` where a day has no band, adds the seven forward rows and the joining row on `endDate` that carries both bands' pairs, and fits the axis over both bands, and the legend carries the band's item with a block swatch and nothing for the week ahead. VRT covers the band itself, at a small, a medium and a large site's traffic, so the band's proportional width is in the reference images, and the week ahead on a rising and on a falling trend, so the join on `endDate` and the divider are in them too.
 
 **The [wire format](#wire-format) is the one thing both suites test, and they test it against the same file.** The PHP encoder's test asserts that a fixed set of derived values encodes to the checked-in fixture, and the JS decoder's test asserts that the same fixture decodes to the objects the sections expect. A field added on one side without the other fails one of the two rather than producing a silent misread in the dashboard. One case beyond the happy path belongs here: an unknown version integer, which must be rejected rather than guessed at.
 
-**The view-only path belongs in PHPUnit rather than only in manual QA**: a shared request must resolve the owner's client for the reports, which is assertable by dispatching the datapoint as a view-only user. The Search-Console-not-shared case belongs beside it — a response with one key fewer, and a tab that renders one section fewer rather than erroring.
+**The view-only path belongs in PHPUnit rather than only in manual QA**: a shared request must resolve the owner's client for the reports, which is assertable by dispatching the datapoint as a view-only user. The Search-Console-not-shared case belongs beside it — a response selected without search keywords, and a tab that renders its cards rather than erroring.
 
-Four cases are worth naming because they are easy to miss and awkward to reach naturally:
+Six cases are worth naming because they are easy to miss and awkward to reach naturally:
 
 1. **A property between 13 and 14 months old**, where the chart's window starts before the property did and the earliest weeks are genuinely empty.  
-2. **A dimension whose rows all moved by the same amount**, which is what the dimension ordering has to break deterministically rather than by report order.  
-3. **Selecting the tab twice**, which must issue one request rather than two — the property that the API layer's hour-long entry is what makes cheap, and the one that silently regresses if the resolver is keyed on anything but the two dates.  
-4. **A property tagged long after it was created**, whose line is zero for months and whose band must start four weeks after the first recorded traffic rather than fitting the zeros before it.
+2. **Two candidates with the same score, and two attribute kinds whose values moved by the same amount**, which the selection has to break deterministically rather than by report order.  
+3. **A referring site that clears the gate under a `Referral` channel that would otherwise lead**, which must take the channel's place rather than sit beside it.  
+4. **A channel that fell on a site that grew**, whose badge must read as a share of the site's loss rather than as a negative share of its gain.  
+5. **Selecting the tab twice**, which must issue one request rather than two — the property that the API layer's hour-long entry is what makes cheap, and the one that silently regresses if the resolver is keyed on anything but the two dates.  
+6. **A property tagged long after it was created**, whose line is zero for months and whose band must start four weeks after the first recorded traffic rather than fitting the zeros before it.
 
 ## **Launch plans**
 
@@ -693,21 +807,35 @@ Undecided: which of the three; whether the choice depends on the site's traffic 
 
 Blocked on this: the chart's table builder, the daily array's shape in the wire format, the two places that say what the line is — the legend's label and the support page behind the chart's info tooltip — and the band. The [expected range](#expected-range) carries each weekday's shape, so a smoothed line would run through a band that still waves with the weekday cycle the smoothing removed from the line; either the band is smoothed the same way or the comparison stops being like for like.
 
-## **How many rows does each dimension carry?** {#how-many-rows-does-each-dimension-carry?}
+## **How long can a card's label be?** {#how-long-can-a-card-label-be?}
 
-Rows are ranked by absolute change and capped per dimension, so the ones that survive are the ones carrying the movement. The cap decides both what a reader sees and what browser storage holds, since the response carries exactly the rows the tab renders.
+The number of rows is settled — three cards and two attributes on each — so what bounds the worst case is the length of a label. A landing path with a long slug, a campaign name someone typed into a URL builder, and a long-tail search query can each run far past the width of a card, and the [design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev) truncates a path with an ellipsis after about twenty characters.
 
-Two pressures pull in different directions and both are about the product: what each factor section needs to render — three to five rows a section, from the Figma frames — and what a reader can take in across seven sections without the tab becoming a report. Nothing about the transport constrains it: a `GET` response has no size ceiling the design has to work around.
+Undecided: whether the response truncates labels to a fixed length, which bounds browser storage, or carries them whole and leaves truncation to CSS, which keeps the full value for a tooltip; and whether a truncated label shows its full value on hover or focus.
 
-Undecided: the cap for each of the seven dimensions; the truncation length for the labels, URLs and titles inside them, which is what bounds the worst case rather than the row count; and whether a section that is capped says so, or simply ends.
+Blocked on this: the label handling in the response builder and in `KeyFactorCard`.
 
-Blocked on this: the caps in the response builder, and the fixtures every front-end issue is built against.
+## **Where does AI-assistant traffic come from?** {#where-does-ai-assistant-traffic-come-from?}
+
+A visit from an AI assistant's answer is a driver a site owner wants named, and its card would carry the assistant, the landing page and the user type as its attributes. What is not settled is how the plugin recognizes such a visit. The default channel grouping the breakdowns read is GA4's, and the plugin either reads an AI channel from it by name or derives one itself — from a list of assistant hostnames among the `Referral` sources, collapsed the way Facebook's variants are.
+
+Undecided: which of the two; if derived, the list of hostnames and who maintains it; and whether a derived AI channel takes its sessions out of `Referral`, so the two never share them.
+
+Blocked on this: the `Assistant` attribute kind, and an AI-assistant row in the [attribute candidates](#key-factors).
+
+## **Should a Direct card read click identifiers off its landing URLs?** {#should-a-direct-card-read-click-identifiers-off-its-landing-urls?}
+
+Some direct visits are not direct at all. A link opened inside the Facebook app often arrives with no referrer but with `fbclid` on its query string, and the same is true of other platforms' click identifiers. Read off `landingPagePlusQueryString`, that remnant names where a share of the Direct card's visits really came from, which is the most actionable thing a Direct card could say.
+
+Undecided: whether a Direct card does this at all; the list of identifiers and the platform each names; how the result renders on the card, for which there is no design; and whether those visits are counted as the platform's rather than Direct's, which would change the Direct card's own figure.
+
+Blocked on this: a third breakdown for the Direct card, `landingPagePlusQueryString` among the shareable dimensions, and the card's design.
 
 ## **What is the minimum history and volume for the Typical Traffic tab?** {#what-is-the-minimum-history-and-volume-for-the-typical-traffic-tab?}
 
 The tab gates on property age alone: thirteen months from `getPropertyCreateTime()`. Two things that gate does not look at are both capable of making the tab meaningless.
 
-**Volume.** A site averaging two visitors a day has thirteen months of history and nothing typical about any of it: the chart is noise, and every factor section reports a large percentage change over a difference of three visitors. Nothing currently declines to render for such a site. The band is the one part that already allows for it — its margin floor puts a two-visitor day's band at about 80% either side — but a band that wide holds almost anything, and says correspondingly little.
+**Volume.** A site averaging two visitors a day has thirteen months of history and nothing typical about any of it: the chart is noise, and a key factor card can name a driver whose whole change is a dozen visits. Nothing currently declines to render for such a site. The band is the one part that already allows for it — its margin floor puts a two-visitor day's band at about 80% either side — but a band that wide holds almost anything, and says correspondingly little.
 
 **Actual collected history, as opposed to property age.** A property created fourteen months ago and tagged last month passes the gate with one month of data behind a year of zeros, which is a worse chart than a young property's because the zeros look like a collapse. The band does not add to it — its fits start at the first recorded traffic, so it draws nothing under the zeros — but it does not explain them either.
 
@@ -727,16 +855,28 @@ What `GET:benchmarking-data` returns once decoded, and therefore the fixtures ev
 | :---- | :---- | :---: |
 | `visitors` | `{ current: int, previous: int }` for the selected period | Always |
 | `dailyTraffic` | `Array<{ date, visitors, expectedMin, expectedMax }>`, one row per day across the thirteen-month window; `expectedMin` and `expectedMax` are one-decimal floats, or `null` on a day the expected range cannot fit | Always |
-| `dimensions` | `Array<DimensionCode>`, ordered by absolute movement, highest first | Always |
-| `contextualData.channels` | `Array<{ label, current, previous }>` | Always |
-| `contextualData.devices` | `Array<{ label, current, previous }>` | Always |
-| `contextualData.visitorMix` | `Array<{ label, current, previous }>` | Always |
-| `contextualData.referrers` | `Array<{ label, current, previous }>` | Always |
-| `contextualData.searchQueries` | `Array<{ label, current, previous, positionCurrent, positionPrevious }>` | With Search Console connected and readable |
-| `contextualData.content` | `Array<{ url, title, visitors, publishedDaysAgo }>` | With the post-date custom dimension |
-| `contextualData.categories` | `Array<{ label, current, previous }>` | With the post-categories custom dimension |
+| `forecast` | `Array<{ date, expectedMin, expectedMax }>`, 7 rows from the day after `endDate`, the bounds one-decimal floats | With a fit at `endDate` |
+| `keyFactors` | `Array<KeyFactor>`, at most 3, in rank order; empty when no candidate survives | Always |
 
-`DimensionCode` is one of `CHANNELS`, `DEVICES`, `VISITOR_MIX`, `REFERRERS`, `SEARCH_QUERIES`, `CONTENT` or `CATEGORIES`, and `dimensions` names only codes whose `contextualData` key is present.
+`KeyFactor` is `{ kind: KeyFactorKind, label: string, current: int, previous: int, sharePct: float, attributes: Array<KeyFactorAttribute> }`, with at most 2 attributes, and `KeyFactorAttribute` is `{ kind: KeyFactorAttributeKind, label: string, current: int, previous: int, sharePct: float }`. `current` and `previous` count sessions, or clicks where the kind is `SEARCH_KEYWORD`; `sharePct` is a one-decimal float between `0` and `100`.
+
+`KeyFactorKind` is one of `CHANNEL`, `CONTENT`, `SEARCH_KEYWORD`, `REFERRING_SITE` or `CAMPAIGN`. `KeyFactorAttributeKind` is one of `TRAFFIC_CHANNEL`, `LANDING_PAGE`, `SEARCH_KEYWORD`, `REFERRING_SITE`, `PLATFORM`, `CAMPAIGN`, `DEVICE` or `USER_TYPE`.
+
+### **Contextual data keys** {#contextual-data-keys}
+
+The rows the response builder selects from, and the contract a [`googlesitekit_benchmarking_contextual_data`](#cross-module-contextual-data) callback is validated against. Every count is a `{ current, previous }` pair over the two windows, as two integer fields, and every key holds at most 250 rows.
+
+| Key | Row | Contributed by |
+| :---- | :---- | :---- |
+| `channelBreakdowns` | `{ channel, device, userType, current, previous }`, sessions | `Analytics_4` |
+| `channelSources` | `{ channel, source, current, previous }`, sessions | `Analytics_4` |
+| `channelPages` | `{ channel, page, current, previous }`, sessions | `Analytics_4` |
+| `channelCampaigns` | `{ channel, campaign, current, previous }`, sessions | `Analytics_4` |
+| `searchKeywords` | `{ keyword, current, previous }`, clicks | `Search_Console` |
+| `searchKeywordPages` | `{ keyword, page, current, previous }`, clicks; `page` a path | `Search_Console` |
+| `searchKeywordDevices` | `{ keyword, device, current, previous }`, clicks; `device` a GA4 device token | `Search_Console` |
+
+The second-pass reports are not contextual data: they run after the selection, only for the kept cards, and no callback sees them.
 
 ### **Wire format layout** {#wire-format-layout}
 
@@ -745,22 +885,37 @@ The positional layout the [wire format](#wire-format) fixes, at the level the en
 | Envelope member | Holds |
 | :---- | :---- |
 | `0` | format version, an integer |
-| `1` | the string table: every label, URL and post title, once each |
+| `1` | the string table: every label and path, once each |
 | `2` | the first plotted date, as `YYYY-MM-DD` — every later row's date is its offset from this |
 | `3` | the daily series, one visitor count per day |
 | `4` | `[ visitorsCurrent, visitorsPrevious ]` for the selected period |
-| `5` | the contextual dimensions, keyed by dimension index, each an array of rows whose own layout the dimension declares |
-| `6` | the dimension order: dimension indices, ranked |
+| `5` | the key factor cards, in rank order: each `[ kind, label, current, previous, sharePct ]` |
+| `6` | the cards' attributes: one array per entry of member `5`, in the same order, each attribute `[ kind, label, current, previous, sharePct ]` |
 | `7` | the expected range: one `[ expectedMin, expectedMax ]` pair per day of member `3`, in the same order, or `null` for a day without a band |
+| `8` | the week ahead: one `[ expectedMin, expectedMax ]` pair per day for the seven days after `endDate`, or empty without a fit at `endDate` |
 
 Four conventions the table does not show, and the encoder and decoder both depend on:
 
-* An enum value travels as its index in a fixed list, not as its string. A decoder that does not recognize an index drops the entry the way an unrecognized catalog code is dropped.  
+* An enum value travels as its index in a fixed list, not as its string. The driver kinds are listed `CHANNEL`, `CONTENT`, `SEARCH_KEYWORD`, `REFERRING_SITE`, `CAMPAIGN`, and the attribute kinds `TRAFFIC_CHANNEL`, `LANDING_PAGE`, `SEARCH_KEYWORD`, `REFERRING_SITE`, `PLATFORM`, `CAMPAIGN`, `DEVICE`, `USER_TYPE`; a kind is only ever appended. A decoder that does not recognize an index drops the card or the attribute, the way an unrecognized catalog entry is dropped.  
 * A missing value is `null`, never `0` or an empty string. Zero is a real visitor count.  
 * A string is always a reference into the string table, never an inline literal.  
 * Every non-integer arrives already rounded. The decoder does no arithmetic at all.
 
-### **Chart options**
+### **Chart table and options** {#chart-table-and-options}
+
+The table, in column order. Interval columns annotate the series column they follow, so the order is load-bearing rather than cosmetic. `null` in a cell is a gap the chart must not interpolate across.
+
+| \# | Column |
+| :---- | :---- |
+| 0 | `date` |
+| 1 | `visitors`; `null` on the seven forward rows |
+| 2 | `expectedMin`, `role: 'interval'`; `null` on a day without a band and on the forward rows |
+| 3 | `expectedMax`, `role: 'interval'`, the same |
+| 4 | the forward series, drawn with no line: the midpoint of its row's forward band; `null` until the row for `endDate`, which carries the midpoint of that day's measured band |
+| 5 | forward `expectedMin`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMin` |
+| 6 | forward `expectedMax`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMax` |
+
+Columns 4 to 6 and the seven forward rows are absent when the response carries no `forecast`.
 
 The thirteen-month chart starts from the Overview chart's `TRAFFIC_CHART_OPTIONS`, so its line color, its value axis on the right, its gridlines and its crosshair match the Overview chart, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them. The options that carry a decision rather than a preference:
 
@@ -769,8 +924,9 @@ The thirteen-month chart starts from the Overview chart's `TRAFFIC_CHART_OPTIONS
 | `curveType` | `'function'` | Smooths a line whose points are two pixels apart. |
 | `hAxis.ticks` | one per month, `format: 'MMM'` | Weekly ticks are unreadable across thirteen months. |
 | `hAxis.baseline` | the last plotted day | Draws the gray line along the right edge of the plot, as on the Overview chart. |
-| `vAxis.viewWindow` | fitted to the whole window, over the line and the band's upper bound | The year's peak is what the current period is read against, and an axis fitted to the line alone clips the band. |
-| `intervals` | `style: 'area'`, the band's tint and opacity, `lineWidth: 0`, `pointSize: 0` | Draws the expected range as a filled area with no edge lines or points. |
+| `vAxis.viewWindow` | fitted to the whole window, over the line and both bands' upper bounds | The year's peak is what the current period is read against, and an axis fitted to the line alone clips the band. |
+| `intervals` | `style: 'area'`, the band's tint and opacity, `lineWidth: 0`, `pointSize: 0` | Draws the expected range and its week ahead as filled areas with no edge lines or points. |
+| `series` for the forward series | `lineWidth: 0`, `pointSize: 0` | Carries the week ahead's band without drawing a line or points of its own; the divider is what separates the measured days from it. |
 | `interpolateNulls` | `false` | Leaves a day without a band empty rather than bridging the band across it. |
 | `backgroundColor` | `'transparent'` | Lets the selected-range region, which paints behind the SVG, show through. |
 | `legend` | `position: 'none'` | The legend is HTML: `ChartLegend` below the plot, as on the Overview chart. Google Charts cannot show a band in its own legend. |
@@ -785,11 +941,12 @@ The [expected range](#expected-range) step by step, as `Expected_Baseline` compu
 | Clamp | Sort `W`. `Q1` and `Q3` are the values at zero-based positions `FLOOR( n / 4 )` and `FLOOR( 3 * n / 4 )`, and `IQR = MAX( 10, Q3 - Q1 )`. Every value in `W` is clamped to `[ MAX( 0, Q1 - 2.5 * IQR ), Q3 + 2.5 * IQR ]`. |
 | 28-day totals | The clamped sums over positions `[ 0, 28 )`, `[ 14, 42 )`, `[ 28, 56 )` and so on while `W` lasts, then the clamped sum of the last 28 days unless the last of those already equals it. `K` is how many there are. |
 | Weekday shape | `S( d ) = 0.10 + 0.90 * mean( d ) / mean_all`, where `mean( d )` is weekday `d`'s mean over the clamped `W` and `mean_all` is the mean of the seven; a `mean_all` of `0` or less is read as `1`. |
-| Trend | Weighted least squares over the 28-day totals against `x_k = k * 14 / 30.4375` months, with weights `EXP( -0.18 * ( K - 1 - k ) )`. The monthly slope is the fitted slope over the weighted mean of the totals, as a percentage, and `0` when the fit's denominator is `0` or the weighted mean is not positive. `UP` above `+4%`, `DOWN` below `-4%`, `STABLE` otherwise. The band does not read it. |
+| Trend | Weighted least squares over the 28-day totals against `x_k = k * 14 / 30.4375` months, with weights `EXP( -0.18 * ( K - 1 - k ) )`. The monthly slope is the fitted slope over the weighted mean of the totals, as a percentage, and `0` when the fit's denominator is `0` or the weighted mean is not positive. `UP` above `+4%`, `DOWN` below `-4%`, `STABLE` otherwise. The band does not read it; the week ahead does. |
 | Center | Ordinary least squares through the last 28 clamped days; its value on the last of them, held to `[ 0.6, 1.2 ]` times their mean; `B = MAX( 10, 28 * that )`. |
 | Margin | `RMSE = SQRT( SUM( ( v - B / 28 * S( d ) )^2 ) / 21 ) * SQRT( 28 )` over the last 28 clamped days `v`, each with its weekday `d`. `floor = 5 * SQRT( B ) + 0.13 * B`, `ceiling = MAX( floor, 0.24 * B )`, and `M = MAX( 15, floor, MIN( ceiling, 2.5 * RMSE ) )`. |
 | Short history | With `K < 2`: `B` is the raw sum of the last 28 days of `H`, `M = MAX( 15, 0.18 * B + 6.5 * SQRT( B ), 0.25 * B )`, and the trend is `STABLE`. |
 | Band | `expectedMin = ROUND( MAX( 0, B - M ) / 28 * S( d ), 1 )` and `expectedMax = ROUND( ( B + M ) / 28 * S( d ), 1 )`, with `d` the weekday of `t` and `S` from the fit at `t`. |
+| Week ahead | For `h` from 1 to 7, with the fit at `endDate` and its monthly slope in percent: `growth = MAX( 0, 1 + slope / 100 * h / 30.4375 )`, and the band on `endDate + h` is the Band step with `B * growth` in place of `B`, `M` unchanged, and `S( d )` from the fit at `endDate`, with `d` the weekday of `endDate + h`. Without a fit at `endDate` there are no forward rows. |
 
 Three properties the implementation has to hold, because the fixtures' bounds depend on each: the quartiles are positions in the sorted window rather than interpolated percentiles; `ROUND` rounds half away from zero, as PHP's `round()` does by default; and every sum runs over its days oldest first, since a sum in another order can move a bound across a rounding boundary.
 

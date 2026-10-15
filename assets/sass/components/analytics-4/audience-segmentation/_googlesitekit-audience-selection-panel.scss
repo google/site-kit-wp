@@ -86,7 +86,7 @@
 
 		.googlesitekit-audience-selection-panel__add-group-notice {
 			background-color: $c-surfaces-background;
-			margin: $cta-gap-tablet / 2 $grid-gap-desktop;
+			margin: $cta-gap-tablet * 0.5 $grid-gap-desktop;
 			padding: $grid-gap-phone $cta-gap-tablet * 2;
 
 			@media (max-width: $bp-xsmallOnly) {

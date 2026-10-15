@@ -265,7 +265,7 @@ WithAnalyticsActive.scenario = {};
 
 export const SecondaryAdminAnalyticsNotActive = Template.bind( {} );
 SecondaryAdminAnalyticsNotActive.storyName =
-	'Secondary admin, Analytics not setup (setupFlowRefreshPhase4 enabled)';
+	'Secondary admin, Analytics not setup';
 SecondaryAdminAnalyticsNotActive.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
@@ -283,14 +283,11 @@ SecondaryAdminAnalyticsNotActive.args = {
 		] );
 	},
 };
-SecondaryAdminAnalyticsNotActive.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
 SecondaryAdminAnalyticsNotActive.scenario = {};
 
 export const SecondaryAdminWithSharedServices = Template.bind( {} );
 SecondaryAdminWithSharedServices.storyName =
-	'Secondary admin with shared services (setupFlowRefreshPhase4 enabled)';
+	'Secondary admin with shared services';
 SecondaryAdminWithSharedServices.args = {
 	setupRegistry: ( registry ) => {
 		provideSiteConnection( registry, {
@@ -338,9 +335,6 @@ SecondaryAdminWithSharedServices.args = {
 		] );
 	},
 };
-SecondaryAdminWithSharedServices.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
-};
 SecondaryAdminWithSharedServices.scenario = {};
 
 export const AnalyticsActivationError = Template.bind( {} );
@@ -372,13 +366,8 @@ AnalyticsActivationError.args = {
 				areaSlug: NOTIFICATION_AREAS.SPLASH_CONTENT,
 				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 				isDismissible: false,
-				featureFlag: 'setupFlowRefreshPhase4',
 			} );
 	},
-};
-
-AnalyticsActivationError.parameters = {
-	features: [ 'setupFlowRefreshPhase4' ],
 };
 
 AnalyticsActivationError.scenario = {};

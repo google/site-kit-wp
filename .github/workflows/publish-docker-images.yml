@@ -7,7 +7,6 @@ on:
     paths:
       - 'codegen/Dockerfile'
       - 'codegen/library.lock'
-      - 'tests/backstop/Dockerfile'
       - 'tests/playwright/docker/wordpress/Dockerfile'
       - '.github/workflows/publish-docker-images.yml'
       - '.github/actions/build-push-docker-image/**'
@@ -16,7 +15,6 @@ on:
     paths:
       - 'codegen/Dockerfile'
       - 'codegen/library.lock'
-      - 'tests/backstop/Dockerfile'
       - 'tests/playwright/docker/wordpress/Dockerfile'
       - '.github/workflows/publish-docker-images.yml'
       - '.github/actions/build-push-docker-image/**'
@@ -34,7 +32,6 @@ on:
         options:
           - all
           - codegen
-          - vrt
           - playwright-wp
 
 permissions:
@@ -54,7 +51,6 @@ jobs:
       pull-requests: read
     outputs:
       codegen: ${{ steps.filter.outputs.codegen }}
-      vrt: ${{ steps.filter.outputs.vrt }}
       playwright-wp: ${{ steps.filter.outputs.playwright-wp }}
     steps:
       - name: Checkout code
@@ -68,10 +64,6 @@ jobs:
             codegen:
               - 'codegen/Dockerfile'
               - 'codegen/library.lock'
-              - '.github/workflows/publish-docker-images.yml'
-              - '.github/actions/build-push-docker-image/**'
-            vrt:
-              - 'tests/backstop/Dockerfile'
               - '.github/workflows/publish-docker-images.yml'
               - '.github/actions/build-push-docker-image/**'
             playwright-wp:
@@ -111,30 +103,6 @@ jobs:
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           push: ${{ github.event_name != 'pull_request' }}
 
-  publish-vrt:
-    name: Backstop
-    runs-on: ubuntu-latest
-    needs: changes
-    permissions:
-      contents: read
-      packages: write
-    if: |
-      needs.changes.outputs.vrt == 'true' ||
-      (github.event_name == 'workflow_dispatch' && (github.event.inputs.image == 'all' || github.event.inputs.image == 'vrt'))
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
-
-      - name: Build and push Docker image
-        uses: ./.github/actions/build-push-docker-image
-        with:
-          # Update the version number here when updating the Backstop version within the Dockerfile.
-          tags: ghcr.io/google/site-kit-wp/vrt:6.3.25-node22-chrome150.0.7871.100
-          context: ./tests/backstop
-          labels: org.opencontainers.image.description=Docker image used to run visual regression tests for Site Kit.
-          registry-username: "github-actions[bot]"
-          registry-password: ${{ secrets.GITHUB_TOKEN }}
-          push: ${{ github.event_name != 'pull_request' }}
 
   publish-playwright-wp-fixed:
     name: Playwright WP 5.2.21

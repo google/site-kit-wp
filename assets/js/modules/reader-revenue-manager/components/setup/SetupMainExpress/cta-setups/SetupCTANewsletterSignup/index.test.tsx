@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
@@ -29,9 +30,14 @@ import {
 	providePublication,
 	providePublications,
 } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import * as tracking from '@/js/util/tracking';
 import { decodeServiceURL } from '@tests/js/mock-accountChooserURL-utils';
-import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	mockIntersectionObserver,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
+import {
+	act,
 	createTestRegistry,
 	fireEvent,
 	provideModuleRegistrations,
@@ -525,6 +531,239 @@ describe( 'SetupCTANewsletterSignup', () => {
 				);
 
 				openSpy.mockRestore();
+			} );
+		} );
+	} );
+
+	describe( 'event tracking', () => {
+		const { simulateAllIntersections } = mockIntersectionObserver();
+
+		const eventCategory = `${ VIEW_CONTEXT_MODULE_SETUP }_rrm-express-setup_newsletter-signup`;
+
+		let mockTrackEvent: jest.SpyInstance;
+
+		beforeEach( () => {
+			mockTrackEvent = jest
+				.spyOn( tracking, 'trackEvent' )
+				.mockImplementation( () => Promise.resolve() );
+		} );
+
+		afterEach( () => {
+			mockTrackEvent.mockRestore();
+		} );
+
+		it( 'should track the start of the setup', () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			render( <SetupCTANewsletterSignup />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'start_setup',
+				undefined
+			);
+		} );
+
+		it( 'should track the start of a step once it is in view', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			const { getByText } = render( <SetupCTANewsletterSignup />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'terms-of-service' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+				eventCategory,
+				'start_step',
+				expect.anything()
+			);
+
+			act( () => {
+				simulateAllIntersections();
+			} );
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'start_step',
+				'terms-of-service'
+			);
+			expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+		} );
+
+		it.each( [
+			[ 'connect-publication', [ publications[ 0 ] ] ],
+			[ 'create-publication', [] ],
+		] )(
+			'should track the start of the publication setup step as %s',
+			async ( label, availablePublications ) => {
+				global.location.href =
+					'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+				providePublications( registry, availablePublications );
+
+				const { waitForRegistry } = render(
+					<SetupCTANewsletterSignup />,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MODULE_SETUP,
+					}
+				);
+
+				await waitForRegistry();
+
+				act( () => {
+					simulateAllIntersections();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'start_step',
+					label
+				);
+			}
+		);
+
+		it( 'should track the completion of a step', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			const publicationID = publications[ 0 ].publicationId;
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID } );
+
+			providePublications( registry, [ publications[ 0 ] ] );
+
+			const { getByRole, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				}
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Test: complete step' } )
+			);
+
+			expect( mockTrackEvent ).toHaveBeenCalledWith(
+				eventCategory,
+				'complete_step',
+				'connect-publication'
+			);
+		} );
+
+		it( 'should not track any events outside a CTA setup flow', async () => {
+			global.location.href = 'http://example.com/?step=terms-of-service';
+
+			const { getByText } = render( <SetupCTANewsletterSignup />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MODULE_SETUP,
+			} );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'terms-of-service' ] )
+				).toBeInTheDocument();
+			} );
+
+			act( () => {
+				simulateAllIntersections();
+			} );
+
+			expect( mockTrackEvent ).not.toHaveBeenCalled();
+		} );
+
+		describe( 'setup complete step', () => {
+			beforeEach( () => {
+				const publication = publications[ 3 ];
+
+				registry = createTestRegistry() as Registry;
+				provideUserAuthentication( registry, {
+					grantedScopes: EXPRESS_SETUP_SCOPES,
+				} );
+				provideSiteInfo( registry );
+				provideUserInfo( registry );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( {
+						/* eslint-disable sitekit/acronym-case */
+						organizationID: publication.organizationId,
+						publicationID: publication.publicationId,
+						/* eslint-enable sitekit/acronym-case */
+						snippetMode: 'sitewide',
+						postTypes: [],
+					} );
+
+				providePublication( registry, publication );
+
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetCTAs( { ctas: [], params: {} } );
+
+				global.location.href =
+					'http://example.com/?cta=newsletter-signup&step=setup-complete';
+			} );
+
+			it( 'should track the start of the step and the completion of the setup once it is in view', () => {
+				render( <SetupCTANewsletterSignup />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				} );
+
+				act( () => {
+					simulateAllIntersections();
+				} );
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'start_step',
+					'setup-complete'
+				);
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'complete_setup',
+					undefined
+				);
+			} );
+
+			it( 'should track the completion of the step before returning to the dashboard', async () => {
+				const { getByRole } = render( <SetupCTANewsletterSignup />, {
+					registry,
+					viewContext: VIEW_CONTEXT_MODULE_SETUP,
+				} );
+
+				fireEvent.click(
+					getByRole( 'button', { name: /Return to Dashboard/i } )
+				);
+
+				expect( mockTrackEvent ).toHaveBeenCalledWith(
+					eventCategory,
+					'complete_step',
+					'setup-complete'
+				);
+
+				await waitFor( () => {
+					expect( global.location.assign ).toHaveBeenCalledWith(
+						'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+					);
+				} );
 			} );
 		} );
 	} );
