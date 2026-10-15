@@ -111,7 +111,7 @@ describe( 'TotalSalesWidget', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should render the current period total sales count and the change vs. the previous period', async () => {
+	it( 'should render the current period total sales count, the events subtext and the change vs. the previous period', async () => {
 		const reportOptions = getReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
@@ -146,6 +146,9 @@ describe( 'TotalSalesWidget', () => {
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
 		).toHaveTextContent( '150' );
 		expect( getByText( '150' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
+		).toHaveTextContent( '“purchase” events' );
 
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )
