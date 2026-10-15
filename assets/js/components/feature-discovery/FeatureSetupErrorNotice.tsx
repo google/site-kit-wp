@@ -63,8 +63,11 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	isRetrying = false,
 } ) => {
 	const featureTitle = useSelect(
-		( select: Select ) =>
-			select( CORE_FEATURE_DISCOVERY ).getFeature( slug )?.title,
+		( select: Select ) => {
+			const feature = select( CORE_FEATURE_DISCOVERY ).getFeature( slug );
+
+			return feature?.name || feature?.title;
+		},
 		[ slug ]
 	);
 

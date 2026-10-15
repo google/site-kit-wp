@@ -33,7 +33,8 @@ describe( 'FeatureSetupErrorNotice', () => {
 		provideFeatures( registry, [
 			{
 				slug: 'test-feature',
-				title: 'Analytics',
+				name: 'Analytics',
+				title: 'Analytics title',
 			},
 		] );
 
@@ -117,6 +118,37 @@ describe( 'FeatureSetupErrorNotice', () => {
 		expect( getHelpLink ).toHaveAttribute( 'href', troubleshootingURL );
 
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
+	} );
+
+	it( 'falls back to feature title when feature name is not available', () => {
+		const registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				title: 'Title fallback',
+			},
+		] );
+
+		const error = {
+			code: 'activation_failed',
+			message: 'Could not activate service.',
+			data: { status: 500 },
+		};
+
+		const { getByText } = render(
+			<FeatureSetupErrorNotice
+				error={ error }
+				onDismiss={ () => {} }
+				onRetry={ () => {} }
+				slug="test-feature"
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByText( 'Title fallback setup failed' )
+		).toBeInTheDocument();
 	} );
 
 	it( 'includes the redo setup link when reconnectURL is present', () => {
