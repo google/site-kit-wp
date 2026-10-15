@@ -58,11 +58,67 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Implementation Brief
 
-* [ ] <!-- One or more bullet points for how to technically implement the feature. Make sure to include changes to Storybook and visual regression tests where relevant. -->
+* [ ] In `includes/Modules/Analytics_4/Benchmarking/Expected_Baseline.php` (new file):
+  * Add the class `Expected_Baseline`, following `Row_Scorer` in the same directory for the file header, the docblocks and the constants. The constructor takes the daily series and nothing else: no `Context`, no `Options`, no module instance and no service client.
+  * Add these class constants, and use them wherever the steps in the acceptance criteria use their values:
+    * `MINIMUM_HISTORY_DAYS`, set to `28`: the fewest days of history a day needs to have a fit.
+    * `MAXIMUM_HISTORY_DAYS`, set to `365`: the most days a fit reads.
+    * `PERIOD_DAYS`, set to `28`: the days in each 28-day total, which are also the days the center and the margin read.
+    * `PERIOD_STEP_DAYS`, set to `14`: the distance between the first days of two 28-day totals.
+    * `DAYS_PER_MONTH`, set to `30.4375`.
+    * `TREND_THRESHOLD_PERCENT`, set to `4`.
+    * `DIRECTION_UP`, `DIRECTION_DOWN` and `DIRECTION_STABLE`, set to `'UP'`, `'DOWN'` and `'STABLE'`.
+    * The coefficients of the formulas (`2.5`, `0.18`, `0.13`, `0.24` and the others) can stay inline, as `Row_Scorer::score_row()` keeps `0.6` and `0.4` inline.
+  * `__construct( array $daily_traffic )`:
+    * `$daily_traffic` is a list of days, oldest first, each `array( 'date' => 'YYYY-MM-DD', 'visitors' => int )`, with one entry for every day and no day missing. This is the shape `Response_Builder::get_daily_traffic()` returns.
+    * Store each day's visitors, and each day's weekday as `(int) ( new DateTimeImmutable( $date, new DateTimeZone( 'UTC' ) ) )->format( 'w' )`, which is `0` for Sunday to `6` for Saturday.
+    * Store the position of the first day with more than `0` visitors, or `null` when no day has visitors.
+  * `get_fit( $day_index )`, public. `$day_index` is the zero-based position of the day in the series. It returns an array with four keys:
+    * `expectedMin` and `expectedMax`: the day's bounds from the Band step, as floats.
+    * `monthlyTrendPercent`: the monthly trend from the Trend step, as a float. It is not rounded.
+    * `trendDirection`: `DIRECTION_UP` when the trend is above `TREND_THRESHOLD_PERCENT`, `DIRECTION_DOWN` when it is below `-TREND_THRESHOLD_PERCENT`, and `DIRECTION_STABLE` otherwise.
+    * All four keys are `null` when the day has no fit. A day has no fit when no day in the series has visitors, when the day comes before the first day with visitors, or when fewer than `MINIMUM_HISTORY_DAYS` days run from the first day with visitors up to and including the day.
+  * `fit_day( $day_index )`, private. It computes the fit and returns `null` when the day has no fit. Otherwise it returns `center` (`B`), `margin` (`M`), `weekdayFactors` (the seven values of `S`, keyed by weekday `0` to `6`) and `monthlyTrendPercent`. `get_fit()` builds its result from this array, and #13841 builds the week ahead from it too.
+    * The window `W` starts at the later of two positions: the first day with visitors, and `$day_index - MAXIMUM_HISTORY_DAYS + 1`. It ends at `$day_index`.
+    * It runs the steps of the acceptance criteria in order, one private method for each step, as listed below.
+  * Rules that apply to every step, so that the bounds are the same to the decimal on every run:
+    * Keep every list oldest first, and add it up in that order, with a `foreach` loop or with `array_sum()`.
+    * Write each formula with its terms in the order the acceptance criteria give them, evaluated left to right. For example, `MAX( 0, B - M ) / 28 * S( d )` divides by `28` first and multiplies by `S( d )` after that.
+    * Round only in the Band step, with `round( $value, 1 )`.
+  * The private methods for the steps:
+    * `limit_values( array $values )`: sort a copy of the window's values with `sort()`. Read `Q1` at position `intdiv( $count, 4 )` and `Q3` at position `intdiv( 3 * $count, 4 )` of the sorted copy, where `$count` is the number of days in the window. Return the window's values in their original order, each limited as the Limit step says and cast to `float`. The cast makes every later sum a float, so two sums can be compared with `!==`.
+    * `get_period_totals( array $limited_values )`: add up the 28-day totals that start at positions `0`, `PERIOD_STEP_DAYS`, `2 * PERIOD_STEP_DAYS` and so on, while the total still ends inside the window. Then add up the last `PERIOD_DAYS` limited values, and append that sum only when it is `!==` the last total in the list. Compare the two sums by value, not by their positions.
+    * `get_weekday_factors( array $limited_values, array $weekdays )`: take the mean of each weekday from `0` to `6` over the window. A window of 28 days or more holds every weekday at least four times. Add the seven means in the order of weekday `0` to `6`, and divide by `7` for `mean_all`.
+    * `get_monthly_trend_percent( array $period_totals )`: a weighted least squares line through the totals, in closed form:
+      * For each total `y` at index `k`, from `0` to `K - 1`, `x = k * PERIOD_STEP_DAYS / DAYS_PER_MONTH` and `w = exp( -0.18 * ( K - 1 - k ) )`.
+      * Add up `w`, `w * x`, `w * y`, `w * x * x` and `w * x * y` over the totals.
+      * `denominator = sum( w ) * sum( w * x * x ) - sum( w * x ) * sum( w * x )`, `slope = ( sum( w ) * sum( w * x * y ) - sum( w * x ) * sum( w * y ) ) / denominator`, and `weighted_mean = sum( w * y ) / sum( w )`.
+      * Return `slope / weighted_mean * 100`, or `0` when `denominator` is `0` or `weighted_mean` is `0` or less.
+    * `get_center( array $last_period_values )`: an ordinary least squares line through the last `PERIOD_DAYS` limited values, with `x` from `0` to `27`, in closed form:
+      * `slope = ( 28 * sum( x * y ) - sum( x ) * sum( y ) ) / ( 28 * sum( x * x ) - sum( x ) * sum( x ) )` and `intercept = ( sum( y ) - slope * sum( x ) ) / 28`.
+      * The line's value on the last day is `intercept + slope * 27`. Limit it as the Center step says, with `sum( y ) / 28` as the mean, and return `B`.
+    * `get_margin( $center, array $last_period_values, array $last_period_weekdays, array $weekday_factors )`: return `M` from the Margin step.
+    * `get_band( $center, $margin, $weekday_factor )`: return `expectedMin` and `expectedMax` from the Band step. #13841 calls it with the center of a day in the week ahead.
+  * When there are fewer than two 28-day totals, `fit_day()` does not call `get_monthly_trend_percent()`, `get_center()` or `get_margin()`. It takes `B`, `M` and a monthly trend of `0` from the Short history step instead. `B` is the sum of the visitors of the last `PERIOD_DAYS` days of the window, before limiting. The weekday factors still come from `get_weekday_factors()`.
+
+Calling `Expected_Baseline` from `Response_Builder`, the longer daily report and the bounds in the wire format are #13799. The week ahead is #13841. Drawing the band on the chart is #13800.
 
 ### Test Coverage
 
-* <!-- One or more bullet points for how to implement automated tests to verify the feature works. -->
+* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Expected_BaselineTest.php`, following `Row_ScorerTest`, with a private helper that turns a list of visitor counts and a first date into a daily series. Assert every bound with `assertSame()`, and the trend with `assertEqualsWithDelta()`, because the trend is not rounded. Cover:
+  * 365 days at `100` visitors give the last day `77.6` to `122.4` and `STABLE`. 365 days at `10` give `5.7` to `14.3`.
+  * 28 days at `100` give the last day `69.7` to `130.3`, a trend of `0` and `STABLE`. 27 days at `100` give the last day `null` in all four keys.
+  * 100 days at `0` followed by 365 days at `100` give the last day `77.6` to `122.4`. The 27th day with visitors has no fit, and the 28th day has `69.7` to `130.3`.
+  * A series of only zeros gives every day `null` in all four keys.
+  * 35 days at `1000` followed by 365 days at `100` give the last day `77.6` to `122.4`, because the fit reads only the last 365 days.
+  * 365 days at `100` with one day of `5000` in the middle give every day the same result as the same series with `125` on that day. The same series with one day of `0` gives every day the same result as with `75` on that day.
+  * Two series that differ only on their last day give the same result on every earlier day.
+  * On 365 days with `120` visitors on every weekday and `50` on every Saturday and Sunday, both bounds of every weekday in the last week are higher than both bounds of every weekend day in that week.
+  * 365 days rising by one visitor a day, from `100` to `464`, give the last day a trend above `4` and `UP`. The same days falling from `464` to `100` give a trend below `-4` and `DOWN`.
+  * Two instances built from the same series return identical results for every day, trend and direction included.
+  * The tests build `Expected_Baseline` from a series alone, with no `Context`, no options and no HTTP mocks.
+* No Storybook story is required, because the change adds no UI.
+* No VRT changes expected.
 
 ## QA Brief
 

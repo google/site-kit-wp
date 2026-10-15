@@ -136,7 +136,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Report_Options.php`:
   * Set `REPORT_ROW_LIMIT` to `250`.
-  * In the private `get_dimension_options()`, count `sessions` instead of `totalUsers`, and order by `sessions` descending.
+  * In the private `get_dimension_options()`, count `sessions` instead of `totalUsers`, and order by `sessions`, descending. `get_daily_series_options()` keeps counting `totalUsers`.
   * Replace `get_channels_options()`, `get_devices_options()`, `get_visitor_mix_options()`, `get_referrers_options()`, `get_content_options()` and `get_categories_options()` with four methods, each with no dimension filter:
 
     | Method | Dimensions |
@@ -146,101 +146,175 @@ _Do not alter or remove anything below. The following sections will be managed b
     | `get_channel_pages_options()` | `sessionDefaultChannelGrouping`, `landingPage` |
     | `get_channel_campaigns_options()` | `sessionDefaultChannelGrouping`, `sessionCampaignName` |
 
-  * Add `get_driver_breakdown_options( $filter_dimension, array $filter_values, array $dimension_names )` for the second pass. It returns `get_dimension_options( $dimension_names, ... )` with an in-list filter on `$filter_dimension` set to `$filter_values`, which `RequestHelpers::parse_dimension_filter()` builds from a numeric array.
+  * Add `get_driver_breakdown_options( $filter_dimension_name, array $filter_values, array $dimension_names )` for the reports that run after the cards are chosen. It returns `get_dimension_options( $dimension_names, array( $filter_dimension_name => $filter_values ) )`. `RequestHelpers::parse_dimension_filter()` turns a numeric array of values into an `inListFilter`.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Row_Scorer.php`:
-  * Replace `DIMENSION_WEIGHTS` with `KIND_WEIGHTS`: `CONTENT` `1.5`, `SEARCH_KEYWORD` `1.4`, `REFERRING_SITE` `1.3`, `CAMPAIGN` `1.2`, `CHANNEL` `1.1`.
-  * Rename the constructor parameters to `$sessions_current` and `$sessions_previous`, and add `$site_gain` and `$site_loss`, the site's growth and drop from the acceptance criteria.
-  * In `is_excluded_row()`, remove the macro-divergence check. Keep the significance floor and the counter-trend filter as they are.
-  * Add `ELEVATION_MINIMUM_DELTA` (`10`), `ELEVATION_MINIMUM_SHARE_PERCENT` (`15`) and `MAXIMUM_SHARE_PERCENT` (`100`).
-  * Add `get_share_percent( array $row )`, returning the `sharePct` in the acceptance criteria, rounded with `Wire_Format::SHARE_DECIMAL_PLACES`. It returns `0` when the divisor is `0`.
-  * Add `passes_elevation_gate( $kind, array $row )`, which is `true` for a `CHANNEL` and otherwise applies the two thresholds.
-  * Keep `MACRO_DIVERGENCE_PERCENT`. `Key_Factor_Selector` uses it for device and visitor-type attributes.
+  * Replace `DIMENSION_WEIGHTS` with `KIND_WEIGHTS`, keyed by card kind: `CONTENT` `1.5`, `SEARCH_KEYWORD` `1.4`, `REFERRING_SITE` `1.3`, `CAMPAIGN` `1.2`, `CHANNEL` `1.1`. `score_row( $kind, array $row )` reads it.
+  * Change the constructor to `__construct( $sessions_current, $sessions_previous, $site_growth, $site_drop )`, and rename the two existing properties to match. `$site_growth` and `$site_drop` are the site's growth and drop from the acceptance criteria, both positive numbers.
+  * Change `is_excluded_row()` to `is_excluded_row( array $row )`. Remove the device and visitor mix check from it, and keep the significance floor and the counter-trend check as they are.
+  * Make `get_self_change_percent()` public, for the attribute rule on devices and visitor types.
+  * Keep `MACRO_DIVERGENCE_PERCENT`, and change its docblock: a `DEVICE` or `USER_TYPE` attribute value counts only when its own change differs from the card's change by at least this many percentage points.
+  * Add `SPECIFIC_DRIVER_MINIMUM_DELTA` (`10`), `SPECIFIC_DRIVER_MINIMUM_SHARE_PERCENT` (`15`) and `MAXIMUM_SHARE_PERCENT` (`100`).
+  * Add `get_share_percent( array $row )`. It returns the `sharePct` from the acceptance criteria, rounded with `round( $value, Wire_Format::SHARE_DECIMAL_PLACES )` (added in #13844). It returns `0` when the row did not change, or when the growth or drop it divides by is `0`.
+  * Add `passes_specific_driver_gate( $kind, array $row )`. It returns `true` for `CHANNEL`. For every other kind, it returns `true` only when `abs( delta )` is at least `SPECIFIC_DRIVER_MINIMUM_DELTA` and the rounded `get_share_percent()` is at least `SPECIFIC_DRIVER_MINIMUM_SHARE_PERCENT`.
+  * Change the docblocks that say "visitors" to say "sessions".
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Key_Factor_Selector.php` (new file):
-  * Add `Key_Factor_Selector`, with no dependency on the REST layer, the module or the reports, so PHPUnit can drive it from plain arrays.
-  * Add the constants:
-    * `MAXIMUM_KEY_FACTORS` (`3`) and `MAXIMUM_ATTRIBUTES` (`2`).
-    * `REFERRING_SITE_CHANNELS`: `Referral`, `Organic Social`.
-    * `JOINED_SOURCES`, mapping each lowercase source to the label it is joined into: `facebook.com`, `m.facebook.com`, `l.facebook.com`, `lm.facebook.com` and `fb` to `Facebook`.
-    * `CHANNEL_ATTRIBUTE_KINDS`, mapping each channel name in the acceptance criteria's table to its list of attribute kinds, and `DEFAULT_CHANNEL_ATTRIBUTE_KINDS` for any other channel.
-    * `KIND_ATTRIBUTE_KINDS`, mapping `CONTENT`, `CAMPAIGN`, `REFERRING_SITE` and `SEARCH_KEYWORD` to their lists.
-  * Add `is_placeholder( $value )`, which is `true` for an empty string and for a value that starts with `(` and ends with `)`.
-  * Add `select_key_factors( array $contextual_data )`. It returns the cards without attributes, each with its `kind`, `label`, `current`, `previous` and `sharePct`, plus an internal `sourceValues` list for a referring site: the raw sources it was joined from. In order, it:
-    * Sums the candidates from the contextual-data keys, as the acceptance criteria describe. It joins sources with `JOINED_SOURCES`, compared in lowercase, and skips placeholder values.
-    * Works out the site's session totals, growth and drop from `channelBreakdowns`, and creates a `Row_Scorer` with them.
-    * Drops the rows `Row_Scorer::is_excluded_row()` rejects, and then the rows `Row_Scorer::passes_elevation_gate()` rejects.
-    * Removes each parent channel of a remaining non-channel candidate.
-    * Sorts the rest by `Row_Scorer::score_row()`, descending, and keeps `MAXIMUM_KEY_FACTORS`. It breaks ties explicitly by `Wire_Format::KEY_FACTOR_KINDS` order and then `strcmp()` on the label, because `usort()` is not stable on PHP 7.4.
-  * Add `select_attributes( array $card, array $breakdowns )`. `$breakdowns` maps each attribute kind to its paired rows `{ label, current, previous }` for this card. It applies the rules in the acceptance criteria, and uses `MACRO_DIVERGENCE_PERCENT` for `DEVICE` and `USER_TYPE`. It returns at most `MAXIMUM_ATTRIBUTES` attributes, each with its `sharePct` from the same `Row_Scorer`.
-  * Add `get_attribute_kinds( array $card )`, which returns the card's list from `CHANNEL_ATTRIBUTE_KINDS`, `DEFAULT_CHANNEL_ATTRIBUTE_KINDS` or `KIND_ATTRIBUTE_KINDS`.
+  * Add `Key_Factor_Selector`, following `Row_Scorer` for the file header and docblocks. It works only on plain arrays: no REST layer, no module and no reports.
+  * Add these constants:
+    * `MAXIMUM_KEY_FACTORS` (`3`), `MAXIMUM_ATTRIBUTES` (`2`) and `MINIMUM_ATTRIBUTE_DELTA` (`5`).
+    * `REFERRING_SITE_CHANNELS`: `Referral` and `Organic Social`.
+    * `JOINED_SOURCES`: `facebook.com`, `m.facebook.com`, `l.facebook.com`, `lm.facebook.com` and `fb`, each mapped to `Facebook`. A source is looked up in lowercase.
+    * `CHANNEL_ATTRIBUTE_KINDS`: each channel name in the acceptance criteria's table, mapped to its list of attribute kinds. `DEFAULT_CHANNEL_ATTRIBUTE_KINDS`: the list for any other channel.
+    * `KIND_ATTRIBUTE_KINDS`: `CONTENT`, `CAMPAIGN`, `REFERRING_SITE` and `SEARCH_KEYWORD`, each mapped to its list.
+  * `__construct( array $contextual_data )` takes the validated contextual data. A key that is missing has no rows. The constructor:
+    * Adds up the `channelBreakdowns` rows of each window into the site's sessions, and into each channel's sessions.
+    * Works out the site's growth and drop from every channel's change, including a channel whose name is a placeholder.
+    * Creates the `Row_Scorer` that every other method uses.
+  * A private `is_placeholder( $value )` returns `true` for an empty string, and for a value that starts with `(` and ends with `)`.
+  * A private `join_source( $source )` returns `JOINED_SOURCES[ strtolower( $source ) ]`, or the source unchanged when it is not in the list.
+  * `get_key_factors()` returns at most `MAXIMUM_KEY_FACTORS` cards, each `array( 'kind', 'label', 'current', 'previous', 'sharePct' )`. A `REFERRING_SITE` card also has `sourceValues`: the raw sources it was joined from, in the order they were first read. The method does these steps, in order:
+    * Build the candidates, and skip every placeholder value:
+      * `CHANNEL`: each `channel` of `channelBreakdowns`, with the channel's sessions.
+      * `CONTENT`: each `page` of `channelPages`, summed over every channel.
+      * `CAMPAIGN`: each `campaign` of `channelCampaigns`, summed over every channel.
+      * `REFERRING_SITE`: each joined `source` of the `channelSources` rows whose `channel` is in `REFERRING_SITE_CHANNELS`, summed over those two channels.
+      * `SEARCH_KEYWORD`: each `keyword` of `searchKeywords`.
+    * For each `CONTENT`, `CAMPAIGN` and `REFERRING_SITE` candidate, also keep its sessions in each channel, so the next steps can find its parent.
+    * Drop each candidate that `Row_Scorer::is_excluded_row()` excludes, and then each candidate that `Row_Scorer::passes_specific_driver_gate()` does not pass.
+    * Remove the parent channel of every candidate that is not a `CHANNEL`. A `SEARCH_KEYWORD`'s parent is `Organic Search`. The parent of any other kind is the channel whose change for that candidate is the largest in the candidate's own direction. When two channels changed by the same amount, the parent is the one that comes first by `strcmp()`.
+    * Sort the candidates by `Row_Scorer::score_row()`, highest first, and keep the first `MAXIMUM_KEY_FACTORS`. Order two equal scores by the kind's index in `Wire_Format::KEY_FACTOR_KINDS` (added in #13844), and then with `strcmp()` on the label. Write these tie-breaks into the `usort()` callback, because `usort()` is not stable on PHP 7.4.
+    * Give each card its `sharePct` from `Row_Scorer::get_share_percent()`.
+  * `get_attributes( array $card, array $driver_rows )` returns the card's attributes, at most `MAXIMUM_ATTRIBUTES`, each `array( 'kind', 'label', 'current', 'previous', 'sharePct' )`:
+    * `$driver_rows` holds the rows of the reports that ran for this card after the cards were chosen. Its keys are `driverBreakdowns` (`device`, `userType`, `current`, `previous`), `driverSources` (`channel`, `source`, `current`, `previous`) and `driverPages` (`page`, `current`, `previous`). It is an empty array for a `CHANNEL` or a `SEARCH_KEYWORD` card.
+    * Take the card's list of kinds from `CHANNEL_ATTRIBUTE_KINDS`, `DEFAULT_CHANNEL_ATTRIBUTE_KINDS` or `KIND_ATTRIBUTE_KINDS`.
+    * For each kind in the list, read the values from these rows. Add up the rows that have the same value, and join every source with `join_source()` first:
+
+      | Card | Attribute kind | Values from |
+      | :---- | :---- | :---- |
+      | `CHANNEL` | `SEARCH_KEYWORD` | `searchKeywords`, by `keyword` |
+      | `CHANNEL` | `LANDING_PAGE` | the card's channel's `channelPages` rows, by `page` |
+      | `CHANNEL` | `REFERRING_SITE`, `PLATFORM` | the card's channel's `channelSources` rows, by `source` |
+      | `CHANNEL` | `CAMPAIGN` | the card's channel's `channelCampaigns` rows, by `campaign` |
+      | `CHANNEL` | `USER_TYPE`, `DEVICE` | the card's channel's `channelBreakdowns` rows, by `userType` or by `device` |
+      | `CONTENT` | `TRAFFIC_CHANNEL` | the card's page's `channelPages` rows, by `channel` |
+      | `CONTENT` | `SEARCH_KEYWORD` | the card's page's `searchKeywordPages` rows, by `keyword` |
+      | `CONTENT` | `REFERRING_SITE` | the `driverSources` rows in `REFERRING_SITE_CHANNELS`, by `source` |
+      | `CAMPAIGN` | `TRAFFIC_CHANNEL` | the card's campaign's `channelCampaigns` rows, by `channel` |
+      | `CAMPAIGN`, `REFERRING_SITE` | `LANDING_PAGE` | `driverPages`, by `page` |
+      | `CONTENT`, `CAMPAIGN`, `REFERRING_SITE` | `USER_TYPE`, `DEVICE` | `driverBreakdowns`, by `userType` or by `device` |
+      | `SEARCH_KEYWORD` | `LANDING_PAGE` | the card's keyword's `searchKeywordPages` rows, by `page` |
+      | `SEARCH_KEYWORD` | `DEVICE` | the card's keyword's `searchKeywordDevices` rows, by `device` |
+
+    * Keep only the values that count, as the acceptance criteria define them. Use `MINIMUM_ATTRIBUTE_DELTA` for the smallest change. For `DEVICE` and `USER_TYPE`, compare `Row_Scorer::get_self_change_percent()` of the value and of the card with `MACRO_DIVERGENCE_PERCENT`.
+    * Pick each kind's representative, and then the two kinds, with the tie-breaks in the acceptance criteria, written into the `usort()` callbacks. Give each attribute its `sharePct` from `Row_Scorer::get_share_percent()`.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Contextual_Data_Validator.php`:
-  * Key `ROW_FIELDS` by the seven contextual-data keys, with the row fields from the acceptance criteria. Type `channel`, `device`, `userType`, `source`, `page`, `campaign` and `keyword` as `string`, and `current` and `previous` as `count`. Remove the `position` type.
-  * In `validate()`, walk `ROW_FIELDS` instead of `Wire_Format::CONTEXTUAL_DATA_KEYS`, and keep at most `Report_Options::REPORT_ROW_LIMIT` rows for each key.
+  * Key `ROW_FIELDS` by the seven contextual-data keys, with these fields. Type the text fields as `string`, and `current` and `previous` as `count`:
+
+    | Key | Fields |
+    | :---- | :---- |
+    | `channelBreakdowns` | `channel`, `device`, `userType`, `current`, `previous` |
+    | `channelSources` | `channel`, `source`, `current`, `previous` |
+    | `channelPages` | `channel`, `page`, `current`, `previous` |
+    | `channelCampaigns` | `channel`, `campaign`, `current`, `previous` |
+    | `searchKeywords` | `keyword`, `current`, `previous` |
+    | `searchKeywordPages` | `keyword`, `page`, `current`, `previous` |
+    | `searchKeywordDevices` | `keyword`, `device`, `current`, `previous` |
+
+  * Remove the `position` type from `validate_row()`.
+  * In `validate()`, walk the keys of `ROW_FIELDS` instead of `Wire_Format::CONTEXTUAL_DATA_KEYS`. After dropping the rows that are not valid, keep the first `Report_Options::REPORT_ROW_LIMIT` rows of each key.
+  * Update the docblocks to name the seven keys.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Builder.php`:
-  * Remove the `Custom_Dimensions_Data_Available` constructor parameter, its property and the `MAX_ROWS_PER_DIMENSION` constant.
-  * In `get_report_requests()`, request the daily series and the four breakdowns from `Report_Options`, under the keys `dailyTraffic`, `channelBreakdowns`, `channelSources`, `channelPages` and `channelCampaigns`.
-  * In `get_report_rows()`, read the first metric value of a row as its count, whatever the metric is.
-  * In `pair_periods()`, key each pair on all of the row's dimension values, not only the first one.
-  * Replace `build_contextual_data()` and `build_content_rows()` with code that builds the four Analytics keys with the row fields in the acceptance criteria.
-  * Replace `rank_contextual_data()` and `get_response_row()` with a step that calls `Key_Factor_Selector::select_key_factors()` on the filtered contextual data. Then it runs the second-pass reports from `Report_Options::get_driver_breakdown_options()` for each kept `CONTENT`, `CAMPAIGN` and `REFERRING_SITE` card, through the existing `run_reports()`, in chunks of five. Last, it calls `Key_Factor_Selector::select_attributes()` for every card, with breakdowns built from the first-pass keys, Search Console's keys and the second-pass rows, as the acceptance criteria list them.
-  * Return a `WP_Error` from a second-pass call unchanged.
-  * Return `visitors`, `dailyTraffic` and `keyFactors`. Remove the internal `sourceValues` from each card before returning.
+  * Remove the `Custom_Dimensions_Data_Available` constructor parameter, its property, its `use` statement and the `MAX_ROWS_PER_DIMENSION` constant. Remove `rank_contextual_data()`, `get_response_row()` and `build_content_rows()`.
+  * In `get_report_requests()`, stop reading `Custom_Dimensions_Data_Available`, and return the daily series and the four breakdowns under the keys `dailyTraffic`, `channelBreakdowns`, `channelSources`, `channelPages` and `channelCampaigns`.
+  * In `get_report_rows()`, rename the `visitors` key of each row to `count`, because the breakdowns count sessions. Read `count` where the daily series reads the rows.
+  * Change `pair_periods()` to pair the two windows by all of a row's dimension values, not only by the first value.
+  * Change `build_contextual_data()` to build the four Analytics keys from the paired rows, with the fields in the `Contextual_Data_Validator` table above, in the order of each report's dimensions.
+  * In `filter_contextual_data()`, rewrite the filter's docblock for the seven keys and their row fields, and remove the sentence about ranking and the cap of 5 rows.
+  * Add a private `get_key_factors( Report_Options $report_options, array $contextual_data )`, which returns the cards or a `WP_Error`:
+    * Create a `Key_Factor_Selector` from the filtered contextual data, and call `get_key_factors()`.
+    * For each `CONTENT`, `CAMPAIGN` and `REFERRING_SITE` card, add two requests from `Report_Options::get_driver_breakdown_options()`:
+
+      | Card | Filter | `driverBreakdowns` dimensions | Second report |
+      | :---- | :---- | :---- | :---- |
+      | `CONTENT` | `landingPage`, the card's `label` | `deviceCategory`, `newVsReturning` | `driverSources`: `sessionDefaultChannelGrouping`, `sessionSource` |
+      | `CAMPAIGN` | `sessionCampaignName`, the card's `label` | `deviceCategory`, `newVsReturning` | `driverPages`: `landingPage` |
+      | `REFERRING_SITE` | `sessionSource`, the card's `sourceValues` | `deviceCategory`, `newVsReturning` | `driverPages`: `landingPage` |
+
+    * Run the requests through `run_reports()` only when there is at least one. Return a `WP_Error` from that call unchanged.
+    * Pair each report's windows with `pair_periods()`, name the fields as `Key_Factor_Selector::get_attributes()` expects them, and set each card's `attributes` from `get_attributes()`. Call `get_attributes()` with an empty array for a `CHANNEL` or a `SEARCH_KEYWORD` card.
+    * Remove `sourceValues` from each card.
+  * In `build()`, return `visitors`, `dailyTraffic` and `keyFactors`, and update its `@return` description.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Wire_Format.php`:
-  * Remove `DIMENSION_INDEXES` and `CONTEXTUAL_DATA_KEYS`, which nothing reads any more.
+  * Remove `DIMENSION_INDEXES` and `CONTEXTUAL_DATA_KEYS`. After the changes above, no class reads them.
 
 * [ ] In `includes/Modules/Analytics_4/Datapoints/Get_Benchmarking_Data.php`:
-  * Create `Response_Builder` with the module only.
+  * Create `Response_Builder` with `$definition['module']` only.
 
 * [ ] In `includes/Modules/Analytics_4.php`:
   * Remove `custom_dimensions_data_available` from the `GET:benchmarking-data` definition in `get_datapoint_definitions()`.
 
 * [ ] In `includes/Modules/Search_Console/Benchmarking/Report_Options.php`:
-  * Replace `get_search_query_requests()` with `get_search_keyword_requests()`. It returns six requests, one per window for each of the dimensions `query`, `query,page` and `query,device`, with the identifiers `keywords_current`, `keywords_previous`, `keyword_pages_current`, `keyword_pages_previous`, `keyword_devices_current` and `keyword_devices_previous`.
+  * Replace `get_search_query_requests()` with `get_search_keyword_requests()`. It returns six requests, one for each window of each of the dimensions `query`, `query,page` and `query,device`. Their identifiers are `keywords_current`, `keywords_previous`, `keyword_pages_current`, `keyword_pages_previous`, `keyword_devices_current` and `keyword_devices_previous`.
 
 * [ ] In `includes/Modules/Search_Console/Benchmarking/Report_Data_Builder.php`:
-  * Replace `build_search_query_rows()` with `build_search_keyword_rows( array $args )`. It runs the six requests in one `searchanalytics-batch` call and returns `searchKeywords`, `searchKeywordPages` and `searchKeywordDevices`, pairing each set's two windows by all of the row's keys and counting `getClicks()`.
-  * Write a page as `wp_parse_url( $page, PHP_URL_PATH )`, and a device with `strtolower()`.
-  * Leave a key out when either of its two requests failed. Return an empty array when the whole batch failed.
+  * Replace `build_search_query_rows()` with `build_search_keyword_rows( array $args )`. It runs the six requests in one `searchanalytics-batch` call, and returns `array( 'searchKeywords' => …, 'searchKeywordPages' => …, 'searchKeywordDevices' => … )`, with the row fields in the acceptance criteria.
+  * Count `(int) $report_row->getClicks()`, and stop reading the position.
+  * Write a page as `wp_parse_url( $page, PHP_URL_PATH )`, or `/` when the URL has no path. Write a device with `strtolower()`.
+  * Pair each key's two windows by all of the row's values after the page and the device are converted. Add up the rows that become the same, for example two URLs of one page with different query strings.
+  * Return an empty array when the batch call fails, or when any of the six requests fails.
 
 * [ ] In `includes/Modules/Search_Console.php`:
-  * Rename `add_search_query_rows()` to `add_search_keyword_rows()`, keep its property check, and merge every key `build_search_keyword_rows()` returns into the contextual data. Update the `add_filter()` call in `register()`.
+  * Rename `add_search_query_rows()` to `add_search_keyword_rows()`, and update the `add_filter()` call in `register()`.
+  * Keep its property check. Add every key `build_search_keyword_rows()` returns to the contextual data, and update its docblock.
 
 Encoding `keyFactors` is #13844. `sessionSource` is added to the dimensions a shared report may use in #13597, and `landingPage` and `sessionCampaignName` in #13843.
 
 ### Test Coverage
 
+* Update `tests/phpunit/includes/Fake_Benchmarking_Reports_Trait.php`: key `$report_rows` by all of a report's dimension names, joined with commas, instead of by the first name only, because the four breakdowns all start with `sessionDefaultChannelGrouping`. Also let a key hold a callable that receives the report request and returns the rows, so a test can answer two reports that run after the cards are chosen by their filters.
 * Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Report_OptionsTest.php` covering:
   * Each of the four breakdowns counts `sessions`, carries both windows, has the dimensions in the table and asks for 250 rows.
   * `get_driver_breakdown_options()` adds an in-list filter on the dimension it is given.
-* Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Row_ScorerTest.php` covering:
-  * Scores use the new weights by kind.
-  * The macro-divergence check no longer drops anything.
-  * `get_share_percent()` uses the site's growth for a rise and the site's drop for a fall, stops at `100`, rounds to one decimal, and returns `0` when the divisor is `0`.
-  * `passes_elevation_gate()` lets through a channel at any size, and a landing page at exactly `10` sessions and `15%`, and drops it at `9` sessions or at `14.9%`.
-* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Key_Factor_SelectorTest.php`, driven from plain contextual-data arrays, covering:
-  * The example in the acceptance criteria gives `substack.com`, `Direct` and `Organic Search`, with their shares, and no `Referral` card.
-  * A search keyword that clears the gate removes `Organic Search`. A landing page's parent is the channel whose row changed the most in the page's direction.
-  * The Facebook sources are joined into one referring site, and a source only in a paid channel is not a referring site.
-  * Placeholder values are never a card or an attribute, but they still count toward channel totals.
+  * Remove the cases for the six removed methods.
+* Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Row_ScorerTest.php` for the new constructor, covering:
+  * Scores use the weights by kind.
+  * The device and visitor mix check no longer excludes anything.
+  * `get_share_percent()` divides by the site's growth for a rise and by the site's drop for a fall, stops at `100`, rounds to one decimal, and returns `0` when it would divide by `0`.
+  * `passes_specific_driver_gate()` passes a channel of any size. It passes a landing page at exactly `10` sessions and `15%`, and fails it at `9` sessions or at `14.9%`.
+* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Key_Factor_SelectorTest.php`, driven by plain contextual-data arrays, covering:
+  * The example in the acceptance criteria gives `substack.com`, `Direct` and `Organic Search`, in that order, with shares of `33.3`, `41.7` and `16.7`, and no `Referral` card.
+  * On a site that grew, a channel card that fell has its share of the site's drop as its `sharePct`, not a share of the site's growth.
+  * A search keyword that passes the gate removes `Organic Search`. A landing page's parent is the channel whose change for it is the largest in its direction, and two channels with the same change give the parent that comes first by name.
+  * `Facebook.com`, `m.facebook.com` and `fb` are counted as one `Facebook` referring site, whose `sourceValues` lists all three. A source that has sessions only in a paid channel is not a referring site.
+  * A placeholder value is never a card and never an attribute, but its sessions still count toward its channel's sessions and the site's sessions.
   * Two candidates with the same score, and two attribute kinds with the same change, come back in the same order on every run.
-  * Attributes: the card's list decides which kinds may appear; a value that moved against the card or by less than `5` does not count; a device that changed at nearly the card's own rate does not count; the two largest kinds are kept; and a card can have one attribute or none.
-  * A site with no candidate left gives an empty list.
+  * For each card kind, the attributes come from the rows in the brief's table, and only the kinds in the card's list appear.
+  * A value that moved against the card, or by less than `5`, does not count. A device that changed at almost the card's own rate does not count. The two kinds with the largest changes are kept, and a card can have one attribute or none.
+  * Contextual data with no candidate left gives an empty list.
 * Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php` covering:
-  * Five reports are run in one call, and none of the removed reports is run.
+  * Five reports run in one call, and none of the removed reports runs, with or without data in the post date and post categories dimensions.
   * Rows are paired by all of their dimension values.
-  * Second-pass reports are run only for kept landing page, campaign and referring-site cards, and are filtered to the card's driver. No second-pass report is run when the cards are channels and search keywords.
-  * A `WP_Error` from a second-pass call is returned unchanged.
-  * The response carries `keyFactors` and neither `dimensions` nor `contextualData`, and building it twice from the same fixtures gives the same response.
-  * Remove the cases that cover dimension ranking, caps and content rows.
-* Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Contextual_Data_ValidatorTest.php` for the seven keys, the 250-row limit, and the removal of the `position` type.
-* Update `tests/phpunit/integration/Modules/Search_Console/Benchmarking/Report_OptionsTest.php` and `Report_Data_BuilderTest.php` covering the six requests, the three keys, the conversion of a page URL to a path and of a device name to lowercase, and a key left out when one of its requests fails.
-* Update the benchmarking cases in `tests/phpunit/integration/Modules/Search_ConsoleTest.php` and `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php` for the new keys and the new response, including the view-only cases from #13597:
-  * Dispatched as a view-only user whose role has Analytics shared, the datapoint runs the five first-pass reports and any second-pass reports under the module owner's client.
-  * With Analytics shared and Search Console not shared, the response carries no `SEARCH_KEYWORD` card and no `SEARCH_KEYWORD` attribute, in place of the case that asserts no `searchQueries` key and no `SEARCH_QUERIES` in `dimensions`.
+  * The reports after the cards are chosen run only for kept landing page, campaign and referring site cards, filtered to the card's driver. A `Facebook` card's filter lists every raw source it was joined from. Three such cards take two calls, and channel and search keyword cards take none.
+  * A `WP_Error` from the first call, and one from a later call, is returned unchanged.
+  * The response carries `visitors`, `dailyTraffic` and `keyFactors`, and neither `dimensions` nor `contextualData`. Building it twice from the same report rows gives the same response.
+  * Make `test_build__does_not_return_a_number_with_decimals` also allow each `sharePct`, and assert that it has at most one decimal.
+  * Remove the cases for the dimension ranking, the cap of 5 rows and the content rows, and the `Custom_Dimensions_Data_Available` setup.
+* Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Contextual_Data_ValidatorTest.php` for the seven keys and their fields, the limit of 250 rows per key, and the removed `position` type.
+* Update `tests/phpunit/integration/Modules/Search_Console/Benchmarking/Report_OptionsTest.php` and `Report_Data_BuilderTest.php` covering:
+  * The six requests and their identifiers.
+  * The three keys, counting clicks.
+  * `https://example.com/garlic/` becomes `/garlic/`, two URLs of one page with different query strings become one row, and `https://example.com` becomes `/`.
+  * `MOBILE` becomes `mobile`.
+  * An empty array when the batch call fails, and when one of the six requests fails.
+* Update the benchmarking cases in `tests/phpunit/integration/Modules/Search_ConsoleTest.php` for `add_search_keyword_rows()` and the three keys.
+* Update `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php`:
+  * Create the recording builder's parent without `Custom_Dimensions_Data_Available`.
+  * Dispatched as a view-only user whose role has Analytics shared, the datapoint runs every Analytics call, the first one and the later ones, under the module owner's token.
+  * With Analytics shared and Search Console not shared, the response has no `SEARCH_KEYWORD` card and no `SEARCH_KEYWORD` attribute. This replaces the case that asserts no `SEARCH_QUERIES` dimension.
 * No Storybook story is required, because the change adds no UI.
 * No VRT changes expected.
 
