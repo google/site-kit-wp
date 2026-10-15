@@ -51,8 +51,7 @@ const TypicalTrafficChartHeader: FC = () => {
 						'google-site-kit'
 					),
 					{
-						// TODO: Point the link at the support page for this chart
-						// once it exists.
+						// TODO: #13875 -- Point the link at the chart's support page.
 						a: <Link href="#" external hideExternalIndicator />,
 					}
 				) }
