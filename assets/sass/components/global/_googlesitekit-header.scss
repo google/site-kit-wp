@@ -224,10 +224,17 @@
 					display: inline-block;
 				}
 			}
+
+			// The date range picker panel sits inside the header, so keep its
+			// footer button labels visible.
+			.googlesitekit-date-range-picker__footer .mdc-button__label {
+				display: inline-block;
+			}
 		}
 	}
 
-	// The date range picker panel is rendered in a portal, outside the header.
+	// The date range picker panel is positioned under its trigger, so it stays
+	// with the sticky header.
 
 	.googlesitekit-date-range-picker__panel {
 
@@ -236,11 +243,11 @@
 		border-radius: $br-sm;
 		display: flex;
 		left: var(--googlesitekit-date-picker-panel-left, 0);
-		min-height: 460px;
+		min-height: var(--googlesitekit-date-picker-panel-min-height);
 		overflow: hidden;
 		position: absolute;
 		top: var(--googlesitekit-date-picker-panel-top, 0);
-		width: 744px;
+		width: var(--googlesitekit-date-picker-panel-width);
 		z-index: $z-index-sk-header + 1;
 
 		&:focus {

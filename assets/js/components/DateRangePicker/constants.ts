@@ -30,6 +30,9 @@ export const DATE_RANGE_PICKER_PANEL_ID = 'date-range-picker-panel';
 // Wide enough for the preset rail and two month grids side by side.
 export const DATE_RANGE_PICKER_PANEL_WIDTH = 744;
 
+// Tall enough for the Figma panel; the content added in #13612 and #13613 fills it.
+export const DATE_RANGE_PICKER_PANEL_MIN_HEIGHT = 460;
+
 // Space between the trigger and the panel opening beneath it.
 export const DATE_RANGE_PICKER_PANEL_GAP = 16;
 

@@ -95,10 +95,13 @@ const DateRangePicker: FC = () => {
 		}
 
 		const triggerRect = triggerButtonRef.current?.getBoundingClientRect();
+		const wrapperRect = triggerWrapperRef.current?.getBoundingClientRect();
 
-		if ( triggerRect ) {
-			// Viewport coordinates: the panel converts them to its own positioning
-			// context, which isn't the page.
+		if ( triggerRect && wrapperRect ) {
+			// Centre the panel on the trigger, then shift it inwards if it would
+			// extend past the viewport edge. The panel is positioned within the
+			// trigger's wrapper so it stays with the sticky header, so the offsets
+			// are relative to that wrapper.
 			const centredLeft =
 				triggerRect.left +
 				triggerRect.width / 2 -
@@ -110,8 +113,13 @@ const DateRangePicker: FC = () => {
 				DATE_RANGE_PICKER_PANEL_VIEWPORT_MARGIN;
 
 			setAnchor( {
-				top: triggerRect.bottom + DATE_RANGE_PICKER_PANEL_GAP,
-				left: Math.max( minLeft, Math.min( centredLeft, maxLeft ) ),
+				top:
+					triggerRect.bottom -
+					wrapperRect.top +
+					DATE_RANGE_PICKER_PANEL_GAP,
+				left:
+					Math.max( minLeft, Math.min( centredLeft, maxLeft ) ) -
+					wrapperRect.left,
 			} );
 		}
 
