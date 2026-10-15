@@ -124,7 +124,7 @@ export function isAuthError( error: unknown ): boolean {
  * send the `cacheTTL` that holds the request back until the quota has recovered. The
  * newer Google APIs report a rate limit through the status alone, with no reason.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if it's a rate limit error, otherwise FALSE.
@@ -146,7 +146,7 @@ export function isRateLimitError( error: unknown ): boolean {
  * Checks if the given error can be retried.
  *
  * @since 1.86.0
- * @since n.e.x.t Rate limit errors are no longer retryable.
+ * @since 1.190.0 Rate limit errors are no longer retryable.
  *
  * @param {Object} error          The error object to check.
  * @param {Object} [selectorData] The error's associated selector data object.

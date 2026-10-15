@@ -80,7 +80,7 @@ const actions = {
 	 * conversion ID, enables conversion tracking, and completes the intent on
 	 * the Site Kit Service. Stops at the first step that fails.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string} intentCode Code the Site Kit Service created for the intent.
 	 * @param {string} tagID      Google tag ID to save as the conversion ID, e.g. `AW-123456789`.
@@ -178,7 +178,7 @@ const actions = {
 	 * Confirming only unlocks placing the tag: nothing is saved until
 	 * `completeConversionTrackingIntent()` places it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {Object} Redux-style action.
 	 */
@@ -205,7 +205,7 @@ const selectors = {
 	/**
 	 * Checks whether the user confirmed the tag on the Ads conversion tracking intent screen.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` if the user confirmed the tag, otherwise `false`.

@@ -42,7 +42,7 @@ const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 /**
  * Fetch options for the `getReport` resolver and selector.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export type ReportFetchOptions = {
 	signal?: AbortSignal;
@@ -67,7 +67,7 @@ export type ReportFetchOptions = {
  * one call's cancellation abort another call's report.
  *
  * @since 1.183.0
- * @since n.e.x.t Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
+ * @since 1.190.0 Accept an optional `cacheTTL` fetch option, such as `{ cacheTTL }` to change how long the report response is cached.
  *
  * @param storeName Report datastore name, such as `modules/analytics-4`.
  * @return Generator resolver for the store's `getReport` selector.
