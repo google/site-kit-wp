@@ -141,6 +141,7 @@ export interface Feature extends FeatureSettings {
 export interface FeatureCategory {
 	slug: FeatureCategorySlug;
 	title: string;
+	chipLabel: string;
 }
 
 export interface PendingSetup {
