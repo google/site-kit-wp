@@ -110,6 +110,25 @@ describe( 'core/feature-discovery selectors', () => {
 				FEATURE_CATEGORIES.PRODUCTIVITY,
 			] );
 		} );
+
+		it( 'should return each category with its chip label', () => {
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeatureCategories()
+					.map(
+						( { chipLabel }: { chipLabel: string } ) => chipLabel
+					)
+			).toEqual( [
+				'Know your audience',
+				'Engage your visitors',
+				'Monetize',
+				'Drive traffic',
+				'Manage privacy',
+				'Improve site speed',
+				'Collaborate',
+			] );
+		} );
 	} );
 
 	describe( 'isFeaturePrerequisiteMet', () => {
@@ -541,7 +560,7 @@ describe( 'core/feature-discovery selectors', () => {
 		} );
 	} );
 
-	describe( 'getFeaturesByGoal', () => {
+	describe( 'getFeaturesFilteredByGoal', () => {
 		beforeEach( () => {
 			provideModules( registry, [
 				{ slug: 'analytics-4', active: false, connected: false },
@@ -550,8 +569,12 @@ describe( 'core/feature-discovery selectors', () => {
 
 		it( 'should require a category', () => {
 			expect( () =>
-				registry.select( CORE_FEATURE_DISCOVERY ).getFeaturesByGoal()
-			).toThrow( 'category is required to get features by goal.' );
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal()
+			).toThrow(
+				'category is required to get filtered features by goal.'
+			);
 		} );
 
 		it( 'should return features whose primary category matches, in registration order', () => {
@@ -564,7 +587,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'audience-one', 'audience-two' ] );
 		} );
@@ -602,7 +625,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [
 				'in-progress-first',
@@ -623,7 +646,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -638,7 +661,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -654,7 +677,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -673,7 +696,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'needs-analytics' ] );
 		} );
@@ -686,7 +709,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 			).toEqual( [] );
 		} );
 
@@ -698,7 +721,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'visible' ] );
 			expect( checkRequirements ).toHaveBeenCalled();
@@ -710,7 +733,7 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				registry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
 					.map( ( { slug }: { slug: string } ) => slug )
 			).toEqual( [ 'default-visible' ] );
 		} );
@@ -727,7 +750,71 @@ describe( 'core/feature-discovery selectors', () => {
 			expect(
 				loadingRegistry
 					.select( CORE_FEATURE_DISCOVERY )
-					.getFeaturesByGoal( FEATURE_CATEGORIES.AUDIENCE )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
+			).toEqual( [] );
+		} );
+
+		it( 'should match only primary category when no categories are selected', () => {
+			registerFeature( 'multi-goal', {
+				goalCategories: [
+					FEATURE_CATEGORIES.ENGAGEMENT,
+					FEATURE_CATEGORIES.AUDIENCE,
+				],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.ENGAGEMENT )
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'multi-goal' ] );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE )
+			).toEqual( [] );
+		} );
+
+		it( 'should match on the first selected category in the feature goal order', () => {
+			registerFeature( 'multi-goal', {
+				goalCategories: [
+					FEATURE_CATEGORIES.ENGAGEMENT,
+					FEATURE_CATEGORIES.AUDIENCE,
+				],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.ENGAGEMENT, [
+						FEATURE_CATEGORIES.AUDIENCE,
+						FEATURE_CATEGORIES.ENGAGEMENT,
+					] )
+					.map( ( { slug }: { slug: string } ) => slug )
+			).toEqual( [ 'multi-goal' ] );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.AUDIENCE, [
+						FEATURE_CATEGORIES.AUDIENCE,
+						FEATURE_CATEGORIES.ENGAGEMENT,
+					] )
+			).toEqual( [] );
+		} );
+
+		it( 'should not include a feature in unselected categories', () => {
+			registerFeature( 'audience-feature', {
+				goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+			} );
+
+			expect(
+				registry
+					.select( CORE_FEATURE_DISCOVERY )
+					.getFeaturesFilteredByGoal( FEATURE_CATEGORIES.ENGAGEMENT, [
+						FEATURE_CATEGORIES.ENGAGEMENT,
+					] )
 			).toEqual( [] );
 		} );
 	} );
