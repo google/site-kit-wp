@@ -473,6 +473,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 						undefined
 					);
 
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 					expect( global.open ).not.toHaveBeenCalled();
 
 					const isViewOnSite =
