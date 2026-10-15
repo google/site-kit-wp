@@ -148,7 +148,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * The instance the plugin registered at bootstrap stays bound to the user
 	 * it was built for, so a test that switches users needs its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param int $user_id The user the capabilities are resolved for.
 	 */
@@ -179,7 +179,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * Builds a response builder that records every call and answers with the
 	 * given value.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param mixed $result Optional. Value `build()` answers with. Default an empty response.
 	 * @return Response_Builder The recording builder, whose `calls` property holds each `[ $start_date, $end_date ]` pair.
@@ -227,7 +227,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * Enables the feature flag and puts a recording builder behind the
 	 * datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param mixed $result Optional. Value the builder answers with. Default an empty response.
 	 * @return Response_Builder The recording builder.
@@ -392,7 +392,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	/**
 	 * Requests the datapoint.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $params Optional. Query parameters. Default the two valid dates.
 	 * @return \WP_REST_Response The response.

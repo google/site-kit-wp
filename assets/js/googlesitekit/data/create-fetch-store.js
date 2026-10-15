@@ -60,7 +60,7 @@ function defaultValidateParams() {}
  * fetch options by those keys.
  *
  * @since 1.182.0
- * @since n.e.x.t Accept fetch options with a `cacheTTL` key, such as `{ cacheTTL }`, even without a `signal` key.
+ * @since 1.190.0 Accept fetch options with a `cacheTTL` key, such as `{ cacheTTL }`, even without a `signal` key.
  *
  * @param {Array} args All arguments passed to the generated `fetchX` action.
  * @return {Object} An object with `fetchArgs`, the arguments that build the
@@ -135,7 +135,7 @@ const {
  *
  * @since 1.10.0
  * @since 1.182.0 Accept an optional fetch options object on the generated `fetchX` action, such as `{ signal }` to cancel the request, and pass it to `controlCallback` as a second argument.
- * @since n.e.x.t Accept an optional `cacheTTL` fetch option on the generated `fetchX` action, such as `{ cacheTTL }` to change how long the response is cached.
+ * @since 1.190.0 Accept an optional `cacheTTL` fetch option on the generated `fetchX` action, such as `{ cacheTTL }` to change how long the response is cached.
  * @private
  *
  * @param {Object}   args                   Arguments for creating the fetch store.

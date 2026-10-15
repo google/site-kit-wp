@@ -174,7 +174,7 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * and the insight report in the store, so the Recent activity tab renders
  * without sending a request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} registry The registry to put the property, the post and the reports in.
  * @return {void}

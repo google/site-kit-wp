@@ -24,5 +24,3 @@ export { default as ExpressSetupBannerWidget } from './ExpressSetupBannerWidget'
 export { default as RRMSetupSuccessSubtleNotification } from './RRMSetupSuccessSubtleNotification';
 export { default as RRMIntroductoryOverlayNotification } from './RRMIntroductoryOverlayNotification';
 export { default as PolicyViolationNotification } from './PolicyViolationNotification';
-export { default as ExpressSetupResumeNewsletterNotification } from './ExpressSetupResumeNewsletterNotification';
-export { default as ExpressSetupResumeNotice } from './ExpressSetupResumeNotice';

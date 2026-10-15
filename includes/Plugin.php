@@ -317,6 +317,25 @@ final class Plugin {
 	}
 
 	/**
+	 * Forces the Setup Flow Refresh Phase 4 feature flag to be enabled.
+	 *
+	 * @since 1.183.0
+	 * @since 1.185.0 Force-enable the `setupFlowRefreshPhase4` flag in addition to the initial Setup Flow Refresh flag.
+	 * @since 1.190.0 Renamed from `force_setup_flow_refresh_feature_enabled()`, and now only force-enables the `setupFlowRefreshPhase4` flag.
+	 *
+	 * @param bool   $feature_enabled The current status of this feature flag.
+	 * @param string $feature_name    The feature name.
+	 * @return bool True for setupFlowRefreshPhase4, otherwise the original value.
+	 */
+	public function force_setup_flow_refresh_phase4_feature_enabled( $feature_enabled, $feature_name ) {
+		if ( 'setupFlowRefreshPhase4' === $feature_name ) {
+			return true;
+		}
+
+		return $feature_enabled;
+	}
+
+	/**
 	 * Loads the plugin main instance and initializes it.
 	 *
 	 * @since 1.0.0

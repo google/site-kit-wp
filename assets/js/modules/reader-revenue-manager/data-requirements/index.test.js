@@ -21,7 +21,6 @@
  */
 import {
 	CONTENT_POLICY_STATES,
-	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 	POLICY_VIOLATION_STATES,
 	PUBLICATION_ONBOARDING_STATES,
@@ -29,13 +28,10 @@ import {
 import { createTestRegistry } from '@tests/js/test-utils';
 import {
 	requireContentPolicyState,
-	requireExpressSetupCTAActioned,
-	requireExpressSetupCTAConfigured,
 	requirePaymentOption,
 	requireProductID,
 	requireProductIDs,
 	requirePublicationOnboardingState,
-	requireSettingsAvailable,
 } from './index';
 
 describe( 'Reader Revenue Manager data requirements', () => {
@@ -202,140 +198,6 @@ describe( 'Reader Revenue Manager data requirements', () => {
 					registry
 				)
 			).toBe( false );
-		} );
-	} );
-	describe( 'requireExpressSetupCTAActioned', () => {
-		it( 'should return true when the CTA was actioned', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( {
-					lastActionedExpressSetups: {
-						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 1752451200,
-					},
-				} );
-
-			expect(
-				await requireExpressSetupCTAActioned(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( true );
-		} );
-
-		it( 'should return false when the CTA action timestamp is falsy', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( {
-					lastActionedExpressSetups: {
-						[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: 0,
-					},
-				} );
-
-			expect(
-				await requireExpressSetupCTAActioned(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( false );
-		} );
-
-		it( 'should return false when another CTA was actioned', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( {
-					lastActionedExpressSetups: { 'another-cta': 1752451200 },
-				} );
-
-			expect(
-				await requireExpressSetupCTAActioned(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( false );
-		} );
-
-		it( 'should return false when no CTA has been actioned', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetUserSettings( {} );
-
-			expect(
-				await requireExpressSetupCTAActioned(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( false );
-		} );
-	} );
-	describe( 'requireExpressSetupCTAConfigured', () => {
-		it( 'should return true when the CTA is configured', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					configuredCTAs: {
-						'configured-cta-id':
-							EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
-					},
-				} );
-
-			expect(
-				await requireExpressSetupCTAConfigured(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( true );
-		} );
-
-		it( 'should return false when another CTA is configured', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					configuredCTAs: { 'configured-cta-id': 'another-cta' },
-				} );
-
-			expect(
-				await requireExpressSetupCTAConfigured(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( false );
-		} );
-
-		it( 'should return false when no CTA is configured', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { configuredCTAs: {} } );
-
-			expect(
-				await requireExpressSetupCTAConfigured(
-					EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
-				)( registry )
-			).toBe( false );
-		} );
-	} );
-	describe( 'requireSettingsAvailable', () => {
-		it( 'should return true when the settings are available', async () => {
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {} );
-
-			expect( await requireSettingsAvailable()( registry ) ).toBe( true );
-		} );
-
-		it( 'should return false when the settings request fails', async () => {
-			fetchMock.getOnce(
-				new RegExp(
-					'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
-				),
-				{
-					body: {
-						code: 'internal_server_error',
-						message: 'Internal server error',
-						data: { status: 500 },
-					},
-					status: 500,
-				}
-			);
-
-			expect( await requireSettingsAvailable()( registry ) ).toBe(
-				false
-			);
-
-			expect( console ).toHaveErrored();
 		} );
 	} );
 } );

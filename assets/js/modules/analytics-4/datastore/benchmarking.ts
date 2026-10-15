@@ -55,7 +55,7 @@ import { ReportOptions } from './types';
 /**
  * The date range of a benchmarking request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export type BenchmarkingDataParams = Pick<
 	ReportOptions,
@@ -75,7 +75,7 @@ const CLEAR_BENCHMARKING_DATA = 'CLEAR_BENCHMARKING_DATA';
 /**
  * Throws an error when either date is missing or isn't a valid `YYYY-MM-DD` date.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} params           The date range.
  * @param {string} params.startDate The first day of the date range.
@@ -163,7 +163,7 @@ const baseActions = {
 	 * the API cache, so the next `getBenchmarkingData()` call for those dates
 	 * requests it again.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
 	 * @param {string} endDate   The last day of the date range, as `YYYY-MM-DD`.
@@ -250,7 +250,7 @@ const baseSelectors = {
 	/**
 	 * Gets the decoded benchmarking response for a date range.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
@@ -268,7 +268,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether a request for the benchmarking response of a date range is in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.
