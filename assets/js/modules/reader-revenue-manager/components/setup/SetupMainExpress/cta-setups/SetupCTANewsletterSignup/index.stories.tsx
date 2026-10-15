@@ -101,10 +101,7 @@ const BASE_QUERY = {
 	cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
 };
 
-function setupBaseRegistry(
-	registry: WPDataRegistry,
-	connectedPublication?: Publication
-) {
+function setupBaseRegistry( registry: WPDataRegistry ) {
 	provideModules( registry, [
 		{
 			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -118,16 +115,11 @@ function setupBaseRegistry(
 	provideUserAuthentication( registry, {
 		grantedScopes: EXPRESS_SETUP_SCOPES,
 	} );
-	providePublications(
-		registry,
-		connectedPublication
-			? [ ...publications, connectedPublication ]
-			: publications
-	);
+	providePublications( registry, publications );
 
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		organizationID: connectedPublication ? ORGANIZATION_ID : '',
-		publicationID: connectedPublication ? PUBLICATION_ID : '',
+		organizationID: ORGANIZATION_ID,
+		publicationID: PUBLICATION_ID,
 		snippetMode: 'sitewide',
 		postTypes: [],
 	} );
@@ -135,6 +127,13 @@ function setupBaseRegistry(
 	registry
 		.dispatch( MODULES_READER_REVENUE_MANAGER )
 		.receiveGetCTAs( { ctas: [ NEWSLETTER_CTA ], params: {} } );
+}
+
+function connectPublication(
+	registry: WPDataRegistry,
+	publication: Publication
+) {
+	providePublications( registry, [ ...publications, publication ] );
 }
 
 function Template() {
@@ -149,6 +148,13 @@ ConnectPublication.parameters = {
 		step: publicationSetupStep.slug,
 	},
 };
+ConnectPublication.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationID( '' );
+	},
+};
 ConnectPublication.scenario = {};
 
 export const TermsOfService = Template.bind( {} ) as Story;
@@ -160,7 +166,8 @@ TermsOfService.parameters = {
 	},
 };
 TermsOfService.args = {
-	connectedPublication: PUBLICATION_WITHOUT_TERMS,
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, PUBLICATION_WITHOUT_TERMS ),
 };
 TermsOfService.scenario = {};
 
@@ -173,7 +180,8 @@ PublicationPolicies.parameters = {
 	},
 };
 PublicationPolicies.args = {
-	connectedPublication: PUBLICATION_WITHOUT_POLICIES,
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, PUBLICATION_WITHOUT_POLICIES ),
 };
 PublicationPolicies.scenario = {};
 
@@ -186,7 +194,8 @@ SetupCTA.parameters = {
 	},
 };
 SetupCTA.args = {
-	connectedPublication: COMPLETE_PUBLICATION,
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, COMPLETE_PUBLICATION ),
 };
 SetupCTA.scenario = {};
 
@@ -199,7 +208,8 @@ SetupComplete.parameters = {
 	},
 };
 SetupComplete.args = {
-	connectedPublication: COMPLETE_PUBLICATION,
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, COMPLETE_PUBLICATION ),
 };
 SetupComplete.scenario = {};
 
@@ -213,8 +223,9 @@ SetupCompleteWithPreExistingCTAs.parameters = {
 	},
 };
 SetupCompleteWithPreExistingCTAs.args = {
-	connectedPublication: COMPLETE_PUBLICATION,
 	setupRegistry: ( registry: WPDataRegistry ) => {
+		connectPublication( registry, COMPLETE_PUBLICATION );
+
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
 			ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
 			params: {},
@@ -230,12 +241,9 @@ Loading.parameters = {
 };
 Loading.args = {
 	pauseAnimation: true,
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		// Not in the publications list, so the flow waits for it to load.
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setPublicationID( PUBLICATION_ID );
-
+	setupRegistry: () => {
+		// The connected publication is not in the publications list, so the
+		// flow waits for it to load.
 		freezeFetch( PUBLICATION_ENDPOINT );
 	},
 };
@@ -247,11 +255,7 @@ InitialStepError.parameters = {
 	query: BASE_QUERY,
 };
 InitialStepError.args = {
-	setupRegistry: ( registry: WPDataRegistry ) => {
-		registry
-			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.setPublicationID( PUBLICATION_ID );
-
+	setupRegistry: () => {
 		fetchMock.get( PUBLICATION_ENDPOINT, {
 			body: {
 				code: 'internal_server_error',
@@ -274,10 +278,7 @@ export default {
 			{ args }: { args: Story[ 'args' ] }
 		) => {
 			function setupRegistry( registry: WPDataRegistry ) {
-				setupBaseRegistry(
-					registry,
-					args?.connectedPublication as Publication | undefined
-				);
+				setupBaseRegistry( registry );
 				args?.setupRegistry?.( registry );
 			}
 
