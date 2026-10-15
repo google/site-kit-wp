@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { withQuery } from '@storybook/addon-queryparams';
+import fetchMock from 'fetch-mock';
 import { ElementType } from 'react';
 
 /**
@@ -44,9 +45,11 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
@@ -70,11 +73,38 @@ const NEWSLETTER_CTA = {
 	type: CTA_TYPES.NEWSLETTER_SIGNUP,
 };
 
+/* eslint-disable sitekit/acronym-case -- `Id` and `Url` are the identifiers used by the API. */
+const PUBLICATION_WITHOUT_TERMS = {
+	...publications[ 2 ],
+	organizationId: ORGANIZATION_ID,
+	publicationId: PUBLICATION_ID,
+} as Publication;
+
+const PUBLICATION_WITHOUT_POLICIES = {
+	...publications[ 0 ],
+	organizationId: ORGANIZATION_ID,
+	publicationId: PUBLICATION_ID,
+} as Publication;
+
+const COMPLETE_PUBLICATION = {
+	...PUBLICATION_WITHOUT_POLICIES,
+	publicationTosUrl: 'https://example.com/terms',
+	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
+} as Publication;
+/* eslint-enable sitekit/acronym-case */
+
+const PUBLICATION_ENDPOINT = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication'
+);
+
 const BASE_QUERY = {
 	cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
 };
 
-function setupBaseRegistry( registry: WPDataRegistry ) {
+function setupBaseRegistry(
+	registry: WPDataRegistry,
+	connectedPublication?: Publication
+) {
 	provideModules( registry, [
 		{
 			slug: MODULE_SLUG_READER_REVENUE_MANAGER,
@@ -88,11 +118,16 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 	provideUserAuthentication( registry, {
 		grantedScopes: EXPRESS_SETUP_SCOPES,
 	} );
-	providePublications( registry, publications );
+	providePublications(
+		registry,
+		connectedPublication
+			? [ ...publications, connectedPublication ]
+			: publications
+	);
 
 	registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetSettings( {
-		organizationID: ORGANIZATION_ID,
-		publicationID: PUBLICATION_ID,
+		organizationID: connectedPublication ? ORGANIZATION_ID : '',
+		publicationID: connectedPublication ? PUBLICATION_ID : '',
 		snippetMode: 'sitewide',
 		postTypes: [],
 	} );
@@ -124,6 +159,9 @@ TermsOfService.parameters = {
 		step: termsOfServiceStep.slug,
 	},
 };
+TermsOfService.args = {
+	connectedPublication: PUBLICATION_WITHOUT_TERMS,
+};
 TermsOfService.scenario = {};
 
 export const PublicationPolicies = Template.bind( {} ) as Story;
@@ -133,6 +171,9 @@ PublicationPolicies.parameters = {
 		...BASE_QUERY,
 		step: publicationPoliciesStep.slug,
 	},
+};
+PublicationPolicies.args = {
+	connectedPublication: PUBLICATION_WITHOUT_POLICIES,
 };
 PublicationPolicies.scenario = {};
 
@@ -144,6 +185,9 @@ SetupCTA.parameters = {
 		step: signupFormStep.slug,
 	},
 };
+SetupCTA.args = {
+	connectedPublication: COMPLETE_PUBLICATION,
+};
 SetupCTA.scenario = {};
 
 export const SetupComplete = Template.bind( {} ) as Story;
@@ -153,6 +197,9 @@ SetupComplete.parameters = {
 		...BASE_QUERY,
 		step: setupCompleteStep.slug,
 	},
+};
+SetupComplete.args = {
+	connectedPublication: COMPLETE_PUBLICATION,
 };
 SetupComplete.scenario = {};
 
@@ -166,6 +213,7 @@ SetupCompleteWithPreExistingCTAs.parameters = {
 	},
 };
 SetupCompleteWithPreExistingCTAs.args = {
+	connectedPublication: COMPLETE_PUBLICATION,
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		registry.dispatch( MODULES_READER_REVENUE_MANAGER ).receiveGetCTAs( {
 			ctas: [ PRE_EXISTING_CTA, NEWSLETTER_CTA ],
@@ -174,6 +222,47 @@ SetupCompleteWithPreExistingCTAs.args = {
 	},
 };
 SetupCompleteWithPreExistingCTAs.scenario = {};
+
+export const Loading = Template.bind( {} ) as Story;
+Loading.storyName = 'Loading';
+Loading.parameters = {
+	query: BASE_QUERY,
+};
+Loading.args = {
+	pauseAnimation: true,
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		// Not in the publications list, so the flow waits for it to load.
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationID( PUBLICATION_ID );
+
+		freezeFetch( PUBLICATION_ENDPOINT );
+	},
+};
+Loading.scenario = {};
+
+export const InitialStepError = Template.bind( {} ) as Story;
+InitialStepError.storyName = 'Initial Step Error';
+InitialStepError.parameters = {
+	query: BASE_QUERY,
+};
+InitialStepError.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationID( PUBLICATION_ID );
+
+		fetchMock.get( PUBLICATION_ENDPOINT, {
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+	},
+};
+InitialStepError.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTANewsletterSignup',
@@ -185,13 +274,22 @@ export default {
 			{ args }: { args: Story[ 'args' ] }
 		) => {
 			function setupRegistry( registry: WPDataRegistry ) {
-				setupBaseRegistry( registry );
+				setupBaseRegistry(
+					registry,
+					args?.connectedPublication as Publication | undefined
+				);
 				args?.setupRegistry?.( registry );
 			}
 
 			return (
 				<WithRegistrySetup func={ setupRegistry }>
-					<StoryComponent />
+					{ args?.pauseAnimation ? (
+						<div className="googlesitekit-vrt-animation-paused">
+							<StoryComponent />
+						</div>
+					) : (
+						<StoryComponent />
+					) }
 				</WithRegistrySetup>
 			);
 		},
