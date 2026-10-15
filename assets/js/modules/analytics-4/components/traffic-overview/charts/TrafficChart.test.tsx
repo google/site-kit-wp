@@ -290,10 +290,38 @@ describe( 'TrafficChart', () => {
 		expect( dateMarkers ).toBeUndefined();
 	} );
 
-	it( 'draws no marker on a view-only dashboard', async () => {
+	it( 'should mark the day the Analytics property was created on a view-only dashboard, and read it to a screen reader', async () => {
 		providePropertyCreateTime( '2025-01-14' );
 
-		render(
+		const { getByText } = render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY }
+		);
+
+		const { dateMarkers } = await getLastChartProps();
+
+		expect( dateMarkers ).toEqual( [
+			{
+				date: '2025-01-14',
+				text: 'Google Analytics property created',
+			},
+		] );
+		expect(
+			getByText(
+				'Google Analytics property created on January 14, 2025.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker on a view-only dashboard when the Analytics property creation time is not known', async () => {
+		// The setting is `0` until Site Kit stores the property's creation time.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSettings( { propertyCreateTime: 0 } );
+
+		const { queryByText } = render(
 			<TrafficChart
 				report={ getAnalytics4MockResponse( reportOptions ) }
 			/>,
@@ -303,6 +331,9 @@ describe( 'TrafficChart', () => {
 		const { dateMarkers } = await getLastChartProps();
 
 		expect( dateMarkers ).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'reads every day and its visitors to a screen reader', async () => {

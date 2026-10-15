@@ -3,35 +3,22 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
-## Workflow playbooks
-Each workflow below has a shared, tool-agnostic playbook in `docs/context/workflow/` that is its
-single source of truth: read that playbook and follow it exactly. Claude Code exposes each one as
-a skill of the same name; Antigravity as a workflow in `.agents/workflows/`.
+## Skills
+Project workflows, such as writing issues and implementation briefs, implementing issues and
+reviewing pull requests, are skills in `.agents/skills/`. Each tool finds a skill by its
+`description` and reads the full instructions only when the skill runs.
 
-### Writing an issue
-When asked to create, draft, or write a GitHub issue from a design doc, from a bug report or from
-requirements in the message, to break an epic's design doc into issues, or to write **Acceptance
-criteria** for an existing issue, follow **`docs/context/workflow/write-issue-requirements.md`**. Establish the
-type first — a **feature request** (`.github/ISSUE_TEMPLATE/feature_request.md`) or a **bug
-report** (`.github/ISSUE_TEMPLATE/bug_report.md`) — and **ask the user which one when the request
-doesn't make it clear**. Do not create or edit a GitHub issue unless explicitly asked.
+These rules apply whether or not a skill runs:
+- **Never commit, push, or open a PR** unless explicitly asked.
+- **Never write to GitHub** unless explicitly asked: do not create or edit issues, post comments,
+  approve a pull request, or change its state.
 
-### Writing an implementation brief
-When asked to write, draft, adjust, update, or fill in the **Implementation Brief** and **Test
-Coverage** sections of an issue, follow **`docs/context/workflow/write-implementation-brief.md`**.
-Touch **only** those two sections, and do not edit the GitHub issue or post a comment unless
-explicitly asked.
-
-### Implementing a GitHub issue
-When asked to implement, build, or work on a GitHub issue by number, follow
-**`docs/context/workflow/implement-issue.md`** and review against
-**`docs/context/workflow/review-checklist.md`**. **Never commit, push, or open a PR unless
-explicitly asked.**
-
-### Reviewing a pull request
-When asked to review a pull request by number, follow **`docs/context/workflow/review-pr.md`** and
-grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
-comments, approve, or change the PR state unless explicitly asked.
+### Adding a skill
+Put the whole procedure in `.agents/skills/<name>/SKILL.md`, with any supporting files next to it,
+and add a symlink to it at `.claude/skills/<name>/SKILL.md`. Do not add a separate playbook or
+workflow file. Do not add an entry to this file for a new skill either: every tool loads this
+file in full in every session, and it already finds skills by their `description`. Add a line here
+only for a rule that must hold even when the skill does not run.
 
 ## Creating a design doc
 When asked to create, write, or draft a design doc (technical design / epic design) for a feature,

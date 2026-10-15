@@ -52,6 +52,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	protected $made_shared_data_request = null;
 
 	/**
+	 * The Google client the latest request ran with.
+	 *
+	 * @var Google_Site_Kit_Client|null
+	 */
+	protected $request_client = null;
+
+	/**
 	 * Callback to invoke on activation.
 	 *
 	 * @var callable
@@ -131,6 +138,13 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 				$this->made_shared_data_request = $this->is_shared_data_request( $data );
 			}
 		);
+
+		add_action(
+			'googlesitekit_fake_module_request_client',
+			function ( Google_Site_Kit_Client $client ) {
+				$this->request_client = $client;
+			}
+		);
 	}
 
 	/**
@@ -172,6 +186,17 @@ class FakeModule extends Module implements Module_With_Activation, Module_With_D
 	 */
 	public function made_shared_data_request() {
 		return $this->made_shared_data_request;
+	}
+
+	/**
+	 * Gets the Google client the latest request ran with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return Google_Site_Kit_Client|null The client, or null if no request has run yet.
+	 */
+	public function get_request_client() {
+		return $this->request_client;
 	}
 
 	/**

@@ -650,7 +650,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 							isOtherSourcesTab={ isOtherSourcesTab }
 							rateInfoTooltip={ createInterpolateElement(
 								__(
-									'The percentage of total visitors who successfully completed a key action (like submitting a form). <a>Learn more</a>',
+									'The percentage of total visitors who successfully completed a key action (like filling out a form). <a>Learn more</a>',
 									'google-site-kit'
 								),
 								{
