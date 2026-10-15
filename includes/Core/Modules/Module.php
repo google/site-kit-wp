@@ -59,7 +59,7 @@ abstract class Module {
 	 * returns `code`, `message`, and `status`, with no `error.errors` for the
 	 * client to read, so a reason alone would miss every Analytics report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var int
 	 */
 	const RATE_LIMIT_STATUS = 429;
@@ -71,7 +71,7 @@ abstract class Module {
 	 * checked. Kept in agreement with the same list in `assets/js/util/errors.ts`,
 	 * which decides whether the browser offers the reader a retry.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var string[]
 	 */
 	const RATE_LIMIT_REASONS = array(
@@ -88,7 +88,7 @@ abstract class Module {
 	 * therefore clears the shorter of the two windows without holding a reader on an error
 	 * for the whole of the longer one.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var int
 	 */
 	const RATE_LIMIT_CACHE_TTL = 10 * MINUTE_IN_SECONDS;
@@ -401,7 +401,7 @@ abstract class Module {
 	 * 400, that a REST route with this schema would return, and a parameter's
 	 * `default` is applied the way the REST server applies it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param Data_Request $data        Data request object.
 	 * @param array        $args_schema Map of parameter names to their schemas.
@@ -435,7 +435,7 @@ abstract class Module {
 	 * Creates a request object for the given datapoint.
 	 *
 	 * @since 1.0.0
-	 * @since n.e.x.t Validates the parameters of a `Schema_Aware_Datapoint` before running it.
+	 * @since 1.190.0 Validates the parameters of a `Schema_Aware_Datapoint` before running it.
 	 * @since n.e.x.t Passes the Google client the request is sent with to a closure request.
 	 *
 	 * @param Data_Request $data Data request object.

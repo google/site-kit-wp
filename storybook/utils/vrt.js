@@ -43,7 +43,7 @@ export const VRT_FONTS = [
  *
  * `storybook/preview-head-vrt.html` sets the flag in builds made with `VRT=1`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} Whether the preview runs in visual regression test mode.
  */
@@ -54,7 +54,7 @@ export function isVRT() {
 /**
  * Records the story's render state on the document element.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} state   The render state: `pending`, `rendered` or `errored`.
  * @param {string} [error] The error message, for the `errored` state.
@@ -71,7 +71,7 @@ function setStoryState( state, error = '' ) {
  * attribute to leave `pending`, and fails with `data-vrt-story-error` when the
  * story errors instead of rendering.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export function trackVRTStoryState() {
 	const channel = addons.getChannel();
@@ -96,7 +96,7 @@ export function trackVRTStoryState() {
 /**
  * Loads the web fonts the stories use.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Promise<void>} Resolves once every font face has loaded.
  */

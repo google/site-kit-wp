@@ -85,7 +85,7 @@ class Intents {
 	 *
 	 * An intent is only handled with both its ID and its code, so an empty array is returned unless both are non-empty strings.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param mixed $intent      Intent ID.
 	 * @param mixed $intent_code One-time code for the intent.

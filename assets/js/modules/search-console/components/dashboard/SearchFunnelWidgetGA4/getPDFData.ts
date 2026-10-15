@@ -209,7 +209,7 @@ interface MetricCardResult {
  * dotted line of the same color, mirroring the dashboard.
  *
  * @since 1.183.0
- * @since n.e.x.t Wrote large values as `58K`, and showed every axis label in full.
+ * @since 1.190.0 Wrote large values as `58K`, and showed every axis label in full.
  *
  * @param {Object} options          The line color, the dates, and the highest value for the chart.
  * @param {string} options.color    The series color for both lines.

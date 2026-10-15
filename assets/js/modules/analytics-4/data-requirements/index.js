@@ -100,7 +100,7 @@ export function requireAdSenseLinked() {
  * only satisfied when AdSense is known to be unlinked, so an unresolved
  * `undefined` value does not pass.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether AdSense is not linked or not.
  */
