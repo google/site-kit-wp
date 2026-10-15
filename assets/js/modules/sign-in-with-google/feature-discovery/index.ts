@@ -45,6 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'sign-in-with-google', {
+		name: 'Sign in with Google',
 		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 		title: __(
 			'Boost onboarding, security, and trust on your site using Sign in with Google',
