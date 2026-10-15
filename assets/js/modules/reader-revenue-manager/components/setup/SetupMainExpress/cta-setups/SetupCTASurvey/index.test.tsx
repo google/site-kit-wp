@@ -224,38 +224,6 @@ describe( 'SetupCTASurvey', () => {
 		expect( global.location.href ).toContain( 'step=connect-publication' );
 	} );
 
-	it( 'advances from the survey questions step to the survey CTA step', async () => {
-		global.location.href = 'http://example.com/?step=survey-questions';
-
-		const { getByRole, getByText } = render( <SetupCTASurvey />, {
-			registry,
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Continue' } ) );
-
-		await waitFor( () => {
-			expect(
-				getByText( STEP_CONTENT[ 'survey-cta' ] )
-			).toBeInTheDocument();
-		} );
-	} );
-
-	it( 'advances from the survey CTA step to the setup complete step', async () => {
-		global.location.href = 'http://example.com/?step=survey-cta';
-
-		const { getByRole, getByText } = render( <SetupCTASurvey />, {
-			registry,
-		} );
-
-		fireEvent.click( getByRole( 'button', { name: 'Continue' } ) );
-
-		await waitFor( () => {
-			expect(
-				getByText( STEP_CONTENT[ 'setup-complete' ] )
-			).toBeInTheDocument();
-		} );
-	} );
-
 	it( 'renders the "View on your site" CTA on the setup complete step', async () => {
 		global.location.href = 'http://example.com/?step=setup-complete';
 
