@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { sum } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -26,113 +31,137 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
 import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { SITE_TOTALS_METRICS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	formatRoundedShare,
+	getMetricCount,
+	getRoundedShares,
+} from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import {
+	Report,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 
-const SHARE_FORMAT = {
-	style: 'percent',
-	maximumFractionDigits: 1,
-} as const;
-
 /**
- * Formats a row's share of the site's visitors.
+ * Splits a thousand tenths of a percent between the given counts and the
+ * rest of the total, with `getRoundedShares()`.
  *
- * A share that rounds to `0%` shows as `<0.1%`, and a share below `1` that
- * rounds to `100%` shows as `>99.9%`. So a row shows `100%` only when its
- * visitors reach the site's total.
+ * The rest of the total, which no row shows, takes part as the last count. So
+ * the shares of the rows can add up to less than 100%, but never to more.
  *
  * @since n.e.x.t
  *
- * @param {number} share The row's share, above `0` and up to `1`.
- * @return {string} The formatted share, such as `34.1%`.
+ * @param {Array<number>} counts The count of each row, in display order, each above zero.
+ * @param {number}        total  The total that the shares divide, above zero.
+ * @return {Array<number>} The tenths of a percent of each row, in the same order, from `0` to `1000`.
  */
-function formatShare( share: number ): string {
-	const formattedShare = numFmt( share, SHARE_FORMAT );
+function getTenthPercentages( counts: number[], total: number ): number[] {
+	const countsTotal = sum( counts );
+	// A column's report and the report of the site's totals are separate
+	// requests. So the rows can count a little more than the total, such as a
+	// view Analytics counted between the two requests. The shares then divide
+	// the rows' sum, so neither a row nor a column shows more than 100%.
+	const sharedTotal = Math.max( total, countsTotal );
 
-	if ( formattedShare === numFmt( 0, SHARE_FORMAT ) ) {
-		return sprintf(
-			/* translators: %s: a tenth of one percent, such as "0.1%", in a string that reads as "less than 0.1%" */
-			__( '<%s', 'google-site-kit' ),
-			numFmt( 0.001, SHARE_FORMAT )
-		);
-	}
-
-	if ( share < 1 && formattedShare === numFmt( 1, SHARE_FORMAT ) ) {
-		return sprintf(
-			/* translators: %s: a share just below one hundred percent, such as "99.9%", in a string that reads as "more than 99.9%" */
-			__( '>%s', 'google-site-kit' ),
-			numFmt( 0.999, SHARE_FORMAT )
-		);
-	}
-
-	return formattedShare;
+	return getRoundedShares(
+		[ ...counts, sharedTotal - countsTotal ],
+		1000
+	).slice( 0, counts.length );
 }
 
 /**
- * Gets the visitors in a report's total, which counts each visitor once.
+ * Gets the site's total of the metric that a column's report counts, from the
+ * report of the site's totals.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report] Optional. A report with the `totalUsers` metric.
- * @return {number} The visitors in the report's total, or `0` when the report has no total.
+ * @param {Object} [siteTotalsReport] Optional. The report of the site's totals, with its `totals`.
+ * @param {Object} [reportOptions]    Optional. The options of the column's report, which name the metric it counts.
+ * @return {number} The total, such as the site's visits for the channels column, or `0` when the report of the site's totals has no total.
  */
-function getTotalVisitors( report?: Report ): number {
-	return (
-		parseInt(
-			report?.totals?.[ 0 ]?.metricValues?.[ 0 ]?.value ?? '',
-			10
-		) || 0
+export function getSiteTotal(
+	siteTotalsReport?: Report,
+	reportOptions?: ReportOptions
+): number {
+	const [ metric ] = reportOptions?.metrics ?? [];
+	const metricIndex = SITE_TOTALS_METRICS.indexOf(
+		typeof metric === 'string' ? metric : metric?.name ?? ''
 	);
+
+	return getMetricCount( siteTotalsReport?.totals?.[ 0 ], metricIndex );
 }
 
 /**
  * Builds the rows a column of the Recent activity tab's traffic breakdown
  * renders from its report.
  *
- * Values with no visitors are omitted, and the rest are sorted by visitors,
- * most first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is of
- * the site's visitors, so a column's shares can add up to more than 100% when
- * a visitor is counted in two rows.
+ * With `getRowLabel`, each row of the report takes the label that the
+ * function returns, and rows with the same label add up to one row. Values
+ * with no count are left out, and the rest are sorted by count, most first, up
+ * to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is of the site's
+ * total. The shares of a column, with the share of the rest of the total, add
+ * up to 100%.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report]             Optional. A report with one dimension and the `totalUsers` metric.
- * @param {Object} [siteVisitorsReport] Optional. The report of the site's visitors, with its `totals`.
- * @return {Array<Object>} The rows, each with the dimension value as its `label`, the visitors as its `value`, such as `'12K'` rather than `12345`, and the share as its `secondaryValue`, such as `'(52.2%)'` rather than `0.522`. A row has no share when the report of the site's visitors has no total, or a total of zero.
+ * @param {Object}   [report]      Optional. A report with one dimension and one metric.
+ * @param {number}   [siteTotal]   Optional. The site's total of the metric, such as its visits. A row has no share when the total is `0`. Default `0`.
+ * @param {Function} [getRowLabel] Optional. A function that gets the label of a row from its dimension value, or `undefined` to leave the row out. Without it, a row's label is its dimension value.
+ * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`.
  */
 export function getRecentTrafficBreakdownRows(
 	report?: Report,
-	siteVisitorsReport?: Report
+	siteTotal = 0,
+	getRowLabel?: ( dimensionValue: string ) => string | undefined
 ): TableTileRow[] {
-	const siteVisitors = getTotalVisitors( siteVisitorsReport );
+	// A `Map` keeps the order of the report, so a sort keeps that order for
+	// labels with the same count.
+	const counts = new Map< string, number >();
 
-	return (
-		( report?.rows ?? [] )
-			.map( ( row ) => ( {
-				label: row.dimensionValues?.[ 0 ]?.value ?? '',
-				visitors:
-					parseInt( row.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0,
-			} ) )
-			// A report includes values with no visitors, which a column omits.
-			.filter( ( { visitors } ) => visitors > 0 )
-			.sort( ( first, second ) => second.visitors - first.visitors )
-			.slice( 0, RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS )
-			.map( ( { label, visitors } ) => ( {
-				label,
-				value: numFmt( visitors ),
-				secondaryValue:
-					siteVisitors > 0
-						? sprintf(
-								/* translators: %s: the row's share of the site's visitors, such as "52.2%" */
-								__( '(%s)', 'google-site-kit' ),
-								// Analytics visitor counts are estimates, so a
-								// row's count can be a little higher than the
-								// total.
-								formatShare(
-									Math.min( visitors / siteVisitors, 1 )
-								)
-						  )
-						: undefined,
-			} ) )
-	);
+	( report?.rows ?? [] ).forEach( ( row ) => {
+		const dimensionValue = row.dimensionValues?.[ 0 ]?.value ?? '';
+		const label = getRowLabel
+			? getRowLabel( dimensionValue )
+			: dimensionValue;
+
+		if ( label === undefined ) {
+			return;
+		}
+
+		counts.set(
+			label,
+			( counts.get( label ) ?? 0 ) + getMetricCount( row )
+		);
+	} );
+
+	const rows = Array.from( counts, ( [ label, count ] ) => ( {
+		label,
+		count,
+	} ) )
+		// A report includes values with no count, which a column leaves out.
+		.filter( ( { count } ) => count > 0 )
+		.sort( ( first, second ) => second.count - first.count )
+		.slice( 0, RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS );
+
+	const tenths =
+		siteTotal > 0
+			? getTenthPercentages(
+					rows.map( ( { count } ) => count ),
+					siteTotal
+			  )
+			: [];
+
+	return rows.map( ( { label, count }, index ) => ( {
+		label,
+		value: numFmt( count ),
+		secondaryValue:
+			siteTotal > 0
+				? sprintf(
+						/* translators: %s: the row's share of the site's total, such as "52.2%" */
+						__( '(%s)', 'google-site-kit' ),
+						formatRoundedShare( tenths[ index ], 1000 )
+				  )
+				: undefined,
+	} ) );
 }

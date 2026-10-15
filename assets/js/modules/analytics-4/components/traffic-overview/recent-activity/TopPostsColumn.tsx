@@ -30,93 +30,35 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import {
-	TableTile,
-	TableTileRow,
-} from '@/js/modules/analytics-4/components/common/tiles';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { usePlainPermalinkPostTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkPostTitles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
+import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
-import { decodeAmpersand } from '@/js/modules/analytics-4/utils';
-import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
+import { getPlainPermalinkPost } from './utils/getPlainPermalinkPost';
+
+/**
+ * No page paths, for the titles hook of the permalink structure the site
+ * doesn't use. The array stays the same between renders, so the hook's
+ * memoized values do too.
+ */
+const NO_PAGE_PATHS: string[] = [];
 
 const TopPostsColumn: FC = () => {
-	const excludedProductPathPrefix = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getExcludedProductPathPrefix(),
+	const usingPlainPermalinks = useSelect(
+		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
 		[]
 	);
 
-	// The report waits until the column knows whether to omit product pages,
-	// so it isn't requested once without the filter and again with it.
-	const buildReportOptions = useCallback(
-		( dateRange: FreshDataDateRange ) =>
-			excludedProductPathPrefix === undefined
-				? undefined
-				: getTopPostsReportOptions(
-						dateRange,
-						excludedProductPathPrefix
-				  ),
-		[ excludedProductPathPrefix ]
-	);
-
-	const {
-		reportOptions,
-		report,
-		// Each row's `label` is a page path.
-		rows: pathRows,
-		loading,
-		error,
-		retry,
-	} = useRecentTrafficBreakdownColumn( buildReportOptions );
-
-	const pagePaths = useMemo(
-		() => pathRows.map( ( { label } ) => label ),
-		[ pathRows ]
-	);
-
-	// `getPageTitles` requests a title for each row of its report, so it
-	// receives only the rows the column shows, and `titlesError` is read for
-	// those same page paths.
-	const shownRowsReport = useMemo< Report | undefined >(
-		() =>
-			report && {
-				...report,
-				rows: report.rows?.filter( ( row ) =>
-					pagePaths.includes(
-						row.dimensionValues?.[ 0 ]?.value ?? ''
-					)
-				),
-			},
-		[ report, pagePaths ]
-	);
-
-	const titles = useInViewSelect< Record< string, string > | undefined >(
+	const excludedProducts = useSelect(
 		( select: Select ) =>
-			shownRowsReport && reportOptions
-				? select( MODULES_ANALYTICS_4 ).getPageTitles(
-						shownRowsReport,
-						reportOptions
-				  )
-				: undefined,
-		[ shownRowsReport, reportOptions ]
-	);
-
-	// `getPageTitles` returns `undefined` both while the titles load and after
-	// their request fails, so the error is read from the store.
-	const titlesError = useSelect(
-		( select: Select ) =>
-			pagePaths.length && reportOptions
-				? select( MODULES_ANALYTICS_4 ).getFirstReportError(
-						getPageTitlesReportOptions( reportOptions, pagePaths )
-				  )
-				: undefined,
-		[ pagePaths, reportOptions, titles ]
+			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
+		[]
 	);
 
 	const siteURL = useSelect(
@@ -124,36 +66,80 @@ const TopPostsColumn: FC = () => {
 		[]
 	);
 
-	const rows: TableTileRow[] = pathRows.map( ( row ) => {
-		const pagePath = row.label;
-		const title = decodeAmpersand( titles?.[ pagePath ] ?? '' ).trim();
+	// The report waits until the column knows the permalink structure and
+	// whether to leave out product pages. So it isn't requested once with the
+	// wrong options and again with the right ones.
+	const buildReportOptions = useCallback(
+		( dateRange: FreshDataDateRange ) =>
+			usingPlainPermalinks === undefined || excludedProducts === undefined
+				? undefined
+				: getTopPostsReportOptions( dateRange, {
+						usingPlainPermalinks,
+						excludedProducts,
+				  } ),
+		[ usingPlainPermalinks, excludedProducts ]
+	);
 
-		return {
-			...row,
-			// A page that Analytics has no title for shows its path.
-			label:
-				title && title !== __( '(unknown)', 'google-site-kit' )
-					? title
-					: pagePath,
-			url: getPageURL( siteURL, pagePath ),
-		};
-	} );
+	// On plain permalinks, each row of the report is a path and query string,
+	// such as `/?p=123&utm_source=newsletter`. A row takes the permalink of the
+	// post it shows, such as `/?p=123`, so rows of the same post add up.
+	const getRowLabel = useMemo(
+		() =>
+			usingPlainPermalinks
+				? ( pagePathPlusQueryString: string ) =>
+						getPlainPermalinkPost(
+							pagePathPlusQueryString,
+							siteURL
+						)?.path
+				: undefined,
+		[ usingPlainPermalinks, siteURL ]
+	);
+
+	const {
+		reportOptions,
+		// Each row's `label` is a page path, or a plain permalink.
+		rows: pathRows,
+		loading,
+		error,
+		retry,
+	} = useRecentTrafficBreakdownColumn( buildReportOptions, getRowLabel );
+
+	const pagePaths = useMemo(
+		() => pathRows.map( ( { label } ) => label ),
+		[ pathRows ]
+	);
+
+	// Each hook requests titles only for its own permalink structure.
+	const reportPageTitles = useReportPageTitles(
+		usingPlainPermalinks ? NO_PAGE_PATHS : pagePaths,
+		reportOptions
+	);
+	const plainPermalinkPostTitles = usePlainPermalinkPostTitles(
+		usingPlainPermalinks ? pagePaths : NO_PAGE_PATHS,
+		siteURL
+	);
+	const {
+		titles,
+		loading: titlesLoading,
+		error: titlesError,
+	} = usingPlainPermalinks ? plainPermalinkPostTitles : reportPageTitles;
+
+	const rows = pathRows.map( ( row ) => ( {
+		...row,
+		// A page with no title shows its path.
+		label: titles?.[ row.label ] || row.label,
+		url: getPageURL( siteURL, row.label ),
+	} ) );
 
 	return (
 		<TableTile
 			title={ __( 'Top posts by visitors', 'google-site-kit' ) }
 			titleAs="h4"
 			rows={ rows }
-			loading={
-				loading ||
-				( pagePaths.length > 0 &&
-					titles === undefined &&
-					! titlesError )
-			}
+			loading={ loading || titlesLoading }
 			error={ error || titlesError }
 			// The "Retry" button requests failed titles again by itself. `retry`
-			// requests a failed report of pages, or of the site's visitors,
-			// again.
+			// requests a failed report of pages, or of the site's totals, again.
 			onRetry={ error ? retry : undefined }
 		/>
 	);

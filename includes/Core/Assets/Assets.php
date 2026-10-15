@@ -852,7 +852,7 @@ final class Assets {
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
-		global $wpdb;
+		global $wpdb, $wp_rewrite;
 		$site_url           = $this->context->get_reference_site_url();
 		$product_post_type  = $this->get_product_post_type();
 		$woocommerce_active = class_exists( 'WooCommerce' );
@@ -878,6 +878,8 @@ final class Assets {
 			'referenceDate'        => Date::reference_date(),
 			'productPostType'      => $product_post_type,
 			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
+			'productQueryVar'      => $this->get_post_type_query_var( $product_post_type ),
+			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1276,12 +1278,13 @@ final class Assets {
 	 * WordPress builds such a URL in `get_post_permalink()`, from the post
 	 * type's permalink structure, such as `product/%product%`. The part before
 	 * the first rewrite tag, such as `%product%`, is the same for every post of
-	 * the type.
+	 * the type. The path starts with the path of the reference site URL, which
+	 * the dashboard also builds its page links from.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string|null $post_type The post type name, or `null` for none.
-	 * @return string|null The path, such as `/product/`, never a full URL, or `null` when there is no post type, the post type has no permalink structure, or its structure starts with a rewrite tag.
+	 * @return string|null The path, such as `/product/`, or `null` for no post type, no permalink structure, or a structure that starts with a rewrite tag.
 	 */
 	protected function get_post_type_path_prefix( $post_type ) {
 		global $wp_rewrite;
@@ -1300,12 +1303,42 @@ final class Assets {
 			return null;
 		}
 
-		$path = substr( $permastruct, 0, strpos( $permastruct, '%' ) );
+		$path = (string) strstr( $permastruct, '%', true );
 
 		if ( '' === trim( $path, '/' ) ) {
 			return null;
 		}
 
-		return URL::parse( home_url( $path ), PHP_URL_PATH );
+		return URL::parse(
+			trailingslashit( $this->context->get_reference_site_url() ) . ltrim( $path, '/' ),
+			PHP_URL_PATH
+		);
+	}
+
+	/**
+	 * Gets the query var that holds the slug of a post of a post type in a
+	 * URL, such as `product` in `/?product=hoodie`.
+	 *
+	 * On plain permalinks, `get_post_permalink()` builds the URL of such a
+	 * post from this query var. `WP::parse_request()` reads the query var
+	 * from a URL only for a post type that `is_post_type_viewable()` accepts.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $post_type The post type name, or `null` for none.
+	 * @return string|null The query var, such as `product`, or `null` when WordPress reads no query var of the post type from a URL.
+	 */
+	protected function get_post_type_query_var( $post_type ) {
+		if ( ! $post_type ) {
+			return null;
+		}
+
+		$post_type_object = get_post_type_object( $post_type );
+
+		if ( ! $post_type_object || ! is_post_type_viewable( $post_type_object ) ) {
+			return null;
+		}
+
+		return $post_type_object->query_var ?: null;
 	}
 }

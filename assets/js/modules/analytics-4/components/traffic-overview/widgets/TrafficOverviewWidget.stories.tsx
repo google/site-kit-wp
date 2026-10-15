@@ -176,7 +176,8 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setFreshDataIncludesWooCommerceProducts( true );
-	// The site had 100 visitors, and 12 of them came from other sites.
+	// The site had 100 visits, each with one view, and 12 of the visits came
+	// from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
 		posts: createBreakdownReport( [
 			[ '/autumn-recipes/', 64 ],
@@ -198,7 +199,7 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 			[ 'reddit.com', 3 ],
 			[ 'medium.com', 2 ],
 		] ),
-		siteVisitors: 100,
+		siteTotals: { visits: 100, views: 100 },
 	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )

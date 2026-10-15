@@ -25,8 +25,11 @@ import { useCallback, useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
-import { getSiteVisitorsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { getSiteTotalsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	getRecentTrafficBreakdownRows,
+	getSiteTotal,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
 import {
 	Report,
 	ReportOptions,
@@ -40,11 +43,11 @@ export interface RecentTrafficBreakdownColumn {
 	reportOptions?: ReportOptions;
 	/** The column's report, or `undefined` until it loads. */
 	report?: Report;
-	/** The rows the column renders, each with its share of the site's visitors once the report of the site's visitors loads. */
+	/** The rows the column renders, each with its share of the site's total once the report of the site's totals loads. */
 	rows: TableTileRow[];
-	/** `true` until the column's report and the report of the site's visitors have both finished. */
+	/** `true` until the column's report and the report of the site's totals have both finished. */
 	loading: boolean;
-	/** The error of the column's report, or else the error of the report of the site's visitors. */
+	/** The error of the column's report, or else the error of the report of the site's totals. */
 	error?: ErrorObject;
 	/** Requests each failed report again. */
 	retry: () => void;
@@ -52,18 +55,20 @@ export interface RecentTrafficBreakdownColumn {
 
 /**
  * Resolves the report of a column of the Recent activity tab's traffic
- * breakdown, and the report of the site's visitors that each share in the
- * column divides by.
+ * breakdown. It also resolves the report of the site's totals, which each
+ * share in the column divides.
  *
  * @since n.e.x.t
  *
- * @param {Function} buildReportOptions A function that builds the column's report options from the tab's date range, the way `useFreshDataReport()` takes them.
+ * @param {Function} buildReportOptions The function that builds the column's report options from the tab's date range, the way `useFreshDataReport()` takes it.
+ * @param {Function} [getRowLabel]      Optional. A function that gets the label of a row from its dimension value, the way `getRecentTrafficBreakdownRows()` takes it. Pass a function defined outside the component, or one that changes only when the data it reads does.
  * @return {Object} The column's report options and report, its rows, whether it is loading, its error, and a function that requests each failed report again.
  */
 export function useRecentTrafficBreakdownColumn(
 	buildReportOptions: (
 		dateRange: FreshDataDateRange
-	) => ReportOptions | undefined
+	) => ReportOptions | undefined,
+	getRowLabel?: ( dimensionValue: string ) => string | undefined
 ): RecentTrafficBreakdownColumn {
 	const {
 		reportOptions,
@@ -74,15 +79,20 @@ export function useRecentTrafficBreakdownColumn(
 	} = useFreshDataReport( buildReportOptions );
 
 	const {
-		report: siteVisitorsReport,
-		loading: isSiteVisitorsReportLoading,
-		error: siteVisitorsReportError,
-		retry: retrySiteVisitorsReport,
-	} = useFreshDataReport( getSiteVisitorsReportOptions );
+		report: siteTotalsReport,
+		loading: isSiteTotalsReportLoading,
+		error: siteTotalsReportError,
+		retry: retrySiteTotalsReport,
+	} = useFreshDataReport( getSiteTotalsReportOptions );
 
 	const rows = useMemo(
-		() => getRecentTrafficBreakdownRows( report, siteVisitorsReport ),
-		[ report, siteVisitorsReport ]
+		() =>
+			getRecentTrafficBreakdownRows(
+				report,
+				getSiteTotal( siteTotalsReport, reportOptions ),
+				getRowLabel
+			),
+		[ report, siteTotalsReport, reportOptions, getRowLabel ]
 	);
 
 	const retry = useCallback( () => {
@@ -90,19 +100,19 @@ export function useRecentTrafficBreakdownColumn(
 		// column's report is requested again only after it failed.
 		retryReport();
 
-		// Every column reads the same report of the site's visitors, so
+		// Every column reads the same report of the site's totals, so
 		// requesting it again shows the loading state in all of them.
-		if ( siteVisitorsReportError ) {
-			retrySiteVisitorsReport();
+		if ( siteTotalsReportError ) {
+			retrySiteTotalsReport();
 		}
-	}, [ retryReport, siteVisitorsReportError, retrySiteVisitorsReport ] );
+	}, [ retryReport, siteTotalsReportError, retrySiteTotalsReport ] );
 
 	return {
 		reportOptions,
 		report,
 		rows,
-		loading: loading || isSiteVisitorsReportLoading,
-		error: error || siteVisitorsReportError,
+		loading: loading || isSiteTotalsReportLoading,
+		error: error || siteTotalsReportError,
 		retry,
 	};
 }

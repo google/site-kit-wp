@@ -49,10 +49,10 @@ import RecentTrafficBreakdown, {
 import { FRESH_DATA_FETCH_OPTIONS } from './reportOptions';
 
 /**
- * The site's visitors over the date range, which each share divides by,
- * with 12 of them from other sites.
+ * The site's visits and views over the date range, which each share divides.
+ * 12 of the visits came from other sites.
  */
-const SITE_VISITORS = 157;
+const SITE_TOTALS = { visits: 157, views: 268 };
 
 const POSTS = createBreakdownReport( [
 	[ '/ice-cream-is-good-for-your-health/', 82 ],
@@ -62,7 +62,8 @@ const POSTS = createBreakdownReport( [
 
 const POST_TITLES = {
 	'/ice-cream-is-good-for-your-health/': 'Ice cream is good for your health',
-	'/use-spf-every-day/': 'Use SPF every day, even for short walks',
+	'/use-spf-every-day/':
+		'Use SPF every day, even for short walks on cloudy days',
 	'/stay-hydrated/': 'Stay hydrated',
 };
 
@@ -125,7 +126,9 @@ function Template( {
 
 /**
  * Shows the three columns side by side from the desktop breakpoint, and
- * stacked below it, as the `medium` and `small` captures show.
+ * stacked below it, as the `medium` and `small` captures show. A long post
+ * title and a long referral source are cut short in the narrow columns of the
+ * `large` and `small` captures.
  */
 export const Loaded = Template.bind(
 	{}
@@ -137,8 +140,12 @@ Loaded.args = {
 			posts: POSTS,
 			postTitles: POST_TITLES,
 			channels: CHANNELS,
-			referrals: REFERRALS,
-			siteVisitors: SITE_VISITORS,
+			referrals: createBreakdownReport( [
+				[ 'substack.com', 7 ],
+				[ 'reddit.com', 3 ],
+				[ 'android-app://com.google.android.googlequicksearchbox', 2 ],
+			] ),
+			siteTotals: SITE_TOTALS,
 		} ),
 };
 Loaded.scenario = {};
@@ -176,7 +183,7 @@ OneColumnErrored.args = {
 			posts: POSTS,
 			postTitles: POST_TITLES,
 			referrals: REFERRALS,
-			siteVisitors: SITE_VISITORS,
+			siteTotals: SITE_TOTALS,
 		} );
 
 		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
@@ -218,7 +225,7 @@ ZeroRows.args = {
 			posts: {},
 			channels: {},
 			referrals: {},
-			siteVisitors: 0,
+			siteTotals: { visits: 0, views: 0 },
 		} ),
 };
 ZeroRows.scenario = {
@@ -236,54 +243,12 @@ NoPublishedPosts.args = {
 		provideRecentTrafficBreakdownReports( registry, {
 			channels: CHANNELS,
 			referrals: REFERRALS,
-			siteVisitors: SITE_VISITORS,
+			siteTotals: SITE_TOTALS,
 		} ),
 };
 NoPublishedPosts.scenario = {
 	viewport: 'large',
 };
-
-/**
- * Shows titles and sources cut short, counts in the thousands, and the widest
- * shares, "(>99.9%)" and "(<0.1%)", with every count still lined up.
- * Some visitors read both long posts, so their shares add up to more than
- * 100%.
- */
-export const LongTitlesAndExtremeShares = Template.bind(
-	{}
-) as Story< RecentTrafficBreakdownStoryProps >;
-LongTitlesAndExtremeShares.storyName = 'Long Titles and Extreme Shares';
-LongTitlesAndExtremeShares.args = {
-	setupRegistry: ( registry: WPDataRegistry ) =>
-		provideRecentTrafficBreakdownReports( registry, {
-			posts: createBreakdownReport( [
-				[ '/how-to-choose-store-and-serve-ice-cream/', 1840 ],
-				[ '/sunscreen-myths/', 1206 ],
-				[ '/hydration/', 9 ],
-			] ),
-			postTitles: {
-				'/how-to-choose-store-and-serve-ice-cream/':
-					'The complete guide to choosing, storing and serving ice cream on the hottest days of the summer',
-				'/sunscreen-myths/':
-					'Seven sunscreen myths that dermatologists wish you would stop believing',
-				'/hydration/': 'Stay hydrated',
-			},
-			channels: createBreakdownReport( [
-				[ 'Direct', 2999 ],
-				[ 'Mobile Push Notifications', 1 ],
-			] ),
-			referrals: createBreakdownReport( [
-				[ 'android-app://com.google.android.googlequicksearchbox', 46 ],
-				[
-					'newsletter.an-example-publication-with-a-long-name.com',
-					31,
-				],
-				[ 'reddit.com', 3 ],
-			] ),
-			siteVisitors: 3000,
-		} ),
-};
-LongTitlesAndExtremeShares.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/RecentTrafficBreakdown',

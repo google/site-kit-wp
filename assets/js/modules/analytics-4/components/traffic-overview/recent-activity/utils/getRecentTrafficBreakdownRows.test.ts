@@ -20,34 +20,37 @@
  * Internal dependencies
  */
 import {
+	getTopChannelsReportOptions,
+	getTopPostsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
 	createBreakdownReport,
-	createSiteVisitorsReport,
+	createSiteTotalsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getRecentTrafficBreakdownRows } from './getRecentTrafficBreakdownRows';
+import { getPlainPermalinkPost } from './getPlainPermalinkPost';
+import {
+	getRecentTrafficBreakdownRows,
+	getSiteTotal,
+} from './getRecentTrafficBreakdownRows';
 
 describe( 'getRecentTrafficBreakdownRows', () => {
-	it( "should show each row's visitors and its share of the site's visitors", () => {
+	it( "should show each row's count and its share of the site's total", () => {
 		const report = createBreakdownReport( [
 			[ 'Direct', 50 ],
 			[ 'Organic Search', 30 ],
 			[ 'Referral', 10 ],
 		] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 120 )
-			)
-		).toEqual( [
+		expect( getRecentTrafficBreakdownRows( report, 120 ) ).toEqual( [
 			{ label: 'Direct', value: '50', secondaryValue: '(41.7%)' },
 			{ label: 'Organic Search', value: '30', secondaryValue: '(25%)' },
 			{ label: 'Referral', value: '10', secondaryValue: '(8.3%)' },
 		] );
 	} );
 
-	it( "should divide a row's visitors by the site's visitors, not by the total of the row's own report", () => {
-		// The report of referrals counts the 12 visitors who came from other
-		// sites, and the site had 120.
+	it( "should divide a row's count by the site's total, not by the total of the row's own report", () => {
+		// The report of referrals counts the 12 visits from other sites, and
+		// the site had 120 visits.
 		const report = {
 			...createBreakdownReport( [
 				[ 'news.example.com', 8 ],
@@ -57,144 +60,153 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		};
 
 		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 120 )
-			).map( ( { secondaryValue } ) => secondaryValue )
+			getRecentTrafficBreakdownRows( report, 120 ).map(
+				( { secondaryValue } ) => secondaryValue
+			)
 		).toEqual( [ '(6.7%)', '(3.3%)' ] );
 	} );
 
-	it( 'should show shares that add up to more than 100% when visitors appear in several rows, because the total counts each visitor once', () => {
-		// 80 visitors read the two posts, and 30 of them read both.
+	it( 'should give a tenth of a percent still missing to the share with the largest remainder, so the shares and the rest of the total add up to 100%', () => {
+		// 96, 41, and 17 of 157 visits are 61.15%, 26.11%, and 10.83%, and the
+		// other 3 visits are 1.91%. Their whole tenths add up to 99.9%, and
+		// 61.15% has the largest remainder.
 		const report = createBreakdownReport( [
-			[ '/ice-cream/', 60 ],
-			[ '/hydration/', 50 ],
+			[ 'Direct', 96 ],
+			[ 'Organic Search', 41 ],
+			[ 'Organic Social', 17 ],
 		] );
 
 		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 80 )
-			).map( ( { secondaryValue } ) => secondaryValue )
-		).toEqual( [ '(75%)', '(62.5%)' ] );
+			getRecentTrafficBreakdownRows( report, 157 ).map(
+				( { secondaryValue } ) => secondaryValue
+			)
+		).toEqual( [ '(61.2%)', '(26.1%)', '(10.8%)' ] );
 	} );
 
-	it( 'should round a share to one decimal place', () => {
+	it( 'should show shares that add up to 100% when the rows count the whole total', () => {
 		const report = createBreakdownReport( [
-			[ '/autumn-recipes/', 2 ],
-			[ '/winter-recipes/', 1 ],
+			[ 'Direct', 1 ],
+			[ 'Organic Search', 1 ],
+			[ 'Referral', 1 ],
 		] );
 
 		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 3 )
-			).map( ( { secondaryValue } ) => secondaryValue )
-		).toEqual( [ '(66.7%)', '(33.3%)' ] );
+			getRecentTrafficBreakdownRows( report, 3 ).map(
+				( { secondaryValue } ) => secondaryValue
+			)
+		).toEqual( [ '(33.4%)', '(33.3%)', '(33.3%)' ] );
 	} );
 
-	it( 'should show a share that rounds to 0% as "<0.1%", and a share below 100% that rounds to 100% as ">99.9%"', () => {
+	it( 'should give a tenth of a percent still missing to the rest of the total when the rest has the largest remainder, and show a share that gets no tenth as "<0.1%"', () => {
+		// 5,000 and 1 of 10,000 views are 50% and 0.01%, and the other 4,999
+		// views are 49.99%.
+		const report = createBreakdownReport( [
+			[ '/?p=12', 5000 ],
+			[ '/?p=34', 1 ],
+		] );
+
+		expect(
+			getRecentTrafficBreakdownRows( report, 10000 ).map(
+				( { secondaryValue } ) => secondaryValue
+			)
+		).toEqual( [ '(50%)', '(<0.1%)' ] );
+	} );
+
+	it( 'should show "99.9%" rather than "100%" for a row below the total, and give the tenth still missing to another row', () => {
 		const report = createBreakdownReport( [
 			[ 'Direct', 2999 ],
 			[ 'Email', 1 ],
 		] );
 
 		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 3000 )
-			).map( ( { secondaryValue } ) => secondaryValue )
-		).toEqual( [ '(>99.9%)', '(<0.1%)' ] );
-	} );
-
-	it( 'should show a share of 0.05%, which rounds up, as "0.1%"', () => {
-		const report = createBreakdownReport( [
-			[ 'Direct', 1999 ],
-			[ 'Email', 1 ],
-		] );
-
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 2000 )
-			).map( ( { secondaryValue } ) => secondaryValue )
-		).toEqual( [ '(>99.9%)', '(0.1%)' ] );
-	} );
-
-	it( 'should show a count of a thousand visitors or more in the short form the dashboard uses, such as "12K"', () => {
-		const report = createBreakdownReport( [ [ 'Direct', 12345 ] ] );
-
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 12345 )
+			getRecentTrafficBreakdownRows( report, 3000 ).map(
+				( { secondaryValue } ) => secondaryValue
 			)
-		).toEqual( [
-			{ label: 'Direct', value: '12K', secondaryValue: '(100%)' },
+		).toEqual( [ '(99.9%)', '(0.1%)' ] );
+	} );
+
+	it( 'should show 100% for a row with the whole total', () => {
+		const report = createBreakdownReport( [ [ 'Direct', 40 ] ] );
+
+		expect( getRecentTrafficBreakdownRows( report, 40 ) ).toEqual( [
+			{ label: 'Direct', value: '40', secondaryValue: '(100%)' },
 		] );
 	} );
 
-	it( 'should show 100% for a row with as many visitors as the total, even when other rows have visitors', () => {
-		// Every visitor viewed the home page, and some of them read a post too.
-		const report = createBreakdownReport( [
-			[ '/', 40 ],
-			[ '/ice-cream/', 12 ],
-		] );
-
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 40 )
-			).map( ( { secondaryValue } ) => secondaryValue )
-		).toEqual( [ '(100%)', '(30%)' ] );
-	} );
-
-	it( 'should stop a share at 100% when a row comes out above the total, because Analytics visitor counts are estimates', () => {
+	it( 'should stop a share at 100% when a row counts more than the total', () => {
 		const report = createBreakdownReport( [ [ 'Direct', 101 ] ] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 100 )
-			)
-		).toEqual( [
+		expect( getRecentTrafficBreakdownRows( report, 100 ) ).toEqual( [
 			{ label: 'Direct', value: '101', secondaryValue: '(100%)' },
 		] );
 	} );
 
-	it( 'should omit the values with no visitors', () => {
+	it( "should divide the rows' sum, so the shares add up to 100%, when the rows count more than the total", () => {
+		const report = createBreakdownReport( [
+			[ 'Direct', 60 ],
+			[ 'Organic Search', 50 ],
+		] );
+
+		expect(
+			getRecentTrafficBreakdownRows( report, 100 ).map(
+				( { secondaryValue } ) => secondaryValue
+			)
+		).toEqual( [ '(54.5%)', '(45.5%)' ] );
+	} );
+
+	it( 'should show a count of a thousand or more in the short form the dashboard uses, such as "12K"', () => {
+		const report = createBreakdownReport( [ [ 'Direct', 12345 ] ] );
+
+		expect( getRecentTrafficBreakdownRows( report, 12345 ) ).toEqual( [
+			{ label: 'Direct', value: '12K', secondaryValue: '(100%)' },
+		] );
+	} );
+
+	it( 'should add up the rows that `getRowLabel` gives the same label, and leave out the rows it gives no label', () => {
+		const report = createBreakdownReport( [
+			[ '/', 50 ],
+			[ '/?p=12', 30 ],
+			[ '/?p=34', 20 ],
+			[ '/?p=12&utm_source=newsletter', 15 ],
+		] );
+
+		expect(
+			getRecentTrafficBreakdownRows(
+				report,
+				115,
+				( pagePath ) =>
+					getPlainPermalinkPost( pagePath, 'http://example.com' )
+						?.path
+			)
+		).toEqual( [
+			{ label: '/?p=12', value: '45', secondaryValue: '(39.1%)' },
+			{ label: '/?p=34', value: '20', secondaryValue: '(17.4%)' },
+		] );
+	} );
+
+	it( 'should leave out the values with no count', () => {
 		const report = createBreakdownReport( [
 			[ 'Direct', 5 ],
 			[ 'Paid Search', 0 ],
 			[ 'Referral', 3 ],
 		] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 8 )
-			)
-		).toEqual( [
+		expect( getRecentTrafficBreakdownRows( report, 8 ) ).toEqual( [
 			{ label: 'Direct', value: '5', secondaryValue: '(62.5%)' },
 			{ label: 'Referral', value: '3', secondaryValue: '(37.5%)' },
 		] );
 	} );
 
-	it( 'should not return a row when no value in the report had visitors', () => {
+	it( 'should not return a row when no value in the report has a count', () => {
 		const report = createBreakdownReport( [
 			[ 'Direct', 0 ],
 			[ 'Referral', 0 ],
 		] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 0 )
-			)
-		).toEqual( [] );
+		expect( getRecentTrafficBreakdownRows( report, 0 ) ).toEqual( [] );
 	} );
 
-	it( "should not show a share when there is no report of the site's visitors", () => {
+	it( "should not show a share when there is no site's total", () => {
 		const report = createBreakdownReport( [ [ 'Direct', 5 ] ] );
 
 		expect( getRecentTrafficBreakdownRows( report ) ).toEqual( [
@@ -202,20 +214,15 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		] );
 	} );
 
-	it( "should not show a share when the total of the report of the site's visitors is zero", () => {
+	it( "should not show a share when the site's total is zero", () => {
 		const report = createBreakdownReport( [ [ 'Direct', 5 ] ] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 0 )
-			)
-		).toEqual( [
+		expect( getRecentTrafficBreakdownRows( report, 0 ) ).toEqual( [
 			{ label: 'Direct', value: '5', secondaryValue: undefined },
 		] );
 	} );
 
-	it( 'should sort the rows by visitors, most visitors first', () => {
+	it( 'should sort the rows by count, most first', () => {
 		const report = createBreakdownReport( [
 			[ 'blog.example.com', 1 ],
 			[ 'news.example.com', 5 ],
@@ -233,7 +240,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		] );
 	} );
 
-	it( 'should keep the order of the report for values with the same visitor count', () => {
+	it( 'should keep the order of the report for values with the same count', () => {
 		const report = createBreakdownReport( [
 			[ 'forum.example.com', 2 ],
 			[ 'blog.example.com', 2 ],
@@ -269,12 +276,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 	it( 'should keep the dimension value as the label, exactly as the report returned it', () => {
 		const report = createBreakdownReport( [ [ '(not set)', 4 ] ] );
 
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				createSiteVisitorsReport( 4 )
-			)
-		).toEqual( [
+		expect( getRecentTrafficBreakdownRows( report, 4 ) ).toEqual( [
 			{ label: '(not set)', value: '4', secondaryValue: '(100%)' },
 		] );
 	} );
@@ -291,5 +293,62 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 
 	it( 'should not return a row when there is no report', () => {
 		expect( getRecentTrafficBreakdownRows() ).toEqual( [] );
+	} );
+} );
+
+describe( 'getSiteTotal', () => {
+	const dateRange = { startDate: '2025-02-03', endDate: '2025-02-05' };
+
+	it( "should return the site's visits for the report of a column that counts visits", () => {
+		expect(
+			getSiteTotal(
+				createSiteTotalsReport( { visits: 157, views: 268 } ),
+				getTopChannelsReportOptions( dateRange )
+			)
+		).toBe( 157 );
+	} );
+
+	it( "should return the site's views for the report of a column that counts views", () => {
+		expect(
+			getSiteTotal(
+				createSiteTotalsReport( { visits: 157, views: 268 } ),
+				getTopPostsReportOptions( dateRange, {
+					usingPlainPermalinks: false,
+				} )
+			)
+		).toBe( 268 );
+	} );
+
+	it( "should return `0` for the report of a column that counts a metric the report of the site's totals doesn't have", () => {
+		expect(
+			getSiteTotal(
+				createSiteTotalsReport( { visits: 157, views: 268 } ),
+				{
+					...getTopChannelsReportOptions( dateRange ),
+					metrics: [ { name: 'totalUsers' } ],
+				}
+			)
+		).toBe( 0 );
+	} );
+
+	it( "should return `0` when there is no report of the site's totals", () => {
+		expect(
+			getSiteTotal( undefined, getTopChannelsReportOptions( dateRange ) )
+		).toBe( 0 );
+	} );
+
+	it( "should return `0` when the report of the site's totals has no `totals`", () => {
+		expect(
+			getSiteTotal( {}, getTopChannelsReportOptions( dateRange ) )
+		).toBe( 0 );
+	} );
+
+	it( "should return `0` before the options of the column's report can be built", () => {
+		expect(
+			getSiteTotal(
+				createSiteTotalsReport( { visits: 157, views: 268 } ),
+				undefined
+			)
+		).toBe( 0 );
 	} );
 } );

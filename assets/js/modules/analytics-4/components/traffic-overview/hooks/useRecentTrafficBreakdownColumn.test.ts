@@ -25,10 +25,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	getTopChannelsReportOptions,
+	getTopPostsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getPlainPermalinkPost } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPlainPermalinkPost';
 import {
 	createBreakdownReport,
-	createSiteVisitorsReport,
+	createSiteTotalsReport,
+	forDimensions,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
 	actHook as act,
@@ -40,7 +45,24 @@ import {
 	freezeFetch,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
+import { FreshDataDateRange } from './useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from './useRecentTrafficBreakdownColumn';
+
+/**
+ * Gets the path of a post from a path and query string, such as `/?p=12` from
+ * `/?p=12&utm_source=newsletter`, or `undefined` for the home page.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} pagePathPlusQueryString The path and query string.
+ * @return {(string|undefined)} The path of the post.
+ */
+function getPostPath( pagePathPlusQueryString: string ) {
+	return getPlainPermalinkPost(
+		pagePathPlusQueryString,
+		'http://example.com'
+	)?.path;
+}
 
 describe( 'useRecentTrafficBreakdownColumn', () => {
 	let registry: WPDataRegistry;
@@ -49,33 +71,23 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	/**
-	 * Checks whether a request is for the channels report, which groups its
-	 * visitors by channel.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {string} url The URL of the request.
-	 * @return {boolean} `true` when the URL is a request for the channels report.
-	 */
-	function channelsRequest( url: string ) {
-		return (
-			reportEndpoint.test( url ) &&
-			url.includes( 'sessionDefaultChannelGroup' )
-		);
-	}
+	const channelsRequest = forDimensions( 'sessionDefaultChannelGroup' );
+	const pagesRequest = forDimensions( 'pagePath' );
+	const siteTotalsRequest = forDimensions();
 
 	/**
-	 * Checks whether a request is for the report of the site's visitors, which
-	 * has no dimension.
+	 * Builds the options of the report of views for each page, for a site with
+	 * a permalink structure.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {string} url The URL of the request.
-	 * @return {boolean} `true` when the URL is a request for the report of the site's visitors.
+	 * @param {Object} dateRange The date range of the Recent activity tab.
+	 * @return {Object} The report options.
 	 */
-	function siteVisitorsRequest( url: string ) {
-		return reportEndpoint.test( url ) && ! url.includes( 'dimensions' );
+	function getPagesReportOptions( dateRange: FreshDataDateRange ) {
+		return getTopPostsReportOptions( dateRange, {
+			usingPlainPermalinks: false,
+		} );
 	}
 
 	const channelsReport = createBreakdownReport( [
@@ -94,13 +106,13 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	} );
 
-	it( "should return the column's rows, each with its share of the site's visitors", async () => {
+	it( "should return the column's rows, each with its share of the site's visits", async () => {
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.get( siteVisitorsRequest, {
-			body: createSiteVisitorsReport( 157 ),
+		fetchMock.get( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
 			status: 200,
 		} );
 
@@ -115,19 +127,75 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		expect( result.current ).toMatchObject( {
 			rows: [
 				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.6%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
 			],
 			loading: false,
 			error: undefined,
 		} );
 	} );
 
-	it( "should be loading while the report of the site's visitors loads, after the column's report has loaded", async () => {
+	it( "should return the rows of a column that counts views, each with its share of the site's views", async () => {
+		fetchMock.get( pagesRequest, {
+			body: createBreakdownReport( [
+				[ '/ice-cream/', 82 ],
+				[ '/hydration/', 12 ],
+			] ),
+			status: 200,
+		} );
+		fetchMock.get( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => useRecentTrafficBreakdownColumn( getPagesReportOptions ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.rows ).toEqual( [
+			{ label: '/ice-cream/', value: '82', secondaryValue: '(30.6%)' },
+			{ label: '/hydration/', value: '12', secondaryValue: '(4.5%)' },
+		] );
+	} );
+
+	it( 'should add up the rows that `getRowLabel` gives the same label, and leave out the rows it gives no label', async () => {
+		fetchMock.get( pagesRequest, {
+			body: createBreakdownReport( [
+				[ '/?p=12', 82 ],
+				[ '/', 40 ],
+				[ '/?p=12&utm_source=newsletter', 12 ],
+			] ),
+			status: 200,
+		} );
+		fetchMock.get( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() =>
+				useRecentTrafficBreakdownColumn(
+					getPagesReportOptions,
+					getPostPath
+				),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.rows ).toEqual( [
+			{ label: '/?p=12', value: '94', secondaryValue: '(35.1%)' },
+		] );
+	} );
+
+	it( "should be loading while the report of the site's totals loads, after the column's report has loaded", async () => {
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
 		} );
-		freezeFetch( siteVisitorsRequest );
+		freezeFetch( siteTotalsRequest );
 
 		const { result, waitForRegistry } = renderHook(
 			() =>
@@ -175,12 +243,12 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 	} );
 
-	it( "should return the error of the report of the site's visitors when only that request fails", async () => {
+	it( "should return the error of the report of the site's totals when only that request fails", async () => {
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.get( siteVisitorsRequest, {
+		fetchMock.get( siteTotalsRequest, {
 			body: errorResponse,
 			status: 500,
 		} );
@@ -204,17 +272,17 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 	} );
 
-	it( "should request only the report of the site's visitors again when `retry` is called after that request fails", async () => {
+	it( "should request only the report of the site's totals again when `retry` is called after that request fails", async () => {
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.getOnce( siteVisitorsRequest, {
+		fetchMock.getOnce( siteTotalsRequest, {
 			body: errorResponse,
 			status: 500,
 		} );
-		fetchMock.getOnce( siteVisitorsRequest, {
-			body: createSiteVisitorsReport( 157 ),
+		fetchMock.getOnce( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
 			status: 200,
 		} );
 
@@ -240,11 +308,11 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		// `retry` invalidates the column's report too, but the `getReport`
 		// resolver sends no request for a report the store already has.
 		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 2, siteVisitorsRequest );
+		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
 			rows: [
 				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.6%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
 			],
 			loading: false,
 			error: undefined,
@@ -260,8 +328,8 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.get( siteVisitorsRequest, {
-			body: createSiteVisitorsReport( 157 ),
+		fetchMock.get( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
 			status: 200,
 		} );
 
@@ -285,11 +353,11 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 1, siteVisitorsRequest );
+		expect( fetchMock ).toHaveFetchedTimes( 1, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
 			rows: [
 				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.6%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
 			],
 			loading: false,
 			error: undefined,
@@ -309,12 +377,12 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.getOnce( siteVisitorsRequest, {
+		fetchMock.getOnce( siteTotalsRequest, {
 			body: errorResponse,
 			status: 500,
 		} );
-		fetchMock.getOnce( siteVisitorsRequest, {
-			body: createSiteVisitorsReport( 157 ),
+		fetchMock.getOnce( siteTotalsRequest, {
+			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
 			status: 200,
 		} );
 
@@ -343,7 +411,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 2, siteVisitorsRequest );
+		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
 			loading: false,
 			error: undefined,

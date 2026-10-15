@@ -512,6 +512,88 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( '/blog/product/', $data['productPathPrefix'], 'productPathPrefix should start with the path of the home URL.' );
 	}
 
+	public function test_base_data__product_path_prefix__reference_site_url() {
+		$this->set_permalink_structure( '/%postname%/' );
+		add_filter( 'googlesitekit_site_url', fn() => 'https://example.com/shop-site' );
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], 'productPathPrefix should start with the path of the reference site URL.' );
+	}
+
+	public function test_base_data__product_query_var__no_product_post_type() {
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when the site has no product post type.' );
+	}
+
+	public function test_base_data__product_query_var() {
+		register_post_type( 'product', array( 'public' => true ) );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'product', $data['productQueryVar'], 'productQueryVar should be the name of the product post type, which WordPress uses as its query var by default.' );
+	}
+
+	public function test_base_data__product_query_var__custom_query_var() {
+		register_post_type(
+			'product',
+			array(
+				'public'    => true,
+				'query_var' => 'item',
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'item', $data['productQueryVar'], 'productQueryVar should be the query var that the product post type registers.' );
+	}
+
+	public function test_base_data__product_query_var__no_query_var() {
+		register_post_type(
+			'product',
+			array(
+				'public'    => true,
+				'query_var' => false,
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when the product post type has no query var.' );
+	}
+
+	public function test_base_data__product_query_var__not_publicly_queryable() {
+		register_post_type(
+			'product',
+			array(
+				'public'             => true,
+				'publicly_queryable' => false,
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertNull( $data['productQueryVar'], 'productQueryVar should be null when WordPress doesn\'t read the query var from a URL, because products aren\'t publicly queryable.' );
+	}
+
+	public function test_base_data__using_plain_permalinks() {
+		$this->set_permalink_structure( '' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['usingPlainPermalinks'], 'usingPlainPermalinks should be true when the site has no permalink structure.' );
+	}
+
+	public function test_base_data__using_plain_permalinks__permalink_structure() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['usingPlainPermalinks'], 'usingPlainPermalinks should be false when the site has a permalink structure.' );
+	}
+
 	public function test_base_data__woocommerce_not_installed() {
 		$this->set_installed_plugins( array() );
 

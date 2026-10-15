@@ -24,12 +24,15 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { receiveState } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	setEnabledFeatures,
 	untilResolved,
 	waitFor,
@@ -43,6 +46,7 @@ const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
 );
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+const pagesEndpoint = new RegExp( '^/wp/v2/pages' );
 /** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
 
@@ -53,51 +57,11 @@ describe( 'modules/analytics-4 fresh data', () => {
 		registry = createTestRegistry();
 	} );
 
-	/**
-	 * Puts the module list, the site info, and the Analytics settings in the
-	 * store, so the selectors that decide whether to include products can read
-	 * them.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object}  [state]                    Optional. The state to put in the store.
-	 * @param {boolean} [state.analyticsConnected] Optional. If true, Analytics is connected. If false, Analytics is disconnected. Default `true`.
-	 * @param {boolean} [state.wooCommerceActive]  Optional. If true, WooCommerce is active. If false, WooCommerce is inactive. Default `true`.
-	 * @param {boolean} [state.setting]            Optional. If true, the setting to include products is on. If false, the setting is off. Default `true`.
-	 * @param {string}  [state.productPathPrefix]  Optional. The path that product URLs start with. Default `null`.
-	 * @return {void}
-	 */
-	function receiveState( {
-		analyticsConnected = true,
-		wooCommerceActive = true,
-		setting = true,
-		productPathPrefix = null,
-	}: {
-		analyticsConnected?: boolean;
-		wooCommerceActive?: boolean;
-		setting?: boolean;
-		productPathPrefix?: string | null;
-	} = {} ) {
-		provideModules( registry, [
-			{
-				slug: MODULE_SLUG_ANALYTICS_4,
-				active: true,
-				connected: analyticsConnected,
-			},
-		] );
-
-		provideSiteInfo( registry, { wooCommerceActive, productPathPrefix } );
-
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-			[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
-		} );
-	}
-
 	describe( 'shouldIncludeWooCommerceProducts', () => {
 		it( 'should return true when the flag is enabled, Analytics is connected, WooCommerce is active, and the setting is on', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState();
+			receiveState( registry );
 
 			expect(
 				registry
@@ -107,7 +71,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return false when the freshData flag is disabled', () => {
-			receiveState();
+			receiveState( registry );
 
 			expect(
 				registry
@@ -119,7 +83,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when Analytics is not connected', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { analyticsConnected: false } );
+			receiveState( registry, { analyticsConnected: false } );
 
 			expect(
 				registry
@@ -131,7 +95,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when WooCommerce is installed but not active', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { wooCommerceActive: false } );
+			receiveState( registry, { wooCommerceActive: false } );
 
 			expect(
 				registry
@@ -143,7 +107,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when the setting is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { setting: false } );
+			receiveState( registry, { setting: false } );
 
 			expect(
 				registry
@@ -202,56 +166,178 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 	} );
 
-	describe( 'getExcludedProductPathPrefix', () => {
-		it( 'should return the path that product URLs start with when the setting to include products is off', () => {
+	describe( 'getExcludedProducts', () => {
+		it( 'should return the path that every product URL starts with when the setting to include products is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { setting: false, productPathPrefix: '/product/' } );
+			receiveState( registry, {
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
 
 			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getExcludedProductPathPrefix()
-			).toBe( '/product/' );
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'pathPrefix', pathPrefix: '/product/' } );
+		} );
+
+		it( 'should return the product post type and its query var on plain permalinks when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( registry, {
+				setting: false,
+				usingPlainPermalinks: true,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( {
+				by: 'queryVar',
+				postType: 'product',
+				queryVar: 'product',
+			} );
+		} );
+
+		it( 'should return the product post type with no query var on plain permalinks when WordPress reads no query var for products', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( registry, {
+				setting: false,
+				usingPlainPermalinks: true,
+				productQueryVar: null,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( {
+				by: 'queryVar',
+				postType: 'product',
+				queryVar: null,
+			} );
+		} );
+
+		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'postTypeDimension', postType: 'product' } );
+		} );
+
+		it( "should return null when product URLs share no path and the Analytics property doesn't have the `googlesitekit_post_type` custom dimension", () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( "should return null when product URLs share no path and the user can't sync the unknown custom dimensions of the Analytics property", async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			// A user who hasn't signed in with Google, such as a view-only user,
+			// can't sync the custom dimensions.
+			provideUserAuthentication( registry, { authenticated: false } );
+			receiveState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getAvailableCustomDimensions();
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the custom dimensions of the Analytics property sync', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			receiveState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				)
+			);
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				)
+			);
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
 		} );
 
 		it( 'should return null when the setting to include products is on', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { setting: true, productPathPrefix: '/product/' } );
+			receiveState( registry, {
+				setting: true,
+				productPathPrefix: '/product/',
+			} );
 
 			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getExcludedProductPathPrefix()
-			).toBeNull();
-		} );
-
-		it( 'should return null when the setting to include products is off and product URLs share no path', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
-			receiveState( { setting: false, productPathPrefix: null } );
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getExcludedProductPathPrefix()
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toBeNull();
 		} );
 
 		it( 'should return null when WooCommerce is not active, even when the setting to include products is off and product URLs share a path', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( {
+			receiveState( registry, {
 				wooCommerceActive: false,
 				setting: false,
 				productPathPrefix: '/product/',
 			} );
 
 			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getExcludedProductPathPrefix()
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return null when the site has no product post type, even when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			receiveState( registry, {
+				setting: false,
+				productPostType: null,
+				usingPlainPermalinks: true,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toBeNull();
 		} );
 
@@ -277,12 +363,216 @@ describe( 'modules/analytics-4 fresh data', () => {
 			} );
 
 			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getExcludedProductPathPrefix()
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toBeUndefined();
 
 			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+		} );
+	} );
+
+	describe( 'getPostTitles', () => {
+		it( 'should return the title of each post and page by its ID', async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: [
+					{ id: 12, title: { rendered: 'Autumn recipes' } },
+					{ id: 34, title: { rendered: 'Summer recap' } },
+				],
+				status: 200,
+			} );
+			fetchMock.getOnce( pagesEndpoint, {
+				body: [ { id: 5, title: { rendered: 'About us' } } ],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12, 34 ], pageIDs: [ 5 ] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12, 34 ], pageIDs: [ 5 ] }
+			);
+
+			expect( fetchMock ).toHaveFetched( postsEndpoint, {
+				query: {
+					'include[0]': '12',
+					'include[1]': '34',
+					per_page: '2',
+					_fields: 'id,title',
+				},
+			} );
+			expect( fetchMock ).toHaveFetched( pagesEndpoint, {
+				query: {
+					'include[0]': '5',
+					per_page: '1',
+					_fields: 'id,title',
+				},
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 12, 34 ], pageIDs: [ 5 ] } )
+			).toEqual( {
+				5: 'About us',
+				12: 'Autumn recipes',
+				34: 'Summer recap',
+			} );
+		} );
+
+		it( 'should not request pages when there are no page IDs', async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12 ], pageIDs: [] }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } )
+			).toEqual( { 12: 'Autumn recipes' } );
+		} );
+
+		it( "should return no title for a post that WordPress doesn't return, such as a deleted post", async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12, 99 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12, 99 ], pageIDs: [] }
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 12, 99 ], pageIDs: [] } )
+			).toEqual( { 12: 'Autumn recipes' } );
+		} );
+
+		it( 'should return the title with its HTML entities decoded and its HTML tags removed', async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: [
+					{
+						id: 5,
+						title: {
+							rendered:
+								'Coffee &#038; <em>cake</em> we&#8217;ve baked&hellip;',
+						},
+					},
+				],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 5 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 5 ], pageIDs: [] }
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 5 ], pageIDs: [] } )
+			).toEqual( { 5: 'Coffee & cake we’ve baked…' } );
+		} );
+
+		it( 'should not request the titles again for the same posts and pages', async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: [ { id: 12, title: { rendered: 'Autumn recipes' } } ],
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12 ], pageIDs: [] }
+			);
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getPostTitles', [
+					{ postIDs: [ 12 ], pageIDs: [] },
+				] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12 ], pageIDs: [] }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+		} );
+
+		it( 'should return `undefined` while the titles load', async () => {
+			freezeFetch( postsEndpoint );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( postsEndpoint )
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } )
+			).toBeUndefined();
+		} );
+
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the request fails', async () => {
+			fetchMock.getOnce( postsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } );
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getPostTitles(
+				{ postIDs: [ 12 ], pageIDs: [] }
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostTitles', [
+						{ postIDs: [ 12 ], pageIDs: [] },
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostTitles( { postIDs: [ 12 ], pageIDs: [] } )
+			).toBeUndefined();
 		} );
 	} );
 

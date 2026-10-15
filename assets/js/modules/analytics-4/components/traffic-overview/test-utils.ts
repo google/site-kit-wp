@@ -17,13 +17,20 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isEqual, map } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	FreshDataDateRange,
@@ -31,7 +38,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
 	getInsightReportArgs,
-	getSiteVisitorsReportOptions,
+	getSiteTotalsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -41,12 +48,17 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
 import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 
 export interface RecentTrafficBreakdownReportOptions {
 	/** The options of the "Top posts by visitors" report. */
@@ -55,21 +67,28 @@ export interface RecentTrafficBreakdownReportOptions {
 	channels: ReportOptions;
 	/** The options of the "Top referrals by visitors" report. */
 	referrals: ReportOptions;
-	/** The options of the report of the site's visitors, which each share divides by. */
-	siteVisitors: ReportOptions;
+	/** The options of the report of the site's totals, which each share divides. */
+	siteTotals: ReportOptions;
+}
+
+export interface SiteTotals {
+	/** The site's visits over the date range, which each share of the channels and referrals columns divides. */
+	visits: number;
+	/** The site's views over the date range, which each share of the posts column divides. */
+	views: number;
 }
 
 export interface RecentTrafficBreakdownReports {
-	/** The report of visitors for each page path. */
+	/** The report of views for each page path. */
 	posts?: Report;
 	/** The title of each page path, for the pages the posts column shows. */
 	postTitles?: Record< string, string >;
-	/** The report of visitors for each channel. */
+	/** The report of visits for each channel. */
 	channels?: Report;
-	/** The report of visitors for each site that referred them. */
+	/** The report of visits for each site that referred them. */
 	referrals?: Report;
-	/** The site's visitors over the date range, which each share divides by. */
-	siteVisitors?: number;
+	/** The site's visits and views over the date range, which each share divides. */
+	siteTotals?: SiteTotals;
 }
 
 /**
@@ -79,36 +98,71 @@ export interface RecentTrafficBreakdownReports {
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
+ * @since n.e.x.t Added the optional `dimension` parameter, which names the dimension of the report in its `dimensionHeaders`.
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @param {Array<Array>} pairs       `[ label, visitors ]` pairs.
+ * @param {string}       [dimension] Optional. The name of the dimension, such as `pagePath`. Without it, the report has no `dimensionHeaders`.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >
+	pairs: Array< [ string, number ] >,
+	dimension?: string
+): Report {
+	const rows = pairs.map( ( [ label, visitors ] ) => ( {
+		dimensionValues: [ { value: label } ],
+		metricValues: [ { value: String( visitors ) } ],
+	} ) );
+
+	return dimension
+		? { dimensionHeaders: [ { name: dimension } ], rows }
+		: { rows };
+}
+
+/**
+ * Builds a report of page titles from page path and title pairs, in the order
+ * given.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array<string>>} pairs `[ pagePath, pageTitle ]` pairs.
+ * @return {Object} The report of page titles.
+ */
+export function createTitlesReport(
+	pairs: Array< [ string, string ] >
 ): Report {
 	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
+		rows: pairs.map( ( [ pagePath, pageTitle ] ) => ( {
+			dimensionValues: [ { value: pagePath }, { value: pageTitle } ],
 		} ) ),
 	};
 }
 
 /**
- * Builds a report of the site's visitors, with no dimension.
+ * Builds a report of the site's visits and views, with no dimension.
  *
- * The report has the visitors in its one row and in its total, the way the API
- * returns them, as a string.
+ * The report has the visits and the views in its one row and in its total,
+ * in the order of `getSiteTotalsReportOptions()`. Each is a string, the way the
+ * API returns it.
  *
  * @since n.e.x.t
  *
- * @param {number} visitors The site's visitors.
- * @return {Object} The report of the site's visitors.
+ * @param {Object} siteTotals        The site's totals.
+ * @param {number} siteTotals.visits The site's visits.
+ * @param {number} siteTotals.views  The site's views.
+ * @return {Object} The report of the site's totals.
  */
-export function createSiteVisitorsReport( visitors: number ): Report {
+export function createSiteTotalsReport( {
+	visits,
+	views,
+}: SiteTotals ): Report {
+	const metricValues = [
+		{ value: String( visits ) },
+		{ value: String( views ) },
+	];
+
 	return {
-		rows: [ { metricValues: [ { value: String( visitors ) } ] } ],
-		totals: [ { metricValues: [ { value: String( visitors ) } ] } ],
+		rows: [ { metricValues } ],
+		totals: [ { metricValues } ],
 	};
 }
 
@@ -199,13 +253,14 @@ export function getSectionClassNames( container: Element ): string[] {
  * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
  *
- * The posts report omits the pages under the path that
- * `getExcludedProductPathPrefix()` returns, the way the posts column does.
+ * The posts report follows the site's permalink structure, and leaves out the
+ * product pages that `getExcludedProducts()` recognizes, the way the posts
+ * column does.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry The registry, with its reference date set.
- * @return {Object} The options of the posts, channels, and referrals reports, and of the report of the site's visitors.
+ * @param {Object} registry The registry, with its reference date and its site info set.
+ * @return {Object} The options of the posts, channels, and referrals reports, and of the report of the site's totals.
  */
 export function getRecentTrafficBreakdownReportOptions(
 	registry: WPDataRegistry
@@ -215,15 +270,17 @@ export function getRecentTrafficBreakdownReportOptions(
 	);
 
 	return {
-		posts: getTopPostsReportOptions(
-			dateRange,
-			registry
+		posts: getTopPostsReportOptions( dateRange, {
+			usingPlainPermalinks: registry
+				.select( CORE_SITE )
+				.isUsingPlainPermalinks(),
+			excludedProducts: registry
 				.select( MODULES_ANALYTICS_4 )
-				.getExcludedProductPathPrefix()
-		),
+				.getExcludedProducts(),
+		} ),
 		channels: getTopChannelsReportOptions( dateRange ),
 		referrals: getTopReferralsReportOptions( dateRange ),
-		siteVisitors: getSiteVisitorsReportOptions( dateRange ),
+		siteTotals: getSiteTotalsReportOptions( dateRange ),
 	};
 }
 
@@ -231,17 +288,17 @@ export function getRecentTrafficBreakdownReportOptions(
  * Puts the given reports of the Recent activity tab's traffic breakdown in the
  * store, so the breakdown renders without sending a request. When
  * `reports.posts` is given, the report of titles that the posts column
- * requests goes in the store too.
+ * requests goes in the store too, for a site with a permalink structure.
  *
  * @since n.e.x.t
  *
- * @param {Object} registry               The registry, with its reference date set.
- * @param {Object} reports                The reports.
- * @param {Object} [reports.posts]        Optional. The report of visitors for each page path.
- * @param {Object} [reports.postTitles]   Optional. The title of each page path. A path with no title here has none in the report of titles.
- * @param {Object} [reports.channels]     Optional. The report of visitors for each channel.
- * @param {Object} [reports.referrals]    Optional. The report of visitors for each site that referred them.
- * @param {number} [reports.siteVisitors] Optional. The site's visitors over the date range.
+ * @param {Object} registry             The registry, with its reference date and its site info set.
+ * @param {Object} reports              The reports.
+ * @param {Object} [reports.posts]      Optional. The report of views for each page path.
+ * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
+ * @param {Object} [reports.channels]   Optional. The report of visits for each channel.
+ * @param {Object} [reports.referrals]  Optional. The report of visits for each site that referred them.
+ * @param {Object} [reports.siteTotals] Optional. The site's visits and views over the date range.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(
@@ -251,7 +308,7 @@ export function provideRecentTrafficBreakdownReports(
 		postTitles = {},
 		channels,
 		referrals,
-		siteVisitors,
+		siteTotals,
 	}: RecentTrafficBreakdownReports
 ) {
 	const reportOptions = getRecentTrafficBreakdownReportOptions( registry );
@@ -271,16 +328,14 @@ export function provideRecentTrafficBreakdownReports(
 
 		if ( pagePaths.length ) {
 			receiveGetReport(
-				{
-					rows: pagePaths
+				createTitlesReport(
+					pagePaths
 						.filter( ( pagePath ) => postTitles[ pagePath ] )
-						.map( ( pagePath ) => ( {
-							dimensionValues: [
-								{ value: pagePath },
-								{ value: postTitles[ pagePath ] },
-							],
-						} ) ),
-				},
+						.map( ( pagePath ): [ string, string ] => [
+							pagePath,
+							postTitles[ pagePath ],
+						] )
+				),
 				{
 					options: getPageTitlesReportOptions(
 						reportOptions.posts,
@@ -299,9 +354,98 @@ export function provideRecentTrafficBreakdownReports(
 		receiveGetReport( referrals, { options: reportOptions.referrals } );
 	}
 
-	if ( siteVisitors !== undefined ) {
-		receiveGetReport( createSiteVisitorsReport( siteVisitors ), {
-			options: reportOptions.siteVisitors,
+	if ( siteTotals ) {
+		receiveGetReport( createSiteTotalsReport( siteTotals ), {
+			options: reportOptions.siteTotals,
 		} );
 	}
+}
+
+/**
+ * Puts the module list, the site info, and the Analytics settings in the
+ * store. The selectors that decide whether to include products read them.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}  registry                          The registry to put the state in.
+ * @param {Object}  [state]                           Optional. The state to put in the store.
+ * @param {boolean} [state.analyticsConnected]        Optional. If true, Analytics is connected. If false, Analytics is disconnected. Default `true`.
+ * @param {boolean} [state.wooCommerceActive]         Optional. If true, WooCommerce is active. If false, WooCommerce is inactive. Default `true`.
+ * @param {boolean} [state.setting]                   Optional. If true, the setting to include products is on. If false, the setting is off. Default `true`.
+ * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
+ * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
+ * @param {string}  [state.productQueryVar]           Optional. The query var of the product post type. Default `product`.
+ * @param {boolean} [state.usingPlainPermalinks]      Optional. If true, the site uses plain permalinks. If false, the site has a permalink structure. Default `false`.
+ * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
+ * @return {void}
+ */
+export function receiveState(
+	registry: WPDataRegistry,
+	{
+		analyticsConnected = true,
+		wooCommerceActive = true,
+		setting = true,
+		productPostType = 'product',
+		productPathPrefix = null,
+		productQueryVar = 'product',
+		usingPlainPermalinks = false,
+		availableCustomDimensions,
+	}: {
+		analyticsConnected?: boolean;
+		wooCommerceActive?: boolean;
+		setting?: boolean;
+		productPostType?: string | null;
+		productPathPrefix?: string | null;
+		productQueryVar?: string | null;
+		usingPlainPermalinks?: boolean;
+		availableCustomDimensions?: string[] | null;
+	} = {}
+) {
+	provideModules( registry, [
+		{
+			slug: MODULE_SLUG_ANALYTICS_4,
+			active: true,
+			connected: analyticsConnected,
+		},
+	] );
+
+	provideSiteInfo( registry, {
+		wooCommerceActive,
+		productPostType,
+		productPathPrefix,
+		productQueryVar,
+		usingPlainPermalinks,
+	} );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
+		availableCustomDimensions,
+	} );
+}
+
+/**
+ * Gets a matcher for the Analytics report requests that ask for exactly the
+ * given dimensions.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...string} dimensions The dimension names, in order. With none, the matcher matches a report request with no dimension.
+ * @return {Function} The matcher, for `fetchMock`.
+ */
+export function forDimensions( ...dimensions: string[] ) {
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	return ( url: string ) =>
+		reportEndpoint.test( url ) &&
+		isEqual(
+			map(
+				getQueryArg( url, 'dimensions' ) as
+					| Array< { name: string } >
+					| undefined,
+				'name'
+			),
+			dimensions
+		);
 }
