@@ -132,4 +132,21 @@ describe( 'ExitSetup', () => {
 		);
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
 	} );
+
+	it( 'should still navigate without tracking an event when the category and action are missing', async () => {
+		const { getByRole } = render(
+			<ExitSetup gaTrackingEventArgs={ {} } />,
+			{
+				registry,
+			}
+		);
+
+		fireEvent.click( getByRole( 'button' ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
 } );

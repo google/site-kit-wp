@@ -28,7 +28,7 @@ import { isZeroReport } from '@/js/modules/analytics-4/utils';
 /**
  * Returns a function that checks if the ad blocking recovery setup status matches the given status.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} status Ad blocking recovery setup status to match.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the ad blocking recovery setup status matches or not.
@@ -47,7 +47,7 @@ export function requireAdBlockingRecoverySetupStatus( status ) {
 /**
  * Returns a function that checks if the linked Analytics property has revenue for the connected AdSense account.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the linked Analytics property has AdSense revenue or not.
  */

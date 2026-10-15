@@ -75,7 +75,7 @@ type CustomRenderResult = RenderResult & {
  * Renders the given UI into a container to make assertions.
  *
  * @since 1.25.0 Added `features` option.
- * @since n.e.x.t Added `widget` option.
+ * @since 1.190.0 Added `widget` option.
  * @see {@link https://testing-library.com/docs/react-testing-library/api#render}
  * @private
  *
@@ -202,7 +202,7 @@ type CustomRenderHookResult< Props, Result > = RenderHookResult<
  * @since 1.12.0
  * @since 1.25.0 Added `features` option.
  * @since 1.45.0 Added `viewContext` option.
- * @since n.e.x.t Added `widget` option.
+ * @since 1.190.0 Added `widget` option.
  * @private
  *
  * @param {Function}            callback              The function that is called each render of the test component. This function should call one or more hooks for testing. The props passed into the callback will be the initialProps provided in the options to renderHook, unless new props are provided by a subsequent rerender call.

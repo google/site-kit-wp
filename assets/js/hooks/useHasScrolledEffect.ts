@@ -24,7 +24,7 @@ import { useEffect, useState } from '@wordpress/element';
 /**
  * Checks whether the window is scrolled down from the top.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} `true` if the window is scrolled, `false` otherwise.
  */

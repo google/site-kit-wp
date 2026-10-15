@@ -270,7 +270,7 @@ async function resolvePrimaryEcommerceEvent( registry ) {
  * `buildSecondaryReportOptions` is given, the second report its row mapper
  * reads.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
  * @param {Function} [buildSecondaryReportOptions] Builds a second report's options.
@@ -311,7 +311,7 @@ function buildTableTileRequests(
  * have extra requirements and keep their own tile config.
  *
  * @since 1.188.0
- * @since n.e.x.t Added the optional `buildSecondaryReportOptions` argument.
+ * @since 1.190.0 Added the optional `buildSecondaryReportOptions` argument.
  *
  * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
  * @param {Function} mapRows                       Maps this tile's report rows to `GoalDriverRow[]`.
@@ -378,7 +378,7 @@ async function resolveDetectedLeadEvents( registry ) {
  * can build its report options, so this centralizes that resolution instead
  * of every tile repeating it.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} buildRequests Given `(dates, detectedLeadEvents)`, returns this tile's report request(s), or a falsy value when there's nothing to fetch.
  * @return {Function} An async `getTileData` request-builder function.
@@ -396,7 +396,7 @@ function createLeadEventsPDFTileRequestBuilder( buildRequests ) {
  * primary event is the detected lead events rather than a hardcoded
  * `purchase`, since lead generation has no single triggering event.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Function} buildReportOptions            Builds this tile's Analytics 4 report options.
  * @param {Function} mapRows                       Maps this tile's report rows to `GoalDriverRow[]`.
@@ -2007,6 +2007,11 @@ export const KEY_METRICS_PDF_TILES = {
 					value: numFmt( currentPrimaryCount, {
 						style: 'decimal',
 					} ),
+					subtext: sprintf(
+						/* translators: %s: GA4 event name, e.g. "purchase". */
+						__( '“%s” events', 'google-site-kit' ),
+						ENUM_CONVERSION_EVENTS.PURCHASE
+					),
 					...getPDFTileChange(
 						previousPrimaryCount,
 						currentPrimaryCount

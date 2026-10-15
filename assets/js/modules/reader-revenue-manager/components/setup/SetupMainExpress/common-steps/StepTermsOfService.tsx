@@ -52,6 +52,7 @@ import {
 	ExpressSetupStepHeadline,
 	ExpressSetupStepPublicationTypeRadio,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -75,6 +76,8 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isLoading, setIsLoading ] = useState( true );
 	const [ isSaving, setIsSaving ] = useState( false );
 
@@ -90,7 +93,18 @@ const StepTermsOfService: FC< StepTermsOfServiceProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication-tos" external />,
+			a: (
+				<DocumentationLink
+					slug="rrm-publication-tos"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
+						)
+					}
+					external
+				/>
+			),
 		}
 	);
 

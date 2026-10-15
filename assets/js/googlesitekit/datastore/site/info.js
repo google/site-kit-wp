@@ -1195,7 +1195,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if WooCommerce is active, `false` if not. Returns `undefined` if not loaded.
@@ -1205,7 +1205,7 @@ export const selectors = {
 	/**
 	 * Determines whether the WooCommerce plugin is installed.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(boolean|undefined)} `true` if WooCommerce is installed, `false` if not. Returns `undefined` if not loaded.

@@ -82,7 +82,7 @@ export function requireCanViewSharedModule( slug ) {
 /**
  * Returns a function that checks if the current user has access to the given shareable module.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the given shareable module or not.

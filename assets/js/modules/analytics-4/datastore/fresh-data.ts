@@ -61,6 +61,8 @@ export interface RecentContentItem {
 	pagePath: string;
 	/** The publish time in UTC, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
 	publishedAt: string;
+	/** The publish time in the site's time zone, as WordPress shows it, e.g. `2026-09-24T10:05:00`, with no time zone suffix. */
+	sitePublishedAt: string;
 }
 
 interface RecentContentOptions {
@@ -105,6 +107,8 @@ export type ExcludedProducts =
 interface WordPressPost {
 	/** The post ID. */
 	id: number;
+	/** The publish time in the site's time zone, e.g. `2026-09-24T10:05:00`, with no time zone suffix. */
+	date: string;
 	/** The publish time in UTC, e.g. `2026-09-24T14:05:00`, with no time zone suffix. */
 	// eslint-disable-next-line camelcase -- The WordPress REST API returns this field as `date_gmt`.
 	date_gmt: string;
@@ -160,7 +164,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 						orderby: 'date',
 						order: 'desc',
 						per_page: count,
-						_fields: 'id,date_gmt,link,title',
+						_fields: 'id,date,date_gmt,link,title',
 					} ),
 				} )
 			)
@@ -174,6 +178,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 				permalink: post.link,
 				pagePath: new URL( post.link ).pathname,
 				publishedAt: `${ post.date_gmt }Z`,
+				sitePublishedAt: post.date,
 			} ) )
 			.sort(
 				( itemA, itemB ) =>
@@ -345,7 +350,7 @@ const baseSelectors = {
 	 * `shouldIncludeWooCommerceProducts()` returns `true`. Read a request error
 	 * with `getErrorForSelector( 'getRecentContent', [ options ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
@@ -386,7 +391,7 @@ const baseSelectors = {
 	 * Determines whether WooCommerce products should be included alongside
 	 * WordPress posts for "Fresh Data" cards/widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {(boolean|undefined)} `true` if WooCommerce products should be included, `false` if not. Returns `undefined` if not yet loaded.
 	 */
