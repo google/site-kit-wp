@@ -46,7 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
-		name: 'Ads',
+		name: __( 'Ads', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADS,
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(

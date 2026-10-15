@@ -45,7 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'pagespeed-insights', {
-		name: 'PageSpeed Insights',
+		name: __( 'PageSpeed Insights', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 		title: __(
 			'Make your web pages fast on all devices',

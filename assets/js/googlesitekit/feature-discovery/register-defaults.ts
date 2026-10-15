@@ -48,7 +48,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'dashboard-sharing', {
-		name: 'Dashboard sharing',
+		name: __( 'Dashboard sharing', 'google-site-kit' ),
 		title: __(
 			'Collaborate with other team members by sharing dashboard access',
 			'google-site-kit'
@@ -162,7 +162,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'email-reports', {
-		name: 'Email reports',
+		name: __( 'Email reports', 'google-site-kit' ),
 		title: __( 'Get site insights in your inbox', 'google-site-kit' ),
 		shortDescription: __(
 			"Receive the most important insights about your site's performance, key trends, and tailored metrics directly in your inbox. Invite other site users to subscribe, and manage your report frequency.",
@@ -273,7 +273,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'pdf-report', {
-		name: 'PDF report',
+		name: __( 'PDF report', 'google-site-kit' ),
 		title: __( 'Export Site Kit to PDF report', 'google-site-kit' ),
 		shortDescription: __(
 			'Generate a PDF featuring the current metrics from your dashboard. The report reflects the same date range selected in your dashboard, excluding data from the current day to ensure accuracy.',

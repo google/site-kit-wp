@@ -45,7 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'adsense', {
-		name: 'AdSense',
+		name: __( 'AdSense', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Place ads on your site', 'google-site-kit' ),
 		shortDescription: __(
@@ -144,7 +144,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'ad-blocking-recovery', {
-		name: 'Ad blocking recovery',
+		name: __( 'Ad blocking recovery', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
 		shortDescription: __(
