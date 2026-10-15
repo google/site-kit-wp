@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import PropTypes from 'prop-types';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -41,12 +41,26 @@ import LatestContentHeader from './LatestContentHeader';
 import LatestContentTable from './LatestContentTable';
 import TopContentTable from './TopContentTable';
 
-function ModulePopularPagesWidgetGA4( props ) {
-	const { Widget, WidgetReportError } = props;
+/**
+ * Props for the Popular content widget.
+ *
+ * @since n.e.x.t
+ */
+interface ModulePopularPagesWidgetGA4Props {
+	/** The widget wrapper component. */
+	Widget: ElementType;
+	/** The component the tables render when a request fails. */
+	WidgetReportError: ElementType;
+}
 
+const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
+	Widget,
+	WidgetReportError,
+} ) => {
 	const freshDataEnabled = useFeature( 'freshData' );
 
-	const [ activeTabID, setActiveTabID ] = useState( TOP_CONTENT_TAB_ID );
+	const [ activeTabID, setActiveTabID ] =
+		useState< string >( TOP_CONTENT_TAB_ID );
 
 	if ( ! freshDataEnabled ) {
 		return (
@@ -90,12 +104,6 @@ function ModulePopularPagesWidgetGA4( props ) {
 			</div>
 		</Widget>
 	);
-}
-
-ModulePopularPagesWidgetGA4.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetReportError: PropTypes.elementType.isRequired,
-	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
 export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
