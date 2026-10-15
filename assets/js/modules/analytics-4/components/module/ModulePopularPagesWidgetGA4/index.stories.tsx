@@ -35,6 +35,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { properties } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import {
 	STRATEGY_ZIP,
@@ -308,21 +309,6 @@ const LATEST_CONTENT_REPORT = {
 	} ) ),
 };
 
-function provideRecentContent(
-	registry: WPDataRegistry,
-	recentContent: RecentContentItem[] = RECENT_CONTENT
-) {
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetRecentContent( recentContent, {
-			count: 10,
-			includeProducts: false,
-		} );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getRecentContent', [ { count: 10 } ] );
-}
-
 export const TopContentFreshData = Template.bind( {} ) as Story;
 TopContentFreshData.storyName = 'Top Content (freshData enabled)';
 TopContentFreshData.args = {
@@ -338,7 +324,7 @@ LatestContent.storyName = 'Latest Content (freshData enabled)';
 LatestContent.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
-		provideRecentContent( registry );
+		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( LATEST_CONTENT_REPORT, {
@@ -359,7 +345,7 @@ LatestContentReportError.storyName =
 LatestContentReportError.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
-		provideRecentContent( registry );
+		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
 		registry.dispatch( MODULES_ANALYTICS_4 ).setErrorForSelector(
 			{
 				code: 'test_error',
@@ -387,7 +373,7 @@ LatestContentNoPublishedPosts.storyName =
 LatestContentNoPublishedPosts.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		Loaded.args?.setupRegistry?.( registry );
-		provideRecentContent( registry, [] );
+		provideRecentContent( registry, [], { count: 10 } );
 	},
 };
 LatestContentNoPublishedPosts.parameters = {

@@ -29,6 +29,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
 	act,
 	createTestRegistry,
@@ -72,13 +73,7 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			count: 10,
-			includeProducts: false,
-		} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getRecentContent', [ { count: 10 } ] );
+		provideRecentContent( registry, [], { count: 10 } );
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 

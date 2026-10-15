@@ -51,6 +51,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -445,10 +446,11 @@ RecentActivityNoPublishedPosts.args = {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			...LATEST_POST_RECENT_CONTENT_OPTIONS,
-			includeProducts: false,
-		} );
+		provideRecentContent(
+			registry,
+			[],
+			LATEST_POST_RECENT_CONTENT_OPTIONS
+		);
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {
