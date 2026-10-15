@@ -105,7 +105,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 			id,
 			Component: TestNotificationComponent,
 			areaSlug: NOTIFICATION_AREAS.HEADER,
-			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+			groupID: 'test-group',
 			viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
 			priority: 11,
 		};
@@ -117,7 +117,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationToCheck, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 			} )
 		).toBe( true );
 
@@ -134,7 +134,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 			id,
 			Component: TestNotificationComponent,
 			areaSlug: NOTIFICATION_AREAS.HEADER,
-			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+			groupID: 'test-group',
 			viewContexts: [
 				VIEW_CONTEXT_MAIN_DASHBOARD,
 				VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -144,28 +144,28 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} )
 		).toBe( true );
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
 			} )
 		).toBe( true );
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 				viewContext: VIEW_CONTEXT_ADMIN_BAR,
 			} )
 		).toBe( false );
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 				viewContext: VIEW_CONTEXT_ADMIN_BAR,
 			} )
 		).toBe( false );
@@ -174,13 +174,13 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 			id,
 			Component: TestNotificationComponent,
 			areaSlug: NOTIFICATION_AREAS.HEADER,
-			groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+			groupID: 'test-group',
 			priority: 11,
 		};
 
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithoutViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 			} )
 		).toBe( true );
 
@@ -188,7 +188,7 @@ describe( 'shouldNotificationBeAddedToQueue', () => {
 		// queue, regardless of the `viewContext` supplied.
 		expect(
 			shouldNotificationBeAddedToQueue( notificationWithoutViewContexts, {
-				groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+				groupID: 'test-group',
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			} )
 		).toBe( true );

@@ -1218,7 +1218,7 @@ describe( 'core/notifications Notifications', () => {
 					Component: TestNotificationComponent,
 					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+					groupID: 'test-group',
 					priority: 20,
 				} );
 				registerNotification( 'default-2', {
@@ -1231,7 +1231,7 @@ describe( 'core/notifications Notifications', () => {
 					Component: TestNotificationComponent,
 					areaSlug: NOTIFICATION_AREAS.HEADER,
 					viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
-					groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+					groupID: 'test-group',
 					priority: 20,
 				} );
 
@@ -1239,7 +1239,7 @@ describe( 'core/notifications Notifications', () => {
 					.resolveSelect( CORE_NOTIFICATIONS )
 					.getQueuedNotifications(
 						VIEW_CONTEXT_MAIN_DASHBOARD,
-						NOTIFICATION_GROUPS.SETUP_CTAS
+						'test-group'
 					);
 
 				expect( queuedNotifications.map( ( { id } ) => id ) ).toEqual(
