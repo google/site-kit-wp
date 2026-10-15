@@ -26,6 +26,7 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import {
@@ -67,6 +68,7 @@ export const initialState: FeatureDiscoveryState = {
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
 const setupTypes = Object.values( FEATURE_SETUP_TYPES );
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 type SetupFeatureResult = { error?: unknown };
 
@@ -189,6 +191,8 @@ export const actions = {
 		): Generator< unknown, SetupFeatureResult, unknown > {
 			const registry = ( yield commonActions.getRegistry() ) as Registry;
 
+			yield clearActionError( 'setupFeature', [ slug ] );
+
 			const feature = registry
 				.select( CORE_FEATURE_DISCOVERY )
 				.getFeature( slug );
@@ -211,6 +215,7 @@ export const actions = {
 			};
 
 			if ( error ) {
+				yield setErrorForAction( error, 'setupFeature', [ slug ] );
 				return { error };
 			}
 
