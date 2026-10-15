@@ -107,7 +107,7 @@
 	.googlesitekit-analytics-popular-pages-widget__report-error {
 		padding: $grid-gap-phone $grid-gap-phone 0;
 
-		@media (min-width: $bp-tablet) {
+		@media (min-width: $bp-desktop) {
 			padding: $grid-gap-desktop $grid-gap-desktop 0;
 		}
 	}

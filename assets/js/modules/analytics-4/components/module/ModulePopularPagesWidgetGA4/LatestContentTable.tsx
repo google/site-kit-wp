@@ -201,9 +201,12 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		primary: true,
 		className: 'googlesitekit-analytics-popular-pages-widget__title',
 		Component( { row }: { row: LatestContentRow } ) {
+			const uniquePagePath = hasUniquePagePath( row );
+			const { pathname, search } = new URL( row.permalink );
+
 			const serviceURL = useSelect(
 				( select: Select ) => {
-					if ( viewOnlyDashboard ) {
+					if ( viewOnlyDashboard || ! uniquePagePath ) {
 						return null;
 					}
 
@@ -215,7 +218,7 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 						}
 					);
 				},
-				[ row.pagePath ]
+				[ row.pagePath, uniquePagePath ]
 			);
 
 			return (
@@ -228,7 +231,7 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 					) }
 					<DetailsPermaLinks
 						title={ row.title }
-						path={ row.pagePath }
+						path={ `${ pathname }${ search }` }
 						serviceURL={ serviceURL }
 					/>
 				</div>
@@ -305,15 +308,13 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		},
 	];
 
-	let columns;
-
-	if ( tabbedLayout ) {
-		columns = [ titleColumn, ...metricColumns ];
-	} else if ( reportError ) {
-		columns = [ ...postedColumns, titleColumn ];
-	} else {
-		columns = [ ...postedColumns, titleColumn, ...metricColumns ];
-	}
+	const columns = tabbedLayout
+		? [ titleColumn, ...metricColumns ]
+		: [
+				...postedColumns,
+				titleColumn,
+				...( reportError ? [] : metricColumns ),
+		  ];
 
 	const reportTable = (
 		<ReportTable

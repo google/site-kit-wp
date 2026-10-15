@@ -40,11 +40,13 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { act, createTestRegistry, render, waitFor } from '@tests/js/test-utils';
 import {
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
+	provideTimezone,
 	provideUserInfo,
 } from '@tests/js/utils';
 import { getLatestContentReportArgs } from './latestContentReportOptions';
@@ -114,18 +116,6 @@ describe( 'LatestContentTable', () => {
 		);
 	}
 
-	function receiveRecentContent( recentContent: RecentContentItem[] ) {
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.receiveGetRecentContent( recentContent, {
-				count: 10,
-				includeProducts: false,
-			} );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.finishResolution( 'getRecentContent', [ { count: 10 } ] );
-	}
-
 	function getHeaders( container: Element ) {
 		return Array.from(
 			container.querySelectorAll( '.googlesitekit-table__head-item' )
@@ -160,7 +150,7 @@ describe( 'LatestContentTable', () => {
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
 
-		receiveRecentContent( RECENT_CONTENT );
+		provideRecentContent( registry, RECENT_CONTENT, { count: 10 } );
 	} );
 
 	it( 'should render the posted date and time, title and metric columns with the title link and path', async () => {
@@ -193,29 +183,41 @@ describe( 'LatestContentTable', () => {
 		);
 	} );
 
-	it( 'should show the publish date and time in the site time zone', async () => {
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( REPORT, {
-			options: getReportArgs(),
+	describe( 'with a browser time zone ahead of UTC', () => {
+		let originalTimezone: string | undefined;
+
+		beforeEach( () => {
+			originalTimezone = provideTimezone( 'Asia/Tokyo' );
 		} );
 
-		const { container, waitForRegistry } = renderTable();
+		afterEach( () => {
+			provideTimezone( originalTimezone );
+		} );
 
-		await waitForRegistry();
+		it( 'should show the publish date and time in the site time zone', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( REPORT, {
+				options: getReportArgs(),
+			} );
 
-		const postedCells = Array.from(
-			container.querySelectorAll( '.googlesitekit-table__body-row' )
-		).map( ( row ) =>
-			Array.from(
-				row.querySelectorAll( '.googlesitekit-table__body-item' )
-			)
-				.slice( 0, 2 )
-				.map( ( cell ) => cell.textContent )
-		);
+			const { container, waitForRegistry } = renderTable();
 
-		expect( postedCells ).toEqual( [
-			[ 'Oct 7', '11:30 PM' ],
-			[ 'Oct 1', '12:05 PM' ],
-		] );
+			await waitForRegistry();
+
+			const postedCells = Array.from(
+				container.querySelectorAll( '.googlesitekit-table__body-row' )
+			).map( ( row ) =>
+				Array.from(
+					row.querySelectorAll( '.googlesitekit-table__body-item' )
+				)
+					.slice( 0, 2 )
+					.map( ( cell ) => cell.textContent )
+			);
+
+			expect( postedCells ).toEqual( [
+				[ 'Oct 7', '11:30 PM' ],
+				[ 'Oct 1', '12:05 PM' ],
+			] );
+		} );
 	} );
 
 	it( 'should keep a post with no Analytics row and show zeros for it', async () => {
@@ -287,6 +289,79 @@ describe( 'LatestContentTable', () => {
 		expect( secondURL ).toContain( 'startDate=2026-10-02' );
 		expect( secondURL ).toContain( '/published-this-morning/' );
 		expect( secondURL ).toContain( '/popular-older-post/' );
+	} );
+
+	it( 'should link a plain permalink post to its own URL and details page, without an Analytics report link', async () => {
+		const plainPermalinkPost = {
+			id: 7,
+			title: 'Plain permalink post',
+			permalink: 'http://example.com/?p=7',
+			pagePath: '/',
+			publishedAt: '2026-10-08T06:30:00Z',
+			sitePublishedAt: '2026-10-07T23:30:00',
+		};
+
+		registry.dispatch( MODULES_ANALYTICS_4 ).setPropertyID( '12345' );
+		provideRecentContent(
+			registry,
+			[ plainPermalinkPost, RECENT_CONTENT[ 1 ] ],
+			{ count: 10 }
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport( REPORT, {
+			options: getLatestContentReportArgs(
+				registry.select( CORE_USER ).getDateRangeDates(),
+				[ '/popular-older-post/' ]
+			),
+		} );
+
+		const { getByRole, waitForRegistry } = renderTable();
+
+		await waitForRegistry();
+
+		expect(
+			getByRole( 'link', { name: 'Plain permalink post' } )
+		).toHaveAttribute(
+			'href',
+			expect.stringContaining(
+				'page=googlesitekit-dashboard&permaLink=http%3A%2F%2Fexample.com%2F%3Fp%3D7'
+			)
+		);
+		expect( getByRole( 'link', { name: '/?p=7' } ) ).toHaveAttribute(
+			'href',
+			'http://example.com/?p=7'
+		);
+		expect(
+			getByRole( 'link', { name: /^Popular older post/ } )
+		).toHaveAttribute(
+			'href',
+			expect.stringContaining( 'analytics.google.com' )
+		);
+	} );
+
+	it( 'should keep the posted columns on small screens when the report fails', async () => {
+		( useBreakpoint as jest.Mock ).mockReturnValue( BREAKPOINT_SMALL );
+
+		const args = getReportArgs();
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector( ERROR, 'getReport', [ args ] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [ args ] );
+
+		const { container, getByText, queryAllByRole, waitForRegistry } =
+			renderTable();
+
+		await waitForRegistry();
+
+		expect( getByText( /Error message\./ ) ).toBeInTheDocument();
+		expect( getHeaders( container ) ).toEqual( [
+			'Posted',
+			'Time',
+			'Title',
+		] );
+		expect( queryAllByRole( 'tab' ) ).toHaveLength( 0 );
 	} );
 
 	it( 'should show the skeleton while the report loads', async () => {
@@ -366,7 +441,7 @@ describe( 'LatestContentTable', () => {
 	} );
 
 	it( 'should show a message and request no report when the site has no published posts', async () => {
-		receiveRecentContent( [] );
+		provideRecentContent( registry, [], { count: 10 } );
 
 		const { getByText, waitForRegistry } = renderTable();
 
