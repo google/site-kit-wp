@@ -1019,7 +1019,7 @@ class REST_Modules_Controller {
 	 * Resolves datapoint permission callback.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Checks the `GET:` definition for `HEAD` requests and the `POST:` definition for `PUT` and `PATCH` requests.
+	 * @since 1.190.0 Checks the `GET:` definition for `HEAD` requests and the `POST:` definition for `PUT` and `PATCH` requests.
 	 *
 	 * @param WP_REST_Request $request The request.
 	 * @param callable        $default_callback Default permission callback.

@@ -4,7 +4,7 @@ Contributors:      google
 Requires at least: 5.2
 Tested up to:      7.1
 Requires PHP:      7.4
-Stable tag:        1.189.0
+Stable tag:        1.190.0
 License:           Apache License 2.0
 License URI:       https://www.apache.org/licenses/LICENSE-2.0
 Tags:              google, search-console, analytics, adsense, pagespeed-insights
@@ -112,40 +112,39 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 
 == Changelog ==
 
-= 1.189.0 =
+= 1.190.0 =
+
+**Added**
+
+* Add a "Recent activity" tab showing traffic and search performance since the day before yesterday. See [#13681](https://github.com/google/site-kit-wp/issues/13681).
 
 **Enhanced**
 
-* Update proxy setup to include verification evidence. See [#13678](https://github.com/google/site-kit-wp/issues/13678).
-* Add the `datePicker` feature flag for the dashboard date picker feature. See [#13609](https://github.com/google/site-kit-wp/issues/13609).
-* Add the `typicalTraffic` feature flag. See [#13592](https://github.com/google/site-kit-wp/issues/13592).
-* Add survey triggers in Reader Revenue Manager express setup flow. See [#13577](https://github.com/google/site-kit-wp/issues/13577).
-* Add a feature metric reporting configured Reader Revenue Manager CTA types. See [#13576](https://github.com/google/site-kit-wp/issues/13576).
-* Remove the All Traffic widget, so the new Traffic Overview widget shows in the Traffic section of the main and entity dashboards for every site. See [#13413](https://github.com/google/site-kit-wp/issues/13413).
-* Add the PDF widget for the new Traffic Overview version. See [#13412](https://github.com/google/site-kit-wp/issues/13412).
-* Add loading, gathering-data, zero-data and error states to the new Traffic Overview widget. See [#13411](https://github.com/google/site-kit-wp/issues/13411).
-* Add the daily traffic chart to the new Traffic Overview widget. See [#13409](https://github.com/google/site-kit-wp/issues/13409).
-* Add ability to enable Plugin Conversion Tracking from Site Goals CTA. See [#13398](https://github.com/google/site-kit-wp/issues/13398).
-* Save publication type and email opt-in when accepting Reader Revenue Manager Terms of Service during express setup. See [#13392](https://github.com/google/site-kit-wp/issues/13392).
-* Show the new feature count in the "Add Features" admin menu item. See [#13359](https://github.com/google/site-kit-wp/issues/13359).
-* Add an **Add features** button to the dashboard header with a badge for new features. See [#13358](https://github.com/google/site-kit-wp/issues/13358).
-* Allow a user to provide feedback when dismissing a feature from the "What's new?" tab in the Feature Discovery Hub. See [#13357](https://github.com/google/site-kit-wp/issues/13357).
-* Build the Feature Discovery Hub's "All services and features" tab. See [#13328](https://github.com/google/site-kit-wp/issues/13328).
-* Build the feature card's CTA for setting up a feature, with a stub setup action. See [#13322](https://github.com/google/site-kit-wp/issues/13322).
-* Build the Feature Discovery Hub's "What's new?" tab. See [#13321](https://github.com/google/site-kit-wp/issues/13321).
-* Build the `FeatureCard` and `EffortIndicator` components for the upcoming Feature Discovery Hub, and present them in Storybook. See [#13320](https://github.com/google/site-kit-wp/issues/13320).
-* Route new users to the "All services and features" tab on their first visit to the Feature Discovery Hub, and the "What's new?" tab by default on subsequent visits. See [#13319](https://github.com/google/site-kit-wp/issues/13319).
-* Add event tracking that monitors when a reader finishes reading a post. See [#13287](https://github.com/google/site-kit-wp/issues/13287).
-* Add the setup complete step to the Reader Revenue Manager Express setup flow. See [#13028](https://github.com/google/site-kit-wp/issues/13028).
+* Add the `rrmSurveyCTA` feature flag. See [#13716](https://github.com/google/site-kit-wp/issues/13716).
+* Improve handling of rate limit Google API errors. See [#13630](https://github.com/google/site-kit-wp/issues/13630).
+* Add a setting to include WooCommerce products in the "Recent activity" tab. See [#13625](https://github.com/google/site-kit-wp/issues/13625).
+* Add the benchmarking response that combines Analytics reports into daily traffic, visitor totals and ranked key factors. See [#13595](https://github.com/google/site-kit-wp/issues/13595).
+* Add GA event tracking for the Reader Revenue Manager configured CTA manage settings link. See [#13575](https://github.com/google/site-kit-wp/issues/13575).
+* Standardize custom dimension notices and creation throughout plugin. See [#13552](https://github.com/google/site-kit-wp/issues/13552).
+* Add the Ads Conversion tracking card. See [#13473](https://github.com/google/site-kit-wp/issues/13473).
+* Add Site Goals key metric tiles for "Generating leads". See [#13421](https://github.com/google/site-kit-wp/issues/13421).
+* Update all badges to match the new design. See [#13361](https://github.com/google/site-kit-wp/issues/13361).
+* Add a dashboard callout introducing the **Add features** button for the feature discovery hub. See [#13360](https://github.com/google/site-kit-wp/issues/13360).
+* Enable setting up the Analytics, Ads, AdSense, Sign in with Google, and Reader Revenue Manager features on the Feature Discovery Hub. See [#13338](https://github.com/google/site-kit-wp/issues/13338).
+* Add relevancy feedback controls to the Feature Discovery Hub's feature detail panel. See [#13337](https://github.com/google/site-kit-wp/issues/13337).
+* Build the shell for the Feature Discovery Hub's detail panel. See [#13330](https://github.com/google/site-kit-wp/issues/13330).
+* Add the empty state for the "What's new?" tab in the Feature Discovery Hub. See [#13327](https://github.com/google/site-kit-wp/issues/13327).
+* Update the auto-updates CTA notice, and show it on the "What's new?" tab in the Feature Discovery Hub. See [#13323](https://github.com/google/site-kit-wp/issues/13323).
+* Improve the exported PDF filename to name the site and the reporting period. See [#13216](https://github.com/google/site-kit-wp/issues/13216).
+* Add a warning notice that replaces a Site Goals widget when none of its event provider plugins is active and the selected date range has no conversion events, with an option to remove the widget. See [#12774](https://github.com/google/site-kit-wp/issues/12774).
+* Update typography for consistency throughout the plugin. Props amarkdotdev, voidstackloop. See [#11266](https://github.com/google/site-kit-wp/issues/11266).
+* Add support for schemas in module datapoint routes. See [#6759](https://github.com/google/site-kit-wp/issues/6759).
 
 **Fixed**
 
-* Ensure traffic overview cards show accurate percentages when rounding. See [#13659](https://github.com/google/site-kit-wp/issues/13659).
-* Fix duplicate date labels on the Traffic overview chart while Analytics is gathering data. See [#13658](https://github.com/google/site-kit-wp/issues/13658).
-* Fix the welcome tour skipping its traffic step when the new Traffic Overview widget is enabled. See [#13656](https://github.com/google/site-kit-wp/issues/13656).
 * Fix creating a CTA in the Reader Revenue Manager express setup flow. See [#13634](https://github.com/google/site-kit-wp/issues/13634).
-* Fix listing existing publications in the Reader Revenue Manager express setup flow. See [#13622](https://github.com/google/site-kit-wp/issues/13622).
+* Fix UI styles for the happiness survey answers. See [#13632](https://github.com/google/site-kit-wp/issues/13632).
 * Fix creating a publication in the Reader Revenue Manager express setup flow. See [#13620](https://github.com/google/site-kit-wp/issues/13620).
-* Ensure empty data rows don't appear in the Speed section of the PDF export. Props vivekjm. See [#13215](https://github.com/google/site-kit-wp/issues/13215).
+* Fix cut-off and overlapping axis labels on the PDF report charts. See [#13218](https://github.com/google/site-kit-wp/issues/13218).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
