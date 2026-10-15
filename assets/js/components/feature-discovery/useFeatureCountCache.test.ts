@@ -119,6 +119,37 @@ describe( 'useFeatureCountCache', () => {
 		);
 	} );
 
+	it( 'should write zero when the only unseen feature is in progress', () => {
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+			[ getFeatureNewnessKey( 'test-feature' ) ]:
+				Math.floor( Date.now() / 1000 ) + 1000,
+		} );
+
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'in-progress-feature', {
+				title: 'In progress feature',
+				shortDescription: 'A test feature.',
+				effort: FEATURE_EFFORTS.LOW,
+				goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+				addedInVersion: '1.187.0',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+		renderHook( useFeatureCountCache, {
+			registry,
+			features: [ 'featureDiscoveryHub' ],
+		} );
+
+		expect( setFeatureCountCache ).toHaveBeenLastCalledWith(
+			expect.objectContaining( { count: 0 } )
+		);
+	} );
+
 	it( 'should update the fingerprint when connections or the user change', async () => {
 		renderHook( useFeatureCountCache, {
 			registry,

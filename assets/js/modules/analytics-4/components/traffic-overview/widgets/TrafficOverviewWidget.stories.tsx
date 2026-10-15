@@ -33,7 +33,10 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
-import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	TRAFFIC_OVERVIEW_WIDGET_SLUG,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
@@ -42,6 +45,9 @@ import {
 import {
 	provideFreshMetricsReports,
 	provideInsightReport,
+	provideLatestPost,
+	provideLatestPostAnalyticsReports,
+	provideLatestPostKeywordReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
@@ -161,8 +167,8 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 
 /**
  * Puts the Search Console property, the reports of the fresh figures, the
- * site's latest post and the insight report in the store, so the Recent
- * activity tab renders without sending a request.
+ * site's latest post and its reports, and the insight report in the store, so
+ * the Recent activity tab renders without sending a request.
  *
  * @since n.e.x.t
  *
@@ -177,21 +183,12 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 		totalVisitors: 157,
 		searchPerformance: { clicks: 72, impressions: 8000 },
 	} );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent(
-		[
-			{
-				id: 12,
-				title: 'Autumn recipes',
-				permalink: 'https://example.com/autumn-recipes/',
-				pagePath: '/autumn-recipes/',
-				publishedAt: '2026-09-24T14:05:00Z',
-			},
-		],
-		{ count: 1, includeProducts: false }
-	);
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getRecentContent', [ { count: 1 } ] );
+		.setDetectedEvents( [ 'purchase' ] );
+	provideLatestPost( registry );
+	provideLatestPostAnalyticsReports( registry );
+	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 }
 
@@ -215,7 +212,9 @@ function Template( {
 	);
 }
 
-export const MainDashboard = Template.bind( {} ) as Story;
+export const MainDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 MainDashboard.storyName = 'Main Dashboard';
 MainDashboard.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -227,7 +226,9 @@ MainDashboard.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-export const TypicalTraffic = Template.bind( {} ) as Story;
+export const TypicalTraffic = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTraffic.storyName = 'Typical Traffic (typicalTraffic enabled)';
 TypicalTraffic.args = {
 	...MainDashboard.args,
@@ -239,7 +240,9 @@ TypicalTraffic.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
 };
 
-export const TypicalTrafficSelected = Template.bind( {} ) as Story;
+export const TypicalTrafficSelected = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 TypicalTrafficSelected.storyName =
 	'Typical Traffic Selected (typicalTraffic enabled)';
 TypicalTrafficSelected.args = {
@@ -268,7 +271,9 @@ TypicalTrafficSelected.scenario = {
  * `useTrafficOverviewReports.test.ts` and `TrafficOverviewSourceLink.test.tsx`
  * already cover both.
  */
-export const EntityDashboard = Template.bind( {} ) as Story;
+export const EntityDashboard = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 EntityDashboard.storyName = 'Entity Dashboard';
 EntityDashboard.args = {
 	viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
@@ -281,7 +286,9 @@ EntityDashboard.args = {
 	},
 };
 
-export const Loading = Template.bind( {} ) as Story;
+export const Loading = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 Loading.storyName = 'Loading';
 Loading.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -294,7 +301,9 @@ Loading.args = {
 	},
 };
 
-export const GatheringData = Template.bind( {} ) as Story;
+export const GatheringData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 GatheringData.storyName = 'Gathering Data';
 GatheringData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -307,7 +316,9 @@ GatheringData.scenario = {
 	viewport: 'large',
 };
 
-export const ZeroData = Template.bind( {} ) as Story;
+export const ZeroData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 ZeroData.storyName = 'Zero Data';
 ZeroData.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -335,7 +346,9 @@ ZeroData.args = {
 	},
 };
 
-export const ReportFailure = Template.bind( {} ) as Story;
+export const ReportFailure = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 ReportFailure.storyName = 'Report Failure';
 ReportFailure.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -359,7 +372,9 @@ ReportFailure.args = {
 	},
 };
 
-export const RecentActivity = Template.bind( {} ) as Story;
+export const RecentActivity = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivity.storyName = 'Recent Activity (freshData enabled)';
 RecentActivity.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
@@ -376,7 +391,9 @@ RecentActivity.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
-export const RecentActivityAnalyticsNotConnected = Template.bind( {} ) as Story;
+export const RecentActivityAnalyticsNotConnected = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityAnalyticsNotConnected.storyName =
 	'Recent Activity, Analytics Not Connected (freshData enabled)';
 RecentActivityAnalyticsNotConnected.args = {
@@ -402,7 +419,9 @@ RecentActivityAnalyticsNotConnected.scenario = {
 	viewport: 'large',
 };
 
-export const RecentActivityGatheringData = Template.bind( {} ) as Story;
+export const RecentActivityGatheringData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityGatheringData.storyName =
 	'Recent Activity, Gathering Data (freshData enabled)';
 RecentActivityGatheringData.args = {
@@ -421,12 +440,9 @@ RecentActivityGatheringData.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
-/**
- * This story sets no `scenario`, so it runs no visual check. When the site has
- * no published posts, the Recent activity tab only omits the latest post
- * performance, which renders no content yet.
- */
-export const RecentActivityNoPublishedPosts = Template.bind( {} ) as Story;
+export const RecentActivityNoPublishedPosts = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
 RecentActivityNoPublishedPosts.storyName =
 	'Recent Activity, No Published Posts (freshData enabled)';
 RecentActivityNoPublishedPosts.args = {
@@ -435,13 +451,17 @@ RecentActivityNoPublishedPosts.args = {
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			count: 1,
+			...LATEST_POST_RECENT_CONTENT_OPTIONS,
 			includeProducts: false,
 		} );
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {
 	features: [ 'freshData' ],
+};
+RecentActivityNoPublishedPosts.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
 export default {
