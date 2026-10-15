@@ -20,26 +20,26 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, useMemo } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import GoogleChart from '@/js/components/GoogleChart';
-import VisuallyHidden from '@/js/components/VisuallyHidden';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
-import { getLocale, stringToDate } from '@/js/util';
+import { stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
+import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
+import { getTrafficLegendItem } from './getTrafficLegendItem';
 import { getTypicalTrafficChartData } from './getTypicalTrafficChartData';
+import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import SelectedRangeRegion from './SelectedRangeRegion';
-import { TRAFFIC_CHART_LINE_COLOR } from './trafficChartOptions';
 import TypicalTrafficChartHeader from './TypicalTrafficChartHeader';
 import { TYPICAL_TRAFFIC_CHART_OPTIONS } from './typicalTrafficChartOptions';
 
@@ -106,9 +106,6 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 		},
 		vAxis: {
 			...TYPICAL_TRAFFIC_CHART_OPTIONS.vAxis,
-			// The busiest day of the window sets the scale. Google Charts rounds
-			// the top of the axis up to the gridline above it.
-			maxValue: maximumVisitors,
 			// When every day is at zero, Google Charts needs a maximum, or it
 			// draws the line across the middle of the chart area.
 			viewWindow: {
@@ -130,44 +127,6 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 		propertyCreateDate <= windowEndDate
 			? propertyCreateDate
 			: undefined;
-
-	const dateMarkers = markerDate
-		? [
-				{
-					date: markerDate,
-					text: __(
-						'Google Analytics property created',
-						'google-site-kit'
-					),
-				},
-		  ]
-		: undefined;
-
-	const legendItems = [
-		{
-			label: sprintf(
-				/* translators: %d: the number of days in the selected date range, such as "28" */
-				_n(
-					'Last %d day traffic',
-					'Last %d days traffic',
-					daysInSelectedRange,
-					'google-site-kit'
-				),
-				daysInSelectedRange
-			),
-			color: TRAFFIC_CHART_LINE_COLOR,
-		},
-	];
-
-	const dayFormatter = useMemo(
-		() =>
-			new Intl.DateTimeFormat( getLocale(), {
-				year: 'numeric',
-				month: 'long',
-				day: 'numeric',
-			} ),
-		[]
-	);
 
 	// Google Charts fires `ready` again after every redraw, including the one
 	// after the browser window is resized, so the region follows the chart.
@@ -208,7 +167,7 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
-				dateMarkers={ dateMarkers }
+				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
 				height="256px"
 				onReady={ positionSelectedRangeRegion }
 				options={ options }
@@ -218,18 +177,11 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 			>
 				<SelectedRangeRegion id={ regionID } />
 			</GoogleChart>
-			<ChartLegend items={ legendItems } />
+			<ChartLegend
+				items={ [ getTrafficLegendItem( daysInSelectedRange ) ] }
+			/>
 			{ markerDate && (
-				<VisuallyHidden>
-					{ sprintf(
-						/* translators: %s: the day the property was created, such as "January 15, 2025" */
-						__(
-							'Google Analytics property created on %s.',
-							'google-site-kit'
-						),
-						dayFormatter.format( stringToDate( markerDate ) )
-					) }
-				</VisuallyHidden>
+				<PropertyCreatedScreenReaderText date={ markerDate } />
 			) }
 		</div>
 	);

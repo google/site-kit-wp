@@ -22,19 +22,14 @@
 import { ReactNode } from 'react';
 
 /**
- * WordPress dependencies
- */
-import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-
-/**
  * Internal dependencies
  */
+import { createChartWrapper } from '@/js/components/GoogleChart/test-utils';
 import {
 	createDailyTrafficRows,
 	getPropertyCreateTimeAtMidday,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getDateString } from '@/js/util';
-import { createTestRegistry, render, waitFor } from '@tests/js/test-utils';
+import { render } from '@tests/js/test-utils';
 import TypicalTrafficChart, {
 	TypicalTrafficChartProps,
 } from './TypicalTrafficChart';
@@ -54,8 +49,6 @@ jest.mock( '@/js/components/GoogleChart', () => {
 } );
 
 describe( 'TypicalTrafficChart', () => {
-	let registry: WPDataRegistry;
-
 	// A 28-day range ending on `2026-09-15`, with 395 days of 120 visitors.
 	const defaultProps: TypicalTrafficChartProps = {
 		dailyTraffic: createDailyTrafficRows( '2026-09-15', () => 120 ),
@@ -64,67 +57,18 @@ describe( 'TypicalTrafficChart', () => {
 		daysInSelectedRange: 28,
 	};
 
-	/**
-	 * Waits for the chart to render, then reads the props it received.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {Object} The props the chart last received.
-	 */
-	async function getLastChartProps() {
-		await waitFor( () => expect( mockGoogleChart ).toHaveBeenCalled() );
-
-		const { calls } = mockGoogleChart.mock;
-
-		return calls[ calls.length - 1 ][ 0 ];
-	}
-
-	/**
-	 * Builds the argument `GoogleChart` passes to its `onReady` handler, with a
-	 * chart layout that puts each given day at the given position.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} xLocations       The position of each day, keyed by the day as `YYYY-MM-DD`.
-	 * @param {Object} chartArea        The chart area.
-	 * @param {number} chartArea.top    The chart area's distance from the top of the chart.
-	 * @param {number} chartArea.height The chart area's height.
-	 * @return {Object} The argument for the `onReady` handler.
-	 */
-	function createReadyEvent(
-		xLocations: Record< string, number >,
-		chartArea: { top: number; height: number }
-	) {
-		return {
-			chartWrapper: {
-				getChart: () => ( {
-					getChartLayoutInterface: () => ( {
-						getChartAreaBoundingBox: () => chartArea,
-						getXLocation: ( day: Date ) =>
-							xLocations[ getDateString( day ) ],
-					} ),
-				} ),
-			},
-		};
-	}
-
-	beforeEach( () => {
-		registry = createTestRegistry();
-	} );
-
 	afterEach( () => {
 		mockGoogleChart.mockClear();
 	} );
 
-	it( 'should plot the 395 days of the rows for a 28-day and for a 90-day range', async () => {
+	it( 'should plot the 395 days of the rows for a 28-day and for a 90-day range', () => {
 		const { rerender } = render(
-			<TypicalTrafficChart { ...defaultProps } />,
-			{ registry }
+			<TypicalTrafficChart { ...defaultProps } />
 		);
 
-		expect( ( await getLastChartProps() ).data.slice( 1 ) ).toHaveLength(
-			395
-		);
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+		).toHaveLength( 395 );
 
 		rerender(
 			<TypicalTrafficChart
@@ -134,12 +78,12 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		expect( ( await getLastChartProps() ).data.slice( 1 ) ).toHaveLength(
-			395
-		);
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+		).toHaveLength( 395 );
 	} );
 
-	it( 'should move the whole 395-day window when the range ends on a later day', async () => {
+	it( 'should move the whole 395-day window when the range ends on a later day', () => {
 		render(
 			<TypicalTrafficChart
 				{ ...defaultProps }
@@ -149,12 +93,11 @@ describe( 'TypicalTrafficChart', () => {
 				) }
 				selectedStartDate="2026-08-26"
 				selectedEndDate="2026-09-22"
-			/>,
-			{ registry }
+			/>
 		);
 
 		const { data, plottedStartDate, plottedEndDate } =
-			await getLastChartProps();
+			mockGoogleChart.mock.lastCall[ 0 ];
 		const points = data.slice( 1 );
 
 		expect( points ).toHaveLength( 395 );
@@ -164,10 +107,10 @@ describe( 'TypicalTrafficChart', () => {
 		expect( plottedEndDate ).toBe( '2026-09-22' );
 	} );
 
-	it( 'should label the horizontal axis with the short name of each month, over transparent gridlines', async () => {
-		render( <TypicalTrafficChart { ...defaultProps } />, { registry } );
+	it( 'should label the horizontal axis with the short name of each month, over transparent gridlines', () => {
+		render( <TypicalTrafficChart { ...defaultProps } /> );
 
-		const { options } = await getLastChartProps();
+		const { options } = mockGoogleChart.mock.lastCall[ 0 ];
 
 		expect( options.hAxis.format ).toBe( 'MMM' );
 		expect( options.hAxis.gridlines.color ).toBe( 'transparent' );
@@ -176,59 +119,55 @@ describe( 'TypicalTrafficChart', () => {
 		expect( options.hAxis.ticks[ 12 ] ).toEqual( new Date( 2026, 8, 1 ) );
 	} );
 
-	it( 'should draw the gray line along the right edge on the last plotted day', async () => {
-		render( <TypicalTrafficChart { ...defaultProps } />, { registry } );
+	it( 'should draw the gray line along the right edge on the last plotted day', () => {
+		render( <TypicalTrafficChart { ...defaultProps } /> );
 
-		const { options } = await getLastChartProps();
+		const { options } = mockGoogleChart.mock.lastCall[ 0 ];
 
 		expect( options.hAxis.baseline ).toEqual( new Date( 2026, 8, 15 ) );
 	} );
 
-	it( 'should fit the value axis to the most visitors on a day, and leave Google Charts to round its top up', async () => {
+	it( 'should set no maximum on the value axis when a day has visitors', () => {
 		render(
 			<TypicalTrafficChart
 				{ ...defaultProps }
 				dailyTraffic={ createDailyTrafficRows(
 					'2026-09-15',
-					( _dayIndex, date ) => ( date === '2025-10-15' ? 900 : 100 )
+					( _dayIndex, date ) => ( date === '2025-10-15' ? 900 : 0 )
 				) }
-			/>,
-			{ registry }
+			/>
 		);
 
-		const { options } = await getLastChartProps();
+		const { options } = mockGoogleChart.mock.lastCall[ 0 ];
 
-		expect( options.vAxis.maxValue ).toBe( 900 );
 		expect( options.vAxis.viewWindow ).toEqual( { min: 0 } );
 	} );
 
-	it( 'should run the value axis to 100 when every day has no visitors', async () => {
+	it( 'should run the value axis to 100 when every day has no visitors', () => {
 		render(
 			<TypicalTrafficChart
 				{ ...defaultProps }
 				dailyTraffic={ createDailyTrafficRows( '2026-09-15', () => 0 ) }
-			/>,
-			{ registry }
+			/>
 		);
 
-		const { options } = await getLastChartProps();
+		const { options } = mockGoogleChart.mock.lastCall[ 0 ];
 
 		expect( options.vAxis.viewWindow ).toEqual( { min: 0, max: 100 } );
 	} );
 
-	it( 'should mark the day the property was created when it is in the window but outside the selected range', async () => {
+	it( 'should mark the day the property was created when it is in the window but outside the selected range', () => {
 		render(
 			<TypicalTrafficChart
 				{ ...defaultProps }
 				propertyCreateTime={ getPropertyCreateTimeAtMidday(
 					'2025-10-01'
 				) }
-			/>,
-			{ registry }
+			/>
 		);
 
 		const { dateMarkers, plottedStartDate, plottedEndDate } =
-			await getLastChartProps();
+			mockGoogleChart.mock.lastCall[ 0 ];
 
 		expect( dateMarkers ).toEqual( [
 			{
@@ -240,26 +179,60 @@ describe( 'TypicalTrafficChart', () => {
 		expect( plottedEndDate ).toBe( '2026-09-15' );
 	} );
 
-	it( 'should not draw a date marker when the property was created before the window', async () => {
+	it( 'should mark the day the property was created when it is the first plotted day', () => {
+		render(
+			<TypicalTrafficChart
+				{ ...defaultProps }
+				propertyCreateTime={ getPropertyCreateTimeAtMidday(
+					'2025-08-17'
+				) }
+			/>
+		);
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2025-08-17',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
+	it( 'should mark the day the property was created when it is the last plotted day', () => {
+		render(
+			<TypicalTrafficChart
+				{ ...defaultProps }
+				propertyCreateTime={ getPropertyCreateTimeAtMidday(
+					'2026-09-15'
+				) }
+			/>
+		);
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-09-15',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
+	it( 'should not draw a date marker when the property was created before the window', () => {
 		render(
 			<TypicalTrafficChart
 				{ ...defaultProps }
 				propertyCreateTime={ getPropertyCreateTimeAtMidday(
 					'2025-08-16'
 				) }
-			/>,
-			{ registry }
+			/>
 		);
 
-		const { dateMarkers } = await getLastChartProps();
-
-		expect( dateMarkers ).toBeUndefined();
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+		).toBeUndefined();
 	} );
 
 	it( 'should make room above the chart for the date marker only when it draws one', () => {
 		const { container, rerender } = render(
-			<TypicalTrafficChart { ...defaultProps } />,
-			{ registry }
+			<TypicalTrafficChart { ...defaultProps } />
 		);
 
 		expect(
@@ -291,8 +264,7 @@ describe( 'TypicalTrafficChart', () => {
 				propertyCreateTime={ getPropertyCreateTimeAtMidday(
 					'2025-10-01'
 				) }
-			/>,
-			{ registry }
+			/>
 		);
 
 		expect(
@@ -300,31 +272,30 @@ describe( 'TypicalTrafficChart', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should not pass `gatheringData`, which would cut the window down to the selected range', async () => {
-		render( <TypicalTrafficChart { ...defaultProps } />, { registry } );
+	it( 'should not pass `gatheringData`, which would cut the window down to the selected range', () => {
+		render( <TypicalTrafficChart { ...defaultProps } /> );
 
-		const props = await getLastChartProps();
-
-		expect( props ).not.toHaveProperty( 'gatheringData' );
+		expect( mockGoogleChart.mock.lastCall[ 0 ] ).not.toHaveProperty(
+			'gatheringData'
+		);
 	} );
 
-	it( 'should position the selected-range region from the chart layout, and move it when the chart redraws', async () => {
+	it( 'should position the selected-range region from the chart layout, and move it when the chart redraws', () => {
 		const { container } = render(
-			<TypicalTrafficChart { ...defaultProps } />,
-			{ registry }
+			<TypicalTrafficChart { ...defaultProps } />
 		);
 
-		const { onReady } = await getLastChartProps();
+		const { onReady } = mockGoogleChart.mock.lastCall[ 0 ];
 		const region = container.querySelector(
 			'.googlesitekit-traffic-overview__selected-range-region'
 		);
 
-		onReady(
-			createReadyEvent(
+		onReady( {
+			chartWrapper: createChartWrapper(
 				{ '2026-08-19': 1020, '2026-09-15': 1100 },
 				{ top: 8, height: 224 }
-			)
-		);
+			),
+		} );
 
 		expect( region ).toHaveStyle( {
 			left: '1020px',
@@ -335,12 +306,12 @@ describe( 'TypicalTrafficChart', () => {
 
 		// A narrower browser window draws the same days closer to the left
 		// edge.
-		onReady(
-			createReadyEvent(
+		onReady( {
+			chartWrapper: createChartWrapper(
 				{ '2026-08-19': 600, '2026-09-15': 650 },
 				{ top: 8, height: 200 }
-			)
-		);
+			),
+		} );
 
 		expect( region ).toHaveStyle( {
 			left: '600px',
@@ -352,8 +323,7 @@ describe( 'TypicalTrafficChart', () => {
 
 	it( 'should show one legend item for the selected range, beside a line in `#462083`', () => {
 		const { getByRole, rerender } = render(
-			<TypicalTrafficChart { ...defaultProps } />,
-			{ registry }
+			<TypicalTrafficChart { ...defaultProps } />
 		);
 
 		expect( getByRole( 'listitem' ) ).toHaveTextContent(

@@ -252,13 +252,13 @@ TypicalTrafficSelected.args = {
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
-		// The checked-in response has only four days, so the chart gets the
-		// design's thirteen months instead.
+		// The checked-in response has only four days, so the chart gets
+		// thirteen months of daily visitors in the thousands instead.
 		provideBenchmarkingData( registry, dates, {
 			...decodedBenchmarkingResponse,
 			dailyTraffic: createDailyTrafficRows(
 				dates.endDate,
-				( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ]
+				( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ] * 100
 			),
 		} );
 	},

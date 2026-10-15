@@ -27,11 +27,6 @@ import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
  */
 export const TYPICAL_TRAFFIC_CHART_OPTIONS = {
 	...TRAFFIC_CHART_OPTIONS,
-	// The design ends the chart area 28px before the right edge of the chart.
-	chartArea: {
-		...TRAFFIC_CHART_OPTIONS.chartArea,
-		right: 28,
-	},
 	// The selected-range region sits behind the chart, so the chart draws no
 	// background over it.
 	backgroundColor: 'transparent',

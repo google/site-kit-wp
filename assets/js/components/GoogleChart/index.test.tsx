@@ -26,7 +26,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { getDateString } from '@/js/util';
 import {
 	act,
 	createTestRegistry,
@@ -34,6 +33,7 @@ import {
 	render,
 } from '@tests/js/test-utils';
 import GoogleChart from './';
+import { createChartWrapper } from './test-utils';
 
 const mockChart = jest.fn();
 
@@ -173,22 +173,15 @@ describe( 'GoogleChart', () => {
 					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 				);
 
-				const xLocations: Record< string, number > = {
-					'2025-01-04': 100,
-					'2025-01-05': 120,
-					'2025-01-06': 140,
-				};
 				const chartWrapper = {
-					getChart: () => ( {
-						getChartLayoutInterface: () => ( {
-							getChartAreaBoundingBox: () => ( {
-								top: 8,
-								height: 224,
-							} ),
-							getXLocation: ( day: Date ) =>
-								xLocations[ getDateString( day ) ],
-						} ),
-					} ),
+					...createChartWrapper(
+						{
+							'2025-01-04': 100,
+							'2025-01-05': 120,
+							'2025-01-06': 140,
+						},
+						{ top: 8, height: 224 }
+					),
 					getDataTable: () => ( {} ),
 				};
 				const google = {

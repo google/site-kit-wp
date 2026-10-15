@@ -163,7 +163,7 @@
 		// end padding leaves room for the icon after any line.
 		.googlesitekit-traffic-overview__typical-traffic-chart-header {
 			font-size: $fs-title-md;
-			line-height: 20px;
+			line-height: $lh-title-md;
 			margin-bottom: 12px;
 			padding-inline-end: 22px;
 
@@ -222,10 +222,6 @@
 			right: 40px;
 			top: -4px;
 			width: 1px;
-		}
-
-		.googlesitekit-traffic-overview__chart--typical-traffic div[dir]::after {
-			right: 28px;
 		}
 
 		.googlesitekit-traffic-overview__chart-legend {
@@ -535,7 +531,7 @@
 
 // The info tooltip's popup renders outside the widget, so a rule nested under
 // the widget doesn't reach it. The design's width includes the padding.
-.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content--typical-traffic {
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-info-tooltip__content--typical-traffic {
 	box-sizing: border-box;
 	max-width: 235px;
 }

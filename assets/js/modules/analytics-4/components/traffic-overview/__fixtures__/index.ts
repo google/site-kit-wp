@@ -17,11 +17,11 @@
  */
 
 /**
- * The daily visitors that draw the line of the Typical Traffic chart in the
- * design, one for each day the chart plots, oldest first.
+ * The daily visitors the Typical Traffic stories plot, one for each of the
+ * chart's 395 days, oldest first.
  *
- * The design draws four weeks. These values trace its line across all thirteen
- * months.
+ * These values stretch the line of the design's five-week chart across all
+ * thirteen months.
  */
 export const DESIGN_DAILY_VISITORS = [
 	39, 38, 37, 36, 35, 34, 33, 32, 32, 32, 31, 31, 31, 32, 33, 34, 35, 37, 39,
