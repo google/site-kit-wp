@@ -19,7 +19,7 @@ namespace Google\Site_Kit\Core\Modules;
  * sanitized values. Code that calls the datapoint's `create_request()` directly
  * skips this validation.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -32,7 +32,7 @@ interface Schema_Aware_Datapoint {
 	 * parameter names to their schemas. For a `POST` datapoint, these are the
 	 * keys of the data to set.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Map of parameter names to their schemas.
 	 */

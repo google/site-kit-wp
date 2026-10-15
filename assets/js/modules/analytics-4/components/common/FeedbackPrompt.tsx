@@ -51,7 +51,7 @@ interface FeedbackPromptProps {
  * Renders the "Is this section helpful?" prompt with thumbs feedback.
  *
  * @since 1.182.0
- * @since n.e.x.t Replaced the `goalType` prop with `gaTrackingEventArgs`.
+ * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
  *
  * @param props                     Component props.
  * @param props.voteID              Identifier used to build the survey trigger string.

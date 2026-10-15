@@ -240,7 +240,7 @@ class Google_Proxy {
 	 * Sanitizes the given base URL.
 	 *
 	 * @since 1.154.0
-	 * @since n.e.x.t Allows URLs on the `.local` TLD.
+	 * @since 1.190.0 Allows URLs on the `.local` TLD.
 	 *
 	 * @param string $url Base URL to sanitize.
 	 * @return string Sanitized base URL.
@@ -437,7 +437,7 @@ class Google_Proxy {
 	 *
 	 * @since 1.68.0
 	 * @since 1.189.0 Added the `verification_evidence` field.
-	 * @since n.e.x.t Added the `intent-step` mode for requests with `purpose=intent`.
+	 * @since 1.190.0 Added the `intent-step` mode for requests with `purpose=intent`.
 	 *
 	 * @return array Metadata fields array.
 	 */
@@ -458,7 +458,7 @@ class Google_Proxy {
 		 * Filters the setup mode.
 		 *
 		 * @since 1.68.0
-		 * @since n.e.x.t The initial mode is `intent-step` when the setup flow fulfills an intent.
+		 * @since 1.190.0 The initial mode is `intent-step` when the setup flow fulfills an intent.
 		 *
 		 * @param string $mode An initial setup mode.
 		 */

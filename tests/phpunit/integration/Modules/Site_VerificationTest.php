@@ -206,7 +206,7 @@ class Site_VerificationTest extends TestCase {
 	 * The attributes are read from the parsed tag, because WordPress can print them
 	 * in any order.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $html HTML printed in the document head.
 	 * @return array List of `content` attribute values, in the order the tags appear.

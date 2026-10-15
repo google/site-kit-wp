@@ -23,7 +23,10 @@ import { registerDefaults } from './register-defaults';
 
 describe( 'registerDefaults', () => {
 	it( 'registers the PDF report feature in the catalog', () => {
-		const featureDiscoveryAPI = { registerFeature: jest.fn() };
+		const featureDiscoveryAPI = {
+			registerFeature: jest.fn(),
+			resetIncompleteSetupReminder: jest.fn(),
+		};
 
 		registerDefaults( featureDiscoveryAPI );
 
