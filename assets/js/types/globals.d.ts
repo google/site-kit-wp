@@ -110,6 +110,9 @@ declare global {
 		| Record< string, string[] >
 		| undefined;
 	var _googlesitekitConsents: Record< string, string > | undefined;
+	var _googlesitekitNotificationQueueTimings:
+		| import('@/js/googlesitekit/notifications/util/queue-timing').QueueTimingSummary[]
+		| undefined;
 
 	// Third-party WP Consent API globals.
 	// eslint-disable-next-line camelcase
