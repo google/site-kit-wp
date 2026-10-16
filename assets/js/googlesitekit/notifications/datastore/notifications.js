@@ -36,6 +36,7 @@ import {
 	NOTIFICATION_AREAS,
 	NOTIFICATION_GROUPS,
 } from '@/js/googlesitekit/notifications/constants';
+import { startQueueTiming } from '@/js/googlesitekit/notifications/util/queue-timing';
 import { shouldNotificationBeAddedToQueue } from '@/js/googlesitekit/notifications/util/shouldNotificationBeAddedToQueue';
 import { racePrioritizedAsyncTasks } from '@/js/util/async';
 import { getStorage } from '@/js/util/storage';
@@ -536,6 +537,8 @@ export const controls = {
 		( registry ) =>
 			async ( { payload } ) => {
 				const { viewContext, groupID } = payload;
+				const queueTiming = startQueueTiming( viewContext, groupID );
+				let queuedCount = 0;
 				const notifications = registry
 					.select( CORE_NOTIFICATIONS )
 					.getNotifications();
@@ -578,14 +581,19 @@ export const controls = {
 							...notification,
 							viewCount,
 							checkRequirements,
-							async check() {
-								if ( checkRequirements ) {
-									return await checkRequirements(
-										registry,
-										viewContext
-									);
-								}
-								return true;
+							check() {
+								return queueTiming.timeCheck(
+									notification.id,
+									async () => {
+										if ( checkRequirements ) {
+											return await checkRequirements(
+												registry,
+												viewContext
+											);
+										}
+										return true;
+									}
+								);
 							},
 						};
 					} )
@@ -615,6 +623,10 @@ export const controls = {
 
 						if ( meetsRequirements ) {
 							queueNotification( potentialPinnedNotification );
+							queueTiming.markHead(
+								potentialPinnedNotification.id
+							);
+							queuedCount += 1;
 
 							// Remove the pinned notification from the potential notifications.
 							potentialNotifications =
@@ -634,11 +646,15 @@ export const controls = {
 					);
 					if ( nextNotification ) {
 						queueNotification( nextNotification );
+						queueTiming.markHead( nextNotification.id );
+						queuedCount += 1;
 						potentialNotifications = potentialNotifications.filter(
 							( n ) => n !== nextNotification
 						);
 					}
 				} while ( nextNotification );
+
+				queueTiming.finish( queuedCount );
 			}
 	),
 	[ PERSIST_SEEN_NOTIFICATIONS ]: createRegistryControl(
