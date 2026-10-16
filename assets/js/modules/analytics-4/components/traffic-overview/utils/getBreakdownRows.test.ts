@@ -20,7 +20,11 @@
  * Internal dependencies
  */
 import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getBreakdownRows } from './getBreakdownRows';
+import {
+	formatRoundedShare,
+	getBreakdownRows,
+	getRoundedShares,
+} from './getBreakdownRows';
 
 describe( 'getBreakdownRows', () => {
 	it( 'gives each value its share of the column total', () => {
@@ -307,5 +311,47 @@ describe( 'getBreakdownRows', () => {
 			[ 'Referral', '7%' ],
 			[ 'Others', '<1%' ],
 		] );
+	} );
+} );
+
+describe( 'getRoundedShares', () => {
+	it( 'should add the missing step to the part with the largest remainder', () => {
+		// 2 and 1 of 3 are 666.7 and 333.3 tenths of a percent. Their whole
+		// tenths add up to 999, and 2 has the larger remainder.
+		expect( getRoundedShares( [ 2, 1 ], 1000 ) ).toEqual( [ 667, 333 ] );
+	} );
+
+	it( 'should add the missing step to the earliest part when the remainders are equal', () => {
+		// Each part is 33.3%, so all three remainders are equal.
+		expect( getRoundedShares( [ 1, 1, 1 ], 100 ) ).toEqual( [
+			34, 33, 33,
+		] );
+	} );
+
+	it( 'should add no missing step to a part one step short of the whole', () => {
+		// 99.97% has the larger remainder, but would show 100% beside 0.03%.
+		expect( getRoundedShares( [ 9997, 3 ], 1000 ) ).toEqual( [ 999, 1 ] );
+	} );
+
+	it( 'should return the whole for a single part', () => {
+		expect( getRoundedShares( [ 42 ], 100 ) ).toEqual( [ 100 ] );
+	} );
+} );
+
+describe( 'formatRoundedShare', () => {
+	it( 'should format a share out of 100 steps as a whole percent', () => {
+		expect( formatRoundedShare( 27, 100 ) ).toBe( '27%' );
+	} );
+
+	it( 'should format a share out of 1000 steps to a tenth of a percent', () => {
+		expect( formatRoundedShare( 522, 1000 ) ).toBe( '52.2%' );
+	} );
+
+	it( 'should format a share of no step out of 100 as "<1%"', () => {
+		expect( formatRoundedShare( 0, 100 ) ).toBe( '<1%' );
+	} );
+
+	it( 'should format a share of no step out of 1000 as "<0.1%"', () => {
+		expect( formatRoundedShare( 0, 1000 ) ).toBe( '<0.1%' );
 	} );
 } );

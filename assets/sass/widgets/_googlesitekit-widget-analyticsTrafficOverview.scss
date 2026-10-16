@@ -456,6 +456,91 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__recent-traffic-breakdown {
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-columns {
+			display: grid;
+			gap: 8px;
+
+			// The design stacks the columns on tablets too.
+			grid-template-columns: minmax(0, 1fr);
+			margin-top: 12px;
+
+			@media (min-width: $bp-desktop) {
+				gap: 42px;
+
+				// Without the posts column, the other two stay a third wide.
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			// The left padding makes room for the rail and its dot.
+			.googlesitekit-table-tile {
+				padding: 8px 16px 8px $tile-content-offset;
+				position: relative;
+
+				&::before {
+					background: $c-utility-divider;
+					bottom: 0;
+					content: "";
+					left: $tile-connector-offset;
+					position: absolute;
+					top: 0;
+					width: 2px;
+				}
+
+				&::after {
+					background: $c-utility-divider;
+					border-radius: 50%;
+					content: "";
+					height: 9px;
+					left: 0;
+					position: absolute;
+					top: 15px;
+					width: 9px;
+				}
+			}
+
+			.googlesitekit-table-tile__title.googlesitekit-typography {
+				line-height: $lh-body-md;
+			}
+
+			.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+				margin-top: 4px;
+			}
+
+			// The 4px padding keeps a post link's focus outline visible, and
+			// the -4px margin cancels it, so the text stays in place.
+			.googlesitekit-table-tile__cell--label {
+				margin: -4px;
+				padding: 4px;
+			}
+
+			.googlesitekit-table-tile__cell--label .googlesitekit-cta-link__contents {
+				font-weight: $fw-medium;
+			}
+
+			.googlesitekit-table-tile__cell--value {
+				font-variant-numeric: tabular-nums;
+				letter-spacing: $ls-s;
+			}
+
+			// The fixed width fits the widest share, such as `(99.9%)`, so the
+			// counts line up.
+			.googlesitekit-table-tile__secondary-value {
+				color: $c-surfaces-on-surface;
+				display: inline-block;
+				margin-left: 5px;
+				min-width: 7ch;
+				text-align: right;
+			}
+		}
+	}
+
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
 		align-items: center;
 		display: flex;

@@ -179,6 +179,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				timezone,
 				startOfWeek,
 				usingProxy,
+				usingPlainPermalinks,
 				webStoriesActive,
 				proxySupportLinkURL,
 				widgetsAdminURL,
@@ -189,6 +190,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				productQueryVar,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -224,6 +227,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				timezone,
 				startOfWeek,
 				usingProxy,
+				usingPlainPermalinks,
 				webStoriesActive,
 				proxySupportLinkURL,
 				widgetsAdminURL,
@@ -234,6 +238,8 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				siteKitAutoUpdatesEnabled,
 				pluginBasename,
 				productPostType,
+				productPathPrefix,
+				productQueryVar,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -325,6 +331,7 @@ export const resolvers = {
 			timezone,
 			startOfWeek,
 			usingProxy,
+			usingPlainPermalinks,
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
@@ -335,6 +342,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			productQueryVar,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -378,6 +387,7 @@ export const resolvers = {
 			startOfWeek,
 			postTypes,
 			usingProxy: !! usingProxy,
+			usingPlainPermalinks,
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
@@ -387,6 +397,8 @@ export const resolvers = {
 			siteKitAutoUpdatesEnabled,
 			pluginBasename,
 			productPostType,
+			productPathPrefix,
+			productQueryVar,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -712,6 +724,17 @@ export const selectors = {
 	isUsingProxy: getSiteInfoProperty( 'usingProxy' ),
 
 	/**
+	 * Checks whether the site uses plain permalinks, such as `/?p=123`, where
+	 * the path of every post's URL is the path of the home URL.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(boolean|undefined)} `true` if the site uses plain permalinks, `false` if it has a permalink structure. Returns `undefined` if not loaded.
+	 */
+	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
+
+	/**
 	 * Gets a site's name.
 	 *
 	 * @since 1.9.0
@@ -979,6 +1002,25 @@ export const selectors = {
 	 * @return {string|null} The product post type or null if not present.
 	 */
 	getProductPostType: getSiteInfoProperty( 'productPostType' ),
+
+	/**
+	 * Gets the path that the URL of every product starts with.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when product URLs share no such path, such as on plain permalinks. Returns `undefined` if not loaded.
+	 */
+	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
+
+	/**
+	 * Gets the query var whose value is a product's slug in a product URL on
+	 * plain permalinks, such as `product` in `/?product=hoodie`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(string|null|undefined)} The query var, such as `product`, or `null` when the site has no product post type or WordPress reads no query var for it. Returns `undefined` if not loaded.
+	 */
+	getProductQueryVar: getSiteInfoProperty( 'productQueryVar' ),
 
 	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user

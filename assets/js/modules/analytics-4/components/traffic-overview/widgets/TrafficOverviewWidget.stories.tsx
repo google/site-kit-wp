@@ -43,10 +43,12 @@ import {
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	createBreakdownReport,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
@@ -166,15 +168,46 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 
 /**
  * Puts the Search Console property, the site's latest post and its reports,
- * and the insight report in the store, so the Recent activity tab renders
- * without sending a request.
+ * the insight report, and the reports of the recent traffic breakdown in the
+ * store, so the Recent activity tab renders without sending a request.
  *
  * @since 1.190.0
+ * @since n.e.x.t Puts the reports of the recent traffic breakdown in the store too.
  *
- * @param {Object} registry The registry to put the property, the post and the reports in.
+ * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
+	// The posts column requests its report only once the setting to include
+	// products has loaded.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setFreshDataIncludesWooCommerceProducts( true );
+	// The site had 100 visits, each with one view, and 12 of the visits came
+	// from other sites.
+	provideRecentTrafficBreakdownReports( registry, {
+		posts: createBreakdownReport( [
+			[ '/autumn-recipes/', 64 ],
+			[ '/winter-soups/', 23 ],
+			[ '/spring-salads/', 9 ],
+		] ),
+		postTitles: {
+			'/autumn-recipes/': 'Autumn recipes',
+			'/winter-soups/': 'Winter soups',
+			'/spring-salads/': 'Spring salads',
+		},
+		channels: createBreakdownReport( [
+			[ 'Direct', 52 ],
+			[ 'Organic Search', 31 ],
+			[ 'Referral', 12 ],
+		] ),
+		referrals: createBreakdownReport( [
+			[ 'substack.com', 7 ],
+			[ 'reddit.com', 3 ],
+			[ 'medium.com', 2 ],
+		] ),
+		siteTotals: { visits: 100, views: 100 },
+	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );

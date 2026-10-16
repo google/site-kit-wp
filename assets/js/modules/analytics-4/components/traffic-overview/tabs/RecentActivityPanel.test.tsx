@@ -139,6 +139,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
@@ -160,6 +161,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
@@ -321,6 +323,7 @@ describe( 'RecentActivityPanel', () => {
 		// The site had no visitors four weeks ago, so the insight notice has
 		// only three weeks to compare against, and hides.
 		provideInsightReport( registry, 3, [ 2, 1, 1 ] );
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
@@ -343,6 +346,7 @@ describe( 'RecentActivityPanel', () => {
 			{ body: [], status: 200 },
 			{ overwriteRoutes: true }
 		);
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -358,7 +362,48 @@ describe( 'RecentActivityPanel', () => {
 		] );
 	} );
 
+	it( 'should render the "Top posts by visitors" column of the recent traffic breakdown when the site has published posts', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+		mockLatestPostReports();
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			screen.getByRole( 'heading', { name: 'Top posts by visitors' } )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should not render the "Top posts by visitors" column of the recent traffic breakdown when the site has no published posts', async () => {
+		fetchMock.get(
+			postsEndpoint,
+			{ body: [], status: 200 },
+			{ overwriteRoutes: true }
+		);
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
+
+		const { waitForRegistry } = render( <RecentActivityPanel />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			screen.queryByRole( 'heading', { name: 'Top posts by visitors' } )
+		).not.toBeInTheDocument();
+		expect(
+			screen.getByRole( 'heading', { name: 'Top channels by visitors' } )
+		).toBeInTheDocument();
+		expect(
+			screen.getByRole( 'heading', { name: 'Top referrals by visitors' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render the four sections when the request for the recent posts fails', async () => {
+		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 		fetchMock.get(
 			postsEndpoint,
 			{

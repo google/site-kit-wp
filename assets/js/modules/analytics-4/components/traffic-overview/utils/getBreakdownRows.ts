@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import { sum, sumBy } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { __, sprintf } from '@wordpress/i18n';
@@ -37,92 +42,94 @@ export interface TrafficBreakdownRow {
 	formattedPercentage: string;
 }
 
-const WHOLE_PERCENT_FORMAT = {
-	style: 'percent',
-	maximumFractionDigits: 0,
-} as const;
-
 /**
- * Reads a row's visitor count.
+ * Reads the count of a metric in a report row, such as its visitors.
  *
  * @since 1.188.0
+ * @since n.e.x.t Renamed from `getVisitors()`, exported, and takes an optional row and the index of the metric to read.
  *
- * @param {Object} row A breakdown report row.
- * @return {number} The row's visitors, or `0` when the value is missing or not a number.
+ * @param {Object} [row]         Optional. A report row.
+ * @param {number} [metricIndex] Optional. The index of the metric in the row's metric values. Default `0`.
+ * @return {number} The count, or `0` when the row has no value for the metric or the value isn't a number.
  */
-function getVisitors( row: ReportRow ): number {
-	return parseInt( row?.metricValues?.[ 0 ]?.value ?? '', 10 ) || 0;
+export function getMetricCount( row?: ReportRow, metricIndex = 0 ): number {
+	return parseInt( row?.metricValues?.[ metricIndex ]?.value ?? '', 10 ) || 0;
 }
 
 /**
- * Splits 100 whole percents between the given visitor counts.
+ * Splits a whole between the given parts in whole steps, such as whole
+ * percents or tenths of a percent.
  *
- * Rounding each share on its own can miss 100 by a percent or more, so each
- * count gets the whole part of its share, and the percents still missing go
- * to the counts with the largest remainders. When remainders tie, the earlier
- * count wins. A count at 99% gets no missing percent, so a column never shows
- * 100% beside another value.
+ * Rounding each share on its own can miss the whole by a step or more. So
+ * each part gets the whole steps of its share, and the steps still missing go
+ * to the parts with the largest remainders. Of two equal remainders, the
+ * earlier part gets the step. A part one step short of the whole gets no
+ * missing step, so a share never shows the whole beside another share.
  *
  * @since 1.189.0
+ * @since n.e.x.t Renamed from `getWholePercentages()`, and takes the number of steps in the whole, so it splits tenths of a percent too.
  *
- * @param {Array<number>} visitorCounts The visitor count of each row, in display order.
- * @param {number}        total         The sum of `visitorCounts`, above zero.
- * @return {Array<number>} Whole percents in the same order, adding up to 100.
+ * @param {Array<number>} parts The parts, in display order, adding up to more than zero.
+ * @param {number}        steps The steps in the whole, such as `100` for whole percents or `1000` for tenths of a percent.
+ * @return {Array<number>} The steps of each part, in the same order, adding up to `steps`.
  */
-function getWholePercentages(
-	visitorCounts: number[],
-	total: number
-): number[] {
-	const wholePercentages = visitorCounts.map( ( visitors ) =>
-		Math.floor( ( visitors * 100 ) / total )
+export function getRoundedShares( parts: number[], steps: number ): number[] {
+	const total = sum( parts );
+	const shares = parts.map( ( part ) =>
+		Math.floor( ( part * steps ) / total )
 	);
-	const missingPercents =
-		100 -
-		wholePercentages.reduce(
-			( sum, wholePercentage ) => sum + wholePercentage,
-			0
-		);
+	const missingSteps = steps - sum( shares );
 
-	visitorCounts
-		// A remainder is kept as a whole number over `total`, so remainders
-		// that tie compare as equal, which fractions would not always do.
-		.map( ( visitors, index ) => ( {
+	parts
+		// Remainders are whole numbers over `total`, because fractions that
+		// should be equal can have different last digits.
+		.map( ( part, index ) => ( {
 			index,
-			remainder: ( visitors * 100 ) % total,
+			remainder: ( part * steps ) % total,
 		} ) )
-		// Only a count at 99% can reach 100%, and the other counts then add
-		// up to less than 1%, so they have the one missing percent to take.
-		.filter( ( { index } ) => wholePercentages[ index ] < 99 )
-		// `sort` is stable, so tied remainders keep the display order.
+		// Only a part one step short of the whole can reach it. The other
+		// parts then add up to less than one step, so one of them gets the
+		// missing step.
+		.filter( ( { index } ) => shares[ index ] < steps - 1 )
+		// `sort` is stable, so equal remainders keep the order of the parts.
 		.sort( ( first, second ) => second.remainder - first.remainder )
-		.slice( 0, missingPercents )
+		.slice( 0, missingSteps )
 		.forEach( ( { index } ) => {
-			wholePercentages[ index ] += 1;
+			shares[ index ] += 1;
 		} );
 
-	return wholePercentages;
+	return shares;
 }
 
 /**
- * Formats a row's whole percent the way a column displays it.
+ * Formats a share that `getRoundedShares()` returned for a part with a count
+ * above zero, such as `27%` or `52.2%`.
  *
  * @since 1.189.0
+ * @since n.e.x.t Renamed from `formatWholePercentage()`, and takes the number of steps in the whole, so it formats tenths of a percent too.
  *
- * @param {number} wholePercentage Whole percent given to a row with visitors, `0` to `100`.
- * @return {string} The formatted share, such as `27%`, or `<1%` for `0`.
+ * @param {number} share The share in steps, from `0` to `steps`.
+ * @param {number} steps The steps in the whole, `100` for whole percents or `1000` for tenths of a percent.
+ * @return {string} The formatted share, or one step with `<` before it for `0`, such as `<1%`.
  */
-function formatWholePercentage( wholePercentage: number ): string {
-	// The row has visitors, so a row given no whole percent is above zero but
-	// below one percent.
-	if ( wholePercentage === 0 ) {
+export function formatRoundedShare( share: number, steps: number ): string {
+	const format = {
+		style: 'percent',
+		// `100` steps need no decimal place, and `1000` steps need one.
+		maximumFractionDigits: Math.log10( steps ) - 2,
+	} as const;
+
+	// The part has a count above zero, so a share of no step is above zero but
+	// below one step.
+	if ( share === 0 ) {
 		return sprintf(
-			/* translators: %s: one percent, such as "1%". The string reads "less than 1%", and is shown for a share above zero but below one percent */
+			/* translators: %s: the smallest share a breakdown shows, such as "1%" or "0.1%". The string reads "less than 1%" */
 			__( '<%s', 'google-site-kit' ),
-			numFmt( 0.01, WHOLE_PERCENT_FORMAT )
+			numFmt( 1 / steps, format )
 		);
 	}
 
-	return numFmt( wholePercentage / 100, WHOLE_PERCENT_FORMAT );
+	return numFmt( share / steps, format );
 }
 
 /**
@@ -148,7 +155,7 @@ export function getBreakdownRows( report?: Report ): TrafficBreakdownRow[] {
 	const valueRows = ( report?.rows ?? [] )
 		.map( ( row ) => ( {
 			label: row?.dimensionValues?.[ 0 ]?.value ?? '',
-			visitors: getVisitors( row ),
+			visitors: getMetricCount( row ),
 		} ) )
 		.filter( ( { visitors } ) => visitors > 0 );
 
@@ -164,25 +171,23 @@ export function getBreakdownRows( report?: Report ): TrafficBreakdownRow[] {
 					...valueRows.slice( 0, TRAFFIC_BREAKDOWN_MAX_ROWS - 1 ),
 					{
 						label: __( 'Others', 'google-site-kit' ),
-						visitors: valueRows
-							.slice( TRAFFIC_BREAKDOWN_MAX_ROWS - 1 )
-							.reduce(
-								( sum, { visitors } ) => sum + visitors,
-								0
-							),
+						visitors: sumBy(
+							valueRows.slice( TRAFFIC_BREAKDOWN_MAX_ROWS - 1 ),
+							'visitors'
+						),
 					},
 			  ];
 
 	const visitorCounts = shapedRows.map( ( { visitors } ) => visitors );
-	const total = visitorCounts.reduce(
-		( sum, visitors ) => sum + visitors,
-		0
-	);
-	const wholePercentages = getWholePercentages( visitorCounts, total );
+	const total = sum( visitorCounts );
+	const wholePercentages = getRoundedShares( visitorCounts, 100 );
 
 	return shapedRows.map( ( { label, visitors }, index ) => ( {
 		label,
 		percentage: visitors / total,
-		formattedPercentage: formatWholePercentage( wholePercentages[ index ] ),
+		formattedPercentage: formatRoundedShare(
+			wholePercentages[ index ],
+			100
+		),
 	} ) );
 }
