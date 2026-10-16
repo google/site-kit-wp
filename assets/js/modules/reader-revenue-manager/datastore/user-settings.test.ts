@@ -146,8 +146,32 @@ describe( 'modules/reader-revenue-manager user settings', () => {
 							},
 						} )
 				).toThrow(
-					'lastActionedExpressSetups timestamps should be integers.'
+					'lastActionedExpressSetups timestamps should be integers or null.'
 				);
+			} );
+
+			it( 'should accept null timestamps', async () => {
+				const settingsWithNull = {
+					lastActionedExpressSetups: {
+						'newsletter-signup:new': null,
+					},
+				};
+
+				fetchMock.postOnce( userSettingsEndpoint, {
+					body: { lastActionedExpressSetups: {} },
+					status: 200,
+				} );
+
+				const { error } = await registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.saveUserSettings( settingsWithNull );
+
+				expect( error ).toBeUndefined();
+				expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+					body: {
+						data: settingsWithNull,
+					},
+				} );
 			} );
 		} );
 	} );
