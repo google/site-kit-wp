@@ -308,6 +308,11 @@ describe( 'core/feature-discovery features', () => {
 				expect(
 					registry.dispatch( CORE_MODULES ).activateModule
 				).toHaveBeenCalledWith( 'test-module' );
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
 				expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
 
 				// The record is stored (and so would survive the OAuth round trip).
@@ -364,8 +369,54 @@ describe( 'core/feature-discovery features', () => {
 
 				expect( result ).toEqual( { error } );
 				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toEqual( error );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should clear any stale setupFeature action error before running setup again', async () => {
+				registerSetupFlowFeature();
+				registerSetupComponent();
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+					{
+						code: 'activation_failed',
+						message: 'Old error',
+						data: { status: 500 },
+					},
+					'setupFeature',
+					[ 'test-feature' ]
+				);
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeDefined();
+
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
 			} );
 
 			it( 'should stop without recording or navigating when the module has no setup component', async () => {

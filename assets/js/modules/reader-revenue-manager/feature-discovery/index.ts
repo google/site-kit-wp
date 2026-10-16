@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'reader-revenue-manager', {
+		name: __( 'Reader Revenue Manager', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
 			'Open up new revenue opportunities while growing, retaining and engaging your audience',
@@ -146,6 +147,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		registerFeature( 'newsletter-signup', {
+			name: __( 'Newsletter signup', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',
