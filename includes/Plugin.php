@@ -94,17 +94,6 @@ final class Plugin {
 		// Set up remote features before anything else.
 		( new Remote_Features_Provider( $this->context, $options ) )->register();
 
-		if ( ! defined( 'GOOGLESITEKIT_TESTS' ) ) {
-			// TODO: Remove this filter once `setupFlowRefreshPhase4` is fully
-			// rolled out and we no longer need to force it on for all users.
-			add_filter(
-				'googlesitekit_is_feature_enabled',
-				array( $this, 'force_setup_flow_refresh_phase4_feature_enabled' ),
-				10,
-				2
-			);
-		}
-
 		// REST route to set up a temporary tag to verify meta tag output works reliably.
 		add_filter(
 			'googlesitekit_rest_routes',
@@ -332,7 +321,7 @@ final class Plugin {
 	 *
 	 * @since 1.183.0
 	 * @since 1.185.0 Force-enable the `setupFlowRefreshPhase4` flag in addition to the initial Setup Flow Refresh flag.
-	 * @since n.e.x.t Renamed from `force_setup_flow_refresh_feature_enabled()`, and now only force-enables the `setupFlowRefreshPhase4` flag.
+	 * @since 1.190.0 Renamed from `force_setup_flow_refresh_feature_enabled()`, and now only force-enables the `setupFlowRefreshPhase4` flag.
 	 *
 	 * @param bool   $feature_enabled The current status of this feature flag.
 	 * @param string $feature_name    The feature name.

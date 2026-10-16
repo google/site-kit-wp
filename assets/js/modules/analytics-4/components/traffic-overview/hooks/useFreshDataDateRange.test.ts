@@ -25,11 +25,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { stringToDate } from '@/js/util';
 import {
 	actHook as act,
 	createTestRegistry,
 	renderHook,
 } from '@tests/js/test-utils';
+import { provideTimezone } from '@tests/js/utils';
 import { useFreshDataDateRange } from './useFreshDataDateRange';
 
 describe( 'useFreshDataDateRange', () => {
@@ -83,5 +85,32 @@ describe( 'useFreshDataDateRange', () => {
 			startDate: '2025-07-08',
 			endDate: '2025-07-10',
 		} );
+	} );
+
+	it( 'should start the date range two calendar days before the reference date when the clocks went forward in between', () => {
+		const originalTimezone = provideTimezone( 'America/New_York' );
+
+		try {
+			// The clocks in New York went forward on 9 March 2025.
+			expect( stringToDate( '2025-03-08' ).getTimezoneOffset() ).toBe(
+				300
+			);
+			expect( stringToDate( '2025-03-10' ).getTimezoneOffset() ).toBe(
+				240
+			);
+
+			registry.dispatch( CORE_USER ).setReferenceDate( '2025-03-10' );
+
+			const { result } = renderHook( () => useFreshDataDateRange(), {
+				registry,
+			} );
+
+			expect( result.current ).toEqual( {
+				startDate: '2025-03-08',
+				endDate: '2025-03-10',
+			} );
+		} finally {
+			provideTimezone( originalTimezone );
+		}
 	} );
 } );

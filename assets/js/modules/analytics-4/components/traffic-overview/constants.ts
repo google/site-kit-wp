@@ -23,6 +23,12 @@
 export const TRAFFIC_OVERVIEW_TAB_ID = 'googlesitekit-traffic-overview-tab';
 
 /**
+ * The DOM `id` of the Typical Traffic tab. The panel points its
+ * `aria-labelledby` at this `id`, so the tab names the panel.
+ */
+export const TYPICAL_TRAFFIC_TAB_ID = 'googlesitekit-typical-traffic-tab';
+
+/**
  * The DOM `id` of the Recent activity tab. The Recent activity panel points
  * its `aria-labelledby` at the tab's `id`, so the tab names the panel.
  */
@@ -37,3 +43,6 @@ export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 
 /** The most rows a breakdown column shows, counting the trailing "Others" row. */
 export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
+
+/** The `getRecentContent` options that select the most recently published post. */
+export const LATEST_POST_RECENT_CONTENT_OPTIONS = { count: 1 };

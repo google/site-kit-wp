@@ -845,6 +845,18 @@ class Sign_In_With_GoogleTest extends TestCase {
 		);
 	}
 
+	public function test_handle_login_errors__adds_duplicate_email_error_message() {
+		$_GET['error'] = Authenticator::ERROR_DUPLICATE_EMAIL;
+
+		$error = $this->module->handle_login_errors( new WP_Error() );
+
+		$this->assertEquals(
+			'Multiple accounts on this site use your email address. To use Sign in with Google, log in with your username and password, then connect your Google account on your profile page.',
+			$error->get_error_message( 'sign-in-with-google' ),
+			'Should add the duplicate email message for the duplicate email error code.'
+		);
+	}
+
 	public function test_handle_login_errors__ignores_an_unrecognized_error_code() {
 		$_GET['error'] = 'unrecognized_error_code';
 

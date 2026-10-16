@@ -34,7 +34,7 @@ import { DecodedBenchmarkingResponse } from '@/js/modules/analytics-4/utils/benc
  * The decoded `benchmarking-data.json` fixture, which is never `null` because the
  * fixture is a valid response in format version `1`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 export const decodedBenchmarkingResponse = decodeBenchmarkingResponse(
 	benchmarkingData
@@ -44,7 +44,7 @@ export const decodedBenchmarkingResponse = decodeBenchmarkingResponse(
  * Stores a decoded benchmarking response for a date range, so
  * `getBenchmarkingData()` returns it without a request.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} registry        The registry to dispatch to.
  * @param {Object} dates           The date range.

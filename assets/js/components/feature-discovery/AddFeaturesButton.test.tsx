@@ -127,6 +127,39 @@ describe( 'AddFeaturesButton', () => {
 		).not.toBeInTheDocument();
 	} );
 
+	it( 'does not show the new features indicator when the only unseen feature is in progress', () => {
+		// Mark the original test feature as seen so it is not unread.
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {
+			[ getFeatureNewnessKey( 'test-feature' ) ]: Math.floor(
+				Date.now() / 1000
+			),
+		} );
+
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.registerFeature( 'in-progress-feature', {
+				title: 'In progress feature',
+				shortDescription: 'A feature used in tests.',
+				effort: FEATURE_EFFORTS.LOW,
+				goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+				addedInVersion: siteKitVersion,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					isEnabled: () => false,
+					isInProgress: () => true,
+				},
+			} );
+
+		const { queryByText } = render( <AddFeaturesButton />, {
+			registry,
+			features: [ 'featureDiscoveryHub' ],
+		} );
+
+		expect(
+			queryByText( 'New features available' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders nothing when the featureDiscoveryHub feature flag is not enabled', () => {
 		const { container, queryByRole } = render( <AddFeaturesButton />, {
 			registry,

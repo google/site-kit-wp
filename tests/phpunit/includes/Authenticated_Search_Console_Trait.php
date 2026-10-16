@@ -15,11 +15,13 @@ use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Search_Console;
+use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
+use Google\Site_Kit_Dependencies\Psr\Http\Message\RequestInterface;
 
 /**
  * Trait for testing Search Console reports with a fake Search Console API.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -32,7 +34,7 @@ trait Authenticated_Search_Console_Trait {
 	 * The administrator becomes the current user, since the module reads the
 	 * token of the current user.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param callable $handler The handler each request to the Search Console API goes to.
 	 * @return Search_Console The module, with no property.
@@ -58,5 +60,36 @@ trait Authenticated_Search_Console_Trait {
 		FakeHttp::fake_google_http_handler( $search_console->get_client(), $handler );
 
 		return $search_console;
+	}
+
+	/**
+	 * Creates the response to a batch of search query reports, in which each
+	 * report has one `plant garlic` row: 300 clicks at position 3.4 for the
+	 * `current` report, and 210 clicks at position 4.8 for any other.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param RequestInterface $request The batch request.
+	 * @return Response The batch response.
+	 */
+	protected function create_plant_garlic_batch_response( RequestInterface $request ) {
+		return FakeHttp::create_batch_response(
+			$request,
+			fn( $identifier ) => new Response(
+				200,
+				array(),
+				wp_json_encode(
+					array(
+						'rows' => array(
+							array(
+								'keys'     => array( 'plant garlic' ),
+								'clicks'   => 'current' === $identifier ? 300 : 210,
+								'position' => 'current' === $identifier ? 3.4 : 4.8,
+							),
+						),
+					)
+				)
+			)
+		);
 	}
 }

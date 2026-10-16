@@ -1072,7 +1072,7 @@ class AuthenticationTest extends TestCase {
 	/**
 	 * Gets the query arguments of the proxy setup URL passed to JS for the current request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array Query arguments of `proxySetupURL`.
 	 */

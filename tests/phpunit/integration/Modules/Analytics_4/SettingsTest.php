@@ -120,6 +120,24 @@ class SettingsTest extends SettingsTestCase {
 		);
 	}
 
+	public function test_get_view_only_keys__includes_the_property_create_time_without_the_typical_traffic_flag() {
+		$this->assertContains(
+			'propertyCreateTime',
+			$this->settings->get_view_only_keys(),
+			'The `propertyCreateTime` setting should be a view-only key when the `typicalTraffic` flag is disabled.'
+		);
+	}
+
+	public function test_get_view_only_keys__includes_the_property_create_time_with_the_typical_traffic_flag() {
+		$this->enable_feature( 'typicalTraffic' );
+
+		$this->assertContains(
+			'propertyCreateTime',
+			$this->settings->get_view_only_keys(),
+			'The `propertyCreateTime` setting should be a view-only key when the `typicalTraffic` flag is enabled.'
+		);
+	}
+
 	public function data_tag_ids() {
 		return array(
 			'googleTagID is valid G-XXXX string'           => array( 'googleTagID', 'G-XXXX', 'G-XXXX' ),

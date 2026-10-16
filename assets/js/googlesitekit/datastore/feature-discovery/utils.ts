@@ -35,6 +35,18 @@ export function getFeatureDismissalKey( slug: string ) {
 }
 
 /**
+ * Gets the incomplete setup reminder dismissal key for a feature.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Feature slug.
+ * @return {string} Feature incomplete setup reminder dismissal key.
+ */
+export function getFeatureIncompleteSetupReminderKey( slug: string ) {
+	return `feature-discovery-incomplete-setup-${ slug }`;
+}
+
+/**
  * Gets the feature newness key for a feature.
  *
  * @since 1.188.0
@@ -77,7 +89,7 @@ export function getFeatureRelevancyTriggerID(
 /**
  * Gets the dismissed item slug for a feature relevancy vote.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string}        slug      Feature slug.
  * @param {VoteDirection} direction Vote direction.

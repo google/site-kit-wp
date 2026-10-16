@@ -12,9 +12,7 @@ Feature flags are defined in `/feature-flags.json` at the project root:
   "googleTagGateway",
   "gtagUserData",
   "proactiveUserEngagement",
-  "rrmExpressSetup",
-  "setupFlowRefresh",
-  "setupFlowRefreshPhase4"
+  "rrmExpressSetup"
 ]
 ```
 

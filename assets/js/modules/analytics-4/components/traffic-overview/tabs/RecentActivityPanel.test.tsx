@@ -33,7 +33,13 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import {
+	getSectionClassNames,
+	provideInsightReport,
+	provideLatestPost,
+	provideLatestPostAnalyticsReports,
+	provideLatestPostKeywordReport,
+} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -65,6 +71,28 @@ describe( 'RecentActivityPanel', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
+
+	/**
+	 * Mocks the report requests of the latest post performance section. The
+	 * mocks are added after the existing ones, so a report response that the
+	 * test has already set up takes precedence.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {void}
+	 */
+	function mockLatestPostReports() {
+		fetchMock.get(
+			reportEndpoint,
+			{ body: {}, status: 200 },
+			{ overwriteRoutes: false }
+		);
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
+	}
+
 	// `ActivateAnalyticsCTA` observes when it scrolls into view, and jsdom
 	// has no `IntersectionObserver`.
 	const { getObservedElements, simulateIntersection } =
@@ -90,10 +118,13 @@ describe( 'RecentActivityPanel', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 		fetchMock.get( postsEndpoint, {
 			body: [
 				{
 					id: 12,
+					date: '2026-09-24T10:05:00',
 					date_gmt: '2026-09-24T14:05:00',
 					link: 'http://example.com/autumn-recipes/',
 					title: { rendered: 'Autumn recipes' },
@@ -108,6 +139,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should mark the panel as a tab panel and name it using the content in the "Recent activity" tab', async () => {
+		mockLatestPostReports();
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -127,6 +160,8 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should render the insight notice, the fresh metrics row, the recent traffic breakdown, and the latest post performance in that order', async () => {
+		mockLatestPostReports();
+
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
 			{ registry }
@@ -234,6 +269,7 @@ describe( 'RecentActivityPanel', () => {
 
 	it( 'should render the "Gathering data…" notice in place of the insight notice and the recent traffic breakdown when Analytics is gathering data', async () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( true );
+		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
 			<RecentActivityPanel />,
@@ -265,6 +301,9 @@ describe( 'RecentActivityPanel', () => {
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 		freezeFetch( reportEndpoint );
+		provideLatestPost( registry );
+		provideLatestPostAnalyticsReports( registry );
+		provideLatestPostKeywordReport( registry );
 
 		const { container } = render( <RecentActivityPanel />, { registry } );
 
@@ -274,6 +313,26 @@ describe( 'RecentActivityPanel', () => {
 
 		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__latest-post-performance',
+		] );
+	} );
+
+	it( 'should render the other sections without the insight notice when the site has too few visitors to compare', async () => {
+		// The site had no visitors four weeks ago, so the insight notice has
+		// only three weeks to compare against, and hides.
+		provideInsightReport( registry, 3, [ 2, 1, 1 ] );
+		mockLatestPostReports();
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 			'googlesitekit-traffic-overview__latest-post-performance',
 		] );
 	} );
@@ -340,7 +399,7 @@ describe( 'RecentActivityPanel', () => {
 		expect( fetchMock ).not.toHaveFetched( postsEndpoint );
 	} );
 
-	it( 'should render the fresh metrics row and the latest post performance alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
+	it( 'should render the fresh metrics row alone, and should not request a report, for a view-only user who cannot view Analytics', async () => {
 		// We create a registry that doesn't know whether Analytics is gathering
 		// data, so that calling `isGatheringData()` would request a report.
 		registry = createTestRegistry();
@@ -372,7 +431,6 @@ describe( 'RecentActivityPanel', () => {
 
 		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__fresh-metrics-row',
-			'googlesitekit-traffic-overview__latest-post-performance',
 		] );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
