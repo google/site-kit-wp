@@ -27,7 +27,7 @@ import { useEvent, useMount } from 'react-use';
  * WordPress dependencies
  */
 import { useThrottle } from '@wordpress/compose';
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -78,6 +78,7 @@ export default function Navigation() {
 	const [ isJumpingTo, setIsJumpingTo ] = useState(
 		initialHash || undefined
 	);
+	const hasScrolledToInitialHash = useRef( false );
 	const [ isSticky, setIsSticky ] = useState( false );
 	const [ selectedID, setSelectedID ] = useState( initialHash );
 
@@ -197,9 +198,12 @@ export default function Navigation() {
 			return;
 		}
 
-		const chipID = isValidChipID( initialHash )
-			? initialHash
-			: defaultChipID;
+		if ( ! isValidChipID( initialHash ) ) {
+			setSelectedID( defaultChipID );
+			return;
+		}
+
+		const chipID = initialHash;
 
 		// Set initial/default chip ID in state.
 		setSelectedID( chipID );
@@ -207,6 +211,16 @@ export default function Navigation() {
 
 		// Scroll to the chip position.
 		setTimeout( () => {
+			if (
+				hasScrolledToInitialHash.current ||
+				! document.querySelector(
+					`.googlesitekit-widget-context#${ chipID }`
+				)
+			) {
+				return;
+			}
+
+			hasScrolledToInitialHash.current = true;
 			const scrollTo = calculateScrollPosition( chipID );
 
 			if ( global.scrollY === scrollTo ) {
@@ -217,6 +231,39 @@ export default function Navigation() {
 			scrollToChip( chipID );
 		}, 50 );
 	} );
+
+	useEffect( () => {
+		if (
+			hasScrolledToInitialHash.current ||
+			! initialHash ||
+			! isValidChipID( initialHash ) ||
+			! document.querySelector(
+				`.googlesitekit-widget-context#${ initialHash }`
+			)
+		) {
+			return;
+		}
+
+		setSelectedID( initialHash );
+		setIsJumpingTo( initialHash );
+		setValue( ACTIVE_CONTEXT_ID, initialHash );
+
+		const scrollTo = calculateScrollPosition( initialHash );
+		hasScrolledToInitialHash.current = true;
+
+		if ( global.scrollY !== scrollTo ) {
+			scrollToChip( initialHash );
+		} else {
+			setValue( ACTIVE_CONTEXT_ID, undefined );
+			setIsJumpingTo( undefined );
+		}
+	}, [
+		calculateScrollPosition,
+		initialHash,
+		isValidChipID,
+		scrollToChip,
+		setValue,
+	] );
 
 	const onScroll = useCallback(
 		( event ) => {
