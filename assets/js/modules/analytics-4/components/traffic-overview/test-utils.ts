@@ -47,6 +47,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
 	Report,
 	ReportOptions,
@@ -89,17 +90,11 @@ export function getLatestPostReportArgs(
  * @return {void}
  */
 export function provideLatestPost( registry: WPDataRegistry ) {
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.receiveGetRecentContent( [ LATEST_POST ], {
-			...LATEST_POST_RECENT_CONTENT_OPTIONS,
-			includeProducts: false,
-		} );
-	registry
-		.dispatch( MODULES_ANALYTICS_4 )
-		.finishResolution( 'getRecentContent', [
-			LATEST_POST_RECENT_CONTENT_OPTIONS,
-		] );
+	provideRecentContent(
+		registry,
+		[ LATEST_POST ],
+		LATEST_POST_RECENT_CONTENT_OPTIONS
+	);
 }
 
 /**
