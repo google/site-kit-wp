@@ -36,7 +36,7 @@ export interface DateTick {
  * the same way the chart writes its labels, in the language Google Charts
  * loaded with.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} type    The Google Charts formatter class, `DateFormat` or `NumberFormat`.
  * @param {string} pattern The label pattern, such as `MMM d` or `short`.
@@ -61,7 +61,7 @@ function getChartLabelFormatter(
  * Gets the width of each label in Google Sans Text, the font the charts write
  * their labels in.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string[]} labels   The labels to measure, such as `Sep 23`.
  * @param {number}   fontSize The label font size, in chart pixels.
@@ -91,7 +91,7 @@ function getLabelWidths( labels: string[], fontSize: number ): number[] {
  * power of 10. A step that needs more than 20 labels is left out, because the
  * chart has no room for them.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {number} maxValue The highest value on the chart, 100 or more.
  * @return {string[]} The labels the axis can show, such as `5K` and `60K`.
@@ -127,7 +127,7 @@ function getShortValueLabels( maxValue: number ): string[] {
  * `0.03`. So the labels use `short` only for a highest value of 100 or more.
  * Every gridline is then a whole number, so no label loses a digit.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {number} maxValue The highest value on the chart.
  * @return {string|undefined} `short`, or `undefined` for Google Charts' default format.
@@ -143,7 +143,7 @@ export function getValueAxisFormat( maxValue: number ): 'short' | undefined {
  * Google Charts cuts off a value label that is wider than the gutter, and ends
  * it with an ellipsis.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {number} maxValue The highest value on the chart.
  * @param {number} fontSize The label font size, in chart pixels.
@@ -192,7 +192,7 @@ export function getValueAxisGutter(
  * the dates into equal parts. No two labels are closer together than the width
  * of the widest date label, plus the gap Google Charts needs between them.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Date[]} dates          The dates on the chart, in order.
  * @param {number} chartAreaWidth The width of the chart area, in chart pixels.

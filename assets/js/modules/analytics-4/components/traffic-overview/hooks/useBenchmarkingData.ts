@@ -40,7 +40,7 @@ export interface BenchmarkingData {
 /**
  * Resolves the benchmarking response for the selected date range.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Object} The selected date range, and the response, whether it is loading, and its error.
  */

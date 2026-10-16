@@ -68,7 +68,7 @@ export interface UseGoalDriverReportResult {
  * component.
  *
  * @since 1.188.0
- * @since n.e.x.t Added the optional `buildSecondaryReportOptions` argument.
+ * @since 1.190.0 Added the optional `buildSecondaryReportOptions` argument.
  *
  * @param {Object}          args                               Hook args.
  * @param {string}          args.id                            The driver's `GOAL_DRIVER_IDS` id.

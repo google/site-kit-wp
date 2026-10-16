@@ -267,7 +267,7 @@ export function dateSub( relativeDate: unknown, duration: number ): Date {
 /**
  * Gets the first day of a date's month.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} dateString Date in YYYY-MM-DD format.
  * @return {string} First day of the month.
@@ -283,7 +283,7 @@ export function getMonthStart( dateString: string ): string {
 /**
  * Gets the last day of a date's month.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} dateString Date in YYYY-MM-DD format.
  * @return {string} Last day of the month.
@@ -299,7 +299,7 @@ export function getMonthEnd( dateString: string ): string {
 /**
  * Adds calendar months, clamping the day to the last day of the target month.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} dateString Date in YYYY-MM-DD format.
  * @param {number} months     Number of months to add (may be negative).
@@ -319,7 +319,7 @@ export function addMonths( dateString: string, months: number ): string {
 /**
  * Adds calendar days without shifting dates at daylight saving transitions.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} dateString Date in YYYY-MM-DD format.
  * @param {number} days       Number of days to add (may be negative).
@@ -336,7 +336,7 @@ export function addDays( dateString: string, days: number ): string {
 /**
  * Counts calendar days inclusively, independent of daylight saving changes.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} startDate Start date in YYYY-MM-DD format.
  * @param {string} endDate   End date in YYYY-MM-DD format.
@@ -354,7 +354,7 @@ export function getDayCount( startDate: string, endDate: string ): number {
 /**
  * Gets all calendar months touched by a date range, oldest first.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} startDate Start date in YYYY-MM-DD format.
  * @param {string} endDate   End date in YYYY-MM-DD format.
@@ -381,7 +381,7 @@ export function getMonthsInRange(
  * Clamps both endpoints to the reference date. Unknown selection types resolve
  * to the reference date.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {DateRangeSelection} selection     Date range selection.
  * @param {string}             referenceDate Reference date in YYYY-MM-DD format.
@@ -440,7 +440,7 @@ export function resolveDateRangeSelection(
 /**
  * Checks for an actual calendar date in strict YYYY-MM-DD format.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {unknown} dateString Value to validate.
  * @return {boolean} Whether the value is a valid calendar date.
@@ -457,7 +457,7 @@ function isValidCalendarDate( dateString: unknown ): dateString is string {
 /**
  * Validates a selection's shape and explicit dates against the selectable window.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {unknown} selection     Value to validate.
  * @param {string}  referenceDate Reference date in YYYY-MM-DD format.
@@ -521,7 +521,7 @@ export function isValidDateRangeSelection(
  *
  * @since 1.182.0
  * @since 1.184.0 Moved from `PDFHeader` to a shared helper for use in other PDF components.
- * @since n.e.x.t Moved from PDF to the generic `dates` utils.
+ * @since 1.190.0 Moved from PDF to the generic `dates` utils.
  *
  * @param {Date|string} date      Date instance or date string (YYYY-MM-DD) to format.
  * @param {Object}      [options] `Intl.DateTimeFormat` options that override the defaults, e.g. `{ month: 'long' }` for "July 28, 2026".
@@ -549,7 +549,7 @@ export function formatDate(
  * Formats a `YYYY-MM-DD` date range as a localized short date range, e.g.
  * "Mar 1 – 7, 2026".
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} startDate The first day of the range, as `YYYY-MM-DD`.
  * @param {string} endDate   The last day of the range, as `YYYY-MM-DD`.

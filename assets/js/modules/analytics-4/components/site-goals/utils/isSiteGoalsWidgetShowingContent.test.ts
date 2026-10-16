@@ -73,7 +73,7 @@ describe( 'isSiteGoalsWidgetShowingContent', () => {
 	/**
 	 * Stores Site Goals settings with the `ecommerce` and `lead` widgets active.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {void}
 	 */

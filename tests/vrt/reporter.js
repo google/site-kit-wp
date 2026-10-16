@@ -47,7 +47,7 @@ const NO_IMAGES = { actual: null, diff: null, previous: null, failure: null };
 /**
  * Removes terminal colors from a Playwright error.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} error A Playwright `TestError`.
  * @return {string} The error's message (or value, or stack), without colors.
@@ -67,7 +67,7 @@ function formatError( error ) {
  * `<name>-diff.png` and, when the page kept changing, `<name>-previous.png`.
  * `fixtures.js` attaches `failure.png` when a test fails before its screenshot.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} attachment A Playwright attachment.
  * @return {string|null} The kind of image, or `null` for other attachments.
@@ -89,7 +89,7 @@ function getImageKind( attachment ) {
 /**
  * Gets a test's status in the report.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} test  The Playwright test case.
  * @param {string} error The first error of the attempt the report shows.
@@ -113,7 +113,7 @@ function getStatus( test, error ) {
 /**
  * Reads the dimensions of a PNG image from its header.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Buffer} contents The image.
  * @return {Object} Its `width` and `height` in pixels, `null` if unknown.
@@ -133,7 +133,7 @@ function getPNGSize( contents ) {
 /**
  * Summarizes how a failed test's screenshot differs from its reference image.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string}      status The entry's status.
  * @param {string}      error  The first error message.
@@ -185,7 +185,7 @@ function summarizeDifference( status, error, area ) {
 /**
  * Summarizes a problem with a test, for its card.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string}      status The entry's status.
  * @param {string}      error  The first error message.
@@ -211,7 +211,7 @@ function getSummary( status, error, actual ) {
 /**
  * Lists the stories with a flaky screenshot, for the pull request comment.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object[]} entries The report's entries.
  * @return {Object[]} Each story's `label`, and the `viewports` it was flaky in.
@@ -242,7 +242,7 @@ function getFlakyStories( entries ) {
  * `--grep` matches the test's title path (`<project> vrt.spec.js <label>`)
  * followed by its tags, so the pattern is anchored to match this story only.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} label    The story's label.
  * @param {string} viewport The viewport (Playwright project).
@@ -268,13 +268,13 @@ function getApproveCommand( label, viewport ) {
  * `merge.config.js` when CI merges the reports of its shards. Playwright doesn't
  * wait for promises returned by reporters, so everything here is synchronous.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  */
 class VRTReporter {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} [options]           Reporter options.
 	 * @param {string} [options.outputDir] Where to write the report, relative to
@@ -289,7 +289,7 @@ class VRTReporter {
 	/**
 	 * Tells Playwright this reporter doesn't print, so others can.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {boolean} `false`.
 	 */
@@ -300,7 +300,7 @@ class VRTReporter {
 	/**
 	 * Starts a new report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} config The Playwright config.
 	 * @param {Object} suite  The root suite.
@@ -320,7 +320,7 @@ class VRTReporter {
 	 *
 	 * Attachments are copied right away: locally, they live in `test-results/`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} test   The Playwright test case.
 	 * @param {Object} result The result of this attempt.
@@ -351,7 +351,7 @@ class VRTReporter {
 	 *
 	 * For example, a spec that failed to load, or `maxFailures` being reached.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} error The Playwright error.
 	 */
@@ -362,7 +362,7 @@ class VRTReporter {
 	/**
 	 * Writes the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} result The result of the whole run.
 	 */
@@ -427,7 +427,7 @@ class VRTReporter {
 	/**
 	 * Builds the report entry for a test.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} test The Playwright test case.
 	 * @return {Object|null} The entry, or `null` for a test that isn't a story.
@@ -486,7 +486,7 @@ class VRTReporter {
 	/**
 	 * Copies a reference image into the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {string} file The image's path, relative to `__screenshots__/`.
 	 * @return {Object|null} The image (see `writeImage()`), or `null` if there's
@@ -508,7 +508,7 @@ class VRTReporter {
 	/**
 	 * Copies an attached image into the report, named by its content.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} attachment A Playwright attachment, with a `path` or `body`.
 	 * @return {Object|null} The image (see `writeImage()`), or `null` if it's
@@ -540,7 +540,7 @@ class VRTReporter {
 	/**
 	 * Writes an image into the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Buffer} contents The image.
 	 * @param {string} target   Its path in the report, with `/` separators.

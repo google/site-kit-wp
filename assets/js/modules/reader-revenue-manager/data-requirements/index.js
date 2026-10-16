@@ -23,20 +23,6 @@ import { WPDataRegistry } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 
 /**
- * Returns a function that checks if the module settings are available.
- *
- * @since 1.189.0
- *
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the module settings are available or not.
- */
-export function requireSettingsAvailable() {
-	return async ( { resolveSelect } ) =>
-		!! ( await resolveSelect(
-			MODULES_READER_REVENUE_MANAGER
-		).getSettings() );
-}
-
-/**
  * Returns a function that checks if the publication onboarding state matches the given state.
  *
  * @since 1.189.0
@@ -126,43 +112,5 @@ export function requireContentPolicyState( states ) {
 		return states.includes(
 			select( MODULES_READER_REVENUE_MANAGER ).getContentPolicyState()
 		);
-	};
-}
-
-/**
- * Returns a function that checks if the given express setup CTA was actioned.
- *
- * @since 1.189.0
- *
- * @param {string} ctaType Express setup CTA type slug.
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA was actioned or not.
- */
-export function requireExpressSetupCTAActioned( ctaType ) {
-	return async ( { resolveSelect } ) => {
-		const { lastActionedExpressSetups = {} } =
-			( await resolveSelect(
-				MODULES_READER_REVENUE_MANAGER
-			).getUserSettings() ) || {};
-
-		return !! lastActionedExpressSetups[ ctaType ];
-	};
-}
-
-/**
- * Returns a function that checks if the given express setup CTA is already configured.
- *
- * @since 1.189.0
- *
- * @param {string} ctaType Express setup CTA type slug.
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the given express setup CTA is configured or not.
- */
-export function requireExpressSetupCTAConfigured( ctaType ) {
-	return async ( { resolveSelect } ) => {
-		const { configuredCTAs = {} } =
-			( await resolveSelect(
-				MODULES_READER_REVENUE_MANAGER
-			).getSettings() ) || {};
-
-		return Object.values( configuredCTAs ).includes( ctaType );
 	};
 }

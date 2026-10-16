@@ -31,7 +31,7 @@ import { ErrorObject } from '@/js/util/errors';
  * Props passed to the component registered for an intent.
  *
  * @since 1.189.0
- * @since n.e.x.t Added the `error` prop.
+ * @since 1.190.0 Added the `error` prop.
  */
 export interface IntentComponentProps {
 	/** Slug the intent is registered under, e.g. `ads-conversion-tracking`. */

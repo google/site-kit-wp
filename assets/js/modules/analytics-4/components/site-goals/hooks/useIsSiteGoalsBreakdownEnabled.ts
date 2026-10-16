@@ -26,7 +26,7 @@ import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/use
  * Reads whether the Site Goals breakdown is enabled, pairing the breakdown
  * dimensions with the plugin conversion tracking setting.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {boolean|undefined} hasBreakdownDimensions Whether the breakdown custom dimensions exist, or `undefined` while loading.
  * @return {boolean|undefined} Whether the breakdown is enabled, or `undefined` while either condition is loading.

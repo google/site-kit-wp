@@ -216,7 +216,7 @@ export function renderPDFChildStyles(
  * Call `mockChartAxisLabels()` before each test, and add its result to the
  * `google.visualization` mock.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Object} The `DateFormat` and `NumberFormat` mocks.
  */
