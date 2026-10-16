@@ -86,6 +86,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/adsense/',
 				serviceRequirements: __(
 					'Requires approval from AdSense of your account and site. Approval times may vary from a few days to several weeks.',
 					'google-site-kit'
@@ -103,11 +105,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable ad blocking recovery (optional).',
 						'google-site-kit'
 					),
+					__(
+						'You’re ready to generate revenue with AdSense!',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re ready to generate revenue with AdSense!',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -198,6 +200,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/adsense/#ad-blocking-recovery',
 				serviceRequirements: __(
 					'There are no service requirements for Ad blocking recovery',
 					'google-site-kit'
@@ -208,11 +212,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Create your ad blocking recovery message',
 						'google-site-kit'
 					),
+					__(
+						'You are saving lost revenue! Ad blocking recovery is set up for your site.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You are saving lost revenue! Ad blocking recovery is set up for your site.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
