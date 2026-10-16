@@ -25,7 +25,10 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import {
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
+	TYPICAL_TRAFFIC_CHART_DAYS,
+} from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
 	getFreshDataDateRange,
@@ -52,7 +55,9 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { getDateString, stringToDate } from '@/js/util';
 
 export const LATEST_POST: RecentContentItem = {
 	id: 12,
@@ -326,4 +331,56 @@ export function getSectionClassNames( container: Element ): string[] {
 			'.googlesitekit-traffic-overview__panel > *'
 		)
 	).map( ( section ) => section.className );
+}
+
+/**
+ * Builds the daily rows of a benchmarking response, one for each day the
+ * Typical Traffic chart plots. The last row is the given day.
+ *
+ * The checked-in `benchmarking-data.json` fixture has only four days.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}   endDate     The last day, as `YYYY-MM-DD`.
+ * @param {Function} getVisitors Returns a day's visitors, given the day's position in the rows, from `0`, and the day as `YYYY-MM-DD`.
+ * @return {Array.<Object>} The `{ date, visitors }` rows, oldest first.
+ */
+export function createDailyTrafficRows(
+	endDate: string,
+	getVisitors: ( dayIndex: number, date: string ) => number
+): BenchmarkingDailyTrafficRow[] {
+	// The date walks a day at a time, so a daylight-saving change inside the
+	// rows doesn't skip or repeat a day.
+	const day = stringToDate( endDate );
+	day.setDate( day.getDate() - TYPICAL_TRAFFIC_CHART_DAYS + 1 );
+
+	return Array.from(
+		{ length: TYPICAL_TRAFFIC_CHART_DAYS },
+		( _value, dayIndex ) => {
+			const date = getDateString( day );
+
+			day.setDate( day.getDate() + 1 );
+
+			return { date, visitors: getVisitors( dayIndex, date ) };
+		}
+	);
+}
+
+/**
+ * Gets an Analytics property's creation time at midday on the given day, as
+ * `getPropertyCreateTime()` returns it.
+ *
+ * Midnight can fall on the day before or the day after in another time zone,
+ * so a test or a story that creates the property at midday keeps its day.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} date The day the property was created, as `YYYY-MM-DD`.
+ * @return {number} The creation time in milliseconds.
+ */
+export function getPropertyCreateTimeAtMidday( date: string ): number {
+	const day = stringToDate( date );
+	day.setHours( 12 );
+
+	return day.getTime();
 }

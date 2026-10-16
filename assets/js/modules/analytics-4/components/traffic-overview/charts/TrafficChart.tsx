@@ -24,7 +24,7 @@ import { FC, useMemo } from 'react';
 /**
  * WordPress dependencies
  */
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,11 +38,11 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
+import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
 import { getTrafficChartData } from './getTrafficChartData';
-import {
-	TRAFFIC_CHART_LINE_COLOR,
-	TRAFFIC_CHART_OPTIONS,
-} from './trafficChartOptions';
+import { getTrafficLegendItem } from './getTrafficLegendItem';
+import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
+import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 
 export interface TrafficChartProps {
 	/** The daily-visitors report for the selected range. */
@@ -122,34 +122,6 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			? propertyCreateDate
 			: undefined;
 
-	const dateMarkers = markerDate
-		? [
-				{
-					date: markerDate,
-					text: __(
-						'Google Analytics property created',
-						'google-site-kit'
-					),
-				},
-		  ]
-		: undefined;
-
-	const legendItems = [
-		{
-			label: sprintf(
-				/* translators: %d: the number of days in the selected date range, such as "28" */
-				_n(
-					'Last %d day traffic',
-					'Last %d days traffic',
-					daysInRange,
-					'google-site-kit'
-				),
-				daysInRange
-			),
-			color: TRAFFIC_CHART_LINE_COLOR,
-		},
-	];
-
 	const dayFormatter = useMemo(
 		() =>
 			new Intl.DateTimeFormat( getLocale(), {
@@ -165,7 +137,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
-				dateMarkers={ dateMarkers }
+				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
 				gatheringData={ gatheringData }
 				height="256px"
 				loaded={ loaded }
@@ -173,7 +145,11 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 				options={ options }
 				width="100%"
 			/>
-			{ loaded && <ChartLegend items={ legendItems } /> }
+			{ loaded && (
+				<ChartLegend
+					items={ [ getTrafficLegendItem( daysInRange ) ] }
+				/>
+			) }
 			{ loaded &&
 				! gatheringData &&
 				points.map( ( [ day, visitors ] ) => (
@@ -192,16 +168,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 					</VisuallyHidden>
 				) ) }
 			{ loaded && markerDate && (
-				<VisuallyHidden>
-					{ sprintf(
-						/* translators: %s: the day the property was created, such as "January 15, 2025" */
-						__(
-							'Google Analytics property created on %s.',
-							'google-site-kit'
-						),
-						dayFormatter.format( stringToDate( markerDate ) )
-					) }
-				</VisuallyHidden>
+				<PropertyCreatedScreenReaderText date={ markerDate } />
 			) }
 		</div>
 	);

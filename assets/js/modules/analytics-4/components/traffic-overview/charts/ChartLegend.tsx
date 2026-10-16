@@ -27,7 +27,7 @@ import { FC } from 'react';
 import Typography from '@/js/components/Typography';
 import { SIZE_SMALL, TYPE_BODY } from '@/js/components/Typography/constants';
 
-interface ChartLegendItem {
+export interface ChartLegendItem {
 	/** The name of the line, such as "Last 28 days traffic". */
 	label: string;
 	/** The color of the line. The legend shows the same color beside the label. */
