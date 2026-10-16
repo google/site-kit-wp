@@ -29,6 +29,7 @@ describe( 'core/site errors', () => {
 		description: 'Test error message',
 		format: 'small',
 		type: 'win-error',
+		showGlobalNotification: true,
 	};
 
 	let registry;
