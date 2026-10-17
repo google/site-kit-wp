@@ -30,7 +30,6 @@ import {
 	SITE_GOALS_BREAKDOWN_OTHER_SOURCES_TAB_ID,
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
-import { useIsSiteGoalsBreakdownEnabled } from '@/js/modules/analytics-4/components/site-goals/hooks/useIsSiteGoalsBreakdownEnabled';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 export interface SiteGoalsBreakdown {
@@ -58,6 +57,7 @@ export interface UseSiteGoalsBreakdownOptions {
  * @since 1.182.0
  * @since 1.187.0 Held every breakdown report back until the breakdown custom dimension exists on the property.
  * @since 1.190.0 Held every breakdown report back until plugin conversion tracking is enabled too.
+ * @since n.e.x.t Gated the breakdown reports on the breakdown custom dimension alone, so the tabs stay when plugin conversion tracking is switched off later.
  *
  * @param {string} goalType                      The goal type whose breakdown dimension to resolve.
  * @param {Object} [options]                     Discovery, detection and allowlist options.
@@ -78,12 +78,12 @@ export function useSiteGoalsBreakdown(
 		SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE[ goalType ];
 
 	// Analytics answers 400 for a dimension the property does not have, so
-	// every report below waits for it to appear in the synced dimensions. Any
-	// custom dimensions CTA can create it, but the breakdown also needs plugin
-	// conversion tracking to attach the dimension to events, so the breakdown
-	// is only on once both are in place. This is the same condition
-	// `BreakdownNoticeArea` uses to swap its CTA for the breakdown, so the two
-	// widgets should stay in-sync.
+	// every report below waits for it to appear in the synced dimensions.
+	// Plugin conversion tracking is not part of this check: when it is
+	// switched off after the breakdown was in use, the tabs stay, built from
+	// the data collected so far, and `ConversionTrackingDisabledNotice` warns
+	// that the breakdown has stopped updating. When conversion tracking was
+	// never on, the dimension holds no values, so no tabs appear.
 	const hasBreakdownDimension = useInViewSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).hasCustomDimensions(
@@ -91,9 +91,6 @@ export function useSiteGoalsBreakdown(
 			),
 		[ breakdownDimension ]
 	) as boolean | undefined;
-	const isBreakdownEnabled = useIsSiteGoalsBreakdownEnabled(
-		hasBreakdownDimension
-	);
 
 	// The tab structure (the values below and `hasUnattributedEvents`) is
 	// evaluated over a fixed 90-day discovery window in the datastore, so it is
@@ -101,7 +98,7 @@ export function useSiteGoalsBreakdown(
 	// removes tabs, only the metrics follow the selected range.
 	const breakdownValues = useInViewSelect(
 		( select: Select ) => {
-			if ( ! isBreakdownEnabled ) {
+			if ( ! hasBreakdownDimension ) {
 				return undefined;
 			}
 
@@ -121,13 +118,18 @@ export function useSiteGoalsBreakdown(
 				supportedValues.includes( value )
 			);
 		},
-		[ breakdownDimension, eventNames, supportedValues, isBreakdownEnabled ]
+		[
+			breakdownDimension,
+			eventNames,
+			supportedValues,
+			hasBreakdownDimension,
+		]
 	) as string[] | undefined;
 
 	const hasOtherSources =
 		( useInViewSelect(
 			( select: Select ) =>
-				isBreakdownEnabled
+				hasBreakdownDimension
 					? select( MODULES_ANALYTICS_4 ).hasUnattributedEvents(
 							breakdownDimension,
 							detectionEventNames,
@@ -138,7 +140,7 @@ export function useSiteGoalsBreakdown(
 				breakdownDimension,
 				detectionEventNames,
 				breakdownValues,
-				isBreakdownEnabled,
+				hasBreakdownDimension,
 			]
 		) as boolean | undefined ) ?? false;
 
