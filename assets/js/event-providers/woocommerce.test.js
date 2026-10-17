@@ -41,17 +41,19 @@ function createProduct( price ) {
  *
  * @since 1.187.0
  *
- * @param {number} price The order total and the price of its one product, both in minor units.
+ * @param {number} price    The order total and the price of its one product, both in minor units.
+ * @param {number} shipping The shipping total in minor units.
+ * @param {number} tax      The tax total in minor units.
  * @return {Object} An order for `window._googlesitekit.wcdata`.
  */
-function createOrder( price ) {
+function createOrder( price, shipping = 0, tax = 0 ) {
 	return {
 		id: 99,
 		affiliation: 'Test Store',
 		totals: {
 			currency_code: 'USD',
-			tax_total: 0,
-			shipping_total: 0,
+			tax_total: tax,
+			shipping_total: shipping,
 			total_price: price,
 		},
 		items: [ createProduct( price ) ],
@@ -158,6 +160,41 @@ describe( 'WooCommerce event provider', () => {
 				],
 				googlesitekit_event_provider: 'woocommerce',
 			} );
+			expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
+		}
+	);
+
+	// Each row is the store's decimal places, the shipping and tax in minor
+	// units, and the amounts the script should send.
+	const shippingAndTaxCases = [
+		[ 'shipping and tax', 2, 500, 250, 5, 2.5 ],
+		[ 'zero decimal places', 0, 5, 3, 5, 3 ],
+	];
+
+	it.each( shippingAndTaxCases )(
+		'should send the `purchase` shipping and tax for a store set to %s',
+		async (
+			_caseName,
+			currencyMinorUnit,
+			shippingMinor,
+			taxMinor,
+			expectedShipping,
+			expectedTax
+		) => {
+			const gtagEvent = await loadEventScript( {
+				currency: 'USD',
+				currencyMinorUnit,
+				eventsToTrack: [ 'add_to_cart', 'purchase' ],
+				purchase: createOrder( 5000, shippingMinor, taxMinor ),
+			} );
+
+			expect( gtagEvent ).toHaveBeenCalledWith(
+				'purchase',
+				expect.objectContaining( {
+					shipping: expectedShipping,
+					tax: expectedTax,
+				} )
+			);
 			expect( gtagEvent ).toHaveBeenCalledTimes( 1 );
 		}
 	);
