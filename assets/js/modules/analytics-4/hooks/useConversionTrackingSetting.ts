@@ -27,24 +27,22 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 
 export interface ConversionTrackingSetting {
-	/** Whether the user may read and change the setting. */
+	/** Whether the user may change the setting. */
 	canManageOptions: boolean | undefined;
-	/**
-	 * Whether plugin conversion tracking is on. It reads `undefined` while the
-	 * setting loads, and for a user who is not allowed to read it.
-	 */
+	/** Whether plugin conversion tracking is on. It reads `undefined` while the setting loads. */
 	isConversionTrackingEnabled: boolean | undefined;
 }
 
 /**
- * Reads the plugin conversion tracking setting, for a user allowed to read it.
+ * Reads the plugin conversion tracking setting, and whether the user may change it.
  *
- * The REST route behind the setting requires `MANAGE_OPTIONS`, so asking for it
- * without the capability only logs a 403.
+ * Any user who can view the dashboard may read the setting, while only a user
+ * who can manage options may change it.
  *
  * @since 1.189.0
+ * @since n.e.x.t Read the setting for every user, not only for a user who can manage options.
  *
- * @return {ConversionTrackingSetting} The capability, and the setting for a user who holds it.
+ * @return {ConversionTrackingSetting} The setting, and whether the user may change it.
  */
 export function useConversionTrackingSetting(): ConversionTrackingSetting {
 	const canManageOptions = useSelect(
@@ -54,11 +52,8 @@ export function useConversionTrackingSetting(): ConversionTrackingSetting {
 	);
 
 	const isConversionTrackingEnabled = useSelect(
-		( select: Select ) =>
-			canManageOptions
-				? select( CORE_SITE ).isConversionTrackingEnabled()
-				: undefined,
-		[ canManageOptions ]
+		( select: Select ) => select( CORE_SITE ).isConversionTrackingEnabled(),
+		[]
 	);
 
 	return { canManageOptions, isConversionTrackingEnabled };
