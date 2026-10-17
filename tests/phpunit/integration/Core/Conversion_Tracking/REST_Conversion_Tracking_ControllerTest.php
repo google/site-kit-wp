@@ -13,9 +13,12 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Conversion_Tracking\REST_Conversion_Tracking_Controller;
+use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -116,6 +119,26 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings response should forbid unauthenticated admins.' );
 	}
 
+	public function test_get_settings__allows_a_view_only_user() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->switch_to_view_only_user();
+
+		$original_settings = array(
+			'enabled' => false,
+		);
+
+		$this->settings->register();
+		$this->settings->set( $original_settings );
+
+		$request  = new WP_REST_Request( 'GET', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 200, $response->get_status(), 'A view-only user should be able to read the conversion tracking setting.' );
+		$this->assertEqualSetsWithIndex( $original_settings, $response->get_data(), 'Conversion tracking response for a view-only user should contain stored settings.' );
+	}
+
 	public function test_set_settings() {
 		remove_all_filters( 'googlesitekit_rest_routes' );
 		$this->controller->register();
@@ -179,6 +202,30 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings update should forbid unauthenticated admins.' );
 	}
 
+	public function test_set_settings__forbids_a_view_only_user() {
+		remove_all_filters( 'googlesitekit_rest_routes' );
+		$this->controller->register();
+		$this->register_rest_routes();
+		$this->switch_to_view_only_user();
+
+		$this->settings->register();
+		$this->settings->set( array( 'enabled' => false ) );
+
+		$request = new WP_REST_Request( 'POST', '/' . REST_Routes::REST_ROOT . '/core/site/data/conversion-tracking' );
+		$request->set_body_params(
+			array(
+				'data' => array(
+					'settings' => array( 'enabled' => true ),
+				),
+			)
+		);
+
+		$response = rest_get_server()->dispatch( $request );
+
+		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'Settings update should forbid a view-only user.' );
+		$this->assertFalse( $this->settings->get()['enabled'], 'A view-only user should not be able to change the conversion tracking setting.' );
+	}
+
 	/**
 	 * @dataProvider provider_wrong_settings_data
 	 */
@@ -236,6 +283,31 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		// This request is made by a user who is not authenticated with dashboard
 		// view permissions and is therefore forbidden.
 		$this->assertEquals( 'rest_forbidden', $response->get_data()['code'], 'API settings response should forbid unauthenticated admins.' );
+	}
+
+	private function switch_to_view_only_user() {
+		$this->fake_proxy_site_connection();
+
+		// A view-only user can view the dashboard only after setup is complete.
+		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+
+		( new Module_Sharing_Settings( new Options( $this->context ) ) )->set(
+			array(
+				'analytics-4' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'all_admins',
+				),
+			)
+		);
+
+		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
+		wp_set_current_user( $user_id );
+
+		// A view-only user can view the dashboard only after they dismiss the splash screen.
+		( new Dismissed_Items( new User_Options( $this->context, $user_id ) ) )->add( 'shared_dashboard_splash' );
+
+		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'The editor should be able to view the shared dashboard.' );
+		$this->assertFalse( current_user_can( Permissions::MANAGE_OPTIONS ), 'The editor should not be able to manage options.' );
 	}
 
 	private function grant_manage_options_permission() {
