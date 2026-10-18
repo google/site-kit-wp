@@ -1,0 +1,125 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureDetailDescription should omit empty sections for { description: [Object] } 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  />
+</div>
+`;
+
+exports[`FeatureDetailDescription should omit empty sections for {} 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  />
+</div>
+`;
+
+exports[`FeatureDetailDescription should omit empty sections for undefined 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  />
+</div>
+`;
+
+exports[`FeatureDetailDescription should render benefits without an optional heading 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <dl
+        class="googlesitekit-feature-details-panel__why-use-list"
+      >
+        <div>
+          <dt
+            class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--medium"
+          >
+            Benefit
+          </dt>
+          <dd
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
+            Explanation
+          </dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</div>
+`;
+
+exports[`FeatureDetailDescription should render catalog descriptions and benefits with markup 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        What is this feature?
+      </h3>
+      <p
+        class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+      >
+        <span>
+          Learn about
+           
+          <a
+            href="https://example.com/"
+          >
+            your audience
+          </a>
+          .
+        </span>
+      </p>
+    </section>
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-feature-details-panel__heading googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Why use this feature?
+      </h3>
+      <dl
+        class="googlesitekit-feature-details-panel__why-use-list"
+      >
+        <div>
+          <dt
+            class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--medium"
+          >
+            First benefit
+          </dt>
+          <dd
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
+            First explanation
+          </dd>
+        </div>
+        <div>
+          <dt
+            class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--medium"
+          >
+            Second benefit
+          </dt>
+          <dd
+            class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+          >
+            <strong>
+              Second explanation
+            </strong>
+          </dd>
+        </div>
+      </dl>
+    </section>
+  </div>
+</div>
+`;

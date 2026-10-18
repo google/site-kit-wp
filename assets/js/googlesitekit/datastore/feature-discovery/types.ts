@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentType, LazyExoticComponent } from 'react';
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -52,17 +52,17 @@ export interface FeatureScreenshot {
 
 export interface FeatureDetail {
 	description?: {
-		whatIs?: string;
-		whyUseHeading?: string;
+		whatIs?: ReactNode;
+		whyUseHeading?: ReactNode;
 		whyUseList?: {
-			term: string;
-			description: string;
+			term: ReactNode;
+			description: ReactNode;
 		}[];
 	};
 	requirements?: {
-		serviceRequirements?: string;
-		setupList?: string[];
-		setupComplete?: string;
+		serviceRequirements?: ReactNode;
+		setupList?: ReactNode[];
+		documentationURL?: string;
 	};
 	screenshots?: FeatureScreenshot[];
 }
