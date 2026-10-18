@@ -1,0 +1,141 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ModulePopularPagesWidgetGA4 should render the Top content card without tabs when freshData is disabled 1`] = `
+<div>
+  <div
+    class="googlesitekit-widget googlesitekit-widget--analyticsModulePopularPagesGA4 googlesitekit-widget--no-padding googlesitekit-widget--with-header"
+  >
+    <div
+      class="googlesitekit-widget__header"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-widget__header-title googlesitekit-typography--title googlesitekit-typography--small"
+      >
+        Top content over the last 28 days
+      </h3>
+    </div>
+    <div
+      class="googlesitekit-widget__body"
+    >
+      <div
+        class="googlesitekit-table-overflow"
+      >
+        <div
+          class="googlesitekit-table-overflow__container"
+        >
+          <div
+            class=""
+          >
+            <div
+              class="googlesitekit-table googlesitekit-table--with-list"
+            >
+              <table
+                class="googlesitekit-table__wrapper googlesitekit-table__wrapper--5-col"
+              >
+                <thead
+                  class="googlesitekit-table__head"
+                >
+                  <tr
+                    class="googlesitekit-table__head-row"
+                  >
+                    <th
+                      class="googlesitekit-table__head-item googlesitekit-table__head-item--primary googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+                      data-tooltip="Page Title"
+                    >
+                      <span
+                        class="googlesitekit-table__head-item-title"
+                      >
+                        Title
+                      </span>
+                    </th>
+                    <th
+                      class="googlesitekit-table__head-item googlesitekit-table__head-item--pageviews googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+                      data-tooltip="Pageviews"
+                    >
+                      <span
+                        class="googlesitekit-table__head-item-title"
+                      >
+                        Pageviews
+                      </span>
+                    </th>
+                    <th
+                      class="googlesitekit-table__head-item googlesitekit-table__head-item--sessions googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+                      data-tooltip="Sessions"
+                    >
+                      <span
+                        class="googlesitekit-table__head-item-title"
+                      >
+                        Sessions
+                      </span>
+                    </th>
+                    <th
+                      class="googlesitekit-table__head-item googlesitekit-table__head-item--engagement-rate googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+                      data-tooltip="Engagement Rate"
+                    >
+                      <span
+                        class="googlesitekit-table__head-item-title"
+                      >
+                        Engagement Rate
+                      </span>
+                    </th>
+                    <th
+                      class="googlesitekit-table__head-item googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small"
+                      data-tooltip="Session Duration"
+                    >
+                      <span
+                        class="googlesitekit-table__head-item-title"
+                      >
+                        Session Duration
+                      </span>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody
+                  class="googlesitekit-table__body"
+                >
+                  <tr
+                    class="googlesitekit-table__body-row googlesitekit-table__body-row--no-data"
+                  >
+                    <td
+                      class="googlesitekit-table__body-item"
+                      colspan="5"
+                    >
+                      <span>
+                        No data to display: your site hasn’t received any visitors yet
+                      </span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="googlesitekit-widget__footer"
+    >
+      <div
+        class="googlesitekit-source-link"
+      >
+        Source: 
+        <button
+          class="googlesitekit-cta-link"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
+          >
+            Analytics
+          </span>
+          <span
+            class="googlesitekit-icon-wrapper"
+            style="margin-left: 5px;"
+          >
+            <svg />
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+`;
