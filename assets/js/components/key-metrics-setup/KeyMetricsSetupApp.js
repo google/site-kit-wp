@@ -42,6 +42,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
@@ -74,8 +75,6 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { trackEvent } from '@/js/util';
-
-const FEATURE_SLUG_ANALYTICS = 'analytics';
 
 export default function KeyMetricsSetupApp() {
 	const viewContext = useViewContext();
@@ -217,7 +216,7 @@ export default function KeyMetricsSetupApp() {
 
 		const hubURL = await getPendingSetupReturnURL(
 			registry.select,
-			FEATURE_SLUG_ANALYTICS
+			MODULE_SLUG_TO_FEATURE_SLUG[ MODULE_SLUG_ANALYTICS_4 ]
 		);
 
 		if ( hubURL ) {

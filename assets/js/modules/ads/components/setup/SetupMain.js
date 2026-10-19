@@ -40,6 +40,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import Link from '@/js/components/Link';
 import NewBadge from '@/js/components/NewBadge';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
@@ -55,6 +56,7 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Row } from '@/js/material-components';
 import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
 import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
@@ -68,8 +70,6 @@ import {
 import { trackEvent } from '@/js/util';
 import AdsIcon from '@/svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
-
-const FEATURE_SLUG_ADS = 'ads';
 
 export default function SetupMain( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -183,7 +183,7 @@ export default function SetupMain( { finishSetup } ) {
 		await resolveSelect( CORE_SITE ).getSiteInfo();
 		const pendingSetupURL = await getPendingSetupReturnURL(
 			select,
-			FEATURE_SLUG_ADS
+			MODULE_SLUG_TO_FEATURE_SLUG[ MODULE_SLUG_ADS ]
 		);
 
 		const redirectURL =
