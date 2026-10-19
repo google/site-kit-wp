@@ -24,12 +24,19 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import type { Registry, Select } from 'googlesitekit-data';
+import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import dashboardSharingScreenshotURL from '@/svg/graphics/dashboard-sharing.svg?path';
 import emailReportingScreenshotURL from '@/svg/graphics/email-reporting.svg?path';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
@@ -159,6 +166,26 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 			ctaLabel: __( 'Try it now', 'google-site-kit' ),
+			open: ( registry: Registry ) => {
+				registry.dispatch( CORE_UI ).setValue( SETTINGS_DIALOG, true );
+			},
+			isEnabled: ( select: Select ) => {
+				// Both are needed for `haveSharingSettingsUpdated()`, which has
+				// no resolver of its own.
+				const sharingSettings =
+					select( CORE_MODULES ).getSharingSettings();
+				const sharedOwnershipModules =
+					select( CORE_MODULES ).getSharedOwnershipModules();
+
+				if (
+					sharingSettings === undefined ||
+					sharedOwnershipModules === undefined
+				) {
+					return undefined;
+				}
+
+				return select( CORE_MODULES ).haveSharingSettingsUpdated();
+			},
 		},
 	} );
 
@@ -271,6 +298,21 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 			ctaLabel: __( 'Try it now', 'google-site-kit' ),
+			open: ( registry: Registry ) => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue( USER_SETTINGS_SELECTION_PANEL_OPENED_KEY, true );
+			},
+			isEnabled: ( select: Select ) => {
+				const settings =
+					select( CORE_USER ).getEmailReportingSettings();
+
+				if ( settings === undefined ) {
+					return undefined;
+				}
+
+				return settings?.subscribed === true;
+			},
 		},
 	} );
 
@@ -355,6 +397,13 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
 			ctaLabel: __( 'Try it now', 'google-site-kit' ),
+			// Downloading a report is an action rather than a setting, so there
+			// is no `isEnabled()` and the feature is never counted as set up.
+			open: ( registry: Registry ) => {
+				registry
+					.dispatch( CORE_UI )
+					.setValue( PDF_DOWNLOAD_PANEL_OPENED_KEY, true );
+			},
 		},
 	} );
 }
