@@ -24,8 +24,12 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFPartialDataBadge from './PDFPartialDataBadge';
+import { renderPDFStyle } from '@/js/components/pdf-export/test-utils';
+import PDFPartialDataBadge, {
+	PDF_PARTIAL_DATA_BADGE_HEIGHT,
+} from './PDFPartialDataBadge';
 
 describe( 'PDFPartialDataBadge', () => {
 	it( 'renders the Partial data label in the warning colors', () => {
@@ -36,5 +40,11 @@ describe( 'PDFPartialDataBadge', () => {
 		expect( badgeJSON ).toContain( 'Partial data' );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_WARNING_CONTAINER );
 		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_700 );
+	} );
+
+	it( 'should scale the badge height', () => {
+		expect( renderPDFStyle( <PDFPartialDataBadge /> ) ).toMatchObject( {
+			height: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
+		} );
 	} );
 } );

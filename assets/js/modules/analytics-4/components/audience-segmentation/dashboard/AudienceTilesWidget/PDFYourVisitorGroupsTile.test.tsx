@@ -19,13 +19,16 @@
 /**
  * External dependencies
  */
+import { Text, View } from '@react-pdf/renderer';
 import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -58,18 +61,18 @@ const TOP_CONTENT = [
 	},
 ];
 
+type TileProps = Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > >;
+
 /**
- * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
+ * Renders `PDFYourVisitorGroupsTile` with default props.
  *
- * @since 1.184.0
+ * @since n.e.x.t
  *
  * @param props Props that override the defaults.
- * @return The rendered tree serialized to a string.
+ * @return The test renderer.
  */
-function renderTile(
-	props: Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > > = {}
-) {
-	const renderer = TestRenderer.create(
+function createTile( props: TileProps = {} ) {
+	return TestRenderer.create(
 		<PDFYourVisitorGroupsTile
 			audienceName="New visitors"
 			metrics={ METRICS }
@@ -80,7 +83,39 @@ function renderTile(
 			{ ...props }
 		/>
 	);
-	return JSON.stringify( renderer.toJSON() );
+}
+
+/**
+ * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
+ *
+ * @since 1.184.0
+ *
+ * @param props Props that override the defaults.
+ * @return The rendered tree serialized to a string.
+ */
+function renderTile( props: TileProps = {} ) {
+	return JSON.stringify( createTile( props ).toJSON() );
+}
+
+/**
+ * Finds the style of the row that holds the given title text.
+ *
+ * @since n.e.x.t
+ *
+ * @param props Props that override the defaults.
+ * @param title The title text the row holds.
+ * @return The row's style, flattened to one object.
+ */
+function getTitleRowStyle( props: TileProps, title: string ) {
+	let node = createTile( props ).root.find(
+		( instance ) =>
+			instance.type === Text && instance.props.children === title
+	);
+	while ( node.type !== View && node.parent ) {
+		node = node.parent;
+	}
+
+	return Object.assign( {}, ...[ node.props.style ].flat() );
 }
 
 /**
@@ -179,6 +214,35 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 			)
 		).toBe( 2 );
 	} );
+
+	it.each( [ true, false ] )(
+		'should reserve the badge height in the card header when isAudiencePartialData is %s',
+		( isAudiencePartialData ) => {
+			const style = getTitleRowStyle(
+				{ isAudiencePartialData },
+				'New visitors'
+			);
+
+			expect( style ).toMatchObject( {
+				minHeight: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
+			} );
+			expect( style ).not.toHaveProperty( 'paddingVertical' );
+		}
+	);
+
+	it.each( [ true, false ] )(
+		'should reserve the badge height in the Top content title row when isTopContentPartialData is %s',
+		( isTopContentPartialData ) => {
+			expect(
+				getTitleRowStyle(
+					{ isTopContentPartialData },
+					'Top content by pageviews'
+				)
+			).toMatchObject( {
+				minHeight: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
+			} );
+		}
+	);
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {
 		const json = renderTile( {
