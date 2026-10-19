@@ -264,7 +264,7 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<View style={ [ styles.badgeRow ] }>
+					<View style={ styles.badgeRow }>
 						<PDFTypography
 							size="medium"
 							style={ [

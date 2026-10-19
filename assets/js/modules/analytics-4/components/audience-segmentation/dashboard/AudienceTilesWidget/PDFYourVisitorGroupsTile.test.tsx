@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { Text, View } from '@react-pdf/renderer';
 import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
@@ -29,6 +28,8 @@ import TestRenderer from 'react-test-renderer';
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
+import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -107,15 +108,12 @@ function renderTile( props: TileProps = {} ) {
  * @return The row's style, flattened to one object.
  */
 function getTitleRowStyle( props: TileProps, title: string ) {
-	let node = createTile( props ).root.find(
+	const titleNode = createTile( props ).root.find(
 		( instance ) =>
-			instance.type === Text && instance.props.children === title
+			instance.type === PDFTypography && instance.props.children === title
 	);
-	while ( node.type !== View && node.parent ) {
-		node = node.parent;
-	}
 
-	return Object.assign( {}, ...[ node.props.style ].flat() );
+	return flattenPDFStyle( titleNode.parent?.props.style );
 }
 
 /**

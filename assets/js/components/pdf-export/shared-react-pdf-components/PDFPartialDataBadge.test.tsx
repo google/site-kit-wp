@@ -42,7 +42,7 @@ describe( 'PDFPartialDataBadge', () => {
 		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_700 );
 	} );
 
-	it( 'should scale the badge height', () => {
+	it( 'should render at a fixed height', () => {
 		expect( renderPDFStyle( <PDFPartialDataBadge /> ) ).toMatchObject( {
 			height: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
 		} );
