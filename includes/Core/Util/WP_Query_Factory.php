@@ -71,7 +71,8 @@ final class WP_Query_Factory {
 	private static function normalize_url( $url ) {
 		global $wp_rewrite;
 
-		$url_host      = str_replace( 'www.', '', URL::parse( $url, PHP_URL_HOST ) );
+		// A path with no host, such as `/?p=123`, has no host to compare.
+		$url_host      = str_replace( 'www.', '', (string) URL::parse( $url, PHP_URL_HOST ) );
 		$home_url_host = str_replace( 'www.', '', URL::parse( home_url(), PHP_URL_HOST ) );
 
 		// Bail early if the URL does not belong to this site.
@@ -208,8 +209,6 @@ final class WP_Query_Factory {
 	 * @return array Associative array of arguments to pass to a `WP_Query` instance.
 	 */
 	private static function parse_wp_query_args( array $url_path_vars, array $url_query_vars ) {
-		global $wp;
-
 		// Determine available post type query vars.
 		$post_type_query_vars = array();
 		foreach ( get_post_types( array(), 'objects' ) as $post_type => $post_type_obj ) {
@@ -218,17 +217,9 @@ final class WP_Query_Factory {
 			}
 		}
 
-		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
-		// either manually trigger the filter or not.
-		if ( did_action( 'parse_request' ) ) {
-			$public_query_vars = $wp->public_query_vars;
-		} else {
-			$public_query_vars = apply_filters( 'query_vars', $wp->public_query_vars );
-		}
-
 		// Populate `WP_Query` arguments.
 		$query_args = array();
-		foreach ( $public_query_vars as $wpvar ) {
+		foreach ( self::get_public_query_vars() as $wpvar ) {
 			if ( isset( $url_query_vars[ $wpvar ] ) ) {
 				$query_args[ $wpvar ] = $url_query_vars[ $wpvar ];
 			} elseif ( isset( $url_path_vars[ $wpvar ] ) ) {
@@ -286,5 +277,27 @@ final class WP_Query_Factory {
 		$query_args = apply_filters( 'request', $query_args );
 
 		return $query_args;
+	}
+
+	/**
+	 * Gets the query vars that WordPress reads from a URL.
+	 *
+	 * The list holds WordPress's public query vars, such as `p` and `s`, and the
+	 * query var of each viewable post type and taxonomy, such as `product`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] Query var names.
+	 */
+	public static function get_public_query_vars() {
+		global $wp;
+
+		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
+		// either manually trigger the filter or not.
+		if ( did_action( 'parse_request' ) ) {
+			return $wp->public_query_vars;
+		}
+
+		return apply_filters( 'query_vars', $wp->public_query_vars );
 	}
 }
