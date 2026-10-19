@@ -34,6 +34,9 @@ import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { FRESH_DATA_VOTE_ID_RECENT_ACTIVITY } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import {
 	FRESH_DATA_FETCH_OPTIONS,
@@ -93,6 +96,7 @@ function getInsightCopy( { classification, changePercent }: Insight ): string {
 }
 
 const InsightNotice: FC = () => {
+	const viewContext = useViewContext();
 	const dateRange = useFreshDataDateRange();
 
 	const reportArgs = useMemo(
@@ -147,19 +151,28 @@ const InsightNotice: FC = () => {
 	return (
 		<div className="googlesitekit-traffic-overview__insight-notice">
 			<div className="googlesitekit-traffic-overview__insight-notice-content">
-				<span className="googlesitekit-traffic-overview__insight-notice-icon">
-					<MagnifyingGlassIcon
-						width={ 18 }
-						height={ 18 }
-						aria-hidden="true"
-					/>
-				</span>
-				<P
-					className="googlesitekit-traffic-overview__insight-notice-text"
-					size={ SIZE_MEDIUM }
-				>
-					{ getInsightCopy( insight ) }
-				</P>
+				<div className="googlesitekit-traffic-overview__insight-notice-message">
+					<span className="googlesitekit-traffic-overview__insight-notice-icon">
+						<MagnifyingGlassIcon
+							width={ 18 }
+							height={ 18 }
+							aria-hidden="true"
+						/>
+					</span>
+					<P
+						className="googlesitekit-traffic-overview__insight-notice-text"
+						size={ SIZE_MEDIUM }
+					>
+						{ getInsightCopy( insight ) }
+					</P>
+				</div>
+				<FeedbackPrompt
+					voteID={ FRESH_DATA_VOTE_ID_RECENT_ACTIVITY }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_recent-activity-survey`,
+					} }
+					hideQuestion
+				/>
 			</div>
 		</div>
 	);
