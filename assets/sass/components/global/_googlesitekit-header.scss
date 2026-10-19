@@ -224,6 +224,58 @@
 					display: inline-block;
 				}
 			}
+
+			// The date range picker panel sits inside the header, so keep its
+			// footer button labels visible.
+			.googlesitekit-date-range-picker__footer .mdc-button__label {
+				display: inline-block;
+			}
 		}
+	}
+
+	// The date range picker panel is positioned under its trigger, so it stays
+	// with the sticky header.
+
+	.googlesitekit-date-range-picker__panel {
+
+		@include elevation-3;
+		background-color: $c-base;
+		border-radius: $br-sm;
+		display: flex;
+		left: var(--googlesitekit-date-picker-panel-left, 0);
+		min-height: var(--googlesitekit-date-picker-panel-min-height);
+		overflow: hidden;
+		position: absolute;
+		top: var(--googlesitekit-date-picker-panel-top, 0);
+		width: var(--googlesitekit-date-picker-panel-width);
+		z-index: $z-index-sk-header + 1;
+
+		&:focus {
+			outline: 0;
+		}
+	}
+
+	.googlesitekit-date-range-picker__rail {
+		border-right: 1px solid $c-utility-divider;
+		flex: 0 0 200px;
+	}
+
+	.googlesitekit-date-range-picker__calendar-pane {
+		display: flex;
+		flex: 1 1 auto;
+		flex-direction: column;
+		min-width: 0;
+	}
+
+	.googlesitekit-date-range-picker__calendar {
+		flex: 1 1 auto;
+	}
+
+	.googlesitekit-date-range-picker__footer {
+		align-items: center;
+		display: flex;
+		gap: $grid-gap-phone * 0.5;
+		justify-content: flex-end;
+		padding: $grid-gap-phone;
 	}
 }
