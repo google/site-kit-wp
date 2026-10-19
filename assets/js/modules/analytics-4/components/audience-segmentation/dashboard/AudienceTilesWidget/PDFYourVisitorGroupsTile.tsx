@@ -264,13 +264,10 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<View style={ styles.badgeRow }>
+					<View style={ [ styles.badgeRow, styles.topContentTitle ] }>
 						<PDFTypography
 							size="medium"
-							style={ [
-								styles.sectionTitle,
-								styles.topContentTitle,
-							] }
+							style={ styles.sectionTitle }
 						>
 							{ __(
 								'Top content by pageviews',
