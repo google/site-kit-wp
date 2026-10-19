@@ -32,10 +32,18 @@ import { __ } from '@wordpress/i18n';
  */
 import { Button } from 'googlesitekit-components';
 import { type Select, useSelect } from 'googlesitekit-data';
+import {
+	useExpressSetupTrackEvent,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import ExternalIcon from '@/svg/icons/external.svg';
 
 const ViewOnSiteCTA: FC = () => {
+	const [ stepSlug ] = useStep();
+
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const viewOnSiteURL = useSelect(
 		( select: Select ) =>
 			select( MODULES_READER_REVENUE_MANAGER ).getViewOnSiteURL(),
@@ -43,8 +51,10 @@ const ViewOnSiteCTA: FC = () => {
 	);
 
 	const onClick = useCallback( () => {
+		trackEvent( 'click_view_on_your_site_link', stepSlug );
+
 		global.open( viewOnSiteURL, '_blank' );
-	}, [ viewOnSiteURL ] );
+	}, [ stepSlug, trackEvent, viewOnSiteURL ] );
 
 	if ( ! viewOnSiteURL ) {
 		return null;

@@ -45,8 +45,12 @@ import {
 	ExpressSetupStepHeadline,
 	PublicationSelect,
 } from '@/js/modules/reader-revenue-manager/components/common';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_STEPS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { languageCodeFormat, regionCodeFormat } from '@/js/util/i18n';
 
@@ -59,6 +63,8 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const { findMatchedPublication, selectPublication, submitChanges } =
 		useDispatch( MODULES_READER_REVENUE_MANAGER );
 
@@ -74,7 +80,18 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication" external />,
+			a: (
+				<DocumentationLink
+					slug="rrm-publication"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.CONNECT_PUBLICATION
+						)
+					}
+					external
+				/>
+			),
 		}
 	);
 

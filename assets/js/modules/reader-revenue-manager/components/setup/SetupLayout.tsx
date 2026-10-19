@@ -39,11 +39,20 @@ import ExitSetup from '@/js/components/setup/ExitSetup';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useQueryArg from '@/js/hooks/useQueryArg';
+import {
+	useExpressSetupEventCategory,
+	useExpressSetupStepEventLabel,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 
 const SetupLayout: FC = () => {
 	const [ expressSetup ] = useQueryArg( 'expressSetup' );
 	const finishSetup = useFinishSetup( MODULE_SLUG_READER_REVENUE_MANAGER );
+
+	const [ step ] = useStep();
+	const eventCategory = useExpressSetupEventCategory();
+	const stepEventLabel = useExpressSetupStepEventLabel( step );
 
 	const module = useSelect(
 		( select: Select ) =>
@@ -69,7 +78,15 @@ const SetupLayout: FC = () => {
 			<Fragment>
 				<SetupHeader>
 					<ExitSetup
-						gaTrackingEventArgs={ {} }
+						gaTrackingEventArgs={
+							eventCategory
+								? {
+										category: eventCategory,
+										action: 'exit_setup',
+										label: stepEventLabel ?? step,
+								  }
+								: {}
+						}
 						url={ dashboardURL }
 					/>
 				</SetupHeader>

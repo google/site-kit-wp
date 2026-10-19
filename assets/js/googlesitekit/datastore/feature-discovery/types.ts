@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import type { ComponentType, LazyExoticComponent } from 'react';
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 
 /**
  * Internal dependencies
@@ -52,17 +52,17 @@ export interface FeatureScreenshot {
 
 export interface FeatureDetail {
 	description?: {
-		whatIs?: string;
-		whyUseHeading?: string;
+		whatIs?: ReactNode;
+		whyUseHeading?: ReactNode;
 		whyUseList?: {
-			term: string;
-			description: string;
+			term: ReactNode;
+			description: ReactNode;
 		}[];
 	};
 	requirements?: {
-		serviceRequirements?: string;
-		setupList?: string[];
-		setupComplete?: string;
+		serviceRequirements?: ReactNode;
+		setupList?: ReactNode[];
+		documentationURL?: string;
 	};
 	screenshots?: FeatureScreenshot[];
 }
@@ -81,13 +81,24 @@ export interface FeatureSuccessNotice {
 	dismissLabel?: string;
 }
 
+export interface FeatureIncompleteSetupReminder {
+	title: string;
+	description: string;
+	tooltip: string;
+}
+
 export interface FeatureSetup {
 	type: FeatureSetupType;
 	ctaLabel?: string;
+	resumeCTALabel?: string;
 	// The module to activate, for `setup-flow` features.
 	moduleSlug?: string;
 	// Target override for `setup-flow` features that are not module activation.
 	getSetupURL?: ( select: Select ) => string | undefined;
+	// Target override for in-progress setups that can be resumed.
+	getResumeURL?: ( select: Select ) => string | undefined;
+	// In-progress check for setups that have started but are unfinished.
+	isInProgress?: ( select: Select ) => boolean | undefined;
 	// The enable routine for `background-toggle` features.
 	activate?: ( ...args: never[] ) => unknown;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
@@ -118,6 +129,7 @@ export interface FeatureSettings {
 	// Static badges only. The "New" badge is derived per user.
 	badges?: FeatureBadge[];
 	successNotice?: FeatureSuccessNotice;
+	incompleteSetupReminder?: FeatureIncompleteSetupReminder;
 }
 
 export interface Feature extends FeatureSettings {
@@ -129,6 +141,7 @@ export interface Feature extends FeatureSettings {
 export interface FeatureCategory {
 	slug: FeatureCategorySlug;
 	title: string;
+	chipLabel: string;
 }
 
 export interface PendingSetup {

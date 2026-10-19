@@ -56,7 +56,7 @@ describe( 'useHasTypicalTrafficTab', () => {
 	 * Stores the property's creation time as midnight of the given day in the
 	 * test's own time zone, so the hook reads the same day in any time zone.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {number} year  The year.
 	 * @param {number} month The month, `0` for January.

@@ -95,6 +95,45 @@ class AuthenticatorTest extends TestCase {
 		return $authenticator->authenticate_user( new MutableInput() );
 	}
 
+	/**
+	 * Creates two users who share an email address.
+	 *
+	 * @param string $email Email address both users share.
+	 * @return int[] IDs of the two users.
+	 */
+	private function create_users_sharing_email( $email ) {
+		global $wpdb;
+
+		$first_user_id  = $this->factory()->user->create( array( 'user_email' => $email ) );
+		$second_user_id = $this->factory()->user->create( array( 'user_email' => 'duplicate-' . $email ) );
+
+		// WordPress only blocks duplicate emails in `wp_insert_user()`; the `user_email`
+		// column has no unique index. Two users can share an email in practice, e.g. after
+		// an import that defines `WP_IMPORTING`, or after a plugin or migration writes to
+		// the users table directly.
+		$wpdb->update(
+			$wpdb->users,
+			array( 'user_email' => $email ),
+			array( 'ID' => $second_user_id )
+		);
+
+		clean_user_cache( $second_user_id );
+
+		return array( $first_user_id, $second_user_id );
+	}
+
+	/**
+	 * Checks whether the given user is connected to any Google account.
+	 *
+	 * @param int $user_id User ID.
+	 * @return bool True when the user is connected, false otherwise.
+	 */
+	private function is_connected_to_google_account( $user_id ) {
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $user_id );
+
+		return metadata_exists( 'user', $user_id, $user_options->get_meta_key( Hashed_User_ID::OPTION ) );
+	}
+
 	public function test_authenticate_user_fails_when_profile_reader_returns_error() {
 		$expected = add_query_arg( 'error', Authenticator::ERROR_INVALID_REQUEST, wp_login_url() );
 		$actual   = $this->do_authenticate_user( new WP_Error( 'test_error' ) );
@@ -486,6 +525,69 @@ class AuthenticatorTest extends TestCase {
 			$this->two_factor_challenges_user( $other_user_id ),
 			'Should keep the two-factor challenge for every other user.'
 		);
+	}
+
+	public function test_authenticate_user__blocks_users_sharing_the_email_address() {
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the duplicate email error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave both users signed out.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $first_user_id ), 'Should leave the first user unconnected.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $second_user_id ), 'Should leave the second user unconnected.' );
+	}
+
+	public function test_authenticate_user__blocks_users_sharing_the_email_address_when_registration_is_open() {
+		add_filter( 'option_users_can_register', '__return_true' );
+
+		$this->create_users_sharing_email( self::$new_user_payload['email'] );
+
+		// Count users across the whole network, so a user added to any site would be counted on multisite.
+		$all_users_query = array(
+			'blog_id' => 0,
+			'fields'  => 'ID',
+		);
+		$user_count      = count( get_users( $all_users_query ) );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$new_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect to the login page with the duplicate email error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should not sign anyone in.' );
+		$this->assertCount( $user_count, get_users( $all_users_query ), 'Should not create a new user.' );
+	}
+
+	public function test_authenticate_user__signs_in_connected_user_sharing_the_email_address() {
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+
+		// Connecting from the profile page stores the hashed Google user ID.
+		$user_options = new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $second_user_id );
+		$user_options->set( Hashed_User_ID::OPTION, md5( self::$existing_user_payload['sub'] ) );
+
+		$actual = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( admin_url( '/profile.php' ), $actual, 'Should redirect to the profile page after signing in.' );
+		$this->assertEquals( $second_user_id, get_current_user_id(), 'Should sign the connected user in.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $first_user_id ), 'Should leave the other user unconnected.' );
+	}
+
+	/**
+	 * @runInSeparateProcess
+	 */
+	public function test_authenticate_user__blocks_users_sharing_the_email_address_when_one_uses_two_factor() {
+		$this->activate_two_factor_plugin();
+
+		list( $first_user_id, $second_user_id ) = $this->create_users_sharing_email( self::$existing_user_payload['email'] );
+		$this->enable_two_factor_for_user( $first_user_id );
+
+		$expected = add_query_arg( 'error', Authenticator::ERROR_DUPLICATE_EMAIL, wp_login_url() );
+		$actual   = $this->do_authenticate_user( self::$existing_user_payload );
+
+		$this->assertEquals( $expected, $actual, 'Should redirect with the duplicate email error, not the two-factor error.' );
+		$this->assertEquals( 0, get_current_user_id(), 'Should leave both users signed out.' );
+		$this->assertFalse( $this->is_connected_to_google_account( $second_user_id ), 'Should leave the user without two-factor unconnected.' );
 	}
 
 	/**

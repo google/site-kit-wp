@@ -25,17 +25,203 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
 	getFreshDataDateRange,
 } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import {
+	PostReportArgs,
+	getEngagementReportOptions,
+	getPostReportArgs,
+	getPurchasesReportOptions,
+	getTopChannelReportOptions,
+	getTopKeywordReportOptions,
+	getTopReferrerReportOptions,
+	getVisitorsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/postReportOptions';
 import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
+import {
+	Report,
+	ReportOptions,
+} from '@/js/modules/analytics-4/datastore/types';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+
+export const LATEST_POST: RecentContentItem = {
+	id: 12,
+	title: 'Ice cream is good for your health',
+	permalink: 'https://example.com/ice-cream/',
+	pagePath: '/ice-cream/',
+	publishedAt: '2026-09-17T12:30:00Z',
+	sitePublishedAt: '2026-09-17T08:30:00',
+};
+
+/**
+ * Gets the report arguments of `LATEST_POST` for the registry's reference date.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the reference date.
+ * @return {Object} The post's permalink and the post's date range.
+ */
+export function getLatestPostReportArgs(
+	registry: WPDataRegistry
+): PostReportArgs {
+	return getPostReportArgs(
+		LATEST_POST,
+		registry.select( CORE_USER ).getReferenceDate()
+	);
+}
+
+/**
+ * Stores `LATEST_POST` as the most recent post, so the latest post
+ * performance section renders without a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the post in.
+ * @return {void}
+ */
+export function provideLatestPost( registry: WPDataRegistry ) {
+	provideRecentContent(
+		registry,
+		[ LATEST_POST ],
+		LATEST_POST_RECENT_CONTENT_OPTIONS
+	);
+}
+
+/**
+ * Stores a report and marks its request as finished.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry  The registry to put the report in.
+ * @param {string} storeName The store with the `getReport` selector.
+ * @param {Object} options   The report options.
+ * @param {*}      report    The report.
+ * @return {void}
+ */
+function provideReport(
+	registry: WPDataRegistry,
+	storeName: string,
+	options: object,
+	report: unknown
+) {
+	registry.dispatch( storeName ).receiveGetReport( report, { options } );
+	registry.dispatch( storeName ).finishResolution( 'getReport', [ options ] );
+}
+
+/**
+ * Gets the options of the Analytics reports of the latest post performance
+ * section for `LATEST_POST`, including its purchases report.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the reference date.
+ * @return {Object} The report options, keyed by the report.
+ */
+export function getLatestPostAnalyticsReportOptions(
+	registry: WPDataRegistry
+): Record<
+	'visitors' | 'topChannel' | 'topReferrer' | 'engagement' | 'purchases',
+	ReportOptions
+> {
+	const reportArgs = getLatestPostReportArgs( registry );
+
+	return {
+		visitors: getVisitorsReportOptions( reportArgs ),
+		topChannel: getTopChannelReportOptions( reportArgs ),
+		topReferrer: getTopReferrerReportOptions( reportArgs ),
+		engagement: getEngagementReportOptions( reportArgs ),
+		purchases: getPurchasesReportOptions( reportArgs ),
+	};
+}
+
+/**
+ * Stores the Analytics reports of the latest post performance section for
+ * `LATEST_POST`, including its purchases report.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the reports in.
+ * @return {void}
+ */
+export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
+	const { visitors, topChannel, topReferrer, engagement, purchases } =
+		getLatestPostAnalyticsReportOptions( registry );
+
+	const reports: Array< [ ReportOptions, Report ] > = [
+		[
+			visitors,
+			{
+				rows: [
+					{
+						dimensionValues: [ { value: 'new' } ],
+						metricValues: [ { value: '66' } ],
+					},
+					{
+						dimensionValues: [ { value: 'returning' } ],
+						metricValues: [ { value: '28' } ],
+					},
+				],
+				totals: [ { metricValues: [ { value: '94' } ] } ],
+			},
+		],
+		[ topChannel, createBreakdownReport( [ [ 'Organic Social', 41 ] ] ) ],
+		[ topReferrer, createBreakdownReport( [ [ 'substack.com', 23 ] ] ) ],
+		[
+			engagement,
+			{
+				rows: [
+					{ metricValues: [ { value: '76' }, { value: '18' } ] },
+				],
+			},
+		],
+		[ purchases, createBreakdownReport( [ [ 'purchase', 4 ] ] ) ],
+	];
+
+	reports.forEach( ( [ options, report ] ) =>
+		provideReport( registry, MODULES_ANALYTICS_4, options, report )
+	);
+}
+
+/**
+ * Gets the options of the Search Console report of the latest post
+ * performance section for `LATEST_POST`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry with the reference date.
+ * @return {Object} The Search Console report options.
+ */
+export function getLatestPostKeywordReportOptions( registry: WPDataRegistry ) {
+	return getTopKeywordReportOptions( getLatestPostReportArgs( registry ) );
+}
+
+/**
+ * Stores the Search Console report of the latest post performance section for
+ * `LATEST_POST`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the report in.
+ * @return {void}
+ */
+export function provideLatestPostKeywordReport( registry: WPDataRegistry ) {
+	provideReport(
+		registry,
+		MODULES_SEARCH_CONSOLE,
+		getLatestPostKeywordReportOptions( registry ),
+		[ { keys: [ 'healthy ice cream' ], clicks: 12 } ]
+	);
+}
 
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
@@ -129,7 +315,7 @@ export function provideInsightReport(
  * Gets the class names of the direct children of a tab panel of
  * `TrafficOverviewWidget`, in order.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Element} container The element the tab panel rendered into.
  * @return {Array<string>} The class names.
