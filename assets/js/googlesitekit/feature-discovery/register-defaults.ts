@@ -311,7 +311,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					return undefined;
 				}
 
-				return settings?.subscribed === true;
+				return settings.subscribed === true;
 			},
 		},
 	} );

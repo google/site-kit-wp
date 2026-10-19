@@ -400,6 +400,7 @@ describe( 'core/feature-discovery features', () => {
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
 			} );
+
 			describe( 'for an in-place-panel feature', () => {
 				it( 'should close the detail panel before opening the feature’s panel', async () => {
 					// Records the detail panel's state at the moment the
