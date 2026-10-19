@@ -30,7 +30,6 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -431,9 +430,8 @@ export function getSectionClassNames( container: Element ): string[] {
  * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
  *
- * The posts report follows the site's permalink structure, and leaves out the
- * product pages that `getExcludedProducts()` recognizes, the way the posts
- * column does.
+ * The posts report leaves out the product pages that `getExcludedProducts()`
+ * recognizes, the way the posts column does.
  *
  * @since n.e.x.t
  *
@@ -448,14 +446,10 @@ export function getRecentTrafficBreakdownReportOptions(
 	);
 
 	return {
-		posts: getTopPostsReportOptions( dateRange, {
-			usingPlainPermalinks: registry
-				.select( CORE_SITE )
-				.isUsingPlainPermalinks(),
-			excludedProducts: registry
-				.select( MODULES_ANALYTICS_4 )
-				.getExcludedProducts(),
-		} ),
+		posts: getTopPostsReportOptions(
+			dateRange,
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+		),
 		channels: getTopChannelsReportOptions( dateRange ),
 		referrals: getTopReferralsReportOptions( dateRange ),
 		siteTotals: getSiteTotalsReportOptions( dateRange ),
@@ -466,7 +460,7 @@ export function getRecentTrafficBreakdownReportOptions(
  * Puts the given reports of the Recent activity tab's traffic breakdown in the
  * store, so the breakdown renders without sending a request. When
  * `reports.posts` is given, the report of titles that the posts column
- * requests goes in the store too, for a site with a permalink structure.
+ * requests goes in the store too.
  *
  * @since n.e.x.t
  *
@@ -547,8 +541,6 @@ export function provideRecentTrafficBreakdownReports(
  * @param {boolean} [state.setting]                   Optional. Whether the setting to include products is on. Default `true`.
  * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
  * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
- * @param {string}  [state.productQueryVar]           Optional. The query var of the product post type. Default `product`.
- * @param {boolean} [state.usingPlainPermalinks]      Optional. Whether the site uses plain permalinks. Default `false`.
  * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
  * @return {void}
  */
@@ -560,8 +552,6 @@ export function receiveState(
 		setting = true,
 		productPostType = 'product',
 		productPathPrefix = null,
-		productQueryVar = 'product',
-		usingPlainPermalinks = false,
 		availableCustomDimensions,
 	}: {
 		analyticsConnected?: boolean;
@@ -569,8 +559,6 @@ export function receiveState(
 		setting?: boolean;
 		productPostType?: string | null;
 		productPathPrefix?: string | null;
-		productQueryVar?: string | null;
-		usingPlainPermalinks?: boolean;
 		availableCustomDimensions?: string[] | null;
 	} = {}
 ) {
@@ -586,8 +574,6 @@ export function receiveState(
 		wooCommerceActive,
 		productPostType,
 		productPathPrefix,
-		productQueryVar,
-		usingPlainPermalinks,
 	} );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

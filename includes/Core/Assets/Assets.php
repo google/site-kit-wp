@@ -852,7 +852,7 @@ final class Assets {
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
-		global $wpdb, $wp_rewrite;
+		global $wpdb;
 		$site_url           = $this->context->get_reference_site_url();
 		$product_post_type  = $this->get_product_post_type();
 		$woocommerce_active = class_exists( 'WooCommerce' );
@@ -878,8 +878,6 @@ final class Assets {
 			'referenceDate'        => Date::reference_date(),
 			'productPostType'      => $product_post_type,
 			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
-			'productQueryVar'      => $this->get_post_type_query_var( $product_post_type ),
-			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1312,28 +1310,5 @@ final class Assets {
 			trailingslashit( $this->context->get_reference_site_url() ) . ltrim( $path, '/' ),
 			PHP_URL_PATH
 		);
-	}
-
-	/**
-	 * Gets the query var whose value is the slug of a post of a post type in a
-	 * URL, such as `product` in `/?product=hoodie`.
-	 *
-	 * On plain permalinks, `get_post_permalink()` builds the URL of such a
-	 * post from this query var. `WP::parse_request()` reads the query var
-	 * from a URL only for a post type that `is_post_type_viewable()` accepts.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string|null $post_type The post type name, or `null` for none.
-	 * @return string|null The query var, such as `product`, or `null` when WordPress reads no query var of the post type from a URL.
-	 */
-	protected function get_post_type_query_var( $post_type ) {
-		$post_type_object = get_post_type_object( $post_type );
-
-		if ( ! $post_type_object || ! is_post_type_viewable( $post_type_object ) ) {
-			return null;
-		}
-
-		return $post_type_object->query_var ?: null;
 	}
 }

@@ -34,26 +34,13 @@ import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
-import { usePlainPermalinkPostTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkPostTitles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
-import { getPlainPermalinkPost } from './utils/getPlainPermalinkPost';
-
-/**
- * No page paths, for the titles hook of the permalink structure the site
- * doesn't use. The same array on every render keeps that hook's memoized values.
- */
-const NO_PAGE_PATHS: string[] = [];
 
 const TopPostsColumn: FC = () => {
-	const usingPlainPermalinks = useSelect(
-		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
-		[]
-	);
-
 	const excludedProducts = useSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
@@ -65,62 +52,34 @@ const TopPostsColumn: FC = () => {
 		[]
 	);
 
-	// The options wait for both values, so the report isn't requested first
-	// with the wrong options.
+	// The options wait for the product pages to leave out, so the report isn't
+	// requested first without its product filter.
 	const buildReportOptions = useCallback(
 		( dateRange: FreshDataDateRange ) =>
-			usingPlainPermalinks === undefined || excludedProducts === undefined
+			excludedProducts === undefined
 				? undefined
-				: getTopPostsReportOptions( dateRange, {
-						usingPlainPermalinks,
-						excludedProducts,
-				  } ),
-		[ usingPlainPermalinks, excludedProducts ]
-	);
-
-	// On plain permalinks, a row of the report is a path and query string, such
-	// as `/?p=123&utm_source=newsletter`. Labeling each row with the permalink
-	// of its post, such as `/?p=123`, adds up the rows of the same post.
-	const getRowLabel = useMemo(
-		() =>
-			usingPlainPermalinks
-				? ( pagePathPlusQueryString: string ) =>
-						getPlainPermalinkPost(
-							pagePathPlusQueryString,
-							siteURL
-						)?.path
-				: undefined,
-		[ usingPlainPermalinks, siteURL ]
+				: getTopPostsReportOptions( dateRange, excludedProducts ),
+		[ excludedProducts ]
 	);
 
 	const {
 		reportOptions,
-		// Each row's `label` is a page path, or a plain permalink.
 		rows: pathRows,
 		loading,
 		error,
 		retry,
-	} = useRecentTrafficBreakdownColumn( buildReportOptions, getRowLabel );
+	} = useRecentTrafficBreakdownColumn( buildReportOptions );
 
 	const pagePaths = useMemo(
 		() => pathRows.map( ( { label } ) => label ),
 		[ pathRows ]
 	);
 
-	// Each hook requests titles only for its own permalink structure.
-	const reportPageTitles = useReportPageTitles(
-		usingPlainPermalinks ? NO_PAGE_PATHS : pagePaths,
-		reportOptions
-	);
-	const plainPermalinkPostTitles = usePlainPermalinkPostTitles(
-		usingPlainPermalinks ? pagePaths : NO_PAGE_PATHS,
-		siteURL
-	);
 	const {
 		titles,
 		loading: titlesLoading,
 		error: titlesError,
-	} = usingPlainPermalinks ? plainPermalinkPostTitles : reportPageTitles;
+	} = useReportPageTitles( pagePaths, reportOptions );
 
 	const rows = pathRows.map( ( row ) => ( {
 		...row,

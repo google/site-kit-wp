@@ -38,10 +38,10 @@ describe( 'useReportPageTitles', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
 	);
 
-	const reportOptions = getTopPostsReportOptions(
-		{ startDate: '2025-02-03', endDate: '2025-02-05' },
-		{ usingPlainPermalinks: false }
-	);
+	const reportOptions = getTopPostsReportOptions( {
+		startDate: '2025-02-03',
+		endDate: '2025-02-05',
+	} );
 
 	beforeEach( () => {
 		registry = createTestRegistry();

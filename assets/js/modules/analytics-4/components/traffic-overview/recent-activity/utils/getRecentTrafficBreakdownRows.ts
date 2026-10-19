@@ -96,48 +96,26 @@ export function getSiteTotal(
  * Builds the rows a column of the Recent activity tab's traffic breakdown
  * renders from its report.
  *
- * With `getRowLabel`, the rows of the report that the function returns the same
- * label for add up to one row. Values with no count are left out, and the rest
- * are sorted by count, most first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS`
- * rows. Each share is a percentage of the site's total. With the share of the
- * rest of the total, the shares of a column add up to 100%.
+ * Values with no count are left out, and the rest are sorted by count, most
+ * first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is a
+ * percentage of the site's total. With the share of the rest of the total, the
+ * shares of a column add up to 100%.
  *
  * @since n.e.x.t
  *
- * @param {Object}   [report]      Optional. A report with one dimension and one metric.
- * @param {number}   [siteTotal]   Optional. The site's total of the metric, such as its visits. A row has no share when the total is `0`. Default `0`.
- * @param {Function} [getRowLabel] Optional. A function that returns the label of a row from its dimension value, or `undefined` to leave the row out. Without it, a row's label is its dimension value.
+ * @param {Object} [report]    Optional. A report with one dimension and one metric.
+ * @param {number} [siteTotal] Optional. The site's total of the metric, such as its visits. A row has no share when the total is `0`. Default `0`.
  * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`.
  */
 export function getRecentTrafficBreakdownRows(
 	report?: Report,
-	siteTotal = 0,
-	getRowLabel?: ( dimensionValue: string ) => string | undefined
+	siteTotal = 0
 ): TableTileRow[] {
-	// A `Map` keeps the order of the report, so a sort keeps that order for
-	// labels with the same count.
-	const counts = new Map< string, number >();
-
-	( report?.rows ?? [] ).forEach( ( row ) => {
-		const dimensionValue = row.dimensionValues?.[ 0 ]?.value ?? '';
-		const label = getRowLabel
-			? getRowLabel( dimensionValue )
-			: dimensionValue;
-
-		if ( label === undefined ) {
-			return;
-		}
-
-		counts.set(
-			label,
-			( counts.get( label ) ?? 0 ) + getMetricCount( row )
-		);
-	} );
-
-	const rows = Array.from( counts, ( [ label, count ] ) => ( {
-		label,
-		count,
-	} ) )
+	const rows = ( report?.rows ?? [] )
+		.map( ( row ) => ( {
+			label: row.dimensionValues?.[ 0 ]?.value ?? '',
+			count: getMetricCount( row ),
+		} ) )
 		// A report includes values with no count, which a column leaves out.
 		.filter( ( { count } ) => count > 0 )
 		.sort( ( first, second ) => second.count - first.count )

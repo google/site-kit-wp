@@ -228,7 +228,6 @@ export function provideSiteInfo(
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
-		usingPlainPermalinks: false,
 		postTypes: [
 			{
 				slug: 'post',
@@ -245,7 +244,6 @@ export function provideSiteInfo(
 		],
 		productPostType: 'product',
 		productPathPrefix: null,
-		productQueryVar: 'product',
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,

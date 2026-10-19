@@ -29,7 +29,6 @@ import {
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getPlainPermalinkPost } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPlainPermalinkPost';
 import {
 	createBreakdownReport,
 	createSiteTotalsReport,
@@ -45,7 +44,6 @@ import {
 	freezeFetch,
 	waitForDefaultTimeouts,
 } from '@tests/js/utils';
-import { FreshDataDateRange } from './useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from './useRecentTrafficBreakdownColumn';
 
 describe( 'useRecentTrafficBreakdownColumn', () => {
@@ -58,21 +56,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 	const channelsRequest = forDimensions( 'sessionDefaultChannelGroup' );
 	const pagesRequest = forDimensions( 'pagePath' );
 	const siteTotalsRequest = forDimensions();
-
-	/**
-	 * Builds the options of the report of views for each page, for a site with
-	 * a permalink structure.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} dateRange The date range of the Recent activity tab.
-	 * @return {Object} The report options.
-	 */
-	function getPagesReportOptions( dateRange: FreshDataDateRange ) {
-		return getTopPostsReportOptions( dateRange, {
-			usingPlainPermalinks: false,
-		} );
-	}
 
 	const channelsReport = createBreakdownReport( [
 		[ 'Direct', 82 ],
@@ -132,7 +115,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 
 		const { result, waitForRegistry } = renderHook(
-			() => useRecentTrafficBreakdownColumn( getPagesReportOptions ),
+			() => useRecentTrafficBreakdownColumn( getTopPostsReportOptions ),
 			{ registry }
 		);
 
@@ -141,43 +124,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		expect( result.current.rows ).toEqual( [
 			{ label: '/ice-cream/', value: '82', secondaryValue: '(30.6%)' },
 			{ label: '/hydration/', value: '12', secondaryValue: '(4.5%)' },
-		] );
-	} );
-
-	it( 'should add up the rows that `getRowLabel` returns the same label for, and leave out the rows it returns no label for', async () => {
-		fetchMock.get( pagesRequest, {
-			body: createBreakdownReport( [
-				[ '/?p=12', 82 ],
-				[ '/', 40 ],
-				[ '/?p=12&utm_source=newsletter', 12 ],
-			] ),
-			status: 200,
-		} );
-		fetchMock.get( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
-			status: 200,
-		} );
-
-		function getRowLabel( pagePathPlusQueryString: string ) {
-			return getPlainPermalinkPost(
-				pagePathPlusQueryString,
-				'http://example.com'
-			)?.path;
-		}
-
-		const { result, waitForRegistry } = renderHook(
-			() =>
-				useRecentTrafficBreakdownColumn(
-					getPagesReportOptions,
-					getRowLabel
-				),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( result.current.rows ).toEqual( [
-			{ label: '/?p=12', value: '94', secondaryValue: '(35.1%)' },
 		] );
 	} );
 

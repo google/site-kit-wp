@@ -27,7 +27,6 @@ import {
 	createBreakdownReport,
 	createSiteTotalsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { getPlainPermalinkPost } from './getPlainPermalinkPost';
 import {
 	getRecentTrafficBreakdownRows,
 	getSiteTotal,
@@ -101,8 +100,8 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		// 5,000 and 1 of 10,000 views are 50% and 0.01%, and the other 4,999
 		// views are 49.99%.
 		const report = createBreakdownReport( [
-			[ '/?p=12', 5000 ],
-			[ '/?p=34', 1 ],
+			[ '/ice-cream/', 5000 ],
+			[ '/spf/', 1 ],
 		] );
 
 		expect(
@@ -159,28 +158,6 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 
 		expect( getRecentTrafficBreakdownRows( report, 12345 ) ).toEqual( [
 			{ label: 'Direct', value: '12K', secondaryValue: '(100%)' },
-		] );
-	} );
-
-	it( 'should add up the rows that `getRowLabel` returns the same label for, and leave out the rows it returns no label for', () => {
-		const report = createBreakdownReport( [
-			[ '/', 50 ],
-			[ '/?p=12', 30 ],
-			[ '/?p=34', 20 ],
-			[ '/?p=12&utm_source=newsletter', 15 ],
-		] );
-
-		expect(
-			getRecentTrafficBreakdownRows(
-				report,
-				115,
-				( pagePath ) =>
-					getPlainPermalinkPost( pagePath, 'http://example.com' )
-						?.path
-			)
-		).toEqual( [
-			{ label: '/?p=12', value: '45', secondaryValue: '(39.1%)' },
-			{ label: '/?p=34', value: '20', secondaryValue: '(17.4%)' },
 		] );
 	} );
 
@@ -312,9 +289,7 @@ describe( 'getSiteTotal', () => {
 		expect(
 			getSiteTotal(
 				createSiteTotalsReport( { visits: 157, views: 268 } ),
-				getTopPostsReportOptions( dateRange, {
-					usingPlainPermalinks: false,
-				} )
+				getTopPostsReportOptions( dateRange )
 			)
 		).toBe( 268 );
 	} );

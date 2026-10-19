@@ -17,11 +17,6 @@
  */
 
 /**
- * External dependencies
- */
-import { escapeRegExp } from 'lodash';
-
-/**
  * Internal dependencies
  */
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
@@ -165,27 +160,6 @@ function getExcludedProductsFilters(
 		};
 	}
 
-	if ( excludedProducts.by === 'queryVar' ) {
-		const { postType, queryVar } = excludedProducts;
-		// `get_post_permalink()` puts the slug of a product in the product
-		// query var, such as `?product=hoodie`. For a draft, or a post type
-		// with no query var, it uses the post type and the ID instead, such as
-		// `?post_type=product&p=123`.
-		const productParameters = [
-			...( queryVar ? [ `${ escapeRegExp( queryVar ) }=[^&]` ] : [] ),
-			`post_type=${ escapeRegExp( postType ) }(&|$)`,
-		];
-
-		return {
-			pagePathPlusQueryString: {
-				filterType: 'stringFilter',
-				matchType: 'PARTIAL_REGEXP',
-				value: `[?&](${ productParameters.join( '|' ) })`,
-				notExpression: true,
-			},
-		};
-	}
-
 	return {
 		'customEvent:googlesitekit_post_type': {
 			filterType: 'stringFilter',
@@ -199,51 +173,35 @@ function getExcludedProductsFilters(
 /**
  * Builds the options of the report of views for each page.
  *
- * On plain permalinks, the page path of every post is the path of the home
- * URL. So the report has a row for each path and query string, such as
- * `/?p=123`, and sets no `limit`. Analytics then returns up to 10,000 rows, and
- * the column adds up the rows of the same post, such as `/?p=123` and
- * `/?p=123&utm_source=newsletter`. Otherwise, the report has only the pages
- * with the most views, as many as a column shows.
+ * The report has only the pages with the most views, as many as a column
+ * shows.
  *
  * @since n.e.x.t
  *
- * @param {Object}      dateRange                 The date range of the Recent activity tab.
- * @param {string}      dateRange.startDate       The first day of the date range.
- * @param {string}      dateRange.endDate         The last day of the date range.
- * @param {Object}      site                      The facts about the site that the report depends on.
- * @param {boolean}     site.usingPlainPermalinks Whether the site uses plain permalinks.
- * @param {Object|null} [site.excludedProducts]   Optional. The way to recognize the product pages that the report leaves out, or `null` to keep them.
+ * @param {Object}      dateRange           The date range of the Recent activity tab.
+ * @param {string}      dateRange.startDate The first day of the date range.
+ * @param {string}      dateRange.endDate   The last day of the date range.
+ * @param {Object|null} [excludedProducts]  Optional. The way to recognize the product pages that the report leaves out, or `null` to keep them. Default `null`.
  * @return {Object} The report options.
  */
 export function getTopPostsReportOptions(
 	dateRange: FreshDataDateRange,
-	{
-		usingPlainPermalinks,
-		excludedProducts = null,
-	}: {
-		usingPlainPermalinks: boolean;
-		excludedProducts?: ExcludedProducts | null;
-	}
+	excludedProducts: ExcludedProducts | null = null
 ): ReportOptions {
-	const reportOptions = getColumnReportOptions(
-		dateRange,
-		usingPlainPermalinks ? 'pagePathPlusQueryString' : 'pagePath',
-		'screenPageViews',
-		'analytics-4_recent-traffic-breakdown_widget_topPostsArgs'
-	);
-
 	return {
-		...reportOptions,
+		...getColumnReportOptions(
+			dateRange,
+			'pagePath',
+			'screenPageViews',
+			'analytics-4_recent-traffic-breakdown_widget_topPostsArgs'
+		),
 		...( excludedProducts
 			? {
 					dimensionFilters:
 						getExcludedProductsFilters( excludedProducts ),
 			  }
 			: {} ),
-		...( usingPlainPermalinks
-			? {}
-			: { limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } ),
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
 	};
 }
 

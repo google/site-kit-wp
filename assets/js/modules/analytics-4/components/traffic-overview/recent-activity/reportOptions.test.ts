@@ -66,10 +66,10 @@ describe( 'getSiteTotalsReportOptions', () => {
 describe( 'getTopPostsReportOptions', () => {
 	it( 'should build options that request the three pages with the most views over the date range, most views first', () => {
 		expect(
-			getTopPostsReportOptions(
-				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{ usingPlainPermalinks: false }
-			)
+			getTopPostsReportOptions( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -88,7 +88,7 @@ describe( 'getTopPostsReportOptions', () => {
 		expect(
 			getTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{ usingPlainPermalinks: false, excludedProducts: null }
+				null
 			)
 		).toEqual( {
 			startDate: '2025-02-03',
@@ -108,13 +108,7 @@ describe( 'getTopPostsReportOptions', () => {
 		expect(
 			getTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{
-					usingPlainPermalinks: false,
-					excludedProducts: {
-						by: 'pathPrefix',
-						pathPrefix: '/product/',
-					},
-				}
+				{ by: 'pathPrefix', pathPrefix: '/product/' }
 			)
 		).toEqual( {
 			startDate: '2025-02-03',
@@ -142,13 +136,7 @@ describe( 'getTopPostsReportOptions', () => {
 		expect(
 			getTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{
-					usingPlainPermalinks: false,
-					excludedProducts: {
-						by: 'postTypeDimension',
-						postType: 'product',
-					},
-				}
+				{ by: 'postTypeDimension', postType: 'product' }
 			)
 		).toEqual( {
 			startDate: '2025-02-03',
@@ -169,82 +157,6 @@ describe( 'getTopPostsReportOptions', () => {
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
-		} );
-	} );
-
-	it( 'should build options that request every path and query string with views on plain permalinks, most views first', () => {
-		expect(
-			getTopPostsReportOptions(
-				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{ usingPlainPermalinks: true }
-			)
-		).toEqual( {
-			startDate: '2025-02-03',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
-			dimensions: [ 'pagePathPlusQueryString' ],
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
-		} );
-	} );
-
-	it( 'should build options that leave out the URLs with the product query var or the product post type on plain permalinks', () => {
-		expect(
-			getTopPostsReportOptions(
-				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{
-					usingPlainPermalinks: true,
-					excludedProducts: {
-						by: 'queryVar',
-						postType: 'product',
-						queryVar: 'product',
-					},
-				}
-			)
-		).toEqual( {
-			startDate: '2025-02-03',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
-			dimensions: [ 'pagePathPlusQueryString' ],
-			dimensionFilters: {
-				pagePathPlusQueryString: {
-					filterType: 'stringFilter',
-					matchType: 'PARTIAL_REGEXP',
-					value: '[?&](product=[^&]|post_type=product(&|$))',
-					notExpression: true,
-				},
-			},
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
-		} );
-	} );
-
-	it( 'should build options that leave out the URLs with the product post type on plain permalinks when products have no query var', () => {
-		expect(
-			getTopPostsReportOptions(
-				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{
-					usingPlainPermalinks: true,
-					excludedProducts: {
-						by: 'queryVar',
-						postType: 'product',
-						queryVar: null,
-					},
-				}
-			).dimensionFilters
-		).toEqual( {
-			pagePathPlusQueryString: {
-				filterType: 'stringFilter',
-				matchType: 'PARTIAL_REGEXP',
-				value: '[?&](post_type=product(&|$))',
-				notExpression: true,
-			},
 		} );
 	} );
 } );

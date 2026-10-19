@@ -61,14 +61,12 @@ export interface RecentTrafficBreakdownColumn {
  * @since n.e.x.t
  *
  * @param {Function} buildReportOptions The function that builds the column's report options from the tab's date range, as `useFreshDataReport()` expects.
- * @param {Function} [getRowLabel]      Optional. A function that gets the label of a row from its dimension value, as `getRecentTrafficBreakdownRows()` expects. Pass a function defined outside the component, or one that changes only when the data it reads does.
  * @return {Object} The column's report options and report, its rows, whether it is loading, its error, and a function that requests each failed report again.
  */
 export function useRecentTrafficBreakdownColumn(
 	buildReportOptions: (
 		dateRange: FreshDataDateRange
-	) => ReportOptions | undefined,
-	getRowLabel?: ( dimensionValue: string ) => string | undefined
+	) => ReportOptions | undefined
 ): RecentTrafficBreakdownColumn {
 	const {
 		reportOptions,
@@ -89,10 +87,9 @@ export function useRecentTrafficBreakdownColumn(
 		() =>
 			getRecentTrafficBreakdownRows(
 				report,
-				getSiteTotal( siteTotalsReport, reportOptions ),
-				getRowLabel
+				getSiteTotal( siteTotalsReport, reportOptions )
 			),
-		[ report, siteTotalsReport, reportOptions, getRowLabel ]
+		[ report, siteTotalsReport, reportOptions ]
 	);
 
 	const retry = useCallback( () => {
