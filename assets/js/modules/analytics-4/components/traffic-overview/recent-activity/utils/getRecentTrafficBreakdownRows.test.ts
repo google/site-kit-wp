@@ -129,6 +129,34 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 		] );
 	} );
 
+	it( 'should add up the rows that `getRowKey` returns the same key for, and leave out the rows it returns no key for', () => {
+		const report = createBreakdownReport(
+			[
+				[ '/', 50 ],
+				[ '/?p=12', 30 ],
+				[ '/?p=34', 20 ],
+				[ '/?p=12&utm_source=newsletter', 15 ],
+			],
+			115
+		);
+
+		const postIDByPagePath: Record< string, string > = {
+			'/?p=12': '12',
+			'/?p=34': '34',
+			'/?p=12&utm_source=newsletter': '12',
+		};
+
+		expect(
+			getRecentTrafficBreakdownRows(
+				report,
+				( pagePath ) => postIDByPagePath[ pagePath ]
+			)
+		).toEqual( [
+			{ label: '12', value: '45', secondaryValue: '(39.1%)' },
+			{ label: '34', value: '20', secondaryValue: '(17.4%)' },
+		] );
+	} );
+
 	it( 'should leave out the values with no count', () => {
 		const report = createBreakdownReport(
 			[
