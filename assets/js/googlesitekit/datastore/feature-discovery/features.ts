@@ -199,9 +199,13 @@ export const actions = {
 				.select( CORE_FEATURE_DISCOVERY )
 				.getFeature( slug );
 
+			if ( ! feature ) {
+				return {};
+			}
+
 			// In-place features open their existing panel over the hub, which
 			// does its own saving, so the user never leaves the hub.
-			if ( feature?.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL ) {
+			if ( feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL ) {
 				// The detail panel is closed first so that the feature's own
 				// panel opens on its own over the hub.
 				registry
@@ -213,7 +217,7 @@ export const actions = {
 				return {};
 			}
 
-			if ( feature?.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+			if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
 				return {};
 			}
 
