@@ -115,7 +115,9 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
 export function formatRoundedShare( share: number, steps: number ): string {
 	const format = {
 		style: 'percent',
-		// `100` steps need no decimal place, and `1000` steps need one.
+		// `100` steps show no decimal place, and `1000` steps always show one,
+		// such as `3.0%`.
+		minimumFractionDigits: Math.log10( steps ) - 2,
 		maximumFractionDigits: Math.log10( steps ) - 2,
 	} as const;
 

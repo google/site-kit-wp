@@ -48,7 +48,6 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/postReportOptions';
 import {
 	getInsightReportArgs,
-	getSiteTotalsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -58,11 +57,7 @@ import {
 	getComparisonDateRange,
 	getDateDimensionValues,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import {
-	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
-	MODULES_ANALYTICS_4,
-} from '@/js/modules/analytics-4/datastore/constants';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
@@ -71,7 +66,6 @@ import {
 } from '@/js/modules/analytics-4/datastore/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { provideModules, provideSiteInfo } from '@tests/js/utils';
 
 export interface RecentTrafficBreakdownReportOptions {
 	/** The options of the "Top posts by visitors" report. */
@@ -80,15 +74,6 @@ export interface RecentTrafficBreakdownReportOptions {
 	channels: ReportOptions;
 	/** The options of the "Top referrals by visitors" report. */
 	referrals: ReportOptions;
-	/** The options of the report of the site's totals, which each share is a percentage of. */
-	siteTotals: ReportOptions;
-}
-
-export interface SiteTotals {
-	/** The site's visits over the date range, which each share in the channels and referrals columns is a percentage of. */
-	visits: number;
-	/** The site's views over the date range, which each share in the posts column is a percentage of. */
-	views: number;
 }
 
 export interface RecentTrafficBreakdownReports {
@@ -100,8 +85,6 @@ export interface RecentTrafficBreakdownReports {
 	channels?: Report;
 	/** The report of visits for each site that referred them. */
 	referrals?: Report;
-	/** The site's visits and views over the date range, which each share is a percentage of. */
-	siteTotals?: SiteTotals;
 }
 
 export const LATEST_POST: RecentContentItem = {
@@ -276,22 +259,37 @@ export function provideLatestPostKeywordReport( registry: WPDataRegistry ) {
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * The visitors are strings, the way the API returns them.
+ * The visitors are strings, the way the API returns them. With `total`, the
+ * report has its `totals` too, which count every value of the dimension, also
+ * the values a `limit` leaves out of `rows`.
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
+ * @since n.e.x.t Takes an optional total.
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @param {Array<Array>} pairs   `[ label, visitors ]` pairs.
+ * @param {number}       [total] Optional. The visitors of every value of the dimension. Without it, the report has no `totals`.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >
+	pairs: Array< [ string, number ] >,
+	total?: number
 ): Report {
 	return {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
 			metricValues: [ { value: String( visitors ) } ],
 		} ) ),
+		...( total === undefined
+			? {}
+			: {
+					totals: [
+						{
+							dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
+							metricValues: [ { value: String( total ) } ],
+						},
+					],
+			  } ),
 	};
 }
 
@@ -311,35 +309,6 @@ export function createTitlesReport(
 		rows: pairs.map( ( [ pagePath, pageTitle ] ) => ( {
 			dimensionValues: [ { value: pagePath }, { value: pageTitle } ],
 		} ) ),
-	};
-}
-
-/**
- * Builds a report of the site's visits and views, with no dimension.
- *
- * The report has the visits and the views in its one row and in its total,
- * in the order of `getSiteTotalsReportOptions()`. Each is a string, the way the
- * API returns it.
- *
- * @since n.e.x.t
- *
- * @param {Object} siteTotals        The site's totals.
- * @param {number} siteTotals.visits The site's visits.
- * @param {number} siteTotals.views  The site's views.
- * @return {Object} The report of the site's totals.
- */
-export function createSiteTotalsReport( {
-	visits,
-	views,
-}: SiteTotals ): Report {
-	const metricValues = [
-		{ value: String( visits ) },
-		{ value: String( views ) },
-	];
-
-	return {
-		rows: [ { metricValues } ],
-		totals: [ { metricValues } ],
 	};
 }
 
@@ -436,7 +405,7 @@ export function getSectionClassNames( container: Element ): string[] {
  * @since n.e.x.t
  *
  * @param {Object} registry The registry, with its reference date and its site info set.
- * @return {Object} The options of the posts, channels, and referrals reports, and of the report of the site's totals.
+ * @return {Object} The options of the posts, channels, and referrals reports.
  */
 export function getRecentTrafficBreakdownReportOptions(
 	registry: WPDataRegistry
@@ -452,7 +421,6 @@ export function getRecentTrafficBreakdownReportOptions(
 		),
 		channels: getTopChannelsReportOptions( dateRange ),
 		referrals: getTopReferralsReportOptions( dateRange ),
-		siteTotals: getSiteTotalsReportOptions( dateRange ),
 	};
 }
 
@@ -470,7 +438,6 @@ export function getRecentTrafficBreakdownReportOptions(
  * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
  * @param {Object} [reports.channels]   Optional. The report of visits for each channel.
  * @param {Object} [reports.referrals]  Optional. The report of visits for each site that referred them.
- * @param {Object} [reports.siteTotals] Optional. The site's visits and views over the date range.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(
@@ -480,7 +447,6 @@ export function provideRecentTrafficBreakdownReports(
 		postTitles = {},
 		channels,
 		referrals,
-		siteTotals,
 	}: RecentTrafficBreakdownReports
 ) {
 	const reportOptions = getRecentTrafficBreakdownReportOptions( registry );
@@ -520,66 +486,6 @@ export function provideRecentTrafficBreakdownReports(
 	if ( referrals ) {
 		receiveGetReport( referrals, { options: reportOptions.referrals } );
 	}
-
-	if ( siteTotals ) {
-		receiveGetReport( createSiteTotalsReport( siteTotals ), {
-			options: reportOptions.siteTotals,
-		} );
-	}
-}
-
-/**
- * Puts the module list, the site info, and the Analytics settings in the
- * store. The selectors that decide whether to include products read them.
- *
- * @since n.e.x.t
- *
- * @param {Object}  registry                          The registry to put the state in.
- * @param {Object}  [state]                           Optional. The state to put in the store.
- * @param {boolean} [state.analyticsConnected]        Optional. Whether Analytics is connected. Default `true`.
- * @param {boolean} [state.wooCommerceActive]         Optional. Whether WooCommerce is active. Default `true`.
- * @param {boolean} [state.setting]                   Optional. Whether the setting to include products is on. Default `true`.
- * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
- * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
- * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
- * @return {void}
- */
-export function receiveState(
-	registry: WPDataRegistry,
-	{
-		analyticsConnected = true,
-		wooCommerceActive = true,
-		setting = true,
-		productPostType = 'product',
-		productPathPrefix = null,
-		availableCustomDimensions,
-	}: {
-		analyticsConnected?: boolean;
-		wooCommerceActive?: boolean;
-		setting?: boolean;
-		productPostType?: string | null;
-		productPathPrefix?: string | null;
-		availableCustomDimensions?: string[] | null;
-	} = {}
-) {
-	provideModules( registry, [
-		{
-			slug: MODULE_SLUG_ANALYTICS_4,
-			active: true,
-			connected: analyticsConnected,
-		},
-	] );
-
-	provideSiteInfo( registry, {
-		wooCommerceActive,
-		productPostType,
-		productPathPrefix,
-	} );
-
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-		[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
-		availableCustomDimensions,
-	} );
 }
 
 /**
@@ -588,7 +494,7 @@ export function receiveState(
  *
  * @since n.e.x.t
  *
- * @param {...string} dimensions The dimension names, in order. With none, the matcher matches a report request with no dimension.
+ * @param {...string} dimensions The dimension names, in order.
  * @return {Function} The matcher, for `fetchMock`.
  */
 export function forDimensions( ...dimensions: string[] ) {

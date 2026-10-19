@@ -187,27 +187,35 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	// The site had 100 visits, each with one view, and 12 of the visits came
 	// from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
-		posts: createBreakdownReport( [
-			[ '/autumn-recipes/', 64 ],
-			[ '/winter-soups/', 23 ],
-			[ '/spring-salads/', 9 ],
-		] ),
+		posts: createBreakdownReport(
+			[
+				[ '/autumn-recipes/', 64 ],
+				[ '/winter-soups/', 23 ],
+				[ '/spring-salads/', 9 ],
+			],
+			100
+		),
 		postTitles: {
 			'/autumn-recipes/': 'Autumn recipes',
 			'/winter-soups/': 'Winter soups',
 			'/spring-salads/': 'Spring salads',
 		},
-		channels: createBreakdownReport( [
-			[ 'Direct', 52 ],
-			[ 'Organic Search', 31 ],
-			[ 'Referral', 12 ],
-		] ),
-		referrals: createBreakdownReport( [
-			[ 'substack.com', 7 ],
-			[ 'reddit.com', 3 ],
-			[ 'medium.com', 2 ],
-		] ),
-		siteTotals: { visits: 100, views: 100 },
+		channels: createBreakdownReport(
+			[
+				[ 'Direct', 52 ],
+				[ 'Organic Search', 31 ],
+				[ 'Referral', 12 ],
+			],
+			100
+		),
+		referrals: createBreakdownReport(
+			[
+				[ 'substack.com', 7 ],
+				[ 'reddit.com', 3 ],
+				[ 'medium.com', 2 ],
+			],
+			12
+		),
 	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )

@@ -156,29 +156,7 @@
 			padding: 8px 0 8px 19px;
 			position: relative;
 
-			// The rail is a `::before` rather than a border, so it and the dot
-			// centered on it both sit inside the column's own box. `left`
-			// centers the 2px rail in the 9px dot: (9px - 2px) / 2.
-			&::before {
-				background: $c-utility-divider;
-				bottom: 0;
-				content: "";
-				left: 3.5px;
-				position: absolute;
-				top: 0;
-				width: 2px;
-			}
-
-			&::after {
-				background: $c-utility-divider;
-				border-radius: 50%;
-				content: "";
-				height: 9px;
-				left: 0;
-				position: absolute;
-				top: 15px;
-				width: 9px;
-			}
+			@include tile-connector(15px);
 		}
 
 		// The typography classes carry the font; only colour and spacing here.
@@ -407,26 +385,7 @@
 				padding: 8px 16px 8px $tile-content-offset;
 				position: relative;
 
-				&::before {
-					background: $c-utility-divider;
-					bottom: 0;
-					content: "";
-					left: $tile-connector-offset;
-					position: absolute;
-					top: 0;
-					width: 2px;
-				}
-
-				&::after {
-					background: $c-utility-divider;
-					border-radius: 50%;
-					content: "";
-					height: 9px;
-					left: 0;
-					position: absolute;
-					top: 15px;
-					width: 9px;
-				}
+				@include tile-connector(15px);
 			}
 
 			.googlesitekit-table-tile__title.googlesitekit-typography {

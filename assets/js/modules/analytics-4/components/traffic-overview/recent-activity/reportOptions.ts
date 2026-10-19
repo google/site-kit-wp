@@ -74,40 +74,6 @@ export function getInsightReportArgs(
 }
 
 /**
- * The metrics of the report of the site's totals, in the order of its
- * `totals` values. The channels and referrals columns count visits, and the
- * posts column counts views.
- */
-export const SITE_TOTALS_METRICS = [ 'sessions', 'screenPageViews' ];
-
-/**
- * Builds the options of the report of the site's visits and views over the
- * date range of the Recent activity tab.
- *
- * Each row of the traffic breakdown shows its share of this report's total of
- * the metric that the row counts. A visit has one channel and one source, and
- * a view has one page. So no visit or view counts in two rows of a column.
- *
- * @since n.e.x.t
- *
- * @param {Object} dateRange           The date range of the Recent activity tab.
- * @param {string} dateRange.startDate The first day of the date range.
- * @param {string} dateRange.endDate   The last day of the date range.
- * @return {Object} The report options.
- */
-export function getSiteTotalsReportOptions( {
-	startDate,
-	endDate,
-}: FreshDataDateRange ): ReportOptions {
-	return {
-		startDate,
-		endDate,
-		metrics: SITE_TOTALS_METRICS.map( ( name ) => ( { name } ) ),
-		reportID: 'analytics-4_recent-traffic-breakdown_widget_siteTotalsArgs',
-	};
-}
-
-/**
  * Builds the options of a column's report, which counts a metric for each
  * value of a dimension, most first.
  *

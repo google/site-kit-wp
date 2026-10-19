@@ -31,16 +31,12 @@ import { __, sprintf } from '@wordpress/i18n';
  */
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
 import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { SITE_TOTALS_METRICS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	formatRoundedShare,
 	getMetricCount,
 	getRoundedShares,
 } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
-import {
-	Report,
-	ReportOptions,
-} from '@/js/modules/analytics-4/datastore/types';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 
 /**
@@ -53,43 +49,13 @@ import { numFmt } from '@/js/util';
  * @since n.e.x.t
  *
  * @param {Array<number>} counts The count of each row, in display order, each above zero.
- * @param {number}        total  The total that each share is a percentage of, above zero.
+ * @param {number}        total  The total that each share is a percentage of, at least the sum of `counts`.
  * @return {Array<number>} The tenths of a percent of each row, in the same order, from `0` to `1000`.
  */
 function getTenthPercentages( counts: number[], total: number ): number[] {
-	const countsTotal = sum( counts );
-	// The rows and the site's total come from separate requests, so the rows
-	// can count a little more than the total, such as a view Analytics counted
-	// between the two. The shares then use the rows' sum, so no row or column
-	// shows more than 100%.
-	const sharedTotal = Math.max( total, countsTotal );
+	const parts = [ ...counts, total - sum( counts ) ];
 
-	return getRoundedShares(
-		[ ...counts, sharedTotal - countsTotal ],
-		1000
-	).slice( 0, counts.length );
-}
-
-/**
- * Gets the site's total of the metric that a column's report counts, from the
- * report of the site's totals.
- *
- * @since n.e.x.t
- *
- * @param {Object} [siteTotalsReport] Optional. The report of the site's totals, with its `totals`.
- * @param {Object} [reportOptions]    Optional. The options of the column's report, which name the metric it counts.
- * @return {number} The total, such as the site's visits for the channels column, or `0` when the report of the site's totals has no total.
- */
-export function getSiteTotal(
-	siteTotalsReport?: Report,
-	reportOptions?: ReportOptions
-): number {
-	const [ metric ] = reportOptions?.metrics ?? [];
-	const metricIndex = SITE_TOTALS_METRICS.indexOf(
-		typeof metric === 'string' ? metric : metric?.name ?? ''
-	);
-
-	return getMetricCount( siteTotalsReport?.totals?.[ 0 ], metricIndex );
+	return getRoundedShares( parts, 1000 ).slice( 0, counts.length );
 }
 
 /**
@@ -98,19 +64,19 @@ export function getSiteTotal(
  *
  * Values with no count are left out, and the rest are sorted by count, most
  * first, up to `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is a
- * percentage of the site's total. With the share of the rest of the total, the
- * shares of a column add up to 100%.
+ * percentage of the report's total, which also counts the values that the
+ * report's `limit` leaves out.
  *
  * @since n.e.x.t
  *
- * @param {Object} [report]    Optional. A report with one dimension and one metric.
- * @param {number} [siteTotal] Optional. The site's total of the metric, such as its visits. A row has no share when the total is `0`. Default `0`.
- * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`.
+ * @param {Object} [report] Optional. A report with one dimension and one metric.
+ * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`. The `secondaryValue` is `undefined` when the report has no total.
  */
 export function getRecentTrafficBreakdownRows(
-	report?: Report,
-	siteTotal = 0
+	report?: Report
 ): TableTileRow[] {
+	const total = getMetricCount( report?.totals?.[ 0 ] );
+
 	const rows = ( report?.rows ?? [] )
 		.map( ( row ) => ( {
 			label: row.dimensionValues?.[ 0 ]?.value ?? '',
@@ -122,10 +88,10 @@ export function getRecentTrafficBreakdownRows(
 		.slice( 0, RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS );
 
 	const tenths =
-		siteTotal > 0
+		total > 0
 			? getTenthPercentages(
 					rows.map( ( { count } ) => count ),
-					siteTotal
+					total
 			  )
 			: [];
 
@@ -133,9 +99,9 @@ export function getRecentTrafficBreakdownRows(
 		label,
 		value: numFmt( count ),
 		secondaryValue:
-			siteTotal > 0
+			total > 0
 				? sprintf(
-						/* translators: %s: the row's share of the site's total, such as "52.2%" */
+						/* translators: %s: the row's share of the column's total, such as "52.2%" */
 						__( '(%s)', 'google-site-kit' ),
 						formatRoundedShare( tenths[ index ], 1000 )
 				  )

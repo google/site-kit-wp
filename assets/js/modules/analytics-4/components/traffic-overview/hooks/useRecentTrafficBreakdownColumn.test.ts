@@ -25,13 +25,9 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import {
-	getTopChannelsReportOptions,
-	getTopPostsReportOptions,
-} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	createBreakdownReport,
-	createSiteTotalsReport,
 	forDimensions,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
@@ -39,11 +35,7 @@ import {
 	createTestRegistry,
 	renderHook,
 } from '@tests/js/test-utils';
-import {
-	createWaitForRegistry,
-	freezeFetch,
-	waitForDefaultTimeouts,
-} from '@tests/js/utils';
+import { createWaitForRegistry, waitForDefaultTimeouts } from '@tests/js/utils';
 import { useRecentTrafficBreakdownColumn } from './useRecentTrafficBreakdownColumn';
 
 describe( 'useRecentTrafficBreakdownColumn', () => {
@@ -54,13 +46,16 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 	);
 
 	const channelsRequest = forDimensions( 'sessionDefaultChannelGroup' );
-	const pagesRequest = forDimensions( 'pagePath' );
-	const siteTotalsRequest = forDimensions();
 
-	const channelsReport = createBreakdownReport( [
-		[ 'Direct', 82 ],
-		[ 'Referral', 12 ],
-	] );
+	// The site had 157 visits, and 63 of them came from channels the report
+	// leaves out.
+	const channelsReport = createBreakdownReport(
+		[
+			[ 'Direct', 82 ],
+			[ 'Referral', 12 ],
+		],
+		157
+	);
 
 	const errorResponse = {
 		code: 'internal_server_error',
@@ -73,66 +68,11 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 	} );
 
-	it( "should return the column's rows, each with its share of the site's visits", async () => {
+	it( "should return the column's rows, each with its share of the report's total", async () => {
 		fetchMock.get( channelsRequest, {
 			body: channelsReport,
 			status: 200,
 		} );
-		fetchMock.get( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
-			status: 200,
-		} );
-
-		const { result, waitForRegistry } = renderHook(
-			() =>
-				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( result.current ).toMatchObject( {
-			rows: [
-				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
-			],
-			loading: false,
-			error: undefined,
-		} );
-	} );
-
-	it( "should return the rows of a column that counts views, each with its share of the site's views", async () => {
-		fetchMock.get( pagesRequest, {
-			body: createBreakdownReport( [
-				[ '/ice-cream/', 82 ],
-				[ '/hydration/', 12 ],
-			] ),
-			status: 200,
-		} );
-		fetchMock.get( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
-			status: 200,
-		} );
-
-		const { result, waitForRegistry } = renderHook(
-			() => useRecentTrafficBreakdownColumn( getTopPostsReportOptions ),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( result.current.rows ).toEqual( [
-			{ label: '/ice-cream/', value: '82', secondaryValue: '(30.6%)' },
-			{ label: '/hydration/', value: '12', secondaryValue: '(4.5%)' },
-		] );
-	} );
-
-	it( "should be loading while the report of the site's totals loads, after the column's report has loaded", async () => {
-		fetchMock.get( channelsRequest, {
-			body: channelsReport,
-			status: 200,
-		} );
-		freezeFetch( siteTotalsRequest );
 
 		const { result, waitForRegistry } = renderHook(
 			() =>
@@ -143,19 +83,14 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		await waitForRegistry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
-		expect( result.current.report ).toEqual( {
+		expect( result.current ).toMatchObject( {
 			rows: [
-				{
-					dimensionValues: [ { value: 'Direct' } ],
-					metricValues: [ { value: '82' } ],
-				},
-				{
-					dimensionValues: [ { value: 'Referral' } ],
-					metricValues: [ { value: '12' } ],
-				},
+				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
+				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
 			],
+			loading: false,
+			error: undefined,
 		} );
-		expect( result.current.loading ).toBe( true );
 	} );
 
 	it( 'should be loading, with no rows, and should not request a report, while the Traffic Overview widget is out of view', async () => {
@@ -180,12 +115,8 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 	} );
 
-	it( "should return the error of the report of the site's totals when only that request fails", async () => {
+	it( "should return the error of the column's report, with no rows, when its request fails", async () => {
 		fetchMock.get( channelsRequest, {
-			body: channelsReport,
-			status: 200,
-		} );
-		fetchMock.get( siteTotalsRequest, {
 			body: errorResponse,
 			status: 500,
 		} );
@@ -200,6 +131,7 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 
 		expect( console ).toHaveErrored();
 		expect( result.current ).toMatchObject( {
+			rows: [],
 			loading: false,
 			error: {
 				code: 'internal_server_error',
@@ -209,61 +141,13 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		} );
 	} );
 
-	it( "should request only the report of the site's totals again when `retry` is called after that request fails", async () => {
-		fetchMock.get( channelsRequest, {
-			body: channelsReport,
-			status: 200,
-		} );
-		fetchMock.getOnce( siteTotalsRequest, {
-			body: errorResponse,
-			status: 500,
-		} );
-		fetchMock.getOnce( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
-			status: 200,
-		} );
-
-		const { result, waitForRegistry } = renderHook(
-			() =>
-				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		const waitForRetry = createWaitForRegistry( registry );
-
-		act( () => {
-			result.current.retry();
-		} );
-
-		await waitForRetry();
-
-		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
-		expect( result.current ).toMatchObject( {
-			rows: [
-				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
-			],
-			loading: false,
-			error: undefined,
-		} );
-	} );
-
-	it( "should request only the column's report again when `retry` is called after that request fails", async () => {
+	it( "should request the column's report again, and return its rows, when `retry` is called after that request fails", async () => {
 		fetchMock.getOnce( channelsRequest, {
 			body: errorResponse,
 			status: 500,
 		} );
 		fetchMock.getOnce( channelsRequest, {
 			body: channelsReport,
-			status: 200,
-		} );
-		fetchMock.get( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
 			status: 200,
 		} );
 
@@ -286,85 +170,6 @@ describe( 'useRecentTrafficBreakdownColumn', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 1, siteTotalsRequest );
-		expect( result.current ).toMatchObject( {
-			rows: [
-				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },
-				{ label: 'Referral', value: '12', secondaryValue: '(7.7%)' },
-			],
-			loading: false,
-			error: undefined,
-		} );
-	} );
-
-	it( "should return the error of the column's report when both requests fail", async () => {
-		fetchMock.getOnce( channelsRequest, {
-			body: {
-				code: 'channels_error',
-				message: 'Channels error',
-				data: { status: 500 },
-			},
-			status: 500,
-		} );
-		fetchMock.getOnce( siteTotalsRequest, {
-			body: errorResponse,
-			status: 500,
-		} );
-
-		const { result, waitForRegistry } = renderHook(
-			() =>
-				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-		expect( result.current.error ).toEqual( {
-			code: 'channels_error',
-			message: 'Channels error',
-			data: { status: 500 },
-		} );
-	} );
-
-	it( 'should request both reports again when `retry` is called after both requests fail', async () => {
-		fetchMock.getOnce( channelsRequest, {
-			body: errorResponse,
-			status: 500,
-		} );
-		fetchMock.getOnce( channelsRequest, {
-			body: channelsReport,
-			status: 200,
-		} );
-		fetchMock.getOnce( siteTotalsRequest, {
-			body: errorResponse,
-			status: 500,
-		} );
-		fetchMock.getOnce( siteTotalsRequest, {
-			body: createSiteTotalsReport( { visits: 157, views: 268 } ),
-			status: 200,
-		} );
-
-		const { result, waitForRegistry } = renderHook(
-			() =>
-				useRecentTrafficBreakdownColumn( getTopChannelsReportOptions ),
-			{ registry }
-		);
-
-		await waitForRegistry();
-
-		expect( console ).toHaveErrored();
-
-		const waitForRetry = createWaitForRegistry( registry );
-
-		act( () => {
-			result.current.retry();
-		} );
-
-		await waitForRetry();
-
-		expect( fetchMock ).toHaveFetchedTimes( 2, channelsRequest );
-		expect( fetchMock ).toHaveFetchedTimes( 2, siteTotalsRequest );
 		expect( result.current ).toMatchObject( {
 			rows: [
 				{ label: 'Direct', value: '82', secondaryValue: '(52.2%)' },

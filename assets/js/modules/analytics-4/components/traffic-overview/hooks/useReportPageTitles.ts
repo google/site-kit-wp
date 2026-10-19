@@ -32,27 +32,25 @@ import {
 	getPageTitleMap,
 	getPageTitlesReportOptions,
 } from '@/js/modules/analytics-4/utils/page-titles-report';
-import { ErrorObject } from '@/js/util/errors';
 
 export interface PageTitles {
-	/** The title of each page path that has one, such as `{ '/hello-world/': 'Hello world!' }`, or `undefined` until the titles load. */
+	/** The title of each page path that has one, such as `{ '/hello-world/': 'Hello world!' }`, or `undefined` until the titles load and after their request fails. */
 	titles?: Record< string, string >;
 	/** `true` while the titles of the page paths load. */
 	loading: boolean;
-	/** The error of the request for the titles, or `undefined` when it hasn't failed. */
-	error?: ErrorObject;
 }
 
 /**
  * Resolves the titles that Analytics records for the given page paths.
  *
- * A page that Analytics has no title for has no title in `titles`.
+ * A page that Analytics has no title for has no title in `titles`. When the
+ * request for the titles fails, no page path has a title.
  *
  * @since n.e.x.t
  *
  * @param {Array<string>} pagePaths       The page paths, such as `/hello-world/`. With none, the hook requests no titles.
  * @param {Object}        [reportOptions] Optional. The options of the report the page paths come from, which set the date range.
- * @return {Object} The titles, whether they are loading, and the error of their request.
+ * @return {Object} The titles, and whether they are loading.
  */
 export function useReportPageTitles(
 	pagePaths: string[],
@@ -95,6 +93,5 @@ export function useReportPageTitles(
 	return {
 		titles,
 		loading: titlesReportOptions !== undefined && loading,
-		error,
 	};
 }

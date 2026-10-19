@@ -22,7 +22,6 @@
 import {
 	INSIGHT_REPORT_ID,
 	getInsightReportArgs,
-	getSiteTotalsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -42,23 +41,6 @@ describe( 'getInsightReportArgs', () => {
 			dimensions: [ 'date' ],
 			orderby: [ { dimension: { dimensionName: 'date' } } ],
 			reportID: INSIGHT_REPORT_ID,
-		} );
-	} );
-} );
-
-describe( 'getSiteTotalsReportOptions', () => {
-	it( "should build options that request the site's visits and views over the date range, with no dimension", () => {
-		expect(
-			getSiteTotalsReportOptions( {
-				startDate: '2025-02-03',
-				endDate: '2025-02-05',
-			} )
-		).toEqual( {
-			startDate: '2025-02-03',
-			endDate: '2025-02-05',
-			metrics: [ { name: 'sessions' }, { name: 'screenPageViews' } ],
-			reportID:
-				'analytics-4_recent-traffic-breakdown_widget_siteTotalsArgs',
 		} );
 	} );
 } );

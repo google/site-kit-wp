@@ -48,17 +48,15 @@ import RecentTrafficBreakdown, {
 } from './RecentTrafficBreakdown';
 import { FRESH_DATA_FETCH_OPTIONS } from './reportOptions';
 
-/**
- * The site's visits and views over the date range, which each share is a
- * percentage of. 12 of the visits came from other sites.
- */
-const SITE_TOTALS = { visits: 157, views: 268 };
-
-const POSTS = createBreakdownReport( [
-	[ '/ice-cream-is-good-for-your-health/', 82 ],
-	[ '/use-spf-every-day/', 21 ],
-	[ '/stay-hydrated/', 8 ],
-] );
+// Each report's total also counts the values that its `limit` leaves out.
+const POSTS = createBreakdownReport(
+	[
+		[ '/ice-cream-is-good-for-your-health/', 82 ],
+		[ '/use-spf-every-day/', 21 ],
+		[ '/stay-hydrated/', 8 ],
+	],
+	268
+);
 
 const POST_TITLES = {
 	'/ice-cream-is-good-for-your-health/': 'Ice cream is good for your health',
@@ -67,17 +65,23 @@ const POST_TITLES = {
 	'/stay-hydrated/': 'Stay hydrated',
 };
 
-const CHANNELS = createBreakdownReport( [
-	[ 'Direct', 96 ],
-	[ 'Organic Search', 41 ],
-	[ 'Organic Social', 17 ],
-] );
+const CHANNELS = createBreakdownReport(
+	[
+		[ 'Direct', 96 ],
+		[ 'Organic Search', 41 ],
+		[ 'Organic Social', 17 ],
+	],
+	157
+);
 
-const REFERRALS = createBreakdownReport( [
-	[ 'substack.com', 7 ],
-	[ 'reddit.com', 3 ],
-	[ 'medium.com', 2 ],
-] );
+const REFERRALS = createBreakdownReport(
+	[
+		[ 'substack.com', 7 ],
+		[ 'reddit.com', 3 ],
+		[ 'medium.com', 2 ],
+	],
+	14
+);
 
 interface RecentTrafficBreakdownStoryProps extends RecentTrafficBreakdownProps {
 	/** Sets the registry state the story needs before it renders. */
@@ -102,6 +106,11 @@ function Template( {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
+				// The posts column requests its report only once the setting
+				// to include products has loaded.
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setFreshDataIncludesWooCommerceProducts( true );
 				registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 
 				setupRegistry( registry );
@@ -140,12 +149,17 @@ Loaded.args = {
 			posts: POSTS,
 			postTitles: POST_TITLES,
 			channels: CHANNELS,
-			referrals: createBreakdownReport( [
-				[ 'substack.com', 7 ],
-				[ 'reddit.com', 3 ],
-				[ 'android-app://com.google.android.googlequicksearchbox', 2 ],
-			] ),
-			siteTotals: SITE_TOTALS,
+			referrals: createBreakdownReport(
+				[
+					[ 'substack.com', 7 ],
+					[ 'reddit.com', 3 ],
+					[
+						'android-app://com.google.android.googlequicksearchbox',
+						2,
+					],
+				],
+				14
+			),
 		} ),
 };
 Loaded.scenario = {};
@@ -183,7 +197,6 @@ OneColumnErrored.args = {
 			posts: POSTS,
 			postTitles: POST_TITLES,
 			referrals: REFERRALS,
-			siteTotals: SITE_TOTALS,
 		} );
 
 		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
@@ -225,7 +238,6 @@ ZeroRows.args = {
 			posts: {},
 			channels: {},
 			referrals: {},
-			siteTotals: { visits: 0, views: 0 },
 		} ),
 };
 ZeroRows.scenario = {
@@ -243,7 +255,6 @@ NoPublishedPosts.args = {
 		provideRecentTrafficBreakdownReports( registry, {
 			channels: CHANNELS,
 			referrals: REFERRALS,
-			siteTotals: SITE_TOTALS,
 		} ),
 };
 NoPublishedPosts.scenario = {
@@ -253,4 +264,5 @@ NoPublishedPosts.scenario = {
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/RecentTrafficBreakdown',
 	component: RecentTrafficBreakdown,
+	parameters: { features: [ 'freshData' ] },
 };

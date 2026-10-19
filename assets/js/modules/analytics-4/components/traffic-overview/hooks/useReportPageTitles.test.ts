@@ -73,7 +73,6 @@ describe( 'useReportPageTitles', () => {
 				'/spf/': 'Use SPF every day',
 			},
 			loading: false,
-			error: undefined,
 		} );
 	} );
 
@@ -157,11 +156,10 @@ describe( 'useReportPageTitles', () => {
 		expect( result.current ).toEqual( {
 			titles: undefined,
 			loading: true,
-			error: undefined,
 		} );
 	} );
 
-	it( 'should return the error of the request for the titles, and should not be loading, when that request fails', async () => {
+	it( 'should return no titles, and should not be loading, when the request for the titles fails', async () => {
 		fetchMock.getOnce( titlesEndpoint, {
 			body: {
 				code: 'internal_server_error',
@@ -182,15 +180,12 @@ describe( 'useReportPageTitles', () => {
 		expect( result.current ).toEqual( {
 			titles: undefined,
 			loading: false,
-			error: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
 		} );
 	} );
 
 	it( 'should not request titles, and should not be loading, when there are no page paths', async () => {
+		fetchMock.get( titlesEndpoint, { body: {}, status: 200 } );
+
 		const { result } = renderHook(
 			() => useReportPageTitles( [], reportOptions ),
 			{ registry }
@@ -202,7 +197,6 @@ describe( 'useReportPageTitles', () => {
 		expect( result.current ).toEqual( {
 			titles: undefined,
 			loading: false,
-			error: undefined,
 		} );
 	} );
 } );

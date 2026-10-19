@@ -30,21 +30,16 @@ import { __, sprintf } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
-import {
-	FRESH_DATA_FETCH_OPTIONS,
-	getInsightReportArgs,
-} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
+import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	Insight,
 	classifyInsight,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 import MagnifyingGlassIcon from '@/svg/icons/magnifying-glass.svg';
 
@@ -95,44 +90,15 @@ function getInsightCopy( { classification, changePercent }: Insight ): string {
 const InsightNotice: FC = () => {
 	const dateRange = useFreshDataDateRange();
 
-	const reportArgs = useMemo(
-		() => getInsightReportArgs( dateRange ),
-		[ dateRange ]
-	);
-
-	const report = useInViewSelect< Report | undefined >(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getReport(
-				reportArgs,
-				FRESH_DATA_FETCH_OPTIONS
-			),
-		[ reportArgs ]
-	);
-
-	// `areReportsLoading()` checks the resolution of `getReport()` called with
-	// the report options alone, so it never sees this call, which passes the
-	// fetch options too.
-	const loaded = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).hasFinishedResolution( 'getReport', [
-				reportArgs,
-				FRESH_DATA_FETCH_OPTIONS,
-			] ),
-		[ reportArgs ]
-	);
-
-	const error = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getFirstReportError( reportArgs ),
-		[ reportArgs ]
-	);
+	const { report, loading, error } =
+		useFreshDataReport( getInsightReportArgs );
 
 	const insight = useMemo(
 		() => classifyInsight( { rows: report?.rows, ...dateRange } ),
 		[ report, dateRange ]
 	);
 
-	if ( ! loaded ) {
+	if ( loading ) {
 		return (
 			<div className="googlesitekit-traffic-overview__insight-notice">
 				<PreviewBlock width="100%" height="72px" />

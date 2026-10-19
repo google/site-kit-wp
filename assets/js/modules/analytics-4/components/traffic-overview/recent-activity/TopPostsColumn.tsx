@@ -75,15 +75,15 @@ const TopPostsColumn: FC = () => {
 		[ pathRows ]
 	);
 
-	const {
-		titles,
-		loading: titlesLoading,
-		error: titlesError,
-	} = useReportPageTitles( pagePaths, reportOptions );
+	const { titles, loading: titlesLoading } = useReportPageTitles(
+		pagePaths,
+		reportOptions
+	);
 
 	const rows = pathRows.map( ( row ) => ( {
 		...row,
-		// A page with no title shows its path.
+		// A page with no title shows its path, also when the request for the
+		// titles fails.
 		label: titles?.[ row.label ] || row.label,
 		url: getPageURL( siteURL, row.label ),
 	} ) );
@@ -94,10 +94,8 @@ const TopPostsColumn: FC = () => {
 			titleAs="h4"
 			rows={ rows }
 			loading={ loading || titlesLoading }
-			error={ error || titlesError }
-			// The "Retry" button requests failed titles again by itself, so
-			// `retry` is only for a failed report of pages or of the site's totals.
-			onRetry={ error ? retry : undefined }
+			error={ error }
+			onRetry={ retry }
 		/>
 	);
 };

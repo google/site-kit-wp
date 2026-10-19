@@ -321,7 +321,18 @@ const baseSelectors = {
 				).shouldIncludeWooCommerceProducts();
 
 			if ( shouldIncludeProducts === undefined ) {
-				return undefined;
+				// `shouldIncludeWooCommerceProducts()` stays `undefined` when
+				// the Analytics settings request fails, and the tab then lists
+				// every page.
+				const hasSettingFailedToLoad =
+					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getSettings'
+					) &&
+					select(
+						MODULES_ANALYTICS_4
+					).getFreshDataIncludesWooCommerceProducts() === undefined;
+
+				return hasSettingFailedToLoad ? null : undefined;
 			}
 
 			const postType = select( CORE_SITE ).getProductPostType();

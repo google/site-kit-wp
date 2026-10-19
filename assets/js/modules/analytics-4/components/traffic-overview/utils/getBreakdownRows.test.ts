@@ -347,6 +347,10 @@ describe( 'formatRoundedShare', () => {
 		expect( formatRoundedShare( 522, 1000 ) ).toBe( '52.2%' );
 	} );
 
+	it( 'should format a whole percent out of 1000 steps with its tenth, such as "3.0%"', () => {
+		expect( formatRoundedShare( 30, 1000 ) ).toBe( '3.0%' );
+	} );
+
 	it( 'should format a share of no step out of 100 as "<1%"', () => {
 		expect( formatRoundedShare( 0, 100 ) ).toBe( '<1%' );
 	} );
