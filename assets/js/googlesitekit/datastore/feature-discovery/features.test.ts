@@ -24,12 +24,20 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Registry } from 'googlesitekit-data';
+import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	consumePendingSetup,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { registerDefaults } from '@/js/googlesitekit/feature-discovery/register-defaults';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
@@ -391,6 +399,138 @@ describe( 'core/feature-discovery features', () => {
 				).toHaveBeenCalledWith( 'test-module' );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+			describe( 'for an in-place-panel feature', () => {
+				it( 'should close the detail panel before opening the feature’s panel', async () => {
+					// Records the detail panel's state at the moment the
+					// feature's panel opens.
+					let detailPanelSlugOnOpen: unknown;
+
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								open: ( openRegistry: Registry ) => {
+									detailPanelSlugOnOpen = openRegistry
+										.select( CORE_UI )
+										.getValue(
+											FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+										);
+
+									openRegistry
+										.dispatch( CORE_UI )
+										.setValue( 'testPanelOpened', true );
+								},
+							},
+						} )
+					);
+
+					registry
+						.dispatch( CORE_UI )
+						.setValue(
+							FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+							'test-feature'
+						);
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect(
+						registry.select( CORE_UI ).getValue( 'testPanelOpened' )
+					).toBe( true );
+					expect( detailPanelSlugOnOpen ).toBe( false );
+				} );
+
+				it( 'should not activate a module or record a pending setup', async () => {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								open: jest.fn(),
+							},
+						} )
+					);
+					const activateModule = jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					);
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it( 'should keep the user on the hub even when the feature names a module with a setup screen', async () => {
+					const open = jest.fn();
+
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								moduleSlug: 'test-module',
+								open,
+							},
+						} )
+					);
+					registerSetupComponent();
+
+					// Were this treated as a `setup-flow` feature, it would
+					// navigate to this URL.
+					const activateModule = jest
+						.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						)
+						.mockResolvedValue( {
+							response: {
+								success: true,
+								moduleReauthURL: 'http://example.com/reauth',
+							},
+						} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( open ).toHaveBeenCalledTimes( 1 );
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it.each( [
+					[ 'dashboard-sharing', SETTINGS_DIALOG ],
+					[
+						'email-reports',
+						USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+					],
+					[ 'pdf-report', PDF_DOWNLOAD_PANEL_OPENED_KEY ],
+				] )(
+					'should open the existing panel for the %s feature',
+					async ( slug, uiKey ) => {
+						registerDefaults( createFeatureDiscovery( registry ) );
+
+						expect(
+							registry.select( CORE_UI ).getValue( uiKey )
+						).toBeUndefined();
+
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( slug );
+
+						expect(
+							registry.select( CORE_UI ).getValue( uiKey )
+						).toBe( true );
+						expect( await consumePendingSetup() ).toBeNull();
+					}
+				);
 			} );
 		} );
 
