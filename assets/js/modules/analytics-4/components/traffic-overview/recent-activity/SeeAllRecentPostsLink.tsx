@@ -44,6 +44,8 @@ import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import ArrowDownIcon from '@/svg/icons/arrow-down.svg';
 
+const RECENT_CONTENT_OPTIONS = { count: LATEST_CONTENT_COUNT };
+
 const SeeAllRecentPostsLink: FC = () => {
 	const breakpoint = useBreakpoint();
 
@@ -54,9 +56,9 @@ const SeeAllRecentPostsLink: FC = () => {
 	const recentContent = useInViewSelect< RecentContentItem[] | undefined >(
 		( select: Select ) =>
 			canViewSharedAnalytics4
-				? select( MODULES_ANALYTICS_4 ).getRecentContent( {
-						count: LATEST_CONTENT_COUNT,
-				  } )
+				? select( MODULES_ANALYTICS_4 ).getRecentContent(
+						RECENT_CONTENT_OPTIONS
+				  )
 				: undefined,
 		[ canViewSharedAnalytics4 ]
 	);
