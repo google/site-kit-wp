@@ -23,7 +23,7 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Dimension;
 class RequestHelpersTest extends TestCase {
 
 	public function test_validate_shared_dimensions__accepts_session_source_without_the_typical_traffic_flag() {
-		$this->validate_session_source();
+		$this->validate_shared_dimension( 'sessionSource' );
 
 		$this->addToAssertionCount( 1 );
 	}
@@ -31,22 +31,30 @@ class RequestHelpersTest extends TestCase {
 	public function test_validate_shared_dimensions__accepts_session_source_with_the_typical_traffic_flag() {
 		$this->enable_feature( 'typicalTraffic' );
 
-		$this->validate_session_source();
+		$this->validate_shared_dimension( 'sessionSource' );
+
+		$this->addToAssertionCount( 1 );
+	}
+
+	public function test_validate_shared_dimensions__accepts_page_path_plus_query_string() {
+		$this->validate_shared_dimension( 'pagePathPlusQueryString' );
 
 		$this->addToAssertionCount( 1 );
 	}
 
 	/**
-	 * Validates a shared report that asks for `sessionSource`.
+	 * Validates a shared report that asks for the given dimension.
 	 *
 	 * The validation throws `Invalid_Report_Dimensions_Exception` when a shared
 	 * report may not ask for the dimension, which fails the test.
 	 *
 	 * @since n.e.x.t
+	 *
+	 * @param string $name The name of the dimension, such as `sessionSource`.
 	 */
-	private function validate_session_source() {
+	private function validate_shared_dimension( $name ) {
 		$dimension = new Dimension();
-		$dimension->setName( 'sessionSource' );
+		$dimension->setName( $name );
 
 		( new RequestHelpers( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ) )->validate_shared_dimensions( array( $dimension ) );
 	}

@@ -282,6 +282,7 @@ class RequestHelpers {
 				'eventName',
 				'newVsReturning',
 				'pagePath',
+				'pagePathPlusQueryString',
 				'pageTitle',
 				'sessionDefaultChannelGroup',
 				'sessionDefaultChannelGrouping',
