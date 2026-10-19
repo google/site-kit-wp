@@ -30,6 +30,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
@@ -48,6 +49,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/postReportOptions';
 import {
 	getInsightReportArgs,
+	getPlainPermalinkTopPostsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -399,8 +401,9 @@ export function getSectionClassNames( container: Element ): string[] {
  * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
  *
- * The posts report leaves out the product pages that `getExcludedProducts()`
- * recognizes, the way the posts column does.
+ * The posts report follows the site's permalink setting, and leaves out the
+ * product pages that `getExcludedProducts()` recognizes, the way the posts
+ * column does.
  *
  * @since n.e.x.t
  *
@@ -414,11 +417,17 @@ export function getRecentTrafficBreakdownReportOptions(
 		registry.select( CORE_USER ).getReferenceDate()
 	);
 
+	const excludedProducts = registry
+		.select( MODULES_ANALYTICS_4 )
+		.getExcludedProducts();
+
 	return {
-		posts: getTopPostsReportOptions(
-			dateRange,
-			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-		),
+		posts: registry.select( CORE_SITE ).isUsingPlainPermalinks()
+			? getPlainPermalinkTopPostsReportOptions(
+					dateRange,
+					excludedProducts
+			  )
+			: getTopPostsReportOptions( dateRange, excludedProducts ),
 		channels: getTopChannelsReportOptions( dateRange ),
 		referrals: getTopReferralsReportOptions( dateRange ),
 	};

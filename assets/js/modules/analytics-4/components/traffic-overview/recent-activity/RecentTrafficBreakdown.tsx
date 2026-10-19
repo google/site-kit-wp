@@ -30,8 +30,11 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import PlainPermalinkTopPostsColumn from './PlainPermalinkTopPostsColumn';
 import TopChannelsColumn from './TopChannelsColumn';
 import TopPostsColumn from './TopPostsColumn';
 import TopReferralsColumn from './TopReferralsColumn';
@@ -52,6 +55,11 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 	);
 	const headingID = `${ instanceID }`;
 
+	const usingPlainPermalinks = useSelect(
+		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
+		[]
+	);
+
 	return (
 		<section
 			className="googlesitekit-traffic-overview__recent-traffic-breakdown"
@@ -67,7 +75,12 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 				{ __( 'What’s affecting recent traffic?', 'google-site-kit' ) }
 			</Typography>
 			<div className="googlesitekit-traffic-overview__recent-traffic-breakdown-columns">
-				{ ! hasNoPublishedPosts && <TopPostsColumn /> }
+				{ ! hasNoPublishedPosts &&
+					( usingPlainPermalinks ? (
+						<PlainPermalinkTopPostsColumn />
+					) : (
+						<TopPostsColumn />
+					) ) }
 				<TopChannelsColumn />
 				<TopReferralsColumn />
 			</div>
