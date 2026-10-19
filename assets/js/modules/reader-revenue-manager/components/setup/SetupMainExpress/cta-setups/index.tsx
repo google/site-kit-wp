@@ -17,3 +17,4 @@
  */
 
 export { default as SetupCTANewsletterSignup } from './SetupCTANewsletterSignup';
+export { default as SetupCTASurvey } from './SetupCTASurvey';
