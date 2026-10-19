@@ -32,6 +32,7 @@ import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import SeeAllRecentPostsLink from './SeeAllRecentPostsLink';
 
 interface SeeAllRecentPostsLinkStoryProps {
+	/** Sets the registry state the story needs before it renders. */
 	setupRegistry: ( registry: WPDataRegistry ) => void;
 }
 

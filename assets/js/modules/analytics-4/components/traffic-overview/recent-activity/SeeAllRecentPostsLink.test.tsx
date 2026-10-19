@@ -29,7 +29,7 @@ import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
 import {
-	LATEST_CONTENT_COUNT,
+	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
 } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import {
@@ -102,9 +102,11 @@ describe( 'SeeAllRecentPostsLink', () => {
 	] )(
 		'should render nothing when the site has %s',
 		( _description, recentContent ) => {
-			provideRecentContent( registry, recentContent, {
-				count: LATEST_CONTENT_COUNT,
-			} );
+			provideRecentContent(
+				registry,
+				recentContent,
+				LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+			);
 
 			const { container } = render( <SeeAllRecentPostsLink />, {
 				registry,

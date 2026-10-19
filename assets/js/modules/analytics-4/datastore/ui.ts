@@ -27,6 +27,7 @@ import invariant from 'invariant';
 import { createReducer } from 'googlesitekit-data';
 
 interface UIState {
+	/** ID of the active tab of the Content card, `undefined` until a tab is selected. */
 	activeContentTab: string | undefined;
 }
 
@@ -37,18 +38,18 @@ type Action = {
 	payload: { tabID: string };
 };
 
-const baseInitialState: UIState = {
+export const initialState: UIState = {
 	activeContentTab: undefined,
 };
 
-const baseActions = {
+export const actions = {
 	/**
 	 * Sets the active tab of the Content card.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param tabID The ID of the tab to select.
-	 * @return Redux-style action.
+	 * @param {string} tabID ID of the tab to select.
+	 * @return {Object} Redux-style action.
 	 */
 	setActiveContentTab( tabID: string ) {
 		invariant(
@@ -57,49 +58,46 @@ const baseActions = {
 		);
 
 		return {
-			type: SET_ACTIVE_CONTENT_TAB,
 			payload: { tabID },
+			type: SET_ACTIVE_CONTENT_TAB,
 		};
 	},
 };
 
-const baseReducer = createReducer(
-	( state: UIState, { type, payload }: Action ) => {
-		switch ( type ) {
-			case SET_ACTIVE_CONTENT_TAB:
-				state.activeContentTab = payload.tabID;
-				break;
+export const controls = {};
 
-			default:
-				break;
-		}
+export const reducer = createReducer( ( state: UIState, action: Action ) => {
+	switch ( action.type ) {
+		case SET_ACTIVE_CONTENT_TAB:
+			state.activeContentTab = action.payload.tabID;
+			break;
+
+		default:
+			break;
 	}
-);
+} );
 
-const baseSelectors = {
+export const resolvers = {};
+
+export const selectors = {
 	/**
 	 * Gets the active tab of the Content card.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param state Data store's state.
-	 * @return The ID of the active tab, or `undefined` when no tab has been selected yet.
+	 * @param {Object} state Data store's state.
+	 * @return {(string|undefined)} ID of the active tab, or `undefined` until a tab is selected.
 	 */
 	getActiveContentTab( state: UIState ): string | undefined {
 		return state.activeContentTab;
 	},
 };
 
-const store = {
-	initialState: baseInitialState,
-	actions: baseActions,
-	reducer: baseReducer,
-	selectors: baseSelectors,
+export default {
+	initialState,
+	actions,
+	controls,
+	reducer,
+	resolvers,
+	selectors,
 };
-
-export const initialState = store.initialState;
-export const actions = store.actions;
-export const reducer = store.reducer;
-export const selectors = store.selectors;
-
-export default store;

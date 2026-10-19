@@ -43,7 +43,7 @@ import {
 	provideUserInfo,
 } from '@tests/js/utils';
 import {
-	LATEST_CONTENT_COUNT,
+	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
 	TOP_CONTENT_TAB_ID,
 } from './constants';
@@ -78,7 +78,11 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
-		provideRecentContent( registry, [], { count: LATEST_CONTENT_COUNT } );
+		provideRecentContent(
+			registry,
+			[],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 

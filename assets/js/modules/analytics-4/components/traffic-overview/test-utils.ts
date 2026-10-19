@@ -25,7 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { LATEST_CONTENT_COUNT } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
@@ -118,9 +118,11 @@ export function provideLatestPost( registry: WPDataRegistry ) {
  * @return {void}
  */
 export function provideLatestContent( registry: WPDataRegistry ) {
-	provideRecentContent( registry, [ LATEST_POST, EARLIER_POST ], {
-		count: LATEST_CONTENT_COUNT,
-	} );
+	provideRecentContent(
+		registry,
+		[ LATEST_POST, EARLIER_POST ],
+		LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+	);
 }
 
 /**

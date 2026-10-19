@@ -35,7 +35,7 @@ import { ANCHOR_ID_CONTENT } from '@/js/googlesitekit/constants';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import {
-	LATEST_CONTENT_COUNT,
+	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
 } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -43,8 +43,6 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 import ArrowDownIcon from '@/svg/icons/arrow-down.svg';
-
-const RECENT_CONTENT_OPTIONS = { count: LATEST_CONTENT_COUNT };
 
 const SeeAllRecentPostsLink: FC = () => {
 	const breakpoint = useBreakpoint();
@@ -57,7 +55,7 @@ const SeeAllRecentPostsLink: FC = () => {
 		( select: Select ) =>
 			canViewSharedAnalytics4
 				? select( MODULES_ANALYTICS_4 ).getRecentContent(
-						RECENT_CONTENT_OPTIONS
+						LATEST_CONTENT_RECENT_CONTENT_OPTIONS
 				  )
 				: undefined,
 		[ canViewSharedAnalytics4 ]
@@ -72,12 +70,11 @@ const SeeAllRecentPostsLink: FC = () => {
 	function handleClick() {
 		setActiveContentTab( LATEST_CONTENT_TAB_ID );
 
-		global.history.replaceState( {}, '', `#${ ANCHOR_ID_CONTENT }` );
+		const anchorLink = `#${ ANCHOR_ID_CONTENT }`;
+
+		global.history.replaceState( {}, '', anchorLink );
 		global.scrollTo( {
-			top: getNavigationalScrollTop(
-				`#${ ANCHOR_ID_CONTENT }`,
-				breakpoint
-			),
+			top: getNavigationalScrollTop( anchorLink, breakpoint ),
 			behavior: 'smooth',
 		} );
 	}
@@ -86,7 +83,7 @@ const SeeAllRecentPostsLink: FC = () => {
 		<Link
 			className="googlesitekit-traffic-overview__see-all-recent-posts"
 			onClick={ handleClick }
-			trailingIcon={ <ArrowDownIcon width={ 14 } height={ 14 } /> }
+			trailingIcon={ <ArrowDownIcon width={ 9 } height={ 12 } /> }
 			secondary
 		>
 			{ __( 'See all recent posts', 'google-site-kit' ) }

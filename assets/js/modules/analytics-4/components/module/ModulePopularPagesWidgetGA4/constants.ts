@@ -19,3 +19,6 @@
 export const TOP_CONTENT_TAB_ID = 'googlesitekit-top-content-tab';
 export const LATEST_CONTENT_TAB_ID = 'googlesitekit-latest-content-tab';
 export const LATEST_CONTENT_COUNT = 10;
+export const LATEST_CONTENT_RECENT_CONTENT_OPTIONS = {
+	count: LATEST_CONTENT_COUNT,
+};
