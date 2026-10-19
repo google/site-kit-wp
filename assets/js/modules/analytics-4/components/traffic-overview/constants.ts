@@ -38,6 +38,10 @@ export const RECENT_ACTIVITY_TAB_ID = 'googlesitekit-recent-activity-tab';
 export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
 	'analytics-setup-cta-recent-activity';
 
+/** The vote ID of the feedback thumbs in the Recent activity tab. */
+export const FRESH_DATA_VOTE_ID_RECENT_ACTIVITY =
+	'fresh_data_recent_activity_widget';
+
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 
