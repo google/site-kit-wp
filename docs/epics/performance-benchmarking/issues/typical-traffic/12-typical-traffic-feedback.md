@@ -2,7 +2,7 @@
 
 ## Feature Description
 
-The Typical Traffic tab shows a reader a year of their own traffic and the factors behind the latest change. It gives the reader no way to say that a part of the tab looks wrong or does not help, so the team cannot tell which parts readers trust and which confuse them. The Site Goals widgets already ask for this with a thumbs up and a thumbs down button, and #13679 turns that prompt into a shared `FeedbackPrompt` component that other widgets can use with their own vote ID and tracking.
+The Typical Traffic tab shows a reader their own daily traffic against the range their history makes normal, and the factors behind the latest change. It gives the reader no way to say that a part of the tab looks wrong or does not help, so the team cannot tell which parts readers trust and which confuse them. The Site Goals widgets already ask for this with a thumbs up and a thumbs down button, and #13679 turns that prompt into a shared `FeedbackPrompt` component that other widgets can use with their own vote ID and tracking.
 
 This issue adds a thumbs up and a thumbs down button to the chart and to each key factor card. When the reader gives a thumbs down, a short popup asks what seems off.
 

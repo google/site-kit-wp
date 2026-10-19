@@ -6,7 +6,7 @@ The benchmarking response builder (#13595) runs seven Analytics reports, one per
 
 The design for the Key factors section has changed ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev)). The section shows at most three **cards**. Each card names one **driver**: a channel, a landing page, a search keyword, a referring site or a campaign. Each card has at most two **attributes**: the values inside the driver that carried its change, such as the referring site behind a `Referral` card, or the device behind a `Direct` card. Device and new-or-returning are never cards. They are only attributes. Post categories are not part of the section at all. The wire format carries these cards in the response's `keyFactors` field (#13844). This issue fills that field.
 
-**The reports count sessions, and they are broken down by channel.** A session — what the card calls a visit — has exactly one channel, one landing page, one source, one campaign, one device and one visitor type. So the rows of a sessions report always add up: a landing page's sessions are the sum of its rows across channels, and a card's attributes are parts of the card. Visitors do not add up this way, because one visitor can arrive through two channels. Four reports, each keyed on the channel, replace the six dimension reports. Together with the daily series they are five reports, which is one Analytics call. The daily series still counts visitors, because the chart plots visitors.
+**The reports count sessions, and they are broken down by channel.** A session — what the card calls a visit — has exactly one channel, one landing page, one source, one campaign, one device and one visitor type. So the rows of a sessions report always add up: a landing page's sessions are the sum of its rows across channels, and a card's attributes are parts of the card. Visitors do not add up this way, because one visitor can arrive through two channels. Four reports, each keyed on the channel, replace the six dimension reports. Together with the daily series they are five reports, which is one Analytics call. The daily series moves from visitors to sessions as well, so the chart's line, the period totals and the cards count the same thing, and a card's change is part of the change the line shows. `visits` and `dailyTraffic`, named for visits in #13844, keep their shape; only what they count changes.
 
 **Choosing the cards.** Every channel, landing page, campaign, referring site and search keyword is a candidate. Each one is scored with the formula the builder already uses, now measured against the site's sessions. A weight is set for each kind of driver, so a specific driver beats a broad one with the same change. The significance floor and the counter-trend filter drop the candidates that moved too little, as they do today. Then two new rules apply:
 
@@ -46,12 +46,12 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Acceptance criteria
 
-* For a request with `startDate=2026-08-19` and `endDate=2026-09-15`, the assembled response carries `visitors`, `dailyTraffic` and `keyFactors`, and carries neither `dimensions` nor `contextualData`. `visitors` and `dailyTraffic` are unchanged.
+* For a request with `startDate=2026-08-19` and `endDate=2026-09-15`, the assembled response carries `visits`, `dailyTraffic` and `keyFactors`, and carries neither `dimensions` nor `contextualData`. `visits` and `dailyTraffic` keep their shape and count sessions: each `dailyTraffic` row's `visits` is that day's sessions, and `visits.current` and `visits.previous` are the sums of the daily report's sessions over the selected period and the period before it.
 * Before any card is chosen, five Analytics reports are run in one call:
 
   | Report | Windows |
   | :---- | :---- |
-  | `totalUsers` by `date`, as today | as today |
+  | `sessions` by `date`, in place of `totalUsers` by `date` | as today |
   | `sessions` by `sessionDefaultChannelGrouping`, `deviceCategory` and `newVsReturning` | selected and comparison, at most 250 rows |
   | `sessions` by `sessionDefaultChannelGrouping` and `sessionSource` | selected and comparison, at most 250 rows |
   | `sessions` by `sessionDefaultChannelGrouping` and `landingPage` | selected and comparison, at most 250 rows |
@@ -136,7 +136,9 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Report_Options.php`:
   * Set `REPORT_ROW_LIMIT` to `250`.
-  * In the private `get_dimension_options()`, count `sessions` instead of `totalUsers`, and order by `sessions`, descending. `get_daily_series_options()` keeps counting `totalUsers`.
+  * In the private `get_dimension_options()`, count `sessions` instead of `totalUsers`, and order by `sessions`, descending.
+  * In `get_daily_series_options()`, count `sessions` instead of `totalUsers` as well, so the daily series, the totals summed from it and the breakdowns are in one unit. Keep its dates and its order.
+  * Change the docblocks that say a report counts visitors to say that it counts sessions.
   * Replace `get_channels_options()`, `get_devices_options()`, `get_visitor_mix_options()`, `get_referrers_options()`, `get_content_options()` and `get_categories_options()` with four methods, each with no dimension filter:
 
     | Method | Dimensions |
@@ -246,7 +248,7 @@ _Do not alter or remove anything below. The following sections will be managed b
     * Run the requests through `run_reports()` only when there is at least one. Return a `WP_Error` from that call unchanged.
     * Pair each report's windows with `pair_periods()`, name the fields as `Key_Factor_Selector::get_attributes()` expects them, and set each card's `attributes` from `get_attributes()`. Call `get_attributes()` with an empty array for a `CHANNEL` or a `SEARCH_KEYWORD` card.
     * Remove `sourceValues` from each card.
-  * In `build()`, return `visitors`, `dailyTraffic` and `keyFactors`, and update its `@return` description.
+  * In `build()`, return `visits`, `dailyTraffic` and `keyFactors`, and update its `@return` description: `visits` and each `dailyTraffic` row's `visits` count sessions. Say the same in the docblocks of the method that builds the daily rows and of `sum_visits()`.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Wire_Format.php`:
   * Remove `DIMENSION_INDEXES` and `CONTEXTUAL_DATA_KEYS`. After the changes above, no class reads them.
@@ -278,6 +280,7 @@ Encoding `keyFactors` is #13844. `sessionSource` is added to the dimensions a sh
 * Update `tests/phpunit/includes/Fake_Benchmarking_Reports_Trait.php`: key `$report_rows` by all of a report's dimension names, joined with commas, instead of by the first name only, because the four breakdowns all start with `sessionDefaultChannelGrouping`. Also let a key hold a callable that receives the report request and returns the rows, so a test can answer two reports that run after the cards are chosen by their filters.
 * Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Report_OptionsTest.php` covering:
   * Each of the four breakdowns counts `sessions`, carries both windows, has the dimensions in the table and asks for 250 rows.
+  * The daily series counts `sessions` by `date` over the same days as before. Change the `get_daily_series_options()` tests to expect `sessions`, and say sessions rather than visitors in their names and messages.
   * `get_driver_breakdown_options()` adds an in-list filter on the dimension it is given.
   * Remove the cases for the six removed methods.
 * Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Row_ScorerTest.php` for the new constructor, covering:
@@ -300,7 +303,8 @@ Encoding `keyFactors` is #13844. `sessionSource` is added to the dimensions a sh
   * Rows are paired by all of their dimension values.
   * The reports after the cards are chosen run only for kept landing page, campaign and referring site cards, filtered to the card's driver. A `Facebook` card's filter lists every raw source it was joined from. Three such cards take two calls, and channel and search keyword cards take none.
   * A `WP_Error` from the first call, and one from a later call, is returned unchanged.
-  * The response carries `visitors`, `dailyTraffic` and `keyFactors`, and neither `dimensions` nor `contextualData`. Building it twice from the same report rows gives the same response.
+  * The response carries `visits`, `dailyTraffic` and `keyFactors`, and neither `dimensions` nor `contextualData`. Building it twice from the same report rows gives the same response.
+  * The daily report asks for `sessions` by `date`, and `dailyTraffic` and the two `visits` totals are read from its rows.
   * Make `test_build__does_not_return_a_number_with_decimals` also allow each `sharePct`, and assert that it has at most one decimal.
   * Remove the cases for the dimension ranking, the cap of 5 rows and the content rows, and the `Custom_Dimensions_Data_Available` setup.
 * Update `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Contextual_Data_ValidatorTest.php` for the seven keys and their fields, the limit of 250 rows per key, and the removed `position` type.

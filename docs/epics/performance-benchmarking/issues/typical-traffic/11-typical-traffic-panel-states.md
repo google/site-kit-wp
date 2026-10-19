@@ -34,7 +34,7 @@ _Do not alter or remove anything below. The following sections will be managed b
 * Retrying after a failure sends a new request that reaches the server rather than returning the failure from browser storage, and shows the placeholders while it is in flight.
 * Where the reader is on a shared dashboard and the failure is one they can act on, the error offers the request-access action the same error offers in other widgets.
 * A failure on the Typical Traffic tab leaves the Traffic Overview tab unchanged: selecting it shows its visitor total, its chart and its breakdown as before.
-* On a property with thirteen months of history and no visitors in the selected period or the period before it, the tab shows the chart with its line at `0` and no key factors section, and shows no call to action and no "gathering data" message.
+* On a property with thirteen months of history and no visits in the selected period or the period before it, the tab shows the chart with its line at `0` and no key factors section, and shows no call to action and no "gathering data" message.
 * The tab never shows a gathering-data state.
 
 ## Implementation Brief
@@ -54,7 +54,7 @@ _Do not alter or remove anything below. The following sections will be managed b
     * `error` is set: `WidgetReportError` with `widgetSlug={ TRAFFIC_OVERVIEW_WIDGET_SLUG }`, `moduleSlug={ MODULE_SLUG_ANALYTICS_4 }`, `error`, and `onRetry` calling `clearBenchmarkingData( startDate, endDate )`. `ReportErrorActions` invalidates the resolution itself, and `clearBenchmarkingData` is what drops the API layer's stored copy, so the retry reaches the server rather than replaying the failure from browser storage.
     * `loading` is `true`, or `response` is `undefined`: `TypicalTrafficPanelLoading`.
     * Otherwise: the chart, its support link and the key factor cards, rendered together from the one response.
-  * Add no gathering-data branch and no zero-data branch. A response with no visitors renders the chart with its zeros, and `KeyFactors` renders nothing for an empty `keyFactors`, which the components already do.
+  * Add no gathering-data branch and no zero-data branch. A response with no visits renders the chart with its zeros, and `KeyFactors` renders nothing for an empty `keyFactors`, which the components already do.
   * Do not pass `gatheringData` to `GoogleChart` anywhere in this tab.
 
 * [ ] In `assets/sass/widgets/_googlesitekit-widget-analyticsTrafficOverview.scss`:
@@ -70,7 +70,7 @@ The chart is #13600, the key factor cards are #13601, and the loading flag, the 
   * Changing to a date range the tab has not shown shows the placeholders again and sends a request.
   * A failed request shows the report error for Analytics in place of the chart and the cards, with its Retry button.
   * Retrying clears the stored response for those dates and sends a request that reaches the network, and shows the placeholders while it is in flight.
-  * A response with no visitors and no key factor cards renders the chart with its zeros and no key factors section, and renders no call to action and no gathering-data message.
+  * A response with no visits and no key factor cards renders the chart with its zeros and no key factors section, and renders no call to action and no gathering-data message.
 * Add `assets/js/components/ReportErrorActions.test.js` covering:
   * An error recorded against `getBenchmarkingData` shows the Retry button, and retrying invalidates that selector's resolution.
   * An error recorded against a selector in neither name still shows no Retry button.

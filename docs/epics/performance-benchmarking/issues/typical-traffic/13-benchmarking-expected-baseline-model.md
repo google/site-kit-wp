@@ -1,14 +1,14 @@
-# `Expected_Baseline` — the expected range of daily visitors, fitted in PHP
+# `Expected_Baseline` — the expected range of daily visits, fitted in PHP
 
 ## Feature Description
 
-The Typical Traffic chart shows thirteen months of a site's daily visitors, but nothing tells the reader whether a given day was normal for that site. A site owner who sees a 12% dip cannot tell a normal January from a real problem. The chart's design answers this with an expected range: a band under the line that shows how many visitors the site's own history makes normal for each day. Nothing in the plugin computes that range today.
+The Typical Traffic chart shows a site's daily visits across the selected date range, but nothing tells the reader whether a given day was normal for that site. A site owner who sees a 12% dip cannot tell a normal January from a real problem. The chart's design answers this with an expected range: a band under the line that shows how many visits the site's own history makes normal for each day. Nothing in the plugin computes that range today.
 
-This issue adds `Expected_Baseline`, a PHP class in `includes/Modules/Analytics_4/Benchmarking/` that takes a site's daily visitor series and returns, for one day, the lowest and the highest number of visitors that is normal for that day. The class stores nothing and calls nothing. It is arithmetic over the series it is given, so it can be tested on its own with fixed series. The benchmarking response assembled in #13595 and the chart from #13600 will use its results, and changing them is separate work.
+This issue adds `Expected_Baseline`, a PHP class in `includes/Modules/Analytics_4/Benchmarking/` that takes a site's daily series of visits — GA4 sessions — and returns, for one day, the lowest and the highest number of visits that is normal for that day. The class stores nothing and calls nothing. It is arithmetic over the series it is given, so it can be tested on its own with fixed series. The benchmarking response assembled in #13595 and the chart from #13600 will use its results, and changing them is separate work.
 
 **Each day is judged only by the days before it, and by the day itself.** The fit for a day reads at most the 365 days that end on that day, and never a day after it. A spike in March therefore changes the band under March and under the days after March, but never the band under February. A band drawn under a day in the past is what the history up to that day expected, not what we know now. A day needs at least 28 days of history to have a band at all; a day with less has no band.
 
-**The history starts on the first day with any traffic.** The daily series has a zero for every day without visitors, which is correct for the line. It is wrong for the fit when the zeros are days before the Analytics property existed, or before the site was tagged. Over a year of such zeros, the fit would clamp every real day to 25 visitors for months. So the fit drops the zeros at the start of the series and begins at the first day with recorded traffic. Zeros after that day stay in, because they are real days without visitors.
+**The history starts on the first day with any traffic.** The daily series has a zero for every day without visits, which is correct for the line. It is wrong for the fit when the zeros are days before the Analytics property existed, or before the site was tagged. Over a year of such zeros, the fit would clamp every real day to 25 visits for months. So the fit drops the zeros at the start of the series and begins at the first day with recorded traffic. Zeros after that day stay in, because they are real days without visits.
 
 **How the band is built.** Each fit computes three values from its window:
 
@@ -16,7 +16,7 @@ This issue adds `Expected_Baseline`, a PHP class in `includes/Modules/Analytics_
 - **A margin**, how far a normal 28 days strays from the center. It comes from how much the last 28 days varied around their weekday pattern. It has a lower limit that grows with the square root of the center, so a small site's band stays wide enough to hold its normal noise. It has an upper limit of 24% of the center, so one unsettled month does not make every later day look normal.
 - **A weekday shape**, how each day of the week compares with the average day, so a site that is quiet at weekends gets a lower band at weekends.
 
-The day's band is the center minus and plus the margin, spread over 28 days and multiplied by the factor for that day's weekday, rounded to one decimal. Because the lower limit of the margin grows with the square root of the center, the band is relatively wider on a small site: about 43% either side of the expectation at 10 visitors a day, about 32% at 25, and between 14% and 24% on large sites.
+The day's band is the center minus and plus the margin, spread over 28 days and multiplied by the factor for that day's weekday, rounded to one decimal. Because the lower limit of the margin grows with the square root of the center, the band is relatively wider on a small site: about 43% either side of the expectation at 10 visits a day, about 32% at 25, and between 14% and 24% on large sites.
 
 **A window too short for a trend gets a simpler fit.** The fit also measures the site's monthly trend from 28-day totals taken every 14 days. The band does not use the trend. The class reports it because two other things read it from the same fit: the week ahead, which continues the band for the seven days after the selected period along that trend, and the Traffic Insights epic. When a window has fewer than two 28-day totals, there is no trend: the center is the plain sum of the last 28 days, the margin is wider, and the trend is reported as stable.
 
@@ -30,8 +30,8 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Acceptance criteria
 
-* `Expected_Baseline`, in `includes/Modules/Analytics_4/Benchmarking/`, takes a daily visitor series with each day's date, oldest first, and returns the fit for any day in it: that day's `expectedMin` and `expectedMax`, the monthly trend as a percentage, and the trend direction `UP`, `DOWN` or `STABLE`.
-* The fit for a day reads the series from its first day with more than `0` visitors up to and including that day, and only the last 365 of those days:
+* `Expected_Baseline`, in `includes/Modules/Analytics_4/Benchmarking/`, takes a daily series of visits with each day's date, oldest first, and returns the fit for any day in it: that day's `expectedMin` and `expectedMax`, the monthly trend as a percentage, and the trend direction `UP`, `DOWN` or `STABLE`.
+* The fit for a day reads the series from its first day with more than `0` visits up to and including that day, and only the last 365 of those days:
   * A day with fewer than 28 such days has no fit, and its `expectedMin` and `expectedMax` are `null`.
   * A day with 28 or more has a fit, and both bounds are numbers rounded to one decimal.
 * The fit is computed with these steps and constants, where `W` is the window of `n` days the fit reads:
@@ -46,13 +46,13 @@ _Do not alter or remove anything below. The following sections will be managed b
   | Short history | When `K < 2`: `B` is the sum of the last 28 days before limiting, `M = MAX( 15, 0.18 * B + 6.5 * SQRT( B ), 0.25 * B )`, the monthly trend is `0` and the direction is `STABLE`. |
   | Band | `expectedMin = ROUND( MAX( 0, B - M ) / 28 * S( d ), 1 )` and `expectedMax = ROUND( ( B + M ) / 28 * S( d ), 1 )`, with `d` the weekday of the day being fitted. |
 * Every sum runs over its days from the oldest to the newest, and rounding is half away from zero.
-* A series of 365 days at `100` visitors each gives the last day `expectedMin` `77.6` and `expectedMax` `122.4`, and a series of 365 days at `10` visitors each gives it `5.7` and `14.3`.
-* A series of exactly 28 days at `100` visitors each gives the last day `expectedMin` `69.7` and `expectedMax` `130.3` and a `STABLE` direction, and a series of 27 such days gives it `null` for both.
-* Adding 100 days of `0` visitors before a series of 365 days at `100` leaves the last day's bounds at `77.6` and `122.4`, and the first day with a band is the 28th day with visitors.
-* A series whose every day has `0` visitors gives `null` bounds on every day.
-* A series of 365 days at `100` visitors with one day of `5,000` in the middle gives every day the same bounds it would get if that day had `125` visitors.
-* Changing the visitors on the last day of a series changes no bound on any earlier day.
-* On a series with more visitors on weekdays than at weekends, every weekday's bounds are higher than every weekend day's bounds in the same week.
+* A series of 365 days at `100` visits each gives the last day `expectedMin` `77.6` and `expectedMax` `122.4`, and a series of 365 days at `10` visits each gives it `5.7` and `14.3`.
+* A series of exactly 28 days at `100` visits each gives the last day `expectedMin` `69.7` and `expectedMax` `130.3` and a `STABLE` direction, and a series of 27 such days gives it `null` for both.
+* Adding 100 days of `0` visits before a series of 365 days at `100` leaves the last day's bounds at `77.6` and `122.4`, and the first day with a band is the 28th day with visits.
+* A series whose every day has `0` visits gives `null` bounds on every day.
+* A series of 365 days at `100` visits with one day of `5,000` in the middle gives every day the same bounds it would get if that day had `125` visits.
+* Changing the visits on the last day of a series changes no bound on any earlier day.
+* On a series with more visits on weekdays than at weekends, every weekday's bounds are higher than every weekend day's bounds in the same week.
 * The same series always produces the same bounds, trend and direction, to the decimal.
 * `Expected_Baseline` makes no request, reads no option and writes nothing.
 
@@ -70,16 +70,16 @@ _Do not alter or remove anything below. The following sections will be managed b
     * `DIRECTION_UP`, `DIRECTION_DOWN` and `DIRECTION_STABLE`, set to `'UP'`, `'DOWN'` and `'STABLE'`.
     * The coefficients of the formulas (`2.5`, `0.18`, `0.13`, `0.24` and the others) can stay inline, as `Row_Scorer::score_row()` keeps `0.6` and `0.4` inline.
   * `__construct( array $daily_traffic )`:
-    * `$daily_traffic` is a list of days, oldest first, each `array( 'date' => 'YYYY-MM-DD', 'visitors' => int )`, with one entry for every day and no day missing. This is the shape `Response_Builder::get_daily_traffic()` returns.
-    * Store each day's visitors, and each day's weekday as `(int) ( new DateTimeImmutable( $date, new DateTimeZone( 'UTC' ) ) )->format( 'w' )`, which is `0` for Sunday to `6` for Saturday.
-    * Store the position of the first day with more than `0` visitors, or `null` when no day has visitors.
+    * `$daily_traffic` is a list of days, oldest first, each `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`, with one entry for every day and no day missing. This is the shape `Response_Builder` builds its daily rows in, with the `visits` name #13844 gives each day's count.
+    * Store each day's `visits`, and each day's weekday as `(int) ( new DateTimeImmutable( $date, new DateTimeZone( 'UTC' ) ) )->format( 'w' )`, which is `0` for Sunday to `6` for Saturday.
+    * Store the position of the first day with more than `0` visits, or `null` when no day has any.
   * `get_fit( $day_index )`, public. `$day_index` is the zero-based position of the day in the series. It returns an array with four keys:
     * `expectedMin` and `expectedMax`: the day's bounds from the Band step, as floats.
     * `monthlyTrendPercent`: the monthly trend from the Trend step, as a float. It is not rounded.
     * `trendDirection`: `DIRECTION_UP` when the trend is above `TREND_THRESHOLD_PERCENT`, `DIRECTION_DOWN` when it is below `-TREND_THRESHOLD_PERCENT`, and `DIRECTION_STABLE` otherwise.
-    * All four keys are `null` when the day has no fit. A day has no fit when no day in the series has visitors, when the day comes before the first day with visitors, or when fewer than `MINIMUM_HISTORY_DAYS` days run from the first day with visitors up to and including the day.
+    * All four keys are `null` when the day has no fit. A day has no fit when no day in the series has visits, when the day comes before the first day with visits, or when fewer than `MINIMUM_HISTORY_DAYS` days run from the first day with visits up to and including the day.
   * `fit_day( $day_index )`, private. It computes the fit and returns `null` when the day has no fit. Otherwise it returns `center` (`B`), `margin` (`M`), `weekdayFactors` (the seven values of `S`, keyed by weekday `0` to `6`) and `monthlyTrendPercent`. `get_fit()` builds its result from this array, and #13841 builds the week ahead from it too.
-    * The window `W` starts at the later of two positions: the first day with visitors, and `$day_index - MAXIMUM_HISTORY_DAYS + 1`. It ends at `$day_index`.
+    * The window `W` starts at the later of two positions: the first day with visits, and `$day_index - MAXIMUM_HISTORY_DAYS + 1`. It ends at `$day_index`.
     * It runs the steps of the acceptance criteria in order, one private method for each step, as listed below.
   * Rules that apply to every step, so that the bounds are the same to the decimal on every run:
     * Keep every list oldest first, and add it up in that order, with a `foreach` loop or with `array_sum()`.
@@ -99,22 +99,22 @@ _Do not alter or remove anything below. The following sections will be managed b
       * The line's value on the last day is `intercept + slope * 27`. Limit it as the Center step says, with `sum( y ) / 28` as the mean, and return `B`.
     * `get_margin( $center, array $last_period_values, array $last_period_weekdays, array $weekday_factors )`: return `M` from the Margin step.
     * `get_band( $center, $margin, $weekday_factor )`: return `expectedMin` and `expectedMax` from the Band step. #13841 calls it with the center of a day in the week ahead.
-  * When there are fewer than two 28-day totals, `fit_day()` does not call `get_monthly_trend_percent()`, `get_center()` or `get_margin()`. It takes `B`, `M` and a monthly trend of `0` from the Short history step instead. `B` is the sum of the visitors of the last `PERIOD_DAYS` days of the window, before limiting. The weekday factors still come from `get_weekday_factors()`.
+  * When there are fewer than two 28-day totals, `fit_day()` does not call `get_monthly_trend_percent()`, `get_center()` or `get_margin()`. It takes `B`, `M` and a monthly trend of `0` from the Short history step instead. `B` is the sum of the visits of the last `PERIOD_DAYS` days of the window, before limiting. The weekday factors still come from `get_weekday_factors()`.
 
 Calling `Expected_Baseline` from `Response_Builder`, the longer daily report and the bounds in the wire format are #13799. The week ahead is #13841. Drawing the band on the chart is #13800.
 
 ### Test Coverage
 
-* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Expected_BaselineTest.php`, following `Row_ScorerTest`, with a private helper that turns a list of visitor counts and a first date into a daily series. Assert every bound with `assertSame()`, and the trend with `assertEqualsWithDelta()`, because the trend is not rounded. Cover:
-  * 365 days at `100` visitors give the last day `77.6` to `122.4` and `STABLE`. 365 days at `10` give `5.7` to `14.3`.
+* Add `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Expected_BaselineTest.php`, following `Row_ScorerTest`, with a private helper that turns a list of daily counts and a first date into a daily series. Assert every bound with `assertSame()`, and the trend with `assertEqualsWithDelta()`, because the trend is not rounded. Cover:
+  * 365 days at `100` visits give the last day `77.6` to `122.4` and `STABLE`. 365 days at `10` give `5.7` to `14.3`.
   * 28 days at `100` give the last day `69.7` to `130.3`, a trend of `0` and `STABLE`. 27 days at `100` give the last day `null` in all four keys.
-  * 100 days at `0` followed by 365 days at `100` give the last day `77.6` to `122.4`. The 27th day with visitors has no fit, and the 28th day has `69.7` to `130.3`.
+  * 100 days at `0` followed by 365 days at `100` give the last day `77.6` to `122.4`. The 27th day with visits has no fit, and the 28th day has `69.7` to `130.3`.
   * A series of only zeros gives every day `null` in all four keys.
   * 35 days at `1000` followed by 365 days at `100` give the last day `77.6` to `122.4`, because the fit reads only the last 365 days.
   * 365 days at `100` with one day of `5000` in the middle give every day the same result as the same series with `125` on that day. The same series with one day of `0` gives every day the same result as with `75` on that day.
   * Two series that differ only on their last day give the same result on every earlier day.
-  * On 365 days with `120` visitors on every weekday and `50` on every Saturday and Sunday, both bounds of every weekday in the last week are higher than both bounds of every weekend day in that week.
-  * 365 days rising by one visitor a day, from `100` to `464`, give the last day a trend above `4` and `UP`. The same days falling from `464` to `100` give a trend below `-4` and `DOWN`.
+  * On 365 days with `120` visits on every weekday and `50` on every Saturday and Sunday, both bounds of every weekday in the last week are higher than both bounds of every weekend day in that week.
+  * 365 days rising by one visit a day, from `100` to `464`, give the last day a trend above `4` and `UP`. The same days falling from `464` to `100` give a trend below `-4` and `DOWN`.
   * Two instances built from the same series return identical results for every day, trend and direction included.
   * The tests build `Expected_Baseline` from a series alone, with no `Context`, no options and no HTTP mocks.
 * No Storybook story is required, because the change adds no UI.

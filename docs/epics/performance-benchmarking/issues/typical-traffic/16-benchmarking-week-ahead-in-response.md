@@ -2,15 +2,15 @@
 
 ## Feature Description
 
-The design of the Typical Traffic chart continues the expected range for seven days after the last day of the selected date range, past a divider, so the days just ahead have a shape rather than being blank ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev)). Nothing computes those seven days today. `Expected_Baseline` from #13798 fits each day on the history up to and including that day, so it has nothing to say about a day that has not happened yet. The benchmarking response from #13799 carries bounds only for the 395 plotted days in `dailyTraffic`, and the wire format has no member for a day after `endDate`.
+The design of the Typical Traffic chart continues the expected range for seven days after the last day of the selected date range, past a divider, so the days just ahead have a shape rather than being blank ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev)). Nothing computes those seven days today. `Expected_Baseline` from #13798 fits each day on the history up to and including that day, so it has nothing to say about a day that has not happened yet. The benchmarking response from #13799 carries bounds only for the plotted days in `dailyTraffic`, the days of the selected date range, and the wire format has no member for a day after `endDate`.
 
 This issue adds the week ahead to the response: a `forecast` field with one row for each of the seven days after `endDate`, each carrying `expectedMin` and `expectedMax`, computed on the server and carried to the browser in a new member of the wire format.
 
 **The week ahead is the fit for `endDate`, carried forward.** The server already fits `endDate` for the band under the last plotted day. Each forward day's band is that same fit, moved along the site's monthly trend that the fit measures, and spread onto the day with the factor for its day of the week. It is arithmetic over a fit the server already has, not a call to a model. It needs no new report and no new request.
 
-**Only the trend moves the band.** The margin stays the margin of the fit for `endDate`, so the band does not get wider for the days further ahead. A horizon of seven days is short enough for that. A growing site's week ahead rises, and a shrinking site's week ahead falls. The center never goes below zero, so a steep decline never produces a negative visitor count.
+**Only the trend moves the band.** The margin stays the margin of the fit for `endDate`, so the band does not get wider for the days further ahead. A horizon of seven days is short enough for that. A growing site's week ahead rises, and a shrinking site's week ahead falls. The center never goes below zero, so a steep decline never produces a negative count.
 
-For a request ending on `2026-09-15`, on a site with 100 visitors on every one of the last 365 days, the fit for `2026-09-15` has a center of `2800` visitors over 28 days, a margin of `628.6` and no trend. Every forward day keeps the band of `2026-09-15`:
+For a request ending on `2026-09-15`, on a site with 100 visits on every one of the last 365 days, the fit for `2026-09-15` has a center of `2800` visits over 28 days, a margin of `628.6` and no trend. Every forward day keeps the band of `2026-09-15`:
 
 ```json
 "forecast": [
@@ -25,9 +25,9 @@ Had the same fit measured a monthly trend of `+10%`, the center would grow by `1
 
 **The week is seven days for every date range.** It describes where the site is heading now, not the selected period, so it is the same seven days whether the reader selected 7 or 90 days. The projection counts its days from `endDate` and does not read the current date, so the same series and the same `endDate` always give the same seven rows, and the tests can assert them to the decimal.
 
-**`forecast` is its own field rather than seven more rows on `dailyTraffic`.** Everything that reads `dailyTraffic` reads days that happened: the line, the period totals and the band. A row with no visitor count would have to be skipped by each of them. A separate field also keeps the week the same length while the window before it changes.
+**`forecast` is its own field rather than seven more rows on `dailyTraffic`.** Everything that reads `dailyTraffic` reads days that happened: the line, the period totals and the band. A row with no count would have to be skipped by each of them. A separate field also keeps the week the same length while the window before it changes.
 
-**No band on `endDate` means no week ahead.** When the site has fewer than 28 days of traffic history up to and including `endDate`, counted from its first day with any visitors, the row for `endDate` has no bounds. There is then no fit to carry forward, and the response carries no `forecast`.
+**No band on `endDate` means no week ahead.** When the site has fewer than 28 days of traffic history up to and including `endDate`, counted from its first day with any visits, the row for `endDate` has no bounds. There is then no fit to carry forward, and the response carries no `forecast`.
 
 **The wire format gains member `8`.** It holds one `[ expectedMin, expectedMax ]` pair for each of the seven days, in order, or an empty array when there is no week ahead. No dates travel: the browser dates the pairs from the last plotted day. The bounds are rounded to one decimal before they are encoded, as every other non-integer in the format is, and the browser does not round them again. The format version stays `1`, because no response in format `1` has been released to users. The example above travels as:
 
@@ -49,8 +49,8 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 * For a request with `endDate=2026-09-15` whose `dailyTraffic` row for `2026-09-15` has bounds, the response carries `forecast`: seven rows dated `2026-09-16` to `2026-09-22`, in ascending date order, each `{ date, expectedMin, expectedMax }`.
 * When the `dailyTraffic` row for `endDate` has `null` bounds, the response carries no `forecast`:
-  * On a series with `0` visitors on every day before `2026-08-19` and visitors on every day from then on, a request ending on `2026-09-15` carries `forecast`.
-  * On the same series with visitors only from `2026-08-20` on, the same request carries no `forecast`.
+  * On a series with `0` visits on every day before `2026-08-19` and visits on every day from then on, a request ending on `2026-09-15` carries `forecast`.
+  * On the same series with visits only from `2026-08-20` on, the same request carries no `forecast`.
 * The bounds of each forward day `endDate + h`, with `h` from `1` to `7`, come from the fit `Expected_Baseline` makes for `endDate`, carried forward:
   | Step | Computation |
   | :---- | :---- |
@@ -58,13 +58,13 @@ _Do not alter or remove anything below. The following sections will be managed b
   | Margin | `M`, the margin of the fit for `endDate`, unchanged |
   | Band | `expectedMin = ROUND( MAX( 0, center - M ) / 28 * S( d ), 1 )` and `expectedMax = ROUND( ( center + M ) / 28 * S( d ), 1 )`, where `S` is the weekday shape of the fit for `endDate` and `d` is the weekday of `endDate + h` |
 * Rounding is half away from zero, and every forward bound is a number with at most one decimal.
-* A series of 365 days at `100` visitors each gives every forward day `expectedMin` `77.6` and `expectedMax` `122.4`, the same bounds as `endDate`.
-* On a series of 365 days rising by one visitor a day, from `100` to `464`, both bounds on `endDate + 7` are higher than the bounds on `endDate`. On a series falling by one visitor a day, from `464` to `100`, both are lower.
-* On a series of 365 days with `120` visitors on every weekday and `50` on every Saturday and Sunday, every forward weekday has higher bounds than every forward Saturday and Sunday.
-* No forward bound is below `0`, and a forward day whose center would fall below `0` takes a center of `0`. On a series of 14 days at `1000` visitors followed by 28 days at `5`, ending on `endDate`, the bounds on `endDate + 7` are `0` and `2.8`.
+* A series of 365 days at `100` visits each gives every forward day `expectedMin` `77.6` and `expectedMax` `122.4`, the same bounds as `endDate`.
+* On a series of 365 days rising by one visit a day, from `100` to `464`, both bounds on `endDate + 7` are higher than the bounds on `endDate`. On a series falling by one visit a day, from `464` to `100`, both are lower.
+* On a series of 365 days with `120` visits on every weekday and `50` on every Saturday and Sunday, every forward weekday has higher bounds than every forward Saturday and Sunday.
+* No forward bound is below `0`, and a forward day whose center would fall below `0` takes a center of `0`. On a series of 14 days at `1000` visits followed by 28 days at `5`, ending on `endDate`, the bounds on `endDate + 7` are `0` and `2.8`.
 * The same series and the same `endDate` give the same `forecast`, to the decimal, whatever day the request is made on.
 * Producing `forecast` runs no report, and the response takes no more calls to Analytics than it does without `forecast`.
-* `visitors`, `dailyTraffic` and `keyFactors` are the same as before, and `dailyTraffic` holds no row after `endDate`.
+* `visits`, `dailyTraffic` and `keyFactors` are the same as before, and `dailyTraffic` holds no row after `endDate`.
 * The encoded response is an array of nine members. Members `0` to `7` are unchanged, and member `8` holds the week ahead:
   * Seven `[ expectedMin, expectedMax ]` pairs, one for each day from `endDate + 1` to `endDate + 7` in order, when the response carries `forecast`.
   * An empty array when it carries none.
@@ -83,7 +83,7 @@ _Do not alter or remove anything below. The following sections will be managed b
     * Compute each forward day's bounds with the Center, Margin and Band steps in the acceptance criteria. Build the band with the code that builds a fitted day's band, with the forward center in place of `B`. Move that code into its own private method if it is not one yet.
     * Read `S` for the weekday of the forward day, numbered the way the fit numbers weekdays. Take `30.4375` from the same constant the trend step uses.
     * Write each formula with its terms in the order the acceptance criteria give them, and round with `round( $value, 1 )`, so the bounds match the tests to the decimal.
-    * Date the rows from the last date of the series. Start from a `DateTimeImmutable` in UTC and move one day forward with `modify( '+1 day' )` for each row, as `Response_Builder::get_daily_traffic()` does. Do not read the current time: no `time()`, no `current_time()`, and no `DateTimeImmutable` created without a date.
+    * Date the rows from the last date of the series. Start from a `DateTimeImmutable` in UTC and move one day forward with `modify( '+1 day' )` for each row, as `Response_Builder::get_daily_series()` does. Do not read the current time: no `time()`, no `current_time()`, and no `DateTimeImmutable` created without a date.
     * Return the rows oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'expectedMin' => float, 'expectedMax' => float )`.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Builder.php`:
@@ -111,7 +111,7 @@ _Do not alter or remove anything below. The following sections will be managed b
   * Add three checks to `membersHoldTheirShapes`, so a response that fails any of them decodes to `null`:
     * Member `MEMBER_FORECAST` is an array that is empty or holds exactly `BENCHMARKING_FORECAST_DAYS` entries.
     * Each of its entries is an array of two numbers.
-    * When it is not empty, member `MEMBER_DAILY_VISITORS` is not empty either, because the pairs are dated from the last daily row.
+    * When it is not empty, member `MEMBER_DAILY_VISITS` is not empty either, because the pairs are dated from the last daily row.
   * Add `decodeForecast( lastDate: string, pairs: [ number, number ][] ): BenchmarkingForecastRow[]` next to `decodeDailyTraffic()`. Start from `stringToDate( lastDate )`, and before each pair move the date one day forward with `setDate( date.getDate() + 1 )`, as `decodeDailyTraffic()` does. Give each row the pair's first number as `expectedMin` and its second as `expectedMax`, unchanged.
   * In `decodeBenchmarkingResponse()`, when member `MEMBER_FORECAST` holds pairs, pass the date of the last decoded `dailyTraffic` row and the pairs to `decodeForecast()`, and add the result to the returned object as `forecast`. When the member is empty, leave the `forecast` key out.
 
@@ -121,17 +121,17 @@ _Do not alter or remove anything below. The following sections will be managed b
 * [ ] In `assets/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json`:
   * Add member `8`: seven different `[ expectedMin, expectedMax ]` pairs, each bound with one decimal. They stand for `2025-08-22` to `2025-08-28`, the seven days after the fixture's last daily count.
 
-#13799 adds the 759-day daily series, the `dailyTraffic` bounds and member `7`. Drawing `forecast` on the chart is #13842.
+#13799 starts the daily report 364 days before the selected range, and adds the `dailyTraffic` bounds and member `7`. Drawing `forecast` on the chart is #13842.
 
 ### Test Coverage
 
 * In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Expected_BaselineTest.php` (added in #13798), add cases for `get_forecast()`, on series that end on `2026-09-15` unless the case says otherwise:
-  * 365 days at `100` visitors give seven rows, dated `2026-09-16` to `2026-09-22` in that order, each `77.6` to `122.4`.
-  * On 365 days rising by one visitor a day, from `100` to `464`, both bounds of the seventh row are higher than the bounds of the last day. On the same days falling from `464` to `100`, both are lower.
-  * On 365 days of `120` visitors on weekdays and `50` at weekends, every forward weekday has higher bounds than every forward Saturday and Sunday.
+  * 365 days at `100` visits give seven rows, dated `2026-09-16` to `2026-09-22` in that order, each `77.6` to `122.4`.
+  * On 365 days rising by one visit a day, from `100` to `464`, both bounds of the seventh row are higher than the bounds of the last day. On the same days falling from `464` to `100`, both are lower.
+  * On 365 days of `120` visits on weekdays and `50` at weekends, every forward weekday has higher bounds than every forward Saturday and Sunday.
   * On 14 days at `1000` followed by 28 days at `5`, the seventh row is `0` to `2.8`, and no bound in any row is below `0`.
-  * A series with `0` visitors before `2026-08-19` and `100` from then on gives seven rows, each `69.7` to `130.3`. With visitors from `2026-08-20` on, it gives an empty array, and so does a series of zeros.
-  * 365 days at `100` visitors ending on `2024-02-27` give rows dated `2024-02-28`, `2024-02-29`, then `2024-03-01` to `2024-03-05`.
+  * A series with `0` visits before `2026-08-19` and `100` from then on gives seven rows, each `69.7` to `130.3`. With visits from `2026-08-20` on, it gives an empty array, and so does a series of zeros.
+  * 365 days at `100` visits ending on `2024-02-27` give rows dated `2024-02-28`, `2024-02-29`, then `2024-03-01` to `2024-03-05`.
 * In `tests/phpunit/integration/Modules/Analytics_4/Benchmarking/Response_BuilderTest.php`:
   * With daily rows on every day from `2026-08-19` to `2026-09-15`, `build( '2026-08-19', '2026-09-15' )` returns seven `forecast` rows dated `2026-09-16` to `2026-09-22`, and the last `dailyTraffic` row is `2026-09-15`.
   * With daily rows from `2026-08-20` on, the response has no `forecast` key.
