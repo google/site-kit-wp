@@ -61,6 +61,7 @@ describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
 
 	let registry;
+	let pendingSetupReturnURLSpy;
 
 	const analytics4SettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -145,6 +146,8 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	afterEach( () => {
+		pendingSetupReturnURLSpy?.mockRestore();
+		pendingSetupReturnURLSpy = undefined;
 		jest.resetAllMocks();
 	} );
 
@@ -301,10 +304,9 @@ describe( 'KeyMetricsSetupApp', () => {
 		const featuresURL = registry
 			.select( CORE_SITE )
 			.getAdminURL( 'googlesitekit-features' );
-		jest.spyOn(
-			pendingSetup,
-			'getPendingSetupReturnURL'
-		).mockResolvedValue( featuresURL );
+		pendingSetupReturnURLSpy = jest
+			.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
+			.mockResolvedValue( featuresURL );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
@@ -344,10 +346,9 @@ describe( 'KeyMetricsSetupApp', () => {
 	} );
 
 	it( 'should navigate to the dashboard success URL when pending setup does not match Analytics', async () => {
-		jest.spyOn(
-			pendingSetup,
-			'getPendingSetupReturnURL'
-		).mockResolvedValue( undefined );
+		pendingSetupReturnURLSpy = jest
+			.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
+			.mockResolvedValue( undefined );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {

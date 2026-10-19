@@ -49,6 +49,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 	let registry;
 	let container;
 	let getByRole;
+	let pendingSetupReturnURLSpy;
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -72,6 +73,11 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 
 		container = renderResult.container;
 		getByRole = renderResult.getByRole;
+	} );
+
+	afterEach( () => {
+		pendingSetupReturnURLSpy?.mockRestore();
+		pendingSetupReturnURLSpy = undefined;
 	} );
 
 	describe( 'Place Tag step', () => {
@@ -454,7 +460,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			const featuresURL = pendingRegistry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-features' );
-			const pendingSetupSpy = jest
+			pendingSetupReturnURLSpy = jest
 				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
 				.mockResolvedValue( featuresURL );
 
@@ -483,7 +489,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				)
 			);
 
-			act( () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
 				fireEvent.click(
 					getButtonFromPendingRender( /enable message/i )
 				);
@@ -496,7 +503,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				{ body: { success: true }, status: 200 }
 			);
 
-			act( () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
 				fireEvent.click(
 					getButtonFromPendingRender( /I published my message/i )
 				);
@@ -505,7 +513,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				featuresURL
 			);
-			pendingSetupSpy.mockRestore();
 		} );
 
 		it( 'should fire the tracking event for `I published my message` when it is clicked', async () => {
@@ -630,7 +637,7 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			const featuresURL = pendingRegistry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-features' );
-			const pendingSetupSpy = jest
+			pendingSetupReturnURLSpy = jest
 				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
 				.mockResolvedValue( featuresURL );
 
@@ -659,13 +666,15 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				)
 			);
 
-			act( () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
 				fireEvent.click(
 					getButtonFromPendingRender( /enable message/i )
 				);
 			} );
 
-			act( () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
 				fireEvent.click(
 					getButtonFromPendingRender( /create message/i )
 				);
@@ -678,7 +687,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 				{ body: { success: true }, status: 200 }
 			);
 
-			act( () => {
+			// eslint-disable-next-line require-await
+			await act( async () => {
 				fireEvent.click(
 					getButtonFromPendingRender( /my message is ready/i )
 				);
@@ -687,7 +697,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				featuresURL
 			);
-			pendingSetupSpy.mockRestore();
 		} );
 
 		it( 'should fire the tracking event for secondary `Create message` when it is clicked', async () => {
