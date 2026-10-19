@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import { flatten } from '@react-pdf/stylesheet';
 import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
@@ -61,6 +60,8 @@ const TOP_CONTENT = [
 	},
 ];
 
+const BADGE_MIN_HEIGHT = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
+
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
@@ -99,33 +100,51 @@ function countPartialDataBadges( json: string ) {
 }
 
 /**
- * Finds the style of the row that directly holds the given title text.
+ * Finds the first row that directly holds the given title text.
+ *
+ * @since n.e.x.t
+ *
+ * @param node  The rendered tree, or a node within it.
+ * @param title The title text the row holds.
+ * @return The row, or `undefined` when no row holds the title.
+ */
+function findTitleRow(
+	node: TestRenderer.ReactTestRendererJSON,
+	title: string
+): TestRenderer.ReactTestRendererJSON | undefined {
+	const children = ( node.children ?? [] ).filter(
+		( child ): child is TestRenderer.ReactTestRendererJSON =>
+			typeof child === 'object'
+	);
+
+	if ( children.some( ( child ) => child.children?.includes( title ) ) ) {
+		return node;
+	}
+
+	for ( const child of children ) {
+		const row = findTitleRow( child, title );
+
+		if ( row ) {
+			return row;
+		}
+	}
+
+	return undefined;
+}
+
+/**
+ * Finds the style of the row that holds the given title text.
  *
  * @since n.e.x.t
  *
  * @param json  The rendered PDF content, serialized to a string.
  * @param title The title text the row holds.
- * @return The row's style, flattened to one object, or `undefined` when no row holds the title.
+ * @return The row's style, flattened to one object.
  */
 function findTitleRowStyle( json: string, title: string ) {
-	function findRow(
-		node: TestRenderer.ReactTestRendererJSON
-	): TestRenderer.ReactTestRendererJSON | undefined {
-		const children = ( node.children ?? [] ).filter(
-			( child ): child is TestRenderer.ReactTestRendererJSON =>
-				typeof child === 'object'
-		);
+	const row = findTitleRow( JSON.parse( json ), title );
 
-		if ( children.some( ( child ) => child.children?.includes( title ) ) ) {
-			return node;
-		}
-
-		return children.map( findRow ).find( Boolean );
-	}
-
-	const row = findRow( JSON.parse( json ) );
-
-	return row && flatten( row.props.style );
+	return Object.assign( {}, ...[ row?.props.style ].flat() );
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -214,15 +233,13 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 	} );
 
 	it( 'should reserve the badge height on the card header with or without a badge', () => {
-		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
-
 		// Header flag set: the badge shows beside the audience name.
 		expect(
 			findTitleRowStyle(
 				renderTile( { isAudiencePartialData: true } ),
 				'New visitors'
 			)
-		).toMatchObject( { minHeight } );
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
 
 		// Header flag unset: no badge, but the header keeps its height.
 		expect(
@@ -230,19 +247,17 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				renderTile( { isAudiencePartialData: false } ),
 				'New visitors'
 			)
-		).toMatchObject( { minHeight } );
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
 	} );
 
 	it( 'should reserve the badge height on the Top content title row with or without a badge', () => {
-		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
-
 		// Top content flag set: the badge shows beside the title.
 		expect(
 			findTitleRowStyle(
 				renderTile( { isTopContentPartialData: true } ),
 				'Top content by pageviews'
 			)
-		).toMatchObject( { minHeight } );
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
 
 		// Top content flag unset: no badge, but the row keeps its height.
 		expect(
@@ -250,7 +265,7 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				renderTile( { isTopContentPartialData: false } ),
 				'Top content by pageviews'
 			)
-		).toMatchObject( { minHeight } );
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
 	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {
