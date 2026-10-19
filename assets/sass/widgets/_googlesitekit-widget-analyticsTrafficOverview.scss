@@ -270,12 +270,6 @@
 
 			.googlesitekit-thumbs-survey-trigger__button.mdc-button {
 				@include mdc-button-ink-color( $c-blue-b-700 );
-
-				&:hover,
-				&:active,
-				&:focus {
-					@include mdc-button-ink-color( $c-blue-b-700 );
-				}
 			}
 		}
 
