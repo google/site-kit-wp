@@ -2009,6 +2009,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'posts-by-page-path',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
@@ -2072,6 +2073,7 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
+				'posts-by-page-path',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'

@@ -77,6 +77,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Properties;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
@@ -1090,6 +1091,12 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 			'GET:form-metadata'                           => new Get_Form_Metadata(
 				array(
 					'service' => '',
+				)
+			),
+			'GET:posts-by-page-path'                      => new Get_Posts_By_Page_Path(
+				array(
+					'service' => '',
+					'context' => $this->context,
 				)
 			),
 		);
