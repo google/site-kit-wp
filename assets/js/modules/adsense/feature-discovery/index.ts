@@ -29,6 +29,7 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
@@ -248,6 +249,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Ad blocking recovery', 'google-site-kit' ),
+			getSetupURL: ( select ) =>
+				select( CORE_SITE ).getAdminURL(
+					'googlesitekit-ad-blocking-recovery'
+				),
 		},
 	} );
 }

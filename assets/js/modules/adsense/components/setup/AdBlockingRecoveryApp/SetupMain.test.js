@@ -26,6 +26,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import * as pendingSetup from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -436,6 +437,77 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
+		it( 'should return to the Feature Discovery hub when `I published my message` is clicked and pending setup matches', async () => {
+			const pendingRegistry = createTestRegistry();
+			provideSiteInfo( pendingRegistry );
+			provideModules( pendingRegistry, [
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ADSENSE,
+				},
+			] );
+			pendingRegistry.dispatch( MODULES_ADSENSE ).setSettings( {
+				adBlockingRecoverySetupStatus: '',
+			} );
+
+			const featuresURL = pendingRegistry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-features' );
+			const pendingSetupSpy = jest
+				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
+				.mockResolvedValue( featuresURL );
+
+			const { container: pendingContainer } = render( <SetupMain />, {
+				registry: pendingRegistry,
+				viewContext: VIEW_CONTEXT_AD_BLOCKING_RECOVERY,
+			} );
+
+			function getButtonFromPendingRender( name ) {
+				return Array.from(
+					pendingContainer.querySelectorAll( 'button' )
+				).find( ( button ) => name.test( button.textContent ) );
+			}
+
+			await act( () => Promise.resolve() );
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+				)
+			);
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				)
+			);
+
+			act( () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /enable message/i )
+				);
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			act( () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /I published my message/i )
+				);
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				featuresURL
+			);
+			pendingSetupSpy.mockRestore();
+		} );
+
 		it( 'should fire the tracking event for `I published my message` when it is clicked', async () => {
 			fetchMock.postOnce(
 				new RegExp(
@@ -539,6 +611,83 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			expect( global.location.assign ).toHaveBeenCalledWith(
 				setupSuccessURL
 			);
+		} );
+
+		it( 'should return to the Feature Discovery hub when `My message is ready` is clicked and pending setup matches', async () => {
+			const pendingRegistry = createTestRegistry();
+			provideSiteInfo( pendingRegistry );
+			provideModules( pendingRegistry, [
+				{
+					active: true,
+					connected: true,
+					slug: MODULE_SLUG_ADSENSE,
+				},
+			] );
+			pendingRegistry.dispatch( MODULES_ADSENSE ).setSettings( {
+				adBlockingRecoverySetupStatus: '',
+			} );
+
+			const featuresURL = pendingRegistry
+				.select( CORE_SITE )
+				.getAdminURL( 'googlesitekit-features' );
+			const pendingSetupSpy = jest
+				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
+				.mockResolvedValue( featuresURL );
+
+			const { container: pendingContainer } = render( <SetupMain />, {
+				registry: pendingRegistry,
+				viewContext: VIEW_CONTEXT_AD_BLOCKING_RECOVERY,
+			} );
+
+			function getButtonFromPendingRender( name ) {
+				return Array.from(
+					pendingContainer.querySelectorAll( 'button' )
+				).find( ( button ) => name.test( button.textContent ) );
+			}
+
+			await act( () => Promise.resolve() );
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/sync-ad-blocking-recovery-tags'
+				)
+			);
+
+			muteFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				)
+			);
+
+			act( () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /enable message/i )
+				);
+			} );
+
+			act( () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /create message/i )
+				);
+			} );
+
+			fetchMock.postOnce(
+				new RegExp(
+					'^/google-site-kit/v1/modules/adsense/data/settings'
+				),
+				{ body: { success: true }, status: 200 }
+			);
+
+			act( () => {
+				fireEvent.click(
+					getButtonFromPendingRender( /my message is ready/i )
+				);
+			} );
+
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				featuresURL
+			);
+			pendingSetupSpy.mockRestore();
 		} );
 
 		it( 'should fire the tracking event for secondary `Create message` when it is clicked', async () => {

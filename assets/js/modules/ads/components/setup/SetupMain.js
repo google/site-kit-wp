@@ -49,6 +49,7 @@ import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Row } from '@/js/material-components';
@@ -67,6 +68,8 @@ import {
 import { trackEvent } from '@/js/util';
 import AdsIcon from '@/svg/graphics/ads.svg';
 import SetupForm from './SetupForm';
+
+const FEATURE_SLUG_ADS = 'ads';
 
 export default function SetupMain( { finishSetup } ) {
 	const [ openDialog, setOpenDialog ] = useState( false );
@@ -178,12 +181,16 @@ export default function SetupMain( { finishSetup } ) {
 		// Encapsulate dependencies to avoid function changing after launch.
 		const { select, resolveSelect } = registry;
 		await resolveSelect( CORE_SITE ).getSiteInfo();
-		const redirectURL = select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			{
-				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
-			}
+		const pendingSetupURL = await getPendingSetupReturnURL(
+			select,
+			FEATURE_SLUG_ADS
 		);
+
+		const redirectURL =
+			pendingSetupURL ||
+			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			} );
 		await Promise.all( [
 			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
 			triggerSurvey( 'pax_setup_completed' ),
