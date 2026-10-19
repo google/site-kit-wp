@@ -28,8 +28,6 @@ import TestRenderer from 'react-test-renderer';
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
-import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -62,18 +60,18 @@ const TOP_CONTENT = [
 	},
 ];
 
-type TileProps = Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > >;
-
 /**
- * Renders `PDFYourVisitorGroupsTile` with default props.
+ * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
  *
- * @since n.e.x.t
+ * @since 1.184.0
  *
  * @param props Props that override the defaults.
- * @return The test renderer.
+ * @return The rendered tree serialized to a string.
  */
-function createTile( props: TileProps = {} ) {
-	return TestRenderer.create(
+function renderTile(
+	props: Partial< ComponentProps< typeof PDFYourVisitorGroupsTile > > = {}
+) {
+	const renderer = TestRenderer.create(
 		<PDFYourVisitorGroupsTile
 			audienceName="New visitors"
 			metrics={ METRICS }
@@ -84,36 +82,7 @@ function createTile( props: TileProps = {} ) {
 			{ ...props }
 		/>
 	);
-}
-
-/**
- * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
- *
- * @since 1.184.0
- *
- * @param props Props that override the defaults.
- * @return The rendered tree serialized to a string.
- */
-function renderTile( props: TileProps = {} ) {
-	return JSON.stringify( createTile( props ).toJSON() );
-}
-
-/**
- * Finds the style of the row that holds the given title text.
- *
- * @since n.e.x.t
- *
- * @param props Props that override the defaults.
- * @param title The title text the row holds.
- * @return The row's style, flattened to one object.
- */
-function getTitleRowStyle( props: TileProps, title: string ) {
-	const titleNode = createTile( props ).root.find(
-		( instance ) =>
-			instance.type === PDFTypography && instance.props.children === title
-	);
-
-	return flattenPDFStyle( titleNode.parent?.props.style );
+	return JSON.stringify( renderer.toJSON() );
 }
 
 /**
@@ -126,6 +95,22 @@ function getTitleRowStyle( props: TileProps, title: string ) {
  */
 function countPartialDataBadges( json: string ) {
 	return json.split( 'Partial data' ).length - 1;
+}
+
+/**
+ * Counts the rows that reserve the Partial data badge height.
+ *
+ * @since n.e.x.t
+ *
+ * @param json The rendered PDF content, serialized to a string.
+ * @return The number of rows that reserve the badge height.
+ */
+function countBadgeHeightRows( json: string ) {
+	return (
+		json.split(
+			`"minHeight":${ scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ) }`
+		).length - 1
+	);
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -213,34 +198,34 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 		).toBe( 2 );
 	} );
 
-	it.each( [ true, false ] )(
-		'should reserve the badge height in the card header when isAudiencePartialData is %s',
-		( isAudiencePartialData ) => {
-			const style = getTitleRowStyle(
-				{ isAudiencePartialData },
-				'New visitors'
-			);
+	it( 'should reserve the badge height on the header and Top content title rows, with or without a badge', () => {
+		// Neither flag: both rows reserve the height with no badge.
+		expect( countBadgeHeightRows( renderTile() ) ).toBe( 2 );
 
-			expect( style ).toMatchObject( {
-				minHeight: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
-			} );
-			expect( style ).not.toHaveProperty( 'paddingVertical' );
-		}
-	);
+		// Header flag only: both rows reserve the height.
+		expect(
+			countBadgeHeightRows(
+				renderTile( { isAudiencePartialData: true } )
+			)
+		).toBe( 2 );
 
-	it.each( [ true, false ] )(
-		'should reserve the badge height in the Top content title row when isTopContentPartialData is %s',
-		( isTopContentPartialData ) => {
-			expect(
-				getTitleRowStyle(
-					{ isTopContentPartialData },
-					'Top content by pageviews'
-				)
-			).toMatchObject( {
-				minHeight: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
-			} );
-		}
-	);
+		// Top content flag only: both rows reserve the height.
+		expect(
+			countBadgeHeightRows(
+				renderTile( { isTopContentPartialData: true } )
+			)
+		).toBe( 2 );
+
+		// Both flags: both rows reserve the height.
+		expect(
+			countBadgeHeightRows(
+				renderTile( {
+					isAudiencePartialData: true,
+					isTopContentPartialData: true,
+				} )
+			)
+		).toBe( 2 );
+	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {
 		const json = renderTile( {

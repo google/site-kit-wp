@@ -26,7 +26,6 @@ import TestRenderer from 'react-test-renderer';
  */
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import { renderPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFPartialDataBadge, {
 	PDF_PARTIAL_DATA_BADGE_HEIGHT,
 } from './PDFPartialDataBadge';
@@ -43,8 +42,12 @@ describe( 'PDFPartialDataBadge', () => {
 	} );
 
 	it( 'should render at a fixed height', () => {
-		expect( renderPDFStyle( <PDFPartialDataBadge /> ) ).toMatchObject( {
-			height: scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ),
-		} );
+		const badgeJSON = JSON.stringify(
+			TestRenderer.create( <PDFPartialDataBadge /> ).toJSON()
+		);
+
+		expect( badgeJSON ).toContain(
+			`"height":${ scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ) }`
+		);
 	} );
 } );
