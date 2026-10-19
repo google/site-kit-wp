@@ -22,6 +22,7 @@
 import {
 	INSIGHT_REPORT_ID,
 	getInsightReportArgs,
+	getPlainPermalinkTopPostsReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
 	getTopReferralsReportOptions,
@@ -139,6 +140,60 @@ describe( 'getTopPostsReportOptions', () => {
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
+		} );
+	} );
+} );
+
+describe( 'getPlainPermalinkTopPostsReportOptions', () => {
+	it( 'should build options that request the 1,000 paths and query strings with the most views over the date range, most views first', () => {
+		expect(
+			getPlainPermalinkTopPostsReportOptions( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
+		).toEqual( {
+			startDate: '2025-02-03',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'screenPageViews' } ],
+			dimensions: [ 'pagePathPlusQueryString' ],
+			orderby: [
+				{ metric: { metricName: 'screenPageViews' }, desc: true },
+			],
+			limit: 1000,
+			reportID:
+				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
+		} );
+	} );
+
+	it( 'should build options that leave out the URLs with the product query var or the product post type', () => {
+		expect(
+			getPlainPermalinkTopPostsReportOptions(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				{ by: 'queryVar', postType: 'product', queryVar: 'product' }
+			).dimensionFilters
+		).toEqual( {
+			pagePathPlusQueryString: {
+				filterType: 'stringFilter',
+				matchType: 'PARTIAL_REGEXP',
+				value: '[?&](product=[^&]|post_type=product(&|$))',
+				notExpression: true,
+			},
+		} );
+	} );
+
+	it( 'should build options that leave out the URLs with the product post type when products have no query var', () => {
+		expect(
+			getPlainPermalinkTopPostsReportOptions(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				{ by: 'queryVar', postType: 'product', queryVar: null }
+			).dimensionFilters
+		).toEqual( {
+			pagePathPlusQueryString: {
+				filterType: 'stringFilter',
+				matchType: 'PARTIAL_REGEXP',
+				value: '[?&](post_type=product(&|$))',
+				notExpression: true,
+			},
 		} );
 	} );
 } );

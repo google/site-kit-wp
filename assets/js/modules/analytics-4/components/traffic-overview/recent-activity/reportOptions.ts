@@ -126,6 +126,28 @@ function getExcludedProductsFilters(
 		};
 	}
 
+	if ( excludedProducts.by === 'queryVar' ) {
+		const { postType, queryVar } = excludedProducts;
+		// `get_post_permalink()` puts the slug of a product in the product
+		// query var, such as `?product=hoodie`. For a draft, or a post type
+		// with no query var, it uses the post type and the ID instead, such as
+		// `?post_type=product&p=123`. WordPress sanitizes both names, so they
+		// hold no character with a meaning in a regular expression.
+		const productParameters = [
+			...( queryVar ? [ `${ queryVar }=[^&]` ] : [] ),
+			`post_type=${ postType }(&|$)`,
+		];
+
+		return {
+			pagePathPlusQueryString: {
+				filterType: 'stringFilter',
+				matchType: 'PARTIAL_REGEXP',
+				value: `[?&](${ productParameters.join( '|' ) })`,
+				notExpression: true,
+			},
+		};
+	}
+
 	return {
 		'customEvent:googlesitekit_post_type': {
 			filterType: 'stringFilter',
@@ -168,6 +190,46 @@ export function getTopPostsReportOptions(
 			  }
 			: {} ),
 		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
+	};
+}
+
+/**
+ * Builds the options of the report of views for each URL on a site with plain
+ * permalinks.
+ *
+ * On plain permalinks, every post has the path of the home URL, and only the
+ * query string tells the posts apart. So the report has a row for each path
+ * and query string, such as `/?p=123` and `/?p=123&utm_source=newsletter`, and
+ * the column adds up the rows of the same post. The report has the 1,000 URLs
+ * with the most views, so the URLs of a post with many tracking args, such as
+ * `utm_source`, still add up.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      dateRange           The date range of the Recent activity tab.
+ * @param {string}      dateRange.startDate The first day of the date range.
+ * @param {string}      dateRange.endDate   The last day of the date range.
+ * @param {Object|null} [excludedProducts]  Optional. The way to recognize the product pages that the report leaves out, or `null` to keep them. Default `null`.
+ * @return {Object} The report options.
+ */
+export function getPlainPermalinkTopPostsReportOptions(
+	dateRange: FreshDataDateRange,
+	excludedProducts: ExcludedProducts | null = null
+): ReportOptions {
+	return {
+		...getColumnReportOptions(
+			dateRange,
+			'pagePathPlusQueryString',
+			'screenPageViews',
+			'analytics-4_recent-traffic-breakdown_widget_topPostsArgs'
+		),
+		...( excludedProducts
+			? {
+					dimensionFilters:
+						getExcludedProductsFilters( excludedProducts ),
+			  }
+			: {} ),
+		limit: 1000,
 	};
 }
 
