@@ -105,7 +105,7 @@ const styles = createPDFStyles( {
 	sectionTitle: {
 		color: PDF_COLORS.SURFACES_ON_SURFACE_VARIANT,
 	},
-	topContentTitle: {
+	topContentTitleRow: {
 		marginBottom: 10,
 	},
 	citiesRow: {
@@ -205,6 +205,7 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 	return (
 		<PDFCard style={ styles.card }>
 			<View style={ styles.header }>
+				{ /* `minHeight` includes padding, so it goes on an inner row. */ }
 				<View style={ styles.badgeRow }>
 					<PDFTypography type="title" size="small">
 						{ audienceName }
@@ -264,7 +265,9 @@ const PDFYourVisitorGroupsTile: FC< PDFYourVisitorGroupsTileProps > = ( {
 					<PDFAudienceMetricIconTopContent />
 				</View>
 				<View style={ styles.body }>
-					<View style={ [ styles.badgeRow, styles.topContentTitle ] }>
+					<View
+						style={ [ styles.badgeRow, styles.topContentTitleRow ] }
+					>
 						<PDFTypography
 							size="medium"
 							style={ styles.sectionTitle }

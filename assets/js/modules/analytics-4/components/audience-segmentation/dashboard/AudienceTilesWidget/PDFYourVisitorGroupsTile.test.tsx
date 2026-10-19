@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { flatten } from '@react-pdf/stylesheet';
 import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
@@ -98,19 +99,33 @@ function countPartialDataBadges( json: string ) {
 }
 
 /**
- * Counts the rows that reserve the Partial data badge height.
+ * Finds the style of the row that directly holds the given title text.
  *
  * @since n.e.x.t
  *
- * @param json The rendered PDF content, serialized to a string.
- * @return The number of rows that reserve the badge height.
+ * @param json  The rendered PDF content, serialized to a string.
+ * @param title The title text the row holds.
+ * @return The row's style, flattened to one object, or `undefined` when no row holds the title.
  */
-function countBadgeHeightRows( json: string ) {
-	return (
-		json.split(
-			`"minHeight":${ scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ) }`
-		).length - 1
-	);
+function findTitleRowStyle( json: string, title: string ) {
+	function findRow(
+		node: TestRenderer.ReactTestRendererJSON
+	): TestRenderer.ReactTestRendererJSON | undefined {
+		const children = ( node.children ?? [] ).filter(
+			( child ): child is TestRenderer.ReactTestRendererJSON =>
+				typeof child === 'object'
+		);
+
+		if ( children.some( ( child ) => child.children?.includes( title ) ) ) {
+			return node;
+		}
+
+		return children.map( findRow ).find( Boolean );
+	}
+
+	const row = findRow( JSON.parse( json ) );
+
+	return row && flatten( row.props.style );
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -198,33 +213,44 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 		).toBe( 2 );
 	} );
 
-	it( 'should reserve the badge height on the header and Top content title rows, with or without a badge', () => {
-		// Neither flag: both rows reserve the height with no badge.
-		expect( countBadgeHeightRows( renderTile() ) ).toBe( 2 );
+	it( 'should reserve the badge height on the card header with or without a badge', () => {
+		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
 
-		// Header flag only: both rows reserve the height.
+		// Header flag set: the badge shows beside the audience name.
 		expect(
-			countBadgeHeightRows(
-				renderTile( { isAudiencePartialData: true } )
+			findTitleRowStyle(
+				renderTile( { isAudiencePartialData: true } ),
+				'New visitors'
 			)
-		).toBe( 2 );
+		).toMatchObject( { minHeight } );
 
-		// Top content flag only: both rows reserve the height.
+		// Header flag unset: no badge, but the header keeps its height.
 		expect(
-			countBadgeHeightRows(
-				renderTile( { isTopContentPartialData: true } )
+			findTitleRowStyle(
+				renderTile( { isAudiencePartialData: false } ),
+				'New visitors'
 			)
-		).toBe( 2 );
+		).toMatchObject( { minHeight } );
+	} );
 
-		// Both flags: both rows reserve the height.
+	it( 'should reserve the badge height on the Top content title row with or without a badge', () => {
+		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
+
+		// Top content flag set: the badge shows beside the title.
 		expect(
-			countBadgeHeightRows(
-				renderTile( {
-					isAudiencePartialData: true,
-					isTopContentPartialData: true,
-				} )
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: true } ),
+				'Top content by pageviews'
 			)
-		).toBe( 2 );
+		).toMatchObject( { minHeight } );
+
+		// Top content flag unset: no badge, but the row keeps its height.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: false } ),
+				'Top content by pageviews'
+			)
+		).toMatchObject( { minHeight } );
 	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {
