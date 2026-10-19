@@ -20,6 +20,7 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -48,6 +49,9 @@ const analytics4SettingsEndpoint = new RegExp(
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 /** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
+const postsByPagePathEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/posts-by-page-path'
+);
 
 describe( 'modules/analytics-4 fresh data', () => {
 	let registry: WPDataRegistry;
@@ -181,6 +185,41 @@ describe( 'modules/analytics-4 fresh data', () => {
 			expect(
 				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toEqual( { by: 'pathPrefix', pathPrefix: '/product/' } );
+		} );
+
+		it( 'should return the product post type and its query var on plain permalinks when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				usingPlainPermalinks: true,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( {
+				by: 'queryVar',
+				postType: 'product',
+				queryVar: 'product',
+			} );
+		} );
+
+		it( 'should return the product post type with no query var on plain permalinks when WordPress reads no query var for products', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				usingPlainPermalinks: true,
+				productQueryVar: null,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( {
+				by: 'queryVar',
+				postType: 'product',
+				queryVar: null,
+			} );
 		} );
 
 		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
@@ -1283,6 +1322,281 @@ describe( 'modules/analytics-4 fresh data', () => {
 					] )
 			).toEqual( new Error( 'count must be a positive integer.' ) );
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+	} );
+
+	describe( 'getPostByPagePath', () => {
+		it( 'should return the post of a page path, `null` for a page path that shows no post, and `undefined` for a page path that has not been requested', () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetPostsByPagePath(
+				{
+					'/?p=1': {
+						id: 1,
+						postType: 'post',
+						title: 'Hello world!',
+						url: 'http://example.com/?p=1',
+					},
+					'/?s=hats': null,
+				},
+				{ pagePaths: [ '/?p=1', '/?s=hats' ] }
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostByPagePath( '/?p=1' )
+			).toEqual( {
+				id: 1,
+				postType: 'post',
+				title: 'Hello world!',
+				url: 'http://example.com/?p=1',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostByPagePath( '/?s=hats' )
+			).toBeNull();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostByPagePath( '/?p=2' )
+			).toBeUndefined();
+		} );
+	} );
+
+	describe( 'getPostsByPagePath', () => {
+		it( 'should return the post or `null` of each page path', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: {
+					'/?p=1&utm_source=newsletter': {
+						id: 1,
+						postType: 'post',
+						title: 'Hello world!',
+						url: 'http://example.com/?p=1',
+					},
+					'/?s=hats': null,
+				},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [
+					'/?p=1&utm_source=newsletter',
+					'/?s=hats',
+				] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [
+				'/?p=1&utm_source=newsletter',
+				'/?s=hats',
+			] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [
+						'/?p=1&utm_source=newsletter',
+						'/?s=hats',
+					] )
+			).toEqual( {
+				'/?p=1&utm_source=newsletter': {
+					id: 1,
+					postType: 'post',
+					title: 'Hello world!',
+					url: 'http://example.com/?p=1',
+				},
+				'/?s=hats': null,
+			} );
+		} );
+
+		it( 'should return `null` for a page path that the response leaves out', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ 'not-a-page-path' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ 'not-a-page-path' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ 'not-a-page-path' ] )
+			).toEqual( { 'not-a-page-path': null } );
+		} );
+
+		it( 'should request only the page paths whose posts have not been received', async () => {
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetPostsByPagePath(
+				{
+					'/?p=1': {
+						id: 1,
+						postType: 'post',
+						title: 'Hello world!',
+						url: 'http://example.com/?p=1',
+					},
+				},
+				{ pagePaths: [ '/?p=1' ] }
+			);
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?page_id=2': null },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes(
+				1,
+				postsByPagePathEndpoint
+			);
+
+			const [ [ postsByPagePathURL ] ] = fetchMock.calls(
+				postsByPagePathEndpoint
+			);
+
+			expect( getQueryArg( postsByPagePathURL, 'pagePaths' ) ).toEqual( [
+				'/?page_id=2',
+			] );
+		} );
+
+		it( 'should not send a request when every post has been received', async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetPostsByPagePath(
+					{ '/?s=hats': null },
+					{ pagePaths: [ '/?s=hats' ] }
+				);
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?s=hats' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?s=hats' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?s=hats' ] )
+			).toEqual( { '/?s=hats': null } );
+		} );
+
+		it( 'should return `undefined` while the posts load', () => {
+			freezeFetch( postsByPagePathEndpoint );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1' ] )
+			).toBeUndefined();
+		} );
+
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the request fails', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1' ],
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1' ] )
+			).toBeUndefined();
+			expect( console ).toHaveErrored();
+		} );
+
+		it( 'should remove the error from `getErrorForSelector()` when a retry of the request succeeds', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': null },
+				status: 200,
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getPostsByPagePath', [ [ '/?p=1' ] ] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1' ],
+					] )
+			).toBeUndefined();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1' ] )
+			).toEqual( { '/?p=1': null } );
+			expect( console ).toHaveErrored();
 		} );
 	} );
 } );
