@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { LATEST_CONTENT_COUNT } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
@@ -63,6 +64,15 @@ export const LATEST_POST: RecentContentItem = {
 	sitePublishedAt: '2026-09-17T08:30:00',
 };
 
+export const EARLIER_POST: RecentContentItem = {
+	id: 11,
+	title: 'Sorbet is good for your health',
+	permalink: 'https://example.com/sorbet/',
+	pagePath: '/sorbet/',
+	publishedAt: '2026-09-10T12:30:00Z',
+	sitePublishedAt: '2026-09-10T08:30:00',
+};
+
 /**
  * Gets the report arguments of `LATEST_POST` for the registry's reference date.
  *
@@ -95,6 +105,22 @@ export function provideLatestPost( registry: WPDataRegistry ) {
 		[ LATEST_POST ],
 		LATEST_POST_RECENT_CONTENT_OPTIONS
 	);
+}
+
+/**
+ * Stores `LATEST_POST` and `EARLIER_POST` as the recent posts that the Latest
+ * content table lists, so the "See all recent posts" link renders without a
+ * request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to put the posts in.
+ * @return {void}
+ */
+export function provideLatestContent( registry: WPDataRegistry ) {
+	provideRecentContent( registry, [ LATEST_POST, EARLIER_POST ], {
+		count: LATEST_CONTENT_COUNT,
+	} );
 }
 
 /**

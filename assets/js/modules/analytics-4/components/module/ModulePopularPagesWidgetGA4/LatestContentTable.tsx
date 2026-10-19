@@ -49,6 +49,7 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 import { formatDate } from '@/js/util/dates';
 import { getLocale } from '@/js/util/i18n';
+import { LATEST_CONTENT_COUNT } from './constants';
 import { getLatestContentReportArgs } from './latestContentReportOptions';
 import NoPublishedContentMessage from './NoPublishedContentMessage';
 import {
@@ -57,7 +58,7 @@ import {
 	joinLatestContentRows,
 } from './utils/joinLatestContentRows';
 
-const RECENT_CONTENT_OPTIONS = { count: 10 };
+const RECENT_CONTENT_OPTIONS = { count: LATEST_CONTENT_COUNT };
 
 const COLUMN_HEADER_CLASS_NAME =
 	'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';

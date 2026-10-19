@@ -32,6 +32,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { LATEST_CONTENT_COUNT } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -44,6 +45,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	provideInsightReport,
+	provideLatestContent,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
@@ -166,9 +168,9 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and its reports,
- * and the insight report in the store, so the Recent activity tab renders
- * without sending a request.
+ * Puts the Search Console property, the site's recent posts, the latest post's
+ * reports, and the insight report in the store, so the Recent activity tab
+ * renders without sending a request.
  *
  * @since 1.190.0
  *
@@ -183,6 +185,7 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );
 	provideLatestPost( registry );
+	provideLatestContent( registry );
 	provideLatestPostAnalyticsReports( registry );
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
@@ -451,6 +454,9 @@ RecentActivityNoPublishedPosts.args = {
 			[],
 			LATEST_POST_RECENT_CONTENT_OPTIONS
 		);
+		provideRecentContent( registry, [], {
+			count: LATEST_CONTENT_COUNT,
+		} );
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {
