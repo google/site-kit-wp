@@ -42,6 +42,7 @@ import {
 	useCallback,
 	useEffect,
 	useLayoutEffect,
+	useMemo,
 	useRef,
 	useState,
 } from '@wordpress/element';
@@ -98,7 +99,10 @@ export default function useDraggableList< Item >( {
 	getItemID,
 	onChange,
 }: UseDraggableListOptions< Item > ) {
-	const itemIDs = items.map( getItemID );
+	const itemIDs = useMemo(
+		() => items.map( getItemID ),
+		[ items, getItemID ]
+	);
 
 	const instructionID = String(
 		useInstanceId(
