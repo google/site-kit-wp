@@ -61,7 +61,7 @@ import { type ReaderRevenueManagerSettings } from './types';
 
 type GetCTAsParams = Partial< PublicationParams >;
 
-type CreateCTAParams = Partial< PublicationParams > & {
+export type CreateCTAParams = Partial< PublicationParams > & {
 	data: CreateCTAData;
 };
 interface CTAsState {
