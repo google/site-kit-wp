@@ -24,18 +24,23 @@ import type { ComponentType, FC } from 'react';
 /**
  * Internal dependencies
  */
+import { useFeature } from '@/js/hooks/useFeature';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { SetupCTANewsletterSignup } from './cta-setups';
+import { SetupCTANewsletterSignup, SetupCTASurvey } from './cta-setups';
 import ExpressSetupDefault from './ExpressSetupDefault';
 import { useExpressSetupSurveyTriggers } from './hooks';
 
 const SetupMainExpress: FC = () => {
 	const [ cta ] = useQueryArg( 'cta' );
+	const isSurveyCTAEnabled = useFeature( 'rrmSurveyCTA' );
 	useExpressSetupSurveyTriggers();
 
 	const ctaSetupComponents: Record< string, ComponentType > = {
 		[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: SetupCTANewsletterSignup,
+		...( isSurveyCTAEnabled && {
+			[ EXPRESS_SETUP_CTAS.SURVEY ]: SetupCTASurvey,
+		} ),
 	};
 
 	const ExpressSetupComponent =

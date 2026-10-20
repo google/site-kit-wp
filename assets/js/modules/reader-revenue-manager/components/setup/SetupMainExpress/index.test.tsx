@@ -88,6 +88,39 @@ describe( 'SetupMainExpress', () => {
 		expect( getByText( 'Set up your sign-up form' ) ).toBeInTheDocument();
 	} );
 
+	it( 'renders the survey CTA component for survey CTA when rrmSurveyCTA is enabled', async () => {
+		global.location.href =
+			'http://example.com/?cta=survey&step=survey-questions';
+
+		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
+			registry,
+			features: [ 'rrmSurveyCTA' ],
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getByText( 'Survey questions placeholder' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'renders the default express setup for survey CTA when rrmSurveyCTA is disabled', async () => {
+		global.location.href =
+			'http://example.com/?cta=survey&step=connect-publication';
+
+		const { getByText, queryByText, waitForRegistry } = render(
+			<SetupMainExpress />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getByText( /Let's get started/ ) ).toBeInTheDocument();
+		expect(
+			queryByText( 'Survey questions placeholder' )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'renders the default express setup when no CTA is specified', async () => {
 		global.location.href = 'http://example.com/?step=connect-publication';
 
