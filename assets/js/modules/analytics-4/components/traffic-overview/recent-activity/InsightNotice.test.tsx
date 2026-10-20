@@ -45,6 +45,7 @@ import {
 	waitFor,
 } from '@tests/js/test-utils';
 import {
+	createWaitForRegistry,
 	freezeFetch,
 	provideSiteInfo,
 	provideUserAuthentication,
@@ -276,7 +277,11 @@ describe( 'InsightNotice', () => {
 		).toHaveAttribute( 'aria-pressed', 'false' );
 	} );
 
-	it( 'should render the thumbs for a view-only user', async () => {
+	it( 'should track `vote_up` with the category `mainDashboardViewOnly_recent-activity-survey` and not send the `survey-trigger` request when a view-only user clicks "Yes, this was helpful"', async () => {
+		fetchMock.post( surveyTriggerEndpoint, { status: 200, body: {} } );
+
+		provideUserAuthentication( registry, { authenticated: false } );
+
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
 
 		const { getByRole, waitForRegistry } = render( <InsightNotice />, {
@@ -286,9 +291,24 @@ describe( 'InsightNotice', () => {
 
 		await waitForRegistry();
 
-		expect(
-			getByRole( 'group', { name: 'Is this section helpful?' } )
-		).toBeInTheDocument();
+		// The `waitForRegistry()` from `render()` has already resolved, so the
+		// test needs a new wait for the vote.
+		const waitForVote = createWaitForRegistry( registry );
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Yes, this was helpful' } )
+		);
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboardViewOnly_recent-activity-survey',
+			'vote_up',
+			undefined
+		);
+
+		await act( waitForVote );
+
+		expect( fetchMock ).not.toHaveFetched( surveyTriggerEndpoint );
 	} );
 
 	it( 'should render a placeholder in place of the notice while the report is resolving', () => {
