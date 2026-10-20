@@ -51,7 +51,7 @@ export function buildTopTrafficChannelsRateReportOptions(
  * The breakdown filter is not applied: its dimension is only set on the
  * goal events, so it would limit the total to sessions that already converted.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object}          args                Builder args.
  * @param {Object}          [args.dates]        The date range.
@@ -83,7 +83,7 @@ export function buildTopTrafficChannelsSessionsReportOptions( {
  * Maps rows to that channel's own conversion rate, not a share of the total.
  *
  * @since 1.188.0
- * @since n.e.x.t Updated to divide by each channel's total sessions, so the rate can't exceed 100%.
+ * @since 1.190.0 Updated to divide by each channel's total sessions, so the rate can't exceed 100%.
  *
  * @param {Object[]} rows                  Report rows, each carrying `eventCount` and `sessions` in `metricValues`.
  * @param {Object}   [sessionsReport]      The report `buildTopTrafficChannelsSessionsReportOptions` requested.

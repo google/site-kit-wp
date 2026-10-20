@@ -63,7 +63,7 @@ const SCENARIO_OPTIONS = {
 /**
  * Formats a location in a story file for error messages.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} file The story file.
  * @param {Object} node The Babel node.
@@ -76,7 +76,7 @@ function location( file, node ) {
 /**
  * Gets the value of a literal Babel node.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} node The Babel node.
  * @return {Object|undefined} `{ value }`, or `undefined` if the node isn't a literal.
@@ -100,7 +100,7 @@ function getLiteral( node ) {
 /**
  * Gets the name of an object property, if it can be read statically.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} property The Babel `ObjectProperty` node.
  * @return {string|undefined} The property name.
@@ -120,7 +120,7 @@ function getPropertyName( property ) {
 /**
  * Removes TypeScript wrappers such as `{ … } as Meta` or `satisfies Meta`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} node The Babel node.
  * @return {Object} The wrapped node.
@@ -139,7 +139,7 @@ function unwrapTypeScript( node ) {
 /**
  * Reads the `features` array from a story's `parameters` object.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} parameters The Babel node assigned to `parameters`.
  * @param {string} file       The story file.
@@ -197,7 +197,7 @@ function getFeatures( parameters, file ) {
 /**
  * Reads and checks a story's `.scenario` object.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} node The Babel node assigned to `.scenario`.
  * @param {string} file The story file.
@@ -264,7 +264,7 @@ function getScenarioOptions( node, file ) {
 /**
  * Reads the visual regression scenarios from one story file.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} file The story file.
  * @return {Object[]} The scenarios.
@@ -423,7 +423,7 @@ let cachedScenarios;
 /**
  * Gets every visual regression scenario, from the `.scenario` of each story.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Object[]} The scenarios, sorted by label.
  */
@@ -467,7 +467,7 @@ function getScenarios() {
  * Without this check, a typo in a story ID would capture Storybook's error
  * page as the reference image.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object[]} scenarios The scenarios.
  * @return {string[]} Problems found, as messages.

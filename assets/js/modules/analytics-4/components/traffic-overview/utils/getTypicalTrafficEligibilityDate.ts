@@ -32,7 +32,7 @@ const TYPICAL_TRAFFIC_MINIMUM_PROPERTY_AGE_MONTHS = 13;
  * before the reference date. When that month is shorter, the day becomes its
  * last day, so `2026-03-31` gives `2025-02-28` rather than a day in March.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {string} referenceDate The reference date, as `YYYY-MM-DD`.
  * @return {string} The last eligible creation day, as `YYYY-MM-DD`.

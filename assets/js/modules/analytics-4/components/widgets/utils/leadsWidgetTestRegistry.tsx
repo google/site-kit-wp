@@ -40,7 +40,7 @@ import { provideKeyMetrics, provideModules } from '@tests/js/utils';
  * Shared setup for the "Generating leads" Key Metrics widget tests
  * (FormCompletionRateWidget, TotalFormCompletionsWidget, LeadsByCountriesWidget, etc).
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {Object} registry Data registry to configure.
  * @return {void}

@@ -24,7 +24,7 @@ import { getDateString } from '@/js/util';
 /**
  * Gets the day an Analytics property was created on.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {(number|undefined)} propertyCreateTime The property's creation time in milliseconds, as `getPropertyCreateTime()` returns it.
  * @return {(string|undefined)} The creation day in the browser's time zone, as `YYYY-MM-DD`, or `undefined` when there is no creation time.

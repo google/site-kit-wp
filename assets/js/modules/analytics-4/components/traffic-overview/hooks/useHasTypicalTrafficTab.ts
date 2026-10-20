@@ -40,7 +40,7 @@ import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-c
  * loads, the hook returns `false`, so the tab appears once rather than
  * appearing and then disappearing.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {boolean} `true` when the widget shows the Typical Traffic tab, otherwise `false`.
  */

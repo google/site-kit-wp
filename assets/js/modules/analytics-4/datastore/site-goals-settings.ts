@@ -164,7 +164,7 @@ function validateSiteGoalsSettings( settings: unknown ): void {
  * Throws an error unless the widget in a removal request is a Site Goals goal
  * type, `ecommerce` or `lead`.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @param {*} widget Goal type of the widget to validate.
  * @return {void}
@@ -326,7 +326,7 @@ const baseActions = {
 	 * The daily cron adds the widget back when its plugin is active again and
 	 * Site Kit finds its events.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {GoalType} widget Goal type of the widget to remove.
 	 * @return {Object} Object with `response` and `error`.
@@ -530,7 +530,7 @@ const baseSelectors = {
 	/**
 	 * Checks whether a removal request is running for either Site Goals widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {boolean} `true` while a widget is being removed, otherwise `false`.

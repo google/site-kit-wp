@@ -16,7 +16,7 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
  * One formula scores every row in every dimension, so a channel, a device, and a
  * search query are ranked on the same scale.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @access private
  * @ignore
  */
@@ -26,7 +26,7 @@ class Row_Scorer {
 	 * What each dimension's scores are multiplied by, so a page or a referrer
 	 * counts for more than a device category.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const DIMENSION_WEIGHTS = array(
 		'CONTENT'        => 1.5,
@@ -43,7 +43,7 @@ class Row_Scorer {
 	 * same way as the site's, and the site went up or down by at least
 	 * `SITE_DIRECTION_THRESHOLD_PERCENT`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const SAME_DIRECTION_BOOST = 1.25;
 
@@ -51,14 +51,14 @@ class Row_Scorer {
 	 * The smallest change in the site's visitors, in percent, that counts as going
 	 * up or down.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const SITE_DIRECTION_THRESHOLD_PERCENT = 3;
 
 	/**
 	 * The smallest change in visitors a row needs to stay in the response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const MINIMUM_ABSOLUTE_DELTA = 5;
 
@@ -66,7 +66,7 @@ class Row_Scorer {
 	 * The smallest change a row needs to stay in the response, as a percentage of
 	 * the larger of the site's two visitor totals.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const MINIMUM_TRAFFIC_IMPACT_PERCENT = 0.40;
 
@@ -74,7 +74,7 @@ class Row_Scorer {
 	 * A row that moved against the site stays in the response when its change is
 	 * at least this percentage of the larger of the site's two visitor totals.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_TRAFFIC_IMPACT_PERCENT = 1.0;
 
@@ -83,7 +83,7 @@ class Row_Scorer {
 	 * visitors changed by at least this percentage and `COUNTER_TREND_DELTA`
 	 * visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_SELF_CHANGE_PERCENT = 10;
 
@@ -91,7 +91,7 @@ class Row_Scorer {
 	 * The smallest change in visitors that, together with
 	 * `COUNTER_TREND_SELF_CHANGE_PERCENT`, keeps a row that moved against the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const COUNTER_TREND_DELTA = 25;
 
@@ -99,35 +99,35 @@ class Row_Scorer {
 	 * A device or visitor mix row is excluded when its own change is less than this
 	 * many percentage points from the site's change, because it only follows the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const MACRO_DIVERGENCE_PERCENT = 5;
 
 	/**
 	 * The site's direction when its visitors went up by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const DIRECTION_UP = 'UP';
 
 	/**
 	 * The site's direction when its visitors went down by `SITE_DIRECTION_THRESHOLD_PERCENT` or more.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const DIRECTION_DOWN = 'DOWN';
 
 	/**
 	 * The site's direction when its visitors changed by less than `SITE_DIRECTION_THRESHOLD_PERCENT`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	const DIRECTION_STABLE = 'STABLE';
 
 	/**
 	 * The site's visitors in the selected period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var int
 	 */
 	private $visitors_current;
@@ -135,7 +135,7 @@ class Row_Scorer {
 	/**
 	 * The site's visitors in the compare period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 * @var int
 	 */
 	private $visitors_previous;
@@ -143,7 +143,7 @@ class Row_Scorer {
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param int $visitors_current  The site's visitors in the selected period.
 	 * @param int $visitors_previous The site's visitors in the compare period.
@@ -161,7 +161,7 @@ class Row_Scorer {
 	 * the same percentage as the site. The dimension's weight multiplies the sum,
 	 * and so does the boost when the row moved the same way as the site.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $dimension_code The dimension code the row belongs to, such as `CHANNELS`.
 	 * @param array  $row            The row, with its `current` and `previous` visitors.
@@ -193,7 +193,7 @@ class Row_Scorer {
 	 * - It's a `DEVICES` or `VISITOR_MIX` row whose own change is less than
 	 *   `MACRO_DIVERGENCE_PERCENT` percentage points from the site's change.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string $dimension_code The dimension code the row belongs to, such as `DEVICES`.
 	 * @param array  $row            The row, with its `current` and `previous` visitors.
@@ -228,7 +228,7 @@ class Row_Scorer {
 	 * Gets the direction the site's visitors moved in, from the compare period
 	 * to the selected period.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return string The direction, `UP`, `DOWN`, or `STABLE`.
 	 */
@@ -250,7 +250,7 @@ class Row_Scorer {
 	 * Gets the change in visitors as a percentage of the larger of the site's two
 	 * totals.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param int|float $change The change in visitors.
 	 * @return int|float The change as a percentage, such as `10` for 10%, or `0` when the site had no visitors in either period.
@@ -267,7 +267,7 @@ class Row_Scorer {
 	 * `is_excluded_row()` excludes a row with no visitors in either period before
 	 * it calls `get_self_change_percent()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param array $row The row, with its `current` and `previous` visitors.
 	 * @return int|float The change in percent, such as `50` for a rise of 50%, or `100` for a row with no visitors in the compare period.
@@ -283,7 +283,7 @@ class Row_Scorer {
 	/**
 	 * Gets the change in the site's visitors, in percent.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return int|float The change in percent, such as `25` for a rise of 25%, or `0` when the site had no visitors in the compare period.
 	 */

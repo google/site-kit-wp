@@ -86,7 +86,7 @@ export const actions = {
 	/**
 	 * Commits a date range selection within the selectable window.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} selection Date range selection.
 	 * @yield {Object} Redux-style action.
@@ -233,7 +233,7 @@ export const selectors = {
 	/**
 	 * Gets the committed date range selection.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {Object} Date range selection.
@@ -245,7 +245,7 @@ export const selectors = {
 	/**
 	 * Gets the earliest selectable date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {string} First day of the earliest selectable month.
@@ -260,7 +260,7 @@ export const selectors = {
 	/**
 	 * Gets the latest selectable date.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {string} Reference date in YYYY-MM-DD format.
@@ -272,7 +272,7 @@ export const selectors = {
 	/**
 	 * Gets selectable calendar months, newest first.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state The current data store's state.
 	 * @return {string[]} Months in YYYY-MM format.

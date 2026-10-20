@@ -96,7 +96,7 @@ function StepContent() {
 /**
  * Creates a step definition for testing.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  * @private
  *
  * @param {string}  slug                 Step slug.

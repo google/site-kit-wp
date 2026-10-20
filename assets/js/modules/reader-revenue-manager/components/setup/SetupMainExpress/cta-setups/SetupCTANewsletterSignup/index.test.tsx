@@ -20,7 +20,10 @@
  * Internal dependencies
  */
 import { Registry } from '@/js/googlesitekit-data';
-import { VIEW_CONTEXT_MODULE_SETUP } from '@/js/googlesitekit/constants';
+import {
+	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MODULE_SETUP,
+} from '@/js/googlesitekit/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
@@ -453,6 +456,119 @@ describe( 'SetupCTANewsletterSignup', () => {
 					'https://wordpress.org/support/plugin/google-site-kit/'
 				);
 			} );
+		} );
+
+		describe.each( [
+			VIEW_CONTEXT_MAIN_DASHBOARD,
+			VIEW_CONTEXT_MODULE_SETUP,
+		] )( 'click tracking in %s', ( viewContext ) => {
+			let mockTrackEvent: jest.SpyInstance;
+			let mockOpen: jest.SpyInstance;
+
+			beforeEach( () => {
+				mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+
+				mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
+				mockOpen = jest
+					.spyOn( global, 'open' )
+					.mockImplementation( () => null );
+			} );
+
+			afterEach( () => {
+				mockTrackEvent.mockRestore();
+				mockOpen.mockRestore();
+			} );
+
+			it.each( [
+				{
+					action: 'click_change_display_order_link',
+					name: /Publisher center/i,
+					hasPreExistingCTAs: true,
+				},
+				{
+					action: 'click_change_placement_settings_link',
+					name: /Site Kit settings/i,
+					hasPreExistingCTAs: false,
+				},
+				{
+					action: 'click_edit_content_link',
+					name: /Publisher center/i,
+					hasPreExistingCTAs: false,
+				},
+				{
+					action: 'click_contact_support_link',
+					name: /contact support/i,
+					hasPreExistingCTAs: false,
+				},
+				{
+					action: 'click_view_on_your_site_link',
+					name: /View on your site/i,
+					hasPreExistingCTAs: false,
+				},
+			] )(
+				'should track $action only when clicked',
+				async ( { action, name, hasPreExistingCTAs } ) => {
+					const eventCategory = `${ viewContext }_rrm-express-setup_newsletter-signup`;
+
+					setupRegistryWithReadyPublication( {
+						ctas: hasPreExistingCTAs
+							? [ preExistingCTA, newsletterCTA ]
+							: [ newsletterCTA ],
+					} );
+
+					const { getAllByRole, waitForRegistry } = render(
+						<SetupCTANewsletterSignup />,
+						{
+							registry,
+							viewContext,
+							features: [ 'rrmExpressSetup' ],
+						}
+					);
+
+					await waitForRegistry();
+
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						eventCategory,
+						'start_setup',
+						undefined
+					);
+
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+					expect( global.open ).not.toHaveBeenCalled();
+
+					const isViewOnSite =
+						action === 'click_view_on_your_site_link';
+
+					// Keep tracking pending to verify that opening the preview tab
+					// does not wait for the event to finish sending.
+					mockTrackEvent.mockImplementationOnce(
+						() => new Promise( () => {} )
+					);
+
+					fireEvent.click(
+						getAllByRole( isViewOnSite ? 'button' : 'link', {
+							name,
+						} )[ 0 ]
+					);
+
+					expect( mockTrackEvent ).toHaveBeenCalledWith(
+						eventCategory,
+						action,
+						'setup-complete'
+					);
+
+					expect( mockTrackEvent ).toHaveBeenCalledTimes( 2 );
+
+					if ( isViewOnSite ) {
+						expect( global.open ).toHaveBeenCalledTimes( 1 );
+						expect( global.open ).toHaveBeenCalledWith(
+							'http://example.com',
+							'_blank'
+						);
+					}
+				}
+			);
 		} );
 
 		describe( '"View on your site" CTA', () => {
