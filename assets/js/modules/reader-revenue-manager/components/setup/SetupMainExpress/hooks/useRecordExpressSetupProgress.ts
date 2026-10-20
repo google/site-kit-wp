@@ -66,7 +66,7 @@ export default function useRecordExpressSetupProgress(
 				? null
 				: Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 
-		const storeProgress = async () => {
+		async function storeProgress() {
 			const { error } = await saveUserSettings( {
 				lastActionedExpressSetups: { [ key ]: value },
 			} );
@@ -75,8 +75,8 @@ export default function useRecordExpressSetupProgress(
 				// If an error occurs, don't expose it to the user.
 				clearActionErrors( 'saveUserSettings' );
 			}
-		};
+		}
 
 		storeProgress();
-	}, [ ctaType, stepSlug, saveUserSettings ] );
+	}, [ ctaType, stepSlug, saveUserSettings, clearActionErrors ] );
 }
