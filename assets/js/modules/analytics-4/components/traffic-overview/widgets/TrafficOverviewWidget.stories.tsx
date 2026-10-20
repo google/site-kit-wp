@@ -43,6 +43,7 @@ import {
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
@@ -51,6 +52,7 @@ import {
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -165,9 +167,9 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and its reports,
- * and the insight report in the store, so the Recent activity tab renders
- * without sending a request.
+ * Puts the Search Console property, the reports of the fresh figures, the
+ * site's latest post and its reports, and the insight report in the store, so
+ * the Recent activity tab renders without sending a request.
  *
  * @since 1.190.0
  *
@@ -178,6 +180,10 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
+	provideFreshMetricsReports( registry, {
+		totalVisitors: 157,
+		searchPerformance: { clicks: 72, impressions: 8000 },
+	} );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );
@@ -445,10 +451,11 @@ RecentActivityNoPublishedPosts.args = {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			...LATEST_POST_RECENT_CONTENT_OPTIONS,
-			includeProducts: false,
-		} );
+		provideRecentContent(
+			registry,
+			[],
+			LATEST_POST_RECENT_CONTENT_OPTIONS
+		);
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {

@@ -66,10 +66,28 @@ describe( 'FeatureDetailPanel', () => {
 		] );
 
 		provideFeatures( registry, [
-			{ slug: 'first', title: 'First feature' },
+			{
+				slug: 'first',
+				title: 'First feature',
+				detail: {
+					description: { whatIs: 'First feature description' },
+					requirements: { setupList: [ 'First feature setup' ] },
+					screenshots: [
+						{
+							src: '/first.png',
+							alt: 'First feature preview',
+							width: 640,
+							height: 480,
+						},
+					],
+				},
+			},
 			{
 				slug: 'second',
 				title: 'Second feature',
+				detail: {
+					description: { whatIs: 'Second feature description' },
+				},
 				moduleSlug: MODULE_SLUG_ANALYTICS_4,
 			},
 		] );
@@ -112,6 +130,10 @@ describe( 'FeatureDetailPanel', () => {
 		setFeature( 'second' );
 
 		await waitForRegistry();
+
+		expect( getByRole( 'tabpanel' ) ).toHaveTextContent(
+			'Second feature description'
+		);
 
 		expect(
 			getByRole( 'heading', { name: 'Second feature' } )
@@ -259,7 +281,27 @@ describe( 'FeatureDetailPanel', () => {
 				name
 			);
 
-			expect( getByRole( 'tabpanel', { name } ) ).toBeInTheDocument();
+			const panel = getByRole( 'tabpanel', { name } );
+
+			if ( name === 'Description' ) {
+				expect( panel ).toHaveTextContent(
+					'First feature description'
+				);
+			} else if ( name === 'Requirements' ) {
+				expect( panel ).toHaveTextContent( 'First feature setup' );
+
+				expect( panel ).not.toHaveTextContent(
+					'First feature description'
+				);
+			} else {
+				expect(
+					within( panel ).getByRole( 'img', {
+						name: 'First feature preview',
+					} )
+				).toBeInTheDocument();
+
+				expect( panel ).not.toHaveTextContent( 'First feature setup' );
+			}
 		}
 
 		fireEvent.click( getByRole( 'button', { name: 'Cancel' } ) );
@@ -276,6 +318,10 @@ describe( 'FeatureDetailPanel', () => {
 		setFeature( 'second' );
 
 		await waitForRegistry();
+
+		expect( getByRole( 'tabpanel' ) ).toHaveTextContent(
+			'Second feature description'
+		);
 
 		expect(
 			getByRole( 'tabpanel', { name: 'Description' } )
