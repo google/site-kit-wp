@@ -164,7 +164,7 @@ describe( 'useRecordExpressSetupProgress', () => {
 		} );
 	} );
 
-	it( 'should keep the save error in the store rather than throwing it', async () => {
+	it( 'should clear a save error rather than keeping it in the store', async () => {
 		fetchMock.reset();
 		fetchMock.post( userSettingsEndpoint, {
 			body: {
@@ -185,20 +185,22 @@ describe( 'useRecordExpressSetupProgress', () => {
 		);
 
 		await waitFor( () => {
-			expect(
-				registry
-					.select( MODULES_READER_REVENUE_MANAGER )
-					.getErrorForAction( 'saveUserSettings', [] )
-			).toBeDefined();
+			expect( fetchMock ).toHaveFetched( userSettingsEndpoint );
 		} );
 
-		expect( console ).toHaveErroredWith( [
+		expect( console ).toHaveErroredWith(
 			'Google Site Kit API Error',
 			'method:POST',
 			'datapoint:user-settings',
 			'type:modules',
 			'identifier:reader-revenue-manager',
-			'error:"Internal server error"',
-		] );
+			'error:"Internal server error"'
+		);
+
+		expect(
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getErrorForAction( 'saveUserSettings', [] )
+		).not.toBeDefined();
 	} );
 } );

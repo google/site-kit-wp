@@ -895,22 +895,25 @@ describe( 'SetupCTANewsletterSignup', () => {
 				{ overwriteRoutes: true }
 			);
 
-			const { getByText } = render( <SetupCTANewsletterSignup />, {
-				registry,
-			} );
+			const { queryByText, getByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
 
 			await waitFor( () => {
-				expect(
-					registry
-						.select( MODULES_READER_REVENUE_MANAGER )
-						.getErrorForAction( 'saveUserSettings', [] )
-				).toBeDefined();
+				expect( fetchMock ).toHaveFetched( userSettingsEndpoint );
 			} );
 
 			expect( console ).toHaveErrored();
 			expect(
 				getByText( STEP_CONTENT[ 'terms-of-service' ] )
 			).toBeInTheDocument();
+
+			expect(
+				queryByText( 'Error: Internal server error' )
+			).not.toBeInTheDocument();
 		} );
 	} );
 

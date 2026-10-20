@@ -48,7 +48,9 @@ export default function useRecordExpressSetupProgress(
 	ctaType: string,
 	stepSlug: EXPRESS_SETUP_STEPS | undefined
 ): void {
-	const { saveUserSettings } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const { clearActionErrors, saveUserSettings } = useDispatch(
+		MODULES_READER_REVENUE_MANAGER
+	);
 
 	useEffect( () => {
 		if ( stepSlug === undefined ) {
@@ -64,6 +66,17 @@ export default function useRecordExpressSetupProgress(
 				? null
 				: Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
 
-		saveUserSettings( { lastActionedExpressSetups: { [ key ]: value } } );
+		const storeProgress = async () => {
+			const { error } = await saveUserSettings( {
+				lastActionedExpressSetups: { [ key ]: value },
+			} );
+
+			if ( error ) {
+				// If an error occurs, don't expose it to the user.
+				clearActionErrors( 'saveUserSettings' );
+			}
+		};
+
+		storeProgress();
 	}, [ ctaType, stepSlug, saveUserSettings ] );
 }
