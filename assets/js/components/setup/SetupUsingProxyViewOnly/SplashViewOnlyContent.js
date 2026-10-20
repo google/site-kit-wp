@@ -37,6 +37,8 @@ import OptIn from '@/js/components/OptIn';
 import Services from '@/js/components/setup/Services';
 import SplashScreenshotSVG from '@/js/components/setup/SetupUsingProxyWithSignIn/SetupFlowSVG';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import {
 	BREAKPOINT_SMALL,
 	BREAKPOINT_TABLET,
@@ -70,7 +72,10 @@ export default function SplashViewOnlyContent( {
 					{ __( 'View-only Dashboard Access', 'google-site-kit' ) }
 				</Typography>
 
-				<p className="googlesitekit-setup__description googlesitekit-setup__description--view-only">
+				<P
+					className="googlesitekit-setup__description googlesitekit-setup__description--view-only"
+					size={ SIZE_MEDIUM }
+				>
 					{ createInterpolateElement(
 						__(
 							"Get insights about how people find and use your site as well as how to improve and monetize your content, directly in your WordPress dashboard. <br /> An administrator has granted you access to view this site's dashboard containing stats from these shared Google services. <a>Learn more</a>",
@@ -91,7 +96,7 @@ export default function SplashViewOnlyContent( {
 							br: <br />,
 						}
 					) }
-				</p>
+				</P>
 
 				<Services />
 

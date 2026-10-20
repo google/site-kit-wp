@@ -111,6 +111,66 @@ describe( 'createInfoStore store', () => {
 					.dispatch( CORE_USER )
 					.receiveConnectURL( 'http://example.com/connect' );
 			} );
+			it.each( [ false, true ] )(
+				'should request only missing additional scopes (reauthentication: %s)',
+				( needsReauthentication ) => {
+					registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+						adminURL: 'http://example.com/wp-admin/',
+					} );
+					registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+						needsReauthentication,
+						grantedScopes: [ 'granted' ],
+					} );
+					const { STORE_NAME, ...store } = createInfoStore(
+						MODULE_SLUG,
+						{ storeName: TEST_STORE_NAME }
+					);
+					registry.registerStore( STORE_NAME, store );
+					const url = registry
+						.select( STORE_NAME )
+						.getAdminReauthURL( {
+							additionalScopes: [ 'granted', 'missing' ],
+							redirectQueryArgs: {
+								expressSetup: true,
+								cta: 'newsletter-signup',
+							},
+						} );
+					expect(
+						url.startsWith( 'http://example.com/connect' )
+					).toBe( true );
+					expect( url ).toMatchQueryParameters( {
+						'additional_scopes[0]': 'missing',
+						status: 'true',
+					} );
+					expect(
+						new URL( url ).searchParams.get( 'redirect' )
+					).toMatchQueryParameters( {
+						expressSetup: 'true',
+						cta: 'newsletter-signup',
+					} );
+				}
+			);
+
+			it( 'should skip OAuth when all additional scopes are granted', () => {
+				registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+					adminURL: 'http://example.com/wp-admin/',
+				} );
+				registry.dispatch( CORE_USER ).receiveGetAuthentication( {
+					needsReauthentication: false,
+					grantedScopes: [ 'granted' ],
+				} );
+				const { STORE_NAME, ...store } = createInfoStore( MODULE_SLUG, {
+					storeName: TEST_STORE_NAME,
+				} );
+				registry.registerStore( STORE_NAME, store );
+				const url = registry
+					.select( STORE_NAME )
+					.getAdminReauthURL( { additionalScopes: [ 'granted' ] } );
+				expect(
+					url.startsWith( 'http://example.com/wp-admin/admin.php' )
+				).toBe( true );
+			} );
+
 			// It generates an adminReauthURL with no slug passed.
 			it( 'works with no slug passed', () => {
 				registry.dispatch( CORE_SITE ).receiveSiteInfo( {

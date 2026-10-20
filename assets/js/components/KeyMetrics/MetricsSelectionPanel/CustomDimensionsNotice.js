@@ -121,9 +121,9 @@ function CustomDimensionsNotice() {
 
 	return (
 		<SelectionPanelNotice
+			description={ customDimensionMessage }
 			ref={ noticeRef }
 			type={ NOTICE_TYPES.WARNING }
-			description={ customDimensionMessage }
 			hideIcon
 		/>
 	);

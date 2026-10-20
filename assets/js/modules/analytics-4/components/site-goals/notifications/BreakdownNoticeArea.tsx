@@ -60,14 +60,17 @@ import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/componen
 import { useBreakdownNoticeTooltip } from '@/js/modules/analytics-4/components/site-goals/notifications/useBreakdownNoticeTooltip';
 import { useSiteGoalsBreakdownNoticeCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownNoticeCopy';
 import { useSiteGoalsBreakdownResultCopy } from '@/js/modules/analytics-4/components/site-goals/notifications/useSiteGoalsBreakdownResultCopy';
+import { isSiteGoalsBreakdownEnabled } from '@/js/modules/analytics-4/components/site-goals/utils/breakdownEnabled';
 import {
+	ALL_CUSTOM_DIMENSIONS,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { useBreakdownEnableHandler } from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
 import {
-	ALL_CUSTOM_DIMENSIONS,
-	useBreakdownEnableHandler,
-} from '@/js/modules/analytics-4/hooks/useBreakdownEnableHandler';
+	ConversionTrackingSetting,
+	useConversionTrackingSetting,
+} from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { DAY_IN_SECONDS, trackEvent, trackEventOnce } from '@/js/util';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import withIntersectionObserver from '@/js/util/withIntersectionObserver';
@@ -106,9 +109,15 @@ function deriveBreakdownScope( goalTypes: GoalType[] ): BreakdownScope {
 interface BreakdownDimensionStateArgs {
 	goalTypes: GoalType[];
 	presenceByGoalType: Record< GoalType, boolean | undefined >;
+	conversionTracking: ConversionTrackingSetting;
 }
 
 interface BreakdownDimensionState {
+	/**
+	 * Whether the breakdown is enabled: its dimensions exist and plugin
+	 * conversion tracking is on, the same condition the widgets use to show
+	 * the breakdown.
+	 */
 	hasBreakdownDimensions: boolean | undefined;
 	/**
 	 * Scope derived from the goal types whose dimension is still missing.
@@ -121,7 +130,7 @@ interface BreakdownDimensionState {
 function getBreakdownDimensionState(
 	args: BreakdownDimensionStateArgs
 ): BreakdownDimensionState {
-	const { goalTypes, presenceByGoalType } = args;
+	const { goalTypes, presenceByGoalType, conversionTracking } = args;
 
 	const dimensionsResolving = goalTypes.some(
 		( goalType ) => presenceByGoalType[ goalType ] === undefined
@@ -131,9 +140,10 @@ function getBreakdownDimensionState(
 	);
 
 	return {
-		hasBreakdownDimensions: dimensionsResolving
-			? undefined
-			: missingGoalTypes.length === 0,
+		hasBreakdownDimensions: isSiteGoalsBreakdownEnabled(
+			dimensionsResolving ? undefined : missingGoalTypes.length === 0,
+			conversionTracking
+		),
 		// Derived from what is still missing; once nothing is missing it falls
 		// back to the full set (then only used for the handler, never rendered).
 		missingScope: deriveBreakdownScope(
@@ -231,6 +241,8 @@ function resolveBreakdownNoticeState(
 
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
+	canManageOptions: boolean | undefined;
+	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
 	isNoticeDismissed: boolean | undefined;
@@ -254,6 +266,8 @@ function computeNoticeState(
 ): BreakdownNoticeState {
 	const {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
@@ -267,6 +281,13 @@ function computeNoticeState(
 		isIntroModalDismissed === undefined ||
 		isNoticeDismissed === undefined
 	) {
+		return null;
+	}
+
+	// The description says whether the CTA also switches conversion tracking on,
+	// so waiting avoids showing the wrong wording first. Only someone allowed to
+	// read the setting ever gets a value, so nobody else is held back.
+	if ( canManageOptions && isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -442,6 +463,10 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 		[]
 	);
 
+	const conversionTracking = useConversionTrackingSetting();
+	const { canManageOptions, isConversionTrackingEnabled } =
+		conversionTracking;
+
 	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
 		{
 			goalTypes,
@@ -449,6 +474,7 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 				[ GOAL_TYPES.ECOMMERCE ]: hasEcommerceDimension,
 				[ GOAL_TYPES.LEAD ]: hasLeadDimension,
 			},
+			conversionTracking,
 		}
 	);
 
@@ -633,6 +659,8 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 
 	const noticeState = computeNoticeState( {
 		isViewOnly,
+		canManageOptions,
+		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,

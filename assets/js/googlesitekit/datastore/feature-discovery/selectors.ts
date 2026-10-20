@@ -41,9 +41,23 @@ import type {
 	FeatureCategory,
 	FeatureCategorySlug,
 	FeatureDiscoveryState,
+	PendingSetup,
 } from './types';
 
 export const selectors = {
+	/**
+	 * Gets the record of the setup the user left the hub to complete, as
+	 * consumed when the hub mounted.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param {Object} state Data store's state.
+	 * @return {(Object|null)} The pending setup (`featureSlug` and `returnTab`), or `null` if there is none.
+	 */
+	getPendingSetup( state: FeatureDiscoveryState ): PendingSetup | null {
+		return state.pendingSetup;
+	},
+
 	/**
 	 * Gets every registered feature, in registration order.
 	 *

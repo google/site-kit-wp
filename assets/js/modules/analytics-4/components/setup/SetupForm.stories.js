@@ -59,7 +59,6 @@ Default.scenario = {};
 export const InitialSetupFlow = Template.bind( null );
 InitialSetupFlow.storyName = 'Initial setup flow';
 InitialSetupFlow.parameters = {
-	features: [ 'setupFlowRefresh' ],
 	query: {
 		showProgress: 'true',
 	},

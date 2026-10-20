@@ -29,6 +29,7 @@ import DashboardEntryPoint from './components/DashboardEntryPoint';
 import Root from './components/Root';
 import { clearCache } from './googlesitekit/api/cache';
 import {
+	VIEW_CONTEXT_INTENT,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 	VIEW_CONTEXT_MODULE_SETUP,
@@ -45,10 +46,15 @@ domReady( async () => {
 	);
 
 	if ( renderTarget ) {
-		const { setupModuleSlug, viewOnly } = renderTarget.dataset;
+		const { setupModuleSlug, viewOnly, intentSlug, intentCode } =
+			renderTarget.dataset;
 
-		let viewContext = VIEW_CONTEXT_MODULE_SETUP;
-		if ( ! setupModuleSlug ) {
+		let viewContext;
+		if ( intentSlug ) {
+			viewContext = VIEW_CONTEXT_INTENT;
+		} else if ( setupModuleSlug ) {
+			viewContext = VIEW_CONTEXT_MODULE_SETUP;
+		} else {
 			viewContext = viewOnly
 				? VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY
 				: VIEW_CONTEXT_MAIN_DASHBOARD;
@@ -57,7 +63,11 @@ domReady( async () => {
 		render(
 			// @ts-expect-error Root is not properly typed yet.
 			<Root viewContext={ viewContext }>
-				<DashboardEntryPoint setupModuleSlug={ setupModuleSlug } />
+				<DashboardEntryPoint
+					setupModuleSlug={ setupModuleSlug }
+					intentSlug={ intentSlug }
+					intentCode={ intentCode }
+				/>
 			</Root>,
 			renderTarget
 		);

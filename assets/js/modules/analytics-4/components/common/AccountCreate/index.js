@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 /**
@@ -42,7 +41,6 @@ import { ProgressBar } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import SetupPluginConversionTrackingNotice from '@/js/components/conversion-tracking/SetupPluginConversionTrackingNotice';
 import Link from '@/js/components/Link';
-import Null from '@/js/components/Null';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
 import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
@@ -78,7 +76,6 @@ export default function AccountCreate( { className } ) {
 		location.href
 	);
 
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -187,10 +184,9 @@ export default function AccountCreate( { className } ) {
 		}
 	}, [ hasAccountCreateForm, siteName, siteURL, timezone, setValues ] );
 
-	const isInitialSetupFlow = !! showProgress && setupFlowRefreshEnabled;
+	const isInitialSetupFlow = !! showProgress;
 
-	const hasAccountCreationError =
-		setupFlowRefreshEnabled && !! accountCreationErrorCode;
+	const hasAccountCreationError = !! accountCreationErrorCode;
 
 	const handleSubmit = useCallback( async () => {
 		const scopes = [];
@@ -367,24 +363,19 @@ export default function AccountCreate( { className } ) {
 				/>
 
 				<SetupPluginConversionTrackingNotice
-					className={ classnames( {
-						'googlesitekit-margin-top-0': ! setupFlowRefreshEnabled,
-					} ) }
 					message={ createInterpolateElement(
 						__(
 							'To track how visitors interact with your site, Site Kit will enable plugin conversion tracking. You can always disable it in settings. <LearnMoreLink />',
 							'google-site-kit'
 						),
 						{
-							LearnMoreLink: setupFlowRefreshEnabled ? (
+							LearnMoreLink: (
 								<Link
 									href={ pluginConversionsDocumentationURL }
 									external
 								>
 									{ __( 'Learn more', 'google-site-kit' ) }
 								</Link>
-							) : (
-								<Null />
 							),
 						}
 					) }
@@ -393,7 +384,7 @@ export default function AccountCreate( { className } ) {
 
 			<P
 				className="googlesitekit-analytics-setup__analytics-create-account-info"
-				size={ setupFlowRefreshEnabled ? 'small' : undefined }
+				size="small"
 			>
 				{ hasRequiredScope && (
 					<span>

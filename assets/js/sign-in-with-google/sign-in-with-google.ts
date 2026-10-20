@@ -32,12 +32,55 @@ export type SignInWithGoogleConfig = {
 	isWooCommerce: boolean;
 	isWPLogin: boolean;
 	loginURI: string;
+	nonceCookieName: string;
+	nonceCookiePath: string;
+	nonceCookieTTL: number;
 	redirectCookieName: string;
 	redirectCookiePath: string;
 	redirectCookieTTL: number;
 	redirectTo: string;
 	shouldShowOneTapPrompt: boolean;
 };
+
+/**
+ * Creates a random value to pass to Google Identity Services as the nonce.
+ *
+ * Google embeds it as the `nonce` claim of the signed ID token, which the
+ * server compares with the cookie set below, establishing that the token was
+ * issued for a sign-in started here.
+ *
+ * @since 1.188.0.t
+ *
+ * @return {string} Random hex string.
+ */
+function createNonce() {
+	const bytes = new Uint8Array( 16 );
+
+	global.crypto.getRandomValues( bytes );
+
+	return Array.from( bytes, ( byte ) =>
+		byte.toString( 16 ).padStart( 2, '0' )
+	).join( '' );
+}
+
+/**
+ * Reads the value of a cookie.
+ *
+ * @since 1.188.0.t
+ *
+ * @param {string} name Cookie name.
+ * @return {string} The value, or an empty string when the cookie is not set.
+ */
+function readCookie( name: string ) {
+	const prefix = `${ name }=`;
+
+	const entry = document.cookie
+		.split( ';' )
+		.map( ( part ) => part.trim() )
+		.find( ( part ) => part.startsWith( prefix ) );
+
+	return entry ? entry.slice( prefix.length ) : '';
+}
 
 function getCommentTextKey( element: HTMLTextAreaElement ) {
 	if ( ! element.form ) {
@@ -137,6 +180,9 @@ export function setupSignInWithGoogle(
 		isPreview,
 		isUserLoggedIn,
 		isWPLogin,
+		nonceCookieName,
+		nonceCookiePath,
+		nonceCookieTTL,
 		redirectTo,
 		redirectCookieTTL,
 		redirectCookieName,
@@ -144,11 +190,32 @@ export function setupSignInWithGoogle(
 		shouldShowOneTapPrompt,
 	} = config;
 
+	const shouldRenderButton =
+		! isUserLoggedIn || isWPLogin || isPreview || isExistingUserFlow;
+
+	// A sign-in can only start on a page which renders a button or shows the
+	// One Tap prompt. Every other page needs no nonce.
+	const offersSignIn = shouldRenderButton || shouldShowOneTapPrompt;
+
+	// Reuse the value already in the cookie when there is one. All tabs share
+	// the single cookie, so minting a fresh value on each page load would
+	// overwrite the one a sign-in started in another tab is waiting on.
+	const nonce = offersSignIn
+		? readCookie( nonceCookieName ) || createNonce()
+		: '';
+
+	if ( offersSignIn ) {
+		// Store the nonce before initializing, because One Tap can select an
+		// account and invoke the callback as soon as the library starts.
+		document.cookie = `${ nonceCookieName }=${ nonce };max-age=${ nonceCookieTTL };path=${ nonceCookiePath }`;
+	}
+
 	const idConfig = {
 		client_id: clientID,
 		callback: ( response: CredentialResponse ) =>
 			handleCredentialResponse( response, config ),
 		library_name: 'Site-Kit',
+		...( nonce ? { nonce } : {} ),
 	};
 
 	initialize( idConfig );
@@ -169,9 +236,6 @@ export function setupSignInWithGoogle(
 
 		login.insertBefore( button, loginForm );
 	}
-
-	const shouldRenderButton =
-		! isUserLoggedIn || isWPLogin || isPreview || isExistingUserFlow;
 
 	if ( shouldRenderButton ) {
 		const buttons = document.querySelectorAll(

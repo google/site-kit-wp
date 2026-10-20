@@ -35,6 +35,7 @@ import { ENTER, ESCAPE } from '@wordpress/keycodes';
  */
 import { useSelect } from 'googlesitekit-data';
 import Badge from '@/js/components/Badge';
+import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import IconWrapper from '@/js/components/IconWrapper';
 import ModuleIcon from '@/js/components/ModuleIcon';
 import NewBadge from '@/js/components/NewBadge';
@@ -149,13 +150,14 @@ export default function Header( { slug } ) {
 										'Experimental',
 										'google-site-kit'
 									) }
+									variant={ BADGE_VARIANTS.EXPERIMENTAL }
 									hasLeftSpacing
 								/>
 							) }
 							{ BETA_MODULES.includes( slug ) && (
 								<Badge
-									className="googlesitekit-badge--beta"
 									label={ __( 'Beta', 'google-site-kit' ) }
+									variant={ BADGE_VARIANTS.ANNOUNCEMENT }
 									hasLeftSpacing
 								/>
 							) }

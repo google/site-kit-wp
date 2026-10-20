@@ -41,7 +41,7 @@ exports[`TopCountriesWidget should render correctly with the expected metrics 1`
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   United States
                 </p>
@@ -61,7 +61,7 @@ exports[`TopCountriesWidget should render correctly with the expected metrics 1`
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   United Kingdom
                 </p>
@@ -81,7 +81,7 @@ exports[`TopCountriesWidget should render correctly with the expected metrics 1`
                 class="googlesitekit-table__body-item"
               >
                 <p
-                  class="googlesitekit-km-widget-tile__table-plain-text"
+                  class="googlesitekit-typography googlesitekit-km-widget-tile__table-plain-text googlesitekit-typography--body googlesitekit-typography--small"
                 >
                   Germany
                 </p>

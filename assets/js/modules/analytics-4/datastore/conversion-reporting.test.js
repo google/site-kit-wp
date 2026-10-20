@@ -19,20 +19,32 @@
 /**
  * Internal dependencies
  */
+import { KEY_METRICS_GROUP_GENERATING_LEADS } from '@/js/components/KeyMetrics/constants';
+import { KEY_METRICS_WIDGETS } from '@/js/components/KeyMetrics/key-metrics-widgets';
 import {
 	CORE_USER,
 	KM_ANALYTICS_ENGAGED_TRAFFIC_SOURCE,
+	KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+	KM_ANALYTICS_FORM_COMPLETION_RATE,
+	KM_ANALYTICS_LEADS_BY_COUNTRIES,
+	KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+	KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
 	KM_ANALYTICS_NEW_VISITORS,
 	KM_ANALYTICS_SALES_BY_COUNTRIES,
 	KM_ANALYTICS_SALES_BY_VISITOR_TYPE,
 	KM_ANALYTICS_SALES_ENGAGEMENT_RATE,
 	KM_ANALYTICS_SALES_RATE,
+	KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_AUTHORS_DRIVING_SALES,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_ADD_TO_CART,
 	KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+	KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
 	KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
+	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_SALES_RATE,
 	KM_ANALYTICS_TOP_TRAFFIC_SOURCE,
+	KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+	KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
 	KM_ANALYTICS_TOTAL_SALES,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -517,6 +529,45 @@ describe( 'modules/analytics-4 conversion-reporting', () => {
 						KM_ANALYTICS_TOP_PAGES_DRIVING_SALES,
 					] )
 				);
+			} );
+
+			it( 'includes the Generating leads Key Metric tiles under contact, submit_lead_form and generate_lead', () => {
+				const {
+					contact,
+					submit_lead_form: submitLeadForm,
+					generate_lead: generateLead,
+				} = registry
+					.select( MODULES_ANALYTICS_4 )
+					.getKeyMetricsConversionEventWidgets();
+
+				const GENERATING_LEADS_WIDGET_SLUGS = [
+					KM_ANALYTICS_TOP_PAGES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_CITIES_DRIVING_LEADS,
+					KM_ANALYTICS_TOP_TRAFFIC_SOURCE_DRIVING_LEADS,
+					KM_ANALYTICS_TOTAL_FORM_COMPLETIONS,
+					KM_ANALYTICS_FORM_COMPLETION_RATE,
+					KM_ANALYTICS_FORM_COMPLETION_ENGAGEMENT_RATE,
+					KM_ANALYTICS_TOP_TRAFFIC_CHANNELS_DRIVING_FORM_COMPLETION_RATE,
+					KM_ANALYTICS_LEADS_BY_VISITOR_TYPE,
+					KM_ANALYTICS_LEADS_BY_COUNTRIES,
+					KM_ANALYTICS_LEADS_BY_DEVICE_TYPE,
+					KM_ANALYTICS_TOP_AUTHORS_DRIVING_LEADS,
+				];
+				const generatingLeadsWidgets = expect.arrayContaining(
+					GENERATING_LEADS_WIDGET_SLUGS
+				);
+
+				expect( contact ).toEqual( generatingLeadsWidgets );
+				expect( submitLeadForm ).toEqual( generatingLeadsWidgets );
+				expect( generateLead ).toEqual( generatingLeadsWidgets );
+
+				// The mapping above doesn't catch a widget being reassigned to
+				// the wrong group, so assert `metadata.group` directly too.
+				GENERATING_LEADS_WIDGET_SLUGS.forEach( ( slug ) => {
+					expect( KEY_METRICS_WIDGETS[ slug ].metadata.group ).toBe(
+						KEY_METRICS_GROUP_GENERATING_LEADS.SLUG
+					);
+				} );
 			} );
 		} );
 

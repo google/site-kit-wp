@@ -408,7 +408,6 @@ describe( 'AccountCreate', () => {
 					{
 						registry,
 						viewContext: VIEW_CONTEXT_MODULE_SETUP,
-						features: [ 'setupFlowRefresh' ],
 					}
 				) );
 
@@ -460,7 +459,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByText, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -468,22 +466,6 @@ describe( 'AccountCreate', () => {
 			expect(
 				getByText( 'Analytics account creation failed' )
 			).toBeInTheDocument();
-		} );
-
-		it( 'should not render the error notice when the `setupFlowRefresh` feature flag is disabled', async () => {
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&slug=analytics-4&reAuth=true&accountCreationErrorCode=user_cancel';
-
-			const { queryByText, waitForRegistry } = render(
-				<AccountCreate />,
-				{ registry }
-			);
-
-			await waitForRegistry();
-
-			expect(
-				queryByText( 'Analytics account creation failed' )
-			).not.toBeInTheDocument();
 		} );
 
 		it( 'should retry the account creation process when the Retry button is clicked', async () => {
@@ -503,7 +485,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -548,7 +529,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 			} );
 
 			await waitForRegistry();
@@ -592,7 +572,6 @@ describe( 'AccountCreate', () => {
 
 			const { getByRole, waitForRegistry } = render( <AccountCreate />, {
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_SETTINGS,
 			} );
 
@@ -620,7 +599,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -641,7 +619,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -670,7 +647,6 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [ 'setupFlowRefresh' ],
 					}
 				);
 
@@ -720,10 +696,7 @@ describe( 'AccountCreate', () => {
 					<AccountCreate />,
 					{
 						registry,
-						features: [
-							'setupFlowRefresh',
-							'setupFlowRefreshPhase4',
-						],
+						features: [ 'setupFlowRefreshPhase4' ],
 					}
 				);
 

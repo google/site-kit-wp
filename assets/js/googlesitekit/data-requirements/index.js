@@ -80,6 +80,25 @@ export function requireCanViewSharedModule( slug ) {
 }
 
 /**
+ * Returns a function that checks if the current user has access to the given shareable module.
+ *
+ * @since 1.190.0
+ *
+ * @param {string} slug Module slug to test.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the current user has access to the given shareable module or not.
+ */
+export function requireAccessToShareableModule( slug ) {
+	return async ( { select, resolveSelect } ) => {
+		await Promise.all( [
+			resolveSelect( CORE_USER ).getAuthentication(),
+			resolveSelect( CORE_MODULES ).getModules(),
+		] );
+
+		return true === select( CORE_USER ).hasAccessToShareableModule( slug );
+	};
+}
+
+/**
  * Returns a function that checks if the given module is active.
  *
  * @since 1.170.0
@@ -116,10 +135,11 @@ export function requireModuleConnected( slug ) {
 /**
  * Returns a function that checks if the given module is not connected.
  *
- * The connection state is tri-state: it is `undefined` until the modules have
- * been fetched, which does not satisfy this requirement.
+ * This is not the inverse of `requireModuleConnected()`: the requirement is
+ * only satisfied when the module is known to be disconnected, so an
+ * unresolved `undefined` value does not pass.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @param {string} slug Module slug to test.
  * @return {function(WPDataRegistry): Promise<boolean>} Whether the given module is not connected or not.
@@ -175,19 +195,18 @@ export function requireItemDismissed( item ) {
 }
 
 /**
- * Returns a function that checks if the audience segmentation widget is hidden.
+ * Returns a function that checks if the given prompt is dismissed.
  *
- * @since 1.166.0
+ * @since 1.189.0
  *
- * @return {function(WPDataRegistry): Promise<boolean>} Whether the widget is hidden or not.
+ * @param {string} prompt Dismissible prompt ID.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the given prompt is dismissed or not.
  */
-export function requireAudienceSegmentationWidgetHidden() {
+export function requirePromptDismissed( prompt ) {
 	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( CORE_USER ).getUserAudienceSettings();
+		await resolveSelect( CORE_USER ).getDismissedPrompts();
 
-		return (
-			true === select( CORE_USER ).isAudienceSegmentationWidgetHidden()
-		);
+		return true === select( CORE_USER ).isPromptDismissed( prompt );
 	};
 }
 

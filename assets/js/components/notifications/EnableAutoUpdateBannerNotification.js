@@ -24,7 +24,12 @@ import PropTypes from 'prop-types';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useState } from '@wordpress/element';
+import {
+	createInterpolateElement,
+	useCallback,
+	useEffect,
+	useState,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -34,10 +39,13 @@ import { useDispatch, useSelect } from 'googlesitekit-data';
 import ErrorNotice from '@/js/components/ErrorNotice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import LearnMoreLink from '@/js/googlesitekit/notifications/components/common/LearnMoreLink';
 import NoticeNotification from '@/js/googlesitekit/notifications/components/layout/NoticeNotification';
 import useViewContext from '@/js/hooks/useViewContext';
 
 export const ENABLE_AUTO_UPDATES_BANNER_SLUG = 'auto-update-cta';
+export const FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG =
+	'feature-discovery-auto-update-cta';
 
 export default function EnableAutoUpdateBannerNotification( {
 	id,
@@ -48,8 +56,12 @@ export default function EnableAutoUpdateBannerNotification( {
 	const siteKitAutoUpdatesEnabled = useSelect( ( select ) =>
 		select( CORE_SITE ).getSiteKitAutoUpdatesEnabled()
 	);
+
 	const enableAutoUpdateError = useSelect( ( select ) =>
 		select( CORE_SITE ).getErrorForAction( 'enableAutoUpdate', [] )
+	);
+	const autoUpdatesDocumentationURL = useSelect( ( select ) =>
+		select( CORE_SITE ).getDocumentationLinkURL( 'auto-updates' )
 	);
 
 	const { enableAutoUpdate } = useDispatch( CORE_SITE );
@@ -76,7 +88,7 @@ export default function EnableAutoUpdateBannerNotification( {
 	if ( enabledViaCTA ) {
 		// Use separate GA tracking event category for success banner variation.
 		const gaTrackingEventArgs = {
-			category: `${ viewContext }_${ ENABLE_AUTO_UPDATES_BANNER_SLUG }-success`,
+			category: `${ viewContext }_${ id }-success`,
 		};
 
 		return (
@@ -107,17 +119,31 @@ export default function EnableAutoUpdateBannerNotification( {
 			<NoticeNotification
 				notificationID={ id }
 				type={ NOTICE_TYPES.NEW }
-				title={ __( 'Keep Site Kit up-to-date', 'google-site-kit' ) }
-				description={ __(
-					'Turn on auto-updates so you always have the latest version of Site Kit. We constantly introduce new features to help you get the insights you need to be successful on the web.',
+				title={ __(
+					'Unlock the latest Site Kit features!',
 					'google-site-kit'
+				) }
+				description={ createInterpolateElement(
+					__(
+						"We regularly release new features and improvements to help you track your site's success. Enable auto-updates for Site Kit so you never miss the latest enhancements. <LearnMoreLink />",
+						'google-site-kit'
+					),
+					{
+						LearnMoreLink: (
+							<LearnMoreLink
+								id={ id }
+								label={ __( 'Learn more', 'google-site-kit' ) }
+								url={ autoUpdatesDocumentationURL }
+							/>
+						),
+					}
 				) }
 				ctaButton={ {
 					label: __( 'Enable auto-updates', 'google-site-kit' ),
 					onClick: ctaActivate,
 				} }
 				dismissButton={ {
-					label: __( 'Dismiss', 'google-site-kit' ),
+					label: __( 'No thanks', 'google-site-kit' ),
 				} }
 			/>
 		</Notification>

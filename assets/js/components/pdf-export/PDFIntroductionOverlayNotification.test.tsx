@@ -89,7 +89,6 @@ describe( 'PDFIntroductionOverlayNotification', () => {
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-				features: [ 'pdfGeneration' ],
 			}
 		);
 	}

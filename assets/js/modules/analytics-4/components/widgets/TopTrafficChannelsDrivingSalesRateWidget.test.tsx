@@ -37,11 +37,11 @@ import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import TopTrafficChannelsDrivingSalesRateWidget from './TopTrafficChannelsDrivingSalesRateWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
 	testInsufficientPermissionsError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 	let registry: WPDataRegistry;
@@ -74,14 +74,25 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		};
 	}
 
+	function getSessionsReportOptions() {
+		return {
+			...registry.select( CORE_USER ).getDateRangeDates(),
+			dimensions: [ 'sessionDefaultChannelGroup' ],
+			metrics: [ { name: 'sessions' } ],
+			reportID:
+				'analytics-4_goal-driver-reports_top-traffic-channels-sessions',
+		};
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideSalesWidgetTestRegistry( registry );
 	} );
 
 	it( 'should render the loading state while resolving the report', async () => {
-		// Freeze the report fetch to keep the widget in loading state.
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+		// Freeze both report fetches (the ranked channels and their total
+		// sessions) to keep the widget in loading state.
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT, { repeat: 2 } );
 
 		const { container, waitForRegistry } = render(
 			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
@@ -97,13 +108,15 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 	testGenericReportError(
 		() => registry,
 		TopTrafficChannelsDrivingSalesRateWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	testInsufficientPermissionsError(
 		() => registry,
 		TopTrafficChannelsDrivingSalesRateWidget,
-		widgetProps
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
 	);
 
 	it( 'should render the zero data state when the report has no rows', async () => {
@@ -112,6 +125,9 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetReport( {}, { options: reportOptions } );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetReport( {}, { options: getSessionsReportOptions() } );
 
 		const { container, getByText, waitForRegistry } = render(
 			<TopTrafficChannelsDrivingSalesRateWidget { ...widgetProps } />,
@@ -137,19 +153,38 @@ describe( 'TopTrafficChannelsDrivingSalesRateWidget', () => {
 				rows: [
 					{
 						dimensionValues: [ { value: 'Organic Search' } ],
-						metricValues: [ { value: '40' }, { value: '100' } ],
+						metricValues: [ { value: '40' }, { value: '40' } ],
 					},
 					{
 						dimensionValues: [ { value: 'Paid Search' } ],
-						metricValues: [ { value: '20' }, { value: '100' } ],
+						metricValues: [ { value: '20' }, { value: '20' } ],
 					},
 					{
 						dimensionValues: [ { value: 'Direct' } ],
-						metricValues: [ { value: '10' }, { value: '200' } ],
+						metricValues: [ { value: '10' }, { value: '10' } ],
 					},
 				],
 			},
 			{ options: reportOptions }
+		);
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{
+						dimensionValues: [ { value: 'Organic Search' } ],
+						metricValues: [ { value: '100' } ],
+					},
+					{
+						dimensionValues: [ { value: 'Paid Search' } ],
+						metricValues: [ { value: '100' } ],
+					},
+					{
+						dimensionValues: [ { value: 'Direct' } ],
+						metricValues: [ { value: '200' } ],
+					},
+				],
+			},
+			{ options: getSessionsReportOptions() }
 		);
 
 		const { getByText, waitForRegistry } = render(

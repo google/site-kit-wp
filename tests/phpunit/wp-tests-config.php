@@ -15,6 +15,17 @@ define( 'WP_DEBUG', true );
 define( 'ABSPATH', dirname( dirname( __DIR__ ) ) . '/vendor/roots/wordpress/' );
 
 /*
+ * Registers the test theme directory before `wp-settings.php` loads.
+ *
+ * `roots/wordpress` ships no `wp-content/themes`, so `wp-settings.php` registers
+ * no theme directory and core's `wp_is_block_theme()` calls raise
+ * `_doing_it_wrong()` notices. The notices break process-isolated tests, which
+ * bootstrap through `wp-phpunit/includes/install.php`. That subprocess reads this
+ * config file and nothing else, so the global belongs here.
+ */
+$GLOBALS['wp_theme_directories'] = array( dirname( dirname( __DIR__ ) ) . '/vendor/wp-phpunit/wp-phpunit/data/themedir1' );
+
+/*
  * This configuration file will be used by the copy of WordPress being tested.
  * wordpress/wp-config.php will be ignored.
  *

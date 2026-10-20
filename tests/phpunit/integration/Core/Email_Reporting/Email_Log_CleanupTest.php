@@ -46,8 +46,7 @@ class Email_Log_CleanupTest extends TestCase {
 		$this->cleanup  = new Email_Log_Cleanup( $this->settings );
 
 		$email_log = new Email_Log( $context );
-		$register  = new \ReflectionMethod( Email_Log::class, 'register_email_log' );
-		$register->setAccessible( true );
+		$register  = $this->get_accessible_method( Email_Log::class, 'register_email_log' );
 		$register->invoke( $email_log );
 	}
 

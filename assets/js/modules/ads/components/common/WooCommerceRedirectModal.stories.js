@@ -39,9 +39,6 @@ export const GoogleForWooCommerceInactive = Template.bind( {} );
 GoogleForWooCommerceInactive.storyName = 'GoogleForWooCommerceInactive';
 GoogleForWooCommerceInactive.args = {
 	plugins: {
-		[ PLUGINS.WOOCOMMERCE ]: {
-			active: true,
-		},
 		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 			active: false,
 			adsConnected: false,
@@ -54,9 +51,6 @@ export const GoogleForWooCommerceActive = Template.bind( {} );
 GoogleForWooCommerceActive.storyName = 'GoogleForWooCommerceActive';
 GoogleForWooCommerceActive.args = {
 	plugins: {
-		[ PLUGINS.WOOCOMMERCE ]: {
-			active: true,
-		},
 		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 			active: true,
 			adsConnected: false,
@@ -69,9 +63,6 @@ export const AdsAccountConnected = Template.bind( {} );
 AdsAccountConnected.storyName = 'AdsAccountConnected';
 AdsAccountConnected.args = {
 	plugins: {
-		[ PLUGINS.WOOCOMMERCE ]: {
-			active: true,
-		},
 		[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 			active: true,
 			adsConnected: true,
@@ -86,7 +77,7 @@ export default {
 	decorators: [
 		( Story, { args } ) => {
 			function setupRegistry( registry ) {
-				provideSiteInfo( registry );
+				provideSiteInfo( registry, { wooCommerceActive: true } );
 				registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
 				registry.dispatch( MODULES_ADS ).receiveModuleData( {
 					plugins: args.plugins,

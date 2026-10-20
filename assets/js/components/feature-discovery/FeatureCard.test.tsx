@@ -29,6 +29,7 @@ import {
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureNewnessKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -36,10 +37,12 @@ import AnalyticsIcon from '@/svg/graphics/analytics.svg';
 import {
 	act,
 	createTestRegistry,
+	fireEvent,
 	provideModules,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from './constants';
 import FeatureCard from './FeatureCard';
 
 const TEST_OLD_VERSION = '1.84.0';
@@ -277,6 +280,27 @@ describe( 'FeatureCard', () => {
 		expect( getByText( 'Paid service' ) ).toBeInTheDocument();
 	} );
 
+	it( 'should render the feature’s own CTA in the slot the card provides', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole } = render( <FeatureCard slug="test-feature" />, {
+			registry,
+		} );
+
+		// How the CTA itself looks and behaves is `FeatureCTA`'s own test.
+		expect(
+			getByRole( 'button', { name: 'Try it now' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'should render the dismiss control only when the card is dismissible', () => {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 
@@ -298,5 +322,115 @@ describe( 'FeatureCard', () => {
 				name: 'Dismiss Test feature title',
 			} )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should toggle the menu without dismissing and close on Escape', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard slug="test-feature" isDismissible />,
+			{ registry }
+		);
+
+		const button = getByRole( 'button', {
+			name: 'Dismiss Test feature title',
+		} );
+
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+
+		fireEvent.click( button );
+
+		expect( button ).toHaveAttribute( 'aria-expanded', 'true' );
+		expect( button ).toHaveAttribute(
+			'aria-controls',
+			getByRole( 'menu' ).id
+		);
+
+		fireEvent.click( button );
+
+		expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+
+		fireEvent.click( button );
+
+		fireEvent.keyDown( getByRole( 'menu' ), {
+			key: 'Escape',
+		} );
+
+		expect( button ).toHaveFocus();
+		expect( button ).toHaveAttribute( 'aria-expanded', 'false' );
+		expect( fetchMock ).not.toHaveFetched();
+	} );
+
+	it.each( [
+		[ 'Just hide this suggestion', undefined ],
+		[ 'It’s not relevant to my site goals', 'not_relevant' ],
+		[ 'I’m already using another tool', 'already_using' ],
+		[ 'Setup seems complex', 'too_complicated' ],
+	] )(
+		'should dismiss the feature and send only the feedback chosen with "%s"',
+		async ( label, reason ) => {
+			provideFeatures( registry, [ TEST_FEATURE ] );
+
+			const triggerSurvey = jest
+				.spyOn( registry.dispatch( CORE_USER ), 'triggerSurvey' )
+				.mockResolvedValue( {} );
+
+			const endpoint = new RegExp(
+				'^/google-site-kit/v1/core/user/data/dismiss-item'
+			);
+
+			fetchMock.postOnce( endpoint, [
+				'feature-discovery-dismissed-test-feature',
+			] );
+
+			const { getByRole, queryByRole, waitForRegistry } = render(
+				<FeatureCard slug="test-feature" isDismissible />,
+				{ registry }
+			);
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Dismiss Test feature title' } )
+			);
+
+			fireEvent.click( getByRole( 'menuitem', { name: label } ) );
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched( endpoint, {
+				body: {
+					data: {
+						slug: 'feature-discovery-dismissed-test-feature',
+						expiration: 0,
+					},
+				},
+			} );
+
+			if ( reason ) {
+				expect( triggerSurvey ).toHaveBeenCalledWith(
+					`feedback:feature_relevancy_test-feature:${ reason }`
+				);
+			} else {
+				expect( triggerSurvey ).not.toHaveBeenCalled();
+			}
+
+			expect( queryByRole( 'menu' ) ).not.toBeInTheDocument();
+		}
+	);
+
+	it( 'should open the detail panel for its feature when Read more is clicked', () => {
+		provideFeatures( registry, [ TEST_FEATURE ] );
+
+		const { getByRole } = render(
+			<FeatureCard slug={ TEST_FEATURE.slug } />,
+			{ registry }
+		);
+
+		fireEvent.click( getByRole( 'button', { name: 'Read more' } ) );
+
+		expect(
+			registry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+		).toBe( TEST_FEATURE.slug );
 	} );
 } );

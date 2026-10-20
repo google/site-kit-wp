@@ -32,7 +32,7 @@ import { useInstanceId } from '@wordpress/compose';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_BODY } from '@/js/components/Typography/constants';
-import ZeroDataMessage from '@/js/modules/analytics-4/components/site-goals/components/ZeroDataMessage';
+import { TileZeroDataMessage } from '@/js/modules/analytics-4/components/common/tiles';
 import { TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { TrafficBreakdownRow as BreakdownRow } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import TrafficBreakdownRow from './TrafficBreakdownRow';
@@ -42,7 +42,7 @@ export interface TrafficBreakdownColumnProps {
 	id: string;
 	/** The column's heading, which also names it for a screen reader. */
 	heading: string;
-	/** The rows to render, empty when the report returned none. */
+	/** The rows to render, empty when no value in the report has visitors. */
 	rows: BreakdownRow[];
 	/** Whether the column's report has arrived. */
 	loaded?: boolean;
@@ -90,17 +90,17 @@ const TrafficBreakdownColumn: FC< TrafficBreakdownColumnProps > = ( {
 				</div>
 			) }
 			{ loaded && rows.length === 0 && (
-				<ZeroDataMessage metricLabel="visitors" />
+				<TileZeroDataMessage metricLabel="visitors" />
 			) }
 			{ loaded &&
 				rows.length > 0 &&
 				// Keyed by position: nothing here reorders, and a dimension
 				// value of "Others" would otherwise collide with the folded row.
-				rows.map( ( { label, percentage }, index ) => (
+				rows.map( ( { label, formattedPercentage }, index ) => (
 					<TrafficBreakdownRow
 						key={ index }
 						label={ label }
-						percentage={ percentage }
+						formattedPercentage={ formattedPercentage }
 					/>
 				) ) }
 		</section>

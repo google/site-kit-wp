@@ -30,12 +30,13 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
-} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
-import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { getSectionClassNames } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -110,7 +111,7 @@ describe( 'TrafficOverviewPanel', () => {
 	 * 4. locations
 	 * 5. devices.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {string} [url] Optional. The entity URL the reports cover.
 	 * @return {Array<Object>} The five argument sets.
@@ -142,7 +143,7 @@ describe( 'TrafficOverviewPanel', () => {
 	 * `googlesitekit-chart-loading__forced` only when `loaded` is false, so the
 	 * chart count reads that class.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.189.0
 	 *
 	 * @param {Element} container The element the panel rendered into.
 	 * @return {Object} The placeholder count for each of the three sections.
@@ -211,13 +212,7 @@ describe( 'TrafficOverviewPanel', () => {
 
 		await waitForRegistry();
 
-		const sections = Array.from(
-			container.querySelectorAll(
-				'.googlesitekit-traffic-overview__panel > *'
-			)
-		);
-
-		expect( sections.map( ( section ) => section.className ) ).toEqual( [
+		expect( getSectionClassNames( container ) ).toEqual( [
 			'googlesitekit-traffic-overview__total-visitors',
 			'googlesitekit-traffic-overview__chart',
 			'googlesitekit-traffic-overview__breakdown',

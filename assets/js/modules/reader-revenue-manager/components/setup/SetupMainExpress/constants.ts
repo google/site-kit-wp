@@ -16,4 +16,14 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import {
+	MANAGE_SCOPE,
+	READONLY_SCOPE,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
+
+export const EXPRESS_SETUP_SCOPES = [ READONLY_SCOPE, MANAGE_SCOPE ];
+
 export const EXPRESS_SETUP_STEP_UI_KEY = 'express-setup-step';

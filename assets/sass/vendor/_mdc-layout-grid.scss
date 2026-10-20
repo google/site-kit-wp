@@ -1,5 +1,7 @@
 // Overrides for .mdc-layout-grid
 
+@use "sass:math";
+
 .googlesitekit-plugin {
 
 	.mdc-layout-grid + .mdc-layout-grid {
@@ -68,7 +70,7 @@
 		@for $i from 1 through 12 {
 
 			.mdc-layout-grid__cell--offset-#{$i} {
-				margin-left: percentage($i / 12);
+				margin-left: math.percentage(math.div($i, 12));
 
 				@supports (display: grid) {
 					margin-left: 0;
@@ -89,7 +91,7 @@
 			@for $i from 1 through 12 {
 
 				.mdc-layout-grid__cell--offset-#{$i}-#{$name} {
-					margin-left: percentage($i / 12);
+					margin-left: math.percentage(math.div($i, 12));
 
 					@supports (display: grid) {
 						margin-left: 0;

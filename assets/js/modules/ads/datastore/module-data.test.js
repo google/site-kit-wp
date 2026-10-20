@@ -29,10 +29,6 @@ describe( 'modules/ads module data', () => {
 		ads: {
 			supportedConversionEvents: [ 'add-to-cart' ],
 			plugins: {
-				[ PLUGINS.WOOCOMMERCE ]: {
-					active: false,
-					installed: false,
-				},
 				[ PLUGINS.GOOGLE_FOR_WOOCOMMERCE ]: {
 					active: false,
 					installed: false,
@@ -158,8 +154,6 @@ describe( 'modules/ads module data', () => {
 		} );
 
 		describe.each( [
-			[ 'isWooCommerceInstalled', PLUGINS.WOOCOMMERCE, false ],
-			[ 'isWooCommerceActivated', PLUGINS.WOOCOMMERCE, false ],
 			[
 				'isGoogleForWooCommerceInstalled',
 				PLUGINS.GOOGLE_FOR_WOOCOMMERCE,

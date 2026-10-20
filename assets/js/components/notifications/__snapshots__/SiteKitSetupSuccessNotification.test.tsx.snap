@@ -24,7 +24,7 @@ exports[`SiteKitSetupSuccessNotification should render the banner 1`] = `
                 class="googlesitekit-banner__content"
               >
                 <p
-                  class="googlesitekit-banner__title"
+                  class="googlesitekit-typography googlesitekit-banner__title googlesitekit-typography--headline googlesitekit-typography--medium"
                 >
                   Congrats on completing the setup for Site Kit!
                 </p>

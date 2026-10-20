@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import PropTypes from 'prop-types';
 import { useClickAway } from 'react-use';
 
@@ -36,10 +35,8 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { Button, Menu } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
@@ -59,7 +56,6 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef();
 	const viewContext = useViewContext();
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -72,7 +68,7 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 
 	const showFeatureTourMenuItem = useSelect(
 		( select ) => {
-			if ( ! showFeatureTour || ! setupFlowRefreshEnabled ) {
+			if ( ! showFeatureTour ) {
 				return false;
 			}
 
@@ -88,7 +84,7 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 
 			return select( MODULES_SEARCH_CONSOLE ).isGatheringData() === false;
 		},
-		[ showFeatureTour, setupFlowRefreshEnabled ]
+		[ showFeatureTour ]
 	);
 
 	const handleMenu = useCallback( () => {
@@ -103,12 +99,6 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		setMenuOpen( false );
 	}, [] );
 
-	const fixCommonIssuesURL = useSelect( ( select ) => {
-		return select( CORE_SITE ).getDocumentationLinkURL(
-			'fix-common-issues'
-		);
-	} );
-
 	const { triggerOnDemandTour } = useDispatch( CORE_USER );
 
 	const welcomeTour = useWelcomeTour();
@@ -118,36 +108,6 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 	}, [ triggerOnDemandTour, welcomeTour ] );
 
 	const menuItems = [
-		{
-			gaEventLabel: 'fix_common_issues',
-			href: fixCommonIssuesURL,
-			children: __( 'Fix common issues', 'google-site-kit' ),
-		},
-		{
-			gaEventLabel: 'documentation',
-			href: 'https://sitekit.withgoogle.com/documentation/',
-			children: __( 'Read help docs', 'google-site-kit' ),
-		},
-		{
-			gaEventLabel: 'support_forum',
-			href: 'https://wordpress.org/support/plugin/google-site-kit/',
-			children: __( 'Get support', 'google-site-kit' ),
-		},
-		...( adSenseModuleActive
-			? [
-					{
-						gaEventLabel: 'adsense_help',
-						href: 'https://support.google.com/adsense/',
-						children: __(
-							'Get help with AdSense',
-							'google-site-kit'
-						),
-					},
-			  ]
-			: [] ),
-	];
-
-	const setupFlowRefreshMenuItems = [
 		{
 			gaEventLabel: 'browse_documentation',
 			href: 'https://sitekit.withgoogle.com/documentation/',
@@ -211,18 +171,13 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 				text
 			/>
 			<Menu
-				className={ classnames( 'googlesitekit-width-auto', {
-					'googlesitekit-help-menu': setupFlowRefreshEnabled,
-				} ) }
+				className="googlesitekit-width-auto googlesitekit-help-menu"
 				menuOpen={ menuOpen }
 				id="googlesitekit-help-menu"
 				onSelected={ handleMenuSelected }
 			>
 				{ children }
-				{ ( setupFlowRefreshEnabled
-					? setupFlowRefreshMenuItems
-					: menuItems
-				).map( ( item, index ) => (
+				{ menuItems.map( ( item, index ) => (
 					<HelpMenuLink key={ index } { ...item } />
 				) ) }
 			</Menu>

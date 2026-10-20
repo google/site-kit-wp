@@ -70,7 +70,7 @@ export default function WooCommerceRedirectModal( {
 		select( CORE_SITE ).getAdminURL()
 	);
 	const isWooCommerceActive = useSelect( ( select ) =>
-		select( MODULES_ADS ).isWooCommerceActivated()
+		select( CORE_SITE ).isWooCommerceActivated()
 	);
 	const isGoogleForWooCommerceActive = useSelect( ( select ) =>
 		select( MODULES_ADS ).isGoogleForWooCommerceActivated()

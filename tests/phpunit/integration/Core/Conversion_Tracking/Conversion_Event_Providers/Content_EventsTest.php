@@ -12,26 +12,17 @@ namespace Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Provid
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Assets\Script;
-use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Events_Provider;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\Content_Events;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking;
 use Google\Site_Kit\Tests\TestCase;
+use WP_Query;
 
 class Content_EventsTest extends TestCase {
 
 	/**
-	 * Every eligible event and its description, on an install without bbPress.
-	 *
-	 * Spelled out here rather than read back from the provider, so a changed
-	 * description or a reordered entry fails the test.
+	 * Post type the `a single custom post type entry` data set registers.
 	 */
-	const EXPECTED_ELIGIBLE_EVENTS = array(
-		'read_article'                                => 'single blog posts',
-		'pagination_click'                            => 'posts split into pages',
-		'contact_link_click'                          => 'email, phone, SMS and messaging-app links',
-		'outbound_link_click'                         => 'external links with rel="sponsored", rel="ugc" or rel="nofollow"',
-		'video_start, video_progress, video_complete' => 'Vimeo embeds',
-	);
+	const TEST_POST_TYPE = 'sitekit_test_cpt';
 
 	/**
 	 * Content_Events instance.
@@ -45,12 +36,22 @@ class Content_EventsTest extends TestCase {
 		$this->content_events = new Content_Events( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
 	}
 
+	public function tear_down() {
+		// WordPress keeps a registered post type, shortcode, and embed handler
+		// for the rest of the process, so every later test sees them.
+		unregister_post_type( self::TEST_POST_TYPE );
+		remove_shortcode( 'sitekit_test_box' );
+		wp_embed_unregister_handler( 'sitekit_test_video' );
+
+		parent::tear_down();
+	}
+
 	public function test_is_active() {
 		$this->assertTrue( $this->content_events->is_active(), 'Content_Events provider should always be active.' );
 	}
 
 	public function test_get_category() {
-		$this->assertEquals( Conversion_Events_Provider::CATEGORY_CONTENT, $this->content_events->get_category(), 'Content_Events category should be CATEGORY_CONTENT.' );
+		$this->assertEquals( 'content', $this->content_events->get_category(), 'Content events should report the `content` category.' );
 	}
 
 	public function test_get_event_names() {
@@ -58,7 +59,7 @@ class Content_EventsTest extends TestCase {
 	}
 
 	public function test_register_script() {
-		$handle = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-content-events';
 		$this->assertFalse( wp_script_is( $handle, 'registered' ), 'Content events script should not be registered initially.' );
 
 		$script = $this->content_events->register_script();
@@ -144,13 +145,11 @@ class Content_EventsTest extends TestCase {
 		$this->content_events->register_hooks();
 
 		do_action( 'googlesitekit_analytics-4_init_tag' );
-		do_action( 'wp_footer' );
 
-		$handle        = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
-		$inline_script = join( "\n", (array) wp_scripts()->get_data( $handle, 'before' ) );
+		$config = $this->get_published_config();
 
-		$this->assertStringContainsString( '"postID":' . $post_id, $inline_script, 'Inline config on single post should include the post ID.' );
-		$this->assertStringContainsString( '"isSinglePost":true', $inline_script, 'Inline config on single post should have isSinglePost true.' );
+		$this->assertSame( $post_id, $config['postID'], 'The published configuration should report the post ID on a single post.' );
+		$this->assertTrue( $config['isReadableSinglePost'], '`isReadableSinglePost` should be true on a single post.' );
 	}
 
 	public function test_inline_config__home_page() {
@@ -164,13 +163,11 @@ class Content_EventsTest extends TestCase {
 		$this->content_events->register_hooks();
 
 		do_action( 'googlesitekit_analytics-4_init_tag' );
-		do_action( 'wp_footer' );
 
-		$handle        = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
-		$inline_script = join( "\n", (array) wp_scripts()->get_data( $handle, 'before' ) );
+		$config = $this->get_published_config();
 
-		$this->assertStringContainsString( '"postID":0', $inline_script, 'Inline config on home page should have postID 0.' );
-		$this->assertStringContainsString( '"isSinglePost":false', $inline_script, 'Inline config on home page should have isSinglePost false.' );
+		$this->assertSame( 0, $config['postID'], '`postID` should be 0 on the home page.' );
+		$this->assertFalse( $config['isReadableSinglePost'], '`isReadableSinglePost` should be false on the home page.' );
 	}
 
 	/**
@@ -327,12 +324,9 @@ class Content_EventsTest extends TestCase {
 
 		$this->assertSame( $html, $filtered, 'Vimeo iframe markup should be byte-identical.' );
 
-		do_action( 'wp_footer' );
+		$config = $this->get_published_config();
 
-		$handle        = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
-		$inline_script = join( "\n", (array) wp_scripts()->get_data( $handle, 'before' ) );
-
-		$this->assertStringContainsString( '"hasVimeoEmbed":true', $inline_script, 'hasVimeoEmbed should be true after a Vimeo embed was seen.' );
+		$this->assertTrue( $config['hasVimeoEmbed'], '`hasVimeoEmbed` should be true after a Vimeo embed rendered.' );
 	}
 
 	public function test_filter_embed_html__no_vimeo_embed_reports_false() {
@@ -341,12 +335,9 @@ class Content_EventsTest extends TestCase {
 		$html = '<iframe src="https://www.youtube.com/embed/abc123"></iframe>';
 		apply_filters( 'embed_oembed_html', $html );
 
-		do_action( 'wp_footer' );
+		$config = $this->get_published_config();
 
-		$handle        = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
-		$inline_script = join( "\n", (array) wp_scripts()->get_data( $handle, 'before' ) );
-
-		$this->assertStringContainsString( '"hasVimeoEmbed":false', $inline_script, 'hasVimeoEmbed should be false when no Vimeo iframe was seen.' );
+		$this->assertFalse( $config['hasVimeoEmbed'], '`hasVimeoEmbed` should be false when no Vimeo iframe rendered.' );
 	}
 
 	public function test_filter_embed_html__core_embed_block_rewrites_youtube_iframe() {
@@ -421,7 +412,7 @@ class Content_EventsTest extends TestCase {
 		// bootstrap, so this should publish nothing at all.
 		do_action( 'wp_footer' );
 
-		$handle = 'googlesitekit-events-provider-' . Content_Events::CONVERSION_EVENT_PROVIDER_SLUG;
+		$handle = 'googlesitekit-events-provider-content-events';
 
 		$this->assertEmpty(
 			wp_scripts()->get_data( $handle, 'before' ),
@@ -431,7 +422,13 @@ class Content_EventsTest extends TestCase {
 
 	public function test_get_eligible_events__lists_every_event_in_order_with_a_description() {
 		$this->assertSame(
-			self::EXPECTED_ELIGIBLE_EVENTS,
+			array(
+				'read_article'        => 'single blog posts',
+				'pagination_click'    => 'posts split into pages',
+				'contact_link_click'  => 'email, phone, SMS and messaging-app links',
+				'outbound_link_click' => 'external links with rel="sponsored", rel="ugc" or rel="nofollow"',
+				'video_start, video_progress, video_complete' => 'Vimeo embeds',
+			),
 			$this->content_events->get_eligible_events(),
 			'Eligible events should list every event, in the documented order, with the page or link it can fire on.'
 		);
@@ -541,7 +538,7 @@ class Content_EventsTest extends TestCase {
 		);
 	}
 
-	public function test_eligible_events_and_debug_data__carry_no_site_or_user_identifiers() {
+	public function test_eligible_events_and_debug_data__have_no_site_or_user_identifiers() {
 		$user_id = $this->factory()->user->create(
 			array(
 				'display_name' => 'Debug Data Author',
@@ -574,8 +571,1154 @@ class Content_EventsTest extends TestCase {
 				'post ID'     => (string) $post_id,
 			) as $label => $identifier
 		) {
-			$this->assertStringNotContainsString( $identifier, $reported, "Reported content events should not carry the $label." );
+			$this->assertStringNotContainsString( $identifier, $reported, "Reported content events should not include the $label." );
 		}
+	}
+
+	/**
+	 * Creates a post and makes it the request being served.
+	 *
+	 * The post gets no excerpt of its own. `get_the_excerpt()` then builds one
+	 * from the content, and runs `the_content` the way it does on a real site.
+	 *
+	 * @param string $content Post content.
+	 * @return int The post ID.
+	 */
+	private function go_to_new_post( $content ) {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_content' => $content,
+				'post_excerpt' => '',
+			)
+		);
+
+		$this->go_to( get_permalink( $post_id ) );
+
+		return $post_id;
+	}
+
+	/**
+	 * Creates a post of three pages and makes one of its pages the request
+	 * being served.
+	 *
+	 * @param int $page Page number to request, from 1 to 3.
+	 */
+	private function go_to_page_of_paginated_post( $page ) {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_excerpt' => '',
+				'post_content' => 'Page one text.<!--nextpage-->Page two text.<!--nextpage-->Page three text.',
+			)
+		);
+
+		$this->go_to( add_query_arg( 'page', $page, get_permalink( $post_id ) ) );
+	}
+
+	/**
+	 * Runs the WordPress loop the way a theme does, and returns what the
+	 * callback renders inside it.
+	 *
+	 * `Content_Events` adds the marker only in the main loop, so the tests
+	 * render the post there.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param callable $render A callback that renders the current post and returns the result.
+	 * @return mixed What the callback returned for the last post of the loop.
+	 */
+	private function render_in_the_loop( $render ) {
+		$rendered = '';
+
+		while ( have_posts() ) {
+			the_post();
+
+			$rendered = $render();
+		}
+
+		wp_reset_postdata();
+
+		return $rendered;
+	}
+
+	/**
+	 * Runs the WordPress loop the way a classic theme does, and returns what
+	 * `the_content()` prints for the post.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @return string The printed content.
+	 */
+	private function apply_the_content() {
+		return $this->render_in_the_loop( fn () => get_echo( 'the_content' ) );
+	}
+
+	/**
+	 * Runs the WordPress loop like a block theme does on a post split into
+	 * pages, and returns what `the_content` rendered.
+	 *
+	 * WordPress 5.2 has no Post Content block to render, so this helper adds
+	 * the `wp_link_pages()` links to the content itself.
+	 *
+	 * @return string The rendered content.
+	 */
+	private function apply_the_content_with_page_links() {
+		return $this->render_in_the_loop( fn () => apply_filters( 'the_content', get_the_content() . wp_link_pages( array( 'echo' => 0 ) ) ) );
+	}
+
+	/**
+	 * Replaces the text the loop reads for the post being served, without
+	 * saving it.
+	 *
+	 * The tests run with no user signed in, so `wp_insert_post()` runs
+	 * `wp_kses()`, which writes `]]>` as `]]&gt;`. `wp_insert_post()` also fails
+	 * to save text that isn't valid UTF-8.
+	 *
+	 * @since 1.189.0
+	 *
+	 * @param string $text The post text.
+	 */
+	private function use_post_text( $text ) {
+		add_filter( 'content_pagination', fn () => array( $text ) );
+	}
+
+	/**
+	 * Publishes the inline configuration and returns it as an array.
+	 *
+	 * @return array The published content events configuration.
+	 */
+	private function get_published_config() {
+		do_action( 'wp_footer' );
+
+		$handle        = 'googlesitekit-events-provider-content-events';
+		$inline_script = join( "\n", (array) wp_scripts()->get_data( $handle, 'before' ) );
+
+		$this->assertSame(
+			1,
+			preg_match( '/window\._googlesitekit\.contentEvents = (\{.*\});/', $inline_script, $matches ),
+			'The inline script should publish a content events configuration object.'
+		);
+
+		return json_decode( $matches[1], true );
+	}
+
+	/**
+	 * Measures a piece of content as the post being read, and returns the
+	 * configuration the provider publishes.
+	 *
+	 * @param string $content Content to measure.
+	 * @return array The published content events configuration.
+	 */
+	private function measure_as_post_content( $content ) {
+		$this->go_to_new_post( $content );
+
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		return $this->get_published_config();
+	}
+
+	/**
+	 * Skips the running test when PHP has no `intl` extension, which provides the
+	 * International Components for Unicode (ICU) word splitter.
+	 */
+	private function skip_without_intl() {
+		if ( ! class_exists( 'IntlBreakIterator' ) ) {
+			$this->markTestSkipped( 'This test needs the PHP `intl` extension.' );
+		}
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_post_being_read() {
+		$this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString(
+			'<!--[googlesitekit-end-of-content]-->',
+			$rendered,
+			'The rendered content should have the marker comment.'
+		);
+		$this->assertSame(
+			1,
+			substr_count( $rendered, 'googlesitekit-end-of-content' ),
+			'The marker should appear exactly once.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_before_markup_added_at_the_default_priority() {
+		$this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		add_filter(
+			'the_content',
+			function ( $content ) {
+				return $content . '<div class="share-buttons"></div>';
+			}
+		);
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString(
+			'googlesitekit-end-of-content',
+			$rendered,
+			'The rendered content should include the marker HTML.'
+		);
+
+		$this->assertLessThan(
+			strpos( $rendered, 'share-buttons' ),
+			strpos( $rendered, 'googlesitekit-end-of-content' ),
+			"The marker should be placed before the markup added by another, lower-priority plugin's filter."
+		);
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_printed_post_after_a_render_the_theme_throws_away() {
+		$this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		// Twenty Seventeen renders a video post's content once to find the
+		// video, throws that render away, then prints the post.
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'thrown_away' => apply_filters( 'the_content', get_the_content() ),
+				'printed'     => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$this->assertStringContainsString( '<!--[googlesitekit-end-of-content]-->', $rendered['thrown_away'], 'The render the theme throws away should have the marker.' );
+		$this->assertStringContainsString( '<!--[googlesitekit-end-of-content]-->', $rendered['printed'], 'The printed post should have the marker too, after an earlier render of the same post.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_another_post_with_the_same_text_rendered_in_the_loop() {
+		$this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		$other_post = $this->factory()->post->create_and_get( array( 'post_content' => 'Some post content.' ) );
+
+		// A Query Loop block in the post sets up each post it lists while the
+		// main loop is still running.
+		$rendered = $this->render_in_the_loop(
+			function () use ( $other_post ) {
+				$GLOBALS['post'] = $other_post;
+				setup_postdata( $other_post );
+
+				return apply_filters( 'the_content', get_the_content() );
+			}
+		);
+
+		$this->assertStringNotContainsString(
+			'googlesitekit-end-of-content',
+			$rendered,
+			'Another post rendered in the loop should not render the marker, even when its text matches the post being read.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_an_excerpt_built_from_the_rendered_post() {
+		$this->go_to_new_post( 'Some post content the excerpt is built from.' );
+		$this->bootstrap_content_hooks();
+
+		// An excerpt plugin can build the excerpt from the rendered post and
+		// keep its HTML.
+		add_filter( 'get_the_excerpt', fn () => apply_filters( 'the_content', get_the_content() ), 5 );
+
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'excerpt' => get_the_excerpt(),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['excerpt'], 'An excerpt built from the rendered post should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post itself should render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_the_password_form_of_a_password_protected_post() {
+		$post_id = $this->factory()->post->create( array( 'post_password' => 'secret' ) );
+
+		$this->go_to( get_permalink( $post_id ) );
+		$this->bootstrap_content_hooks();
+
+		$this->assertTrue( post_password_required( $post_id ), "`post_password_required()` should be true for a visitor who hasn't entered the password." );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString( 'post-password-form', $rendered, 'The content of a password-protected post should be the password form.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'The password form should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_the_post_text_rendered_before_the_loop() {
+		$post_id = $this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		$this->assertFalse( in_the_loop(), '`in_the_loop()` should be false before the theme starts the loop.' );
+
+		// A plugin can render the post's text in the page `<head>`, before the
+		// theme starts the loop.
+		$rendered = apply_filters( 'the_content', get_the_content( null, false, $post_id ) );
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'The post text rendered before the loop should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_in_a_loop_over_a_query_that_replaced_the_main_query() {
+		$post_id = $this->go_to_new_post( 'Some post content.' );
+		$this->bootstrap_content_hooks();
+
+		// A theme can replace the main query with a query of its own, the way
+		// `query_posts()` does.
+		$GLOBALS['wp_query'] = new WP_Query( array( 'p' => $post_id ) );
+
+		$this->assertFalse( is_main_query(), '`is_main_query()` should be false for the query that replaced the main query.' );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, 'A loop over the query that replaced the main query should not render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_video_a_theme_renders_above_the_post() {
+		$this->go_to_new_post( 'The post being read has seven words.' );
+		$this->bootstrap_content_hooks();
+
+		// OceanWP renders a video post's video through `the_content` in the
+		// loop, above the post's text.
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'video'   => apply_filters( 'the_content', '<video src="https://example.com/video.mp4"></video>' ),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$config = $this->get_published_config();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['video'], 'The video rendered above the post should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post rendered below the video should render the marker.' );
+		$this->assertSame( 7, $config['wordCount'], 'The word count should count the post text.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_video_a_theme_renders_above_a_post_with_no_text() {
+		$this->go_to_new_post( '' );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->render_in_the_loop(
+			fn () => array(
+				'video'   => apply_filters( 'the_content', '<video src="https://example.com/video.mp4"></video>' ),
+				'content' => apply_filters( 'the_content', get_the_content() ),
+			)
+		);
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered['video'], 'The video rendered above a post with no text should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered['content'], 'The post with no text should render the marker.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_no_marker_to_a_header_or_a_footer_a_theme_renders_through_the_content() {
+		$this->go_to_new_post( 'The post being read has seven words.' );
+		$this->bootstrap_content_hooks();
+
+		// Avada renders its header and footer layouts through `the_content`,
+		// before and after the loop, without setting up the layout's post.
+		$header        = apply_filters( 'the_content', 'Site header with a menu.' );
+		$rendered_post = $this->apply_the_content();
+		$footer        = apply_filters( 'the_content', 'Site footer with a copyright line.' );
+
+		$config = $this->get_published_config();
+
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $header, 'A header rendered through `the_content` should not render the marker.' );
+		$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $footer, 'A footer rendered through `the_content` should not render the marker.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered_post, 'The post should render the marker.' );
+		$this->assertSame( 7, $config['wordCount'], 'The word count should count the post text alone, not the header or the footer.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_post_text_the_post_content_block_escapes() {
+		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( 'A CDATA section ends with ]]> in this text.' );
+		$this->bootstrap_content_hooks();
+
+		// WordPress 5.2 has no Post Content block to render, so this test writes
+		// `]]>` as `]]&gt;` itself, the way the block does.
+		$rendered = $this->render_in_the_loop( fn () => apply_filters( 'the_content', str_replace( ']]>', ']]&gt;', get_the_content() ) ) );
+
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The post should render the marker when the Post Content block writes `]]>` as `]]&gt;`.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_post_text_the_content_template_tag_escapes_after_the_filter() {
+		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( 'A CDATA section ends with ]]> in this text.' );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString( ']]&gt;', $rendered, 'The printed post should have `]]>` written as `]]&gt;`.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The post should render the marker when the `the_content` filter receives `]]>` as it is.' );
+	}
+
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_preview_of_changes_to_a_published_post() {
+		// `wp_create_post_autosave()` is defined in an admin file that the front
+		// end never loads.
+		require_once ABSPATH . 'wp-admin/includes/post.php';
+
+		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
+
+		$post_id = $this->factory()->post->create( array( 'post_content' => 'The published text of the post.' ) );
+
+		$autosave                 = get_post( $post_id, ARRAY_A );
+		$autosave['post_ID']      = $post_id;
+		$autosave['post_content'] = 'The changed text the author previews.';
+		wp_create_post_autosave( $autosave );
+
+		$preview_link_args = array(
+			'preview_id'    => $post_id,
+			'preview_nonce' => wp_create_nonce( 'post_preview_' . $post_id ),
+		);
+
+		// `_show_post_preview()` reads the preview link's parameters from
+		// `$_GET`, and it has to run before the query that loads the preview.
+		$_GET = $preview_link_args;
+		_show_post_preview();
+
+		$this->go_to( get_preview_post_link( $post_id, $preview_link_args ) );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		unset( $_GET['preview'], $_GET['preview_id'], $_GET['preview_nonce'] );
+
+		$this->assertStringContainsString( 'The changed text the author previews.', $rendered, 'The preview should render the autosaved text.' );
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The preview should render the marker.' );
+	}
+
+	/**
+	 * @dataProvider data_requests_without_a_marker
+	 */
+	public function test_append_end_of_content_marker__appends_no_marker_outside_a_single_post( $go_to_request, $request_label ) {
+		$go_to_request( $this );
+
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringNotContainsString(
+			'googlesitekit-end-of-content',
+			$rendered,
+			"Only a single blog post should render the marker, so $request_label should not."
+		);
+	}
+
+	public function data_requests_without_a_marker() {
+		return array(
+			'a feed of the post'              => array(
+				function ( $test ) {
+					$post_id = $test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
+
+					$test->go_to( add_query_arg( 'feed', 'rss2', get_permalink( $post_id ) ) );
+
+					$test->assertTrue( is_feed(), 'Adding `feed=rss2` to the post permalink should give a feed request.' );
+				},
+				'a feed of the post',
+			),
+			'the oEmbed page of the post'     => array(
+				function ( $test ) {
+					$post_id = $test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
+
+					$test->go_to( get_post_embed_url( $post_id ) );
+
+					$test->assertTrue( is_embed(), 'The oEmbed URL of a post should give an embed request.' );
+				},
+				'the oEmbed page of the post',
+			),
+			'a page'                          => array(
+				function ( $test ) {
+					$page_id = $test->factory()->post->create(
+						array(
+							'post_type'    => 'page',
+							'post_content' => 'Some page content.',
+						)
+					);
+
+					$test->go_to( get_permalink( $page_id ) );
+				},
+				'a page',
+			),
+			'a single custom post type entry' => array(
+				function ( $test ) {
+					register_post_type( self::TEST_POST_TYPE, array( 'public' => true ) );
+
+					$custom_post_id = $test->factory()->post->create(
+						array(
+							'post_type'    => self::TEST_POST_TYPE,
+							'post_content' => 'Some custom post type content.',
+						)
+					);
+
+					$test->go_to( get_permalink( $custom_post_id ) );
+				},
+				'a single custom post type entry',
+			),
+			'a category archive'              => array(
+				function ( $test ) {
+					$category_id = $test->factory()->category->create();
+					$test->factory()->post->create(
+						array(
+							'post_content'  => 'Some post content.',
+							'post_category' => array( $category_id ),
+						)
+					);
+
+					$test->go_to( get_category_link( $category_id ) );
+				},
+				'a category archive',
+			),
+			'a search results page'           => array(
+				function ( $test ) {
+					$test->factory()->post->create(
+						array(
+							'post_title'   => 'A distinctive searchable title',
+							'post_content' => 'Some post content.',
+						)
+					);
+
+					$test->go_to( home_url( '/?s=distinctive' ) );
+
+					$test->assertTrue( is_search(), 'A request for `/?s=distinctive` should give a search results request.' );
+				},
+				'a search results page',
+			),
+			'the home page'                   => array(
+				function ( $test ) {
+					$test->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
+
+					$test->go_to( home_url( '/' ) );
+				},
+				'the home page',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_paginated_post_pages
+	 */
+	public function test_append_end_of_content_marker__appends_the_marker_to_the_last_page_of_a_paginated_post_only( $page, $expects_marker ) {
+		$this->go_to_page_of_paginated_post( $page );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		if ( $expects_marker ) {
+			$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should output the marker, because it is the post's last page." );
+		} else {
+			$this->assertStringNotContainsString( 'googlesitekit-end-of-content', $rendered, "Page $page should not output the marker, because it is not the post's last page." );
+		}
+	}
+
+	public function data_paginated_post_pages() {
+		return array(
+			'page 1 of 3' => array( 1, false ),
+			'page 2 of 3' => array( 2, false ),
+			'page 3 of 3' => array( 3, true ),
+		);
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_before_the_page_links_a_block_theme_adds() {
+		$this->go_to_page_of_paginated_post( 3 );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content_with_page_links();
+
+		$this->assertStringContainsString( 'googlesitekit-end-of-content', $rendered, 'The last page should render the marker.' );
+		$this->assertSame( 1, substr_count( $rendered, 'Pages:' ), 'The last page should render the page links once.' );
+		$this->assertLessThan(
+			strpos( $rendered, 'Pages:' ),
+			strpos( $rendered, 'googlesitekit-end-of-content' ),
+			'The marker should be placed before the page links.'
+		);
+		$this->assertStringNotContainsString( '<p><!--[googlesitekit-end-of-content]--></p>', $rendered, 'The marker should not render in a paragraph of its own before the page links.' );
+	}
+
+	/**
+	 * @dataProvider data_post_endings
+	 */
+	public function test_append_end_of_content_marker__places_the_marker_right_after_the_last_element_with_no_paragraph_around_it( $content, $last_element, $ending_label ) {
+		$this->go_to_new_post( $content );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#' . preg_quote( $last_element, '#' ) . '\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			"The marker should follow the last element of $ending_label, outside any paragraph."
+		);
+	}
+
+	public function data_post_endings() {
+		return array(
+			'a classic post ending in a closing tag' => array(
+				"<p>First.</p>\n<p>Salt &amp; pepper.</p>",
+				'<p>Salt &amp; pepper.</p>',
+				'a classic post ending in a closing tag',
+			),
+			'a classic post ending in text'          => array(
+				"First.\n\nLast line.",
+				'<p>Last line.</p>',
+				'a classic post ending in text',
+			),
+			'a classic post ending in a list'        => array(
+				"First.\n\n<ul>\n<li>One</li>\n</ul>",
+				'</ul>',
+				'a classic post ending in a list',
+			),
+			'a block post'                           => array(
+				"<!-- wp:paragraph -->\n<p>First.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Last.</p>\n<!-- /wp:paragraph -->",
+				'Last.</p>',
+				'a block post',
+			),
+		);
+	}
+
+	/**
+	 * @dataProvider data_shortcode_endings
+	 */
+	public function test_append_end_of_content_marker__renders_a_shortcode_on_the_last_line_outside_a_paragraph( $content, $ending_label ) {
+		add_shortcode( 'sitekit_test_box', fn ( $atts, $box_content = null ) => '<div class="sitekit-test-box">' . $box_content . '</div>' );
+
+		$this->go_to_new_post( $content );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringNotContainsString( '<p><div class="sitekit-test-box">', $rendered, "The output of $ending_label on the last line should not render inside a paragraph." );
+		$this->assertMatchesRegularExpression(
+			'#<div class="sitekit-test-box">[^<]*</div>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			"The marker should follow $ending_label on the last line, outside any paragraph."
+		);
+	}
+
+	public function data_shortcode_endings() {
+		return array(
+			'a shortcode'        => array( "First.\n\n[sitekit_test_box]", 'a shortcode' ),
+			'a page builder row' => array( '[sitekit_test_box]Row text.[/sitekit_test_box]', 'a page builder row' ),
+		);
+	}
+
+	public function test_append_end_of_content_marker__renders_an_embed_url_on_the_last_line_as_the_embed() {
+		wp_embed_register_handler( 'sitekit_test_video', '#https://example\.com/video/\d+#i', fn () => '<div class="sitekit-test-video">Video</div>' );
+
+		$this->go_to_new_post( "First.\n\nhttps://example.com/video/1" );
+		$this->bootstrap_content_hooks();
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertStringContainsString( '<div class="sitekit-test-video">Video</div>', $rendered, 'The URL on the last line should render as the embed.' );
+		$this->assertStringNotContainsString( 'https://example.com/video/1', $rendered, 'The URL on the last line should not render as text.' );
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_when_a_theme_runs_wpautop_at_priority_99() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		remove_filter( 'the_content', 'wpautop' );
+		add_filter( 'the_content', 'wpautop', 99 );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			'The marker should follow the last paragraph, outside any paragraph, when `wpautop()` runs at priority 99.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_when_another_plugin_appends_text_before_wpautop_runs() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		add_filter( 'the_content', fn ( $content ) => $content . 'Share this post.', 5 );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*<p>Share this post\.</p>#',
+			$rendered,
+			'The marker should be placed between the last paragraph and the text another plugin appends before `wpautop()` runs, outside any paragraph.'
+		);
+	}
+
+	public function test_append_end_of_content_marker__places_the_marker_outside_a_paragraph_after_a_block_post_renders() {
+		$this->go_to_new_post( "First.\n\nLast line." );
+		$this->bootstrap_content_hooks();
+
+		apply_filters( 'the_content', "<!-- wp:paragraph -->\n<p>A block post.</p>\n<!-- /wp:paragraph -->" );
+
+		$priority_ten_callbacks = array_keys( $GLOBALS['wp_filter']['the_content']->callbacks[10] );
+
+		$this->assertSame( 'wpautop', end( $priority_ten_callbacks ), '`do_blocks()` and `_restore_wpautop_hook()` should leave `wpautop()` as the last filter at priority 10 once a block post has rendered.' );
+
+		$rendered = $this->apply_the_content();
+
+		$this->assertMatchesRegularExpression(
+			'#<p>Last line\.</p>\s*<!--\[googlesitekit-end-of-content\]-->\s*$#',
+			$rendered,
+			'The marker should follow the last paragraph, outside any paragraph, after a block post has rendered.'
+		);
+	}
+
+	public function test_measure_content__counts_the_text_alone_without_shortcodes_tags_or_block_delimiters() {
+		$config = $this->measure_as_post_content(
+			"<!-- wp:paragraph -->\n<p>The quick <strong>brown</strong> fox.</p>\n<!-- /wp:paragraph -->\n[gallery ids=\"1,2,3\"]"
+		);
+
+		$this->assertSame( 4, $config['wordCount'], 'The word count should count the text alone, with the markup, the block delimiters, the shortcode, etc. removed.' );
+	}
+
+	public function test_measure_content__counts_only_the_requested_page_of_a_paginated_post() {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_excerpt' => '',
+				'post_content' => 'One two three four five.<!--nextpage-->Six seven.',
+			)
+		);
+
+		$this->go_to( add_query_arg( 'page', 2, get_permalink( $post_id ) ) );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame( 2, $config['wordCount'], "The word count should count the requested page's text alone." );
+	}
+
+	public function test_measure_content__counts_the_page_text_without_the_page_links_a_block_theme_adds() {
+		$this->go_to_page_of_paginated_post( 3 );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content_with_page_links();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count "Page three text." alone, without the "Pages: 1 2 3" links.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_a_post_with_only_an_embed_block() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content(
+			"<!-- wp:embed {\"url\":\"https://example.com/video/1\"} -->\n<figure class=\"wp-block-embed\"><div class=\"wp-block-embed__wrapper\">\nhttps://example.com/video/1\n</div></figure>\n<!-- /wp:embed -->"
+		);
+
+		$this->assertSame( 0, $config['wordCount'], 'The URL an Embed block saves should not count as words, because the page shows the embed and never the URL.' );
+	}
+
+	public function test_measure_content__counts_the_caption_of_an_embed_block_without_the_url_the_block_saves() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content(
+			"<!-- wp:embed {\"url\":\"https://example.com/video/1\"} -->\n<figure class=\"wp-block-embed\"><div class=\"wp-block-embed__wrapper\">\nhttps://example.com/video/1\n</div><figcaption class=\"wp-element-caption\">A short video</figcaption></figure>\n<!-- /wp:embed -->"
+		);
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count the caption "A short video" alone, without the URL the Embed block saves.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_an_audio_file_url_alone_on_a_line() {
+		$config = $this->measure_as_post_content( "One two three.\n\nhttps://example.com/song.mp3\n\nFour five." );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "One two three." and "Four five." alone, without the audio file URL that WordPress replaces with an audio player.' );
+	}
+
+	public function test_measure_content__counts_the_text_wordpress_shows_in_place_of_an_embed_url() {
+		add_filter( 'pre_oembed_result', fn () => '<blockquote><p>A quoted note.</p></blockquote>' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/note/1' );
+
+		$this->assertSame( 3, $config['wordCount'], 'The word count should count "A quoted note.", the text WordPress shows in place of the URL.' );
+	}
+
+	public function test_measure_content__counts_a_url_alone_on_a_line_when_wordpress_has_no_embed_for_it() {
+		$this->skip_without_intl();
+
+		add_filter( 'pre_oembed_result', '__return_empty_string' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/guide' );
+
+		$this->assertSame( 3, $config['wordCount'], 'The URL "https://example.com/guide" should count as the 3 words "https", "example.com", and "guide", because the page shows the URL as text.' );
+	}
+
+	public function test_measure_content__counts_an_embed_url_when_a_site_has_removed_autoembed_from_the_content() {
+		$this->skip_without_intl();
+
+		// WordPress has an embed for the URL, so the URL stays on the page as
+		// text only because `autoembed()` is removed.
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+		remove_filter( 'the_content', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
+
+		$config = $this->measure_as_post_content( 'https://example.com/video/1' );
+
+		$this->assertSame( 4, $config['wordCount'], 'The URL "https://example.com/video/1" should count as the 4 words "https", "example.com", "video", and "1", because the page shows the URL as text.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_an_embed_url_right_after_a_paragraph() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content( '<p>Five words above the video.</p>https://example.com/video/1' );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "Five words above the video." alone, without the embed URL right after the paragraph.' );
+	}
+
+	public function test_measure_content__counts_no_words_for_an_embed_url_right_before_a_paragraph() {
+		add_filter( 'pre_oembed_result', fn () => '<iframe src="https://example.com/embed/1"></iframe>' );
+
+		$config = $this->measure_as_post_content( 'https://example.com/video/1<p>Five words below the video.</p>' );
+
+		$this->assertSame( 5, $config['wordCount'], 'The word count should count "Five words below the video." alone, without the embed URL right before the paragraph.' );
+	}
+
+	/**
+	 * @dataProvider data_scripts_without_word_spacing
+	 */
+	public function test_measure_content__counts_the_words_of_a_script_written_without_spaces( $text, $expected_word_count ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'ICU should find the words in a script written without spaces between them.' );
+	}
+
+	public function data_scripts_without_word_spacing() {
+		return array(
+			'Chinese'                    => array( '我喜欢写代码。', 4 ),
+			'Japanese'                   => array( '私はコードを書くのが好きです。', 9 ),
+			'mixed English and Japanese' => array( 'Site Kit by Google の新機能', 7 ),
+		);
+	}
+
+	public function test_measure_content__splits_a_thai_sentence_into_words() {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( 'ฉันชอบเขียนโปรแกรมคอมพิวเตอร์' );
+
+		// The exact count depends on the ICU version a server has, because
+		// ICU splits Thai with its own dictionary.
+		$this->assertGreaterThan( 1, $config['wordCount'], 'A Thai sentence should count as more than the one word a space split returns.' );
+	}
+
+	/**
+	 * @dataProvider data_scripts_with_word_spacing
+	 */
+	public function test_measure_content__matches_the_space_split_for_a_script_written_with_spaces( $text, $expected_word_count ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame(
+			$expected_word_count,
+			$config['wordCount'],
+			'A language that separates words with spaces should give the same count as a space split.'
+		);
+	}
+
+	public function data_scripts_with_word_spacing() {
+		return array(
+			'English' => array( 'The quick brown fox jumps over the lazy dog.', 9 ),
+			'Korean'  => array( '나는 코드 작성을 좋아합니다', 4 ),
+			'Arabic'  => array( 'أنا أحب كتابة الشفرة', 4 ),
+			'Russian' => array( 'Я люблю писать код', 4 ),
+			'Greek'   => array( 'Μου αρέσει να γράφω κώδικα', 5 ),
+			'Hebrew'  => array( 'אני אוהב לכתוב קוד', 4 ),
+			'Hindi'   => array( 'मुझे कोड लिखना पसंद है', 5 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_locales
+	 */
+	public function test_measure_content__counts_the_same_words_for_every_site_language( $locale ) {
+		$this->skip_without_intl();
+
+		add_filter(
+			'locale',
+			function () use ( $locale ) {
+				return $locale;
+			}
+		);
+
+		$config = $this->measure_as_post_content( '私はコードを書くのが好きです。' );
+
+		$this->assertSame( 9, $config['wordCount'], "A Japanese post should count the same on a site running in $locale." );
+	}
+
+	public function data_locales() {
+		return array(
+			'English'  => array( 'en_US' ),
+			'Japanese' => array( 'ja_JP' ),
+			'Chinese'  => array( 'zh_CN' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_digits_punctuation_and_emoji
+	 */
+	public function test_measure_content__counts_digits_but_not_punctuation_or_emoji( $text, $expected_word_count ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'Digits should count as words; punctuation and emoji should not.' );
+	}
+
+	public function data_digits_punctuation_and_emoji() {
+		return array(
+			'a version number'     => array( 'Version 3.14', 2 ),
+			'Japanese punctuation' => array( '「テスト」、。！？', 1 ),
+			'an emoji'             => array( 'Hello 👋 world', 2 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_html_entities
+	 */
+	public function test_measure_content__counts_an_html_entity_as_the_character_it_stands_for( $text, $expected_word_count ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'An HTML entity should count as the character it stands for, never as a word of its own.' );
+	}
+
+	public function data_html_entities() {
+		return array(
+			'an ampersand'         => array( 'Salt &amp; pepper', 2 ),
+			'a non-breaking space' => array( 'one&nbsp;two', 2 ),
+			'a curly apostrophe'   => array( 'it&#8217;s fine', 2 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_estimated_read_times
+	 */
+	public function test_measure_content__estimates_the_reading_time_at_238_words_a_minute( $word_count, $expected_seconds ) {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( trim( str_repeat( 'word ', $word_count ) ) );
+
+		$this->assertSame( $word_count, $config['wordCount'], "A post of $word_count words should count $word_count words." );
+		$this->assertSame( $expected_seconds, $config['estimatedReadTimeSeconds'], "A post of $word_count words should take $expected_seconds seconds to read." );
+	}
+
+	public function data_estimated_read_times() {
+		return array(
+			'20 words'  => array( 20, 5 ),
+			'150 words' => array( 150, 38 ),
+			'238 words' => array( 238, 60 ),
+			'600 words' => array( 600, 151 ),
+		);
+	}
+
+	public function test_measure_content__takes_151_seconds_for_a_japanese_post_of_600_words() {
+		$this->skip_without_intl();
+
+		$config = $this->measure_as_post_content( str_repeat( 'コードを書く。', 200 ) );
+
+		$this->assertSame( 600, $config['wordCount'], 'A Japanese post of 200 three-word sentences should count 600 words.' );
+		$this->assertSame( 151, $config['estimatedReadTimeSeconds'], 'A Japanese post of 600 words should take 151 seconds to read, the same as an English post of 600 words.' );
+	}
+
+	public function test_measure_content__counts_the_rest_of_the_text_when_the_content_is_not_valid_utf8() {
+		$this->skip_without_intl();
+
+		$config = $this->measure_content_alone( "The quick brown fox \xB1\x80 jumps over the lazy dog" );
+
+		$this->assertSame( 9, $config['wordCount'], 'The ICU count should skip invalid content and count the rest of the text.' );
+	}
+
+	public function test_inline_config__reports_the_reading_time_values() {
+		$this->go_to_new_post( trim( str_repeat( 'word ', 238 ) ) );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame( 238, $config['wordCount'], 'The configuration should report the word count.' );
+		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The configuration should report the estimated reading time.' );
+		$this->assertSame( 85, $config['readTimeThresholdPercent'], 'The configuration should report the percentage of the estimate a visitor must stay.' );
+		$this->assertSame( 5, $config['minimumReadTimeSeconds'], 'The configuration should report the shortest waiting time.' );
+		$this->assertTrue( $config['isLastPageOfMultiPagePost'], 'A post that is not split into pages should report itself as the last page.' );
+	}
+
+	/**
+	 * @dataProvider data_paginated_post_pages
+	 */
+	public function test_inline_config__reports_the_last_page_of_a_paginated_post( $page, $is_last_page ) {
+		$this->go_to_page_of_paginated_post( $page );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame(
+			$is_last_page,
+			$config['isLastPageOfMultiPagePost'],
+			"`isLastPageOfMultiPagePost` should say whether page $page is the last of the post's 3 pages."
+		);
+	}
+
+	public function test_inline_config__falls_back_to_the_queried_post_when_the_content_never_runs() {
+		$this->go_to_new_post( trim( str_repeat( 'word ', 238 ) ) );
+		$this->bootstrap_content_hooks();
+
+		// A page builder renders the post content without running `the_content`,
+		// so this test applies no filter.
+		$config = $this->get_published_config();
+
+		$this->assertSame( 238, $config['wordCount'], 'The word count should come from the queried post.' );
+		$this->assertSame( 60, $config['estimatedReadTimeSeconds'], 'The "time-to-read" estimate should come from the queried post.' );
+		$this->assertTrue( $config['isLastPageOfMultiPagePost'], 'A post that is not split into pages should report itself as the last page.' );
+	}
+
+	/**
+	 * @dataProvider data_paginated_post_pages
+	 */
+	public function test_inline_config__falls_back_to_the_queried_page_of_a_paginated_post( $page, $is_last_page ) {
+		$this->go_to_page_of_paginated_post( $page );
+		$this->bootstrap_content_hooks();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame(
+			$is_last_page,
+			$config['isLastPageOfMultiPagePost'],
+			"`isLastPageOfMultiPagePost` should say whether page $page is the last of the post's 3 pages, even when `the_content` never runs."
+		);
+		$this->assertSame( 3, $config['wordCount'], "The word count should count page $page's text alone." );
+	}
+
+	public function test_inline_config__reports_no_reading_time_outside_a_single_post() {
+		$this->factory()->post->create( array( 'post_content' => 'Some post content.' ) );
+		$this->go_to( home_url( '/' ) );
+
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertSame( 0, $config['wordCount'], 'The home page should report no word count.' );
+		$this->assertSame( 0, $config['estimatedReadTimeSeconds'], 'The home page should report no reading time.' );
+		$this->assertFalse( $config['isLastPageOfMultiPagePost'], 'The home page should not report a last page, because it is not a single post.' );
+	}
+
+	public function test_inline_config__reports_no_readable_single_post_while_a_password_protected_post_shows_its_password_form() {
+		$post_id = $this->factory()->post->create(
+			array(
+				'post_password' => 'secret',
+				'post_content'  => 'Words behind the password.',
+			)
+		);
+
+		$this->go_to( get_permalink( $post_id ) );
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		$config = $this->get_published_config();
+
+		$this->assertFalse( $config['isReadableSinglePost'], '`isReadableSinglePost` should be false while the post shows its password form, so the post sends no `read_article` event.' );
+		$this->assertSame( 0, $config['wordCount'], 'A password-protected post should report no word count, neither for its text nor for the password form.' );
+	}
+
+	/**
+	 * Replaces the provider under test with one that counts words without ICU.
+	 */
+	private function use_provider_without_intl() {
+		$this->content_events = new Content_Events_Without_Intl( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+	}
+
+	/**
+	 * Measures a piece of content with the `Content_Events` filter as the only
+	 * one on `the_content`.
+	 *
+	 * The tests that pass invalid UTF-8 bytes call this helper. With the other
+	 * filters removed, no warning from one of WordPress's own filters can look
+	 * like a warning from `Content_Events`.
+	 *
+	 * @param string $content Content to measure.
+	 * @return array The published content events configuration.
+	 */
+	private function measure_content_alone( $content ) {
+		$this->go_to_new_post( 'Placeholder content the test replaces.' );
+		$this->use_post_text( $content );
+
+		remove_all_filters( 'the_content' );
+
+		$this->bootstrap_content_hooks();
+		$this->apply_the_content();
+
+		return $this->get_published_config();
+	}
+
+	public function test_measure_content__keeps_the_english_word_count_and_estimate_when_intl_is_missing() {
+		$this->use_provider_without_intl();
+
+		$config = $this->measure_as_post_content( 'The quick brown fox jumps over the lazy dog.' );
+
+		$this->assertSame( 9, $config['wordCount'], 'English should count the same without ICU.' );
+		$this->assertSame( 2, $config['estimatedReadTimeSeconds'], 'The reading time for an English post should come from its word count without ICU.' );
+	}
+
+	public function test_measure_content__estimates_japanese_from_its_characters_when_intl_is_missing() {
+		$this->use_provider_without_intl();
+
+		// The sentence holds 14 counted characters, because `。` doesn't count,
+		// so 80 sentences give 1,120.
+		$config = $this->measure_as_post_content( str_repeat( '私はコードを書くのが好きです。', 80 ) );
+
+		$this->assertSame( 1, $config['wordCount'], 'A Japanese paragraph should count as one word on a space split.' );
+		$this->assertSame(
+			135,
+			$config['estimatedReadTimeSeconds'],
+			'A Japanese post of one word and 1,120 counted characters should take 135 seconds.'
+		);
+	}
+
+	/**
+	 * @dataProvider data_characters_without_word_spacing
+	 */
+	public function test_measure_content__counts_the_characters_of_a_script_written_without_spaces_when_intl_is_missing( $character ) {
+		$this->use_provider_without_intl();
+
+		$config = $this->measure_as_post_content( str_repeat( $character, 1000 ) );
+
+		$this->assertSame( 1, $config['wordCount'], 'A paragraph written without spaces should count as one word on a space split.' );
+		$this->assertSame(
+			120,
+			$config['estimatedReadTimeSeconds'],
+			'A post of 1,000 counted characters should take 120 seconds at 500 characters a minute.'
+		);
+	}
+
+	public function data_characters_without_word_spacing() {
+		return array(
+			'Chinese'           => array( '漢' ),
+			'Japanese hiragana' => array( 'あ' ),
+			'Japanese katakana' => array( 'ア' ),
+			'Thai'              => array( 'ก' ),
+			'Lao'               => array( 'ກ' ),
+			'Khmer'             => array( 'ក' ),
+			'Burmese'           => array( 'က' ),
+		);
+	}
+
+	public function test_measure_content__counts_nothing_when_the_content_is_not_valid_utf8_and_intl_is_missing() {
+		$this->use_provider_without_intl();
+
+		$config = $this->measure_content_alone( "The quick brown fox \xB1\x80 jumps over the lazy dog" );
+
+		$this->assertSame( 0, $config['wordCount'], 'Text that is not valid UTF-8 should count no words on a space split.' );
+		$this->assertSame( 0, $config['estimatedReadTimeSeconds'], 'Text that counts no words and no characters should take no time to read.' );
+	}
+
+	/**
+	 * @dataProvider data_html_entities
+	 */
+	public function test_measure_content__counts_an_html_entity_as_the_character_it_stands_for_when_intl_is_missing( $text, $expected_word_count ) {
+		$this->use_provider_without_intl();
+
+		$config = $this->measure_as_post_content( $text );
+
+		$this->assertSame( $expected_word_count, $config['wordCount'], 'A space split should count an HTML entity as the character it stands for, never as a word of its own.' );
 	}
 
 	public function test_conversion_event_enumerations__report_no_content_events() {
@@ -584,7 +1727,7 @@ class Content_EventsTest extends TestCase {
 		$this->assertEquals( array(), $this->content_events->get_event_names(), 'Content events should stay out of the provider event names.' );
 		$this->assertEquals( array(), $this->content_events->get_site_kit_event_names(), 'Content events should stay out of the Site Kit event names.' );
 		$this->assertEquals( array(), $this->content_events->get_enhanced_event_names(), 'Content events should stay out of the enhanced event names.' );
-		$this->assertEquals( Conversion_Events_Provider::CATEGORY_CONTENT, $this->content_events->get_category(), 'Content_Events category should remain CATEGORY_CONTENT.' );
+		$this->assertEquals( 'content', $this->content_events->get_category(), 'Content events should stay in the `content` category.' );
 
 		$feature_metrics = $conversion_tracking->get_feature_metrics();
 

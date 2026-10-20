@@ -20,16 +20,23 @@
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
+/**
+ * Internal dependencies
+ */
+import { SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+
 export default function HelpText( { className, children } ) {
 	return (
-		<p
+		<P
 			className={ classnames(
 				'googlesitekit-banner__help-text',
 				className
 			) }
+			size={ SIZE_SMALL }
 		>
 			{ children }
-		</p>
+		</P>
 	);
 }
 

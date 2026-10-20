@@ -31,6 +31,7 @@ import { Fragment } from '@wordpress/element';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import CustomDimensionErrorModal from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/CustomDimensionErrorModal.tsx';
@@ -314,10 +315,44 @@ describe( 'AudienceTile', () => {
 	} );
 
 	describe( 'Partial data badge', () => {
+		const propertyID = '12345';
+
 		beforeEach( () => {
+			// The badge selectors answer only once the property, the audience list, and
+			// the gathering-data state have all loaded.
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				propertyID,
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveGetAudienceSettings( {
+					availableAudiences: [
+						{
+							name: audienceResourceName,
+							audienceType: 'USER_AUDIENCE',
+						},
+					],
+					availableAudiencesLastSyncedAt:
+						( Date.now() - 1000 ) / 1000,
+				} );
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( false );
+
 			const referenceDate = registry
 				.select( CORE_USER )
 				.getReferenceDate();
+
+			// A property that finished collecting long ago, so it never shows a badge of
+			// its own.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					propertyID,
+					'property',
+					20201220
+				);
 
 			const dataAvailabilityDate = Number(
 				getPreviousDate( referenceDate, 1 ).replace( /-/g, '' )
@@ -379,6 +414,111 @@ describe( 'AudienceTile', () => {
 			).toBeInTheDocument();
 
 			expect( container ).toMatchSnapshot();
+		} );
+
+		it( 'should show the "Top content" badge once the property start date loads', () => {
+			// The audience finished collecting, so only the property holds the badge back.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveModuleData( {
+				resourceAvailabilityDates: {
+					audience: { [ audienceResourceName ]: 20201220 },
+					customDimension: {},
+					property: {},
+				},
+			} );
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{ registry }
+			);
+
+			function topContent() {
+				return container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-metric--top-content'
+				);
+			}
+
+			expect( topContent() ).not.toHaveTextContent( 'Partial data' );
+
+			act( () => {
+				const referenceDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setResourceDataAvailabilityDate(
+						propertyID,
+						'property',
+						20201218
+					);
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setResourceDataAvailabilityDate(
+						'googlesitekit_post_type',
+						'customDimension',
+						Number(
+							getPreviousDate( referenceDate, 1 ).replace(
+								/-/g,
+								''
+							)
+						)
+					);
+			} );
+
+			expect( topContent() ).toHaveTextContent( 'Partial data' );
+		} );
+
+		it( 'should clear the "Top content" badge when the property turns partial after the tile renders', () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setResourceDataAvailabilityDate(
+					audienceResourceName,
+					'audience',
+					20201220
+				);
+
+			const { container } = render(
+				<WidgetWithComponentProps { ...props } isPartialData />,
+				{ registry }
+			);
+
+			function topContent() {
+				return container.querySelector(
+					'.googlesitekit-audience-segmentation-tile-metric--top-content'
+				);
+			}
+
+			expect( topContent() ).toHaveTextContent( 'Partial data' );
+
+			// The property's own badge now covers the whole tile.
+			act( () => {
+				const referenceDate = registry
+					.select( CORE_USER )
+					.getReferenceDate();
+
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.setResourceDataAvailabilityDate(
+						propertyID,
+						'property',
+						Number(
+							getPreviousDate( referenceDate, 1 ).replace(
+								/-/g,
+								''
+							)
+						)
+					);
+			} );
+
+			expect( topContent() ).not.toHaveTextContent( 'Partial data' );
 		} );
 
 		it( "should track an event when the partial data badge for the audience's tooltip is viewed", async () => {
@@ -814,6 +954,47 @@ describe( 'AudienceTile', () => {
 					'mainDashboard_audiences-top-content-cta',
 					'setup_error_cancel'
 				);
+			} );
+		} );
+
+		describe( 'error on another custom dimension', () => {
+			beforeEach( async () => {
+				// The CTA creates every custom dimension, not only the post type
+				// one this tile reports on.
+				provideCustomDimensionError( registry, {
+					customDimension: 'googlesitekit_post_author',
+					error: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+				} );
+
+				( { getByText } = render(
+					<Fragment>
+						<WidgetWithComponentProps { ...props } />
+						<CustomDimensionErrorModal />
+					</Fragment>,
+					{
+						registry,
+						viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+					}
+				) );
+
+				await act( async () => {
+					await waitForDefaultTimeouts();
+				} );
+			} );
+
+			it( 'should show the generic error modal', () => {
+				expect(
+					registry
+						.select( CORE_UI )
+						.getValue( 'audience-tiles-show-error-modal' )
+				).toBe( true );
+				expect(
+					getByText( /Failed to enable metric/i )
+				).toBeInTheDocument();
 			} );
 		} );
 	} );

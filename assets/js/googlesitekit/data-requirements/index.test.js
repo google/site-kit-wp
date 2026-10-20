@@ -45,6 +45,7 @@ import {
 } from '@tests/js/test-utils';
 import {
 	requireAccessToFeatureTour,
+	requireAccessToShareableModule,
 	requireAdsConnected,
 	requireAnyGoogleTagGatewayModuleConnected,
 	requireAuthError,
@@ -62,6 +63,7 @@ import {
 	requireModuleRecoverable,
 	requireModuleViewable,
 	requireModuleZeroData,
+	requirePromptDismissed,
 	requireQueryArg,
 	requireSetupError,
 	requireSiteEmailReportingNotDisabled,
@@ -638,6 +640,63 @@ describe( 'data requirements', () => {
 		} );
 	} );
 
+	describe( 'requireAccessToShareableModule', () => {
+		it( 'should return true when the user is authenticated', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return true when the module is shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_SEARCH_CONSOLE
+				) ]: true,
+			} );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the module is not shared with the user', async () => {
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideModules( registry, [
+				{ slug: MODULE_SLUG_SEARCH_CONSOLE, shareable: true },
+			] );
+			provideUserCapabilities( registry );
+
+			expect(
+				await requireAccessToShareableModule(
+					MODULE_SLUG_SEARCH_CONSOLE
+				)( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the module is not available', async () => {
+			provideUserAuthentication( registry );
+			provideModules( registry );
+
+			expect(
+				await requireAccessToShareableModule( 'non-existent-module' )(
+					registry
+				)
+			).toBe( false );
+		} );
+	} );
+
 	describe( 'requireModuleRecoverable', () => {
 		it( 'should return true when the module is recoverable', async () => {
 			provideModules( registry, [
@@ -735,6 +794,39 @@ describe( 'data requirements', () => {
 				await requireModuleZeroData( MODULES_SEARCH_CONSOLE )(
 					registry
 				)
+			).toBe( false );
+		} );
+	} );
+
+	describe( 'requirePromptDismissed', () => {
+		it( 'should return true when the prompt is dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': { expires: 0, count: 1 },
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( true );
+		} );
+
+		it( 'should return false when the prompt is not dismissed', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
+			).toBe( false );
+		} );
+
+		it( 'should return false when the prompt dismissal has expired', async () => {
+			registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {
+				'test-prompt': {
+					expires: Math.floor( Date.now() / 1000 ) - 1,
+					count: 1,
+				},
+			} );
+
+			expect(
+				await requirePromptDismissed( 'test-prompt' )( registry )
 			).toBe( false );
 		} );
 	} );

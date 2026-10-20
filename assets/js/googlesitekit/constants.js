@@ -34,6 +34,7 @@ export const VIEW_CONTEXT_MODULE = 'module';
 export const VIEW_CONTEXT_WP_DASHBOARD = 'wpDashboard';
 export const VIEW_CONTEXT_WP_DASHBOARD_VIEW_ONLY = 'wpDashboardViewOnly';
 export const VIEW_CONTEXT_MODULE_SETUP = 'moduleSetup';
+export const VIEW_CONTEXT_INTENT = 'intent';
 export const VIEW_CONTEXT_METRIC_SELECTION = 'metricSelection';
 export const VIEW_CONTEXT_WP_BLOCK_EDITOR = 'wpBlockEditor';
 export const VIEW_CONTEXT_KEY_METRICS_SETUP = 'keyMetricsSetup';
@@ -57,6 +58,7 @@ export const SITE_KIT_VIEW_CONTEXTS = [
 	VIEW_CONTEXT_SETTINGS,
 	VIEW_CONTEXT_FEATURE_DISCOVERY,
 	VIEW_CONTEXT_MODULE_SETUP,
+	VIEW_CONTEXT_INTENT,
 	VIEW_CONTEXT_METRIC_SELECTION,
 ];
 

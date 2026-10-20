@@ -25,10 +25,15 @@ import { cloneDeep } from 'lodash';
  * Internal dependencies
  */
 import dashboardData from '../__fixtures__/_googlesitekitLegacyData';
+import { USER_AVATAR_URL } from '../../tests/js/user-avatar';
 
 export function resetGlobals() {
 	global._googlesitekitLegacyData = cloneDeep( dashboardData );
+	// Keep the flags `storybook/preview-head.html` set, because
+	// `assets/js/features/index.ts` reads them when it loads.
+	const { enabledFeatures } = global._googlesitekitBaseData || {};
 	global._googlesitekitBaseData = {
+		enabledFeatures,
 		homeURL: 'http://example.com/',
 		referenceSiteURL: 'http://example.com/',
 		adminURL: 'http://example.com/wp-admin/',
@@ -58,8 +63,7 @@ export function resetGlobals() {
 			id: 1,
 			name: 'Wapuu WordPress',
 			email: 'wapuu.wordpress@gmail.com',
-			picture:
-				'https://wapu.us/wp-content/uploads/2017/11/WapuuFinal-100x138.png',
+			picture: USER_AVATAR_URL,
 		},
 		connectURL:
 			'http://example.com/wp-admin/index.php?action=googlesitekit_connect&nonce=abc123',

@@ -41,6 +41,9 @@ on:
       - synchronize
       - ready_for_review
 
+permissions:
+  contents: read
+
 concurrency:
   group: storybook-${{ github.event_name }}-${{ github.ref }}
   cancel-in-progress: true

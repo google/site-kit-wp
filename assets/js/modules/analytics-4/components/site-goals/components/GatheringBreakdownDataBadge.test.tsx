@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -33,6 +34,7 @@ import {
 	createTestRegistry,
 	provideModules,
 	provideUserAuthentication,
+	provideUserCapabilities,
 } from '@tests/js/utils';
 import GatheringBreakdownDataBadge from './GatheringBreakdownDataBadge';
 
@@ -61,6 +63,10 @@ describe( 'GatheringBreakdownDataBadge', () => {
 	beforeEach( () => {
 		registry = createTestRegistry();
 		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: true } );
 		provideModules( registry, [
 			{
 				slug: MODULE_SLUG_ANALYTICS_4,
@@ -99,6 +105,21 @@ describe( 'GatheringBreakdownDataBadge', () => {
 
 	it( 'does not render when the section breakdown dimension does not exist', () => {
 		seedAvailableCustomDimensions( [] );
+		seedGatheringData( true );
+
+		const { container } = render(
+			<GatheringBreakdownDataBadge goalType={ GOAL_TYPES.LEAD } />,
+			{ registry }
+		);
+
+		expect( container ).toBeEmptyDOMElement();
+	} );
+
+	it( 'does not render when the dimension exists but plugin conversion tracking is off', () => {
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: false } );
+		seedAvailableCustomDimensions( SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSIONS );
 		seedGatheringData( true );
 
 		const { container } = render(

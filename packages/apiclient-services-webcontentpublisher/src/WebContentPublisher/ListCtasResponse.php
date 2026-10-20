@@ -15,7 +15,7 @@
  * the License.
  */
 
-namespace Google\Service\Webcontentpublisher;
+namespace Google\Service\WebContentPublisher;
 
 class ListCtasResponse extends \Google\Collection
 {
@@ -23,28 +23,47 @@ class ListCtasResponse extends \Google\Collection
   protected $ctasType = Cta::class;
   protected $ctasDataType = 'array';
   /**
-   * The next page token.
+   * Output only. A token to retrieve the next page of results, or empty if
+   * there are no more results.
    *
    * @var string
    */
   public $nextPageToken;
 
+  /**
+   * Output only. The list of CTAs.
+   *
+   * @param Cta[] $ctas
+   */
   public function setCtas($ctas)
   {
     $this->ctas = $ctas;
   }
+  /**
+   * @return Cta[]
+   */
   public function getCtas()
   {
     return $this->ctas;
   }
+  /**
+   * Output only. A token to retrieve the next page of results, or empty if
+   * there are no more results.
+   *
+   * @param string $nextPageToken
+   */
   public function setNextPageToken($nextPageToken)
   {
     $this->nextPageToken = $nextPageToken;
   }
+  /**
+   * @return string
+   */
   public function getNextPageToken()
   {
     return $this->nextPageToken;
   }
 }
 
-class_alias(ListCtasResponse::class, 'Google_Service_Webcontentpublisher_ListCtasResponse');
+// Adding a class alias for backwards compatibility with the previous class name.
+class_alias(ListCtasResponse::class, 'Google_Service_WebContentPublisher_ListCtasResponse');

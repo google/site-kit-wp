@@ -29,7 +29,7 @@ import {
 	CHANNELS_BREAKDOWN_REPORT_ID,
 	DEVICES_BREAKDOWN_REPORT_ID,
 	LOCATIONS_BREAKDOWN_REPORT_ID,
-} from '@/js/modules/analytics-4/components/dashboard/DashboardAllTrafficWidgetGA4/reportOptions';
+} from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 
 export interface TrafficBreakdownColumnDescriptor
 	extends BreakdownReportDescriptor {

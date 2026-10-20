@@ -41,6 +41,9 @@ const config: SignInWithGoogleConfig = {
 	isWooCommerce: false,
 	isWPLogin: false,
 	loginURI: 'http://example.com/wp-login.php?action=googlesitekit_auth',
+	nonceCookieName: 'googlesitekit_auth_nonce',
+	nonceCookiePath: '/',
+	nonceCookieTTL: 900,
 	redirectCookieName: 'googlesitekit_siwg_redirect_to',
 	redirectCookiePath: '/',
 	redirectCookieTTL: 300,
@@ -146,5 +149,88 @@ describe( 'sign-in-with-google', () => {
 				width: 320,
 			} )
 		);
+	} );
+
+	describe( 'nonce', () => {
+		beforeEach( () => {
+			// jsdom keeps one cookie jar for the whole file, and the nonce is
+			// now reused when present, so clear it between tests.
+			document.cookie = `${ config.nonceCookieName }=;max-age=0;path=${ config.nonceCookiePath }`;
+		} );
+
+		function getInitializedNonce() {
+			const calls = ( identityServices.initialize as jest.Mock ).mock
+				.calls;
+
+			return calls[ calls.length - 1 ][ 0 ].nonce;
+		}
+
+		it( 'should pass a nonce to the identity services library', () => {
+			setupSignInWithGoogle( identityServices, config );
+
+			expect( getInitializedNonce() ).toEqual(
+				expect.stringMatching( /^[0-9a-f]{32}$/ )
+			);
+		} );
+
+		it( 'should store the same nonce it passes to the library in a cookie', () => {
+			setupSignInWithGoogle( identityServices, config );
+
+			expect( document.cookie ).toContain(
+				`${ config.nonceCookieName }=${ getInitializedNonce() }`
+			);
+		} );
+
+		it( 'should reuse the value already in the cookie', () => {
+			setupSignInWithGoogle( identityServices, config );
+			const first = getInitializedNonce();
+
+			setupSignInWithGoogle( identityServices, config );
+
+			// Loading a second page must not replace the value an attempt
+			// started on the first page is waiting on.
+			expect( getInitializedNonce() ).toEqual( first );
+		} );
+
+		it( 'should generate a new value when the cookie is empty', () => {
+			setupSignInWithGoogle( identityServices, config );
+			const first = getInitializedNonce();
+
+			document.cookie = `${ config.nonceCookieName }=;max-age=0;path=${ config.nonceCookiePath }`;
+
+			setupSignInWithGoogle( identityServices, config );
+
+			expect( getInitializedNonce() ).not.toEqual( first );
+		} );
+
+		it( 'should set no nonce on a page which offers no sign-in', () => {
+			setupSignInWithGoogle( identityServices, {
+				...config,
+				isUserLoggedIn: true,
+			} );
+
+			expect( getInitializedNonce() ).toBeUndefined();
+			expect( document.cookie ).not.toMatch(
+				new RegExp( `${ config.nonceCookieName }=.+` )
+			);
+		} );
+
+		it( 'should set the nonce before initializing, so One Tap cannot run first', () => {
+			const callOrder: string[] = [];
+
+			( identityServices.initialize as jest.Mock ).mockImplementationOnce(
+				() => {
+					callOrder.push(
+						document.cookie.includes( config.nonceCookieName )
+							? 'cookie-set'
+							: 'cookie-missing'
+					);
+				}
+			);
+
+			setupSignInWithGoogle( identityServices, config );
+
+			expect( callOrder ).toEqual( [ 'cookie-set' ] );
+		} );
 	} );
 } );

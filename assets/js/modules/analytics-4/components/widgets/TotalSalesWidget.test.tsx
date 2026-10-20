@@ -38,10 +38,10 @@ import { render } from '@tests/js/test-utils';
 import { createTestRegistry, freezeFetch } from '@tests/js/utils';
 import TotalSalesWidget from './TotalSalesWidget';
 import {
-	SALES_WIDGET_REPORT_ENDPOINT,
-	provideSalesWidgetTestRegistry,
+	KEY_METRICS_WIDGET_REPORT_ENDPOINT,
 	testGenericReportError,
-} from './utils/salesWidgetTestRegistry';
+} from './utils/keyMetricsWidgetTestHelpers';
+import { provideSalesWidgetTestRegistry } from './utils/salesWidgetTestRegistry';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
 
@@ -68,7 +68,7 @@ describe( 'TotalSalesWidget', () => {
 	}
 
 	it( 'should render the loading state while resolving the report', async () => {
-		freezeFetch( SALES_WIDGET_REPORT_ENDPOINT );
+		freezeFetch( KEY_METRICS_WIDGET_REPORT_ENDPOINT );
 
 		const { container, waitForRegistry } = render(
 			<TotalSalesWidget { ...widgetProps } />,
@@ -81,7 +81,12 @@ describe( 'TotalSalesWidget', () => {
 		).toBeInTheDocument();
 	} );
 
-	testGenericReportError( () => registry, TotalSalesWidget, widgetProps );
+	testGenericReportError(
+		() => registry,
+		TotalSalesWidget,
+		widgetProps,
+		KEY_METRICS_WIDGET_REPORT_ENDPOINT
+	);
 
 	it( 'should render zero values when there are no purchases in either period', async () => {
 		const reportOptions = getReportOptions();
@@ -106,7 +111,7 @@ describe( 'TotalSalesWidget', () => {
 		).toHaveTextContent( '0%' );
 	} );
 
-	it( 'should render the current period total sales count and the change vs. the previous period', async () => {
+	it( 'should render the current period total sales count, the events subtext and the change vs. the previous period', async () => {
 		const reportOptions = getReportOptions();
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
@@ -141,6 +146,9 @@ describe( 'TotalSalesWidget', () => {
 			container.querySelector( '.googlesitekit-km-widget-tile__metric' )
 		).toHaveTextContent( '150' );
 		expect( getByText( '150' ) ).toBeInTheDocument();
+		expect(
+			container.querySelector( '.googlesitekit-km-widget-tile__subtext' )
+		).toHaveTextContent( '“purchase” events' );
 
 		expect(
 			container.querySelector( '.googlesitekit-change-badge' )

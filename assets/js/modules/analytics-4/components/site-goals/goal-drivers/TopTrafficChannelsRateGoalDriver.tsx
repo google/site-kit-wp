@@ -24,11 +24,12 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import TableTile from '@/js/modules/analytics-4/components/site-goals/components/TableTile';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { GOAL_DRIVER_IDS } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import useGoalDriverReport from '@/js/modules/analytics-4/components/site-goals/goal-drivers/hooks/useGoalDriverReport';
 import {
 	buildTopTrafficChannelsRateReportOptions,
+	buildTopTrafficChannelsSessionsReportOptions,
 	mapTopTrafficChannelsRateRows,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/report-utils/topTrafficChannelsRate';
 import { GoalDriverComponentProps } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
@@ -41,6 +42,8 @@ const TopTrafficChannelsRateGoalDriver: FC< GoalDriverComponentProps > = (
 		...props,
 		id: GOAL_DRIVER_IDS.TOP_TRAFFIC_CHANNELS_RATE,
 		buildReportOptions: buildTopTrafficChannelsRateReportOptions,
+		buildSecondaryReportOptions:
+			buildTopTrafficChannelsSessionsReportOptions,
 		mapRows: mapTopTrafficChannelsRateRows,
 	} );
 

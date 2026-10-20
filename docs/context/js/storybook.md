@@ -154,7 +154,6 @@ VRTStory.storyName = 'All Links VRT';
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-cta-link--hover',
     postInteractionWait: 1000,
-    onReadyScript: 'mouse.js',
 };
 
 export default {
@@ -228,12 +227,9 @@ React + Webpack 5 framework). Stories are matched for both `.stories.js` and
 ```javascript
 module.exports = {
     framework: getModuleAbsolutePath( '@storybook/react-webpack5' ),
-    stories: [
-        path.resolve( rootDir, 'assets/js/**/*.stories.js' ),
-        path.resolve( rootDir, 'assets/blocks/**/*.stories.js' ),
-        path.resolve( rootDir, 'assets/js/**/*.stories.tsx' ),
-        path.resolve( rootDir, 'assets/blocks/**/*.stories.tsx' ),
-    ],
+    // The story globs, from `storybook/stories.js`, which the visual
+    // regression tests also read.
+    stories,
     addons: [
         getModuleAbsolutePath( '@storybook/addon-webpack5-compiler-babel' ),
         getModuleAbsolutePath( '@storybook/addon-viewport' ),
@@ -251,106 +247,26 @@ module.exports = {
 
 ### Preview Configuration
 
-Global decorators and parameters live in `storybook/preview.js`. The shared
-test utilities are imported through the `@tests` alias, and feature flags are
-toggled via the `enabledFeatures` set from `assets/js/features` (the same set
-the app reads at runtime):
+Global decorators and parameters live in the `storybook/preview.js` file. The last decorator in the `decorators` list wraps all the others, so Storybook runs that decorator first. From the outermost in, the decorators do the following:
 
-```javascript
-/**
- * Storybook preview config.
- */
-import { createMemoryHistory } from 'history';
-import { Router } from 'react-router';
-import { RegistryProvider } from 'googlesitekit-data';
-import { createTestRegistry, provideUserInfo } from '@tests/js/test-utils';
-import FeaturesProvider from '../assets/js/components/FeaturesProvider';
-import InViewProvider from '../assets/js/components/InViewProvider';
-import { enabledFeatures } from '../assets/js/features';
-import { Cell, Grid, Row } from '../assets/js/material-components';
+1. The last decorator calls `reloadForFeatures()` with `parameters.features` and renders nothing while Storybook reloads for the story's flags. For more information about that reload, see [How the `features` parameter gets to the bundle](#how-the-features-parameter-gets-to-the-bundle) on this page.
+2. The `resetGlobals()` decorator builds `_googlesitekitLegacyData`, `_googlesitekitBaseData`, `_googlesitekitEntityData`, `_googlesitekitUserData`, and `_googlesitekitTrackingData` again each time a story renders.
+3. The registry decorator fills the `enabledFeatures` set from `assets/js/features` with `parameters.features`. It then wraps the story in `InViewProvider`, a `RegistryProvider` with a new test registry, `FeaturesProvider`, and a router whose history starts at `parameters.route`.
+4. The first decorator is the layout decorator. It renders the story in a `Cell` with the `googlesitekit-plugin` class, inside a `Row` and a `Grid`. The `Grid` takes its padding from `parameters.padding`. A story whose title starts with `Blocks/` gets a plain `Grid` instead.
 
-// Decorators run from last added to first. (Eg. In reverse order as listed.)
-export const decorators = [
-    ( Story, { parameters, kind } ) => {
-        const styles = {};
-
-        const { padding } = parameters || {};
-        if ( padding !== undefined ) {
-            styles.padding = padding;
-        }
-
-        // Render block stories in non-Site Kit context.
-        if ( kind.startsWith( 'Blocks/' ) ) {
-            return (
-                <Grid style={ styles }>
-                    <Story />
-                </Grid>
-            );
-        }
-
-        return (
-            <Grid className="googlesitekit-plugin-preview js" style={ styles }>
-                <Row>
-                    <Cell size={ 12 } className="googlesitekit-plugin">
-                        <Story />
-                    </Cell>
-                </Row>
-            </Grid>
-        );
-    },
-    // Features must be set up before the test registry is initialized.
-    ( Story, { parameters } ) => {
-        const { features = [], route } = parameters;
-
-        enabledFeatures.clear();
-        for ( const feature of features ) {
-            enabledFeatures.add( feature );
-        }
-
-        const registry = createTestRegistry();
-        const history = createMemoryHistory();
-        const featuresToEnable = new Set( features );
-
-        // Populate most basic data which should not affect any tests.
-        provideUserInfo( registry );
-
-        if ( route ) {
-            history.push( route );
-        }
-
-        return (
-            <InViewProvider value={ inViewState }>
-                <RegistryProvider value={ registry }>
-                    <FeaturesProvider value={ featuresToEnable }>
-                        <Router history={ history }>
-                            <Story />
-                        </Router>
-                    </FeaturesProvider>
-                </RegistryProvider>
-            </InViewProvider>
-        );
-    },
-];
-
-export const parameters = {
-    layout: 'fullscreen',
-    options: {
-        // Custom comparator that sorts folders before files, then alphabetically.
-        storySort: ( a, b ) => { /* ... */ },
-    },
-};
-```
+The `parameters` export sets the `fullscreen` layout and a `storySort` function that puts folders before stories in the sidebar and sorts each by name.
 
 ## Visual Regression Testing
 
-BackstopJS scenarios are generated automatically from stories by
-`tests/backstop/scenarios.js`, which parses every story file and emits one VRT
-scenario for each story that declares a `scenario` **object**. An empty
-`scenario = {}` opts a story in with default capture behaviour; properties on
-the object (such as `delay`, `readySelector`, `hoverSelector`, `clickSelector`,
-`postInteractionWait`, `onReadyScript`) customise the capture. A story with no
-`scenario` property — or one whose `scenario` is anything other than a plain
-object — is rendered in Storybook but not captured for VRT.
+Visual regression tests are generated automatically from stories by
+`tests/vrt/scenarios.js`, which parses every story file and creates one test for
+each story that declares a `scenario` object. An empty `scenario = {}` opts a
+story in with the default capture; options on the object (such as
+`readySelector`, `delay`, `hoverSelector`, `clickSelector`,
+`postInteractionWait` and `viewport`) customise the capture. An unknown option,
+or a value that isn't a literal, fails the run rather than being ignored. A story
+with no `scenario` is rendered in Storybook but not captured. See
+`tests/vrt/README.md` for every option and for running and approving the tests.
 
 ### VRT Story Patterns
 
@@ -380,7 +296,6 @@ VRTStory.storyName = 'All Buttons VRT';
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-button--icon',
     postInteractionWait: 3000,
-    onReadyScript: 'mouse.js',
 };
 ```
 
@@ -400,7 +315,6 @@ HoverButton.args = {
 VRTStory.scenario = {
     hoverSelector: '.googlesitekit-button--icon',
     postInteractionWait: 3000,
-    onReadyScript: 'mouse.js',
 };
 ```
 
@@ -432,11 +346,26 @@ Stories can accept configuration through parameters:
 // Story with custom parameters
 export const FeatureStory = Template.bind( {} );
 FeatureStory.parameters = {
-    features: [ 'pdfGeneration' ], // Enable feature flags (see feature-flags.json)
+    features: [ 'rrmExpressSetup' ], // Enable feature flags (see feature-flags.json)
     route: '/dashboard',           // Set router history location
     padding: '20px',               // Custom padding applied by the layout decorator
 };
 ```
+
+#### How the `features` parameter gets to the bundle
+
+Some code reads a flag at module-evaluation time, before any decorator runs. A datastore's `base.js` file is the common case. For example, the Reader Revenue Manager datastore's `base.js` file calls `isFeatureEnabled( 'rrmExpressSetup' )` to decide which `settingSlugs` the store registers. So `getConfiguredCTAs()` exists only when the flag was on as the bundle loaded, and setting `enabledFeatures` from a decorator is too late.
+
+Storybook therefore sets the flags before the bundle runs, and the chain has three parts:
+
+1. The inline script in the `storybook/preview-head.html` file writes `window._googlesitekitBaseData.enabledFeatures`. It takes the flags from the `features` query parameter when the URL has one, and from the `googlesitekit-storybook-features` entry in session storage otherwise.
+2. The `storybook/utils/resetGlobals.js` file keeps `enabledFeatures` when it builds `_googlesitekitBaseData` again, so the `assets/js/features/index.ts` file reads the story's flags.
+3. The outermost decorator in the `storybook/preview.js` file calls `reloadForFeatures()`. When the page loaded with a different set, the helper stores the story's flags and reloads the Storybook app. The story then renders on the next load. A story page opened outside the Storybook app, with a `features` value in its URL, gets the story's flags written into that URL instead. When the Storybook app URL has a `features` value, Storybook copies it into the story page URL. In that case, the helper writes the story's flags into the app URL.
+
+Two things follow from that chain:
+
+- Selecting a story whose flags are different from those of the story on screen reloads the whole Storybook app. That reload is expected. Each change in the flag set costs a reload, so list only the flags the story needs in `parameters.features`.
+- The `tests/vrt/scenarios.js` file adds the story's flags to every visual test URL as `&features=`. A capture then loads with the flags already set, and never reloads. Flags must be written as string literals in `parameters.features`; anything else fails the scenario extraction, and a capture that reloads the page fails the test.
 
 ### Best Practices
 
@@ -459,27 +388,9 @@ component conventions) rather than redefining it here.
 
 ### Testing Integration
 
-Every story is smoke-tested by the Storybook **test-runner**
-(`@storybook/test-runner`, driven through Playwright). Running
-`npm run test:storybook` builds Storybook, serves it locally and visits each
-story, failing if a story throws while rendering. The shared assertion lives in
-the `puppeteerTest` parameter in `storybook/preview.js`, which checks that the
-story rendered without Storybook's error overlay:
+Every story is smoke-tested by the Storybook test-runner (`@storybook/test-runner`, driven through Playwright). Running `npm run test:storybook` builds Storybook, serves it locally, and visits each story, failing if a story throws while rendering.
 
-```javascript
-// storybook/preview.js
-export const parameters = {
-    async puppeteerTest( page ) {
-        await page.waitForTimeout( 50 );
-
-        expect(
-            await page.$eval( 'body', ( element ) =>
-                element.classList.contains( 'sb-show-errordisplay' )
-            )
-        ).toBe( false );
-    },
-};
-```
+The `storybook/test-runner.js` file configures that run. Its `preVisit` hook loads the page with the story's `parameters.features` before the story renders. Without that load, the decorator described under [How the `features` parameter gets to the bundle](#how-the-features-parameter-gets-to-the-bundle) reloads the page during the test. The runner then reports a pass for a story that never rendered.
 
 Component behaviour is otherwise covered by the co-located Jest +
 React Testing Library tests (`Component.test.js` / `Component.test.tsx`) that

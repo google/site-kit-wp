@@ -45,14 +45,14 @@ exports[`GoogleTagGatewayToggle should render in default state 1`] = `
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-badge--announcement googlesitekit-badge--has-left-spacing"
         >
           Beta
         </span>
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
@@ -125,14 +125,14 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
         class="googlesitekit-google-tag-gateway-toggle__switch-badge"
       >
         <span
-          class="googlesitekit-badge googlesitekit-badge--beta googlesitekit-badge--has-left-spacing"
+          class="googlesitekit-badge googlesitekit-badge--announcement googlesitekit-badge--has-left-spacing"
         >
           Beta
         </span>
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a
@@ -159,7 +159,7 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
       class="googlesitekit-notice-container"
     >
       <div
-        class="googlesitekit-notice googlesitekit-notice--warning"
+        class="googlesitekit-notice googlesitekit-notice--warning googlesitekit-notice--warning"
         role="status"
       >
         <div
@@ -168,10 +168,10 @@ exports[`GoogleTagGatewayToggle should render in disabled state if server requir
           <svg />
         </div>
         <div
-          class="googlesitekit-notice__content"
+          class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
         >
           <p
-            class="googlesitekit-notice__title"
+            class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
           >
             Your server’s current settings prevent Google tag gateway for advertisers from working. To enable it, please contact your hosting provider and request access to external resources and plugin files. 
             <a
@@ -233,7 +233,7 @@ exports[`GoogleTagGatewayToggle should render in loading state if the server req
       </div>
     </div>
     <p
-      class="googlesitekit-module-settings-group__helper-text"
+      class="googlesitekit-typography googlesitekit-module-settings-group__helper-text googlesitekit-typography--body googlesitekit-typography--small"
     >
       Your tag data will be sent through your own domain to improve data quality and help you recover measurement signals. 
       <a

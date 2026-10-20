@@ -37,11 +37,11 @@ import { Select, useDispatch, useSelect } from 'googlesitekit-data';
 import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardSharingDialog';
 import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
 import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import AddFeaturesButton from '@/js/components/feature-discovery/AddFeaturesButton';
 import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useIsInitialSetupFlow from '@/js/hooks/useIsInitialSetupFlow';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
 import useViewContext from '@/js/hooks/useViewContext';
@@ -54,13 +54,16 @@ import ShareIcon from '@/svg/icons/share.svg';
 import { FEATURES_MENU_BUTTON_CLASS } from './constants';
 import FeaturesMenuItem from './FeaturesMenuItem';
 
-const FeaturesMenu: FC = () => {
+interface FeaturesMenuProps {
+	hidePDFItem?: boolean;
+}
+
+const FeaturesMenu: FC< FeaturesMenuProps > = ( { hidePDFItem = false } ) => {
 	const [ menuOpen, setMenuOpen ] = useState( false );
 	const menuWrapperRef = useRef< HTMLDivElement | null >( null );
 	const viewContext = useViewContext();
 	const viewOnlyDashboard = useViewOnly();
 	const isInitialSetupFlow = useIsInitialSetupFlow();
-	const pdfGenerationEnabled = useFeature( 'pdfGeneration' );
 
 	useClickAway( menuWrapperRef, () => setMenuOpen( false ) );
 	useKeyCodesInside( [ ESCAPE, TAB ], menuWrapperRef, () =>
@@ -135,9 +138,8 @@ const FeaturesMenu: FC = () => {
 		? !! hasEmailReportingDataAccess
 		: ! isInitialSetupFlow;
 	const showSharingItem = ! viewOnlyDashboard;
-	const showPDFItem = pdfGenerationEnabled;
 
-	if ( ! showEmailReportsItem && ! showSharingItem && ! showPDFItem ) {
+	if ( ! showEmailReportsItem && ! showSharingItem && hidePDFItem ) {
 		return null;
 	}
 
@@ -167,6 +169,7 @@ const FeaturesMenu: FC = () => {
 						id="googlesitekit-features-menu"
 						onSelected={ handleMenuSelected }
 					>
+						<AddFeaturesButton />
 						{ showEmailReportsItem && (
 							<FeaturesMenuItem
 								icon={
@@ -196,7 +199,7 @@ const FeaturesMenu: FC = () => {
 								) }
 							</FeaturesMenuItem>
 						) }
-						{ showPDFItem && (
+						{ ! hidePDFItem && (
 							<FeaturesMenuItem
 								icon={
 									<DownloadIcon width={ 20 } height={ 20 } />

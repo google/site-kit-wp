@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import TileStoryCard from '@/js/modules/analytics-4/components/common/tiles/TileStoryCard';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -68,16 +69,9 @@ function Template( {
 				setupRegistry( registry );
 			} }
 		>
-			<div
-				style={ {
-					backgroundColor: 'white',
-					padding: '20px',
-					display: 'inline-block',
-					minWidth: '330px',
-				} }
-			>
+			<TileStoryCard>
 				<KeyActionChartTile { ...props } />
-			</div>
+			</TileStoryCard>
 		</WithRegistrySetup>
 	);
 }

@@ -43,10 +43,11 @@ import ErrorNotice from '@/js/components/ErrorNotice';
 import ConfirmSitePurposeChangeModal from '@/js/components/KeyMetrics/ConfirmSitePurposeChangeModal';
 import LoadingWrapper from '@/js/components/LoadingWrapper';
 import Portal from '@/js/components/Portal';
+import { SIZE_SMALL, TYPE_TITLE } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import useFormValue from '@/js/hooks/useFormValue';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -73,7 +74,6 @@ export default function UserInputPreview( props ) {
 		loading = false,
 		settingsView = false,
 	} = props;
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const previewContainer = useRef();
 	const [ isModalOpen, toggleIsModalOpen ] = useState( false );
 	const handleModal = useCallback( () => {
@@ -220,9 +220,13 @@ export default function UserInputPreview( props ) {
 		>
 			<div className="googlesitekit-user-input__preview-contents">
 				{ ! settingsView && (
-					<p className="googlesitekit-user-input__preview-subheader">
+					<P
+						className="googlesitekit-user-input__preview-subheader"
+						size={ SIZE_SMALL }
+						type={ TYPE_TITLE }
+					>
 						{ __( 'Review your answers', 'google-site-kit' ) }
-					</p>
+					</P>
 				) }
 				{ settingsView && (
 					<div className="googlesitekit-settings-user-input__heading-container">
@@ -231,17 +235,15 @@ export default function UserInputPreview( props ) {
 							width="275px"
 							height="16px"
 						>
-							<p className="googlesitekit-settings-user-input__heading">
-								{ setupFlowRefreshEnabled
-									? __(
-											'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
-											'google-site-kit'
-									  )
-									: __(
-											'Edit your answers for more personalized metrics:',
-											'google-site-kit'
-									  ) }
-							</p>
+							<P
+								className="googlesitekit-settings-user-input__heading"
+								size={ SIZE_SMALL }
+							>
+								{ __(
+									'Answer all questions to help us tailor metrics and offerings that will help you achieve your business goals',
+									'google-site-kit'
+								) }
+							</P>
 						</LoadingWrapper>
 					</div>
 				) }

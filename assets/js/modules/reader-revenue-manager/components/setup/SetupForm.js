@@ -34,6 +34,8 @@ import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import StoreErrorNotices from '@/js/components/StoreErrorNotices';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import {
 	ProductIDSelect,
@@ -121,7 +123,10 @@ export default function SetupForm( { onCompleteSetup } ) {
 				moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 				storeName={ MODULES_READER_REVENUE_MANAGER }
 			/>
-			<p className="googlesitekit-margin-bottom-0">
+			<P
+				className="googlesitekit-setup-module__description"
+				size={ SIZE_MEDIUM }
+			>
 				{ publications?.length === 1
 					? __(
 							'Site Kit will connect your existing publication',
@@ -131,7 +136,7 @@ export default function SetupForm( { onCompleteSetup } ) {
 							'Select your preferred publication to connect with Site Kit',
 							'google-site-kit'
 					  ) }
-			</p>
+			</P>
 			<div className="googlesitekit-setup-module__inputs">
 				<PublicationSelect
 					onChange={ ( publication ) =>

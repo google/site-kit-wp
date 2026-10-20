@@ -52,6 +52,10 @@ export const ACTIVE_POLICY_VIOLATION_STATES = [
 	CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
 ];
 
+export const EXTREME_POLICY_VIOLATION_STATES = [
+	CONTENT_POLICY_STATES.CONTENT_POLICY_ORGANIZATION_VIOLATION_ACTIVE_IMMEDIATE,
+];
+
 export const POLICY_VIOLATION_STATES = [
 	...PENDING_POLICY_VIOLATION_STATES,
 	...ACTIVE_POLICY_VIOLATION_STATES,
@@ -67,8 +71,6 @@ export const READER_REVENUE_MANAGER_NOTICES_FORM =
 	'readerRevenueManagerNoticesForm';
 
 export const SHOW_PUBLICATION_CREATE = 'showPublicationCreate';
-
-export const SHOW_TERMS_OF_SERVICE = 'showTermsOfService';
 
 export const RESET_PUBLICATIONS = 'resetPublications';
 
@@ -86,7 +88,7 @@ export const enum EXPRESS_SETUP_STEPS {
 	CONNECT_PUBLICATION = 'connect-publication',
 	TERMS_OF_SERVICE = 'terms-of-service',
 	PUBLICATION_POLICIES = 'publication-policies',
-	SETUP_CTA = 'setup-cta',
+	NEWSLETTER_SIGNUP_FORM = 'newsletter-signup-form',
 	SETUP_COMPLETE = 'setup-complete',
 }
 
@@ -111,3 +113,9 @@ export const enum CREATE_PUBLICATION_FORM {
 	LANGUAGE_CODE = 'languageCode',
 	REGION_CODE = 'regionCode',
 }
+
+export const READONLY_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.readonly';
+
+export const MANAGE_SCOPE =
+	'https://www.googleapis.com/auth/webcontentpublisher.publications.manage';

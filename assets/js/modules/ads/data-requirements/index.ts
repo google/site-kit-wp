@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { MODULES_ADS } from '@/js/modules/ads/datastore/constants';
 
 /**
@@ -31,18 +32,18 @@ type DataRequirement = ( registry: Registry ) => Promise< boolean >;
 /**
  * Returns a function that checks if the WooCommerce plugin is activated.
  *
- * The plugin status is tri-state: it is `undefined` until the module data has
+ * The plugin status is tri-state: it is `undefined` until the site info has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the WooCommerce plugin is activated or not.
  */
 export function requireWooCommerceActivated(): DataRequirement {
 	return async ( { select, resolveSelect } ) => {
-		await resolveSelect( MODULES_ADS ).getModuleData();
+		await resolveSelect( CORE_SITE ).getSiteInfo();
 
-		return true === select( MODULES_ADS ).isWooCommerceActivated();
+		return true === select( CORE_SITE ).isWooCommerceActivated();
 	};
 }
 
@@ -52,7 +53,7 @@ export function requireWooCommerceActivated(): DataRequirement {
  * The plugin status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the Google for WooCommerce plugin is activated or not.
  */
@@ -70,7 +71,7 @@ export function requireGoogleForWooCommerceActivated(): DataRequirement {
  * The account status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether a Google for WooCommerce Ads account is present or not.
  */
@@ -90,7 +91,7 @@ export function requireGoogleForWooCommerceAdsAccount(): DataRequirement {
  * The account status is tri-state: it is `undefined` until the module data has
  * been fetched, which does not satisfy this requirement.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  *
  * @return {function(Registry): Promise<boolean>} Whether the Google for WooCommerce Ads account is absent or not.
  */

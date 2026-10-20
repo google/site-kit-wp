@@ -103,17 +103,20 @@
 			}
 
 			.googlesitekit-rrm-settings-edit__product-id-warning-notice {
+				inline-size: 100%;
+				
 				@media (min-width: $bp-wpAdminBarTablet) {
 					left: 220px;
 					max-width: 442px;
 					position: absolute;
-					top: -10px;
+					top: 0;
 
 					.googlesitekit-notice {
 						align-items: center;
+						border-radius: $br-xs;
 						flex-direction: row;
-						gap: $grid-gap-phone;
-						padding: 14px $grid-gap-desktop;
+						min-block-size: 56px;
+						padding-block: 0;
 
 						.googlesitekit-notice__content {
 							flex: 1;

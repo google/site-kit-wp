@@ -27,7 +27,6 @@ import {
 	asUser,
 	withAudiences,
 	withConnectedModules,
-	withFeatureFlags,
 	withFixtures,
 	withKeyMetrics,
 	withPlugins,
@@ -36,7 +35,6 @@ import {
 import { PDFGenerationPage } from './pdf-generation-page';
 
 const user = asUser( 'admin' );
-const featureFlags = withFeatureFlags( 'pdfGeneration' );
 const plugins = withPlugins( 'proxy-auth.php' );
 
 // Connect AdSense so the export includes the Monetization section. The admin's
@@ -68,7 +66,7 @@ const adsenseConnected = withConnectedModules( adsenseModule );
 
 test.describe(
 	'PDF Generation',
-	{ annotation: [ user, featureFlags, plugins, adsenseConnected ] },
+	{ annotation: [ user, plugins, adsenseConnected ] },
 	() => {
 		// Generating the PDF (rendering charts to images, then assembling the
 		// document) is heavy, and on slower CI runners it pushes past the default
@@ -291,7 +289,6 @@ test.describe(
 	{
 		annotation: [
 			user,
-			featureFlags,
 			plugins,
 			withConnectedModules( adsenseModule, analytics4Module ),
 		],
@@ -437,7 +434,6 @@ test.describe(
 					'pdf_introduction_overlay_notification',
 				],
 			} ),
-			featureFlags,
 			withPlugins( 'proxy-credentials.php' ),
 			withConnectedModules( {
 				slug: 'search-console',

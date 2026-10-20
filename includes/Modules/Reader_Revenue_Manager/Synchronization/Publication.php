@@ -12,7 +12,7 @@ namespace Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
 
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Publication_Normalizer;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
-use Google\Site_Kit_Dependencies\Google\Service\Webcontentpublisher\Publication as WCP_Publication;
+use Google\Site_Kit_Dependencies\Google\Service\WebContentPublisher\Publication as WCP_Publication;
 
 /**
  * Class for synchronizing publication data with Reader Revenue Manager settings.

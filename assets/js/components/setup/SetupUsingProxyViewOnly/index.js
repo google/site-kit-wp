@@ -43,11 +43,11 @@ import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { trackEvent } from '@/js/util';
 import Header from './Header';
+import IntentSetupAdminRequiredNotice from './IntentSetupAdminRequiredNotice';
 import LegacySplashViewOnlyContent from './LegacySplashViewOnlyContent';
 import SplashViewOnlyContent from './SplashViewOnlyContent';
 
 export default function SetupUsingProxyViewOnly() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
 	);
@@ -74,18 +74,14 @@ export default function SetupUsingProxyViewOnly() {
 			dismissItem( SHARED_DASHBOARD_SPLASH_ITEM_KEY ),
 			trackEvent( viewContext, 'confirm_viewonly' ),
 		] ).finally( () => {
-			const redirectURL = setupFlowRefreshEnabled
-				? addQueryArgs( dashboardURL, {
-						notification:
-							forwardableParams.notification ||
-							'initial_setup_success',
-				  } )
-				: dashboardURL;
+			const redirectURL = addQueryArgs( dashboardURL, {
+				notification:
+					forwardableParams.notification || 'initial_setup_success',
+			} );
 
 			navigateTo( redirectURL );
 		} );
 	}, [
-		setupFlowRefreshEnabled,
 		forwardableParams.notification,
 		dashboardURL,
 		dismissItem,
@@ -116,7 +112,10 @@ export default function SetupUsingProxyViewOnly() {
 	const splashSetupContent = (
 		<Layout rounded={ ! setupFlowRefreshPhase4Enabled }>
 			<section className={ classname }>
-				<Grid>{ splashContent }</Grid>
+				<Grid>
+					<IntentSetupAdminRequiredNotice />
+					{ splashContent }
+				</Grid>
 			</section>
 		</Layout>
 	);

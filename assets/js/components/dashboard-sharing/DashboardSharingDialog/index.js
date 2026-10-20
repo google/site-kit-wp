@@ -19,7 +19,6 @@
 /**
  * External dependencies
  */
-import classnames from 'classnames';
 import { useEvent, useKey, useWindowScroll } from 'react-use';
 
 /**
@@ -50,6 +49,8 @@ import {
 import Link from '@/js/components/Link';
 import Portal from '@/js/components/Portal';
 import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, SIZE_SMALL } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -103,7 +104,7 @@ export default function DashboardSharingDialog() {
 	// the whole screen. But we have to move the box and adjust its height below the
 	// WP Admin bar of 46px which gradually scrolls off the screen.
 	if ( breakpoint === BREAKPOINT_SMALL ) {
-		dialogStyles.top = `${ y < 46 ? 46 - y : 0 }px`;
+		dialogStyles.top = `${ Math.max( 46 - y, 0 ) }px`;
 		dialogStyles.height = `calc(100% - 46px + ${ y < 46 ? y : 46 }px)`;
 	}
 
@@ -234,14 +235,11 @@ export default function DashboardSharingDialog() {
 								) }
 							</Typography>
 
-							<p
-								className={ classnames(
-									'googlesitekit-dialog__subtitle',
-									{
-										'googlesitekit-dialog__subtitle--emphasis':
-											resetDialogOpen,
-									}
-								) }
+							<P
+								className="googlesitekit-dialog__subtitle"
+								size={
+									resetDialogOpen ? SIZE_MEDIUM : SIZE_SMALL
+								}
 							>
 								{ settingsDialogOpen && (
 									<span>
@@ -276,7 +274,7 @@ export default function DashboardSharingDialog() {
 										) }
 									</span>
 								) }
-							</p>
+							</P>
 						</div>
 					</div>
 

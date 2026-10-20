@@ -19,18 +19,113 @@
 /**
  * External dependencies
  */
+import compareVersions from 'compare-versions';
 import { FC } from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 
 /**
+ * WordPress dependencies
+ */
+import { useEffect, useRef } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { DEFAULT_TAB_PATH, FEATURE_DISCOVERY_TABS } from './constants';
+import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	DEFAULT_TAB_PATH,
+	FEATURE_DISCOVERY_VISITED_ITEM_SLUG,
+	FIRST_VISIT_TAB_PATH,
+	HUB_LAUNCH_VERSION,
+} from './constants';
 
-const FeatureDiscoveryContent: FC = () => (
-	<Switch>
-		{ FEATURE_DISCOVERY_TABS.map(
-			( { path, tabID, panelID, Component } ) => (
+export interface FeatureDiscoveryTab {
+	Component: FC;
+	label: string;
+	panelID: string;
+	path: string;
+	tabID: string;
+}
+
+export interface FeatureDiscoveryContentProps {
+	tabs: FeatureDiscoveryTab[];
+	isExplicitTab: boolean;
+}
+
+const FeatureDiscoveryContent: FC< FeatureDiscoveryContentProps > = ( {
+	tabs,
+	isExplicitTab,
+} ) => {
+	const initialVersion = useSelect(
+		( select: Select ) => select( CORE_USER ).getInitialSiteKitVersion(),
+		[]
+	);
+	const hasResolvedInitialVersion = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).hasFinishedResolution(
+				'getInitialSiteKitVersion'
+			),
+		[]
+	);
+	const hasVisitedHub = useSelect(
+		( select: Select ) =>
+			select( CORE_USER ).isItemDismissed(
+				FEATURE_DISCOVERY_VISITED_ITEM_SLUG
+			),
+		[]
+	);
+
+	const pendingSetup = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).getPendingSetup(),
+		[]
+	);
+
+	const { dismissItem } = useDispatch( CORE_USER );
+	const hasMarkedVisitedRef = useRef( false );
+
+	const isRoutingStateResolved =
+		hasResolvedInitialVersion && hasVisitedHub !== undefined;
+
+	useEffect( () => {
+		if (
+			! isRoutingStateResolved ||
+			hasVisitedHub !== false ||
+			hasMarkedVisitedRef.current
+		) {
+			return;
+		}
+
+		hasMarkedVisitedRef.current = true;
+		dismissItem( FEATURE_DISCOVERY_VISITED_ITEM_SLUG );
+	}, [ dismissItem, hasVisitedHub, isRoutingStateResolved ] );
+
+	if ( ! isExplicitTab && ! isRoutingStateResolved ) {
+		return null;
+	}
+
+	const isFirstVisitByNewUser =
+		hasVisitedHub === false &&
+		!! initialVersion &&
+		compareVersions.compare( initialVersion, HUB_LAUNCH_VERSION, '>=' );
+
+	// A user returning from a setup they started on the hub goes back to the
+	// tab they set out from, in place of the usual default.
+	const returnTab =
+		pendingSetup &&
+		tabs.some( ( { path } ) => path === pendingSetup.returnTab )
+			? pendingSetup.returnTab
+			: undefined;
+
+	const defaultPath =
+		returnTab ||
+		( isFirstVisitByNewUser ? FIRST_VISIT_TAB_PATH : DEFAULT_TAB_PATH );
+
+	return (
+		<Switch>
+			{ tabs.map( ( { path, tabID, panelID, Component } ) => (
 				<Route key={ path } path={ path } exact>
 					<div
 						aria-labelledby={ tabID }
@@ -41,10 +136,10 @@ const FeatureDiscoveryContent: FC = () => (
 						<Component />
 					</div>
 				</Route>
-			)
-		) }
-		<Redirect to={ DEFAULT_TAB_PATH } />
-	</Switch>
-);
+			) ) }
+			<Redirect to={ defaultPath } />
+		</Switch>
+	);
+};
 
 export default FeatureDiscoveryContent;

@@ -41,7 +41,10 @@ export const ModuleSetupInProgress = Template.bind( {} );
 ModuleSetupInProgress.storyName = 'Module setup in progress';
 ModuleSetupInProgress.args = {
 	setupRegistry: () => {
-		setItem( 'module_setup', MODULE_SLUG_ANALYTICS_4 );
+		setItem( 'module_setup', {
+			slug: MODULE_SLUG_ANALYTICS_4,
+			options: {},
+		} );
 	},
 };
 

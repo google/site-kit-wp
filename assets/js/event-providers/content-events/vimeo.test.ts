@@ -59,8 +59,13 @@ function baseConfig(
 ): ContentEventsConfig {
 	return {
 		postID: 1,
-		isSinglePost: true,
+		isReadableSinglePost: true,
 		hasVimeoEmbed: true,
+		wordCount: 0,
+		estimatedReadTimeSeconds: 0,
+		isLastPageOfMultiPagePost: true,
+		readTimeThresholdPercent: 85,
+		minimumReadTimeSeconds: 5,
 		...overrides,
 	};
 }

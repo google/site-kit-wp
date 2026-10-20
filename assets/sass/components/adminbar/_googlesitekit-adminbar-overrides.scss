@@ -259,22 +259,7 @@
 			margin-bottom: 24px;
 		}
 
-		// New Analytics CTA Link
-		.googlesitekit-analytics-cta {
-
-			@extend .googlesitekit-analytics-cta;
-
-			strong {
-				font-weight: 600;
-			}
-
-			.mdc-button__label {
-				font-weight: $fw-normal;
-				letter-spacing: 1.25px;
-			}
-		}
-
-		// Setup Flow Refresh Analytics CTA styles.
+		// Activate Analytics CTA styles.
 		.googlesitekit-activate-analytics-cta {
 
 			@extend .googlesitekit-activate-analytics-cta;

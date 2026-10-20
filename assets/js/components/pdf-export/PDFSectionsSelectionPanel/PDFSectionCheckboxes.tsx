@@ -32,6 +32,11 @@ import { __ } from '@wordpress/i18n';
 import { Checkbox } from 'googlesitekit-components';
 import { PDFSection } from '@/js/components/pdf-export/constants';
 import Typography from '@/js/components/Typography';
+import {
+	SIZE_MEDIUM,
+	TYPE_BODY,
+	TYPE_TITLE,
+} from '@/js/components/Typography/constants';
 
 interface PDFSectionCheckboxesProps {
 	sections: PDFSection[];
@@ -77,11 +82,10 @@ const PDFSectionCheckboxes: FC< PDFSectionCheckboxesProps > = ( {
 								indeterminate={ sectionIndeterminate }
 								onChange={ () => toggleSection( section ) }
 							>
-								{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
 								<Typography
-									type="title"
-									size="medium"
 									as="span"
+									size={ SIZE_MEDIUM }
+									type={ TYPE_TITLE }
 								>
 									{ section.label }
 								</Typography>
@@ -103,11 +107,10 @@ const PDFSectionCheckboxes: FC< PDFSectionCheckboxesProps > = ( {
 										toggleWidget( widget.slug )
 									}
 								>
-									{ /* @ts-expect-error - The `Typography` component does not yet expose `className` as optional. */ }
 									<Typography
-										type="body"
-										size="medium"
 										as="span"
+										size={ SIZE_MEDIUM }
+										type={ TYPE_BODY }
 									>
 										{ widget.label }
 									</Typography>

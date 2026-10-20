@@ -1,5 +1,5 @@
 /**
- * AllServicesTab placeholder component.
+ * AllServicesTab component.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -21,10 +21,49 @@
  */
 import { FC } from 'react';
 
-const AllServicesTab: FC = () => (
-	<p>
-		Feature Discovery Hub tab panel placeholder: All services and features
-	</p>
-);
+/**
+ * Internal dependencies
+ */
+import { Select, useSelect } from 'googlesitekit-data';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import type {
+	Feature,
+	FeatureCategory,
+} from '@/js/googlesitekit/datastore/feature-discovery/types';
+import FeatureGoalGroup from './FeatureGoalGroup';
+
+interface GoalGroup {
+	category: FeatureCategory;
+	features: Feature[];
+}
+
+const AllServicesTab: FC = () => {
+	// Which features a group lists, and in what order, is the selectors'
+	// business. Only groups with nothing to list are dropped here.
+	const goalGroups: GoalGroup[] = useSelect( ( select: Select ) => {
+		const { getFeatureCategories, getFeaturesByGoal } = select(
+			CORE_FEATURE_DISCOVERY
+		);
+
+		return getFeatureCategories()
+			.map( ( category: FeatureCategory ) => ( {
+				category,
+				features: getFeaturesByGoal( category.slug ),
+			} ) )
+			.filter( ( { features }: GoalGroup ) => features.length > 0 );
+	}, [] );
+
+	return (
+		<div className="googlesitekit-all-services-tab">
+			{ goalGroups.map( ( { category, features } ) => (
+				<FeatureGoalGroup
+					category={ category }
+					features={ features }
+					key={ category.slug }
+				/>
+			) ) }
+		</div>
+	);
+};
 
 export default AllServicesTab;

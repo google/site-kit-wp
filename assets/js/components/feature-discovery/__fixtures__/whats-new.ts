@@ -109,7 +109,7 @@ export const PARTIALLY_SEEN_TIMERS = {
  * Marking the listed features as seen posts their timers. Echoing the given
  * state back keeps each story's seen/unseen split stable.
  *
- * @since n.e.x.t
+ * @since 1.189.0
  * @private
  *
  * @param {Object} registry       Data registry object.
@@ -130,7 +130,8 @@ export function provideWhatsNewState(
 		new RegExp(
 			'^/google-site-kit/v1/core/user/data/set-expirable-item-timers'
 		),
-		{ body: expirableItems, status: 200 }
+		{ body: expirableItems, status: 200 },
+		{ overwriteRoutes: true }
 	);
 }
 

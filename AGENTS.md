@@ -3,25 +3,35 @@
 ## Project Overview
 WordPress plugin providing Google services integration. PHP backend (`includes/`) + React frontend (`assets/js/`) with modular architecture for each Google service (Analytics, AdSense, Search Console, etc.).
 
-## Implementing a GitHub issue
-When asked to implement, build, or work on a GitHub issue by number, follow the shared,
-tool-agnostic playbook **`docs/context/workflow/implement-issue.md`** (the single source of
-truth) and review against **`docs/context/workflow/review-checklist.md`**. Read only the
-`docs/context/{js,php}` convention docs the issue touches. Co-locate tests and Storybook
-stories; run lint, the specific test files touched, and `npm run build:dev`; and
-**never commit, push, or open a PR unless explicitly asked**. (Claude Code exposes this as
-the `implement-issue` skill; Gemini as `/implement`; Antigravity as the `/implement-issue`
-workflow.)
+## Workflow playbooks
+Each workflow below has a shared, tool-agnostic playbook in `docs/context/workflow/` that is its
+single source of truth: read that playbook and follow it exactly. Claude Code exposes each one as
+a skill of the same name; Antigravity as a workflow in `.agents/workflows/`.
 
-## Reviewing a pull request
-When asked to review a pull request by number, follow the shared, tool-agnostic playbook
-**`docs/context/workflow/review-pr.md`** (the single source of truth) and grade against
-**`docs/context/workflow/review-checklist.md`**. Read the issue the PR links under "Addresses
-issue:" and check the diff against its acceptance criteria and Implementation Brief first, then
-read only the `docs/context/{js,php}` convention docs the PR touches. Stay **read-only** — do
-not post comments, approve, or change the PR state unless explicitly asked. (Claude Code
-exposes this as the `review-pr` skill; Gemini as `/review-pr`; Antigravity as the `/review-pr`
-workflow.)
+### Writing an issue
+When asked to create, draft, or write a GitHub issue from a design doc, from a bug report or from
+requirements in the message, to break an epic's design doc into issues, or to write **Acceptance
+criteria** for an existing issue, follow **`docs/context/workflow/write-issue-requirements.md`**. Establish the
+type first — a **feature request** (`.github/ISSUE_TEMPLATE/feature_request.md`) or a **bug
+report** (`.github/ISSUE_TEMPLATE/bug_report.md`) — and **ask the user which one when the request
+doesn't make it clear**. Do not create or edit a GitHub issue unless explicitly asked.
+
+### Writing an implementation brief
+When asked to write, draft, adjust, update, or fill in the **Implementation Brief** and **Test
+Coverage** sections of an issue, follow **`docs/context/workflow/write-implementation-brief.md`**.
+Touch **only** those two sections, and do not edit the GitHub issue or post a comment unless
+explicitly asked.
+
+### Implementing a GitHub issue
+When asked to implement, build, or work on a GitHub issue by number, follow
+**`docs/context/workflow/implement-issue.md`** and review against
+**`docs/context/workflow/review-checklist.md`**. **Never commit, push, or open a PR unless
+explicitly asked.**
+
+### Reviewing a pull request
+When asked to review a pull request by number, follow **`docs/context/workflow/review-pr.md`** and
+grade against **`docs/context/workflow/review-checklist.md`**. Stay **read-only** — do not post
+comments, approve, or change the PR state unless explicitly asked.
 
 ## Architecture Essentials
 
@@ -68,7 +78,7 @@ workflow.)
 - **PHP**: PHPUnit with WordPress test suite (`tests/phpunit/`)
 - **JS**: Jest with React Testing Library (`tests/js/`)
 - **E2E**: Puppeteer browser automation (`tests/e2e/`)
-- **Visual**: Backstop.js for regression (`tests/backstop/`)
+- **Visual**: Playwright screenshots of Storybook stories (`tests/vrt/`)
 
 **Key test utilities**: `tests/js/test-utils.js` (JS), `tests/phpunit/includes/TestCase.php` (PHP)
 
@@ -114,15 +124,16 @@ ComponentName.stories.js
 ```
 
 ### Visual Regression Testing (VRT)
-**Automated visual testing via BackstopJS + Storybook:**
-- **Reference Images**: `tests/backstop/reference/` - Golden master screenshots
-- **Config**: `tests/backstop/config.js` + `scenarios.js` - BackstopJS setup
-- **VRT Styles**: `storybook/preview-head-vrt.html` - Animation/transition disabling
+**Automated visual testing via Playwright + Storybook, in Docker** (guide: `tests/vrt/README.md`):
+- **Reference Images**: `tests/vrt/__screenshots__/<story path>/<viewport>.png`
+- **Config**: `tests/vrt/playwright.config.js` + `scenarios.js` (reads each story's `.scenario`)
+- **VRT Mode**: `storybook/preview-head-vrt.html` (animations off) + `storybook/utils/vrt.js` (fonts, render state)
 
 **VRT workflow:**
-- `npm run test:visualtest` - Run VRT tests (compare vs reference)
-- `npm run test:visualapprove` - Accept new screenshots as reference
-- **Auto-generated**: Scenarios created from all `*.stories.js` files
-- **Special classes**: `.googlesitekit-vrt-animation-none`, `.googlesitekit-vrt-animation-paused`
+- `npm run test:visualtest -- --grep "<story label>"` - Compare stories against reference images
+- `npm run test:visualapprove -- --grep "<story label>"` - Write new reference images to commit
+- Or add the `VRT: Update reference images` label to a PR to have CI commit them
+- **Auto-generated**: One test per story with a `.scenario`, at three viewports
+- **Special class**: `.googlesitekit-vrt-animation-paused` keeps animations paused at their first frame
 
 **When in doubt**: Check existing similar modules, refer to config files, or search the codebase for patterns.

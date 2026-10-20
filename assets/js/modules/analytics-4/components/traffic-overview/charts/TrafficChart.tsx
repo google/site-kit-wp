@@ -36,6 +36,7 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
+import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
 import { getTrafficChartData } from './getTrafficChartData';
@@ -84,11 +85,10 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 	);
 
 	const { chartData, ticks, hasVisitors } = getTrafficChartData( {
-		// A property still gathering data shows no visitors, so the chart draws
-		// a flat line at zero.
-		report: gatheringData ? undefined : report,
+		report,
 		startDate,
 		endDate,
+		gatheringData,
 	} );
 
 	const [ , ...points ] = chartData;
@@ -101,6 +101,14 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			// A baseline on the last day draws the gray line along the right edge
 			// of the chart area.
 			baseline: points[ points.length - 1 ]?.[ 0 ],
+			// `getChartOptions()` drops the ticks while the property is gathering
+			// data unless the chart sets a horizontal view window of its own.
+			...( gatheringData && {
+				viewWindow: {
+					min: stringToDate( startDate ),
+					max: stringToDate( endDate ),
+				},
+			} ),
 		},
 		vAxis: {
 			...TRAFFIC_CHART_OPTIONS.vAxis,
@@ -113,10 +121,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		},
 	};
 
-	const propertyCreateDate = propertyCreateTime
-		? // eslint-disable-next-line sitekit/no-direct-date -- The date comes from the property's creation time, not from the reference date.
-		  getDateString( new Date( propertyCreateTime ) )
-		: undefined;
+	const propertyCreateDate = getPropertyCreateDate( propertyCreateTime );
 
 	// `GoogleChart` draws a marker only for a day inside the selected range.
 	// The screen-reader sentence about that day follows the same rule.

@@ -11,7 +11,6 @@ Feature flags are defined in `/feature-flags.json` at the project root:
 [
   "googleTagGateway",
   "gtagUserData",
-  "pdfGeneration",
   "proactiveUserEngagement",
   "rrmExpressSetup",
   "setupFlowRefresh",
@@ -155,8 +154,8 @@ Feature flags support testing through several mechanisms:
   import { renderHook } from '@tests/js/test-utils';
   import { useFeature } from '@/js/hooks/useFeature';
 
-  const { result } = renderHook( () => useFeature( 'pdfGeneration' ), {
-      features: [ 'pdfGeneration' ],
+  const { result } = renderHook( () => useFeature( 'setupFlowRefresh' ), {
+      features: [ 'setupFlowRefresh' ],
   } );
   ```
 

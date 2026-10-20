@@ -30,6 +30,7 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import { withNotificationComponentProps } from '@/js/googlesitekit/notifications/util/component-props';
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
 	ERROR_CODE_NON_HTTPS_SITE,
@@ -208,6 +209,7 @@ describe( 'ReaderRevenueManagerSetupCTABanner', () => {
 					expressSetup: 'true',
 					cta: 'newsletter-signup',
 				},
+				additionalScopes: EXPRESS_SETUP_SCOPES,
 			}
 		);
 		expect( fetchMock ).toHaveFetched( dismissPromptEndpoint );

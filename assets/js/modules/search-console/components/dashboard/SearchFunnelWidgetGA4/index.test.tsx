@@ -151,7 +151,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect( getByText( /Set up Google Analytics/ ) ).toBeInTheDocument();
+		expect( getByText( /Set up Analytics/ ) ).toBeInTheDocument();
 	} );
 
 	it( 'should not render the Activate Analytics CTA when the Analytics module is not available', async () => {
@@ -172,9 +172,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 
 		expect( container ).toMatchSnapshot();
 
-		expect(
-			queryByText( /Set up Google Analytics/ )
-		).not.toBeInTheDocument();
+		expect( queryByText( /Set up Analytics/ ) ).not.toBeInTheDocument();
 	} );
 
 	it( 'should track the `view_cta` event when the Activate Analytics CTA is viewed', async () => {
@@ -191,7 +189,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -234,7 +231,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -275,7 +271,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -302,7 +297,6 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh' ],
 				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
 			}
 		);
@@ -407,7 +401,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -453,7 +447,7 @@ describe( 'SearchFunnelWidgetGA4', () => {
 			<SearchFunnelWidgetGA4 { ...widgetComponentProps } />,
 			{
 				registry,
-				features: [ 'setupFlowRefresh', 'setupFlowRefreshPhase4' ],
+				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 

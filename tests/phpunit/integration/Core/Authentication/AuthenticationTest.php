@@ -28,6 +28,7 @@ use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Migration_1_185_0;
+use Google\Site_Kit\Core\Util\Plugin_Update;
 use Google\Site_Kit\Modules\PageSpeed_Insights\Settings as PageSpeed_Insights_Settings;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Exception\RedirectException;
@@ -198,6 +199,65 @@ class AuthenticationTest extends TestCase {
 			array( 'blogname', 'example.com', 'new.example.com' ),
 			array( 'googlesitekit_db_version', '1.0', '2.0' ),
 		);
+	}
+
+	public function data_plugin_version_writes() {
+		return array(
+			'stored for the first time' => array( null ),
+			'replacing an older one'    => array( '1.0.0' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_plugin_version_writes
+	 * @param string|null $stored_version Version stored before the write, or null for none.
+	 */
+	public function test_register__syncs_site_fields_when_the_plugin_version_is_written( $stored_version ) {
+		$this->fake_proxy_site_connection();
+
+		// Set up the stored version before registering the listeners, so they only see the write
+		// below. That write adds the option when none is stored, and updates it when an older one is.
+		delete_option( Plugin_Update::VERSION_OPTION );
+
+		if ( null !== $stored_version ) {
+			add_option( Plugin_Update::VERSION_OPTION, $stored_version );
+		}
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		remove_all_actions( 'add_option_' . Plugin_Update::VERSION_OPTION );
+		remove_all_actions( 'update_option_' . Plugin_Update::VERSION_OPTION );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		$synced_bodies = array();
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$synced_bodies ) {
+				if ( false === strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					return $preempt;
+				}
+
+				$synced_bodies[] = $args['body'];
+
+				return array(
+					'headers'  => array(),
+					'body'     => '{}',
+					'response' => array(
+						'code'    => 200,
+						'message' => get_status_header_desc( 200 ),
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		update_option( Plugin_Update::VERSION_OPTION, '9.9.9' );
+
+		do_action( 'shutdown' );
+
+		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
+		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
 	}
 
 	protected function assertAdminDataExtended() {
@@ -656,9 +716,7 @@ class AuthenticationTest extends TestCase {
 	}
 
 	public function test_get_proxy_setup_url() {
-		$class  = new \ReflectionClass( Authentication::class );
-		$method = $class->getMethod( 'get_proxy_setup_url' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Authentication::class, 'get_proxy_setup_url' );
 
 		$url = $method->invokeArgs(
 			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),
@@ -1011,12 +1069,53 @@ class AuthenticationTest extends TestCase {
 		}
 	}
 
+	/**
+	 * Gets the query arguments of the proxy setup URL passed to JS for the current request.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @return array Query arguments of `proxySetupURL`.
+	 */
+	private function get_proxy_setup_url_query_args() {
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		$this->fake_proxy_site_connection();
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE, new MutableInput() ) );
+		$auth->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		wp_parse_str( wp_parse_url( $data['proxySetupURL'], PHP_URL_QUERY ), $query_args );
+
+		return $query_args;
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_with_intent_purpose() {
+		$_GET['purpose'] = 'intent';
+
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertEquals( 'intent', $query_args['purpose'], 'The proxy setup URL should include `purpose=intent` when the request has it.' );
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_without_purpose() {
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertEquals( 'googlesitekit_proxy_setup_start', $query_args['action'], 'The proxy setup URL should point at the setup-start action.' );
+		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has none.' );
+	}
+
+	public function test_googlesitekit_inline_base_data__proxy_setup_url_with_other_purpose() {
+		$_GET['purpose'] = 'something-else';
+
+		$query_args = $this->get_proxy_setup_url_query_args();
+
+		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has a value other than `intent`.' );
+	}
+
 	public function test_googlesitekit_inline_js_wp_version_non_standard_version() {
 		$version = '42';
 
-		$class  = new \ReflectionClass( Authentication::class );
-		$method = $class->getMethod( 'inline_js_wp_version' );
-		$method->setAccessible( true );
+		$method = $this->get_accessible_method( Authentication::class, 'inline_js_wp_version' );
 
 		$js_inline_wp_version = $method->invokeArgs(
 			new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) ),

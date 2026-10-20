@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!--
+	Visual regression test report. `tests/vrt/reporter.js` copies this page next to
+	the report's `data.js` and images. Plain scripts, no modules or `fetch()`, so the
+	page also works when opened from disk.
+-->
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Visual regression tests · Site Kit</title>
+		<link rel="stylesheet" href="app.css" />
+	</head>
+	<body>
+		<header class="vrt-header">
+			<div class="vrt-header__intro">
+				<h1>Visual regression tests</h1>
+				<p class="vrt-run"></p>
+			</div>
+			<div class="vrt-errors" hidden></div>
+			<nav class="vrt-filters" aria-label="Filter by status"></nav>
+			<div class="vrt-controls">
+				<input
+					type="search"
+					class="vrt-search"
+					placeholder="Filter by story (press /)"
+					aria-label="Filter by story"
+				/>
+				<select class="vrt-viewport-filter" aria-label="Viewport">
+					<option value="">All viewports</option>
+				</select>
+				<span class="vrt-count" aria-live="polite"></span>
+				<a class="vrt-playwright-link" href="playwright/index.html">
+					Playwright report
+				</a>
+			</div>
+		</header>
+
+		<main class="vrt-list"></main>
+
+		<div class="vrt-compare" role="dialog" aria-modal="true" aria-label="Compare images" hidden>
+			<div class="vrt-compare__bar">
+				<button type="button" class="vrt-button vrt-compare__previous" aria-label="Previous (←)">←</button>
+				<button type="button" class="vrt-button vrt-compare__next" aria-label="Next (→)">→</button>
+				<div class="vrt-compare__title"></div>
+				<div class="vrt-compare__modes" role="group" aria-label="View"></div>
+				<label class="vrt-compare__actual-size">
+					<input type="checkbox" />
+					Actual size
+				</label>
+				<button type="button" class="vrt-button vrt-compare__close" aria-label="Close (Esc)">✕</button>
+			</div>
+			<p class="vrt-compare__summary"></p>
+			<div class="vrt-compare__stage"></div>
+		</div>
+
+		<script src="data.js"></script>
+		<script src="app.js"></script>
+	</body>
+</html>

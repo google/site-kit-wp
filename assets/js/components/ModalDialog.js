@@ -40,6 +40,12 @@ import {
 	DialogTitle,
 	SpinnerButton,
 } from 'googlesitekit-components';
+import {
+	SIZE_MEDIUM,
+	SIZE_SMALL,
+	TYPE_LABEL,
+} from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import ExclamationIcon from '@/svg/icons/warning.svg';
 
 function ModalDialog( {
@@ -82,7 +88,17 @@ function ModalDialog( {
 			</DialogTitle>
 			{
 				// Ensure we don't render anything at all if subtitle is falsy, as Dialog expects all its children to be elements and a falsy value will result in an error.
-				subtitle ? <p className="mdc-dialog__lead">{ subtitle }</p> : []
+				subtitle ? (
+					<P
+						className="mdc-dialog__lead"
+						size={ SIZE_MEDIUM }
+						type={ TYPE_LABEL }
+					>
+						{ subtitle }
+					</P>
+				) : (
+					[]
+				)
 			}
 			<DialogContent>
 				{ hasProvides && (
@@ -104,9 +120,10 @@ function ModalDialog( {
 				{ notes.length > 0 && (
 					<section className="mdc-dialog__notes">
 						{ notes.map( ( Note, index ) => (
-							<p
+							<P
 								className="mdc-dialog__note"
 								key={ `note-${ index }` }
+								size={ SIZE_SMALL }
 							>
 								{ typeof Note === 'string' &&
 									createInterpolateElement(
@@ -123,7 +140,7 @@ function ModalDialog( {
 										}
 									) }
 								{ typeof Note === 'function' && <Note /> }
-							</p>
+							</P>
 						) ) }
 					</section>
 				) }

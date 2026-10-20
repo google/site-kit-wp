@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { setUsingCache } from 'googlesitekit-api';
+import { get, setUsingCache } from 'googlesitekit-api';
 import {
 	createTestRegistry,
 	subscribeUntil,
@@ -29,6 +29,11 @@ import {
 import * as fixtures from './__fixtures__';
 import { MODULES_PAGESPEED_INSIGHTS } from './constants';
 
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	require( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
+
 describe( 'modules/pagespeed-insights report', () => {
 	let registry;
 
@@ -37,6 +42,8 @@ describe( 'modules/pagespeed-insights report', () => {
 	} );
 
 	beforeEach( () => {
+		get.mockClear();
+
 		registry = createTestRegistry();
 	} );
 
@@ -102,6 +109,46 @@ describe( 'modules/pagespeed-insights report', () => {
 
 				expect( fetchMock ).toHaveFetchedTimes( 1 );
 				expect( fetchMock.lastOptions().signal ).toBeUndefined();
+			} );
+
+			it( 'passes cacheTTL from the fetch options to the report request', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy, { cacheTTL: 300 } );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+					cacheTTL: 300,
+				} );
+			} );
+
+			it( 'sends no cacheTTL to the report request when the call has no fetch options', async () => {
+				const strategy = 'desktop';
+				const url = 'http://example.com/';
+
+				fetchMock.getOnce(
+					new RegExp(
+						'^/google-site-kit/v1/modules/pagespeed-insights/data/pagespeed'
+					),
+					{ body: fixtures.pagespeedDesktop, status: 200 }
+				);
+
+				await registry
+					.dispatch( MODULES_PAGESPEED_INSIGHTS )
+					.fetchGetReport( url, strategy );
+
+				expect( fetchMock ).toHaveFetchedTimes( 1 );
+				expect( get.mock.calls[ 0 ][ 4 ] ).toBeUndefined();
 			} );
 		} );
 	} );

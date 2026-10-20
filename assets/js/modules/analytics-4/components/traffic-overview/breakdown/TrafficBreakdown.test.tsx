@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Report } from '@/js/modules/analytics-4/datastore/types';
 import * as tracking from '@/js/util/tracking';
 import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
@@ -31,23 +32,6 @@ import { provideSiteInfo } from '@tests/js/utils';
 import TrafficBreakdown from './TrafficBreakdown';
 
 const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
-
-/**
- * Builds a breakdown report from label and visitor pairs, in the order given.
- *
- * @since 1.188.0
- *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
- * @return {Object} The breakdown report.
- */
-function createBreakdownReport( pairs: Array< [ string, number ] > ): Report {
-	return {
-		rows: pairs.map( ( [ label, visitors ] ) => ( {
-			dimensionValues: [ { value: label } ],
-			metricValues: [ { value: String( visitors ) } ],
-		} ) ),
-	};
-}
 
 const CHANNELS = createBreakdownReport( [
 	[ 'Organic Search', 1200 ],
@@ -61,6 +45,16 @@ const LOCATIONS = createBreakdownReport( [
 const DEVICES = createBreakdownReport( [
 	[ 'desktop', 700 ],
 	[ 'mobile', 300 ],
+] );
+
+/** Rounded one by one, these shares would add up to 99%, with "Others" at 0%. */
+const LONG_TAIL_CHANNELS = createBreakdownReport( [
+	[ 'Direct', 4630 ],
+	[ 'Organic Search', 3040 ],
+	[ 'Organic Social', 1560 ],
+	[ 'Referral', 730 ],
+	[ 'Paid Search', 25 ],
+	[ 'Email', 15 ],
 ] );
 
 describe( 'TrafficBreakdown', () => {
@@ -166,6 +160,33 @@ describe( 'TrafficBreakdown', () => {
 			'Organic Search55%',
 			'Direct27%',
 			'Paid Search18%',
+		] );
+	} );
+
+	it( 'shows a row that gets no whole percent as "<1%", and the shares add up to 100%', () => {
+		const { getByRole } = renderBreakdown( {
+			channels: LONG_TAIL_CHANNELS,
+			locations: LOCATIONS,
+			devices: DEVICES,
+		} );
+
+		const channels = getByRole( 'region', {
+			name: 'Visitors by channels',
+		} );
+		const rows = Array.from(
+			channels.querySelectorAll(
+				'.googlesitekit-traffic-overview__breakdown-row'
+			)
+		).map( ( row ) => row.textContent );
+
+		// 46%, 31%, 16%, and 7% add up to 100%, and "Others" gets no whole
+		// percent, so it shows "<1%".
+		expect( rows ).toEqual( [
+			'Direct46%',
+			'Organic Search31%',
+			'Organic Social16%',
+			'Referral7%',
+			'Others<1%',
 		] );
 	} );
 

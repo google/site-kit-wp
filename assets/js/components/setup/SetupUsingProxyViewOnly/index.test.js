@@ -105,7 +105,7 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		await waitForRegistry();
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&notification=initial_setup_success'
 		);
 	} );
 
@@ -125,7 +125,7 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		await waitForRegistry();
 
 		expect( global.location.assign ).toHaveBeenCalledWith(
-			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting'
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&panel=email-reporting&notification=initial_setup_success'
 		);
 	} );
 
@@ -189,6 +189,54 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		expect( global.document.body ).toHaveClass(
 			'googlesitekit-setup-splash'
 		);
+	} );
+
+	it.each( [
+		[ 'disabled', [] ],
+		[ 'enabled', [ 'setupFlowRefreshPhase4' ] ],
+	] )(
+		'should show the "You need administrator access to continue" notice, and keep the "Go to dashboard" button, when the URL has `purpose=intent` and `setupFlowRefreshPhase4` is %s',
+		async ( _, features ) => {
+			global.location.href =
+				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupUsingProxyViewOnly />,
+				{
+					registry,
+					viewContext: VIEW_CONTEXT_SPLASH,
+					features,
+				}
+			);
+			await waitForRegistry();
+
+			const notice = getByText(
+				'You need administrator access to continue'
+			).closest( '.googlesitekit-notice' );
+
+			expect( notice ).toHaveClass( 'googlesitekit-notice--warning' );
+			expect( notice ).toHaveTextContent(
+				'Only administrators of this site can sign in to Site Kit and finish this setup. To complete setup, you can ask a site administrator to give you administrator access, then go back to where you started and try again.'
+			);
+			expect(
+				getByRole( 'button', { name: 'Go to dashboard' } )
+			).toBeInTheDocument();
+		}
+	);
+
+	it( 'should not show the "You need administrator access to continue" notice when the URL has no `purpose=intent`', async () => {
+		const { queryByText, waitForRegistry } = render(
+			<SetupUsingProxyViewOnly />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_SPLASH,
+			}
+		);
+		await waitForRegistry();
+
+		expect(
+			queryByText( 'You need administrator access to continue' )
+		).not.toBeInTheDocument();
 	} );
 
 	describe( 'with the `setupFlowRefreshPhase4` feature flag enabled', () => {

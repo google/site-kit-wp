@@ -29,14 +29,13 @@ import Layout from '@/js/components/layout/Layout';
 import OptIn from '@/js/components/OptIn';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ResetButton from '@/js/components/ResetButton';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useFeature } from '@/js/hooks/useFeature';
 import { Cell, Grid, Row } from '@/js/material-components';
-import SettingsCardAudiences from '@/js/modules/analytics-4/components/audience-segmentation/settings/SettingsCardAudiences';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import ConnectedIcon from '@/svg/icons/connected.svg';
 import SettingsCardConsentMode from './SettingsCardConsentMode';
 import SettingsCardEmailReporting from './SettingsCardEmailReporting';
@@ -44,12 +43,8 @@ import SettingsCardKeyMetrics from './SettingsCardKeyMetrics';
 import SettingsPlugin from './SettingsPlugin';
 
 export default function SettingsAdmin() {
-	const setupFlowRefreshEnabled = useFeature( 'setupFlowRefresh' );
 	const setupFlowRefreshPhase4Enabled = useFeature(
 		'setupFlowRefreshPhase4'
-	);
-	const configuredAudiences = useSelect( ( select ) =>
-		select( CORE_USER ).getConfiguredAudiences()
 	);
 	const hasSitePurposeAnswer = useSelect(
 		( select ) =>
@@ -59,58 +54,17 @@ export default function SettingsAdmin() {
 	const isAnalyticsConnected = useSelect( ( select ) =>
 		select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 )
 	);
-	const isSearchConsoleGatheringData = useSelect( ( select ) =>
-		select( MODULES_SEARCH_CONSOLE ).isGatheringData()
-	);
-	const isAnalyticsGatheringData = useSelect( ( select ) => {
-		if ( ! isAnalyticsConnected ) {
-			return false;
-		}
-
-		return select( MODULES_ANALYTICS_4 ).isGatheringData();
-	} );
-
-	const hasAvailableKeyMetricsData =
-		isSearchConsoleGatheringData === false &&
-		isAnalyticsGatheringData === false;
-
 	const showKeyMetricsSettings =
-		( isAnalyticsConnected && hasAvailableKeyMetricsData ) ||
-		( isAnalyticsConnected && setupFlowRefreshEnabled ) ||
+		isAnalyticsConnected ||
 		( hasSitePurposeAnswer && setupFlowRefreshPhase4Enabled );
 
-	const showKeyMetricsSettingsLoading = useSelect( ( select ) => {
-		if (
+	const showKeyMetricsSettingsLoading = useSelect(
+		( select ) =>
 			! select( CORE_MODULES ).hasFinishedResolution(
 				'isModuleConnected',
 				[ MODULE_SLUG_ANALYTICS_4 ]
 			)
-		) {
-			return true;
-		}
-
-		// The resolvers below are never resolved if Analytics is disconnected,
-		// so if it's disconnected, return early.
-		//
-		// Because they're never called nothing else can be loading.
-		if ( isAnalyticsConnected === false ) {
-			return false;
-		}
-
-		if (
-			! select( MODULES_SEARCH_CONSOLE ).hasFinishedResolution(
-				'isGatheringData'
-			) ||
-			( isAnalyticsConnected &&
-				! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
-					'isGatheringData'
-				) )
-		) {
-			return true;
-		}
-
-		return false;
-	} );
+	);
 
 	// Show a loading skeleton to prevent a layout shift.
 	if ( showKeyMetricsSettingsLoading ) {
@@ -164,13 +118,6 @@ export default function SettingsAdmin() {
 				</Cell>
 			) }
 
-			{ ! setupFlowRefreshEnabled &&
-				( isAnalyticsConnected || !! configuredAudiences ) && (
-					<Cell size={ 12 }>
-						<SettingsCardAudiences />
-					</Cell>
-				) }
-
 			<Cell size={ 12 }>
 				<SettingsCardEmailReporting />
 			</Cell>
@@ -186,7 +133,10 @@ export default function SettingsAdmin() {
 							<Row>
 								<Cell size={ 12 }>
 									<div className="googlesitekit-settings-module__meta-items">
-										<p className="googlesitekit-settings-module__status">
+										<P
+											className="googlesitekit-settings-module__status"
+											size={ SIZE_MEDIUM }
+										>
 											{ __(
 												'Site Kit is connected',
 												'google-site-kit'
@@ -197,7 +147,7 @@ export default function SettingsAdmin() {
 													height={ 8 }
 												/>
 											</span>
-										</p>
+										</P>
 									</div>
 								</Cell>
 							</Row>

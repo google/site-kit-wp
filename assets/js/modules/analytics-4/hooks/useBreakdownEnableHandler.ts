@@ -45,20 +45,20 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { BreakdownScope } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
 import {
-	CUSTOM_DIMENSION_DEFINITIONS,
+	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
 	FORM_CUSTOM_DIMENSIONS_CREATE,
 	MODULES_ANALYTICS_4,
 } from '@/js/modules/analytics-4/datastore/constants';
+import { useConversionTrackingSetting } from '@/js/modules/analytics-4/hooks/useConversionTrackingSetting';
 import { ERROR_CODE_MISSING_REQUIRED_SCOPE } from '@/js/util/errors';
 
-// Every Site Kit custom dimension is created, not just the Site Goals-specific
-// ones, so a single "Enable" sets up all advanced data breakdowns at once.
-export const ALL_CUSTOM_DIMENSIONS = Object.keys(
-	CUSTOM_DIMENSION_DEFINITIONS
-);
-
 export interface BreakdownEnableHandler {
+	/**
+	 * Runs the enable flow, resolving `true` once it has finished here and
+	 * `false` when the OAuth redirect carries it on. `BreakdownNoticeArea`
+	 * keeps its CTA spinning from the click until one of the two happens.
+	 */
 	onEnable: () => Promise< boolean >;
 	inProgress: boolean;
 	disabled: boolean;
@@ -74,6 +74,7 @@ export function useBreakdownEnableHandler(
 		( select: Select ) => select( CORE_USER ).hasScope( EDIT_SCOPE ),
 		[]
 	);
+	const { isConversionTrackingEnabled } = useConversionTrackingSetting();
 	const redirectURL = useSelect(
 		( select: Select ) =>
 			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
@@ -110,6 +111,11 @@ export function useBreakdownEnableHandler(
 	const { setValues } = useDispatch( CORE_FORMS );
 	const { setPermissionScopeError } = useDispatch( CORE_USER );
 	const { createCustomDimensions } = useDispatch( MODULES_ANALYTICS_4 );
+	const {
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
+	} = useDispatch( CORE_SITE );
 
 	const onEnable = useCallback( async () => {
 		// Record where creation was triggered and the enabled scope, so the
@@ -122,6 +128,23 @@ export function useBreakdownEnableHandler(
 			[ BREAKDOWN_SCOPE_FORM_KEY ]: scope,
 			[ BREAKDOWN_DISMISSED_FORM_KEY ]: false,
 		};
+
+		// The new dimensions are useless unless Site Kit tracks the events
+		// itself, so conversion tracking goes on before anything else. The
+		// OAuth path below returns early and would otherwise skip it.
+		if ( isConversionTrackingEnabled === false ) {
+			setConversionTrackingEnabled( true );
+
+			const { error } = ( await saveConversionTrackingSettings() ) ?? {};
+
+			if ( error ) {
+				resetConversionTrackingSettings();
+
+				// A failed save stops here without reaching the OAuth
+				// redirect below, so this is where the flow ends.
+				return true;
+			}
+		}
 
 		if ( ! hasAnalytics4EditScope ) {
 			setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
@@ -145,7 +168,7 @@ export function useBreakdownEnableHandler(
 				},
 			} );
 
-			// Deferred to OAuth; the redirect keeps the busy state.
+			// The OAuth redirect finishes the flow, so it is not over here.
 			return false;
 		}
 
@@ -154,8 +177,7 @@ export function useBreakdownEnableHandler(
 		// Await so `onEnable` resolves only once the action settles, including
 		// the path where nothing is created (all dimensions already exist), so
 		// the caller can clear its loading state.
-		const { error } =
-			( await createCustomDimensions( ALL_CUSTOM_DIMENSIONS ) ) ?? {};
+		const { error } = ( await createCustomDimensions() ) ?? {};
 
 		// The confirming sync can fail even when the dimensions exist, leaving
 		// `availableCustomDimensions` stale and the notice unrendered. Reset the
@@ -173,9 +195,13 @@ export function useBreakdownEnableHandler(
 		createCustomDimensions,
 		scope,
 		hasAnalytics4EditScope,
+		isConversionTrackingEnabled,
 		origin,
 		redirectURL,
 		registry,
+		resetConversionTrackingSettings,
+		saveConversionTrackingSettings,
+		setConversionTrackingEnabled,
 		setPermissionScopeError,
 		setValues,
 	] );

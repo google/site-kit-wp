@@ -18,7 +18,7 @@ exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 
             class="googlesitekit-notice-container"
           >
             <div
-              class="googlesitekit-notice googlesitekit-notice--success"
+              class="googlesitekit-notice googlesitekit-notice--success googlesitekit-notice--default"
               role="status"
             >
               <div
@@ -27,15 +27,15 @@ exports[`GoogleTagGatewaySetupSuccessSubtleNotification should render correctly 
                 <svg />
               </div>
               <div
-                class="googlesitekit-notice__content"
+                class="googlesitekit-typography googlesitekit-notice__content googlesitekit-typography--body googlesitekit-typography--medium"
               >
                 <p
-                  class="googlesitekit-notice__title"
+                  class="googlesitekit-typography googlesitekit-notice__title googlesitekit-typography--label googlesitekit-typography--medium"
                 >
                   You successfully enabled Google tag gateway for advertisers!
                 </p>
                 <p
-                  class="googlesitekit-notice__description"
+                  class="googlesitekit-typography googlesitekit-notice__description googlesitekit-typography--body googlesitekit-typography--medium"
                 >
                   You can always disable it in Analytics or Ads settings
                 </p>

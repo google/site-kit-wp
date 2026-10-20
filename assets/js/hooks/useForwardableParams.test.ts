@@ -60,6 +60,54 @@ describe( 'useForwardableParams', () => {
 		} );
 	} );
 
+	it( 'should return `intent` and `intent_code` when they are present', () => {
+		queryArgs = {
+			intent: 'ads-conversion-tracking',
+			intent_code: 'abc123',
+		};
+
+		const { result } = renderHook( () => useForwardableParams() );
+
+		expect( result.current ).toEqual( {
+			intent: 'ads-conversion-tracking',
+			intent_code: 'abc123',
+		} );
+	} );
+
+	it( 'should leave out `intent` and `intent_code` when they are absent', () => {
+		queryArgs = {
+			notification: 'initial_setup_success',
+		};
+
+		const { result } = renderHook( () => useForwardableParams() );
+
+		// `toStrictEqual` fails on keys that are present with an `undefined` value.
+		expect( result.current ).toStrictEqual( {
+			notification: 'initial_setup_success',
+		} );
+	} );
+
+	it( 'should add `intent` and `intent_code` when only they change between renders', () => {
+		queryArgs = {
+			notification: 'initial_setup_success',
+		};
+
+		const { result, rerender } = renderHook( () => useForwardableParams() );
+
+		queryArgs = {
+			notification: 'initial_setup_success',
+			intent: 'ads-conversion-tracking',
+			intent_code: 'abc123',
+		};
+		rerender();
+
+		expect( result.current ).toEqual( {
+			notification: 'initial_setup_success',
+			intent: 'ads-conversion-tracking',
+			intent_code: 'abc123',
+		} );
+	} );
+
 	it( 'should update returned params when query arg values change between renders', () => {
 		queryArgs = {
 			notification: 'reset_success',
