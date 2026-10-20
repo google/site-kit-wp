@@ -42,6 +42,14 @@
 			ul {
 				margin-block: 10px;
 			}
+
+			> li::marker {
+				content: counters(list-item, ".", decimal) ". ";
+			}
+
+			&.alpha-list > li::marker {
+				content: "(" counter(list-item, lower-alpha) ")";
+			}
 		}
 	}
 }
