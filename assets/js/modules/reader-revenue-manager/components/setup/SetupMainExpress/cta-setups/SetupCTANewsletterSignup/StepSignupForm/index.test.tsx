@@ -84,6 +84,14 @@ const createdCTA = {
 	type: CTA_TYPES.NEWSLETTER_SIGNUP,
 };
 
+/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
+const testPublication = {
+	...publications[ 0 ],
+	publicationTosUrl: 'https://example.com/terms',
+	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
+} as Publication;
+/* eslint-enable sitekit/acronym-case */
+
 // Mocks the requests made after the CTA is created: the publication and CTAs
 // are refreshed, then the settings are saved.
 function mockPostCreateRequests( { mockSettings = true } = {} ) {
@@ -100,14 +108,6 @@ function mockPostCreateRequests( { mockSettings = true } = {} ) {
 		} ) );
 	}
 }
-
-/* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
-const testPublication = {
-	...publications[ 0 ],
-	publicationTosUrl: 'https://example.com/terms',
-	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
-} as Publication;
-/* eslint-enable sitekit/acronym-case */
 
 function renderStepSignupForm(
 	formValues: Record< string, string | boolean > = {},

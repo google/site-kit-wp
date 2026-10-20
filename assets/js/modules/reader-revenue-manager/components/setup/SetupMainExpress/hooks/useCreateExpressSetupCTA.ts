@@ -41,9 +41,9 @@ type CreateExpressSetupCTACallback = (
  * Gets a callback that creates a CTA during express setup, then refreshes the
  * publication and CTAs and saves the resulting settings.
  *
- * Creating the CTA makes the publication live, so the onboarding state saved
- * earlier in the flow is out of date, and the new CTA is missing from the
- * saved `configuredCTAs`.
+ * Creating the CTA may make the publication live, so the onboarding state
+ * saved earlier in the flow can be out of date, and the new CTA is missing
+ * from the saved `configuredCTAs`.
  *
  * @since n.e.x.t
  *
