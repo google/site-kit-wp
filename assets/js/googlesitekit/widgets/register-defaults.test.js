@@ -26,7 +26,10 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import WidgetNull from '@/js/googlesitekit/widgets/components/WidgetNull';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY } from './default-areas';
+import {
+	AREA_MAIN_DASHBOARD_KEY_METRICS_PRIMARY,
+	AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY,
+} from './default-areas';
 import { registerDefaults } from './register-defaults';
 
 /**
@@ -172,5 +175,20 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 		expect(
 			settings.pdf.isActive( selectWithKeyMetrics( undefined ) )
 		).toBe( false );
+	} );
+} );
+
+describe( 'registerDefaults - Monetization area', () => {
+	it( 'registers the Monetization area with a pdfTitle of Monetization', () => {
+		const widgetsAPI = createWidgetsAPI();
+		registerDefaults( widgetsAPI );
+
+		const area = findWidgetAreaRegistration(
+			widgetsAPI,
+			AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY
+		);
+
+		expect( area ).toBeDefined();
+		expect( area.settings.pdfTitle ).toBe( 'Monetization' );
 	} );
 } );
