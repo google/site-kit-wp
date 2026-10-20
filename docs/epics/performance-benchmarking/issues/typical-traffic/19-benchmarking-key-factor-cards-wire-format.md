@@ -78,24 +78,23 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Acceptance criteria
 
-* In the encoded `GET:benchmarking-data` response, members `0` to `4` are unchanged, and the format version in member `0` stays `1`.
+* With `typicalTraffic` enabled, a `GET` to `/google-site-kit/v1/modules/analytics-4/data/benchmarking-data?startDate=2026-08-19&endDate=2026-09-15` returns the encoded response. Its members `0` to `4` are unchanged, and the format version in member `0` stays `1`.
 * Member `5` holds one entry per key factor card, in the order the response ranks them, each `[ kind, label, current, previous, sharePct ]`:
   * `kind` is the card's driver kind, as its position in this list: `CHANNEL` `0`, `CONTENT` `1`, `SEARCH_KEYWORD` `2`, `REFERRING_SITE` `3`, `CAMPAIGN` `4`.
   * `label` is a position in the string table in member `1`.
   * `current` and `previous` are integers.
   * `sharePct` is a number rounded to one decimal.
 * Member `6` holds one list per entry of member `5`, in the same order. Each list holds that card's attributes, each `[ kind, label, current, previous, sharePct ]`, with `kind` as its position in this list: `TRAFFIC_CHANNEL` `0`, `LANDING_PAGE` `1`, `SEARCH_KEYWORD` `2`, `REFERRING_SITE` `3`, `PLATFORM` `4`, `CAMPAIGN` `5`, `DEVICE` `6`, `USER_TYPE` `7`. A card with no attributes has an empty list.
-* A response with no cards is encoded with an empty member `5` and an empty member `6`.
+* A response with no cards is encoded with an empty member `5` and an empty member `6`. Until #13845, the request above always returns both members empty.
 * A label that appears on two cards, or on a card and an attribute, is stored once in the string table.
-* The decoded response carries `visits`, `dailyTraffic` and `keyFactors`, and carries none of `visitors`, `dimensions` and `contextualData`. `visits` is `{ current, previous }`, and each `dailyTraffic` row carries its day's count as `visits`.
+* `getBenchmarkingData( '2026-08-19', '2026-09-15' )` on `modules/analytics-4` returns the decoded response. It has the keys `visits`, `dailyTraffic` and `keyFactors`, and does not have the keys `visitors`, `dimensions` or `contextualData`. `visits` is `{ current, previous }`, and each `dailyTraffic` row carries its day's count as `visits`. Until #13845, `keyFactors` is `[]`.
 * Each `keyFactors` entry is `{ kind, label, current, previous, sharePct, attributes }`, in the order of member `5`, and each of its `attributes` is `{ kind, label, current, previous, sharePct }`, in the order of its list in member `6`. Every number comes out exactly as it was encoded.
 * A card whose driver kind index is not in the list is left out of `keyFactors`, together with its attributes, and every other card is decoded. An attribute whose kind index is not in the list is left out of its card, and every other attribute is decoded.
 * A card or an attribute with fewer than five fields is left out, and the rest are decoded.
-* An encoded response is decoded to nothing, and the store records `benchmarking_decode_failed`, when any of these hold:
+* An encoded response is decoded to nothing, and the store records `benchmarking_decode_failed`, when any of these scenarios are encountered:
   * Member `0` is not `1`.
   * Member `5` or member `6` is not a list.
   * Member `6` does not hold exactly one entry for each entry of member `5`.
-* The checked-in `benchmarking-data.json` carries at least two cards: one with two attributes, and one with none. Encoding the fixed set of values in the PHP test produces that file, and decoding that file in the JavaScript test produces the matching `keyFactors`.
 
 ## Implementation Brief
 
