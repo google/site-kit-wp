@@ -48,7 +48,7 @@
 			}
 
 			&.alpha-list > li::marker {
-				content: "(" counter(list-item, lower-alpha) ")";
+				content: "(" counter(list-item, lower-alpha) ") ";
 			}
 		}
 	}
