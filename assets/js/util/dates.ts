@@ -214,7 +214,9 @@ export function getPreviousDate(
 	relativeDate?: unknown,
 	daysBefore?: unknown
 ): string {
-	return addDays( relativeDate as string, -( daysBefore as number ) );
+	return getDateString(
+		dateSub( relativeDate, ( daysBefore as number ) * DAY_IN_SECONDS )
+	);
 }
 
 /**
