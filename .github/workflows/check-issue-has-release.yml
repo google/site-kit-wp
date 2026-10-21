@@ -1,44 +1,31 @@
 name: Check for Release
 
 on:
-  pull_request:
-    branches:
-      - develop
-      - main
-    types:
-      - opened
-      - closed
-      - reopened
-      - synchronize
   pull_request_review:
     types: [submitted]
 
 permissions:
   contents: read
 
-concurrency:
-  group: check-issue-has-release-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
   check-issue-has-release:
     name: Issue must have a ZenHub release
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: |
-      false == (
-        (
-          github.event_name == 'pull_request' && (
-            github.event.action == 'closed' ||
-            github.event.pull_request.draft == true ||
-            contains( github.head_ref, 'dependabot/' )
-          )
-        ) ||
-        github.event.pull_request.head.repo.fork
-      ) &&
-      github.event.review.state == 'approved'
+    # Approvals from people with repo access, on same-repo PRs only.
+    # `full_name` is reliable where `fork` can be null.
+    if: >-
+      github.event.review.state == 'approved' &&
+      contains( fromJSON( '["OWNER", "MEMBER", "COLLABORATOR"]' ), github.event.review.author_association ) &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    # Job level, so skipped runs don't cancel a running check.
+    concurrency:
+      group: check-issue-has-release-${{ github.ref }}
+      cancel-in-progress: true
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
       - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
         with:
           node-version-file: .nvmrc

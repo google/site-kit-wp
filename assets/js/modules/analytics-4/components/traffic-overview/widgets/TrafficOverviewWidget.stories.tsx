@@ -44,6 +44,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
 	createBreakdownReport,
+	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
@@ -168,9 +169,10 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and its reports,
- * the insight report, and the reports of the recent traffic breakdown in the
- * store, so the Recent activity tab renders without sending a request.
+ * Puts the Search Console property, the reports of the fresh figures, the
+ * site's latest post and its reports, the insight report, and the reports of
+ * the recent traffic breakdown in the store, so the Recent activity tab renders
+ * without sending a request.
  *
  * @since 1.190.0
  * @since n.e.x.t Puts the reports of the recent traffic breakdown in the store too.
@@ -220,6 +222,10 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
+	provideFreshMetricsReports( registry, {
+		totalVisitors: 157,
+		searchPerformance: { clicks: 72, impressions: 8000 },
+	} );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );

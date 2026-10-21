@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
 import { Registry, Select } from '@/js/googlesitekit-data';
 import {
 	CORE_FEATURE_DISCOVERY,
@@ -27,6 +28,7 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -336,6 +338,52 @@ describe( 'FeatureCTA', () => {
 			);
 
 			expect( onSetupComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	describe( 'for an in-place-panel feature', () => {
+		it( 'should open the feature’s panel over the hub', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+						ctaLabel: 'Try it now',
+						open: ( panelRegistry: Registry ) => {
+							panelRegistry
+								.dispatch( CORE_UI )
+								.setValue( 'testPanelOpened', true );
+						},
+					},
+				},
+			] );
+
+			const onSetupComplete = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureCTA
+					slug="test-feature"
+					onSetupComplete={ onSetupComplete }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Try it now' } ) );
+
+			await waitFor( () =>
+				expect( onSetupComplete ).toHaveBeenCalledTimes( 1 )
+			);
+
+			expect(
+				registry.select( CORE_UI ).getValue( 'testPanelOpened' )
+			).toBe( true );
+			expect(
+				registry
+					.select( CORE_UI )
+					.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
+			).toBe( false );
 		} );
 	} );
 } );

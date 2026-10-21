@@ -20,6 +20,7 @@
  * External dependencies
  */
 import { FC, useCallback } from 'react';
+import { useMountedState } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -52,6 +53,7 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	slug,
 } ) => {
 	const [ isBusy, setIsBusy ] = useState( false );
+	const isMounted = useMountedState();
 
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
@@ -91,14 +93,22 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
+		// An in-place setup closes the detail panel this CTA may be rendered
+		// in, which unmounts it before the setup resolves.
 		try {
 			await setupFeature( slug );
-			setIsBusy( false );
+
+			if ( isMounted() ) {
+				setIsBusy( false );
+			}
+
 			onSetupComplete?.();
 		} catch {
-			setIsBusy( false );
+			if ( isMounted() ) {
+				setIsBusy( false );
+			}
 		}
-	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
+	}, [ isMounted, onSetupComplete, setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
