@@ -112,6 +112,7 @@ export interface FeatureSetup {
 }
 
 export interface FeatureSettings {
+	name?: string;
 	title: string;
 	shortDescription: string;
 	effort: FeatureEffort;

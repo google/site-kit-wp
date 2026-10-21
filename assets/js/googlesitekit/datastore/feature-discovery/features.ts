@@ -27,6 +27,7 @@ import { isPlainObject } from 'lodash';
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
@@ -69,6 +70,7 @@ export const initialState: FeatureDiscoveryState = {
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
 const setupTypes = Object.values( FEATURE_SETUP_TYPES );
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 type SetupFeatureResult = { error?: unknown };
 
@@ -235,8 +237,11 @@ export const actions = {
 			};
 
 			if ( error ) {
+				yield setErrorForAction( error, 'setupFeature', [ slug ] );
 				return { error };
 			}
+
+			yield clearActionError( 'setupFeature', [ slug ] );
 
 			// Modules with no setup screen, such as PageSpeed Insights, are
 			// connected as soon as they are activated, so the user stays on
