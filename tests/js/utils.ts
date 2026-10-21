@@ -228,7 +228,6 @@ export function provideSiteInfo(
 		siteName: 'My Site Name',
 		timezone: 'America/Detroit',
 		usingProxy: true,
-		usingPlainPermalinks: false,
 		postTypes: [
 			{
 				slug: 'post',
@@ -246,8 +245,8 @@ export function provideSiteInfo(
 		productPostType: 'product',
 		productPathPrefix: null,
 		productQueryVar: 'product',
-		// The public query vars of WordPress core, its `post_format` taxonomy,
-		// and the `product` post type.
+		usingPlainPermalinks: false,
+		// WordPress's own public query vars, with the query var of `product`.
 		publicQueryVars: [
 			'm',
 			'p',
@@ -295,7 +294,6 @@ export function provideSiteInfo(
 			'cpage',
 			'post_type',
 			'embed',
-			'post_format',
 			'product',
 		],
 		keyMetricsSetupCompletedBy: 0,

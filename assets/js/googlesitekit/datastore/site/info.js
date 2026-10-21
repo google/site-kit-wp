@@ -179,7 +179,6 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				timezone,
 				startOfWeek,
 				usingProxy,
-				usingPlainPermalinks,
 				webStoriesActive,
 				proxySupportLinkURL,
 				widgetsAdminURL,
@@ -192,6 +191,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				productPostType,
 				productPathPrefix,
 				productQueryVar,
+				usingPlainPermalinks,
 				publicQueryVars,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
@@ -228,7 +228,6 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				timezone,
 				startOfWeek,
 				usingProxy,
-				usingPlainPermalinks,
 				webStoriesActive,
 				proxySupportLinkURL,
 				widgetsAdminURL,
@@ -241,6 +240,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				productPostType,
 				productPathPrefix,
 				productQueryVar,
+				usingPlainPermalinks,
 				publicQueryVars,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
@@ -333,7 +333,6 @@ export const resolvers = {
 			timezone,
 			startOfWeek,
 			usingProxy,
-			usingPlainPermalinks,
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
@@ -346,6 +345,7 @@ export const resolvers = {
 			productPostType,
 			productPathPrefix,
 			productQueryVar,
+			usingPlainPermalinks,
 			publicQueryVars,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
@@ -390,7 +390,6 @@ export const resolvers = {
 			startOfWeek,
 			postTypes,
 			usingProxy: !! usingProxy,
-			usingPlainPermalinks,
 			webStoriesActive,
 			proxySupportLinkURL,
 			widgetsAdminURL,
@@ -402,6 +401,7 @@ export const resolvers = {
 			productPostType,
 			productPathPrefix,
 			productQueryVar,
+			usingPlainPermalinks,
 			publicQueryVars,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
@@ -728,17 +728,6 @@ export const selectors = {
 	isUsingProxy: getSiteInfoProperty( 'usingProxy' ),
 
 	/**
-	 * Checks whether the site uses plain permalinks, such as `/?p=123`, where
-	 * the path of every post's URL is the path of the home URL.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state Data store's state.
-	 * @return {(boolean|undefined)} `true` if the site uses plain permalinks, `false` if it has a permalink structure. Returns `undefined` if not loaded.
-	 */
-	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
-
-	/**
 	 * Gets a site's name.
 	 *
 	 * @since 1.9.0
@@ -1017,24 +1006,29 @@ export const selectors = {
 	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
 
 	/**
-	 * Gets the query var whose value is a product's slug in a product URL on
-	 * plain permalinks, such as `product` in `/?product=hoodie`.
+	 * Gets the query var of the product post type, such as `product` in `/?product=hoodie`.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string|null|undefined)} The query var, such as `product`, or `null` when the site has no product post type or WordPress reads no query var for it. Returns `undefined` if not loaded.
+	 * @return {(string|null|undefined)} The query var, or `null` when the site has no product post type or the post type has no query var. Returns `undefined` if not loaded.
 	 */
 	getProductQueryVar: getSiteInfoProperty( 'productQueryVar' ),
 
 	/**
-	 * Gets the query vars that WordPress reads from a URL.
-	 *
-	 * The list holds WordPress's public query vars, such as `p` and `s`, and
-	 * the query var of each viewable post type and taxonomy, such as `product`.
+	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(Array.<string>|undefined)} The query var names. Returns `undefined` if not loaded.
+	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
+	 */
+	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
+
+	/**
+	 * Gets the public query vars, the query vars that WordPress reads from a URL, such as `p` and `page_id`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Array.<string>|undefined)} The public query vars, with the query var of each public post type. Returns `undefined` if not loaded.
 	 */
 	getPublicQueryVars: getSiteInfoProperty( 'publicQueryVars' ),
 

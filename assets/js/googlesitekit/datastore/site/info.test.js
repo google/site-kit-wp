@@ -59,7 +59,6 @@ describe( 'core/site site info', () => {
 			siteLocale: 'en-US',
 			timezone: 'America/Denver',
 			usingProxy: true,
-			usingPlainPermalinks: false,
 			widgetsAdminURL: 'http://example.com/wp-admin/widgets.php',
 			postTypes: [
 				{
@@ -70,7 +69,8 @@ describe( 'core/site site info', () => {
 			productPostType: [ 'product' ],
 			productPathPrefix: '/product/',
 			productQueryVar: 'product',
-			publicQueryVars: [ 'm', 'p', 'page_id', 'product' ],
+			usingPlainPermalinks: true,
+			publicQueryVars: [ 'p', 'page_id', 'product' ],
 			anyoneCanRegister: false,
 			anyoneCanRegisterWooCommerce: false,
 			isMultisite: false,
@@ -518,7 +518,6 @@ describe( 'core/site site info', () => {
 			[ 'getKeyMetricsSetupCompletedBy', 'keyMetricsSetupCompletedBy' ],
 			[ 'getKeyMetricsSetupNew', 'keyMetricsSetupNew' ],
 			[ 'isUsingProxy', 'usingProxy' ],
-			[ 'isUsingPlainPermalinks', 'usingPlainPermalinks' ],
 			[ 'isAMP', 'ampMode' ],
 			[ 'isPrimaryAMP', 'ampMode' ],
 			[ 'isSecondaryAMP', 'ampMode' ],
@@ -526,6 +525,7 @@ describe( 'core/site site info', () => {
 			[ 'getProductPostType', 'productPostType' ],
 			[ 'getProductPathPrefix', 'productPathPrefix' ],
 			[ 'getProductQueryVar', 'productQueryVar' ],
+			[ 'isUsingPlainPermalinks', 'usingPlainPermalinks' ],
 			[ 'getPublicQueryVars', 'publicQueryVars' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
