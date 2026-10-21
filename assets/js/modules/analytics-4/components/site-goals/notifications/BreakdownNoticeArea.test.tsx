@@ -42,6 +42,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { SITE_GOALS_INTRO_MODAL_BANNER } from '@/js/modules/analytics-4/components/site-goals/notifications/IntroModalBanner';
+import { seedSiteGoalsBreakdownValuesReport } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import {
 	ALL_CUSTOM_DIMENSIONS,
 	EDIT_SCOPE,
@@ -80,18 +81,17 @@ describe( 'BreakdownNoticeArea', () => {
 		'^/google-site-kit/v1/core/site/data/conversion-tracking'
 	);
 
-	// `loading` leaves a request unresolved; `unreadable` leaves the setting
-	// neither set nor requested.
+	// `loading` leaves a request unresolved.
 	async function setUpRegistry( {
 		conversionTracking = true,
 	}: {
-		conversionTracking?: boolean | 'loading' | 'unreadable';
+		conversionTracking?: boolean | 'loading';
 	} = {} ) {
 		registry = createTestRegistry();
 
 		if ( conversionTracking === 'loading' ) {
 			freezeFetch( conversionTrackingEndpoint );
-		} else if ( conversionTracking !== 'unreadable' ) {
+		} else {
 			// `true` keeps a test on the existing notice, without the
 			// conversion tracking disclosure.
 			registry
@@ -119,6 +119,12 @@ describe( 'BreakdownNoticeArea', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveGetAdvancedDataBreakdownsSettings( {} );
+		// No Site Goals widget renders by default, so none shows breakdown
+		// tabs and the conversion tracking disabled notice never applies
+		// (tests that need it seed the widgets).
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.receiveGetSiteGoalsSettings( { activeWidgets: [] } );
 		// Mark the throttled availability sync as already done, so the mount
 		// effect doesn't schedule one (tests that need it clear this).
 		await setItem( AVAILABILITY_SYNC_CACHE_KEY, true );
@@ -1209,27 +1215,80 @@ describe( 'BreakdownNoticeArea', () => {
 			expect( queryByText( 'Get breakdown' ) ).not.toBeInTheDocument();
 		} );
 
-		it( 'shows the notice to a user who cannot read the setting, without requesting it', async () => {
-			await setUpRegistry( { conversionTracking: 'unreadable' } );
-			// The REST route requires this capability, so a request would only
-			// 403 and log an error on their dashboard.
-			provideUserCapabilities( registry, {
-				[ PERMISSION_MANAGE_OPTIONS ]: false,
-			} );
-			seedAvailableCustomDimensions( [] );
+		describe( 'once conversion tracking is switched off after the breakdown was in use', () => {
+			// Puts a widget in the state where it shows breakdown tabs: the
+			// widget renders, its dimension exists and holds values.
+			function provideBreakdownInUse( leadBreakdownValues: string[] ) {
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [
+							GOAL_TYPES.ECOMMERCE,
+							GOAL_TYPES.LEAD,
+						],
+					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID: '12345',
+					availableCustomDimensions: ALL_CUSTOM_DIMENSIONS,
+					detectedEvents: [ 'purchase', 'contact' ],
+				} );
+				seedSiteGoalsBreakdownValuesReport(
+					registry,
+					GOAL_TYPES.ECOMMERCE,
+					[]
+				);
+				seedSiteGoalsBreakdownValuesReport(
+					registry,
+					GOAL_TYPES.LEAD,
+					leadBreakdownValues
+				);
+			}
 
-			const { getByText, waitForRegistry } = render(
-				<BreakdownNoticeArea
-					origin={ BREAKDOWN_ORIGIN_WIDGET }
-					goalTypes={ [ GOAL_TYPES.LEAD ] }
-				/>,
-				{ registry }
+			it.each( [
+				[ 'a widget', BREAKDOWN_ORIGIN_WIDGET, [ GOAL_TYPES.LEAD ] ],
+				[
+					'the Side Panel',
+					BREAKDOWN_ORIGIN_PANEL,
+					[ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
+				],
+			] )(
+				'renders nothing in %s while a widget shows breakdown tabs',
+				async ( _, origin, goalTypes ) => {
+					await setUpRegistry( { conversionTracking: false } );
+					provideBreakdownInUse( [ '5' ] );
+
+					const { container } = render(
+						<BreakdownNoticeArea
+							origin={ origin }
+							goalTypes={ goalTypes }
+						/>,
+						{ registry }
+					);
+
+					expect( container ).toBeEmptyDOMElement();
+				}
 			);
 
-			await waitForRegistry();
+			it( 'shows the "Get breakdown" notice with the conversion tracking disclosure when no widget has shown breakdown tabs', async () => {
+				await setUpRegistry( { conversionTracking: false } );
+				provideBreakdownInUse( [] );
 
-			expect( getByText( 'Get breakdown' ) ).toBeInTheDocument();
-			expect( fetchMock ).not.toHaveFetched( conversionTrackingEndpoint );
+				const { getByText } = render(
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_WIDGET }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
+					/>,
+					{ registry }
+				);
+
+				expect( getByText( 'Get breakdown' ) ).toBeInTheDocument();
+				expect(
+					getByText(
+						/Enabling this breakdown will also enable conversion tracking for your forms\./
+					)
+				).toBeInTheDocument();
+			} );
 		} );
 	} );
 } );

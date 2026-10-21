@@ -75,10 +75,15 @@ class REST_Conversion_Tracking_Controller {
 	 * Gets REST route instances.
 	 *
 	 * @since 1.127.0
+	 * @since n.e.x.t Allowed any user who can view the dashboard to read the setting.
 	 *
 	 * @return REST_Route[] List of REST_Route objects.
 	 */
 	protected function get_rest_routes() {
+		$can_view_dashboard = function () {
+			return current_user_can( Permissions::VIEW_DASHBOARD );
+		};
+
 		$has_capabilities = function () {
 			return current_user_can( Permissions::MANAGE_OPTIONS );
 		};
@@ -91,7 +96,7 @@ class REST_Conversion_Tracking_Controller {
 					'callback'            => function () {
 						return new WP_REST_Response( $this->settings->get() );
 					},
-					'permission_callback' => $has_capabilities,
+					'permission_callback' => $can_view_dashboard,
 				)
 			),
 			new REST_Route(

@@ -85,10 +85,33 @@ describe( 'useConversionTrackingSetting', () => {
 		expect( fetchMock ).toHaveFetched( conversionTrackingEndpoint );
 	} );
 
-	it( 'does not request the setting for a user who cannot manage options', async () => {
+	it.each( [ true, false ] )(
+		'returns the setting for a user who cannot manage options, when conversion tracking is %s',
+		( enabled ) => {
+			provideUserCapabilities( registry, {
+				[ PERMISSION_MANAGE_OPTIONS ]: false,
+			} );
+			registry
+				.dispatch( CORE_SITE )
+				.receiveGetConversionTrackingSettings( { enabled } );
+
+			const { result } = renderHook(
+				() => useConversionTrackingSetting(),
+				{ registry }
+			);
+
+			expect( result.current ).toEqual( {
+				canManageOptions: false,
+				isConversionTrackingEnabled: enabled,
+			} );
+		}
+	);
+
+	it( 'requests the setting for a user who cannot manage options', async () => {
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
+		freezeFetch( conversionTrackingEndpoint );
 
 		const { result, waitForRegistry } = renderHook(
 			() => useConversionTrackingSetting(),
@@ -101,6 +124,6 @@ describe( 'useConversionTrackingSetting', () => {
 			canManageOptions: false,
 			isConversionTrackingEnabled: undefined,
 		} );
-		expect( fetchMock ).not.toHaveFetched( conversionTrackingEndpoint );
+		expect( fetchMock ).toHaveFetched( conversionTrackingEndpoint );
 	} );
 } );

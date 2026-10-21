@@ -82,16 +82,19 @@ describe( 'useIsSiteGoalsBreakdownEnabled', () => {
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( 'follows the dimensions alone for a user who cannot read the setting', () => {
+	it( 'is not enabled for a user who cannot manage options while conversion tracking is off', () => {
 		provideUserCapabilities( registry, {
 			googlesitekit_manage_options: false,
 		} );
+		registry
+			.dispatch( CORE_SITE )
+			.receiveGetConversionTrackingSettings( { enabled: false } );
 
 		const { result } = renderHook(
 			() => useIsSiteGoalsBreakdownEnabled( true ),
 			{ registry }
 		);
 
-		expect( result.current ).toBe( true );
+		expect( result.current ).toBe( false );
 	} );
 } );
