@@ -1475,6 +1475,48 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
 		} );
 
+		it( 'should not request a page path again once its post loaded as `null`', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?s=hats': null },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?s=hats' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?s=hats' ] );
+
+			// Without the cache, only the registry's state keeps `/?s=hats` out of
+			// the next request.
+			await clearCache();
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?page_id=2': about },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?s=hats', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?s=hats', '/?page_id=2' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect(
+				getQueryArg(
+					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+					'pagePaths'
+				)
+			).toEqual( [ '/?page_id=2' ] );
+		} );
+
 		it( 'should take the post of each page path from the API cache when the page reloads, and request only the page paths the cache has no post for', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
 				body: { '/?p=1': travelTips },
@@ -1562,7 +1604,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( { '/?p=1': travelTips } );
 		} );
 
-		it( 'should take the `null` of a page path that shows no single post from the API cache when the page reloads', async () => {
+		it( 'should return `null` from the API cache, with no request, for a page path that shows no single post when the page reloads', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
 				body: { '/?s=hats': null },
 				status: 200,
@@ -1734,7 +1776,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'should store the error for `getErrorForSelector()` under the page paths of the selector when the request for the page paths not loaded yet fails', async () => {
+		it( 'should store the error under the whole list of page paths passed to `getPostsByPagePath()` when the request for the ones not loaded yet fails', async () => {
 			const errorResponse = {
 				code: 'internal_server_error',
 				message: 'Internal server error',

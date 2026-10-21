@@ -65,6 +65,9 @@ class AssetsTest extends TestCase {
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
 		}
+		if ( post_type_exists( 'book' ) ) {
+			unregister_post_type( 'book' );
+		}
 	}
 
 	public function test_register() {

@@ -80,7 +80,13 @@ describe( 'getPlainPermalinkPagePath', () => {
 		).toEqual( '/?page_id=2' );
 	} );
 
-	it( 'should keep the home path of a site in a subdirectory, since a page path starts at the root of the domain', () => {
+	it( 'should keep an empty `s` query var, which WordPress still reads as a search', () => {
+		expect(
+			getPlainPermalinkPagePath( '/?s=', 'https://example.com/', [ 's' ] )
+		).toEqual( '/?s=' );
+	} );
+
+	it( 'should return the page path under the home path of a site in a subdirectory, such as `/blog/?p=1` for `/blog/index.php?p=1`', () => {
 		expect(
 			getPlainPermalinkPagePath(
 				'/blog/index.php?p=1',

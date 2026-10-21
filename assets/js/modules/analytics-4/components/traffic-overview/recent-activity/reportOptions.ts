@@ -328,9 +328,10 @@ export function getTopPostsReportOptions(
  * where every post shares the path of the home page.
  *
  * The report reads each URL with its query string, such as `/?p=123`. It asks
- * for 1,000 URLs, many more than the `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page
- * paths the column looks up, because many URLs can show one post, such as
- * `/?p=123&utm_source=newsletter`, and some URLs show no single post.
+ * for at most 1,000 URLs, many more than the
+ * `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page paths the column looks up, because
+ * many URLs can show one post, such as `/?p=123&utm_source=newsletter`, and
+ * some URLs show no single post.
  *
  * @since n.e.x.t
  *

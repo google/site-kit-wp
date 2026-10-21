@@ -628,6 +628,83 @@ describe( 'core/site site info', () => {
 			} );
 		} );
 
+		describe( 'getProductQueryVar', () => {
+			it( 'should return the query var of the product post type', async () => {
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
+
+				registry.select( CORE_SITE ).getProductQueryVar();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).getProductQueryVar()
+				).toEqual( 'product' );
+			} );
+
+			it( 'should return `null` when the product post type has no query var', async () => {
+				global[ baseInfoKey ] = {
+					...baseInfo,
+					productQueryVar: null,
+				};
+				global[ entityInfoKey ] = entityInfo;
+
+				registry.select( CORE_SITE ).getProductQueryVar();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).getProductQueryVar()
+				).toBeNull();
+			} );
+		} );
+
+		describe( 'isUsingPlainPermalinks', () => {
+			it( 'should return `true` when the site uses plain permalinks', async () => {
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
+
+				registry.select( CORE_SITE ).isUsingPlainPermalinks();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isUsingPlainPermalinks()
+				).toEqual( true );
+			} );
+
+			it( 'should return `false` when the site has a permalink structure', async () => {
+				global[ baseInfoKey ] = {
+					...baseInfo,
+					usingPlainPermalinks: false,
+				};
+				global[ entityInfoKey ] = entityInfo;
+
+				registry.select( CORE_SITE ).isUsingPlainPermalinks();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isUsingPlainPermalinks()
+				).toEqual( false );
+			} );
+		} );
+
+		describe( 'getPublicQueryVars', () => {
+			it( 'should return the public query vars', async () => {
+				global[ baseInfoKey ] = baseInfo;
+				global[ entityInfoKey ] = entityInfo;
+
+				registry.select( CORE_SITE ).getPublicQueryVars();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).getPublicQueryVars()
+				).toEqual( [ 'p', 'page_id', 'product' ] );
+			} );
+		} );
+
 		describe( 'isRegistrationOpen', () => {
 			it( 'returns true when WordPress registration is open', async () => {
 				global[ baseInfoKey ] = {

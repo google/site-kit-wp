@@ -1169,7 +1169,10 @@ class WP_Query_FactoryTest extends TestCase {
 			}
 		);
 
-		$this->assertSame( $GLOBALS['wp']->public_query_vars, WP_Query_Factory::get_public_query_vars(), 'The public query vars should be the ones WordPress read the main request with.' );
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
+
+		$this->assertContains( 'p', $public_query_vars, 'The public query vars should include `p` after WordPress read the main request.' );
+		$this->assertNotContains( 'customvar', $public_query_vars, 'The public query vars should leave out a query var that a `query_vars` filter adds after WordPress read the main request.' );
 	}
 
 	public function test_get_public_query_vars__returns_a_list_after_a_filter_removes_a_query_var() {

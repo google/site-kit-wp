@@ -201,7 +201,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
- * @since n.e.x.t Provides `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars` by default.
+ * @since n.e.x.t Sets `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -247,7 +247,8 @@ export function provideSiteInfo(
 		productPathPrefix: null,
 		productQueryVar: 'product',
 		usingPlainPermalinks: false,
-		// WordPress's own public query vars, with the query var of `product`.
+		// The default `WP::$public_query_vars` of WordPress core, and the query
+		// var of the `product` post type.
 		publicQueryVars: [
 			'm',
 			'p',

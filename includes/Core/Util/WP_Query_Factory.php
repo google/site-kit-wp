@@ -33,7 +33,7 @@ final class WP_Query_Factory {
 	 * majority of the code is a direct copy of certain parts of these functions.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Takes a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later.
+	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
 	 * @param string $url URL to get WordPress query object for, or a page path with no host, such as `/?p=123`.
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
@@ -78,8 +78,9 @@ final class WP_Query_Factory {
 		// either manually trigger the filter or not.
 		$public_query_vars = did_action( 'parse_request' ) ? $wp->public_query_vars : apply_filters( 'query_vars', $wp->public_query_vars );
 
-		// A `query_vars` filter that removes a query var leaves a gap in the keys, which `wp_json_encode()` writes as
-		// an object rather than a list.
+		// A `query_vars` filter that removes a query var leaves a gap in the keys. `Assets::get_inline_base_data()`
+		// sends this list to the dashboard as `publicQueryVars`, and `wp_json_encode()` writes an array with a gap in
+		// its keys as an object rather than a list.
 		return array_values( $public_query_vars );
 	}
 
@@ -87,7 +88,7 @@ final class WP_Query_Factory {
 	 * Normalizes the URL for further processing.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later.
+	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
 	 * @param string $url URL to normalize, or a page path with no host, such as `/?p=123`.
 	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.

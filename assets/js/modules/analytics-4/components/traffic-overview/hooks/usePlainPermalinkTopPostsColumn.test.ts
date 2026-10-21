@@ -240,11 +240,14 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 			url: 'http://example.com/?p=12',
 		};
 
+		// The first URL of the report is `/?p=12&page=2`, but the two campaign
+		// URLs add up to more views at the page path `/?p=12`.
 		fetchMock.get( postsRequest, {
 			body: createBreakdownReport(
 				[
-					[ '/?p=12', 10 ],
-					[ '/?p=12&page=2', 5 ],
+					[ '/?p=12&page=2', 7 ],
+					[ '/?p=12&utm_source=a', 6 ],
+					[ '/?p=12&utm_source=b', 6 ],
 				],
 				200
 			),
@@ -265,8 +268,8 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		expect( result.current.rows ).toEqual( [
 			{
 				label: '/?p=12',
-				value: '15',
-				secondaryValue: '(7.5%)',
+				value: '19',
+				secondaryValue: '(9.5%)',
 				url: 'http://example.com/?p=12',
 			},
 		] );
@@ -347,6 +350,52 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 			},
 		] );
 		expect( result.current.error ).toBeUndefined();
+		expect( result.current.loading ).toEqual( false );
+	} );
+
+	it( 'should look up only the page paths at the home path of a site in a subdirectory', async () => {
+		provideSiteInfo( registry, {
+			referenceSiteURL: 'http://example.com/blog/',
+			usingPlainPermalinks: true,
+		} );
+		fetchMock.get( postsRequest, {
+			body: createBreakdownReport(
+				[
+					[ '/blog/?p=1', 40 ],
+					[ '/?p=1', 30 ],
+					[ '/blog/index.php?p=1', 20 ],
+					[ '/blog/forum/', 10 ],
+				],
+				200
+			),
+			status: 200,
+		} );
+		fetchMock.get( postsByPagePathEndpoint, {
+			body: { '/blog/?p=1': travelTips },
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => usePlainPermalinkTopPostsColumn(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect(
+			getQueryArg(
+				fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+				'pagePaths'
+			)
+		).toEqual( [ '/blog/?p=1' ] );
+		expect( result.current.rows ).toEqual( [
+			{
+				label: 'Travel tips',
+				value: '60',
+				secondaryValue: '(30.0%)',
+				url: 'http://example.com/?p=1',
+			},
+		] );
 	} );
 
 	it( 'should be loading, with no rows, while the posts load', async () => {

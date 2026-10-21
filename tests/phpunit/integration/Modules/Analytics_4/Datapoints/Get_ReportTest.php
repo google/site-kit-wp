@@ -13,6 +13,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
+use Google\Site_Kit\Tests\Fake_Report_Response_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -33,6 +34,8 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
  * @group Datapoints
  */
 class Get_ReportTest extends TestCase {
+
+	use Fake_Report_Response_Trait;
 
 	/**
 	 * Get_Report datapoint instance.
@@ -184,38 +187,20 @@ class Get_ReportTest extends TestCase {
 			),
 		);
 
-		$dimension_header = new Google_Service_AnalyticsData\DimensionHeader();
-		$dimension_header->setName( 'pagePathPlusQueryString' );
-		$dimension_value = new Google_Service_AnalyticsData\DimensionValue();
-		$dimension_value->setValue( '/?p=1&key=wc_order_abc' );
-		$row = new Google_Service_AnalyticsData\Row();
-		$row->setDimensionValues( array( $dimension_value ) );
-		$response = new Google_Service_AnalyticsData_RunReportResponse();
-		$response->setDimensionHeaders( array( $dimension_header ) );
-		$response->setRows( array( $row ) );
-
+		$response     = $this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) );
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
 
 		$parsed_response = $datapoint->parse_response( $response, $data_request );
 
-		$this->assertSame( '/?p=1', $parsed_response->getRows()[0]->getDimensionValues()[0]->getValue(), 'A view-only user should get each URL with its public query vars alone.' );
+		$this->assertSame( array( '/?p=1' ), $this->get_dimension_values( $parsed_response, 0 ), 'The report of a view-only user should have each URL with its public query vars alone.' );
 	}
 
 	public function test_parse_response__keeps_the_full_query_string_of_each_url_for_the_owner() {
-		$dimension_header = new Google_Service_AnalyticsData\DimensionHeader();
-		$dimension_header->setName( 'pagePathPlusQueryString' );
-		$dimension_value = new Google_Service_AnalyticsData\DimensionValue();
-		$dimension_value->setValue( '/?p=1&key=wc_order_abc' );
-		$row = new Google_Service_AnalyticsData\Row();
-		$row->setDimensionValues( array( $dimension_value ) );
-		$response = new Google_Service_AnalyticsData_RunReportResponse();
-		$response->setDimensionHeaders( array( $dimension_header ) );
-		$response->setRows( array( $row ) );
-
+		$response     = $this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) );
 		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
 
 		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
 
-		$this->assertSame( '/?p=1&key=wc_order_abc', $parsed_response->getRows()[0]->getDimensionValues()[0]->getValue(), 'The owner, who reads with their own access, should get each URL whole.' );
+		$this->assertSame( array( '/?p=1&key=wc_order_abc' ), $this->get_dimension_values( $parsed_response, 0 ), 'The report of the module owner, who reads with their own access, should have each URL with its whole query string.' );
 	}
 }

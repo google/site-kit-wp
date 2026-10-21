@@ -1032,7 +1032,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(Array.<string>|undefined)} The public query vars, with the query var of each post type that `is_post_type_viewable()` accepts. Returns `undefined` if not loaded.
+	 * @return {(Array.<string>|undefined)} The public query vars. They include the query var of each post type that `is_post_type_viewable()` accepts, and each query var that a plugin adds through the `query_vars` filter. Returns `undefined` if not loaded.
 	 */
 	getPublicQueryVars: getSiteInfoProperty( 'publicQueryVars' ),
 

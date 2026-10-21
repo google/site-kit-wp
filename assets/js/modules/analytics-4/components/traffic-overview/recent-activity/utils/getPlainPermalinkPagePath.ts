@@ -68,9 +68,12 @@ export function getPlainPermalinkPagePath(
 
 	const queryArgs = Object.fromEntries(
 		Object.entries( getQueryArgs( url ) ).filter(
-			// WordPress ignores a query var with an empty value, such as `p=`.
+			// WordPress reads a query var with an empty value, such as `p=`, as
+			// missing. `s` is the exception: an empty `s=` still shows the search
+			// results.
 			( [ key, value ] ) =>
-				value !== '' && publicQueryVars.includes( key )
+				( value !== '' || key === 's' ) &&
+				publicQueryVars.includes( key )
 		)
 	);
 

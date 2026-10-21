@@ -54,7 +54,7 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Closure returning the post of each page path.
+	 * @return callable Closure that returns an array keyed by each page path, such as `/?p=123`. Each value is the post's `id`, `title` and `url`, or `null` where the page path shows no single published post.
 	 * @throws Missing_Required_Param_Exception Thrown when `pagePaths` is missing or empty, such as an empty list.
 	 * @throws Invalid_Param_Exception Thrown when `pagePaths` isn't a list of at most `MAX_PAGE_PATHS` strings that each start with `/`.
 	 */
@@ -96,8 +96,9 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 	/**
 	 * Checks whether a `pagePaths` parameter is a list of at most `MAX_PAGE_PATHS` page paths.
 	 *
-	 * A page path starts with `/`, so the keys of the response are never
-	 * numbers, which would turn the response into a JSON array.
+	 * A page path starts with `/`, so no key of the response is a number.
+	 * Number keys that run `0`, `1`, `2` and so on would make the response a
+	 * JSON array rather than an object.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -119,7 +120,7 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 	}
 
 	/**
-	 * Gets the data the dashboard needs of the post a page path shows.
+	 * Gets the ID, the plain text title and the permalink of the post that a page path shows.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -160,8 +161,9 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 			return null;
 		}
 
-		// The query knows what the page path shows before it runs, so a search
-		// or an archive runs no database query.
+		// `from_url()` has already run `parse_query()`, which sets `is_singular()`
+		// from the page path, so a search or an archive returns here with no
+		// database query.
 		if ( ! $query->is_singular() ) {
 			return null;
 		}
@@ -178,7 +180,8 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 
 		// The query returns an unpublished post, such as a draft, to a user who
 		// can edit it, so we check the status here. For an attachment,
-		// `get_post_status()` returns the status of its parent post.
+		// `get_post_status()` returns the status of its parent post, or
+		// `publish` where it has no parent.
 		if ( 'publish' !== get_post_status( $post ) || ! is_post_type_viewable( $post->post_type ) ) {
 			return null;
 		}

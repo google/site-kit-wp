@@ -253,8 +253,9 @@ const fetchGetPostsByPagePathStore = createFetchStore( {
 	async controlCallback( {
 		pagePaths,
 	}: PostsByPagePathParams ): Promise< PostsByPagePath > {
-		// The API cache keeps the post of each page path for an hour, so a
-		// list with one new page path asks the server for that page path alone.
+		// `setItem()` keeps the post of each page path in the API cache for its
+		// default `ttl` of an hour, so a list with one new page path asks the
+		// server for that page path alone.
 		const cachedPosts = await Promise.all(
 			pagePaths.map( ( pagePath ) =>
 				getItem( getPostCacheKey( pagePath ) )

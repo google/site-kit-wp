@@ -48,7 +48,7 @@ import { usePostsByPagePath } from './usePostsByPagePath';
 interface PlainPermalinkTopPostsColumn {
 	/** The rows the column renders: one for each post, or one for each page path after the request for the posts fails. */
 	rows: TableTileRow[];
-	/** `true` until the column's report has loaded, and then until the posts of its page paths have loaded. */
+	/** `true` until the request for the column's report finishes. Once the report has loaded, it stays `true` until the request for the posts of its page paths finishes. */
 	loading: boolean;
 	/** The error of the column's report, or `undefined` when its request hasn't failed. */
 	error?: ErrorObject;

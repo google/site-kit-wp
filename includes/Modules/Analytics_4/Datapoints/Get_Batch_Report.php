@@ -132,7 +132,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	 * Parses a response.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Keeps only the public query vars of each URL in the reports that a view-only user gets.
+	 * @since n.e.x.t Keeps only the public query vars of each `pagePathPlusQueryString` value in the reports that a view-only user gets.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
@@ -146,7 +146,7 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 		$report = new Analytics_4_Report_Response( $this->context );
 
 		foreach ( (array) $response->getReports() as $report_response ) {
-			$report->remove_private_query_args( $report_response );
+			$report->keep_only_public_query_vars( $report_response );
 		}
 
 		return $response;

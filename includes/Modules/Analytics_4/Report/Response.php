@@ -124,7 +124,7 @@ class Response extends Report {
 	}
 
 	/**
-	 * Removes each query arg that WordPress doesn't read from the URLs of a report that a view-only user gets.
+	 * Keeps only the public query vars in the `pagePathPlusQueryString` values of a report that a view-only user gets.
 	 *
 	 * A view-only user reads a report with the module owner's access, and a URL's
 	 * query string can hold a secret, such as the order `key` of a WooCommerce
@@ -132,12 +132,16 @@ class Response extends Report {
 	 * public query vars, such as `p` and `page_id`, which is all the dashboard
 	 * reads from it.
 	 *
+	 * The method changes the dimension values of the response in place.
+	 * `Get_Batch_Report::parse_response()` relies on that, because it reads no
+	 * return value.
+	 *
 	 * @since n.e.x.t
 	 *
-	 * @param mixed $response The report response, as `parse_response()` returns it.
-	 * @return mixed The response, with each `pagePathPlusQueryString` value cut to its public query vars.
+	 * @param mixed $response A report response, such as the `RunReportResponse` that `parse_response()` returns, or one report of a `BatchRunReportsResponse`.
+	 * @return mixed The response, with each `pagePathPlusQueryString` value cut to its public query vars. A value that is no `RunReportResponse`, such as a `WP_Error`, comes back unchanged.
 	 */
-	public function remove_private_query_args( $response ) {
+	public function keep_only_public_query_vars( $response ) {
 		if ( ! $response instanceof Google_Service_AnalyticsData_RunReportResponse ) {
 			return $response;
 		}

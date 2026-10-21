@@ -284,7 +284,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 } );
 
 describe( 'getRowCounts', () => {
-	it( 'should return the count of every key, most first, not only the first three', () => {
+	it( 'should return the counts of all five keys, most first', () => {
 		const report = createBreakdownReport( [
 			[ '/a/', 1 ],
 			[ '/b/', 4 ],

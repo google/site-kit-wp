@@ -111,7 +111,7 @@ class Get_Report extends Shareable_Datapoint implements Executable_Datapoint {
 	 * Parses a response.
 	 *
 	 * @since 1.177.0
-	 * @since n.e.x.t Keeps only the public query vars of each URL in a report that a view-only user gets.
+	 * @since n.e.x.t Keeps only the public query vars of each `pagePathPlusQueryString` value in a report that a view-only user gets.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
@@ -122,7 +122,7 @@ class Get_Report extends Shareable_Datapoint implements Executable_Datapoint {
 		$response = $report->parse_response( $data, $response );
 
 		if ( ( $this->is_shared_request )( $this ) ) {
-			return $report->remove_private_query_args( $response );
+			return $report->keep_only_public_query_vars( $response );
 		}
 
 		return $response;

@@ -1089,6 +1089,49 @@ describe( 'RecentTrafficBreakdown', () => {
 			);
 		} );
 
+		it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column when the URLs had no views', async () => {
+			mockPlainPermalinkRequests( {
+				posts: {
+					body: createBreakdownReport( [], 0 ),
+					status: 200,
+				},
+			} );
+			mockReportRequests();
+
+			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				getColumn( 'Top posts by visitors' ).querySelector(
+					'.googlesitekit-table-tile__zero-state'
+				)
+			).toHaveTextContent( 'your site hasn’t received any visitors yet' );
+		} );
+
+		it( 'should render the title of each column as a level 4 heading', async () => {
+			mockPlainPermalinkRequests();
+			mockReportRequests();
+
+			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect(
+				screen
+					.getAllByRole( 'heading', { level: 4 } )
+					.map( ( heading ) => heading.textContent )
+			).toEqual( [
+				'Top posts by visitors',
+				'Top channels by visitors',
+				'Top referrals by visitors',
+			] );
+		} );
+
 		it( 'should render the title of each post for a view-only user', async () => {
 			mockPlainPermalinkRequests();
 			mockReportRequests();
