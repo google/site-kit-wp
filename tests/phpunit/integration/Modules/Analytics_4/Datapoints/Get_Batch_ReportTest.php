@@ -256,4 +256,35 @@ class Get_Batch_ReportTest extends TestCase {
 			'The datapoint should return the response unchanged.'
 		);
 	}
+
+	public function test_parse_response__keeps_only_the_public_query_vars_of_each_url_for_a_view_only_user() {
+		$datapoint = new Get_Batch_Report(
+			array(
+				'service'           => function () {},
+				'settings'          => $this->analytics->get_settings(),
+				'context'           => new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'is_shared_request' => function () {
+					return true;
+				},
+			),
+		);
+
+		$dimension_header = new Google_Service_AnalyticsData\DimensionHeader();
+		$dimension_header->setName( 'pagePathPlusQueryString' );
+		$dimension_value = new Google_Service_AnalyticsData\DimensionValue();
+		$dimension_value->setValue( '/?p=1&key=wc_order_abc' );
+		$row = new Google_Service_AnalyticsData\Row();
+		$row->setDimensionValues( array( $dimension_value ) );
+		$report = new Google_Service_AnalyticsData\RunReportResponse();
+		$report->setDimensionHeaders( array( $dimension_header ) );
+		$report->setRows( array( $row ) );
+		$response = new Google_Service_AnalyticsData_BatchRunReportsResponse();
+		$response->setReports( array( $report ) );
+
+		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'batch-report', array() );
+
+		$parsed_response = $datapoint->parse_response( $response, $data_request );
+
+		$this->assertSame( '/?p=1', $parsed_response->getReports()[0]->getRows()[0]->getDimensionValues()[0]->getValue(), 'A view-only user should get each URL of each report with its public query vars alone.' );
+	}
 }

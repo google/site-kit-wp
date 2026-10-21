@@ -34,7 +34,12 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { postsByPagePath } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
-import { freezeFetch, provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	freezeFetch,
+	provideModules,
+	provideSiteInfo,
+	waitForDefaultTimeouts,
+} from '@tests/js/utils';
 import { usePlainPermalinkTopPostsColumn } from './usePlainPermalinkTopPostsColumn';
 
 describe( 'usePlainPermalinkTopPostsColumn', () => {
@@ -116,6 +121,44 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 				value: '5',
 				secondaryValue: '(2.5%)',
 				url: 'http://example.com/?p=3',
+			},
+		] );
+	} );
+
+	it( 'should link the row of a post to the permalink of the post rather than to its page path', async () => {
+		// A post of a custom post type has a permalink by its query var, such as
+		// `/?book=dune`, which differs from the page path the report records.
+		fetchMock.get( postsRequest, {
+			body: createBreakdownReport(
+				[ [ '/?post_type=book&p=5', 10 ] ],
+				200
+			),
+			status: 200,
+		} );
+		fetchMock.get( postsByPagePathEndpoint, {
+			body: {
+				'/?post_type=book&p=5': {
+					id: 5,
+					title: 'Dune',
+					url: 'http://example.com/?book=dune',
+				},
+			},
+			status: 200,
+		} );
+
+		const { result, waitForRegistry } = renderHook(
+			() => usePlainPermalinkTopPostsColumn(),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current.rows ).toEqual( [
+			{
+				label: 'Dune',
+				value: '10',
+				secondaryValue: '(5.0%)',
+				url: 'http://example.com/?book=dune',
 			},
 		] );
 	} );
@@ -344,7 +387,33 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
 	} );
 
-	it( 'should be loading, and should request no report, while the setting to include products loads', async () => {
+	it( 'should be loading, with no rows, and should request neither the report nor the posts, while the Traffic Overview widget is out of view', async () => {
+		fetchMock.get( postsRequest, {
+			body: createBreakdownReport( [ [ '/?p=1', 40 ] ], 200 ),
+			status: 200,
+		} );
+		fetchMock.get( postsByPagePathEndpoint, {
+			body: { '/?p=1': travelTips },
+			status: 200,
+		} );
+
+		const { result } = renderHook(
+			() => usePlainPermalinkTopPostsColumn(),
+			{ registry, inView: false }
+		);
+
+		await waitForDefaultTimeouts();
+
+		expect( fetchMock ).not.toHaveFetched( postsRequest );
+		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
+		expect( result.current ).toMatchObject( {
+			rows: [],
+			loading: true,
+			zeroState: undefined,
+		} );
+	} );
+
+	it( 'should be loading, and should not request a report, while the setting to include products loads', async () => {
 		// The registry from `beforeEach()` has the Analytics settings, so this
 		// test builds one without them.
 		registry = createTestRegistry();

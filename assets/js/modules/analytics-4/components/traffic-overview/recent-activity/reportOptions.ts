@@ -214,7 +214,8 @@ function getColumnReportOptions(
  * and the product post type with the product's ID in either order, such as
  * `/?post_type=product&p=5`. It doesn't match the shop or a product search,
  * which send `post_type=product` with no ID. Analytics reads the pattern as
- * RE2, which has no lookaround and no backreference.
+ * RE2, which has no lookahead, so each order of `post_type` and `p` is an
+ * alternative of its own.
  *
  * @since n.e.x.t
  *
@@ -241,8 +242,8 @@ function getProductQueryStringPattern(
 }
 
 /**
- * Builds the filter that removes the product pages from the report of views for
- * each page.
+ * Builds the filter that removes the product pages from a report of views for
+ * each page path, or for each URL with its query string on plain permalinks.
  *
  * @since n.e.x.t
  *
@@ -326,10 +327,10 @@ export function getTopPostsReportOptions(
  * Builds the options of the report of views for each URL on plain permalinks,
  * where every post shares the path of the home page.
  *
- * The report reads each URL with its query string, such as `/?p=123`. Many
- * URLs can show one post, such as `/?p=123&utm_source=newsletter`, so the
- * report has the 1,000 URLs with the most views rather than as many as a
- * column shows.
+ * The report reads each URL with its query string, such as `/?p=123`. It asks
+ * for 1,000 URLs, many more than the `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page
+ * paths the column looks up, because many URLs can show one post, such as
+ * `/?p=123&utm_source=newsletter`, and some URLs show no single post.
  *
  * @since n.e.x.t
  *

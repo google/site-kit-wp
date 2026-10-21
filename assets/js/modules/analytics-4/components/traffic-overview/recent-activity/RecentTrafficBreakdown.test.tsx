@@ -817,8 +817,13 @@ describe( 'RecentTrafficBreakdown', () => {
 		 * and the request for the post of each page path.
 		 *
 		 * Each request is answered with its default response unless `responses`
-		 * has another response for it. The default answer to the request for
-		 * the posts is `postsByPagePath`, which has no post for `/`.
+		 * has another response for it. The default answer to the request for the
+		 * post of each page path is the `postsByPagePath` fixture, which has no
+		 * post for `/`.
+		 *
+		 * A route registered earlier answers first, so a test that needs a
+		 * request to fail once, or to wait, registers that route before it calls
+		 * `mockPlainPermalinkRequests()`.
 		 *
 		 * @since n.e.x.t
 		 *
@@ -939,6 +944,39 @@ describe( 'RecentTrafficBreakdown', () => {
 			} );
 		} );
 
+		it( 'should render a report error in the posts column, and the rows of the other two columns, when the report of the views fails', async () => {
+			mockPlainPermalinkRequests( {
+				posts: { body: errorResponse, status: 500 },
+			} );
+			mockReportRequests();
+
+			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+				registry,
+			} );
+
+			await waitForRegistry();
+
+			expect( console ).toHaveErrored();
+			expect(
+				getColumn( 'Top posts by visitors' ).querySelector(
+					'.googlesitekit-table-tile__error'
+				)
+			).toHaveTextContent( 'Test error message' );
+			expect(
+				getRowTexts( getColumn( 'Top channels by visitors' ) )
+			).toEqual( [
+				[ 'Direct', '82(68.3%)' ],
+				[ 'Organic Search', '21(17.5%)' ],
+				[ 'Referral', '12(10.0%)' ],
+			] );
+			expect(
+				getRowTexts( getColumn( 'Top referrals by visitors' ) )
+			).toEqual( [
+				[ 'news.example.com', '8(66.7%)' ],
+				[ 'forum.example.com', '4(33.3%)' ],
+			] );
+		} );
+
 		it( 'should request a failed report of the views again, and render its rows, when "Retry" is clicked in the posts column', async () => {
 			fetchMock.getOnce( plainPermalinkPostsRequest, {
 				body: errorResponse,
@@ -983,7 +1021,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should render the loading state in the posts column, rather than the page paths, while the posts load', async () => {
+		it( 'should render the loading state in the posts column, rather than the page paths, and the rows of the other two columns, while the posts load', async () => {
 			freezeFetch( postsByPagePathEndpoint );
 			mockPlainPermalinkRequests();
 			mockReportRequests();
@@ -1005,6 +1043,19 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect(
 				within( postsColumn ).queryByText( '/?p=1' )
 			).not.toBeInTheDocument();
+			expect(
+				getRowTexts( getColumn( 'Top channels by visitors' ) )
+			).toEqual( [
+				[ 'Direct', '82(68.3%)' ],
+				[ 'Organic Search', '21(17.5%)' ],
+				[ 'Referral', '12(10.0%)' ],
+			] );
+			expect(
+				getRowTexts( getColumn( 'Top referrals by visitors' ) )
+			).toEqual( [
+				[ 'news.example.com', '8(66.7%)' ],
+				[ 'forum.example.com', '4(33.3%)' ],
+			] );
 		} );
 
 		it( 'should render "No data to display: your posts haven’t received any visitors yet" in the posts column when the URLs had views but none showed a single post', async () => {

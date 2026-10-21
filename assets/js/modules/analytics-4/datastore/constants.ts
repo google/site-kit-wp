@@ -41,6 +41,7 @@ export const FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS =
 
 /**
  * The maximum number of page paths that one `posts-by-page-path` request can look up.
+ *
  * `Get_Posts_By_Page_Path::MAX_PAGE_PATHS` sets the same limit on the server,
  * which answers a longer list with a `400` error.
  *

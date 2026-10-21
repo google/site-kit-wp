@@ -1171,4 +1171,19 @@ class WP_Query_FactoryTest extends TestCase {
 
 		$this->assertSame( $GLOBALS['wp']->public_query_vars, WP_Query_Factory::get_public_query_vars(), 'The public query vars should be the ones WordPress read the main request with.' );
 	}
+
+	public function test_get_public_query_vars__returns_a_list_after_a_filter_removes_a_query_var() {
+		// `array_diff()` keeps the keys, so removing `p`, the second query var
+		// WordPress registers, leaves a gap after the first key.
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				return array_diff( $query_vars, array( 'p' ) );
+			}
+		);
+
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
+
+		$this->assertSame( range( 0, count( $public_query_vars ) - 1 ), array_keys( $public_query_vars ), 'The public query vars should have no gap in their keys, so `wp_json_encode()` writes them as a list rather than an object.' );
+	}
 }

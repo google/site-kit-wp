@@ -11,6 +11,7 @@
 namespace Google\Site_Kit\Modules\Analytics_4\Report;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use Google\Site_Kit\Modules\Analytics_4\Report;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DateRange as Google_Service_AnalyticsData_DateRange;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\Row as Google_Service_AnalyticsData_Row;
@@ -120,6 +121,85 @@ class Response extends Report {
 		$response->setRowCount( $new_rows_count );
 
 		return $response;
+	}
+
+	/**
+	 * Removes each query arg that WordPress doesn't read from the URLs of a report that a view-only user gets.
+	 *
+	 * A view-only user reads a report with the module owner's access, and a URL's
+	 * query string can hold a secret, such as the order `key` of a WooCommerce
+	 * order received page. So each `pagePathPlusQueryString` value keeps only the
+	 * public query vars, such as `p` and `page_id`, which is all the dashboard
+	 * reads from it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $response The report response, as `parse_response()` returns it.
+	 * @return mixed The response, with each `pagePathPlusQueryString` value cut to its public query vars.
+	 */
+	public function remove_private_query_args( $response ) {
+		if ( ! $response instanceof Google_Service_AnalyticsData_RunReportResponse ) {
+			return $response;
+		}
+
+		$dimension_indexes = array();
+
+		foreach ( (array) $response->getDimensionHeaders() as $index => $dimension_header ) {
+			if ( 'pagePathPlusQueryString' === $dimension_header->getName() ) {
+				$dimension_indexes[] = $index;
+			}
+		}
+
+		if ( empty( $dimension_indexes ) ) {
+			return $response;
+		}
+
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
+
+		foreach ( (array) $response->getRows() as $row ) {
+			$dimension_values = $row->getDimensionValues();
+
+			foreach ( $dimension_indexes as $index ) {
+				if ( isset( $dimension_values[ $index ] ) ) {
+					$dimension_values[ $index ]->setValue(
+						$this->get_url_with_public_query_vars( (string) $dimension_values[ $index ]->getValue(), $public_query_vars )
+					);
+				}
+			}
+		}
+
+		return $response;
+	}
+
+	/**
+	 * Gets a URL with only the query args that are public query vars.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $url               The URL, its path and its query string, such as `/?p=123&key=wc_order_1`.
+	 * @param array  $public_query_vars The query vars that WordPress reads from a URL.
+	 * @return string The URL with its public query vars alone, such as `/?p=123`.
+	 */
+	private function get_url_with_public_query_vars( $url, array $public_query_vars ) {
+		$query_start = strpos( $url, '?' );
+
+		if ( false === $query_start ) {
+			return $url;
+		}
+
+		$query_args = array_filter(
+			explode( '&', substr( $url, $query_start + 1 ) ),
+			function ( $query_arg ) use ( $public_query_vars ) {
+				// A list such as `post_type[]=book` names the query var `post_type`.
+				$name = preg_replace( '/\[.*$/', '', urldecode( explode( '=', $query_arg, 2 )[0] ) );
+
+				return in_array( $name, $public_query_vars, true );
+			}
+		);
+
+		$path = substr( $url, 0, $query_start );
+
+		return empty( $query_args ) ? $path : $path . '?' . implode( '&', $query_args );
 	}
 
 	/**

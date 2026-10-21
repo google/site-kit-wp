@@ -284,7 +284,7 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 } );
 
 describe( 'getRowCounts', () => {
-	it( 'should return the count of every key, beyond the rows a column shows, most first', () => {
+	it( 'should return the count of every key, most first, not only the first three', () => {
 		const report = createBreakdownReport( [
 			[ '/a/', 1 ],
 			[ '/b/', 4 ],
@@ -302,18 +302,49 @@ describe( 'getRowCounts', () => {
 		] );
 	} );
 
-	it( 'should add up the counts of the rows for which `getRowKey` returns the same key, and leave out the rows for which it returns `null`', () => {
+	it( 'should add up the counts of the rows for which `getRowKey` returns the same key', () => {
 		const report = createBreakdownReport( [
 			[ '/?p=1', 3 ],
-			[ '/?s=hats', 9 ],
 			[ '/index.php?p=1', 2 ],
 		] );
 
 		expect(
 			getRowCounts( report, ( value ) =>
-				value.includes( 'p=1' ) ? '/?p=1' : null
+				value.includes( 'p=1' ) ? '/?p=1' : value
 			)
 		).toEqual( [ { key: '/?p=1', count: 5 } ] );
+	} );
+
+	it( 'should leave out the rows for which `getRowKey` returns `null`', () => {
+		const report = createBreakdownReport( [
+			[ '/?p=1', 3 ],
+			[ '/?s=hats', 9 ],
+		] );
+
+		expect(
+			getRowCounts( report, ( value ) =>
+				value === '/?s=hats' ? null : value
+			)
+		).toEqual( [ { key: '/?p=1', count: 3 } ] );
+	} );
+
+	it( 'should sort the keys by the sum of their counts, rather than by their first row', () => {
+		// The first row of `/?p=1` has fewer views than `/`, but its two rows
+		// add up to more.
+		const report = createBreakdownReport( [
+			[ '/', 20 ],
+			[ '/?p=1', 15 ],
+			[ '/?p=1&utm_source=newsletter', 15 ],
+		] );
+
+		expect(
+			getRowCounts( report, ( value ) =>
+				value.startsWith( '/?p=1' ) ? '/?p=1' : value
+			)
+		).toEqual( [
+			{ key: '/?p=1', count: 30 },
+			{ key: '/', count: 20 },
+		] );
 	} );
 
 	it( 'should not return a key when there is no report', () => {

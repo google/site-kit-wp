@@ -59,7 +59,7 @@ function getTenthPercentages( counts: number[], total: number ): number[] {
 }
 
 interface RowCount {
-	/** The key the rows add up under, such as the dimension value or the ID of a post. */
+	/** The key the rows add up under, such as the dimension value, or the most viewed page path of a post, such as `/?p=1`. */
 	key: string;
 	/** The sum of the counts of the rows with the key. */
 	count: number;
@@ -109,10 +109,10 @@ export function getRowCounts(
  * Builds the rows a column of the Recent activity tab's traffic breakdown
  * renders from its report.
  *
- * The rows of the report add up under their keys, by `getRowCounts()`, up to
- * `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` keys. Each share is a percentage of the
- * report's total, which also counts the values that the report's `limit` or
- * `getRowKey` leaves out.
+ * It adds up the rows of the report under their keys with `getRowCounts()`,
+ * and keeps the `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` keys with the highest
+ * counts. Each share is a percentage of the report's total, which also counts
+ * the values that the report's `limit` or `getRowKey` leaves out.
  *
  * @since n.e.x.t
  *

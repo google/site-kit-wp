@@ -22,6 +22,11 @@
 import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
+ * Internal dependencies
+ */
+import { getPageURL } from './getPageURL';
+
+/**
  * Gets the page path that WordPress reads from a URL of an Analytics report, on a site with plain permalinks.
  *
  * On plain permalinks, which have no permalink structure, WordPress serves
@@ -30,50 +35,34 @@ import { addQueryArgs, getQueryArgs } from '@wordpress/url';
  * the order of the URL. The URLs of one post with different campaign query
  * args, such as `utm_source`, then share one page path.
  *
- * A URL at any other path isn't a WordPress page, such as a page of another
- * app on the same Analytics property. So the function returns `null` for it.
+ * WordPress also serves the home path at `index.php`, so the function reads
+ * `/index.php?p=123` as `/?p=123`. A URL at any other path isn't a WordPress
+ * page, such as a page of another app on the same Analytics property, so the
+ * function returns `null` for it.
  *
  * @since n.e.x.t
  *
  * @param {string}        url             The URL of the report row, its path and its query string, such as `/?p=123&utm_source=newsletter`.
  * @param {string}        siteURL         The URL of the site, such as `https://example.com/blog/`, whose path is the home path.
  * @param {Array<string>} publicQueryVars The query vars that WordPress reads from a URL, such as `p` and `page_id`.
- * @return {(string|null)} The page path, such as `/?p=123`, or `null` where the URL isn't a page at the home path.
+ * @return {(string|null)} The page path, such as `/?p=123`, or `null` where the URL isn't at the home path of the site, with or without `index.php`.
  */
 export function getPlainPermalinkPagePath(
 	url: string,
 	siteURL: string,
 	publicQueryVars: string[]
 ): string | null {
-	// Analytics can record a value that isn't a path, such as `(not set)`.
-	if ( ! url.startsWith( '/' ) ) {
+	const pageURL = getPageURL( siteURL, url );
+
+	if ( pageURL === undefined ) {
 		return null;
 	}
 
-	let site: URL;
-	let page: URL;
+	const sitePath = new URL( siteURL ).pathname;
+	const homePath = sitePath.endsWith( '/' ) ? sitePath : `${ sitePath }/`;
+	const { pathname } = new URL( pageURL );
 
-	try {
-		site = new URL( siteURL );
-		page = new URL( url, site );
-	} catch {
-		return null;
-	}
-
-	// A spam path, such as `//example.org/` or `/\example.org/`, resolves to
-	// another site.
-	if ( page.origin !== site.origin ) {
-		return null;
-	}
-
-	const homePath = site.pathname.endsWith( '/' )
-		? site.pathname
-		: `${ site.pathname }/`;
-
-	if (
-		page.pathname !== homePath &&
-		page.pathname !== `${ homePath }index.php`
-	) {
+	if ( pathname !== homePath && pathname !== `${ homePath }index.php` ) {
 		return null;
 	}
 

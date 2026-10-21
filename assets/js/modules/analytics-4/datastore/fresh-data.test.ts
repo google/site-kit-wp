@@ -25,6 +25,7 @@ import { getQueryArg } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { clearCache } from '@/js/googlesitekit/api/cache';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
@@ -191,8 +192,10 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return the product post type and its query var on plain permalinks when the setting to include products is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			// The `googlesitekit_post_type` custom dimension would otherwise come
-			// first, because product URLs share no path on plain permalinks.
+			// The property has the `googlesitekit_post_type` custom dimension, and
+			// product URLs share no path on plain permalinks. So the selector would
+			// recognize products by the dimension if it didn't check for plain
+			// permalinks first.
 			provideIncludeProductsState( registry, {
 				setting: false,
 				usingPlainPermalinks: true,
@@ -1440,6 +1443,10 @@ describe( 'modules/analytics-4 fresh data', () => {
 				MODULES_ANALYTICS_4
 			).getPostsByPagePath( [ '/?p=1' ] );
 
+			// Without the cache, only the registry's state keeps the post of
+			// `/?p=1` out of the next request.
+			await clearCache();
+
 			fetchMock.getOnce( postsByPagePathEndpoint, {
 				body: { '/?page_id=2': about },
 				status: 200,
@@ -1468,7 +1475,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
 		} );
 
-		it( 'should take the post of each page path from the API cache on a new load, and request only the page paths the cache has no post for', async () => {
+		it( 'should take the post of each page path from the API cache when the page reloads, and request only the page paths the cache has no post for', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
 				body: { '/?p=1': travelTips },
 				status: 200,
@@ -1515,7 +1522,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
 		} );
 
-		it( 'should take the post of a page path from the API cache on a new load a second under an hour after its request', async () => {
+		it( 'should take the post of a page path from the API cache when the page reloads a second under an hour after its request', async () => {
 			// The API cache times its entries by `Date.now()`, not by the
 			// reference date.
 			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );
@@ -1555,7 +1562,103 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toEqual( { '/?p=1': travelTips } );
 		} );
 
-		it( 'should request the post of a page path again on a new load an hour after its request', async () => {
+		it( 'should take the `null` of a page path that shows no single post from the API cache when the page reloads', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?s=hats': null },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?s=hats' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?s=hats' ] );
+
+			// A new registry has no posts in its state, as after a reload of the
+			// page, while the API cache keeps its entries.
+			const reloadedRegistry = createTestRegistry();
+
+			reloadedRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?s=hats' ] );
+
+			await untilResolved(
+				reloadedRegistry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?s=hats' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect(
+				reloadedRegistry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?s=hats' ] )
+			).toEqual( { '/?s=hats': null } );
+		} );
+
+		it( 'should return the posts of each list of page paths when two requests for them answer out of order', async () => {
+			let answerFirstRequest: ( () => void ) | undefined;
+
+			// The first request answers only after the second one, so its post
+			// of `/?p=1` reaches the state last.
+			fetchMock.getOnce(
+				postsByPagePathEndpoint,
+				() =>
+					new Promise( ( resolve ) => {
+						answerFirstRequest = () =>
+							resolve( {
+								body: { '/?p=1': travelTips },
+								status: 200,
+							} );
+					} )
+			);
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips, '/?page_id=2': about },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			answerFirstRequest?.();
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1' ] )
+			).toEqual( { '/?p=1': travelTips } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
+			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1', '/?page_id=2' ],
+					] )
+			).toBeUndefined();
+		} );
+
+		it( 'should request the post of a page path again when the page reloads an hour after its request', async () => {
 			// The API cache times its entries by `Date.now()`, not by the
 			// reference date.
 			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );

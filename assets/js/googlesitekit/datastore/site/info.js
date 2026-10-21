@@ -1008,9 +1008,13 @@ export const selectors = {
 	/**
 	 * Gets the query var of the product post type, such as `product` in `/?product=hoodie`.
 	 *
+	 * The query var is `null` when:
+	 * - the site has no product post type;
+	 * - the product post type has no query var.
+	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(string|null|undefined)} The query var, or `null` when the site has no product post type or the post type has no query var. Returns `undefined` if not loaded.
+	 * @return {(string|null|undefined)} The query var, or `null` in each case above. Returns `undefined` if not loaded.
 	 */
 	getProductQueryVar: getSiteInfoProperty( 'productQueryVar' ),
 
@@ -1028,7 +1032,7 @@ export const selectors = {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return {(Array.<string>|undefined)} The public query vars, with the query var of each public post type. Returns `undefined` if not loaded.
+	 * @return {(Array.<string>|undefined)} The public query vars, with the query var of each post type that `is_post_type_viewable()` accepts. Returns `undefined` if not loaded.
 	 */
 	getPublicQueryVars: getSiteInfoProperty( 'publicQueryVars' ),
 

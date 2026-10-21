@@ -27,7 +27,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 			getPlainPermalinkPagePath( '/?p=1', 'https://example.com/', [
 				'p',
 			] )
-		).toBe( '/?p=1' );
+		).toEqual( '/?p=1' );
 	} );
 
 	it( 'should leave out each query arg that is not a public query var', () => {
@@ -37,7 +37,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/',
 				[ 'p' ]
 			)
-		).toBe( '/?p=1' );
+		).toEqual( '/?p=1' );
 	} );
 
 	it( 'should keep the public query vars in the order of the URL', () => {
@@ -47,7 +47,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/',
 				[ 'p', 'post_type' ]
 			)
-		).toBe( '/?post_type=book&p=5' );
+		).toEqual( '/?post_type=book&p=5' );
 	} );
 
 	it( 'should read `index.php` at the home path as the home path', () => {
@@ -57,16 +57,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/',
 				[ 'p' ]
 			)
-		).toBe( '/?p=1' );
-	} );
-
-	it( 'should keep the `page` query var of a post split into pages', () => {
-		expect(
-			getPlainPermalinkPagePath( '/?p=1&page=2', 'https://example.com/', [
-				'p',
-				'page',
-			] )
-		).toBe( '/?p=1&page=2' );
+		).toEqual( '/?p=1' );
 	} );
 
 	it( 'should return the home path for a URL with no public query var', () => {
@@ -76,7 +67,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/',
 				[ 'p' ]
 			)
-		).toBe( '/' );
+		).toEqual( '/' );
 	} );
 
 	it( 'should leave out a public query var with an empty value, which WordPress ignores', () => {
@@ -86,7 +77,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/',
 				[ 'p', 'page_id' ]
 			)
-		).toBe( '/?page_id=2' );
+		).toEqual( '/?page_id=2' );
 	} );
 
 	it( 'should keep the home path of a site in a subdirectory, since a page path starts at the root of the domain', () => {
@@ -96,7 +87,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/blog/',
 				[ 'p' ]
 			)
-		).toBe( '/blog/?p=1' );
+		).toEqual( '/blog/?p=1' );
 	} );
 
 	it( 'should return `null` for a URL outside the home path of a site in a subdirectory', () => {
@@ -124,7 +115,7 @@ describe( 'getPlainPermalinkPagePath', () => {
 				'https://example.com/blog',
 				[ 'p' ]
 			)
-		).toBe( '/blog/?p=1' );
+		).toEqual( '/blog/?p=1' );
 	} );
 
 	it( 'should return `null` for a value that is not a path', () => {

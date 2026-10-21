@@ -2033,7 +2033,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_datapoints__freshData() {
+	public function test_get_datapoints__fresh_data_enabled() {
 		$this->enable_feature( 'freshData' );
 
 		$this->assertContains(
@@ -2043,7 +2043,7 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
-	public function test_get_datapoints__freshData_disabled() {
+	public function test_get_datapoints__fresh_data_disabled() {
 		$this->assertNotContains(
 			'posts-by-page-path',
 			$this->analytics->get_datapoints(),

@@ -298,7 +298,9 @@ class RequestHelpers {
 		);
 
 		// On plain permalinks, the posts column of the Recent activity tab tells
-		// posts apart by their query string, which `pagePath` leaves out.
+		// posts apart by their query string, which `pagePath` leaves out. A
+		// view-only user gets only the public query vars of each URL, because
+		// `Response::remove_private_query_args()` removes the rest.
 		// TODO: #13568 -- Remove the `freshData` check when the flag is removed.
 		if ( Feature_Flags::enabled( 'freshData' ) ) {
 			$shareable_dimensions[] = 'pagePathPlusQueryString';

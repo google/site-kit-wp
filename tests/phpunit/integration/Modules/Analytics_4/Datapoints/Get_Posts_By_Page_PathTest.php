@@ -11,11 +11,10 @@
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
 use Google\Site_Kit\Tests\TestCase;
-
-require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
 
 /**
  * @group Modules
@@ -71,6 +70,19 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 			'posts-by-page-path',
 			array( 'pagePaths' => $page_paths )
 		);
+	}
+
+	/**
+	 * Loads the WooCommerce function fakes, such as `wc_get_page_id()`.
+	 *
+	 * Every caller needs the `runInSeparateProcess` annotation, because PHP holds
+	 * the global `wc_get_page_id()` function for the rest of the process once the
+	 * fake declares it.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function activate_woocommerce() {
+		require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
 	}
 
 	/**
@@ -176,6 +188,23 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		);
 	}
 
+	public function test_create_request__returns_null_for_an_attachment_of_a_draft() {
+		$post_id       = $this->factory()->post->create( array( 'post_status' => 'draft' ) );
+		$attachment_id = $this->factory()->attachment->create(
+			array(
+				'file'           => 'map.jpg',
+				'post_parent'    => $post_id,
+				'post_title'     => 'Map',
+				'post_mime_type' => 'image/jpeg',
+			)
+		);
+		$page_path     = "/?attachment_id=$attachment_id";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), 'The attachment page of a draft should map to no post, because the attachment takes the status of its parent post.' );
+	}
+
 	public function test_create_request__maps_each_url_of_one_post_to_that_post() {
 		// The "Page Break" block saves `<!--nextpage-->`, which splits the post
 		// into two pages, so `page=2` shows its second page.
@@ -232,6 +261,16 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		);
 		$page_path   = "/?page_id=$checkout_id&order-received=123";
 
+		// WooCommerce adds each endpoint, such as `order-received`, as a public
+		// query var through the `query_vars` filter.
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'order-received';
+				return $query_vars;
+			}
+		);
+
 		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
 		$this->assertSame(
@@ -251,6 +290,9 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 	}
 
 	public function test_create_request__returns_null_for_the_posts_page() {
+		// The posts page lists this post, so only the check for a single post
+		// can make the page path map to no post.
+		$this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
 		$homepage_id   = $this->factory()->post->create( array( 'post_type' => 'page' ) );
 		$posts_page_id = $this->factory()->post->create( array( 'post_type' => 'page' ) );
 		update_option( 'show_on_front', 'page' );
@@ -263,7 +305,12 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		$this->assertSame( array( $page_path => null ), $request(), 'The posts page should map to no post, because it lists the latest posts.' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_create_request__returns_null_for_the_woocommerce_shop_page() {
+		$this->activate_woocommerce();
+
 		$shop_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Shop',
@@ -278,7 +325,12 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		$this->assertSame( array( $page_path => null ), $request(), 'The WooCommerce shop page should map to no post, because WooCommerce shows the product archive there.' );
 	}
 
+	/**
+	 * @runInSeparateProcess
+	 */
 	public function test_create_request__returns_null_for_the_woocommerce_shop_page_as_the_static_homepage() {
+		$this->activate_woocommerce();
+
 		$shop_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Shop',
@@ -297,9 +349,25 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 	/**
 	 * @dataProvider data_page_paths_of_no_single_post
 	 *
-	 * @param string $page_path The page path.
+	 * @param string $page_path A page path that shows no single post, such as `/?s=hats`.
 	 */
 	public function test_create_request__returns_null_for_a_page_path_that_shows_no_single_post( $page_path ) {
+		// The search, both archives and the author archive each list one of
+		// these posts, so only the check for a single post can make the page
+		// path map to no post.
+		$this->factory()->post->create(
+			array(
+				'post_title'  => 'Summer hats',
+				'post_author' => 1,
+			)
+		);
+		$this->factory()->post->create(
+			array(
+				'post_title' => 'Hoodie',
+				'post_type'  => 'product',
+			)
+		);
+
 		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
 		$this->assertSame( array( $page_path => null ), $request(), "The page path $page_path should map to no post." );
@@ -310,14 +378,60 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 			'search'           => array( '/?s=hats' ),
 			'category archive' => array( '/?cat=1' ),
 			'product archive'  => array( '/?post_type=product' ),
+			'author archive'   => array( '/?author=1' ),
 			'missing post'     => array( '/?p=999999' ),
+		);
+	}
+
+	public function test_create_request__runs_no_posts_query_for_a_search() {
+		$this->factory()->post->create( array( 'post_title' => 'Summer hats' ) );
+
+		$posts_queries = 0;
+
+		add_filter(
+			'posts_request',
+			function ( $sql ) use ( &$posts_queries ) {
+				$posts_queries++;
+				return $sql;
+			}
+		);
+
+		$request = $this->datapoint->create_request( $this->data_request( array( '/?s=hats' ) ) );
+		$request();
+
+		$this->assertSame( 0, $posts_queries, 'A search should run no posts query, because it shows no single post.' );
+	}
+
+	/**
+	 * Other test files load the WooCommerce function fakes as the suite loads,
+	 * and a separate process copies the files the suite loaded unless it keeps
+	 * no global state. So this test keeps none, to run with no `wc_get_page_id()`.
+	 *
+	 * @runInSeparateProcess
+	 * @preserveGlobalState disabled
+	 */
+	public function test_create_request__returns_a_page_with_woocommerce_inactive() {
+		$page_id   = $this->factory()->post->create(
+			array(
+				'post_title' => 'About',
+				'post_type'  => 'page',
+			)
+		);
+		$page_path = "/?page_id=$page_id";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame(
+			array( $page_path => $this->post_data( $page_id, 'About' ) ),
+			$request(),
+			'A page should map to that page where WooCommerce is inactive, with no `wc_get_page_id()` function.'
 		);
 	}
 
 	/**
 	 * @dataProvider data_unpublished_post_statuses
 	 *
-	 * @param string $post_status The post status.
+	 * @param string $post_status A status other than `publish`, such as `draft`.
 	 */
 	public function test_create_request__returns_null_for_a_post_that_is_not_published( $post_status ) {
 		$post_id   = $this->factory()->post->create(
@@ -407,33 +521,44 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		$this->assertSame( '', $request()[ $page_path ]['title'], 'A post with no title should have an empty title.' );
 	}
 
-	public function test_create_request__throws_when_page_paths_are_missing() {
+	/**
+	 * @dataProvider data_missing_page_paths
+	 *
+	 * @param mixed $page_paths A `pagePaths` parameter with no page path, such as `null`.
+	 */
+	public function test_create_request__throws_when_page_paths_are_missing( $page_paths ) {
 		$this->expectException( Missing_Required_Param_Exception::class );
 
-		$this->datapoint->create_request( $this->data_request( null ) );
+		$this->datapoint->create_request( $this->data_request( $page_paths ) );
+	}
+
+	public function data_missing_page_paths() {
+		return array(
+			'no parameter'  => array( null ),
+			'an empty list' => array( array() ),
+		);
 	}
 
 	/**
 	 * @dataProvider data_invalid_page_paths
 	 *
-	 * @param string $page_paths_label What is wrong with the parameter, for the assertion message.
-	 * @param mixed  $page_paths       The `pagePaths` parameter.
+	 * @param mixed $page_paths A `pagePaths` parameter that isn't a list of page paths, such as `/?p=1`.
 	 */
-	public function test_create_request__returns_an_error_for_invalid_page_paths( $page_paths_label, $page_paths ) {
-		$error = $this->datapoint->create_request( $this->data_request( $page_paths ) );
+	public function test_create_request__throws_for_invalid_page_paths( $page_paths ) {
+		$this->expectException( Invalid_Param_Exception::class );
+		$this->expectExceptionMessage( 'Invalid parameter: pagePaths.' );
 
-		$this->assertWPErrorWithMessage( 'Request parameter pagePaths must be a list of at most 50 page paths, each starting with “/”.', $error );
-		$this->assertSame( array( 'status' => 400 ), $error->get_error_data(), "The error for $page_paths_label should have the status 400." );
+		$this->datapoint->create_request( $this->data_request( $page_paths ) );
 	}
 
 	public function data_invalid_page_paths() {
 		return array(
-			'a string'                   => array( 'a string', '/?p=1' ),
-			'a value that is not a path' => array( 'a value that is not a path', array( '?p=1' ) ),
+			'a string'                   => array( '/?p=1' ),
+			'a value that is not a path' => array( array( '?p=1' ) ),
 			// A query string can send a list in place of a page path, such as
 			// `pagePaths[0][]=/?p=1`.
-			'a page path that is a list' => array( 'a page path that is a list', array( array( '/?p=1' ) ) ),
-			'51 page paths'              => array( '51 page paths', array_fill( 0, 51, '/?p=1' ) ),
+			'a page path that is a list' => array( array( array( '/?p=1' ) ) ),
+			'51 page paths'              => array( array_fill( 0, 51, '/?p=1' ) ),
 		);
 	}
 
@@ -445,11 +570,11 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		$this->assertCount( 50, $request(), 'A request should look up each of 50 page paths, because 50 is the most one request can look up.' );
 	}
 
-	public function test_is_shareable() {
+	public function test_is_shareable__returns_true() {
 		$this->assertTrue( $this->datapoint->is_shareable(), 'The datapoint should be shareable, so a view-only user sees the same rows.' );
 	}
 
-	public function test_parse_response() {
+	public function test_parse_response__returns_the_response_unchanged() {
 		$response = array( '/?p=1' => null );
 
 		$this->assertSame( $response, $this->datapoint->parse_response( $response, $this->data_request( array( '/?p=1' ) ) ), 'The response should be returned unchanged.' );

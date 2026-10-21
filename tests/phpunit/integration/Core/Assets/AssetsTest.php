@@ -544,6 +544,20 @@ class AssetsTest extends TestCase {
 		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the product post type has no query var.' );
 	}
 
+	public function test_base_data__product_query_var__custom_query_var() {
+		register_post_type(
+			'product',
+			array(
+				'public'    => true,
+				'query_var' => 'item',
+			)
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertSame( 'item', $data['productQueryVar'], '`productQueryVar` should be the query var the product post type registers, such as `item` in `/?item=hoodie`, rather than the name of the post type.' );
+	}
+
 	public function test_base_data__product_query_var__no_product_post_type() {
 		$data = $this->get_inline_base_data();
 
@@ -573,6 +587,22 @@ class AssetsTest extends TestCase {
 
 		$this->assertContains( 'p', $data['publicQueryVars'], '`publicQueryVars` should include `p`, which WordPress registers.' );
 		$this->assertContains( 'book', $data['publicQueryVars'], '`publicQueryVars` should include the query var of a public custom post type.' );
+	}
+
+	public function test_base_data__public_query_vars__query_vars_filter() {
+		// WooCommerce adds each endpoint, such as `order-received`, as a public
+		// query var through the `query_vars` filter.
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'order-received';
+				return $query_vars;
+			}
+		);
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertContains( 'order-received', $data['publicQueryVars'], '`publicQueryVars` should include a query var that a plugin adds through the `query_vars` filter.' );
 	}
 
 	public function test_base_data__woocommerce_not_installed() {

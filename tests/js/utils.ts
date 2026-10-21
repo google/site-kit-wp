@@ -201,6 +201,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
+ * @since n.e.x.t Provides `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.

@@ -230,8 +230,9 @@ describe( 'getPlainPermalinkTopPostsReportOptions', () => {
 	 * Gets the pattern of the filter that leaves the product URLs out of the
 	 * report, as a regular expression.
 	 *
-	 * Analytics reads the pattern as RE2, which reads it the same way as
-	 * JavaScript, because it has no lookaround and no backreference.
+	 * Analytics reads the pattern as RE2. The pattern has no lookaround and no
+	 * backreference, which RE2 lacks, so a JavaScript `RegExp` reads it the same
+	 * way.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -302,38 +303,78 @@ describe( 'getPlainPermalinkTopPostsReportOptions', () => {
 		} );
 	} );
 
-	it( 'should build a product filter that matches each URL of a single product', () => {
-		const productPattern = getProductPattern( 'product' );
-
-		expect( productPattern.test( '/?product=hoodie' ) ).toBe( true );
+	it( 'should build a product filter that matches the URL of a product by its query var', () => {
 		expect(
-			productPattern.test( '/?product=hoodie&attribute_pa_color=red' )
-		).toBe( true );
-		expect( productPattern.test( '/?post_type=product&p=5' ) ).toBe( true );
-		expect( productPattern.test( '/?p=5&post_type=product' ) ).toBe( true );
-		expect(
-			productPattern.test( '/?post_type=product&utm_source=x&p=5' )
+			getProductPattern( 'product' ).test( '/?product=hoodie' )
 		).toBe( true );
 	} );
 
-	it( 'should build a product filter that matches neither the shop, a product search, a product category, another post type nor another query var', () => {
-		const productPattern = getProductPattern( 'product' );
+	it( 'should build a product filter that matches the URL of a product with another query arg after its query var', () => {
+		expect(
+			getProductPattern( 'product' ).test(
+				'/?product=hoodie&attribute_pa_color=red'
+			)
+		).toBe( true );
+	} );
 
-		expect( productPattern.test( '/?post_type=product' ) ).toBe( false );
-		expect( productPattern.test( '/?s=hats&post_type=product' ) ).toBe(
-			false
-		);
-		expect( productPattern.test( '/?product_cat=hats' ) ).toBe( false );
-		expect( productPattern.test( '/?post_type=products&p=5' ) ).toBe(
-			false
-		);
-		expect( productPattern.test( '/?p=5&post_type=products' ) ).toBe(
-			false
-		);
-		expect( productPattern.test( '/?featured_product=hoodie' ) ).toBe(
-			false
-		);
-		expect( productPattern.test( '/?p=5' ) ).toBe( false );
+	it( 'should build a product filter that matches the URL of a product by its post type and then its ID', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?post_type=product&p=5' )
+		).toBe( true );
+	} );
+
+	it( 'should build a product filter that matches the URL of a product by its ID and then its post type', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?p=5&post_type=product' )
+		).toBe( true );
+	} );
+
+	it( 'should build a product filter that matches the URL of a product with another query arg between its post type and its ID', () => {
+		expect(
+			getProductPattern( 'product' ).test(
+				'/?post_type=product&utm_source=x&p=5'
+			)
+		).toBe( true );
+	} );
+
+	it( 'should build a product filter that does not match the shop', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?post_type=product' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a product search', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?s=hats&post_type=product' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a product category', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?product_cat=hats' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a post of a post type whose name starts with the product post type, by its post type and then its ID', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?post_type=products&p=5' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a post of a post type whose name starts with the product post type, by its ID and then its post type', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?p=5&post_type=products' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a query var that ends with the product query var', () => {
+		expect(
+			getProductPattern( 'product' ).test( '/?featured_product=hoodie' )
+		).toBe( false );
+	} );
+
+	it( 'should build a product filter that does not match a post by its ID alone', () => {
+		expect( getProductPattern( 'product' ).test( '/?p=5' ) ).toBe( false );
 	} );
 } );
 

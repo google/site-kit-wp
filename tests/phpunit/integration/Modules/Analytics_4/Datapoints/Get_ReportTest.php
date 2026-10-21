@@ -171,4 +171,51 @@ class Get_ReportTest extends TestCase {
 			'The datapoint should parse the response using Analytics_4_Report_Response.'
 		);
 	}
+
+	public function test_parse_response__keeps_only_the_public_query_vars_of_each_url_for_a_view_only_user() {
+		$datapoint = new Get_Report(
+			array(
+				'service'           => function () {},
+				'settings'          => $this->analytics->get_settings(),
+				'context'           => new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
+				'is_shared_request' => function () {
+					return true;
+				},
+			),
+		);
+
+		$dimension_header = new Google_Service_AnalyticsData\DimensionHeader();
+		$dimension_header->setName( 'pagePathPlusQueryString' );
+		$dimension_value = new Google_Service_AnalyticsData\DimensionValue();
+		$dimension_value->setValue( '/?p=1&key=wc_order_abc' );
+		$row = new Google_Service_AnalyticsData\Row();
+		$row->setDimensionValues( array( $dimension_value ) );
+		$response = new Google_Service_AnalyticsData_RunReportResponse();
+		$response->setDimensionHeaders( array( $dimension_header ) );
+		$response->setRows( array( $row ) );
+
+		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
+
+		$parsed_response = $datapoint->parse_response( $response, $data_request );
+
+		$this->assertSame( '/?p=1', $parsed_response->getRows()[0]->getDimensionValues()[0]->getValue(), 'A view-only user should get each URL with its public query vars alone.' );
+	}
+
+	public function test_parse_response__keeps_the_full_query_string_of_each_url_for_the_owner() {
+		$dimension_header = new Google_Service_AnalyticsData\DimensionHeader();
+		$dimension_header->setName( 'pagePathPlusQueryString' );
+		$dimension_value = new Google_Service_AnalyticsData\DimensionValue();
+		$dimension_value->setValue( '/?p=1&key=wc_order_abc' );
+		$row = new Google_Service_AnalyticsData\Row();
+		$row->setDimensionValues( array( $dimension_value ) );
+		$response = new Google_Service_AnalyticsData_RunReportResponse();
+		$response->setDimensionHeaders( array( $dimension_header ) );
+		$response->setRows( array( $row ) );
+
+		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
+
+		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
+
+		$this->assertSame( '/?p=1&key=wc_order_abc', $parsed_response->getRows()[0]->getDimensionValues()[0]->getValue(), 'The owner, who reads with their own access, should get each URL whole.' );
+	}
 }

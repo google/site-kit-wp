@@ -79,7 +79,7 @@ describe( 'usePostsByPagePath', () => {
 		} );
 	} );
 
-	it( 'should be loading, and should request no posts, while the page paths are `undefined`', async () => {
+	it( 'should be loading, and should not request the posts, while the page paths are `undefined`', async () => {
 		fetchMock.get( postsByPagePathEndpoint, { body: {}, status: 200 } );
 
 		const { result } = renderHook( () => usePostsByPagePath( undefined ), {
@@ -96,7 +96,7 @@ describe( 'usePostsByPagePath', () => {
 		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
 	} );
 
-	it( 'should return no posts, and should request none, for an empty list of page paths', async () => {
+	it( 'should return no posts, and should not send a request, for an empty list of page paths', async () => {
 		fetchMock.get( postsByPagePathEndpoint, { body: {}, status: 200 } );
 
 		const { result, waitForRegistry } = renderHook(

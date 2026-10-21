@@ -63,10 +63,11 @@ interface PlainPermalinkTopPostsColumn {
  *
  * On plain permalinks, which have no permalink structure, every post shares
  * the path of the home page, so the report reads each URL with its query
- * string. The column asks which post each of the 50 page paths with the most
- * views shows, and adds up the views of each post into one row, such as the
- * views of `/?p=1` and of `/?p=1&utm_source=newsletter`. When the request for
- * the posts fails, the column has one row for each page path instead.
+ * string. The column asks which post each page path shows, for up to
+ * `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page paths with the most views, and adds
+ * up the views of each post into one row, such as the views of `/?p=1` and of
+ * `/?p=1&utm_source=newsletter`. When the request for the posts fails, the
+ * column has one row for each page path instead.
  *
  * @since n.e.x.t
  *
@@ -89,8 +90,10 @@ export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn 
 		[]
 	);
 
-	// The options wait for the product URLs to leave out, so the report isn't
-	// requested first without its product filter.
+	// As in `TopPostsColumn`, the options stay `undefined` until
+	// `getExcludedProducts()` loads, and `useFreshDataReport()` requests no
+	// report for `undefined` options. So the report is never requested without
+	// its product filter.
 	const buildReportOptions = useCallback(
 		( dateRange: FreshDataDateRange ) =>
 			excludedProducts === undefined
@@ -115,7 +118,8 @@ export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn 
 		[ siteURL, publicQueryVars ]
 	);
 
-	// The page paths come most viewed first.
+	// `getRowCounts()` returns the page paths most viewed first, so the slice
+	// keeps the ones with the most views.
 	const pagePaths = useMemo(
 		() =>
 			report
@@ -134,8 +138,8 @@ export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn 
 
 	const rows = useMemo( () => {
 		if ( posts && pagePaths ) {
-			// The first page path of each post, its most viewed one, keys the
-			// post's row, and labels a post with no title.
+			// Each post's row takes the post's most viewed page path as its key.
+			// A post with no title shows that page path as its label.
 			const rowKeys = new Map< number, string >();
 
 			pagePaths.forEach( ( pagePath ) => {
@@ -152,7 +156,8 @@ export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn 
 
 				return post ? rowKeys.get( post.id ) ?? null : null;
 			} ).map( ( row ) => {
-				// A row's key is a page path that shows a post.
+				// `getRecentTrafficBreakdownRows()` labels each row with its key, a
+				// page path whose post is in `posts`, so the post is never `null`.
 				const post = posts[ row.label ] as PagePathPost;
 
 				return {
