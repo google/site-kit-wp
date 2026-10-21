@@ -21,27 +21,6 @@ if ( ! function_exists( 'wc_get_page_permalink' ) ) {
 	}
 }
 
-if ( ! function_exists( 'wc_get_page_id' ) ) {
-	/**
-	 * Fakes `wc_get_page_id()` for a test of code that reads a WooCommerce page
-	 * while the WooCommerce plugin is inactive.
-	 *
-	 * Like the real function, it reads the `woocommerce_{$page}_page_id` option
-	 * and runs the `woocommerce_get_{$page}_page_id` filter. A test can set
-	 * either one.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $page The WooCommerce page, such as `shop` or `myaccount`.
-	 * @return int The page ID, or `-1` when the store sets no page.
-	 */
-	function wc_get_page_id( $page ) {
-		$page_id = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option( 'woocommerce_' . $page . '_page_id' ) );
-
-		return $page_id ? absint( $page_id ) : -1;
-	}
-}
-
 if ( ! function_exists( 'wc_get_price_decimals' ) ) {
 	/**
 	 * Fakes `wc_get_price_decimals()` for a test that runs WooCommerce-aware code
@@ -114,5 +93,26 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 	// phpcs:ignore Generic.CodeAnalysis.UnusedFunctionParameter.Found -- The argument matches the WooCommerce signature, and the fake never reads it.
 	function is_wc_endpoint_url( $endpoint = false ) {
 		return false;
+	}
+}
+
+if ( ! function_exists( 'wc_get_page_id' ) ) {
+	/**
+	 * Fakes `wc_get_page_id()` for a test that runs WooCommerce-aware code
+	 * with the WooCommerce plugin inactive.
+	 *
+	 * Like the real function, it reads the `woocommerce_<page>_page_id` option
+	 * and runs the `woocommerce_get_<page>_page_id` filter. A test can set either
+	 * one, such as the shop page through the `woocommerce_shop_page_id` option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $page The WooCommerce page, such as `shop` or `checkout`.
+	 * @return int The page's ID, or `-1` where the store has no such page.
+	 */
+	function wc_get_page_id( $page ) {
+		$page_id = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option( 'woocommerce_' . $page . '_page_id' ) );
+
+		return $page_id ? absint( $page_id ) : -1;
 	}
 }

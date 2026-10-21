@@ -10,50 +10,38 @@
 
 namespace Google\Site_Kit\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
-use Google\Site_Kit\Core\Modules\Permission_Aware_Datapoint;
 use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
-use Google\Site_Kit\Core\Util\Entity_Factory;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use WP_Error;
 use WP_Post;
 
 /**
- * Class for the datapoint that gets the post each page path of an Analytics
- * report shows.
+ * Class for the datapoint that finds the post each page path shows.
  *
- * It reads a page path the way WordPress reads a request, so every URL of one
- * post, such as `/?p=123` and `/?p=123&utm_source=newsletter`, gives that post.
+ * On plain permalinks, every post shares the path of the home page, and only
+ * the query string tells posts apart, such as `/?p=123`. So the Recent activity
+ * tab reads each URL of its report with its query string, and asks this
+ * datapoint which published post WordPress shows there.
  *
  * @since n.e.x.t
  * @access private
  * @ignore
  */
-class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_Datapoint, Permission_Aware_Datapoint {
+class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_Datapoint {
 
 	/**
-	 * Context instance.
+	 * The maximum number of page paths that one request can look up.
+	 *
+	 * `usePlainPermalinkTopPostsColumn()` asks for the posts of the 50 page
+	 * paths with the most views, so a lower limit here fails its request.
 	 *
 	 * @since n.e.x.t
-	 * @var Context
+	 * @var int
 	 */
-	private $context;
-
-	/**
-	 * Constructor.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param array $definition Definition fields.
-	 */
-	public function __construct( array $definition ) {
-		parent::__construct( $definition );
-
-		$this->context = $definition['context'];
-	}
+	const MAX_PAGE_PATHS = 50;
 
 	/**
 	 * Creates a request object.
@@ -61,16 +49,25 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 	 * @since n.e.x.t
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable|WP_Error Closure returning the post or `null` of each page path, or WP_Error on invalid input.
+	 * @return callable|WP_Error Closure returning the post of each page path, or an error where `pagePaths` isn't a list of 1 to 50 page paths.
+	 * @throws Missing_Required_Param_Exception Thrown when `pagePaths` is missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
 		$page_paths = $data_request['pagePaths'];
 
-		// Each page path can run a database query.
-		if ( ! is_array( $page_paths ) || count( $page_paths ) > 50 ) {
+		if ( empty( $page_paths ) ) {
+			throw new Missing_Required_Param_Exception( 'pagePaths' );
+		}
+
+		if ( ! $this->is_valid_page_path_list( $page_paths ) ) {
 			return new WP_Error(
-				'invalid_page_paths',
-				__( 'The pagePaths request parameter must be an array of at most 50 page paths.', 'google-site-kit' ),
+				'invalid_param',
+				sprintf(
+					/* translators: 1: the request parameter, such as "pagePaths", 2: the most page paths it can have, such as 50 */
+					__( 'Request parameter %1$s must be a list of at most %2$d page paths, each starting with “/”.', 'google-site-kit' ),
+					'pagePaths',
+					self::MAX_PAGE_PATHS
+				),
 				array( 'status' => 400 )
 			);
 		}
@@ -79,92 +76,11 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 			$posts = array();
 
 			foreach ( $page_paths as $page_path ) {
-				// Analytics records every page path with a leading slash, such as `/?p=123`.
-				if ( ! is_string( $page_path ) || 0 !== strpos( $page_path, '/' ) ) {
-					continue;
-				}
-
 				$posts[ $page_path ] = $this->get_post_data( $page_path );
 			}
 
 			return $posts;
 		};
-	}
-
-	/**
-	 * Gets the published post that a visitor sees at a page path.
-	 *
-	 * The WooCommerce shop page gives no post, because WooCommerce shows the
-	 * list of products there.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string $page_path The page path with its query string, such as `/?p=123`.
-	 * @return array|null {
-	 *     The post, or `null` when the page path shows no single published post.
-	 *
-	 *     @type int    $id       The post ID.
-	 *     @type string $postType The post type, such as `post` or `product`.
-	 *     @type string $title    The title as text, such as `Don’t miss it`, or an empty string.
-	 *     @type string $url      The permalink, on the reference site URL.
-	 * }
-	 */
-	protected function get_post_data( $page_path ) {
-		$query = WP_Query_Factory::from_url( $page_path );
-
-		// The query knows whether it shows a single post before it runs, so a
-		// listing, such as an archive or a search, costs no database query.
-		if ( ! $query || ! $query->is_singular() ) {
-			return null;
-		}
-
-		// The title and the link need neither the post meta nor the terms.
-		$query->set( 'update_post_meta_cache', false );
-		$query->set( 'update_post_term_cache', false );
-		$query->get_posts();
-
-		$entity = Entity_Factory::from_wp_query( $query );
-
-		if ( ! $entity || 'post' !== $entity->get_type() ) {
-			return null;
-		}
-
-		$post = $query->get_queried_object();
-
-		if ( function_exists( 'wc_get_page_id' ) && wc_get_page_id( 'shop' ) === $post->ID ) {
-			return null;
-		}
-
-		return array(
-			'id'       => $post->ID,
-			'postType' => $post->post_type,
-			'title'    => $this->get_title_text( $post ),
-			'url'      => $this->context->get_reference_permalink( $post ),
-		);
-	}
-
-	/**
-	 * Gets the title of a post as text.
-	 *
-	 * `get_the_title()` runs the title through the `the_title` filters. One of
-	 * them is `wptexturize()`, which writes an apostrophe as `&#8217;`, and an
-	 * author can add HTML tags, such as `<em>`.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param WP_Post $post The post.
-	 * @return string The title as text, such as `Don’t miss it` for `Don't <em>miss</em> it`, or an empty string for a post with no title.
-	 */
-	protected function get_title_text( WP_Post $post ) {
-		// The WordPress REST API shows the title of a password-protected post
-		// without its "Protected:" prefix, and so do we.
-		$title_format = fn () => '%s';
-
-		add_filter( 'protected_title_format', $title_format );
-		$title = get_the_title( $post );
-		remove_filter( 'protected_title_format', $title_format );
-
-		return html_entity_decode( wp_strip_all_tags( $title ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
 	}
 
 	/**
@@ -181,16 +97,114 @@ class Get_Posts_By_Page_Path extends Shareable_Datapoint implements Executable_D
 	}
 
 	/**
-	 * Checks whether the current user is allowed to access the datapoint.
+	 * Checks whether a `pagePaths` parameter is a list of at most `MAX_PAGE_PATHS` page paths.
 	 *
-	 * The datapoint returns published posts only, so any dashboard viewer may
-	 * read it, a view-only user of a shared dashboard included.
+	 * A page path starts with `/`, so the keys of the response are never
+	 * numbers, which would turn the response into a JSON array.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return bool `true` when the current user can view the dashboard.
+	 * @param mixed $page_paths The `pagePaths` parameter, as the request sent it.
+	 * @return bool True where the parameter is a list of page paths, false otherwise.
 	 */
-	public function permission_callback() {
-		return current_user_can( Permissions::VIEW_DASHBOARD );
+	private function is_valid_page_path_list( $page_paths ) {
+		if ( ! is_array( $page_paths ) || count( $page_paths ) > self::MAX_PAGE_PATHS ) {
+			return false;
+		}
+
+		foreach ( $page_paths as $page_path ) {
+			if ( ! is_string( $page_path ) || 0 !== strpos( $page_path, '/' ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
+	 * Gets the data the dashboard needs of the post a page path shows.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $page_path The page path, such as `/?p=123`.
+	 * @return array|null The post's `id`, `title` and `url`, or `null` where the page path shows no single published post.
+	 */
+	private function get_post_data( $page_path ) {
+		$post = $this->get_post( $page_path );
+
+		if ( ! $post ) {
+			return null;
+		}
+
+		return array(
+			'id'    => $post->ID,
+			'title' => $this->get_plain_title( $post ),
+			'url'   => get_permalink( $post ),
+		);
+	}
+
+	/**
+	 * Gets the published single post that WordPress shows at a page path.
+	 *
+	 * The query reads the page path the way WordPress reads a request, so a
+	 * static homepage shows at `/`, and the posts page at its page ID lists the
+	 * latest posts, which is no single post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $page_path The page path, such as `/?p=123`.
+	 * @return WP_Post|null The post, or `null` where the page path shows no single published post.
+	 */
+	private function get_post( $page_path ) {
+		$query = WP_Query_Factory::from_url( $page_path );
+
+		// `from_url()` returns `null` for a URL of another host.
+		if ( ! $query ) {
+			return null;
+		}
+
+		$query->get_posts();
+
+		if ( ! $query->is_singular() || ! $query->post instanceof WP_Post ) {
+			return null;
+		}
+
+		$post = $query->post;
+
+		// The query gives a draft to a user who can edit it, so the status of
+		// each post needs its own check. `get_post_status()` gives an
+		// attachment the status of its parent post.
+		if ( 'publish' !== get_post_status( $post ) || ! is_post_type_viewable( $post->post_type ) ) {
+			return null;
+		}
+
+		// WooCommerce shows the product archive on its shop page, also where the
+		// shop page is the static homepage.
+		if ( function_exists( 'wc_get_page_id' ) && wc_get_page_id( 'shop' ) === $post->ID ) {
+			return null;
+		}
+
+		return $post;
+	}
+
+	/**
+	 * Gets the title of a post as plain text, with no HTML and no "Protected:" prefix.
+	 *
+	 * `get_the_title()` adds "Protected: " to the title of a post with a
+	 * password wherever `is_admin()` is `false`, which holds for a REST request.
+	 * So the title runs through the `the_title` filters here, as it does inside
+	 * `get_the_title()`, with no prefix.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param WP_Post $post The post.
+	 * @return string The title, or an empty string for a post with no title.
+	 */
+	private function get_plain_title( WP_Post $post ) {
+		$title = apply_filters( 'the_title', $post->post_title, $post->ID );
+
+		// `wptexturize()`, which runs on `the_title`, writes an apostrophe as
+		// `&#8217;` and an ampersand as `&#038;`.
+		return html_entity_decode( wp_strip_all_tags( $title ), ENT_QUOTES | ENT_HTML5, get_bloginfo( 'charset' ) );
 	}
 }

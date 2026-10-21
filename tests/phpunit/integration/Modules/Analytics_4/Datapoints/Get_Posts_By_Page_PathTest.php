@@ -10,11 +10,12 @@
 
 namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
-use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
+use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
 use Google\Site_Kit\Tests\TestCase;
+
+require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
 
 /**
  * @group Modules
@@ -33,341 +34,252 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 	public function set_up() {
 		parent::set_up();
 
+		// An administrator can read a draft, so a draft that comes back as
+		// `null` proves the datapoint's own check of the post status.
 		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'administrator' ) ) );
 
 		$this->set_permalink_structure( '' );
 
-		register_post_type( 'book', array( 'public' => true ) );
+		// WooCommerce registers `product` with the query var `product`, and a
+		// public custom post type gets its own name as its query var.
 		register_post_type( 'product', array( 'public' => true ) );
+		register_post_type( 'book', array( 'public' => true ) );
 
-		$this->datapoint = new Get_Posts_By_Page_Path(
-			array(
-				'service' => '',
-				'context' => new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-			)
-		);
+		$this->datapoint = new Get_Posts_By_Page_Path( array() );
 	}
 
 	public function tear_down() {
-		unregister_post_type( 'book' );
 		unregister_post_type( 'product' );
+		unregister_post_type( 'book' );
 
 		parent::tear_down();
 	}
 
 	/**
-	 * Runs the datapoint's request for the given page paths.
+	 * Builds the data request of a lookup of the given page paths.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $page_paths The page paths, such as `/?p=123`.
-	 * @return array The post or `null` of each page path, keyed by the page path.
+	 * @param mixed $page_paths The `pagePaths` parameter, as the request sends it.
+	 * @return Data_Request The data request.
 	 */
-	private function get_posts_by_page_path( array $page_paths ) {
-		$request = $this->datapoint->create_request(
-			new Data_Request(
-				'GET',
-				'modules',
-				'analytics-4',
-				'posts-by-page-path',
-				array( 'pagePaths' => $page_paths )
-			)
+	private function data_request( $page_paths ) {
+		return new Data_Request(
+			'GET',
+			'modules',
+			'analytics-4',
+			'posts-by-page-path',
+			array( 'pagePaths' => $page_paths )
 		);
-
-		return $request();
 	}
 
-	public function test_create_request__returns_the_post_of_every_url_of_a_post() {
-		$post_id = self::factory()->post->create( array( 'post_title' => 'Hello world' ) );
-
-		$post = array(
-			'id'       => $post_id,
-			'postType' => 'post',
-			'title'    => 'Hello world',
-			'url'      => "http://example.org/?p={$post_id}",
+	/**
+	 * Gets the data the datapoint returns for a post.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param int    $post_id The post ID.
+	 * @param string $title   The title the datapoint returns, as plain text.
+	 * @return array The post's `id`, `title` and `url`.
+	 */
+	private function post_data( $post_id, $title ) {
+		return array(
+			'id'    => $post_id,
+			'title' => $title,
+			'url'   => get_permalink( $post_id ),
 		);
+	}
+
+	/**
+	 * @dataProvider data_single_posts
+	 *
+	 * @param string $post_label       The kind of single post, for the assertion message.
+	 * @param array  $post_args        The arguments the post is created with.
+	 * @param string $page_path_format The page path, with `%d` for the post ID.
+	 */
+	public function test_create_request__returns_a_published_single_post( $post_label, $post_args, $page_path_format ) {
+		$post_id   = $this->factory()->post->create( $post_args );
+		$page_path = sprintf( $page_path_format, $post_id );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
 		$this->assertSame(
-			array(
-				"/?p={$post_id}"                           => $post,
-				"/?p={$post_id}&utm_source=newsletter"     => $post,
-				"/index.php?p={$post_id}"                  => $post,
-				"/?utm_source=newsletter&p={$post_id}#top" => $post,
+			array( $page_path => $this->post_data( $post_id, $post_args['post_title'] ) ),
+			$request(),
+			"The page path of $post_label should map to that post."
+		);
+	}
+
+	public function data_single_posts() {
+		return array(
+			'post'                                      => array(
+				'a post',
+				array( 'post_title' => 'Travel tips' ),
+				'/?p=%d',
 			),
-			$this->get_posts_by_page_path(
+			'page'                                      => array(
+				'a page',
 				array(
-					"/?p={$post_id}",
-					"/?p={$post_id}&utm_source=newsletter",
-					"/index.php?p={$post_id}",
-					"/?utm_source=newsletter&p={$post_id}#top",
-				)
-			),
-			'Every URL of a post should give the post, keyed by the page path as it arrived.'
-		);
-	}
-
-	public function test_create_request__returns_the_post_of_a_page_of_a_split_post() {
-		$post_id = self::factory()->post->create(
-			array(
-				'post_title'   => 'Long read',
-				'post_content' => 'Page one<!--nextpage-->Page two',
-			)
-		);
-
-		$this->assertSame(
-			array(
-				"/?p={$post_id}&page=2" => array(
-					'id'       => $post_id,
-					'postType' => 'post',
-					'title'    => 'Long read',
-					'url'      => "http://example.org/?p={$post_id}",
+					'post_title' => 'About',
+					'post_type'  => 'page',
 				),
+				'/?page_id=%d',
 			),
-			$this->get_posts_by_page_path( array( "/?p={$post_id}&page=2" ) ),
-			'The second page of a split post should give the post.'
-		);
-	}
-
-	public function test_create_request__returns_a_page() {
-		$page_id = self::factory()->post->create(
-			array(
-				'post_title' => 'About',
-				'post_type'  => 'page',
-			)
-		);
-
-		$this->assertSame(
-			array(
-				"/?page_id={$page_id}" => array(
-					'id'       => $page_id,
-					'postType' => 'page',
-					'title'    => 'About',
-					'url'      => "http://example.org/?page_id={$page_id}",
-				),
-			),
-			$this->get_posts_by_page_path( array( "/?page_id={$page_id}" ) ),
-			'A page URL should give the page.'
-		);
-	}
-
-	public function test_create_request__returns_the_post_of_a_custom_post_type() {
-		$book_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Dune',
-				'post_name'  => 'dune',
-				'post_type'  => 'book',
-			)
-		);
-
-		$book = array(
-			'id'       => $book_id,
-			'postType' => 'book',
-			'title'    => 'Dune',
-			'url'      => 'http://example.org/?book=dune',
-		);
-
-		$this->assertSame(
-			array(
-				'/?book=dune'                   => $book,
-				"/?post_type=book&p={$book_id}" => $book,
-				'/?post_type=book&name=dune'    => $book,
-			),
-			$this->get_posts_by_page_path(
+			'product, by its query var'                 => array(
+				'a product, by its query var,',
 				array(
-					'/?book=dune',
-					"/?post_type=book&p={$book_id}",
-					'/?post_type=book&name=dune',
-				)
-			),
-			'Every URL of a post of a custom post type should give the post.'
-		);
-	}
-
-	public function test_create_request__returns_a_product() {
-		$product_id = self::factory()->post->create(
-			array(
-				'post_title' => 'Hoodie',
-				'post_name'  => 'hoodie',
-				'post_type'  => 'product',
-			)
-		);
-
-		$this->assertSame(
-			array(
-				'/?product=hoodie&attribute_pa_color=red' => array(
-					'id'       => $product_id,
-					'postType' => 'product',
-					'title'    => 'Hoodie',
-					'url'      => 'http://example.org/?product=hoodie',
+					'post_title' => 'Hoodie',
+					'post_name'  => 'hoodie',
+					'post_type'  => 'product',
 				),
+				'/?product=hoodie',
 			),
-			$this->get_posts_by_page_path( array( '/?product=hoodie&attribute_pa_color=red' ) ),
-			'The URL of a product variation should give its product.'
+			'custom post type, by its query var'        => array(
+				'a post of a public custom post type, by its query var,',
+				array(
+					'post_title' => 'Dune',
+					'post_name'  => 'dune',
+					'post_type'  => 'book',
+				),
+				'/?book=dune',
+			),
+			'custom post type, by its post type and ID' => array(
+				'a post of a public custom post type, by its post type and ID,',
+				array(
+					'post_title' => 'Dune',
+					'post_name'  => 'dune',
+					'post_type'  => 'book',
+				),
+				'/?post_type=book&p=%d',
+			),
 		);
 	}
 
-	public function test_create_request__returns_an_attachment() {
-		$attachment_id = self::factory()->attachment->create_object(
-			'photo.jpg',
-			0,
+	public function test_create_request__returns_an_attachment_page() {
+		$post_id       = $this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
+		$attachment_id = $this->factory()->attachment->create(
 			array(
+				'file'           => 'map.jpg',
+				'post_parent'    => $post_id,
+				'post_title'     => 'Map',
 				'post_mime_type' => 'image/jpeg',
-				'post_title'     => 'Photo',
 			)
 		);
+		$page_path     = "/?attachment_id=$attachment_id";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
 		$this->assertSame(
-			array(
-				"/?attachment_id={$attachment_id}" => array(
-					'id'       => $attachment_id,
-					'postType' => 'attachment',
-					'title'    => 'Photo',
-					'url'      => "http://example.org/?attachment_id={$attachment_id}",
-				),
-			),
-			$this->get_posts_by_page_path( array( "/?attachment_id={$attachment_id}" ) ),
-			'An attachment page URL should give the attachment.'
+			array( $page_path => $this->post_data( $attachment_id, 'Map' ) ),
+			$request(),
+			'The page path of an attachment page should map to the attachment, because its parent post is published.'
 		);
 	}
 
-	public function test_create_request__returns_the_page_set_as_the_homepage() {
-		$page_id = self::factory()->post->create(
+	public function test_create_request__maps_each_url_of_one_post_to_that_post() {
+		// The "Page Break" block saves `<!--nextpage-->`, which splits the post
+		// into two pages, so `page=2` shows its second page.
+		$post_id    = $this->factory()->post->create(
+			array(
+				'post_title'   => 'Travel tips',
+				'post_content' => 'Packing<!--nextpage-->Flights',
+			)
+		);
+		$page_paths = array(
+			"/?p=$post_id",
+			"/?p=$post_id&utm_source=newsletter",
+			"/index.php?p=$post_id",
+			"/?p=$post_id&page=2",
+		);
+
+		$request = $this->datapoint->create_request( $this->data_request( $page_paths ) );
+
+		$this->assertSame(
+			array_fill_keys( $page_paths, $this->post_data( $post_id, 'Travel tips' ) ),
+			$request(),
+			'Each URL of a post should map to that post, with a campaign query arg, with `index.php` and on its second page.'
+		);
+	}
+
+	public function test_create_request__maps_the_home_path_to_a_static_homepage() {
+		$homepage_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Welcome',
 				'post_type'  => 'page',
 			)
 		);
 		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $page_id );
+		update_option( 'page_on_front', $homepage_id );
 
-		$page = array(
-			'id'       => $page_id,
-			'postType' => 'page',
-			'title'    => 'Welcome',
-			'url'      => 'http://example.org/',
-		);
+		$request = $this->datapoint->create_request( $this->data_request( array( '/', "/?page_id=$homepage_id" ) ) );
 
 		$this->assertSame(
 			array(
-				'/'                       => $page,
-				'/?utm_source=newsletter' => $page,
-				"/?page_id={$page_id}"    => $page,
+				'/'                      => $this->post_data( $homepage_id, 'Welcome' ),
+				"/?page_id=$homepage_id" => $this->post_data( $homepage_id, 'Welcome' ),
 			),
-			$this->get_posts_by_page_path(
-				array(
-					'/',
-					'/?utm_source=newsletter',
-					"/?page_id={$page_id}",
-				)
-			),
-			'The homepage URL and the URL of the page set as the homepage should give that page.'
+			$request(),
+			'The home path and the page ID of a static homepage should both map to that page.'
 		);
 	}
 
-	public function test_create_request__returns_null_for_the_homepage_that_shows_the_latest_posts() {
-		self::factory()->post->create( array( 'post_title' => 'Hello world' ) );
-		update_option( 'show_on_front', 'posts' );
+	public function test_create_request__maps_a_woocommerce_endpoint_to_its_page() {
+		$checkout_id = $this->factory()->post->create(
+			array(
+				'post_title' => 'Checkout',
+				'post_type'  => 'page',
+			)
+		);
+		$page_path   = "/?page_id=$checkout_id&order-received=123";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
 		$this->assertSame(
-			array( '/' => null ),
-			$this->get_posts_by_page_path( array( '/' ) ),
-			'The homepage should give no post when it shows the latest posts.'
+			array( $page_path => $this->post_data( $checkout_id, 'Checkout' ) ),
+			$request(),
+			'The order received endpoint of the checkout page should map to the checkout page.'
 		);
+	}
+
+	public function test_create_request__returns_null_for_the_latest_posts_on_the_home_page() {
+		$this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
+		update_option( 'show_on_front', 'posts' );
+
+		$request = $this->datapoint->create_request( $this->data_request( array( '/' ) ) );
+
+		$this->assertSame( array( '/' => null ), $request(), 'The home path should map to no post, because it shows the latest posts.' );
 	}
 
 	public function test_create_request__returns_null_for_the_posts_page() {
-		$home_id = self::factory()->post->create( array( 'post_type' => 'page' ) );
-		$blog_id = self::factory()->post->create( array( 'post_type' => 'page' ) );
+		$homepage_id   = $this->factory()->post->create( array( 'post_type' => 'page' ) );
+		$posts_page_id = $this->factory()->post->create( array( 'post_type' => 'page' ) );
 		update_option( 'show_on_front', 'page' );
-		update_option( 'page_on_front', $home_id );
-		update_option( 'page_for_posts', $blog_id );
+		update_option( 'page_on_front', $homepage_id );
+		update_option( 'page_for_posts', $posts_page_id );
+		$page_path = "/?page_id=$posts_page_id";
 
-		$this->assertSame(
-			array( "/?page_id={$blog_id}" => null ),
-			$this->get_posts_by_page_path( array( "/?page_id={$blog_id}" ) ),
-			'The posts page should give no post, because it lists the latest posts.'
-		);
-	}
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
 
-	public function test_create_request__returns_null_for_a_search_and_an_archive() {
-		self::factory()->post->create( array( 'post_title' => 'Hello world' ) );
-
-		$this->assertSame(
-			array(
-				'/?s=hello'  => null,
-				'/?cat=1'    => null,
-				'/?author=1' => null,
-			),
-			$this->get_posts_by_page_path( array( '/?s=hello', '/?cat=1', '/?author=1' ) ),
-			'A search and an archive should give no post.'
-		);
-	}
-
-	public function test_create_request__reads_a_search_with_no_database_query() {
-		global $wpdb;
-
-		$queries_before = $wpdb->num_queries;
-
-		$this->get_posts_by_page_path( array( '/?s=hello' ) );
-
-		$this->assertSame( 0, $wpdb->num_queries - $queries_before, 'A search URL should give no post before any database query runs.' );
-	}
-
-	public function test_create_request__returns_null_for_a_post_that_visitors_cannot_see() {
-		$draft_id     = self::factory()->post->create( array( 'post_status' => 'draft' ) );
-		$scheduled_id = self::factory()->post->create(
-			array(
-				'post_status' => 'future',
-				'post_date'   => '2099-01-01 00:00:00',
-			)
-		);
-		$private_id   = self::factory()->post->create( array( 'post_status' => 'private' ) );
-		$deleted_id   = self::factory()->post->create();
-		wp_delete_post( $deleted_id, true );
-
-		$this->assertSame(
-			array(
-				"/?p={$draft_id}"     => null,
-				"/?p={$scheduled_id}" => null,
-				"/?p={$private_id}"   => null,
-				"/?p={$deleted_id}"   => null,
-				'/?p=999999'          => null,
-			),
-			$this->get_posts_by_page_path(
-				array(
-					"/?p={$draft_id}",
-					"/?p={$scheduled_id}",
-					"/?p={$private_id}",
-					"/?p={$deleted_id}",
-					'/?p=999999',
-				)
-			),
-			'A draft, a scheduled post, a private post, a deleted post and an ID with no post should give no post, also to an administrator.'
-		);
+		$this->assertSame( array( $page_path => null ), $request(), 'The posts page should map to no post, because it lists the latest posts.' );
 	}
 
 	public function test_create_request__returns_null_for_the_woocommerce_shop_page() {
-		require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
-
-		$shop_id = self::factory()->post->create(
+		$shop_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Shop',
 				'post_type'  => 'page',
 			)
 		);
 		update_option( 'woocommerce_shop_page_id', $shop_id );
+		$page_path = "/?page_id=$shop_id";
 
-		$this->assertSame(
-			array( "/?page_id={$shop_id}" => null ),
-			$this->get_posts_by_page_path( array( "/?page_id={$shop_id}" ) ),
-			'The WooCommerce shop page should give no post, because WooCommerce lists the products there.'
-		);
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), 'The WooCommerce shop page should map to no post, because WooCommerce shows the product archive there.' );
 	}
 
-	public function test_create_request__returns_null_for_the_woocommerce_shop_page_set_as_the_homepage() {
-		require_once TESTS_PLUGIN_DIR . '/tests/phpunit/includes/wc-function-fakes.php';
-
-		$shop_id = self::factory()->post->create(
+	public function test_create_request__returns_null_for_the_woocommerce_shop_page_as_the_static_homepage() {
+		$shop_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Shop',
 				'post_type'  => 'page',
@@ -377,121 +289,169 @@ class Get_Posts_By_Page_PathTest extends TestCase {
 		update_option( 'show_on_front', 'page' );
 		update_option( 'page_on_front', $shop_id );
 
-		$this->assertSame(
-			array( '/' => null ),
-			$this->get_posts_by_page_path( array( '/' ) ),
-			'The homepage should give no post when the WooCommerce shop page is set as the homepage.'
+		$request = $this->datapoint->create_request( $this->data_request( array( '/' ) ) );
+
+		$this->assertSame( array( '/' => null ), $request(), 'The home path should map to no post, because the static homepage is the WooCommerce shop page.' );
+	}
+
+	/**
+	 * @dataProvider data_page_paths_of_no_single_post
+	 *
+	 * @param string $page_path The page path.
+	 */
+	public function test_create_request__returns_null_for_a_page_path_that_shows_no_single_post( $page_path ) {
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), "The page path $page_path should map to no post." );
+	}
+
+	public function data_page_paths_of_no_single_post() {
+		return array(
+			'search'           => array( '/?s=hats' ),
+			'category archive' => array( '/?cat=1' ),
+			'product archive'  => array( '/?post_type=product' ),
+			'missing post'     => array( '/?p=999999' ),
 		);
 	}
 
-	public function test_create_request__returns_the_title_as_text() {
-		$post_id = self::factory()->post->create( array( 'post_title' => 'Don\'t <em>miss</em> it' ) );
+	/**
+	 * @dataProvider data_unpublished_post_statuses
+	 *
+	 * @param string $post_status The post status.
+	 */
+	public function test_create_request__returns_null_for_a_post_that_is_not_published( $post_status ) {
+		$post_id   = $this->factory()->post->create(
+			array(
+				'post_status' => $post_status,
+				'post_date'   => 'future' === $post_status ? '2099-01-01 00:00:00' : '',
+			)
+		);
+		$page_path = "/?p=$post_id";
 
-		$this->assertSame(
-			'Don’t miss it',
-			$this->get_posts_by_page_path( array( "/?p={$post_id}" ) )[ "/?p={$post_id}" ]['title'],
-			'The title should have no HTML tags and no HTML entities.'
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), "A post with the $post_status status should map to no post." );
+	}
+
+	public function data_unpublished_post_statuses() {
+		return array(
+			'draft'     => array( 'draft' ),
+			'pending'   => array( 'pending' ),
+			'private'   => array( 'private' ),
+			'scheduled' => array( 'future' ),
 		);
 	}
 
-	public function test_create_request__returns_the_title_of_a_password_protected_post_without_its_prefix() {
-		$post_id = self::factory()->post->create(
+	public function test_create_request__returns_null_for_a_post_of_a_type_that_is_not_viewable() {
+		register_post_type( 'invoice', array( 'public' => false ) );
+
+		$post_id   = $this->factory()->post->create( array( 'post_type' => 'invoice' ) );
+		$page_path = "/?p=$post_id";
+
+		// `WP_Query_Factory` leaves a post type that isn't publicly queryable out
+		// of the query, but another plugin can still add it through
+		// `pre_get_posts`.
+		add_action(
+			'pre_get_posts',
+			fn ( $query ) => $query->set( 'post_type', 'invoice' )
+		);
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), 'A post of a type that is not viewable should map to no post, even where another plugin adds that type to the query.' );
+
+		unregister_post_type( 'invoice' );
+	}
+
+	public function test_create_request__returns_null_for_a_url_of_another_site() {
+		$post_id   = $this->factory()->post->create();
+		$page_path = "//example.com/?p=$post_id";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( array( $page_path => null ), $request(), 'A URL of another host should map to no post, even where its query names a post of this site.' );
+	}
+
+	public function test_create_request__returns_the_title_as_plain_text() {
+		// `wptexturize()`, which runs on the `the_title` filter, turns `'` into
+		// `&#8217;` and `&` into `&#038;`, so the datapoint decodes both.
+		$post_id   = $this->factory()->post->create( array( 'post_title' => "Tips & tricks: don't <em>miss</em> it" ) );
+		$page_path = "/?p=$post_id";
+
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( 'Tips & tricks: don’t miss it', $request()[ $page_path ]['title'], 'The title should be plain text, with its tags stripped and its entities decoded.' );
+	}
+
+	public function test_create_request__returns_the_title_of_a_protected_post_with_no_prefix() {
+		// Outside the admin, `get_the_title()` would add "Protected: " to this title.
+		$post_id   = $this->factory()->post->create(
 			array(
 				'post_title'    => 'Members only',
 				'post_password' => 'secret',
 			)
 		);
+		$page_path = "/?p=$post_id";
 
-		$this->assertSame(
-			'Members only',
-			$this->get_posts_by_page_path( array( "/?p={$post_id}" ) )[ "/?p={$post_id}" ]['title'],
-			'The title of a password-protected post should have no "Protected:" prefix.'
-		);
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( 'Members only', $request()[ $page_path ]['title'], 'The title of a protected post should have no "Protected:" prefix.' );
 	}
 
 	public function test_create_request__returns_an_empty_title_for_a_post_with_no_title() {
-		$post_id = self::factory()->post->create( array( 'post_title' => '' ) );
+		$post_id   = $this->factory()->post->create( array( 'post_title' => '' ) );
+		$page_path = "/?p=$post_id";
 
-		$this->assertSame(
-			'',
-			$this->get_posts_by_page_path( array( "/?p={$post_id}" ) )[ "/?p={$post_id}" ]['title'],
-			'The title of a post with no title should be an empty string.'
+		$request = $this->datapoint->create_request( $this->data_request( array( $page_path ) ) );
+
+		$this->assertSame( '', $request()[ $page_path ]['title'], 'A post with no title should have an empty title.' );
+	}
+
+	public function test_create_request__throws_when_page_paths_are_missing() {
+		$this->expectException( Missing_Required_Param_Exception::class );
+
+		$this->datapoint->create_request( $this->data_request( null ) );
+	}
+
+	/**
+	 * @dataProvider data_invalid_page_paths
+	 *
+	 * @param string $page_paths_label What is wrong with the parameter, for the assertion message.
+	 * @param mixed  $page_paths       The `pagePaths` parameter.
+	 */
+	public function test_create_request__returns_an_error_for_invalid_page_paths( $page_paths_label, $page_paths ) {
+		$error = $this->datapoint->create_request( $this->data_request( $page_paths ) );
+
+		$this->assertWPErrorWithMessage( 'Request parameter pagePaths must be a list of at most 50 page paths, each starting with “/”.', $error );
+		$this->assertSame( array( 'status' => 400 ), $error->get_error_data(), "The error for $page_paths_label should have the status 400." );
+	}
+
+	public function data_invalid_page_paths() {
+		return array(
+			'a string'                   => array( 'a string', '/?p=1' ),
+			'a value that is not a path' => array( 'a value that is not a path', array( '?p=1' ) ),
+			// A query string can send a list in place of a page path, such as
+			// `pagePaths[0][]=/?p=1`.
+			'a page path that is a list' => array( 'a page path that is a list', array( array( '/?p=1' ) ) ),
+			'51 page paths'              => array( '51 page paths', array_fill( 0, 51, '/?p=1' ) ),
 		);
 	}
 
-	public function test_create_request__skips_a_value_that_is_not_a_page_path() {
-		$post_id = self::factory()->post->create();
+	public function test_create_request__looks_up_50_page_paths() {
+		$page_paths = array_map( fn ( $post_id ) => "/?p=$post_id", range( 1, 50 ) );
 
-		$this->assertSame(
-			array( "/?p={$post_id}" ),
-			array_keys( $this->get_posts_by_page_path( array( 123, "?p={$post_id}", "/?p={$post_id}" ) ) ),
-			'A value that is not a string starting with a slash should be skipped.'
-		);
-	}
+		$request = $this->datapoint->create_request( $this->data_request( $page_paths ) );
 
-	public function test_create_request__returns_an_error_when_page_paths_is_not_an_array() {
-		$result = $this->datapoint->create_request(
-			new Data_Request(
-				'GET',
-				'modules',
-				'analytics-4',
-				'posts-by-page-path',
-				array( 'pagePaths' => '/?p=1' )
-			)
-		);
-
-		$this->assertWPError( $result, 'A `pagePaths` value that is not an array should give an error.' );
-		$this->assertSame( 'invalid_page_paths', $result->get_error_code(), 'A `pagePaths` value that is not an array should give the `invalid_page_paths` error.' );
-		$this->assertSame( array( 'status' => 400 ), $result->get_error_data(), 'A `pagePaths` value that is not an array should give a 400 status.' );
-	}
-
-	public function test_create_request__returns_an_error_for_more_than_50_page_paths() {
-		$result = $this->datapoint->create_request(
-			new Data_Request(
-				'GET',
-				'modules',
-				'analytics-4',
-				'posts-by-page-path',
-				array( 'pagePaths' => array_fill( 0, 51, '/?p=1' ) )
-			)
-		);
-
-		$this->assertWPError( $result, 'More than 50 page paths should give an error.' );
-		$this->assertSame( 'invalid_page_paths', $result->get_error_code(), 'More than 50 page paths should give the `invalid_page_paths` error.' );
+		$this->assertCount( 50, $request(), 'A request should look up each of 50 page paths, because 50 is the most one request can look up.' );
 	}
 
 	public function test_is_shareable() {
-		$this->assertTrue( $this->datapoint->is_shareable(), 'The datapoint should be shareable, so a view-only user of a shared dashboard can read it.' );
-	}
-
-	public function test_permission_callback__allows_a_user_who_can_view_the_dashboard() {
-		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
-		add_filter(
-			'map_meta_cap',
-			fn ( $caps, $cap ) => Permissions::VIEW_DASHBOARD === $cap ? array( 'exist' ) : $caps,
-			99,
-			2
-		);
-
-		$this->assertTrue( $this->datapoint->permission_callback(), 'A user who can view the dashboard should be allowed.' );
-	}
-
-	public function test_permission_callback__denies_a_user_who_cannot_view_the_dashboard() {
-		wp_set_current_user( $this->factory()->user->create( array( 'role' => 'subscriber' ) ) );
-
-		$this->assertFalse( $this->datapoint->permission_callback(), 'A user who cannot view the dashboard should be denied.' );
+		$this->assertTrue( $this->datapoint->is_shareable(), 'The datapoint should be shareable, so a view-only user sees the same rows.' );
 	}
 
 	public function test_parse_response() {
 		$response = array( '/?p=1' => null );
 
-		$this->assertSame(
-			array( '/?p=1' => null ),
-			$this->datapoint->parse_response(
-				$response,
-				new Data_Request( 'GET', 'modules', 'analytics-4', 'posts-by-page-path', array() )
-			),
-			'The response should pass through unchanged.'
-		);
+		$this->assertSame( $response, $this->datapoint->parse_response( $response, $this->data_request( array( '/?p=1' ) ) ), 'The response should be returned unchanged.' );
 	}
 }
