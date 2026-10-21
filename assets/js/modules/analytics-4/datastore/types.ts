@@ -28,7 +28,20 @@ export type ReportOptions = {
 	dimensions?: Array< string | { name: string } >;
 	dimensionFilters?: Record<
 		string,
-		string | string[] | { filterType?: string; value?: string | string[] }
+		| string
+		| string[]
+		| {
+				filterType?: string;
+				matchType?:
+					| 'EXACT'
+					| 'BEGINS_WITH'
+					| 'ENDS_WITH'
+					| 'CONTAINS'
+					| 'FULL_REGEXP'
+					| 'PARTIAL_REGEXP';
+				value?: string | string[];
+				notExpression?: boolean;
+		  }
 	>;
 	metricFilters?: Record<
 		string,

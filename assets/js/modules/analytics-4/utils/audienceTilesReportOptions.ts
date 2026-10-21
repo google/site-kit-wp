@@ -57,7 +57,7 @@ const POST_TYPE_DIMENSION_FILTERS = {
 		matchType: 'EXACT',
 		value: 'post',
 	},
-};
+} as const;
 
 /**
  * Builds the main metrics report options, one report split by
