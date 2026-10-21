@@ -102,7 +102,10 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	const calculateScrollPosition = useCallback(
 		( chipID ) => {
 			return chipID !== defaultChipID
-				? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
+				? getNavigationalScrollTop(
+						`.googlesitekit-widget-context#${ chipID }`,
+						breakpoint
+				  )
 				: 0;
 		},
 		[ breakpoint, defaultChipID ]
@@ -152,7 +155,9 @@ export default function useNavChipHelpers( { visibleSections } ) {
 			let closestID = defaultChipID;
 
 			for ( const areaID of visibleSections ) {
-				const area = document.getElementById( areaID );
+				const area = document.querySelector(
+					`.googlesitekit-widget-context#${ areaID }`
+				);
 				if ( ! area ) {
 					continue;
 				}

@@ -19,7 +19,7 @@
 /**
  * WordPress dependencies
  */
-import { useEffect } from '@wordpress/element';
+import { useEffect, useRef } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -33,11 +33,19 @@ export default function useWidgetStateEffect(
 	metadata
 ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( CORE_WIDGETS );
+	const registration = useRef( {} );
 
 	useEffect( () => {
-		setWidgetState( widgetSlug, Component, metadata );
+		const registrationToken = registration.current;
+
+		setWidgetState( widgetSlug, Component, metadata, registrationToken );
 		return () => {
-			unsetWidgetState( widgetSlug, Component, metadata );
+			unsetWidgetState(
+				widgetSlug,
+				Component,
+				metadata,
+				registrationToken
+			);
 		};
 	}, [ widgetSlug, Component, metadata, setWidgetState, unsetWidgetState ] );
 }
