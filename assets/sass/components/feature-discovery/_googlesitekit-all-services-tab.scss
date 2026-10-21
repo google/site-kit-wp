@@ -24,6 +24,11 @@
 		padding-block: 10px;
 	}
 
+	// Collapsed while empty, so it adds no gap above the feature list.
+	.googlesitekit-all-services-tab__notifications:empty {
+		display: none;
+	}
+
 	// 5px of leading above and below the heading text, per the design.
 	.googlesitekit-feature-goal-group__heading {
 		margin: 0;
