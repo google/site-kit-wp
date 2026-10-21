@@ -76,6 +76,22 @@ describe( 'RecentActivityPanel', () => {
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
 
+	const autumnRecipesPost = {
+		id: 12,
+		date: '2026-09-24T10:05:00',
+		date_gmt: '2026-09-24T14:05:00',
+		link: 'http://example.com/autumn-recipes/',
+		title: { rendered: 'Autumn recipes' },
+	};
+
+	const summerRecipesPost = {
+		id: 11,
+		date: '2026-09-20T09:00:00',
+		date_gmt: '2026-09-20T13:00:00',
+		link: 'http://example.com/summer-recipes/',
+		title: { rendered: 'Summer recipes' },
+	};
+
 	/**
 	 * Mocks the report requests of the latest post performance section. The
 	 * mocks are added after the existing ones, so a report response that the
@@ -126,15 +142,7 @@ describe( 'RecentActivityPanel', () => {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
 		fetchMock.get( postsEndpoint, {
-			body: [
-				{
-					id: 12,
-					date: '2026-09-24T10:05:00',
-					date_gmt: '2026-09-24T14:05:00',
-					link: 'http://example.com/autumn-recipes/',
-					title: { rendered: 'Autumn recipes' },
-				},
-			],
+			body: [ autumnRecipesPost ],
 			status: 200,
 		} );
 	} );
@@ -181,6 +189,35 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 			'googlesitekit-traffic-overview__latest-post-performance',
+		] );
+	} );
+
+	it( 'should render the "See all recent posts" link after the latest post performance when the site has more than one published post', async () => {
+		fetchMock.get(
+			postsEndpoint,
+			{
+				body: [ autumnRecipesPost, summerRecipesPost ],
+				status: 200,
+			},
+			{ overwriteRoutes: true }
+		);
+		mockLatestPostReports();
+
+		const { container, waitForRegistry } = render(
+			<RecentActivityPanel />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( getSectionClassNames( container ) ).toEqual( [
+			'googlesitekit-traffic-overview__insight-notice',
+			'googlesitekit-traffic-overview__fresh-metrics-row',
+			'googlesitekit-traffic-overview__recent-traffic-breakdown',
+			'googlesitekit-traffic-overview__latest-post-performance',
+			expect.stringContaining(
+				'googlesitekit-traffic-overview__see-all-recent-posts'
+			),
 		] );
 	} );
 
@@ -349,7 +386,7 @@ describe( 'RecentActivityPanel', () => {
 		] );
 	} );
 
-	it( 'should not render the latest post performance when the site has no published posts', async () => {
+	it( 'should not render the latest post performance or the "See all recent posts" link when the site has no published posts', async () => {
 		fetchMock.get(
 			postsEndpoint,
 			{ body: [], status: 200 },
@@ -369,6 +406,9 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 			'googlesitekit-traffic-overview__recent-traffic-breakdown',
 		] );
+		expect(
+			screen.queryByRole( 'button', { name: 'See all recent posts' } )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should render the "Top posts by visitors" column of the recent traffic breakdown when the site has published posts', async () => {
