@@ -27,7 +27,7 @@ import invariant from 'invariant';
 import { createReducer } from 'googlesitekit-data';
 import { TOP_CONTENT_TAB_ID } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 
-interface UIState {
+interface Analytics4UIState {
 	/** ID of the active tab of the Content card. */
 	activeContentTab: string;
 }
@@ -39,7 +39,7 @@ type Action = {
 	payload: { tabID: string };
 };
 
-export const initialState: UIState = {
+export const initialState: Analytics4UIState = {
 	activeContentTab: TOP_CONTENT_TAB_ID,
 };
 
@@ -67,16 +67,18 @@ export const actions = {
 
 export const controls = {};
 
-export const reducer = createReducer( ( state: UIState, action: Action ) => {
-	switch ( action.type ) {
-		case SET_ACTIVE_CONTENT_TAB:
-			state.activeContentTab = action.payload.tabID;
-			break;
+export const reducer = createReducer(
+	( state: Analytics4UIState, action: Action ) => {
+		switch ( action.type ) {
+			case SET_ACTIVE_CONTENT_TAB:
+				state.activeContentTab = action.payload.tabID;
+				break;
 
-		default:
-			break;
+			default:
+				break;
+		}
 	}
-} );
+);
 
 export const resolvers = {};
 
@@ -89,7 +91,7 @@ export const selectors = {
 	 * @param {Object} state Data store's state.
 	 * @return {string} ID of the active tab.
 	 */
-	getActiveContentTab( state: UIState ): string {
+	getActiveContentTab( state: Analytics4UIState ): string {
 		return state.activeContentTab;
 	},
 };
