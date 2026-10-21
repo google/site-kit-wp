@@ -35,6 +35,7 @@ import {
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
 	getSectionClassNames,
+	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
@@ -136,6 +137,10 @@ describe( 'RecentActivityPanel', () => {
 			.receiveIsGatheringData( false );
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
 		fetchMock.get( postsEndpoint, {
 			body: [ autumnRecipesPost ],
 			status: 200,
@@ -337,6 +342,10 @@ describe( 'RecentActivityPanel', () => {
 			},
 		] );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
 		freezeFetch( reportEndpoint );
 		provideLatestPost( registry );
 		provideLatestPostAnalyticsReports( registry );

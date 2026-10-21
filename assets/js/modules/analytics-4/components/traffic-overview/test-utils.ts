@@ -40,7 +40,14 @@ import {
 	getTopReferrerReportOptions,
 	getVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/postReportOptions';
-import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	getInsightReportArgs,
+	getSearchPerformanceReportOptions,
+	getTimeZoneReportOptions,
+	getTotalVisitorsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { SearchPerformanceTotals } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/aggregateSearchConsoleRows';
+import { getFreshDataWindowStart } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getFreshDataWindow';
 import {
 	getComparisonDateRange,
 	getDateDimensionValues,
@@ -53,6 +60,13 @@ import {
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+
+interface FreshMetricsFigures {
+	/** The number of visitors in the Total visitors report. */
+	totalVisitors?: number;
+	/** The clicks and impressions in the Search Console report. */
+	searchPerformance?: SearchPerformanceTotals;
+}
 
 export const LATEST_POST: RecentContentItem = {
 	id: 12,
@@ -335,4 +349,70 @@ export function getSectionClassNames( container: Element ): string[] {
 			'.googlesitekit-traffic-overview__panel > *'
 		)
 	).map( ( section ) => section.className );
+}
+
+/**
+ * Puts the reports of the Recent activity tab's fresh figures in the store,
+ * for the current time, so the figures render without sending a request.
+ *
+ * It always puts in the report that gives the `Asia/Tokyo` time zone of the
+ * Analytics property, which the Total visitors report needs.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry                    The registry.
+ * @param {Object} figures                     The figures the reports give.
+ * @param {number} [figures.totalVisitors]     Optional. The number of visitors in the Total visitors report.
+ * @param {Object} [figures.searchPerformance] Optional. The clicks and impressions in the Search Console report, which has them in the first hour of the window.
+ * @return {void}
+ */
+export function provideFreshMetricsReports(
+	registry: WPDataRegistry,
+	{ totalVisitors, searchPerformance }: FreshMetricsFigures
+) {
+	// `FreshMetricsRow` counts the last 24 hours from the current time too.
+	// eslint-disable-next-line sitekit/no-direct-date
+	const windowStart = getFreshDataWindowStart( Date.now() );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [ { metricValues: [ { value: '0' } ] } ],
+			metadata: { timeZone: 'Asia/Tokyo' },
+		},
+		{
+			options: getTimeZoneReportOptions( windowStart ),
+		}
+	);
+
+	if ( totalVisitors !== undefined ) {
+		// A report without dimensions has one row, even when it counts no
+		// visitors.
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+			{
+				rows: [
+					{ metricValues: [ { value: String( totalVisitors ) } ] },
+				],
+			},
+			{
+				options: getTotalVisitorsReportOptions(
+					windowStart,
+					'Asia/Tokyo'
+				),
+			}
+		);
+	}
+
+	if ( searchPerformance ) {
+		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetReport(
+			[
+				{
+					// This formats a fixed time, not the current one.
+					// eslint-disable-next-line sitekit/no-direct-date
+					keys: [ new Date( windowStart ).toISOString() ],
+					...searchPerformance,
+				},
+			],
+			{ options: getSearchPerformanceReportOptions( windowStart ) }
+		);
+	}
 }

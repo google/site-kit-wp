@@ -39,7 +39,7 @@ describe( 'PDFReportProgressSnackbar', () => {
 		).toBeInTheDocument();
 		expect(
 			getByText(
-				/Please keep this tab open until the download starts automatically/i
+				/Please keep this page open until the download starts automatically/i
 			)
 		).toBeInTheDocument();
 		expect(

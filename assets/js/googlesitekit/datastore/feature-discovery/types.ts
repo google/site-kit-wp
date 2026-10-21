@@ -24,7 +24,7 @@ import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 /**
  * Internal dependencies
  */
-import type { Select } from 'googlesitekit-data';
+import type { Registry, Select } from 'googlesitekit-data';
 import type {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -102,7 +102,7 @@ export interface FeatureSetup {
 	// The enable routine for `background-toggle` features.
 	activate?: ( ...args: never[] ) => unknown;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
-	open?: ( ...args: never[] ) => unknown;
+	open?: ( registry: Registry ) => void;
 	// Completion check, overriding the default module-connected check.
 	isEnabled?: ( select: Select ) => boolean | undefined;
 	// A `React.lazy()` reference, where setup can't be expressed as a thunk.
