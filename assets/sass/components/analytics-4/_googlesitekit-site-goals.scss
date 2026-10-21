@@ -205,26 +205,7 @@
 				height: 100%;
 			}
 
-			&::before {
-				background: $c-utility-divider;
-				bottom: 0;
-				content: "";
-				left: $tile-connector-offset;
-				position: absolute;
-				top: 0;
-				width: 2px;
-			}
-
-			&::after {
-				background: $c-utility-divider;
-				border-radius: 50%;
-				content: "";
-				height: 9px;
-				left: 0;
-				position: absolute;
-				top: 12px;
-				width: 9px;
-			}
+			@include tile-connector(12px);
 
 			&.googlesitekit-site-goals-goal-drivers-section__tile--empty {
 				display: none;
