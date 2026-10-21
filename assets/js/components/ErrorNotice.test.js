@@ -24,6 +24,7 @@ import {
 	ERROR_CODE_MISSING_REQUIRED_SCOPE,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
 } from '@/js/util/errors';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import { fireEvent, render } from '@tests/js/test-utils';
 import {
 	createTestRegistry,
@@ -200,5 +201,32 @@ describe( 'ErrorNotice', () => {
 		} );
 
 		expect( queryByText( /retry/i ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'scrollIntoView', () => {
+		mockBrowserScrolling();
+
+		it( 'should scroll the notice into view when mounted with the `scrollIntoView` prop', () => {
+			render(
+				<ErrorNotice message="Something went wrong" scrollIntoView />,
+				{ registry }
+			);
+
+			expect( Element.prototype.scrollIntoView ).toHaveBeenCalledTimes(
+				1
+			);
+			expect( Element.prototype.scrollIntoView ).toHaveBeenCalledWith( {
+				behavior: 'smooth',
+				block: 'nearest',
+			} );
+		} );
+
+		it( 'should not scroll the notice into view by default', () => {
+			render( <ErrorNotice message="Something went wrong" />, {
+				registry,
+			} );
+
+			expect( Element.prototype.scrollIntoView ).not.toHaveBeenCalled();
+		} );
 	} );
 } );
