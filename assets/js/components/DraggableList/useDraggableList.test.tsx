@@ -71,7 +71,7 @@ function setup() {
 		}
 	);
 
-	const list = document.createElement( 'ul' );
+	const list = document.createElement( 'ol' );
 
 	list.dataset.draggableTest = 'true';
 
