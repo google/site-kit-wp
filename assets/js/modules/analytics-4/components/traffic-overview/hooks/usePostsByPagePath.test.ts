@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { postsByPagePath } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
 import { freezeFetch, waitForDefaultTimeouts } from '@tests/js/utils';
 import { usePostsByPagePath } from './usePostsByPagePath';
@@ -35,136 +36,108 @@ describe( 'usePostsByPagePath', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/posts-by-page-path'
 	);
 
-	const errorResponse = {
-		code: 'internal_server_error',
-		message: 'Internal server error',
-		data: { status: 500 },
-	};
+	const travelTips = postsByPagePath[ '/?p=1' ];
 
 	beforeEach( () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should return the post or `null` of each page path, and should not be loading, once the request succeeds', async () => {
-		fetchMock.getOnce( postsByPagePathEndpoint, {
-			body: {
-				'/?p=1': {
-					id: 1,
-					postType: 'post',
-					title: 'Hello world!',
-					url: 'http://example.com/?p=1',
-				},
-				'/?s=hats': null,
-			},
-			status: 200,
-		} );
+	it( 'should be loading, with no posts and no error, while the posts load', async () => {
+		freezeFetch( postsByPagePathEndpoint );
 
-		const pagePaths = [ '/?p=1', '/?s=hats' ];
-
-		const { result, waitForRegistry } = renderHook(
-			() => usePostsByPagePath( pagePaths ),
+		const { result } = renderHook(
+			() => usePostsByPagePath( [ '/?p=1' ] ),
 			{ registry }
 		);
 
-		await waitForRegistry();
-
-		expect( result.current ).toMatchObject( {
-			posts: {
-				'/?p=1': {
-					id: 1,
-					postType: 'post',
-					title: 'Hello world!',
-					url: 'http://example.com/?p=1',
-				},
-				'/?s=hats': null,
-			},
-			loading: false,
-			error: undefined,
-		} );
-	} );
-
-	it( 'should be loading, with no posts and no error, while the request has not finished', async () => {
-		freezeFetch( postsByPagePathEndpoint );
-
-		const pagePaths = [ '/?p=1' ];
-
-		const { result } = renderHook( () => usePostsByPagePath( pagePaths ), {
-			registry,
-		} );
-
 		await waitForDefaultTimeouts();
 
-		expect( result.current ).toMatchObject( {
+		expect( result.current ).toEqual( {
 			posts: undefined,
 			loading: true,
 			error: undefined,
 		} );
 	} );
 
-	it( 'should return no posts, should not be loading, and should not send a request for an empty list', async () => {
-		const pagePaths: string[] = [];
-
-		const { result } = renderHook( () => usePostsByPagePath( pagePaths ), {
-			registry,
+	it( 'should return the post of each page path, and should not be loading, once the posts load', async () => {
+		fetchMock.getOnce( postsByPagePathEndpoint, {
+			body: { '/?p=1': travelTips, '/?s=hats': null },
+			status: 200,
 		} );
 
-		await waitForDefaultTimeouts();
+		const { result, waitForRegistry } = renderHook(
+			() => usePostsByPagePath( [ '/?p=1', '/?s=hats' ] ),
+			{ registry }
+		);
 
-		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
-		expect( result.current ).toMatchObject( {
-			posts: {},
+		await waitForRegistry();
+
+		expect( result.current ).toEqual( {
+			posts: { '/?p=1': travelTips, '/?s=hats': null },
 			loading: false,
 			error: undefined,
 		} );
 	} );
 
-	it( 'should return the error, and should not be loading, once the request fails', async () => {
+	it( 'should be loading, and should request no posts, while the page paths are `undefined`', async () => {
+		fetchMock.get( postsByPagePathEndpoint, { body: {}, status: 200 } );
+
+		const { result } = renderHook( () => usePostsByPagePath( undefined ), {
+			registry,
+		} );
+
+		await waitForDefaultTimeouts();
+
+		expect( result.current ).toEqual( {
+			posts: undefined,
+			loading: true,
+			error: undefined,
+		} );
+		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
+	} );
+
+	it( 'should return no posts, and should request none, for an empty list of page paths', async () => {
+		fetchMock.get( postsByPagePathEndpoint, { body: {}, status: 200 } );
+
+		const { result, waitForRegistry } = renderHook(
+			() => usePostsByPagePath( [] ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( result.current ).toEqual( {
+			posts: {},
+			loading: false,
+			error: undefined,
+		} );
+		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
+	} );
+
+	it( 'should return the error, with no posts, and should not be loading, once the request fails', async () => {
+		const errorResponse = {
+			code: 'internal_server_error',
+			message: 'Internal server error',
+			data: { status: 500 },
+		};
+
 		fetchMock.getOnce( postsByPagePathEndpoint, {
 			body: errorResponse,
 			status: 500,
 		} );
 
-		const pagePaths = [ '/?p=1' ];
-
 		const { result, waitForRegistry } = renderHook(
-			() => usePostsByPagePath( pagePaths ),
+			() => usePostsByPagePath( [ '/?p=1' ] ),
 			{ registry }
 		);
 
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect( result.current ).toMatchObject( {
+		expect( result.current ).toEqual( {
 			posts: undefined,
 			loading: false,
-			error: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
-		} );
-	} );
-
-	it( 'should be loading, and should not send a request, while the Traffic Overview widget is out of view', async () => {
-		fetchMock.get( postsByPagePathEndpoint, {
-			body: { '/?p=1': null },
-			status: 200,
-		} );
-
-		const pagePaths = [ '/?p=1' ];
-
-		const { result } = renderHook( () => usePostsByPagePath( pagePaths ), {
-			registry,
-			inView: false,
-		} );
-
-		await waitForDefaultTimeouts();
-
-		expect( fetchMock ).not.toHaveFetched( postsByPagePathEndpoint );
-		expect( result.current ).toMatchObject( {
-			posts: undefined,
-			loading: true,
-			error: undefined,
+			error: errorResponse,
 		} );
 	} );
 } );

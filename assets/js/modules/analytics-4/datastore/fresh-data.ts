@@ -40,13 +40,19 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
+// The built plugin's `googlesitekit-api` global has no `createCacheKey()`.
+import { createCacheKey } from '@/js/googlesitekit/api';
+import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { ErrorObject } from '@/js/util/errors';
-import { MODULES_ANALYTICS_4 } from './constants';
+import {
+	MODULES_ANALYTICS_4,
+	POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
+} from './constants';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 
@@ -83,19 +89,45 @@ export type ExcludedProducts =
 			pathPrefix: string;
 	  }
 	| {
-			/** The way to recognize a product page on plain permalinks: by the query string of its URL. */
-			by: 'queryVar';
-			/** The product post type, such as `product`, which a product URL can name in `post_type=product`. */
-			postType: string;
-			/** The query var whose value is a product's slug, such as `product` in `/?product=hoodie`, or `null` when WordPress reads none. */
-			queryVar: string | null;
-	  }
-	| {
 			/** The way to recognize a product page: by the `googlesitekit_post_type` custom dimension. */
 			by: 'postTypeDimension';
 			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
 			postType: string;
+	  }
+	| {
+			/** The way to recognize a product page on plain permalinks: by its query string. */
+			by: 'queryString';
+			/** The product post type, such as `product`, which a URL can name as `post_type=product` with the product's ID. */
+			postType: string;
+			/** The query var of a product, such as `product` in `/?product=hoodie`, or `null` where the product post type has none. */
+			queryVar: string | null;
 	  };
+
+/**
+ * A published single post that a page path shows, as `GET:posts-by-page-path` returns it.
+ *
+ * @since n.e.x.t
+ */
+export interface PagePathPost {
+	/** The ID of the post. */
+	id: number;
+	/** The title as text, such as `Don’t miss it`, or an empty string for a post with no title. */
+	title: string;
+	/** The URL of the post, such as `https://example.com/?p=123`. */
+	url: string;
+}
+
+/**
+ * The post each page path shows, keyed by the page path, such as `/?p=123`, with `null` where it shows no single published post.
+ *
+ * @since n.e.x.t
+ */
+export type PostsByPagePath = Record< string, PagePathPost | null >;
+
+interface PostsByPagePathParams {
+	/** The page paths to look up, such as `/?p=123`. */
+	pagePaths: string[];
+}
 
 interface WordPressPost {
 	/** The post ID. */
@@ -114,22 +146,11 @@ interface WordPressPost {
 	};
 }
 
-export interface PagePathPost {
-	/** The post ID. */
-	id: number;
-	/** The post type, such as `post`, `page` or `product`. */
-	postType: string;
-	/** The title as text, e.g. `Don’t miss it`, or an empty string for a post with no title. */
-	title: string;
-	/** The permalink on the reference site URL, such as `https://example.com/?p=123`. */
-	url: string;
-}
-
 interface FreshDataState {
 	/** The newest posts and products, saved under the `count` of the request. */
 	recentContent: Record< number, RecentContentItem[] >;
-	/** The post that each page path shows, or `null` for a page path that shows no single published post. */
-	postsByPagePath: Record< string, PagePathPost | null >;
+	/** The post of each page path loaded so far. */
+	postsByPagePath: PostsByPagePath;
 }
 
 const fetchGetRecentContentStore = createFetchStore( {
@@ -210,27 +231,89 @@ const fetchGetRecentContentStore = createFetchStore( {
 	};
 };
 
+/**
+ * Builds the key under which the API cache keeps the post of one page path.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} pagePath The page path, such as `/?p=123`.
+ * @return {string} The cache key.
+ */
+function getPostCacheKey( pagePath: string ): string {
+	return createCacheKey(
+		'modules',
+		MODULE_SLUG_ANALYTICS_4,
+		'posts-by-page-path',
+		{ pagePath }
+	);
+}
+
 const fetchGetPostsByPagePathStore = createFetchStore( {
 	baseName: 'getPostsByPagePath',
-	controlCallback: ( params: { pagePaths: string[] } ) =>
-		get( 'modules', MODULE_SLUG_ANALYTICS_4, 'posts-by-page-path', params ),
+	async controlCallback( {
+		pagePaths,
+	}: PostsByPagePathParams ): Promise< PostsByPagePath > {
+		// The API cache keeps the post of each page path for an hour, so a
+		// list with one new page path asks the server for that page path alone.
+		const cachedPosts = await Promise.all(
+			pagePaths.map( ( pagePath ) =>
+				getItem( getPostCacheKey( pagePath ) )
+			)
+		);
+
+		const posts: PostsByPagePath = {};
+		const pagePathsToRequest: string[] = [];
+
+		pagePaths.forEach( ( pagePath, index ) => {
+			if ( cachedPosts[ index ].cacheHit ) {
+				posts[ pagePath ] = cachedPosts[ index ].value;
+			} else {
+				pagePathsToRequest.push( pagePath );
+			}
+		} );
+
+		if ( ! pagePathsToRequest.length ) {
+			return posts;
+		}
+
+		// `get()` would cache the response under the whole list of page paths,
+		// which a list with any other page path never reads.
+		const response = ( await get(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'posts-by-page-path',
+			{ pagePaths: pagePathsToRequest },
+			{ useCache: false }
+		) ) as PostsByPagePath;
+
+		// A page path the response leaves out gets `null`, because
+		// `undefined` reads as not loaded and would keep the posts loading.
+		pagePathsToRequest.forEach( ( pagePath ) => {
+			posts[ pagePath ] = response[ pagePath ] ?? null;
+		} );
+
+		await Promise.all(
+			pagePathsToRequest.map( ( pagePath ) =>
+				setItem( getPostCacheKey( pagePath ), posts[ pagePath ] )
+			)
+		);
+
+		return posts;
+	},
 	reducerCallback: createReducer(
-		(
-			state: FreshDataState,
-			postsByPagePath: Record< string, PagePathPost | null >,
-			{ pagePaths }: { pagePaths: string[] }
-		) => {
-			// The response leaves out a value that isn't a page path, which then
-			// shows no post either.
-			pagePaths.forEach( ( pagePath ) => {
-				state.postsByPagePath[ pagePath ] =
-					postsByPagePath[ pagePath ] ?? null;
+		( state: FreshDataState, posts: PostsByPagePath ) => {
+			Object.entries( posts ).forEach( ( [ pagePath, post ] ) => {
+				state.postsByPagePath[ pagePath ] = post;
 			} );
 		}
 	),
 	argsToParams: ( pagePaths: string[] ) => ( { pagePaths } ),
-	validateParams: ( { pagePaths }: { pagePaths?: unknown } ) => {
-		invariant( Array.isArray( pagePaths ), 'pagePaths must be an array.' );
+	validateParams: ( { pagePaths }: Partial< PostsByPagePathParams > ) => {
+		invariant(
+			Array.isArray( pagePaths ) &&
+				pagePaths.length <= POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
+			`pagePaths must be a list of at most ${ POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS } page paths.`
+		);
 	},
 } ) as {
 	actions: {
@@ -294,32 +377,28 @@ const baseResolvers = {
 	): Generator< unknown, void, unknown > {
 		const registry = ( yield commonActions.getRegistry() ) as Registry;
 
-		const missingPagePaths = pagePaths.filter(
+		// An earlier failed request saved its error under the selector's
+		// arguments, `[ pagePaths ]`, where the fetch store doesn't clear it.
+		yield clearSelectorError( 'getPostsByPagePath', [ pagePaths ] );
+
+		const pagePathsToLoad = pagePaths.filter(
 			( pagePath ) =>
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPostByPagePath( pagePath ) === undefined
 		);
 
-		// An earlier failed request saved its error under the selector's
-		// arguments, `[ pagePaths ]`, where the fetch store doesn't clear it.
-		yield clearSelectorError( 'getPostsByPagePath', [ pagePaths ] );
-
-		if ( ! missingPagePaths.length ) {
-			return;
-		}
-
 		const { error } =
 			( yield fetchGetPostsByPagePathStore.actions.fetchGetPostsByPagePath(
-				missingPagePaths
+				pagePathsToLoad
 			) ) as { error?: ErrorObject };
 
 		// We move the error from the fetch store's arguments,
-		// `[ missingPagePaths ]`, to the selector's, `[ pagePaths ]`, so a
-		// component can read it and request the posts again.
+		// `[ pagePathsToLoad ]`, to the selector's, `[ pagePaths ]`, so a
+		// component can read it and retry the request.
 		if ( error ) {
 			yield clearSelectorError( 'getPostsByPagePath', [
-				missingPagePaths,
+				pagePathsToLoad,
 			] );
 			yield setErrorForSelector( error, 'getPostsByPagePath', [
 				pagePaths,
@@ -351,40 +430,25 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the post that a page path shows.
+	 * Gets the post that each of a list of page paths shows.
+	 *
+	 * On plain permalinks, every post shares the path of the home page, so a
+	 * page path keeps its query string, such as `/?p=123`. The resolver asks
+	 * `GET:posts-by-page-path` only for the page paths that haven't loaded yet,
+	 * and the API cache keeps the post of each page path for an hour. Read a
+	 * request error with `getErrorForSelector( 'getPostsByPagePath', [ pagePaths ] )`.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object} state    The data store's state.
-	 * @param {string} pagePath The page path with its query string, such as `/?p=123`.
-	 * @return {(Object|null|undefined)} The post, `null` when the page path shows no single published post, or `undefined` until a request for the page path succeeds.
-	 */
-	getPostByPagePath(
-		state: FreshDataState,
-		pagePath: string
-	): PagePathPost | null | undefined {
-		return state.postsByPagePath[ pagePath ];
-	},
-
-	/**
-	 * Gets the post that each page path shows, which the site reads the way
-	 * WordPress reads a request.
-	 *
-	 * So every URL of one post, such as `/?p=123` and
-	 * `/?p=123&utm_source=newsletter`, gives that post. Read a request error
-	 * with `getErrorForSelector( 'getPostsByPagePath', [ pagePaths ] )`.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object}        state     The data store's state.
-	 * @param {Array<string>} pagePaths The page paths with their query strings, such as `/?p=123`.
-	 * @return {(Object|undefined)} The post or `null` of each page path, keyed by the page path, or `undefined` while any of them loads.
+	 * @param {Object}         state     The data store's state.
+	 * @param {Array.<string>} pagePaths The page paths, at most `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS`, such as `/?p=123`.
+	 * @return {(Object|undefined)} The post of each page path, keyed by the page path, with `null` where the page path shows no single published post. Returns `undefined` until every page path has loaded.
 	 */
 	getPostsByPagePath(
 		state: FreshDataState,
 		pagePaths: string[]
-	): Record< string, PagePathPost | null > | undefined {
-		const postsByPagePath: Record< string, PagePathPost | null > = {};
+	): PostsByPagePath | undefined {
+		const posts: PostsByPagePath = {};
 
 		for ( const pagePath of pagePaths ) {
 			const post = state.postsByPagePath[ pagePath ];
@@ -393,10 +457,26 @@ const baseSelectors = {
 				return undefined;
 			}
 
-			postsByPagePath[ pagePath ] = post;
+			posts[ pagePath ] = post;
 		}
 
-		return postsByPagePath;
+		return posts;
+	},
+
+	/**
+	 * Gets the post that one page path shows, once `getPostsByPagePath()` has loaded it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state    The data store's state.
+	 * @param {string} pagePath The page path, such as `/?p=123`.
+	 * @return {(Object|null|undefined)} The post, or `null` where the page path shows no single published post. Returns `undefined` until the page path has loaded.
+	 */
+	getPostByPagePath(
+		state: FreshDataState,
+		pagePath: string
+	): PagePathPost | null | undefined {
+		return state.postsByPagePath[ pagePath ];
 	},
 
 	/**
@@ -443,9 +523,8 @@ const baseSelectors = {
 	 * to include products is off. Without WooCommerce, the setting doesn't
 	 * show, so the tab lists every page. The tab recognizes a product page:
 	 *
-	 * 1. On plain permalinks, by the query string of its URL, such as
-	 *    `/?product=hoodie`.
-	 * 2. Otherwise, by the path that every product URL starts with, such as
+	 * 1. On plain permalinks, by its query string, such as `/?product=hoodie`.
+	 * 2. Otherwise by the path that every product URL starts with, such as
 	 *    `/product/`.
 	 * 3. When product URLs share no such path, by the `googlesitekit_post_type`
 	 *    custom dimension, if the Analytics property has it.
@@ -488,7 +567,7 @@ const baseSelectors = {
 
 			if ( select( CORE_SITE ).isUsingPlainPermalinks() ) {
 				return {
-					by: 'queryVar',
+					by: 'queryString',
 					postType,
 					queryVar: select( CORE_SITE ).getProductQueryVar(),
 				};

@@ -19,7 +19,8 @@
 /**
  * WordPress dependencies
  */
-import { useMemo } from '@wordpress/element';
+import { useCallback, useMemo } from '@wordpress/element';
+import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -27,58 +28,56 @@ import { useMemo } from '@wordpress/element';
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
+import { getPlainPermalinkTopPostsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPageURL';
 import { getPlainPermalinkPagePath } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPlainPermalinkPagePath';
-import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
-import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import {
+	getRecentTrafficBreakdownRows,
+	getRowCounts,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import {
+	MODULES_ANALYTICS_4,
+	POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
+} from '@/js/modules/analytics-4/datastore/constants';
 import { PagePathPost } from '@/js/modules/analytics-4/datastore/fresh-data';
-import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { ErrorObject } from '@/js/util/errors';
 import { FreshDataDateRange } from './useFreshDataDateRange';
 import { useFreshDataReport } from './useFreshDataReport';
 import { usePostsByPagePath } from './usePostsByPagePath';
 
-export interface PlainPermalinkTopPostsColumn {
-	/** The rows the column renders, one for each post, each with its share of the report's total. */
+interface PlainPermalinkTopPostsColumn {
+	/** The rows the column renders: one for each post, or one for each page path after the request for the posts fails. */
 	rows: TableTileRow[];
-	/** The report's total, the site's views in the tab's date range, or `0` until the report loads. */
-	total: number;
-	/** `true` until the site info has loaded and the requests for the report, and then for the posts of its URLs, have finished. */
+	/** `true` until the column's report has loaded, and then until the posts of its page paths have loaded. */
 	loading: boolean;
-	/** The error of the report, or `undefined` when its request hasn't failed. */
+	/** The error of the column's report, or `undefined` when its request hasn't failed. */
 	error?: ErrorObject;
-	/** Requests the report again. */
+	/** Requests the column's report again. */
 	retry: () => void;
+	/** The message the column shows with no rows where the report has views, or `undefined` for the default message, which says the site had no visitors. */
+	zeroState?: string;
 }
 
 /**
- * Resolves the "Top posts by visitors" column on a site with plain permalinks.
+ * Resolves the report of the "Top posts by visitors" column on a site with plain permalinks, and builds the column's rows from it.
  *
- * The column reads each URL of its report the way WordPress reads it. It adds
- * up the views of the URLs of each post, and leaves out the URLs that show no
- * single published post, such as a search. It finds the posts of the 50 page
- * paths with the most views, so a post that only less viewed page paths show
- * is left out. When the request for the posts fails, each row is a page path
- * instead, such as `/?p=123`, with no error.
+ * On plain permalinks, which have no permalink structure, every post shares
+ * the path of the home page, so the report reads each URL with its query
+ * string. The column asks which post each of the 50 page paths with the most
+ * views shows, and adds up the views of each post into one row, such as the
+ * views of `/?p=1` and of `/?p=1&utm_source=newsletter`. When the request for
+ * the posts fails, the column has one row for each page path instead.
  *
  * @since n.e.x.t
  *
- * @param {Function}    buildReportOptions The function that builds the column's report options from the tab's date range, as `useFreshDataReport()` expects.
- * @param {string|null} excludedPostType   The post type whose posts the column leaves out, such as `product`, or `null` to keep every post.
- * @return {Object} The column's rows, the report's total, whether it is loading, the error of its report, and a function that requests the report again.
+ * @return {Object} The column's rows, its loading state, its report's error, a function that requests the report again, and its zero state message.
  */
-export function usePlainPermalinkTopPostsColumn(
-	buildReportOptions: (
-		dateRange: FreshDataDateRange
-	) => ReportOptions | undefined,
-	excludedPostType: string | null
-): PlainPermalinkTopPostsColumn {
-	const {
-		report,
-		loading: reportLoading,
-		error: reportError,
-		retry: retryReport,
-	} = useFreshDataReport( buildReportOptions );
+export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn {
+	const excludedProducts = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
+		[]
+	);
 
 	const siteURL = useSelect(
 		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
@@ -90,119 +89,106 @@ export function usePlainPermalinkTopPostsColumn(
 		[]
 	);
 
-	const isSiteInfoLoaded = !! siteURL && !! publicQueryVars;
+	// The options wait for the product URLs to leave out, so the report isn't
+	// requested first without its product filter.
+	const buildReportOptions = useCallback(
+		( dateRange: FreshDataDateRange ) =>
+			excludedProducts === undefined
+				? undefined
+				: getPlainPermalinkTopPostsReportOptions(
+						dateRange,
+						excludedProducts
+				  ),
+		[ excludedProducts ]
+	);
 
-	// The page path that WordPress reads from each URL of the report, such as
-	// `/?p=123` for `/?p=123&utm_source=newsletter`.
-	const pagePathByURL = useMemo( () => {
-		const pagePaths = new Map< string, string | undefined >();
+	const {
+		report,
+		loading: reportLoading,
+		error,
+		retry,
+	} = useFreshDataReport( buildReportOptions );
 
-		if ( ! isSiteInfoLoaded ) {
-			return pagePaths;
-		}
+	const getPagePath = useCallback(
+		( url: string ) =>
+			getPlainPermalinkPagePath( url, siteURL, publicQueryVars ),
+		[ siteURL, publicQueryVars ]
+	);
 
-		( report?.rows ?? [] ).forEach( ( row ) => {
-			const url = row.dimensionValues?.[ 0 ]?.value ?? '';
-
-			pagePaths.set(
-				url,
-				getPlainPermalinkPagePath( url, siteURL, publicQueryVars )
-			);
-		} );
-
-		return pagePaths;
-	}, [ report, isSiteInfoLoaded, siteURL, publicQueryVars ] );
-
-	const mostViewedPagePaths = useMemo( () => {
-		const views = new Map< string, number >();
-
-		( report?.rows ?? [] ).forEach( ( row ) => {
-			const pagePath = pagePathByURL.get(
-				row.dimensionValues?.[ 0 ]?.value ?? ''
-			);
-
-			if ( pagePath ) {
-				views.set(
-					pagePath,
-					( views.get( pagePath ) ?? 0 ) + getMetricCount( row )
-				);
-			}
-		} );
-
-		return Array.from( views )
-			.filter( ( [ , count ] ) => count > 0 )
-			.sort( ( first, second ) => second[ 1 ] - first[ 1 ] )
-			.slice( 0, 50 )
-			.map( ( [ pagePath ] ) => pagePath );
-	}, [ report, pagePathByURL ] );
+	// The page paths come most viewed first.
+	const pagePaths = useMemo(
+		() =>
+			report
+				? getRowCounts( report, getPagePath )
+						.slice( 0, POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS )
+						.map( ( { key } ) => key )
+				: undefined,
+		[ report, getPagePath ]
+	);
 
 	const {
 		posts,
 		loading: postsLoading,
 		error: postsError,
-	} = usePostsByPagePath( mostViewedPagePaths );
+	} = usePostsByPagePath( pagePaths );
 
 	const rows = useMemo( () => {
+		if ( posts && pagePaths ) {
+			// The first page path of each post, its most viewed one, keys the
+			// post's row, and labels a post with no title.
+			const rowKeys = new Map< number, string >();
+
+			pagePaths.forEach( ( pagePath ) => {
+				const post = posts[ pagePath ];
+
+				if ( post && ! rowKeys.has( post.id ) ) {
+					rowKeys.set( post.id, pagePath );
+				}
+			} );
+
+			return getRecentTrafficBreakdownRows( report, ( url ) => {
+				const pagePath = getPagePath( url );
+				const post = pagePath ? posts[ pagePath ] : null;
+
+				return post ? rowKeys.get( post.id ) ?? null : null;
+			} ).map( ( row ) => {
+				// A row's key is a page path that shows a post.
+				const post = posts[ row.label ] as PagePathPost;
+
+				return {
+					...row,
+					label: post.title || row.label,
+					url: post.url,
+				};
+			} );
+		}
+
 		if ( postsError ) {
-			return getRecentTrafficBreakdownRows( report, ( url ) =>
-				pagePathByURL.get( url )
-			).map( ( row ) => ( {
-				...row,
-				url: getPageURL( siteURL, row.label ),
-			} ) );
+			return getRecentTrafficBreakdownRows( report, getPagePath ).map(
+				( row ) => ( { ...row, url: getPageURL( siteURL, row.label ) } )
+			);
 		}
 
-		if ( ! posts ) {
-			return [];
-		}
+		return [];
+	}, [ posts, pagePaths, postsError, report, getPagePath, siteURL ] );
 
-		const postByURL = new Map< string, PagePathPost >();
-
-		pagePathByURL.forEach( ( pagePath, url ) => {
-			const post = pagePath ? posts[ pagePath ] : undefined;
-
-			if ( post && post.postType !== excludedPostType ) {
-				postByURL.set( url, post );
-			}
-		} );
-
-		const postByID = new Map(
-			Array.from( postByURL.values(), ( post ) => [
-				String( post.id ),
-				post,
-			] )
-		);
-
-		return getRecentTrafficBreakdownRows( report, ( url ) => {
-			const post = postByURL.get( url );
-
-			return post ? String( post.id ) : undefined;
-		} ).map( ( row ) => {
-			const { title, url } = postByID.get( row.label ) as PagePathPost;
-			const { pathname, search } = new URL( url );
-
-			return {
-				...row,
-				// A post with no title shows the path and query string of its
-				// permalink, such as `/?p=12`.
-				label: title || `${ pathname }${ search }`,
-				url,
-			};
-		} );
-	}, [
-		report,
-		pagePathByURL,
-		posts,
-		postsError,
-		siteURL,
-		excludedPostType,
-	] );
+	const hasViews = useMemo(
+		() => getRowCounts( report ).length > 0,
+		[ report ]
+	);
 
 	return {
 		rows,
-		total: getMetricCount( report?.totals?.[ 0 ] ),
-		loading: ! isSiteInfoLoaded || reportLoading || postsLoading,
-		error: reportError,
-		retry: retryReport,
+		// Once the report has loaded, the column waits for the posts, so no row
+		// shows a page path first.
+		loading: reportLoading || ( report !== undefined && postsLoading ),
+		error,
+		retry,
+		zeroState: hasViews
+			? __(
+					'No data to display: your posts haven’t received any visitors yet',
+					'google-site-kit'
+			  )
+			: undefined,
 	};
 }

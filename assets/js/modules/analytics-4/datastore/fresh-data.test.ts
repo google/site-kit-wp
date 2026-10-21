@@ -37,6 +37,7 @@ import {
 	untilResolved,
 	waitFor,
 } from '@tests/js/test-utils';
+import { postsByPagePath } from './__fixtures__';
 import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	MODULES_ANALYTICS_4,
@@ -190,21 +191,25 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return the product post type and its query var on plain permalinks when the setting to include products is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
+			// The `googlesitekit_post_type` custom dimension would otherwise come
+			// first, because product URLs share no path on plain permalinks.
 			provideIncludeProductsState( registry, {
 				setting: false,
 				usingPlainPermalinks: true,
+				productQueryVar: 'product',
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
 			} );
 
 			expect(
 				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toEqual( {
-				by: 'queryVar',
+				by: 'queryString',
 				postType: 'product',
 				queryVar: 'product',
 			} );
 		} );
 
-		it( 'should return the product post type with no query var on plain permalinks when WordPress reads no query var for products', () => {
+		it( 'should return the product post type with no query var on plain permalinks when the product post type has none', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
 			provideIncludeProductsState( registry, {
@@ -216,10 +221,23 @@ describe( 'modules/analytics-4 fresh data', () => {
 			expect(
 				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toEqual( {
-				by: 'queryVar',
+				by: 'queryString',
 				postType: 'product',
 				queryVar: null,
 			} );
+		} );
+
+		it( 'should return null on plain permalinks when the setting to include products is on', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: true,
+				usingPlainPermalinks: true,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
 		} );
 
 		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
@@ -1325,129 +1343,105 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 	} );
 
-	describe( 'getPostByPagePath', () => {
-		it( 'should return the post of a page path, `null` for a page path that shows no post, and `undefined` for a page path that has not been requested', () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetPostsByPagePath(
-				{
-					'/?p=1': {
-						id: 1,
-						postType: 'post',
-						title: 'Hello world!',
-						url: 'http://example.com/?p=1',
-					},
-					'/?s=hats': null,
-				},
-				{ pagePaths: [ '/?p=1', '/?s=hats' ] }
-			);
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( '/?p=1' )
-			).toEqual( {
-				id: 1,
-				postType: 'post',
-				title: 'Hello world!',
-				url: 'http://example.com/?p=1',
-			} );
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( '/?s=hats' )
-			).toBeNull();
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( '/?p=2' )
-			).toBeUndefined();
-		} );
-	} );
-
 	describe( 'getPostsByPagePath', () => {
-		it( 'should return the post or `null` of each page path', async () => {
+		const travelTips = postsByPagePath[ '/?p=1' ];
+		const about = postsByPagePath[ '/?page_id=2' ];
+
+		let dateNowSpy: jest.SpyInstance;
+
+		beforeEach( () => {
+			dateNowSpy = jest.spyOn( Date, 'now' );
+		} );
+
+		afterEach( () => {
+			dateNowSpy.mockRestore();
+		} );
+
+		it( 'should return the post of each page path, and `null` for a page path that shows no single post', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: {
-					'/?p=1&utm_source=newsletter': {
-						id: 1,
-						postType: 'post',
-						title: 'Hello world!',
-						url: 'http://example.com/?p=1',
-					},
-					'/?s=hats': null,
-				},
+				body: { '/?p=1': travelTips, '/?s=hats': null },
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [
-					'/?p=1&utm_source=newsletter',
-					'/?s=hats',
-				] );
+				.getPostsByPagePath( [ '/?p=1', '/?s=hats' ] );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [
-				'/?p=1&utm_source=newsletter',
-				'/?s=hats',
-			] );
+			).getPostsByPagePath( [ '/?p=1', '/?s=hats' ] );
 
+			expect(
+				getQueryArg(
+					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+					'pagePaths'
+				)
+			).toEqual( [ '/?p=1', '/?s=hats' ] );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [
-						'/?p=1&utm_source=newsletter',
-						'/?s=hats',
-					] )
-			).toEqual( {
-				'/?p=1&utm_source=newsletter': {
-					id: 1,
-					postType: 'post',
-					title: 'Hello world!',
-					url: 'http://example.com/?p=1',
-				},
-				'/?s=hats': null,
-			} );
+					.getPostsByPagePath( [ '/?p=1', '/?s=hats' ] )
+			).toEqual( { '/?p=1': travelTips, '/?s=hats': null } );
 		} );
 
 		it( 'should return `null` for a page path that the response leaves out', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: {},
+				body: { '/?p=1': travelTips },
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ 'not-a-page-path' ] );
+				.getPostsByPagePath( [ '/?p=1', '/?p=999' ] );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ 'not-a-page-path' ] );
+			).getPostsByPagePath( [ '/?p=1', '/?p=999' ] );
 
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ 'not-a-page-path' ] )
-			).toEqual( { 'not-a-page-path': null } );
+					.getPostsByPagePath( [ '/?p=1', '/?p=999' ] )
+			).toEqual( { '/?p=1': travelTips, '/?p=999': null } );
 		} );
 
-		it( 'should request only the page paths whose posts have not been received', async () => {
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetPostsByPagePath(
-				{
-					'/?p=1': {
-						id: 1,
-						postType: 'post',
-						title: 'Hello world!',
-						url: 'http://example.com/?p=1',
-					},
-				},
-				{ pagePaths: [ '/?p=1' ] }
+		it( 'should return `undefined` while the posts load', async () => {
+			freezeFetch( postsByPagePathEndpoint );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched( postsByPagePathEndpoint )
 			);
 
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1' ] )
+			).toBeUndefined();
+		} );
+
+		it( 'should request only the page paths whose posts have not loaded yet', async () => {
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?page_id=2': null },
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?page_id=2': about },
 				status: 200,
 			} );
 
@@ -1460,62 +1454,156 @@ describe( 'modules/analytics-4 fresh data', () => {
 				MODULES_ANALYTICS_4
 			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
 
-			expect( fetchMock ).toHaveFetchedTimes(
-				1,
-				postsByPagePathEndpoint
-			);
-
-			const [ [ postsByPagePathURL ] ] = fetchMock.calls(
-				postsByPagePathEndpoint
-			);
-
-			expect( getQueryArg( postsByPagePathURL, 'pagePaths' ) ).toEqual( [
-				'/?page_id=2',
-			] );
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
+			expect(
+				getQueryArg(
+					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+					'pagePaths'
+				)
+			).toEqual( [ '/?page_id=2' ] );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
+			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
 		} );
 
-		it( 'should not send a request when every post has been received', async () => {
-			registry
-				.dispatch( MODULES_ANALYTICS_4 )
-				.receiveGetPostsByPagePath(
-					{ '/?s=hats': null },
-					{ pagePaths: [ '/?s=hats' ] }
-				);
+		it( 'should take the post of each page path from the API cache on a new load, and request only the page paths the cache has no post for', async () => {
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?s=hats' ] );
+				.getPostsByPagePath( [ '/?p=1' ] );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?s=hats' ] );
+			).getPostsByPagePath( [ '/?p=1' ] );
 
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
+			// A new registry has no posts in its state, as after a reload of the
+			// page, while the API cache keeps its entries.
+			const reloadedRegistry = createTestRegistry();
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?page_id=2': about },
+				status: 200,
+			} );
+
+			reloadedRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				reloadedRegistry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
-				registry
+				getQueryArg(
+					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+					'pagePaths'
+				)
+			).toEqual( [ '/?page_id=2' ] );
+			expect(
+				reloadedRegistry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?s=hats' ] )
-			).toEqual( { '/?s=hats': null } );
+					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
+			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
 		} );
 
-		it( 'should return `undefined` while the posts load', () => {
-			freezeFetch( postsByPagePathEndpoint );
+		it( 'should take the post of a page path from the API cache on a new load a second under an hour after its request', async () => {
+			// The API cache times its entries by `Date.now()`, not by the
+			// reference date.
+			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );
 
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:59:59Z' ) );
+
+			const reloadedRegistry = createTestRegistry();
+
+			reloadedRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				reloadedRegistry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect(
-				registry
+				reloadedRegistry
 					.select( MODULES_ANALYTICS_4 )
 					.getPostsByPagePath( [ '/?p=1' ] )
-			).toBeUndefined();
+			).toEqual( { '/?p=1': travelTips } );
+		} );
+
+		it( 'should request the post of a page path again on a new load an hour after its request', async () => {
+			// The API cache times its entries by `Date.now()`, not by the
+			// reference date.
+			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T10:00:00Z' ) );
+
+			const reloadedRegistry = createTestRegistry();
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			reloadedRegistry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				reloadedRegistry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			expect( fetchMock ).toHaveFetchedTimes( 2 );
 		} );
 
 		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the request fails', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				},
+				body: errorResponse,
 				status: 500,
 			} );
 
@@ -1528,33 +1616,31 @@ describe( 'modules/analytics-4 fresh data', () => {
 				MODULES_ANALYTICS_4
 			).getPostsByPagePath( [ '/?p=1' ] );
 
+			expect( console ).toHaveErrored();
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getErrorForSelector( 'getPostsByPagePath', [
 						[ '/?p=1' ],
 					] )
-			).toEqual( {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			} );
+			).toEqual( errorResponse );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getPostsByPagePath( [ '/?p=1' ] )
 			).toBeUndefined();
-			expect( console ).toHaveErrored();
 		} );
 
-		it( 'should remove the error from `getErrorForSelector()` when a retry of the request succeeds', async () => {
+		it( 'should store the error for `getErrorForSelector()` under the page paths of the selector when the request for the page paths not loaded yet fails', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: {
-					code: 'internal_server_error',
-					message: 'Internal server error',
-					data: { status: 500 },
-				},
-				status: 500,
+				body: { '/?p=1': travelTips },
+				status: 200,
 			} );
 
 			registry
@@ -1567,13 +1653,192 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).getPostsByPagePath( [ '/?p=1' ] );
 
 			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': null },
+				body: errorResponse,
+				status: 500,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1', '/?page_id=2' ],
+					] )
+			).toEqual( errorResponse );
+			// The request asked for `/?page_id=2` alone, and its error moved
+			// to the page paths of the selector.
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?page_id=2' ],
+					] )
+			).toBeUndefined();
+		} );
+
+		it( 'should remove the error from `getErrorForSelector()` when a retry succeeds for page paths that partly loaded after the failed request', async () => {
+			const errorResponse = {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			};
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: errorResponse,
+				status: 500,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1', '/?page_id=2' ],
+					] )
+			).toEqual( errorResponse );
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1' ] );
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?page_id=2': about },
 				status: 200,
 			} );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.invalidateResolution( 'getPostsByPagePath', [ [ '/?p=1' ] ] );
+				.invalidateResolution( 'getPostsByPagePath', [
+					[ '/?p=1', '/?page_id=2' ],
+				] );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPostsByPagePath', [
+						[ '/?p=1', '/?page_id=2' ],
+					] )
+			).toBeUndefined();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
+			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
+		} );
+
+		it( 'should request the posts of 50 page paths in one request', async () => {
+			const pagePaths = Array.from(
+				{ length: 50 },
+				( _value, index ) => `/?p=${ index + 1 }`
+			);
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( pagePaths );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( pagePaths );
+
+			expect( fetchMock ).toHaveFetchedTimes( 1 );
+			expect(
+				getQueryArg(
+					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
+					'pagePaths'
+				)
+			).toHaveLength( 50 );
+		} );
+
+		it( 'should store the "pagePaths must be a list of at most 50 page paths." error for `getResolutionError()` and not request posts when `pagePaths` has 51 page paths', async () => {
+			const pagePaths = Array.from(
+				{ length: 51 },
+				( _value, index ) => `/?p=${ index + 1 }`
+			);
+
+			fetchMock.get( postsByPagePathEndpoint, {
+				body: {},
+				status: 200,
+			} );
+
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPostsByPagePath( pagePaths );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPostsByPagePath( pagePaths );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getResolutionError( 'getPostsByPagePath', [ pagePaths ] )
+			).toEqual(
+				new Error(
+					'pagePaths must be a list of at most 50 page paths.'
+				)
+			);
+			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+	} );
+
+	describe( 'getPostByPagePath', () => {
+		it( 'should return `undefined` for a page path that has not loaded, and its post once it has', async () => {
+			const travelTips = postsByPagePath[ '/?p=1' ];
+
+			fetchMock.getOnce( postsByPagePathEndpoint, {
+				body: { '/?p=1': travelTips },
+				status: 200,
+			} );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPostByPagePath( '/?p=1' )
+			).toBeUndefined();
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
@@ -1587,16 +1852,8 @@ describe( 'modules/analytics-4 fresh data', () => {
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1' ],
-					] )
-			).toBeUndefined();
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1' ] )
-			).toEqual( { '/?p=1': null } );
-			expect( console ).toHaveErrored();
+					.getPostByPagePath( '/?p=1' )
+			).toEqual( travelTips );
 		} );
 	} );
 } );

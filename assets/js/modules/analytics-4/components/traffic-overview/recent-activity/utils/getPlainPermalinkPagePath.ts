@@ -19,68 +19,71 @@
 /**
  * WordPress dependencies
  */
-import { buildQueryString, getQueryArgs } from '@wordpress/url';
+import { addQueryArgs, getQueryArgs } from '@wordpress/url';
 
 /**
- * Gets the page path that WordPress reads from a URL on a site with plain
- * permalinks.
+ * Gets the page path that WordPress reads from a URL of an Analytics report, on a site with plain permalinks.
  *
- * WordPress builds every plain permalink at the home URL, and reads only its
- * public query vars from a URL. So the page path is the home path followed by
- * the URL's public query vars, in the order of `publicQueryVars`, and every URL
- * of one post gives the same page path, such as `/?p=123` for
- * `/index.php?utm_source=newsletter&p=123`.
+ * On plain permalinks, which have no permalink structure, WordPress serves
+ * every page at the home path, and reads the post from the query string,
+ * such as `/?p=123`. So the page path keeps only the public query vars, in
+ * the order of the URL. The URLs of one post with different campaign query
+ * args, such as `utm_source`, then share one page path.
+ *
+ * A URL at any other path isn't a WordPress page, such as a page of another
+ * app on the same Analytics property. So the function returns `null` for it.
  *
  * @since n.e.x.t
  *
- * @param {string}        pagePathPlusQueryString The path and query string of the URL, such as `/?p=123&utm_source=newsletter`.
- * @param {string}        siteURL                 The URL of the site, such as `https://example.com`.
- * @param {Array<string>} publicQueryVars         The query vars WordPress reads from a URL, such as `p` and `page_id`.
- * @return {(string|undefined)} The page path, such as `/?p=123`, or `undefined` for a URL on another origin or at a path other than the home path.
+ * @param {string}        url             The URL of the report row, its path and its query string, such as `/?p=123&utm_source=newsletter`.
+ * @param {string}        siteURL         The URL of the site, such as `https://example.com/blog/`, whose path is the home path.
+ * @param {Array<string>} publicQueryVars The query vars that WordPress reads from a URL, such as `p` and `page_id`.
+ * @return {(string|null)} The page path, such as `/?p=123`, or `null` where the URL isn't a page at the home path.
  */
 export function getPlainPermalinkPagePath(
-	pagePathPlusQueryString: string,
+	url: string,
 	siteURL: string,
 	publicQueryVars: string[]
-): string | undefined {
+): string | null {
+	// Analytics can record a value that isn't a path, such as `(not set)`.
+	if ( ! url.startsWith( '/' ) ) {
+		return null;
+	}
+
 	let site: URL;
-	let url: URL;
+	let page: URL;
 
 	try {
 		site = new URL( siteURL );
-		url = new URL( pagePathPlusQueryString, site );
+		page = new URL( url, site );
 	} catch {
-		return undefined;
+		return null;
+	}
+
+	// A spam path, such as `//example.org/` or `/\example.org/`, resolves to
+	// another site.
+	if ( page.origin !== site.origin ) {
+		return null;
 	}
 
 	const homePath = site.pathname.endsWith( '/' )
 		? site.pathname
 		: `${ site.pathname }/`;
 
-	// A request to the home URL without its last slash, or to its `index.php`
-	// file, reaches WordPress too.
 	if (
-		url.origin !== site.origin ||
-		! [
-			homePath,
-			homePath.slice( 0, -1 ),
-			`${ homePath }index.php`,
-		].includes( url.pathname )
+		page.pathname !== homePath &&
+		page.pathname !== `${ homePath }index.php`
 	) {
-		return undefined;
+		return null;
 	}
 
-	// `getQueryArgs()` keeps the last value of a query var that a URL repeats,
-	// as PHP does.
-	const queryArgs = getQueryArgs( pagePathPlusQueryString );
-
-	const query = buildQueryString(
-		Object.fromEntries(
-			publicQueryVars
-				.filter( ( name ) => name in queryArgs )
-				.map( ( name ) => [ name, queryArgs[ name ] ] )
+	const queryArgs = Object.fromEntries(
+		Object.entries( getQueryArgs( url ) ).filter(
+			// WordPress ignores a query var with an empty value, such as `p=`.
+			( [ key, value ] ) =>
+				value !== '' && publicQueryVars.includes( key )
 		)
 	);
 
-	return query ? `${ homePath }?${ query }` : homePath;
+	return addQueryArgs( homePath, queryArgs );
 }

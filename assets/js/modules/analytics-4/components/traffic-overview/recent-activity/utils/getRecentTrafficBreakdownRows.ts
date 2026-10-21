@@ -58,52 +58,78 @@ function getTenthPercentages( counts: number[], total: number ): number[] {
 	return getRoundedShares( parts, 1000 ).slice( 0, counts.length );
 }
 
+interface RowCount {
+	/** The key the rows add up under, such as the dimension value or the ID of a post. */
+	key: string;
+	/** The sum of the counts of the rows with the key. */
+	count: number;
+}
+
 /**
- * Builds the rows a column of the Recent activity tab's traffic breakdown
- * renders from its report.
+ * Adds up the count of the rows of a report under the key of each row, and
+ * sorts the keys by count, most first.
  *
- * With `getRowKey`, the rows of the report that the function returns the same
- * key for add up to one row, whose label is that key. Values with no count are
- * left out, and the rest are sorted by count, most first, up to
- * `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` rows. Each share is a percentage of the
- * report's total, which also counts the values that no row shows, such as those
- * past the report's `limit`.
+ * A row whose key is `null` is left out, and so is a key with no count. Keys
+ * with the same count keep the order of the report.
  *
  * @since n.e.x.t
  *
  * @param {Object}   [report]    Optional. A report with one dimension and one metric.
- * @param {Function} [getRowKey] Optional. A function that returns the key of a row from its dimension value, or `undefined` to leave the row out. Without it, a row's key is its dimension value.
- * @return {Array<Object>} The rows. Each has a `label`, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`. The `secondaryValue` is `undefined` when the report has no total.
+ * @param {Function} [getRowKey] Optional. Gets the key of a row from its dimension value, or `null` to leave the row out. Default: the dimension value.
+ * @return {Array<Object>} The `key` and the `count` of each key, most counted first.
+ */
+export function getRowCounts(
+	report?: Report,
+	getRowKey: ( dimensionValue: string ) => string | null = (
+		dimensionValue
+	) => dimensionValue
+): RowCount[] {
+	const counts = new Map< string, number >();
+
+	for ( const row of report?.rows ?? [] ) {
+		const key = getRowKey( row.dimensionValues?.[ 0 ]?.value ?? '' );
+
+		if ( key !== null ) {
+			counts.set(
+				key,
+				( counts.get( key ) ?? 0 ) + getMetricCount( row )
+			);
+		}
+	}
+
+	return (
+		Array.from( counts, ( [ key, count ] ) => ( { key, count } ) )
+			// A report includes values with no count, which a column leaves out.
+			.filter( ( { count } ) => count > 0 )
+			.sort( ( first, second ) => second.count - first.count )
+	);
+}
+
+/**
+ * Builds the rows a column of the Recent activity tab's traffic breakdown
+ * renders from its report.
+ *
+ * The rows of the report add up under their keys, by `getRowCounts()`, up to
+ * `RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS` keys. Each share is a percentage of the
+ * report's total, which also counts the values that the report's `limit` or
+ * `getRowKey` leaves out.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   [report]    Optional. A report with one dimension and one metric.
+ * @param {Function} [getRowKey] Optional. Gets the key of a row from its dimension value, or `null` to leave the row out, as `getRowCounts()` reads it.
+ * @return {Array<Object>} The rows. Each has a `label` with its key, a `value` with the formatted count, such as `'12K'`, and a `secondaryValue` with the formatted share, such as `'(52.2%)'`. The `secondaryValue` is `undefined` when the report has no total.
  */
 export function getRecentTrafficBreakdownRows(
 	report?: Report,
-	getRowKey?: ( dimensionValue: string ) => string | undefined
+	getRowKey?: ( dimensionValue: string ) => string | null
 ): TableTileRow[] {
 	const total = getMetricCount( report?.totals?.[ 0 ] );
 
-	// A `Map` keeps the order of the report, so a sort keeps that order for
-	// keys with the same count.
-	const counts = new Map< string, number >();
-
-	( report?.rows ?? [] ).forEach( ( row ) => {
-		const dimensionValue = row.dimensionValues?.[ 0 ]?.value ?? '';
-		const key = getRowKey ? getRowKey( dimensionValue ) : dimensionValue;
-
-		if ( key === undefined ) {
-			return;
-		}
-
-		counts.set( key, ( counts.get( key ) ?? 0 ) + getMetricCount( row ) );
-	} );
-
-	const rows = Array.from( counts, ( [ label, count ] ) => ( {
-		label,
-		count,
-	} ) )
-		// A report includes values with no count, which a column leaves out.
-		.filter( ( { count } ) => count > 0 )
-		.sort( ( first, second ) => second.count - first.count )
-		.slice( 0, RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS );
+	const rows = getRowCounts( report, getRowKey ).slice(
+		0,
+		RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS
+	);
 
 	const tenths =
 		total > 0
@@ -113,8 +139,8 @@ export function getRecentTrafficBreakdownRows(
 			  )
 			: [];
 
-	return rows.map( ( { label, count }, index ) => ( {
-		label,
+	return rows.map( ( { key, count }, index ) => ( {
+		label: key,
 		value: numFmt( count ),
 		secondaryValue:
 			total > 0

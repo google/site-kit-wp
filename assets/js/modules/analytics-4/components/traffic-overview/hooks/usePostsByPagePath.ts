@@ -19,63 +19,53 @@
 /**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { PagePathPost } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { PostsByPagePath } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ErrorObject } from '@/js/util/errors';
 
-export interface PostsByPagePath {
-	/** The post or `null` of each page path, or `undefined` until they load and after their request fails. */
-	posts?: Record< string, PagePathPost | null >;
-	/** `true` until the request has finished, whether it succeeded or failed. */
+interface PagePathPosts {
+	/** The post of each page path, or `undefined` until every page path has loaded, and after the request fails. */
+	posts?: PostsByPagePath;
+	/** `true` until the request has finished, whether it succeeded or failed, and while the page paths are `undefined`. */
 	loading: boolean;
 	/** The error of the request, or `undefined` when the request hasn't failed. */
 	error?: ErrorObject;
 }
 
 /**
- * Resolves the post that each of the given page paths shows.
- *
- * With no page paths, the hook requests nothing, and `posts` is an empty
- * object.
+ * Resolves the post that each of a list of page paths shows, on plain permalinks.
  *
  * @since n.e.x.t
  *
- * @param {Array<string>} pagePaths The page paths with their query strings, such as `/?p=123`. Pass an array that changes only when the page paths do.
+ * @param {Array<string>} [pagePaths] Optional. The page paths, at most `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS`, such as `/?p=123`, or `undefined` while they load.
  * @return {Object} The posts, whether they are loading, and the error of their request.
  */
-export function usePostsByPagePath( pagePaths: string[] ): PostsByPagePath {
-	const hasPagePaths = pagePaths.length > 0;
-
-	const posts = useInViewSelect<
-		Record< string, PagePathPost | null > | undefined
-	>(
+export function usePostsByPagePath( pagePaths?: string[] ): PagePathPosts {
+	const posts = useSelect(
 		( select: Select ) =>
-			hasPagePaths
+			pagePaths
 				? select( MODULES_ANALYTICS_4 ).getPostsByPagePath( pagePaths )
-				: {},
-		[ hasPagePaths, pagePaths ]
+				: undefined,
+		[ pagePaths ]
 	);
 
 	const loading = useSelect(
 		( select: Select ) =>
-			hasPagePaths &&
 			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
 				'getPostsByPagePath',
 				[ pagePaths ]
 			),
-		[ hasPagePaths, pagePaths, posts ]
+		[ pagePaths ]
 	);
 
 	const error = useSelect(
 		( select: Select ) =>
-			hasPagePaths
-				? select( MODULES_ANALYTICS_4 ).getErrorForSelector(
-						'getPostsByPagePath',
-						[ pagePaths ]
-				  )
-				: undefined,
-		[ hasPagePaths, pagePaths, posts ]
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getPostsByPagePath',
+				[ pagePaths ]
+			),
+		[ pagePaths ]
 	);
 
 	return { posts, loading, error };

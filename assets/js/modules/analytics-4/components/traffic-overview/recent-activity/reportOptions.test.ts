@@ -145,12 +145,36 @@ describe( 'getTopPostsReportOptions', () => {
 } );
 
 describe( 'getPlainPermalinkTopPostsReportOptions', () => {
-	it( 'should build options that request the 1,000 paths and query strings with the most views over the date range, most views first', () => {
+	/**
+	 * Gets the pattern of the filter that leaves the product URLs out of the
+	 * report, as a regular expression.
+	 *
+	 * Analytics reads the pattern as RE2, which reads it the same way as
+	 * JavaScript, because it has no lookaround and no backreference.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string|null} queryVar The query var of the product post type, or `null` for none.
+	 * @return {RegExp} The pattern.
+	 */
+	function getProductPattern( queryVar: string | null ): RegExp {
+		const { dimensionFilters } = getPlainPermalinkTopPostsReportOptions(
+			{ startDate: '2025-02-03', endDate: '2025-02-05' },
+			{ by: 'queryString', postType: 'product', queryVar }
+		);
+		const filter = dimensionFilters?.pagePathPlusQueryString as {
+			value: string;
+		};
+
+		return new RegExp( filter.value );
+	}
+
+	it( 'should build options that request the 1,000 URLs with the most views over the date range, by their path and query string, most views first', () => {
 		expect(
-			getPlainPermalinkTopPostsReportOptions( {
-				startDate: '2025-02-03',
-				endDate: '2025-02-05',
-			} )
+			getPlainPermalinkTopPostsReportOptions(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				null
+			)
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
@@ -161,40 +185,74 @@ describe( 'getPlainPermalinkTopPostsReportOptions', () => {
 			],
 			limit: 1000,
 			reportID:
-				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
+				'analytics-4_recent-traffic-breakdown_widget_plainPermalinkTopPostsArgs',
 		} );
 	} );
 
-	it( 'should build options that leave out the URLs with the product query var or the product post type', () => {
+	it( 'should build options that leave out the URL of each single product, by its query var or by its post type with an ID', () => {
 		expect(
 			getPlainPermalinkTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{ by: 'queryVar', postType: 'product', queryVar: 'product' }
+				{ by: 'queryString', postType: 'product', queryVar: 'product' }
 			).dimensionFilters
 		).toEqual( {
 			pagePathPlusQueryString: {
 				filterType: 'stringFilter',
 				matchType: 'PARTIAL_REGEXP',
-				value: '[?&](product=[^&]|post_type=product(&|$))',
+				value: '[?&](?:product=[^&]|post_type=product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=product(?:&|$))',
 				notExpression: true,
 			},
 		} );
 	} );
 
-	it( 'should build options that leave out the URLs with the product post type when products have no query var', () => {
+	it( 'should build options that leave out a single product only by its post type with an ID when the product post type has no query var', () => {
 		expect(
 			getPlainPermalinkTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
-				{ by: 'queryVar', postType: 'product', queryVar: null }
+				{ by: 'queryString', postType: 'product', queryVar: null }
 			).dimensionFilters
 		).toEqual( {
 			pagePathPlusQueryString: {
 				filterType: 'stringFilter',
 				matchType: 'PARTIAL_REGEXP',
-				value: '[?&](post_type=product(&|$))',
+				value: '[?&](?:post_type=product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=product(?:&|$))',
 				notExpression: true,
 			},
 		} );
+	} );
+
+	it( 'should build a product filter that matches each URL of a single product', () => {
+		const productPattern = getProductPattern( 'product' );
+
+		expect( productPattern.test( '/?product=hoodie' ) ).toBe( true );
+		expect(
+			productPattern.test( '/?product=hoodie&attribute_pa_color=red' )
+		).toBe( true );
+		expect( productPattern.test( '/?post_type=product&p=5' ) ).toBe( true );
+		expect( productPattern.test( '/?p=5&post_type=product' ) ).toBe( true );
+		expect(
+			productPattern.test( '/?post_type=product&utm_source=x&p=5' )
+		).toBe( true );
+	} );
+
+	it( 'should build a product filter that matches neither the shop, a product search, a product category, another post type nor another query var', () => {
+		const productPattern = getProductPattern( 'product' );
+
+		expect( productPattern.test( '/?post_type=product' ) ).toBe( false );
+		expect( productPattern.test( '/?s=hats&post_type=product' ) ).toBe(
+			false
+		);
+		expect( productPattern.test( '/?product_cat=hats' ) ).toBe( false );
+		expect( productPattern.test( '/?post_type=products&p=5' ) ).toBe(
+			false
+		);
+		expect( productPattern.test( '/?p=5&post_type=products' ) ).toBe(
+			false
+		);
+		expect( productPattern.test( '/?featured_product=hoodie' ) ).toBe(
+			false
+		);
+		expect( productPattern.test( '/?p=5' ) ).toBe( false );
 	} );
 } );
 

@@ -1,5 +1,5 @@
 /**
- * Recent activity top posts column for a site with plain permalinks.
+ * Recent activity top posts column on plain permalinks.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -24,46 +24,17 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
-import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { getPlainPermalinkTopPostsReportOptions } from './reportOptions';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
-	const excludedProducts = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
-		[]
-	);
-
-	// The options wait for the product pages to leave out, so the report isn't
-	// requested first without its product filter.
-	const buildReportOptions = useCallback(
-		( dateRange: FreshDataDateRange ) =>
-			excludedProducts === undefined
-				? undefined
-				: getPlainPermalinkTopPostsReportOptions(
-						dateRange,
-						excludedProducts
-				  ),
-		[ excludedProducts ]
-	);
-
-	const { rows, total, loading, error, retry } =
-		usePlainPermalinkTopPostsColumn(
-			buildReportOptions,
-			excludedProducts?.by === 'queryVar'
-				? excludedProducts.postType
-				: null
-		);
+	const { rows, loading, error, retry, zeroState } =
+		usePlainPermalinkTopPostsColumn();
 
 	return (
 		<TableTile
@@ -73,18 +44,7 @@ const PlainPermalinkTopPostsColumn: FC = () => {
 			loading={ loading }
 			error={ error }
 			onRetry={ retry }
-			// The site can have views that no row shows, such as the views of
-			// a search.
-			zeroState={
-				total > 0 ? (
-					<span>
-						{ __(
-							'No data to display: your posts haven’t received any visitors yet',
-							'google-site-kit'
-						) }
-					</span>
-				) : undefined
-			}
+			zeroState={ zeroState }
 		/>
 	);
 };

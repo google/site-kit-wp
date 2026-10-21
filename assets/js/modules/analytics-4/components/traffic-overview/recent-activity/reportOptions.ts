@@ -104,6 +104,40 @@ function getColumnReportOptions(
 }
 
 /**
+ * Builds the pattern that matches the query string of a single product's URL
+ * on plain permalinks.
+ *
+ * It matches the product's slug in its query var, such as `/?product=hoodie`,
+ * and the product post type with the product's ID in either order, such as
+ * `/?post_type=product&p=5`. It doesn't match the shop or a product search,
+ * which send `post_type=product` with no ID. Analytics reads the pattern as
+ * RE2, which has no lookaround and no backreference.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string}      postType The product post type, such as `product`.
+ * @param {string|null} queryVar The query var of the product post type, such as `product`, or `null` where it has none.
+ * @return {string} The pattern.
+ */
+function getProductQueryStringPattern(
+	postType: string,
+	queryVar: string | null
+): string {
+	// WordPress keeps a post type and its query var to lowercase letters,
+	// digits, `-` and `_`, so neither needs escaping in the pattern.
+	const alternatives = [
+		`post_type=${ postType }&(?:[^&]*&)*p=[0-9]`,
+		`p=[0-9]+&(?:[^&]*&)*post_type=${ postType }(?:&|$)`,
+	];
+
+	if ( queryVar ) {
+		alternatives.unshift( `${ queryVar }=[^&]` );
+	}
+
+	return `[?&](?:${ alternatives.join( '|' ) })`;
+}
+
+/**
  * Builds the filter that removes the product pages from the report of views for
  * each page.
  *
@@ -126,23 +160,15 @@ function getExcludedProductsFilters(
 		};
 	}
 
-	if ( excludedProducts.by === 'queryVar' ) {
-		const { postType, queryVar } = excludedProducts;
-		// `get_post_permalink()` puts the slug of a product in the product
-		// query var, such as `?product=hoodie`. For a draft, or a post type
-		// with no query var, it uses the post type and the ID instead, such as
-		// `?post_type=product&p=123`. WordPress sanitizes both names, so they
-		// hold no character with a meaning in a regular expression.
-		const productParameters = [
-			...( queryVar ? [ `${ queryVar }=[^&]` ] : [] ),
-			`post_type=${ postType }(&|$)`,
-		];
-
+	if ( excludedProducts.by === 'queryString' ) {
 		return {
 			pagePathPlusQueryString: {
 				filterType: 'stringFilter',
 				matchType: 'PARTIAL_REGEXP',
-				value: `[?&](${ productParameters.join( '|' ) })`,
+				value: getProductQueryStringPattern(
+					excludedProducts.postType,
+					excludedProducts.queryVar
+				),
 				notExpression: true,
 			},
 		};
@@ -194,34 +220,32 @@ export function getTopPostsReportOptions(
 }
 
 /**
- * Builds the options of the report of views for each URL on a site with plain
- * permalinks.
+ * Builds the options of the report of views for each URL on plain permalinks,
+ * where every post shares the path of the home page.
  *
- * On plain permalinks, every post has the path of the home URL, and only the
- * query string tells the posts apart. So the report has a row for each path
- * and query string, such as `/?p=123` and `/?p=123&utm_source=newsletter`, and
- * the column adds up the rows of the same post. The report has the 1,000 URLs
- * with the most views, so the URLs of a post with many tracking args, such as
- * `utm_source`, still add up.
+ * The report reads each URL with its query string, such as `/?p=123`. Many
+ * URLs can show one post, such as `/?p=123&utm_source=newsletter`, so the
+ * report has the 1,000 URLs with the most views rather than as many as a
+ * column shows.
  *
  * @since n.e.x.t
  *
  * @param {Object}      dateRange           The date range of the Recent activity tab.
  * @param {string}      dateRange.startDate The first day of the date range.
  * @param {string}      dateRange.endDate   The last day of the date range.
- * @param {Object|null} [excludedProducts]  Optional. The way to recognize the product pages that the report leaves out, or `null` to keep them. Default `null`.
+ * @param {Object|null} excludedProducts    The way to recognize the product URLs that the report leaves out, or `null` to keep them.
  * @return {Object} The report options.
  */
 export function getPlainPermalinkTopPostsReportOptions(
 	dateRange: FreshDataDateRange,
-	excludedProducts: ExcludedProducts | null = null
+	excludedProducts: ExcludedProducts | null
 ): ReportOptions {
 	return {
 		...getColumnReportOptions(
 			dateRange,
 			'pagePathPlusQueryString',
 			'screenPageViews',
-			'analytics-4_recent-traffic-breakdown_widget_topPostsArgs'
+			'analytics-4_recent-traffic-breakdown_widget_plainPermalinkTopPostsArgs'
 		),
 		...( excludedProducts
 			? {
