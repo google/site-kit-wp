@@ -104,9 +104,7 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 				block: 'nearest',
 			} );
 		}
-		// Only scroll when the notice mounts.
-		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [] );
+	}, [ scrollIntoView, message ] );
 
 	// Do not display if there is no error and no direct message text is passed as a direct prop.
 	// Also do not display if the error is for missing scopes as these are handled by a popup modal.

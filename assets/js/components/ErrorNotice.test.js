@@ -221,6 +221,23 @@ describe( 'ErrorNotice', () => {
 			} );
 		} );
 
+		it( 'should scroll the notice into view once it has a message', () => {
+			const { rerender } = render(
+				<ErrorNotice message="" scrollIntoView />,
+				{ registry }
+			);
+
+			expect( Element.prototype.scrollIntoView ).not.toHaveBeenCalled();
+
+			rerender(
+				<ErrorNotice message="Something went wrong" scrollIntoView />
+			);
+
+			expect( Element.prototype.scrollIntoView ).toHaveBeenCalledTimes(
+				1
+			);
+		} );
+
 		it( 'should not scroll the notice into view by default', () => {
 			render( <ErrorNotice message="Something went wrong" />, {
 				registry,
