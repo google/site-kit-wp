@@ -19,11 +19,13 @@
 /**
  * WordPress dependencies
  */
+import { createElement, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -88,6 +90,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/analytics/',
 				serviceRequirements: __(
 					'A "gathering data" message will be displayed to users with newly created Analytics properties. All Analytics data is subject to processing delays, which typically take 2 to 6 hours to process new traffic information.',
 					'google-site-kit'
@@ -105,11 +109,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable enhanced measurements (optional)',
 						'google-site-kit'
 					),
+					__(
+						'Analytics is set up! You are now capturing useful data for your site.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Analytics is set up! You are now capturing useful data for your site.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -118,8 +122,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -205,6 +209,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/key-metrics/',
 				serviceRequirements: __(
 					'There are no service requirements for key metrics',
 					'google-site-kit'
@@ -214,11 +220,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Answer questions about the goal of your site',
 						'google-site-kit'
 					),
+					__(
+						'Your key metrics are set up! You can select which metrics to display and view them on your Site Kit dashboard.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Your key metrics are set up! You can select which metrics to display and view them on your Site Kit dashboard.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -298,6 +304,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/enhanced-measurement/',
 				serviceRequirements: __(
 					'There are no service requirements for enhanced measurement',
 					'google-site-kit'
@@ -307,15 +315,24 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable enhanced measurement for Analytics',
 						'google-site-kit'
 					),
+					createInterpolateElement(
+						__(
+							'View your enhanced measurement data in your <a>Analytics account</a>',
+							'google-site-kit'
+						),
+						{
+							a: createElement( Link, {
+								href: 'https://analytics.google.com/analytics/web/',
+								external: true,
+								hideExternalIndicator: true,
+							} ),
+						}
+					),
 					__(
-						'View your enhanced measurement data in your Analytics account',
+						'You are now tracking enhanced measurement data',
 						'google-site-kit'
 					),
 				],
-				setupComplete: __(
-					'You are now tracking enhanced measurement data',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -324,8 +341,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -358,9 +375,18 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		),
 		detail: {
 			description: {
-				whatIs: __(
-					'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics audiences to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
-					'google-site-kit'
+				whatIs: createInterpolateElement(
+					__(
+						'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
+						'google-site-kit'
+					),
+					{
+						a: createElement( Link, {
+							href: 'https://support.google.com/analytics/answer/9267572?hl=en#zippy=%2Cin-this-article',
+							external: true,
+							hideExternalIndicator: true,
+						} ),
+					}
 				),
 				whyUseHeading: __(
 					'Why use visitor groups?',
@@ -408,6 +434,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/visitor-groups/',
 				serviceRequirements: __(
 					'There are no service requirements for visitor groups',
 					'google-site-kit'
@@ -417,11 +445,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable visitor groups here [CTA for setup]',
 						'google-site-kit'
 					),
+					__(
+						"You're all set! Your visitor groups can be found and configured on your Site Kit dashboard.",
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					"You're all set! Your visitor groups can be found and configured on your Site Kit dashboard.",
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{

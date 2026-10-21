@@ -64,7 +64,7 @@ export interface RecentContentItem {
 	sitePublishedAt: string;
 }
 
-interface RecentContentOptions {
+export interface RecentContentOptions {
 	/** The maximum number of posts and products to return. */
 	count: number;
 }

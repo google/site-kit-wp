@@ -84,6 +84,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/ads/',
 				serviceRequirements: __(
 					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
 					'google-site-kit'
@@ -102,11 +104,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable Google tag gateway for advertisers (optional)',
 						'google-site-kit'
 					),
+					__(
+						'Ads is set up! You are growing your reach.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Ads is set up! You are growing your reach.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -115,8 +117,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Ads settings page showing various configuration options',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},

@@ -89,6 +89,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/sign-in-with-google/',
 				serviceRequirements: __(
 					'Access to the Google Cloud Platform is required to create a project and obtain OAuth credentials (Client ID). Your site must allow user registration (Settings > General) if you want to use the Sign in with Google "One Tap" option.',
 					'google-site-kit'
@@ -100,11 +102,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__( 'Enable one-tap (optional)', 'google-site-kit' ),
+					__(
+						'Users can now sign in with Google to your site',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Users can now sign in with Google to your site',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -113,8 +115,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Custom page showing Sign in with Google integration',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},

@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import type { ComponentType, LazyExoticComponent } from 'react';
+import type { ComponentType, LazyExoticComponent, ReactNode } from 'react';
 
 /**
  * Internal dependencies
  */
-import type { Select } from 'googlesitekit-data';
+import type { Registry, Select } from 'googlesitekit-data';
 import type {
 	FEATURE_BADGES,
 	FEATURE_CATEGORIES,
@@ -52,17 +52,17 @@ export interface FeatureScreenshot {
 
 export interface FeatureDetail {
 	description?: {
-		whatIs?: string;
-		whyUseHeading?: string;
+		whatIs?: ReactNode;
+		whyUseHeading?: ReactNode;
 		whyUseList?: {
-			term: string;
-			description: string;
+			term: ReactNode;
+			description: ReactNode;
 		}[];
 	};
 	requirements?: {
-		serviceRequirements?: string;
-		setupList?: string[];
-		setupComplete?: string;
+		serviceRequirements?: ReactNode;
+		setupList?: ReactNode[];
+		documentationURL?: string;
 	};
 	screenshots?: FeatureScreenshot[];
 }
@@ -102,7 +102,7 @@ export interface FeatureSetup {
 	// The enable routine for `background-toggle` features.
 	activate?: ( ...args: never[] ) => unknown;
 	// Opens the existing surface over the hub, for `in-place-panel` features.
-	open?: ( ...args: never[] ) => unknown;
+	open?: ( registry: Registry ) => void;
 	// Completion check, overriding the default module-connected check.
 	isEnabled?: ( select: Select ) => boolean | undefined;
 	// A `React.lazy()` reference, where setup can't be expressed as a thunk.

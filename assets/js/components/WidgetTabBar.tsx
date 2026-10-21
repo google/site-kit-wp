@@ -1,5 +1,5 @@
 /**
- * Traffic Overview tab bar.
+ * Widget tab bar.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -34,7 +34,7 @@ import Badge from '@/js/components/Badge';
 import { BADGE_VARIANTS } from '@/js/components/Badge/constants';
 import ScrollableTabs from '@/js/components/ScrollableTabs';
 
-export interface TrafficOverviewTab {
+export interface WidgetTab {
 	/** The tab's identifier, which becomes the tab element's DOM `id`. */
 	id: string;
 	/** The text the tab shows. */
@@ -45,9 +45,9 @@ export interface TrafficOverviewTab {
 	isBeta?: boolean;
 }
 
-interface TrafficOverviewTabBarProps {
+interface WidgetTabBarProps {
 	/** The tabs the tab bar renders, in the order given. */
-	tabs: TrafficOverviewTab[];
+	tabs: WidgetTab[];
 	/**
 	 * The `id` of the selected tab. The tab bar selects the first tab when no
 	 * tab has this `id`.
@@ -57,7 +57,7 @@ interface TrafficOverviewTabBarProps {
 	onTabChange: ( tabID: string ) => void;
 }
 
-const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
+const WidgetTabBar: FC< WidgetTabBarProps > = ( {
 	tabs,
 	activeTabID,
 	onTabChange,
@@ -65,7 +65,7 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 	const activeIndex = tabs.findIndex( ( tab ) => tab.id === activeTabID );
 
 	return (
-		<ScrollableTabs className="googlesitekit-traffic-overview__tabs">
+		<ScrollableTabs className="googlesitekit-widget-tab-bar">
 			<TabBar
 				// Material's tab bar lists its tabs in the order they mount, not
 				// in the order they render, so a tab added between two others
@@ -90,7 +90,7 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 					>
 						{ tab.Icon && (
 							<tab.Icon
-								className="googlesitekit-traffic-overview__tab-icon"
+								className="googlesitekit-widget-tab-bar__tab-icon"
 								width={ 18 }
 								height={ 18 }
 								aria-hidden="true"
@@ -116,4 +116,4 @@ const TrafficOverviewTabBar: FC< TrafficOverviewTabBarProps > = ( {
 	);
 };
 
-export default TrafficOverviewTabBar;
+export default WidgetTabBar;
