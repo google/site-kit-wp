@@ -1,0 +1,18 @@
+{
+	"/?p=1": {
+		"id": 1,
+		"title": "Travel tips",
+		"url": "http://example.com/?p=1"
+	},
+	"/?page_id=2": {
+		"id": 2,
+		"title": "About",
+		"url": "http://example.com/?page_id=2"
+	},
+	"/?p=3": {
+		"id": 3,
+		"title": "Packing list",
+		"url": "http://example.com/?p=3"
+	},
+	"/?s=hats": null
+}

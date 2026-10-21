@@ -29,6 +29,7 @@ export { default as createWebDataStream } from './create-webdatastream.json';
 export { default as defaultSettings } from './default-settings.json';
 export { default as defaultEnhancedMeasurementSettings } from './default-enhanced-measurement-settings.json';
 export { default as pageTitles } from './page-titles.json';
+export { default as postsByPagePath } from './posts-by-page-path.json';
 export { default as properties } from './properties.json';
 export { default as report } from './report.json';
 export { default as webDataStreams } from './webdatastreams.json';
