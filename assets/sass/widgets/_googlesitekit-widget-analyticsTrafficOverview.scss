@@ -18,6 +18,10 @@
 
 @use "sass:map";
 
+// The space between the columns of a breakdown and between the groups of fresh
+// figures, so the groups line up with the columns below them.
+$traffic-overview-column-gap: 42px;
+
 .googlesitekit-plugin {
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel {
 		display: flex;
@@ -138,7 +142,7 @@
 			margin-top: 18px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 42px;
+				gap: $traffic-overview-column-gap;
 
 				// Equal fractions, so a column with no rows keeps its width.
 				grid-template-columns: repeat(3, 1fr);
@@ -217,6 +221,25 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__fresh-metrics-row {
+			display: grid;
+			gap: 32px;
+			grid-template-columns: minmax(0, 1fr);
+
+			// Each group takes a third of the row, the width of a column of
+			// the traffic breakdown below.
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		// The notice in place of the visitors figure spans the whole row, above
+		// the search figures.
+		.googlesitekit-traffic-overview__fresh-metrics-notice {
+			grid-column: 1 / -1;
+		}
+
 		.googlesitekit-traffic-overview__insight-notice-content {
 			align-items: center;
 			background-color: $c-blue-b-50;
@@ -249,6 +272,69 @@
 
 			@media (min-width: $bp-desktop) {
 				margin-top: 38px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-group-header {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+
+			// The gap applies to the figures and to a report error alike.
+			margin-bottom: 12px;
+
+			// The icon's line box would make this header taller than the one
+			// without a tooltip.
+			.googlesitekit-info-tooltip {
+				height: 16px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-group-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics {
+			display: flex;
+			gap: 24px;
+
+			@media (min-width: $bp-tablet) {
+				gap: 48px;
+			}
+		}
+
+		// On phones the figures of a group share its width.
+		.googlesitekit-traffic-overview__fresh-metric {
+			color: $c-surfaces-on-surface;
+			flex: 1 1 0;
+
+			@media (min-width: $bp-tablet) {
+				flex: none;
+				min-width: 120px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric:not(:last-child) {
+			border-right: 1px solid $c-utility-divider;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric-label {
+			margin: 0;
+		}
+
+		// The notice takes the height of the figures it replaces.
+		.googlesitekit-traffic-overview__fresh-metrics-empty {
+			color: $c-surfaces-on-surface-variant;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-height: 80px;
+			padding-top: 6px;
+
+			.googlesitekit-typography {
+				color: inherit;
+				margin: 0;
 			}
 		}
 
@@ -374,7 +460,7 @@
 			margin-top: 12px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 42px;
+				gap: $traffic-overview-column-gap;
 
 				// Without the posts column, the other two stay a third wide.
 				grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -435,4 +521,9 @@
 			margin-left: 4px;
 		}
 	}
+}
+
+// The padding comes on top, so the tooltip is 210px wide as in the design.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
+	max-width: 186px;
 }

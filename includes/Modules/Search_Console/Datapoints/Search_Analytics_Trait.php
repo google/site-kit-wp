@@ -93,6 +93,7 @@ trait Search_Analytics_Trait {
 	 * Creates a new Search Console analytics request for the current site and given arguments.
 	 *
 	 * @since 1.186.0
+	 * @since n.e.x.t Requests the `hourly_all` data state when grouping by the `hour` dimension.
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
@@ -130,7 +131,9 @@ trait Search_Analytics_Trait {
 			$request->setEndDate( $args['end_date'] );
 		}
 
-		$request->setDataState( 'all' );
+		// Search Console groups data by hour only in the `hourly_all` data state,
+		// and accepts that data state only when grouping by hour.
+		$request->setDataState( in_array( 'hour', (array) $args['dimensions'], true ) ? 'hourly_all' : 'all' );
 
 		$filters = array();
 
