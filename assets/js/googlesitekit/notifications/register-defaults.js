@@ -549,7 +549,9 @@ export const DEFAULT_NOTIFICATIONS = {
 		Component: FeatureDiscoverySetupSuccessNotification,
 		priority: PRIORITY.SETUP_CTA_HIGH,
 		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
-		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		// Use the DEFAULT group so the notification doesn't block the auto-updates banner
+		// from being shown on the "What's new" tab.
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
 		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
 		checkRequirements: requireFeatureDiscoverySetupSuccess(
 			ALL_SERVICES_TAB_PATH

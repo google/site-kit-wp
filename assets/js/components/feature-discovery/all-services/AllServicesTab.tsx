@@ -97,7 +97,7 @@ const AllServicesTab: FC = () => {
 					areaSlug={
 						NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP
 					}
-					groupID={ NOTIFICATION_GROUPS.SETUP_CTAS }
+					groupID={ NOTIFICATION_GROUPS.DEFAULT }
 				/>
 			</div>
 
