@@ -109,16 +109,6 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 		[ publicationID ]
 	);
 
-	const hasResolvedPublication: boolean = useSelect(
-		( select: Select ) =>
-			! publicationID ||
-			select( MODULES_READER_REVENUE_MANAGER ).hasFinishedResolution(
-				'getPublication',
-				[]
-			),
-		[ publicationID ]
-	);
-
 	const resolvedSlug: string | undefined = useSelect(
 		( select: Select ) => resolveStep( steps, select )?.slug,
 		[ steps ]
@@ -139,11 +129,7 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 			return;
 		}
 
-		if (
-			publicationID &&
-			publication === undefined &&
-			! hasResolvedPublication
-		) {
+		if ( publicationID && publication === undefined ) {
 			return;
 		}
 
@@ -170,7 +156,6 @@ export default function useSetupFlow( steps: SetupStep[] ): {
 	}, [
 		blockingSlug,
 		currentIndex,
-		hasResolvedPublication,
 		publication,
 		publicationID,
 		resolvedSlug,
