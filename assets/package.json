@@ -13,6 +13,8 @@
 		"extends @wordpress/browserslist-config"
 	],
 	"dependencies": {
+		"@atlaskit/pragmatic-drag-and-drop": "4.0.0",
+		"@atlaskit/pragmatic-drag-and-drop-hitbox": "3.0.0",
 		"@material-ui/core": "^4.11.4",
 		"@material/button": "^2.3.0",
 		"@material/checkbox": "^2.3.0",
