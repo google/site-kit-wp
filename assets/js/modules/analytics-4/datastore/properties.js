@@ -576,12 +576,17 @@ const baseActions = {
 		const { googleTagAccountID, googleTagContainerID, googleTagID } =
 			googleTagSettings;
 
-		// Note that when plain actions are dispatched in a function where an await has occurred (this can be a regular async function that has awaited, or a generator function
-		// action that yields to an async action), they are handled asynchronously when they would normally be synchronous. This means that following the usual pattern of dispatching
-		// individual setter actions for the `googleTagAccountID`, `googleTagContainerID` and `googleTagID` settings each resulted in a rerender of the
-		// GoogleTagIDMismatchNotification component, thus resulting in an erroneous call to the GET:container-destinations endpoint with mismatched settings. To mitigate this, we
-		// dispatch a single action here to set all these settings at once. The same applies to the `setSettings()` call above.
-		// See issue https://github.com/google/site-kit-wp/issues/6784 and the PR https://github.com/google/site-kit-wp/pull/6814.
+		/**
+		 * React 17 batches updates within React event handlers, but not after an await or
+		 * when a generator resumes after an asynchronous control. Plain actions still
+		 * update the store synchronously, so separate setter calls can trigger separate
+		 * renders. Set these Google tag settings together to prevent
+		 * GoogleTagIDMismatchNotification from requesting GET:container-destinations with
+		 * mismatched account and container IDs. The earlier setSettings() call also keeps
+		 * related settings together, although that branch has not awaited.
+		 * See https://github.com/google/site-kit-wp/issues/6784 and
+		 * https://github.com/google/site-kit-wp/pull/6814.
+		 */
 		dispatch( MODULES_ANALYTICS_4 ).setSettings( {
 			googleTagAccountID,
 			googleTagContainerID,
