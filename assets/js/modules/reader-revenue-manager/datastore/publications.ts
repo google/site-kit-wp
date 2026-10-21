@@ -202,6 +202,23 @@ export function getSelectedPublicationID(
 }
 
 /**
+ * Resolves the organization ID for a request, falling back to the saved setting.
+ *
+ * @since 1.191.0
+ *
+ * @param {Object} state            Store state.
+ * @param {Object} [state.settings] Module settings.
+ * @param {Object} [params]         Optional publication parameters.
+ * @return {string|undefined} Organization ID, if one can be resolved.
+ */
+export function getSelectedOrganizationID(
+	state: { settings?: ReaderRevenueManagerSettings },
+	params: Partial< PublicationParams > = {}
+): string | undefined {
+	return params.organizationID || state.settings?.organizationID;
+}
+
+/**
  * Resolves module settings when no publication ID was passed and settings
  * are not already in the store.
  *
@@ -528,9 +545,39 @@ const baseActions = {
 		function* (
 			params: UpdatePublicationParams
 		): Generator< unknown, unknown, unknown > {
+			const registryResult = yield commonActions.getRegistry();
+			const registry = registryResult as ReaderRevenueManagerRegistry;
+
+			const publicationID =
+				params.publicationID ||
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublicationID();
+
+			let organizationID =
+				params.organizationID ||
+				registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getOrganizationID();
+
+			if ( ! organizationID && publicationID ) {
+				const publication = registry
+					.select( MODULES_READER_REVENUE_MANAGER )
+					.getPublication( { publicationID } );
+
+				// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+				organizationID = publication?.organizationId;
+			}
+
+			const resolvedParams: UpdatePublicationParams = {
+				...params,
+				...( publicationID ? { publicationID } : {} ),
+				...( organizationID ? { organizationID } : {} ),
+			};
+
 			// @ts-expect-error createFetchStore is not properly typed yet.
 			return yield fetchUpdatePublicationStore.actions.fetchUpdatePublication(
-				params
+				resolvedParams
 			);
 		}
 	),
@@ -769,8 +816,44 @@ const baseResolvers = {
 			return;
 		}
 
+		let organizationID =
+			params?.organizationID ||
+			registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getOrganizationID();
+
+		if ( ! organizationID ) {
+			yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+					.getPublications()
+			);
+
+			const selectedPublication = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublication( { publicationID } );
+
+			// If the connected publication was found in the publications list,
+			// the reducer already synchronized settings and this selector is now resolved.
+			if ( selectedPublication !== undefined ) {
+				return;
+			}
+
+			organizationID = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getOrganizationID();
+		}
+
+		const resolvedParams: Partial< PublicationParams > = {
+			...params,
+			publicationID,
+			...( organizationID ? { organizationID } : {} ),
+		};
+
 		// @ts-expect-error createFetchStore is not properly typed yet.
-		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
+		yield fetchGetPublicationStore.actions.fetchGetPublication(
+			resolvedParams
+		);
 	},
 };
 
