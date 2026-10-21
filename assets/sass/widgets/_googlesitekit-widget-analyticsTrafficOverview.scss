@@ -460,7 +460,7 @@ $traffic-overview-column-gap: 42px;
 			margin-top: 12px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 42px;
+				gap: $traffic-overview-column-gap;
 
 				// Without the posts column, the other two stay a third wide.
 				grid-template-columns: repeat(3, minmax(0, 1fr));
