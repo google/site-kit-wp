@@ -101,7 +101,7 @@ describe( 'FeatureListItem', () => {
 		}
 	);
 
-	it( 'retries the same setup when Retry is clicked', async () => {
+	it( 'should retry the same setup when Retry is clicked', async () => {
 		const registry = setupRegistryWithSetupFlowFeature();
 
 		registry
@@ -133,7 +133,7 @@ describe( 'FeatureListItem', () => {
 		} );
 	} );
 
-	it( 'restores the card to its pre-setup state when Got it is clicked', async () => {
+	it( 'should restore the card to its pre-setup state when Got it is clicked', async () => {
 		const registry = setupRegistryWithSetupFlowFeature();
 
 		registry
@@ -164,7 +164,7 @@ describe( 'FeatureListItem', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'shows setup errors already in the store, matching the detail panel setup path', () => {
+	it( 'should show setup errors already in the store, matching the detail panel setup path', () => {
 		const registry = setupRegistryWithSetupFlowFeature();
 
 		registry
@@ -184,7 +184,7 @@ describe( 'FeatureListItem', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'keeps the notice and Retry spinner visible while setup is still running', async () => {
+	it( 'should keep the notice and Retry spinner visible while setup is still running', async () => {
 		const registry = createTestRegistry();
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );

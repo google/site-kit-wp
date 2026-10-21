@@ -27,7 +27,7 @@ import { provideSiteInfo } from '@tests/js/utils';
 import FeatureSetupErrorNotice from './FeatureSetupErrorNotice';
 
 describe( 'FeatureSetupErrorNotice', () => {
-	it( 'renders retryable setup failures with Retry and Learn more', () => {
+	it( 'should render retryable setup failures with Retry and Learn more', () => {
 		const registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideFeatures( registry, [
@@ -76,7 +76,7 @@ describe( 'FeatureSetupErrorNotice', () => {
 		expect( onDismiss ).toHaveBeenCalledTimes( 1 );
 	} );
 
-	it( 'renders insufficient permissions failures without Retry', () => {
+	it( 'should render insufficient permissions failures without Retry', () => {
 		const registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideFeatures( registry, [
@@ -120,7 +120,7 @@ describe( 'FeatureSetupErrorNotice', () => {
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );
 
-	it( 'falls back to feature title when feature name is not available', () => {
+	it( 'should fall back to feature title when feature name is not available', () => {
 		const registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideFeatures( registry, [
@@ -151,7 +151,7 @@ describe( 'FeatureSetupErrorNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'includes the redo setup link when reconnectURL is present', () => {
+	it( 'should include the redo setup link when reconnectURL is present', () => {
 		const registry = createTestRegistry();
 		provideSiteInfo( registry );
 		provideFeatures( registry, [
