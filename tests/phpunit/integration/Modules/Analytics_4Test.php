@@ -2009,7 +2009,6 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
-				'posts-by-page-path',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints'
@@ -2031,6 +2030,24 @@ class Analytics_4Test extends TestCase {
 			'benchmarking-data',
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should not expose the benchmarking data datapoint with typical traffic disabled'
+		);
+	}
+
+	public function test_get_datapoints__freshData() {
+		$this->enable_feature( 'freshData' );
+
+		$this->assertContains(
+			'posts-by-page-path',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the posts by page path datapoint with fresh data enabled.'
+		);
+	}
+
+	public function test_get_datapoints__freshData_disabled() {
+		$this->assertNotContains(
+			'posts-by-page-path',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the posts by page path datapoint with fresh data disabled.'
 		);
 	}
 
@@ -2073,7 +2090,6 @@ class Analytics_4Test extends TestCase {
 				'advanced-data-breakdowns-settings',
 				'save-advanced-data-breakdowns-settings',
 				'form-metadata',
-				'posts-by-page-path',
 			),
 			$this->analytics->get_datapoints(),
 			'Analytics 4 module should expose the expected datapoints with conversion reporting'

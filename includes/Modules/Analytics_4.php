@@ -77,11 +77,11 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Custom_Dimensions;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Enhanced_Measurement_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Form_Metadata;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Google_Tag_Settings;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Properties;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
@@ -1093,12 +1093,6 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'service' => '',
 				)
 			),
-			'GET:posts-by-page-path'                      => new Get_Posts_By_Page_Path(
-				array(
-					'service' => '',
-					'context' => $this->context,
-				)
-			),
 		);
 
 		if ( Feature_Flags::enabled( 'typicalTraffic' ) ) {
@@ -1108,6 +1102,11 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 					'custom_dimensions_data_available' => $this->custom_dimensions_data_available,
 				)
 			);
+		}
+
+		// TODO: #13568 -- Remove the `freshData` check when the flag is removed.
+		if ( Feature_Flags::enabled( 'freshData' ) ) {
+			$this->datapoints['GET:posts-by-page-path'] = new Get_Posts_By_Page_Path( array() );
 		}
 
 		return $this->datapoints;
