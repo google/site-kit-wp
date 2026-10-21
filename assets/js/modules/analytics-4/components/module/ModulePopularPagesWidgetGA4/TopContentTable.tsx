@@ -1,7 +1,7 @@
 /**
- * ModulePopularPagesWidgetGA4 component.
+ * TopContentTable component.
  *
- * Site Kit by Google, Copyright 2024 Google LLC
+ * Site Kit by Google, Copyright 2026 Google LLC
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@
  */
 import classnames from 'classnames';
 import { cloneDeep } from 'lodash';
-import PropTypes from 'prop-types';
+import { ElementType, FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -31,7 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { useInViewSelect, useSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
 import DetailsPermaLinks from '@/js/components/DetailsPermaLinks';
 import PreviewTable from '@/js/components/PreviewTable';
 import ReportTable from '@/js/components/ReportTable';
@@ -44,25 +44,33 @@ import {
 } from '@/js/hooks/useBreakpoint';
 import useViewOnly from '@/js/hooks/useViewOnly';
 import { ZeroDataMessage } from '@/js/modules/analytics-4/components/common';
-import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
-import whenActive from '@/js/util/when-active';
-import Footer from './Footer';
-import Header from './Header';
 import { getPopularPagesReportOptions } from './reportOptions';
 
-function ModulePopularPagesWidgetGA4( props ) {
-	const { Widget, WidgetReportError } = props;
+/**
+ * Props for the Top content table.
+ *
+ * @since n.e.x.t
+ */
+export interface TopContentTableProps {
+	/** The component the table renders when the report fails. */
+	WidgetReportError: ElementType;
+}
 
+const TopContentTable: FC< TopContentTableProps > = ( {
+	WidgetReportError,
+} ) => {
 	const breakpoint = useBreakpoint();
 
-	const isGatheringData = useInViewSelect( ( select ) =>
+	const isGatheringData = useInViewSelect( ( select: Select ) =>
 		select( MODULES_ANALYTICS_4 ).isGatheringData()
 	);
 
-	const dates = useSelect( ( select ) =>
-		select( CORE_USER ).getDateRangeDates()
+	const dates = useSelect(
+		( select: Select ) => select( CORE_USER ).getDateRangeDates(),
+		[]
 	);
 
 	const viewOnlyDashboard = useViewOnly();
@@ -72,48 +80,51 @@ function ModulePopularPagesWidgetGA4( props ) {
 		...getPopularPagesReportOptions(),
 	};
 
-	const error = useSelect( ( select ) =>
-		select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
-			args,
-		] )
-	);
-
-	const report = useInViewSelect(
-		( select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+	const error = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+				args,
+			] ),
 		[ args ]
 	);
 
-	const titles = useInViewSelect(
-		( select ) =>
+	const report: Report | undefined = useInViewSelect(
+		( select: Select ) => select( MODULES_ANALYTICS_4 ).getReport( args ),
+		[ args ]
+	);
+
+	const titles: Record< string, string > | undefined = useInViewSelect(
+		( select: Select ) =>
 			! error
 				? select( MODULES_ANALYTICS_4 ).getPageTitles( report, args )
 				: undefined,
 		[ error, report, args ]
 	);
 
-	const loaded = useSelect( ( select ) => {
-		const reportLoaded = select(
-			MODULES_ANALYTICS_4
-		).hasFinishedResolution( 'getReport', [ args ] );
+	const loaded = useSelect(
+		( select: Select ) => {
+			const reportLoaded = select(
+				MODULES_ANALYTICS_4
+			).hasFinishedResolution( 'getReport', [ args ] );
 
-		return undefined !== error || ( reportLoaded && undefined !== titles );
-	} );
+			return (
+				undefined !== error || ( reportLoaded && undefined !== titles )
+			);
+		},
+		[ args, error, titles ]
+	);
 
 	const loading = ! loaded || isGatheringData === undefined;
 
 	if ( loading ) {
-		return (
-			<Widget Header={ Header } Footer={ Footer } noPadding>
-				<PreviewTable padding />
-			</Widget>
-		);
+		return <PreviewTable padding />;
 	}
 
 	if ( error ) {
 		return (
-			<Widget Header={ Header } Footer={ Footer }>
+			<div className="googlesitekit-analytics-popular-pages-widget__error">
 				<WidgetReportError moduleSlug="analytics-4" error={ error } />
-			</Widget>
+			</div>
 		);
 	}
 
@@ -126,22 +137,24 @@ function ModulePopularPagesWidgetGA4( props ) {
 			title: __( 'Title', 'google-site-kit' ),
 			description: __( 'Page Title', 'google-site-kit' ),
 			primary: true,
-			Component( { row } ) {
+			Component( { row }: { row: Required< ReportRow > } ) {
 				const [ { value: title }, { value: url } ] =
 					row.dimensionValues;
-				const serviceURL = useSelect( ( select ) => {
-					if ( viewOnlyDashboard ) {
-						return null;
-					}
+				const serviceURL = useSelect(
+					( select: Select ) => {
+						if ( viewOnlyDashboard ) {
+							return null;
+						}
 
-					return select( MODULES_ANALYTICS_4 ).getServiceReportURL(
-						'all-pages-and-screens',
-						{
+						return select(
+							MODULES_ANALYTICS_4
+						).getServiceReportURL( 'all-pages-and-screens', {
 							filters: { unifiedPagePathScreen: url },
 							dates,
-						}
-					);
-				} );
+						} );
+					},
+					[ url ]
+				);
 
 				return (
 					<DetailsPermaLinks
@@ -158,7 +171,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Pageviews', 'google-site-kit' ),
 			field: 'metricValues.0.value',
 			className: 'googlesitekit-table__head-item--pageviews',
-			Component( { fieldValue } ) {
+			Component( { fieldValue }: { fieldValue: string } ) {
 				return (
 					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 				);
@@ -170,7 +183,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Sessions', 'google-site-kit' ),
 			field: 'metricValues.1.value',
 			className: 'googlesitekit-table__head-item--sessions',
-			Component( { fieldValue } ) {
+			Component( { fieldValue }: { fieldValue: string } ) {
 				return (
 					<span>{ numFmt( fieldValue, { style: 'decimal' } ) }</span>
 				);
@@ -182,7 +195,7 @@ function ModulePopularPagesWidgetGA4( props ) {
 			description: __( 'Engagement Rate', 'google-site-kit' ),
 			field: 'metricValues.2.value',
 			className: 'googlesitekit-table__head-item--engagement-rate',
-			Component( { fieldValue } ) {
+			Component( { fieldValue }: { fieldValue: string } ) {
 				return <span>{ numFmt( fieldValue, '%' ) }</span>;
 			},
 		},
@@ -191,19 +204,24 @@ function ModulePopularPagesWidgetGA4( props ) {
 			title: __( 'Session Duration', 'google-site-kit' ),
 			description: __( 'Session Duration', 'google-site-kit' ),
 			field: 'metricValues.3.value',
-			Component( { fieldValue } ) {
+			Component( { fieldValue }: { fieldValue: string } ) {
 				return <span>{ numFmt( fieldValue, 's' ) }</span>;
 			},
 		},
 	];
 
-	const rows = report?.rows?.length ? cloneDeep( report.rows ) : [];
+	const rows: Required< ReportRow >[] = report?.rows?.length
+		? cloneDeep( report.rows as Required< ReportRow >[] )
+		: [];
 	const ZeroState = ZeroDataMessage;
 
 	// Combine the titles from the pageTitles with the rows from the metrics report.
 	rows.forEach( ( row ) => {
 		const url = row.dimensionValues[ 0 ].value;
-		row.dimensionValues.unshift( { value: titles[ url ] } ); // We always have an entry for titles[url].
+		// We always have an entry for titles[url].
+		row.dimensionValues.unshift( {
+			value: ( titles as Record< string, string > )[ url ],
+		} );
 	} );
 
 	const tabbedLayout =
@@ -223,23 +241,11 @@ function ModulePopularPagesWidgetGA4( props ) {
 		/>
 	);
 
-	return (
-		<Widget Header={ Header } Footer={ Footer } noPadding>
-			{ tabbedLayout ? (
-				reportTable
-			) : (
-				<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
-			) }
-		</Widget>
+	return tabbedLayout ? (
+		reportTable
+	) : (
+		<TableOverflowContainer>{ reportTable }</TableOverflowContainer>
 	);
-}
-
-ModulePopularPagesWidgetGA4.propTypes = {
-	Widget: PropTypes.elementType.isRequired,
-	WidgetReportError: PropTypes.elementType.isRequired,
-	WidgetReportZero: PropTypes.elementType.isRequired,
 };
 
-export default whenActive( { moduleName: MODULE_SLUG_ANALYTICS_4 } )(
-	ModulePopularPagesWidgetGA4
-);
+export default TopContentTable;

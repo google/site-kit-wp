@@ -153,6 +153,10 @@
 
 		.googlesitekit-notice__content {
 			flex: 1;
+
+			p {
+				padding: 0;
+			}
 		}
 
 		.googlesitekit-notice__action {

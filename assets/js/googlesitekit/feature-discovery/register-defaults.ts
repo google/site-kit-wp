@@ -106,6 +106,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/',
 				serviceRequirements: __(
 					'Dashboard sharing only works with WordPress user roles. This includes any custom user roles',
 					'google-site-kit'
@@ -120,11 +122,11 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Grant permission to view data to other WordPress users, and who can manage view access',
 						'google-site-kit'
 					),
+					__(
+						'You’re done! Other users can view the Site Kit dashboard in view-only mode',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re done! Other users can view the Site Kit dashboard in view-only mode',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -217,6 +219,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/email-reports/',
 				serviceRequirements: __(
 					'There are no service requirements for email reports',
 					'google-site-kit'
@@ -234,11 +238,11 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Invite others to receive email reports (optional)',
 						'google-site-kit'
 					),
+					__(
+						'You’re done! You will receive a confirmation email and the report will be sent automatically per your frequency selection',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re done! You will receive a confirmation email and the report will be sent automatically per your frequency selection',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -321,11 +325,11 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__( 'Download your report', 'google-site-kit' ),
+					__(
+						'You’re done! The PDF will be automatically downloaded',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re done! The PDF will be automatically downloaded',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
