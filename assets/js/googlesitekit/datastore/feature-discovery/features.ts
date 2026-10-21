@@ -223,7 +223,25 @@ export const actions = {
 				return {};
 			}
 
-			const { moduleSlug } = feature.setup;
+			const { moduleSlug, getSetupURL } = feature.setup;
+
+			if ( getSetupURL ) {
+				const setupURL = getSetupURL( registry.select );
+
+				if ( ! setupURL ) {
+					return {};
+				}
+
+				yield commonActions.await(
+					setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
+				);
+
+				yield commonActions.await(
+					registry.dispatch( CORE_LOCATION ).navigateTo( setupURL )
+				);
+
+				return {};
+			}
 
 			if ( ! moduleSlug ) {
 				return {};
