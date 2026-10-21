@@ -24,7 +24,12 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { MODULES_ANALYTICS_4 } from './constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
+import {
+	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
+	MODULES_ANALYTICS_4,
+} from './constants';
 import { RecentContentItem, RecentContentOptions } from './fresh-data';
 
 /**
@@ -53,4 +58,59 @@ export function provideRecentContent(
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.finishResolution( 'getRecentContent', [ options ] );
+}
+
+/**
+ * Puts the module list, the site info, and the Analytics settings in the
+ * store. The selectors that decide whether to include products read them.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object}  registry                          The registry to put the state in.
+ * @param {Object}  [state]                           Optional. The state to put in the store.
+ * @param {boolean} [state.analyticsConnected]        Optional. Whether Analytics is connected. Default `true`.
+ * @param {boolean} [state.wooCommerceActive]         Optional. Whether WooCommerce is active. Default `true`.
+ * @param {boolean} [state.setting]                   Optional. Whether the setting to include products is on. Default `true`.
+ * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
+ * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
+ * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
+ * @return {void}
+ */
+export function provideIncludeProductsState(
+	registry: WPDataRegistry,
+	{
+		analyticsConnected = true,
+		wooCommerceActive = true,
+		setting = true,
+		productPostType = 'product',
+		productPathPrefix = null,
+		availableCustomDimensions,
+	}: {
+		analyticsConnected?: boolean;
+		wooCommerceActive?: boolean;
+		setting?: boolean;
+		productPostType?: string | null;
+		productPathPrefix?: string | null;
+		availableCustomDimensions?: string[] | null;
+	} = {}
+) {
+	provideModules( registry, [
+		{
+			slug: MODULE_SLUG_ANALYTICS_4,
+			active: true,
+			connected: analyticsConnected,
+		},
+	] );
+
+	provideSiteInfo( registry, {
+		wooCommerceActive,
+		productPostType,
+		productPathPrefix,
+	} );
+
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+		[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
+		availableCustomDimensions,
+	} );
 }

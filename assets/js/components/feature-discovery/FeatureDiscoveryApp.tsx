@@ -32,6 +32,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Tab, TabBar } from 'googlesitekit-components';
+import DashboardSharingDialog from '@/js/components/dashboard-sharing/DashboardSharingDialog';
+import UserSettingsSelectionPanel from '@/js/components/email-reporting/UserSettingsSelectionPanel';
 import {
 	ALL_SERVICES_TAB_PATH,
 	WHATS_NEW_TAB_PATH,
@@ -41,6 +43,8 @@ import useFeatureCountCache from '@/js/components/feature-discovery/useFeatureCo
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import Layout from '@/js/components/layout/Layout';
+import PDFExportRoot from '@/js/components/pdf-export/PDFExportRoot';
+import PDFSectionsSelectionPanel from '@/js/components/pdf-export/PDFSectionsSelectionPanel';
 import Typography from '@/js/components/Typography';
 import {
 	SIZE_MEDIUM,
@@ -164,6 +168,11 @@ const FeatureDiscoveryApp: FC = () => {
 				</Grid>
 				<FeatureDetailPanel />
 			</div>
+			{ /* The existing panels that `in-place-panel` features open over the hub. */ }
+			<DashboardSharingDialog />
+			<UserSettingsSelectionPanel />
+			<PDFSectionsSelectionPanel />
+			<PDFExportRoot />
 		</Fragment>
 	);
 };

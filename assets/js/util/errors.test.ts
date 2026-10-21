@@ -25,12 +25,14 @@ import {
 	ERROR_INVALID_JSON,
 	ERROR_REASON_FORBIDDEN,
 	ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+	getErrorNoticeMessage,
 	getReportErrorMessage,
 	isAuthError,
 	isErrorRetryable,
 	isInsufficientPermissionsError,
 	isPermissionScopeError,
 	isRateLimitError,
+	isRetryableErrorType,
 	isWPError,
 } from './errors';
 
@@ -295,6 +297,96 @@ describe( 'Error Utilities', () => {
 					{ name: 'some-selector', storeName: 'some-store' }
 				)
 			).toBe( true );
+		} );
+	} );
+
+	describe( 'isRetryableErrorType', () => {
+		it( 'should return FALSE for insufficient permissions errors', () => {
+			expect(
+				isRetryableErrorType( {
+					data: {
+						reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS,
+					},
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE for permission scope errors', () => {
+			expect(
+				isRetryableErrorType( {
+					code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE for auth errors', () => {
+			expect(
+				isRetryableErrorType( {
+					data: {
+						reconnectURL: 'https://example.com/reconnect',
+					},
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should return FALSE for rate limit errors', () => {
+			expect(
+				isRetryableErrorType( {
+					data: { status: 429 },
+				} )
+			).toBe( false );
+		} );
+
+		it( 'should return TRUE for generic errors', () => {
+			expect( isRetryableErrorType( { code: 'generic_error' } ) ).toBe(
+				true
+			);
+		} );
+	} );
+
+	describe( 'getErrorNoticeMessage', () => {
+		it( 'should add retry suffix and prefix by default', () => {
+			expect( getErrorNoticeMessage( 'Request failed.', {} ) ).toBe(
+				'Error: Request failed. (Please try again.)'
+			);
+		} );
+
+		it( 'should omit prefix when noPrefix is true', () => {
+			expect(
+				getErrorNoticeMessage(
+					'Request failed.',
+					{},
+					{ noPrefix: true }
+				)
+			).toBe( 'Request failed. (Please try again.)' );
+		} );
+
+		it( 'should omit retry suffix when skipRetryMessage is true', () => {
+			expect(
+				getErrorNoticeMessage(
+					'Request failed.',
+					{},
+					{
+						skipRetryMessage: true,
+					}
+				)
+			).toBe( 'Error: Request failed.' );
+		} );
+
+		it( 'should include redo setup link when reconnectURL is present', () => {
+			expect(
+				getErrorNoticeMessage(
+					'Request failed.',
+					{
+						data: {
+							reconnectURL: 'https://example.com/reconnect',
+						},
+					},
+					{ noPrefix: true, skipRetryMessage: true }
+				)
+			).toContain(
+				'To fix this, <a href="https://example.com/reconnect">redo the plugin setup</a>.'
+			);
 		} );
 	} );
 
