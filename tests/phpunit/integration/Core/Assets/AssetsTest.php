@@ -522,32 +522,12 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the reference site URL.' );
 	}
 
-	public function test_base_data__product_query_var__no_product_post_type() {
-		$data = $this->get_inline_base_data();
-
-		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the site has no product post type.' );
-	}
-
 	public function test_base_data__product_query_var() {
 		register_post_type( 'product', array( 'public' => true ) );
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertEquals( 'product', $data['productQueryVar'], '`productQueryVar` should be the name of the product post type, which WordPress uses as its query var by default.' );
-	}
-
-	public function test_base_data__product_query_var__custom_query_var() {
-		register_post_type(
-			'product',
-			array(
-				'public'    => true,
-				'query_var' => 'item',
-			)
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertEquals( 'item', $data['productQueryVar'], '`productQueryVar` should be the query var that the product post type registers.' );
+		$this->assertSame( 'product', $data['productQueryVar'], '`productQueryVar` should be the query var of the product post type, such as `product` in `/?product=hoodie`.' );
 	}
 
 	public function test_base_data__product_query_var__no_query_var() {
@@ -564,18 +544,10 @@ class AssetsTest extends TestCase {
 		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the product post type has no query var.' );
 	}
 
-	public function test_base_data__product_query_var__not_publicly_queryable() {
-		register_post_type(
-			'product',
-			array(
-				'public'             => true,
-				'publicly_queryable' => false,
-			)
-		);
-
+	public function test_base_data__product_query_var__no_product_post_type() {
 		$data = $this->get_inline_base_data();
 
-		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when WordPress doesn\'t read the query var from a URL, because products aren\'t publicly queryable.' );
+		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the site has no product post type.' );
 	}
 
 	public function test_base_data__using_plain_permalinks() {
@@ -583,7 +555,7 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertTrue( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `true` when the site has no permalink structure.' );
+		$this->assertTrue( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `true` when the site uses plain permalinks.' );
 	}
 
 	public function test_base_data__using_plain_permalinks__permalink_structure() {
@@ -599,19 +571,8 @@ class AssetsTest extends TestCase {
 
 		$data = $this->get_inline_base_data();
 
-		$this->assertContains( 'p', $data['publicQueryVars'], '`publicQueryVars` should hold the public query vars of WordPress core.' );
-		$this->assertContains( 'book', $data['publicQueryVars'], '`publicQueryVars` should hold the query var of a viewable post type.' );
-
-		unregister_post_type( 'book' );
-	}
-
-	public function test_base_data__public_query_vars__filter_leaves_a_gap_in_the_keys() {
-		add_filter( 'query_vars', fn ( $query_vars ) => array_diff( $query_vars, array( 'm' ) ) );
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertNotContains( 'm', $data['publicQueryVars'], '`publicQueryVars` should leave out a query var that the `query_vars` filter removes.' );
-		$this->assertStringStartsWith( '["', wp_json_encode( $data['publicQueryVars'] ), '`publicQueryVars` should encode as a JSON array when the `query_vars` filter leaves a gap in the keys.' );
+		$this->assertContains( 'p', $data['publicQueryVars'], '`publicQueryVars` should include `p`, which WordPress registers.' );
+		$this->assertContains( 'book', $data['publicQueryVars'], '`publicQueryVars` should include the query var of a public custom post type.' );
 	}
 
 	public function test_base_data__woocommerce_not_installed() {

@@ -849,6 +849,7 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
+	 * @since n.e.x.t Adds `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
@@ -881,9 +882,7 @@ final class Assets {
 			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
 			'productQueryVar'      => $this->get_post_type_query_var( $product_post_type ),
 			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
-			// A `query_vars` filter can remove a name and leave a gap in the keys,
-			// which `wp_json_encode()` would then write as an object.
-			'publicQueryVars'      => array_values( WP_Query_Factory::get_public_query_vars() ),
+			'publicQueryVars'      => WP_Query_Factory::get_public_query_vars(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1319,25 +1318,23 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the query var whose value is the slug of a post of a post type in a
-	 * URL, such as `product` in `/?product=hoodie`.
+	 * Gets the query var of a post type, such as `product` in `/?product=hoodie`.
 	 *
-	 * On plain permalinks, `get_post_permalink()` builds the URL of such a
-	 * post from this query var. `WP::parse_request()` reads the query var
-	 * from a URL only for a post type that `is_post_type_viewable()` accepts.
+	 * On plain permalinks, the URL of a post of the type names its slug with this
+	 * query var.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param string|null $post_type The post type name, or `null` for none.
-	 * @return string|null The query var, such as `product`, or `null` when WordPress reads no query var of the post type from a URL.
+	 * @return string|null The query var, or `null` for no post type or a post type with no query var.
 	 */
 	protected function get_post_type_query_var( $post_type ) {
 		$post_type_object = get_post_type_object( $post_type );
 
-		if ( ! $post_type_object || ! is_post_type_viewable( $post_type_object ) ) {
+		if ( ! $post_type_object || ! $post_type_object->query_var ) {
 			return null;
 		}
 
-		return $post_type_object->query_var ?: null;
+		return $post_type_object->query_var;
 	}
 }
