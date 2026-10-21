@@ -378,9 +378,8 @@ describe( 'core/feature-discovery features', () => {
 				expect( await consumePendingSetup() ).toBeNull();
 			} );
 
-			it( 'should clear any stale setupFeature action error before running setup again', async () => {
+			it( 'should clear any stale setupFeature action error once setup succeeds', async () => {
 				registerSetupFlowFeature();
-				registerSetupComponent();
 
 				registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
 					{
@@ -417,6 +416,7 @@ describe( 'core/feature-discovery features', () => {
 						.select( CORE_FEATURE_DISCOVERY )
 						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
 				).toBeUndefined();
+				expect( navigateTo ).not.toHaveBeenCalled();
 			} );
 
 			it( 'should stop without recording or navigating when the module has no setup component', async () => {

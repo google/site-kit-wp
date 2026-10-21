@@ -25,9 +25,11 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
 	fireEvent,
+	provideModules,
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
@@ -180,5 +182,79 @@ describe( 'FeatureListItem', () => {
 		expect(
 			queryByRole( 'button', { name: 'Set up now' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'keeps the notice and Retry spinner visible while setup is still running', async () => {
+		const registry = createTestRegistry();
+
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( '1.186.0' );
+
+		provideModules( registry, [
+			{ slug: 'test-module', name: 'Test module', active: false },
+		] );
+
+		provideFeatures( registry, [
+			{
+				slug: 'test-feature',
+				title: 'Analytics',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up now',
+					moduleSlug: 'test-module',
+				},
+			},
+		] );
+
+		registry
+			.dispatch( CORE_FEATURE_DISCOVERY )
+			.setErrorForAction( SETUP_ERROR, 'setupFeature', [
+				'test-feature',
+			] );
+
+		let resolveActivation!: ( value: unknown ) => void;
+		const activationPromise = new Promise( ( resolve ) => {
+			resolveActivation = resolve;
+		} );
+
+		jest.spyOn(
+			registry.dispatch( CORE_MODULES ),
+			'activateModule'
+		).mockReturnValue( activationPromise );
+
+		const { getByRole, getByText, queryByText } = render(
+			<FeatureListItem slug="test-feature" hideUnreadDot />,
+			{ registry }
+		);
+
+		await waitFor( () => {
+			expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+		} );
+
+		const retryButton = getByRole( 'button', { name: 'Retry' } );
+		fireEvent.click( retryButton );
+
+		await waitFor( () => {
+			expect( getByText( 'Analytics setup failed' ) ).toBeInTheDocument();
+			expect( retryButton ).toHaveClass(
+				'googlesitekit-notice__cta--spinner__running'
+			);
+		} );
+
+		resolveActivation( {
+			response: {
+				success: true,
+				moduleReauthURL: 'http://example.com/reauth',
+			},
+		} );
+
+		await waitFor( () => {
+			expect(
+				queryByText( 'Analytics setup failed' )
+			).not.toBeInTheDocument();
+		} );
 	} );
 } );

@@ -151,7 +151,7 @@ export function isRateLimitError( error: unknown ): boolean {
 /**
  * Checks if the given error type can be retried.
  *
- * @since 1.191.0
+ * @since n.e.x.t
  *
  * @param {Object} error The error object to check.
  * @return {boolean} TRUE if the error type is retryable, otherwise FALSE.
@@ -185,7 +185,7 @@ export function isErrorRetryable(
 /**
  * Formats an error message for display in UI notices.
  *
- * @since 1.191.0
+ * @since n.e.x.t
  *
  * @param {(string|undefined)} message                    Error message to format.
  * @param {Object}             error                      Error object.

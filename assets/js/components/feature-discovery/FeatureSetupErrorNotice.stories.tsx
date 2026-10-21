@@ -73,6 +73,7 @@ RetryableError.args = {
 		data: { status: 500 },
 	},
 };
+RetryableError.scenario = {};
 
 export const InsufficientPermissions = Template.bind(
 	{}
@@ -85,6 +86,7 @@ InsufficientPermissions.args = {
 		data: { reason: ERROR_REASON_INSUFFICIENT_PERMISSIONS },
 	},
 };
+InsufficientPermissions.scenario = {};
 
 export const ReconnectRequired = Template.bind( {} ) as Story< StoryArgs >;
 ReconnectRequired.storyName = 'Reconnect required';
@@ -97,6 +99,7 @@ ReconnectRequired.args = {
 		},
 	},
 };
+ReconnectRequired.scenario = {};
 
 export default {
 	title: 'Components/Feature Discovery/FeatureSetupErrorNotice',

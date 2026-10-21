@@ -147,7 +147,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		registerFeature( 'newsletter-signup', {
-			name: __( 'Newsletter signup', 'google-site-kit' ),
+			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',

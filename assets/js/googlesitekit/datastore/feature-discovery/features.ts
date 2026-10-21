@@ -191,8 +191,6 @@ export const actions = {
 		): Generator< unknown, SetupFeatureResult, unknown > {
 			const registry = ( yield commonActions.getRegistry() ) as Registry;
 
-			yield clearActionError( 'setupFeature', [ slug ] );
-
 			const feature = registry
 				.select( CORE_FEATURE_DISCOVERY )
 				.getFeature( slug );
@@ -218,6 +216,8 @@ export const actions = {
 				yield setErrorForAction( error, 'setupFeature', [ slug ] );
 				return { error };
 			}
+
+			yield clearActionError( 'setupFeature', [ slug ] );
 
 			// Modules with no setup screen, such as PageSpeed Insights, are
 			// connected as soon as they are activated, so the user stays on
