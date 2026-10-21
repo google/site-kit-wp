@@ -41,6 +41,10 @@ jest.mock( './PoweredBy', () => () => null );
 describe( 'SetupMainExpress', () => {
 	mockLocation();
 
+	const userSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
+	);
+
 	let registry: Registry;
 
 	beforeEach( () => {
@@ -48,6 +52,11 @@ describe( 'SetupMainExpress', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
 		mockSurveyEndpoints();
+
+		fetchMock.post( userSettingsEndpoint, {
+			body: { lastActionedExpressSetups: {} },
+			status: 200,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: EXPRESS_SETUP_SCOPES,
@@ -138,6 +147,8 @@ describe( 'SetupMainExpress', () => {
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
 		).toHaveLength( 4 );
+
+		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
 	} );
 
 	it( 'renders the default express setup for an unknown CTA', async () => {
@@ -155,5 +166,7 @@ describe( 'SetupMainExpress', () => {
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();
+
+		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
 	} );
 } );

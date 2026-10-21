@@ -77,6 +77,35 @@ class User_SettingsTest extends TestCase {
 		);
 	}
 
+	public function test_merge__removes_last_actioned_express_setups_with_null_values() {
+		$this->user_settings->merge(
+			array(
+				'lastActionedExpressSetups' => array(
+					'publicationSetup' => 1752451200,
+					'productSetup'     => 1752537600,
+				),
+			)
+		);
+
+		$this->user_settings->merge(
+			array(
+				'lastActionedExpressSetups' => array(
+					'publicationSetup' => null,
+				),
+			)
+		);
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'lastActionedExpressSetups' => array(
+					'productSetup' => 1752537600,
+				),
+			),
+			$this->user_settings->get(),
+			'Merge should remove an express setup set to null while preserving other express setup timestamps.'
+		);
+	}
+
 	public function test_merge__ignores_unknown_keys() {
 		$this->user_settings->merge(
 			array(
