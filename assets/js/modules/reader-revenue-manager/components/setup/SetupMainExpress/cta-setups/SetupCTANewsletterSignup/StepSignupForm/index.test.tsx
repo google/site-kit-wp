@@ -388,7 +388,12 @@ describe( 'StepSignupForm', () => {
 		} );
 		mockPostCreateRequests();
 
-		const onComplete = jest.fn();
+		const onComplete = jest.fn( () => {
+			// Verify the requests were made before `onComplete()` was called.
+			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+		} );
 
 		renderStepSignupForm(
 			{
@@ -405,10 +410,6 @@ describe( 'StepSignupForm', () => {
 		await waitFor( () => {
 			expect( onComplete ).toHaveBeenCalledTimes( 1 );
 		} );
-
-		expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
-		expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
-		expect( fetchMock ).toHaveFetched( settingsEndpoint );
 	} );
 
 	it( 'should not refresh the publication or CTAs, or call onComplete, when createCTA fails', async () => {

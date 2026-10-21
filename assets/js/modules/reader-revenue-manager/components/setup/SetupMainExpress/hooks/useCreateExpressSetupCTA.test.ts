@@ -21,7 +21,10 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	MODULES_READER_REVENUE_MANAGER,
+	PUBLICATION_ONBOARDING_STATES,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import { createTestRegistry, renderHook } from '@tests/js/test-utils';
 import useCreateExpressSetupCTA from './useCreateExpressSetupCTA';
@@ -55,7 +58,8 @@ const params = {
 const initialSettings = {
 	publicationID: 'ABCDEFGH',
 	organizationID: 'ABCD1234',
-	publicationOnboardingState: 'ONBOARDING_ACTION_REQUIRED',
+	publicationOnboardingState:
+		PUBLICATION_ONBOARDING_STATES.ONBOARDING_ACTION_REQUIRED,
 	publicationOnboardingStateChanged: true,
 	productID: 'openaccess',
 	productIDs: [],
@@ -65,7 +69,7 @@ const initialSettings = {
 // The publication is live once the CTA exists.
 const livePublication = {
 	...publications[ 0 ],
-	onboardingState: 'ACTIVE',
+	onboardingState: PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 };
 
 describe( 'useCreateExpressSetupCTA', () => {
@@ -146,7 +150,8 @@ describe( 'useCreateExpressSetupCTA', () => {
 		await result.current( params );
 
 		expect( settingsAtSave ).toMatchObject( {
-			publicationOnboardingState: 'ACTIVE',
+			publicationOnboardingState:
+				PUBLICATION_ONBOARDING_STATES.ONBOARDING_COMPLETE,
 			publicationOnboardingStateChanged: false,
 			configuredCTAs: { 1: 'newsletter-signup' },
 		} );
