@@ -27,7 +27,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
-import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import {
 	EARLIER_POST,
@@ -190,7 +189,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		expect( global.location.hash ).toBe( '#content' );
 		expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
 			'#content',
-			BREAKPOINT_DESKTOP
+			'desktop'
 		);
 		expect( scrollToSpy ).toHaveBeenCalledWith( {
 			top: 100,
