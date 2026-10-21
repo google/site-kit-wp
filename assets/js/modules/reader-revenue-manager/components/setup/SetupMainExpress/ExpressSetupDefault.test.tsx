@@ -25,7 +25,10 @@ import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
-import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
+import {
+	providePublication,
+	providePublications,
+} from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -84,25 +87,6 @@ const completePublication = publications[ 3 ] as Publication;
 // Has not accepted the terms of service.
 const publicationWithoutTerms = publications[ 2 ] as Publication;
 
-/**
- * Connects the given publication.
- *
- * @since n.e.x.t
- * @private
- *
- * @param {Object} registry    Registry to seed.
- * @param {Object} publication Publication to connect.
- * @return {void}
- */
-function connectPublication( registry: Registry, publication: Publication ) {
-	registry
-		.dispatch( MODULES_READER_REVENUE_MANAGER )
-		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-		.setPublicationID( publication.publicationId );
-
-	providePublications( registry, [ publication ] );
-}
-
 describe( 'ExpressSetupDefault', () => {
 	mockLocation();
 
@@ -128,7 +112,7 @@ describe( 'ExpressSetupDefault', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( { publicationID: '' } );
+			.receiveGetSettings( {} );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -140,7 +124,7 @@ describe( 'ExpressSetupDefault', () => {
 	it( 'renders the default steps in order, without a CTA step', () => {
 		global.location.href = 'http://example.com/';
 
-		connectPublication( registry, completePublication );
+		providePublication( registry, completePublication );
 
 		const { container } = render( <ExpressSetupDefault />, { registry } );
 
@@ -161,10 +145,14 @@ describe( 'ExpressSetupDefault', () => {
 			global.location.href = `http://example.com/?step=${ step }`;
 
 			// Each step's copy depends on the connected publication.
-			if ( step === 'terms-of-service' ) {
-				connectPublication( registry, publicationWithoutTerms );
-			} else if ( step !== 'connect-publication' ) {
-				connectPublication( registry, completePublication );
+			if ( step === 'connect-publication' ) {
+				registry
+					.dispatch( MODULES_READER_REVENUE_MANAGER )
+					.receiveGetSettings( { publicationID: '' } );
+			} else if ( step === 'terms-of-service' ) {
+				providePublication( registry, publicationWithoutTerms );
+			} else {
+				providePublication( registry, completePublication );
 			}
 
 			const { getByText, queryByText } = render(
@@ -224,7 +212,7 @@ describe( 'ExpressSetupDefault', () => {
 			global.location.href =
 				'http://example.com/?step=connect-publication';
 
-			connectPublication( registry, publication as Publication );
+			providePublication( registry, publication as Publication );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<ExpressSetupDefault />,
