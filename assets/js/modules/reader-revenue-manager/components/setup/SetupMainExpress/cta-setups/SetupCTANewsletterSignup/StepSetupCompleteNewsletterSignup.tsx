@@ -24,7 +24,11 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment, createInterpolateElement } from '@wordpress/element';
+import {
+	Fragment,
+	createInterpolateElement,
+	useCallback,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -33,7 +37,11 @@ import { __ } from '@wordpress/i18n';
 import { type Select, useSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import { useHasPreExistingCTAs } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
+import {
+	useExpressSetupTrackEvent,
+	useHasPreExistingCTAs,
+	useStep,
+} from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import StepSetupCompleteDetail from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/StepSetupCompleteDetail';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -45,6 +53,10 @@ import {
 const SUPPORT_URL = 'https://wordpress.org/support/plugin/google-site-kit/';
 
 const StepSetupCompleteNewsletterSignup: FC = () => {
+	const [ stepSlug ] = useStep();
+
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const hasPreExistingCTAs = useHasPreExistingCTAs();
 
 	/*
@@ -93,6 +105,22 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 		[]
 	);
 
+	const onClickChangeDisplayOrder = useCallback( () => {
+		trackEvent( 'click_change_display_order_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
+
+	const onClickChangePlacementSettings = useCallback( () => {
+		trackEvent( 'click_change_placement_settings_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
+
+	const onClickContactSupport = useCallback( () => {
+		trackEvent( 'click_contact_support_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
+
+	const onClickEditContent = useCallback( () => {
+		trackEvent( 'click_edit_content_link', stepSlug );
+	}, [ trackEvent, stepSlug ] );
+
 	return (
 		<Fragment>
 			{ hasPreExistingCTAs && (
@@ -108,6 +136,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 							a: (
 								<Link
 									href={ publisherCenterOverviewURL }
+									onClick={ onClickChangeDisplayOrder }
 									external
 								/>
 							),
@@ -124,7 +153,13 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 						'google-site-kit'
 					),
 					{
-						a: <Link href={ rrmSettingsURL } external />,
+						a: (
+							<Link
+								href={ rrmSettingsURL }
+								onClick={ onClickChangePlacementSettings }
+								external
+							/>
+						),
 					}
 				) }
 			</StepSetupCompleteDetail>
@@ -143,6 +178,7 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 									publisherCenterCTAEditURL ||
 									publisherCenterOverviewURL
 								}
+								onClick={ onClickEditContent }
 								external
 							/>
 						),
@@ -158,7 +194,13 @@ const StepSetupCompleteNewsletterSignup: FC = () => {
 						'google-site-kit'
 					),
 					{
-						a: <Link href={ SUPPORT_URL } external />,
+						a: (
+							<Link
+								href={ SUPPORT_URL }
+								onClick={ onClickContactSupport }
+								external
+							/>
+						),
 					}
 				) }
 			</StepSetupCompleteDetail>

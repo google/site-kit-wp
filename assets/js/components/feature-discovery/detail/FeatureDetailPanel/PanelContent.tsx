@@ -40,6 +40,9 @@ import {
 } from '@/js/components/Typography/constants';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { BREAKPOINT_SMALL, useBreakpoint } from '@/js/hooks/useBreakpoint';
+import FeatureDetailDescription from './FeatureDetailDescription';
+import FeatureDetailRequirements from './FeatureDetailRequirements';
+import FeatureDetailScreenshots from './FeatureDetailScreenshots';
 import PanelFooter from './PanelFooter';
 import PanelHeader from './PanelHeader';
 
@@ -72,22 +75,19 @@ const PanelContent: FC< PanelContentProps > = ( {
 
 	const tabs: FeatureDetailPanelTab[] = [
 		{
-			// TODO: #13331 -- Pass FeatureDetailDescription.
-			Component: () => <code>&lt;FeatureDetailDescription /&gt;</code>,
+			Component: FeatureDetailDescription,
 			tabID: `${ baseID }-tab-description`,
 			tabPanelID: `${ baseID }-panel-description`,
 			label: __( 'Description', 'google-site-kit' ),
 		},
 		{
-			// TODO: #13331 -- Pass FeatureDetailRequirements.
-			Component: () => <code>&lt;FeatureDetailRequirements /&gt;</code>,
+			Component: FeatureDetailRequirements,
 			tabID: `${ baseID }-tab-requirements`,
 			tabPanelID: `${ baseID }-panel-requirements`,
 			label: __( 'Requirements', 'google-site-kit' ),
 		},
 		{
-			// TODO: #13331 -- Pass FeatureDetailScreenshots.
-			Component: () => <code>&lt;FeatureDetailScreenshots /&gt;</code>,
+			Component: FeatureDetailScreenshots,
 			tabID: `${ baseID }-tab-screenshots`,
 			tabPanelID: `${ baseID }-panel-screenshots`,
 			label: __( 'Screenshots', 'google-site-kit' ),

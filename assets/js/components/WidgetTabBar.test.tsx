@@ -1,5 +1,5 @@
 /**
- * Traffic Overview tab bar tests.
+ * Widget tab bar tests.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -20,12 +20,10 @@
  * Internal dependencies
  */
 import { fireEvent, render, screen, within } from '@tests/js/test-utils';
-import TrafficOverviewTabBar, {
-	TrafficOverviewTab,
-} from './TrafficOverviewTabBar';
+import WidgetTabBar, { WidgetTab } from './WidgetTabBar';
 
-describe( 'TrafficOverviewTabBar', () => {
-	const tabs: TrafficOverviewTab[] = [
+describe( 'WidgetTabBar', () => {
+	const tabs: WidgetTab[] = [
 		{ id: 'traffic-overview', label: 'Traffic overview' },
 		{ id: 'typical-traffic', label: 'Typical traffic' },
 	];
@@ -42,7 +40,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		const onTabChange = jest.fn();
 
 		const result = render(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ tabs }
 				activeTabID={ activeTabID }
 				onTabChange={ onTabChange }
@@ -130,7 +128,7 @@ describe( 'TrafficOverviewTabBar', () => {
 
 	it( 'should render the icon before the label, hidden from assistive technology', () => {
 		render(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{
@@ -154,9 +152,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		const icon =
 			tab.querySelector( '.mdc-tab__content' )?.firstElementChild;
 
-		expect( icon ).toHaveClass(
-			'googlesitekit-traffic-overview__tab-icon'
-		);
+		expect( icon ).toHaveClass( 'googlesitekit-widget-tab-bar__tab-icon' );
 		expect( icon ).toHaveAttribute( 'aria-hidden', 'true' );
 	} );
 
@@ -164,7 +160,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		const onTabChange = jest.fn();
 
 		render(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{
@@ -190,13 +186,13 @@ describe( 'TrafficOverviewTabBar', () => {
 		expect(
 			screen
 				.getByRole( 'tab', { name: 'Traffic overview' } )
-				.querySelector( '.googlesitekit-traffic-overview__tab-icon' )
+				.querySelector( '.googlesitekit-widget-tab-bar__tab-icon' )
 		).toBeNull();
 	} );
 
 	it( 'should select the tab whose `id` is `activeTabID` after a tab is added between two others', () => {
 		const { rerender } = render(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{ id: 'recent-activity', label: 'Recent activity' },
@@ -207,7 +203,7 @@ describe( 'TrafficOverviewTabBar', () => {
 		);
 
 		rerender(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{ id: 'typical-traffic', label: 'Typical traffic' },
@@ -235,7 +231,7 @@ describe( 'TrafficOverviewTabBar', () => {
 
 	it( 'should show a "Beta" badge only in the tab that is in beta', () => {
 		render(
-			<TrafficOverviewTabBar
+			<WidgetTabBar
 				tabs={ [
 					{ id: 'traffic-overview', label: 'Traffic overview' },
 					{
