@@ -66,6 +66,17 @@ describe( 'core/site errors', () => {
 					internalServerError
 				);
 			} );
+
+			it( 'should set `showGlobalNotification` to `true` when the error does not set it', () => {
+				registry.dispatch( CORE_SITE ).setInternalServerError( {
+					id: 'module-setup-error',
+					description: 'Test error message',
+				} );
+
+				expect(
+					store.getState().internalServerError.showGlobalNotification
+				).toBe( true );
+			} );
 		} );
 
 		describe( 'clearInternalServerError', () => {
