@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'reader-revenue-manager', {
+		name: __( 'Reader Revenue Manager', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
 			'Open up new revenue opportunities while growing, retaining and engaging your audience',
@@ -100,6 +101,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://support.google.com/news/publisher-center/answer/11449914?hl=en-GB&ref_topic=11493750&sjid=4921721547083949313-SA',
 				serviceRequirements: __(
 					'Sites will be subject to Reader Revenue Manager approval processes, which can take from a few hours to a few days',
 					'google-site-kit'
@@ -110,11 +113,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__( 'Set up features', 'google-site-kit' ),
+					__(
+						'You’re all set! Reader Revenue Manager setup is complete.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'You’re all set! Reader Revenue Manager setup is complete.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -144,6 +147,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		registerFeature( 'newsletter-signup', {
+			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',
@@ -201,6 +205,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					],
 				},
 				requirements: {
+					documentationURL:
+						'https://support.google.com/news/publisher-center/answer/12813936?hl=en-GB&sjid=16842124317358157127-EU#zippy=%2Ccreate-a-newsletter-sign-up-form:~:text=Create%20a%20newsletter%20sign%2Dup%20form',
 					serviceRequirements: __(
 						'A supported email service provider (e.g., Mailchimp, Substack, etc.) is required for the collected email data to be sent',
 						'google-site-kit'
@@ -214,11 +220,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Set up a newsletter sign-up form',
 							'google-site-kit'
 						),
+						__(
+							'Your newsletter sign-up form for Reader Revenue Manager is set up',
+							'google-site-kit'
+						),
 					],
-					setupComplete: __(
-						'Your newsletter sign-up form for Reader Revenue Manager is set up',
-						'google-site-kit'
-					),
 				},
 				screenshots: [
 					{

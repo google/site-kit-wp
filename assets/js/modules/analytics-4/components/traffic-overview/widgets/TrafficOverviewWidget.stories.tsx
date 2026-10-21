@@ -43,14 +43,18 @@ import {
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	createBreakdownReport,
+	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { provideAnalytics4MockReport } from '@/js/modules/analytics-4/utils/data-mock';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
@@ -165,19 +169,63 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and its reports,
- * and the insight report in the store, so the Recent activity tab renders
+ * Puts the Search Console property, the reports of the fresh figures, the
+ * site's latest post and its reports, the insight report, and the reports of
+ * the recent traffic breakdown in the store, so the Recent activity tab renders
  * without sending a request.
  *
  * @since 1.190.0
+ * @since n.e.x.t Puts the reports of the recent traffic breakdown in the store too.
  *
- * @param {Object} registry The registry to put the property, the post and the reports in.
+ * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
+	// The posts column requests its report only once the setting to include
+	// products has loaded.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setFreshDataIncludesWooCommerceProducts( true );
+	// The site had 100 visits, each with one view, and 12 of the visits came
+	// from other sites.
+	provideRecentTrafficBreakdownReports( registry, {
+		posts: createBreakdownReport(
+			[
+				[ '/autumn-recipes/', 64 ],
+				[ '/winter-soups/', 23 ],
+				[ '/spring-salads/', 9 ],
+			],
+			100
+		),
+		postTitles: {
+			'/autumn-recipes/': 'Autumn recipes',
+			'/winter-soups/': 'Winter soups',
+			'/spring-salads/': 'Spring salads',
+		},
+		channels: createBreakdownReport(
+			[
+				[ 'Direct', 52 ],
+				[ 'Organic Search', 31 ],
+				[ 'Referral', 12 ],
+			],
+			100
+		),
+		referrals: createBreakdownReport(
+			[
+				[ 'substack.com', 7 ],
+				[ 'reddit.com', 3 ],
+				[ 'medium.com', 2 ],
+			],
+			12
+		),
+	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
+	provideFreshMetricsReports( registry, {
+		totalVisitors: 157,
+		searchPerformance: { clicks: 72, impressions: 8000 },
+	} );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );
@@ -445,10 +493,11 @@ RecentActivityNoPublishedPosts.args = {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
 		provideRecentActivityData( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetRecentContent( [], {
-			...LATEST_POST_RECENT_CONTENT_OPTIONS,
-			includeProducts: false,
-		} );
+		provideRecentContent(
+			registry,
+			[],
+			LATEST_POST_RECENT_CONTENT_OPTIONS
+		);
 	},
 };
 RecentActivityNoPublishedPosts.parameters = {

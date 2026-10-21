@@ -243,6 +243,7 @@ export function provideSiteInfo(
 			},
 		],
 		productPostType: 'product',
+		productPathPrefix: null,
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,

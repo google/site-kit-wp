@@ -26,8 +26,11 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
 	setPendingSetup,
@@ -67,6 +70,7 @@ export const initialState: FeatureDiscoveryState = {
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
 const setupTypes = Object.values( FEATURE_SETUP_TYPES );
+const { clearActionError, setErrorForAction } = errorStoreActions;
 
 type SetupFeatureResult = { error?: unknown };
 
@@ -174,8 +178,12 @@ export const actions = {
 	 * into the module's setup. Where the module has no setup screen, it is
 	 * simply activated and the user stays on the hub.
 	 *
+	 * For `in-place-panel` features, this closes the feature detail panel and
+	 * opens the feature's existing panel over the hub.
+	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
+	 * @since n.e.x.t Implemented the `in-place-panel` setup type.
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated.
@@ -193,11 +201,47 @@ export const actions = {
 				.select( CORE_FEATURE_DISCOVERY )
 				.getFeature( slug );
 
-			if ( feature?.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+			if ( ! feature ) {
 				return {};
 			}
 
-			const { moduleSlug } = feature.setup;
+			// In-place features open their existing panel over the hub, which
+			// does its own saving, so the user never leaves the hub.
+			if ( feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL ) {
+				// The detail panel is closed first so that the feature's own
+				// panel opens on its own over the hub.
+				registry
+					.dispatch( CORE_UI )
+					.setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+
+				feature.setup.open?.( registry );
+
+				return {};
+			}
+
+			if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+				return {};
+			}
+
+			const { moduleSlug, getSetupURL } = feature.setup;
+
+			if ( getSetupURL ) {
+				const setupURL = getSetupURL( registry.select );
+
+				if ( ! setupURL ) {
+					return {};
+				}
+
+				yield commonActions.await(
+					setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
+				);
+
+				yield commonActions.await(
+					registry.dispatch( CORE_LOCATION ).navigateTo( setupURL )
+				);
+
+				return {};
+			}
 
 			if ( ! moduleSlug ) {
 				return {};
@@ -211,8 +255,11 @@ export const actions = {
 			};
 
 			if ( error ) {
+				yield setErrorForAction( error, 'setupFeature', [ slug ] );
 				return { error };
 			}
+
+			yield clearActionError( 'setupFeature', [ slug ] );
 
 			// Modules with no setup screen, such as PageSpeed Insights, are
 			// connected as soon as they are activated, so the user stays on

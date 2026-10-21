@@ -44,7 +44,7 @@ import { MODULES_READER_REVENUE_MANAGER } from './constants';
 const { setErrorForAction, clearActionError } = errorStoreActions;
 
 interface UserSettings {
-	lastActionedExpressSetups?: Record< string, number >;
+	lastActionedExpressSetups?: Record< string, number | null >;
 }
 
 interface UserSettingsState {
@@ -85,8 +85,8 @@ function validateUserSettings( settings: unknown ): void {
 		userSettings.lastActionedExpressSetups as Record< string, unknown >
 	).forEach( ( timestamp ) => {
 		invariant(
-			Number.isInteger( timestamp ),
-			'lastActionedExpressSetups timestamps should be integers.'
+			timestamp === null || Number.isInteger( timestamp ),
+			'lastActionedExpressSetups timestamps should be integers or null.'
 		);
 	} );
 }

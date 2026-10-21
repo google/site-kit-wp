@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
+		name: __( 'Ads', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADS,
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
@@ -84,6 +85,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/ads/',
 				serviceRequirements: __(
 					'When setting up a new Ads account you will need your business information, a conversion goal, ad information and images, preferred search terms, a geographical area to display the ad, a campaign budget, billing information and payment details',
 					'google-site-kit'
@@ -102,11 +105,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable Google tag gateway for advertisers (optional)',
 						'google-site-kit'
 					),
+					__(
+						'Ads is set up! You are growing your reach.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Ads is set up! You are growing your reach.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{

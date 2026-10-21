@@ -64,7 +64,7 @@ export interface RecentContentItem {
 	sitePublishedAt: string;
 }
 
-interface RecentContentOptions {
+export interface RecentContentOptions {
 	/** The maximum number of posts and products to return. */
 	count: number;
 }
@@ -73,6 +73,20 @@ interface RecentContentParams extends RecentContentOptions {
 	/** Whether to request products as well as posts. */
 	includeProducts: boolean;
 }
+
+export type ExcludedProducts =
+	| {
+			/** The way to recognize a product page: by the path that every product URL starts with. */
+			by: 'pathPrefix';
+			/** The path that every product URL starts with, such as `/product/`, never a full URL. */
+			pathPrefix: string;
+	  }
+	| {
+			/** The way to recognize a product page: by the `googlesitekit_post_type` custom dimension. */
+			by: 'postTypeDimension';
+			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
+			postType: string;
+	  };
 
 interface WordPressPost {
 	/** The post ID. */
@@ -280,6 +294,81 @@ const baseSelectors = {
 			}
 
 			return analyticsConnected && wooCommerceActive && setting === true;
+		}
+	),
+
+	/**
+	 * Gets the way the Recent activity tab recognizes the product pages that
+	 * it hides from its list of posts.
+	 *
+	 * The tab hides products only while WooCommerce is active and the setting
+	 * to include products is off. Without WooCommerce, the setting doesn't
+	 * show, so the tab lists every page. The tab recognizes a product page:
+	 *
+	 * 1. By the path that every product URL starts with, such as `/product/`.
+	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
+	 *    custom dimension, if the Analytics property has it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab lists products or can't recognize them. Returns `undefined` if not yet loaded.
+	 */
+	getExcludedProducts: createRegistrySelector(
+		( select: Select ) => (): ExcludedProducts | null | undefined => {
+			const shouldIncludeProducts =
+				select(
+					MODULES_ANALYTICS_4
+				).shouldIncludeWooCommerceProducts();
+
+			if ( shouldIncludeProducts === undefined ) {
+				// `shouldIncludeWooCommerceProducts()` stays `undefined` when
+				// the Analytics settings request fails, and the tab then lists
+				// every page.
+				const hasSettingFailedToLoad =
+					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getSettings'
+					) &&
+					select(
+						MODULES_ANALYTICS_4
+					).getFreshDataIncludesWooCommerceProducts() === undefined;
+
+				return hasSettingFailedToLoad ? null : undefined;
+			}
+
+			const postType = select( CORE_SITE ).getProductPostType();
+
+			if (
+				shouldIncludeProducts ||
+				! select( CORE_SITE ).isWooCommerceActivated() ||
+				! postType
+			) {
+				return null;
+			}
+
+			const pathPrefix = select( CORE_SITE ).getProductPathPrefix();
+
+			if ( pathPrefix ) {
+				return { by: 'pathPrefix', pathPrefix };
+			}
+
+			const hasPostTypeDimension = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( 'googlesitekit_post_type' );
+
+			// `hasCustomDimensions()` stays `undefined` when nobody has synced
+			// the property's custom dimensions and the user can't sync them,
+			// such as a view-only user.
+			if ( hasPostTypeDimension === undefined ) {
+				return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAvailableCustomDimensions'
+				)
+					? null
+					: undefined;
+			}
+
+			return hasPostTypeDimension
+				? { by: 'postTypeDimension', postType }
+				: null;
 		}
 	),
 };

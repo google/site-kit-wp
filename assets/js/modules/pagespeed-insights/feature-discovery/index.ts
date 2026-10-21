@@ -45,6 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'pagespeed-insights', {
+		name: __( 'PageSpeed Insights', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 		title: __(
 			'Make your web pages fast on all devices',
@@ -92,6 +93,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/pagespeed-insights/',
 				serviceRequirements: __(
 					'There are no service requirements for PageSpeed Insights',
 					'google-site-kit'
@@ -101,11 +104,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Connect the PageSpeed Insights module',
 						'google-site-kit'
 					),
+					__(
+						'PageSpeed Insights is set up! You can now see your site’s load times and responsiveness for both mobile and desktop users.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'PageSpeed Insights is set up! You can now see your site’s load times and responsiveness for both mobile and desktop users.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
