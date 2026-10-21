@@ -51,6 +51,8 @@ const SeeAllRecentPostsLink: FC = () => {
 		MODULE_SLUG_ANALYTICS_4
 	);
 
+	const contentIDForLink = `#${ ANCHOR_ID_CONTENT }`;
+
 	const recentContent = useInViewSelect< RecentContentItem[] | undefined >(
 		( select: Select ) =>
 			canViewSharedAnalytics4
@@ -67,21 +69,28 @@ const SeeAllRecentPostsLink: FC = () => {
 		return null;
 	}
 
-	function handleClick() {
+	/* eslint-disable sitekit/function-declaration-consistency */
+	// To type this function, the handler must be declared as a constant, not a
+	// function.
+	const handleClick: React.MouseEventHandler<
+		HTMLAnchorElement | HTMLButtonElement
+	> = ( event ) => {
 		setActiveContentTab( LATEST_CONTENT_TAB_ID );
 
-		const anchorLink = `#${ ANCHOR_ID_CONTENT }`;
-
-		global.history.replaceState( {}, '', anchorLink );
+		global.history.replaceState( {}, '', contentIDForLink );
 		global.scrollTo( {
-			top: getNavigationalScrollTop( anchorLink, breakpoint ),
+			top: getNavigationalScrollTop( contentIDForLink, breakpoint ),
 			behavior: 'smooth',
 		} );
-	}
+
+		event.preventDefault();
+	};
+	/* eslint-enable sitekit/function-declaration-consistency */
 
 	return (
 		<Link
 			className="googlesitekit-traffic-overview__see-all-recent-posts"
+			href={ contentIDForLink }
 			onClick={ handleClick }
 			trailingIcon={ <ArrowDownIcon width={ 9 } height={ 12 } /> }
 			secondary
