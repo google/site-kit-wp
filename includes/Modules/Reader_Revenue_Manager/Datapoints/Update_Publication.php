@@ -148,7 +148,8 @@ class Update_Publication extends Datapoint implements Executable_Datapoint {
 	 */
 	private function resolve_organization_id_from_publication_id( $publication_id ) {
 		try {
-			$response = $this->get_service()->organizations_publications->listOrganizationsPublications( 'organizations/-' );
+			$request  = $this->get_service()->organizations_publications->listOrganizationsPublications( 'organizations/-' );
+			$response = $this->get_service()->getClient()->execute( $request );
 		} catch ( \Exception $e ) {
 			return '';
 		}
