@@ -104,7 +104,11 @@ const RecentActivityPanel: FC = () => {
 					) }
 					{ isGatheringData === false && <InsightNotice /> }
 					<FreshMetricsRow />
-					{ isGatheringData === false && <RecentTrafficBreakdown /> }
+					{ isGatheringData === false && (
+						<RecentTrafficBreakdown
+							hasNoPublishedPosts={ hasNoPublishedPosts }
+						/>
+					) }
 					{ canViewSharedAnalytics4 && ! hasNoPublishedPosts && (
 						<LatestPostPerformance />
 					) }
