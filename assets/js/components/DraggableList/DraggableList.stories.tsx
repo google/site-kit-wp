@@ -53,10 +53,9 @@ function Template( { showHandle, withFields }: TemplateProps ) {
 
 				return (
 					<Fragment>
-						{ ! showHandle && handle }
 						{ withFields ? (
 							<TextField
-								label={ `Answer ${ index + 1 }` }
+								label="Answer"
 								maxLength={ 100 }
 								onChange={ ( event ) =>
 									setItems(
@@ -78,6 +77,7 @@ function Template( { showHandle, withFields }: TemplateProps ) {
 						) : (
 							item.label
 						) }
+						{ ! showHandle && handle }
 					</Fragment>
 				);
 			} }
@@ -93,7 +93,7 @@ HandleInItem.storyName = 'Handle in Item';
 HandleInItem.args = { showHandle: false };
 
 export const TextFields = Template.bind( {} ) as Story< TemplateProps >;
-TextFields.args = { withFields: true };
+TextFields.args = { showHandle: true, withFields: true };
 
 export default {
 	title: 'Components/DraggableList',

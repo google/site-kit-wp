@@ -49,6 +49,7 @@ const DragHandle: FC< DragHandleProps > = ( {
 			aria-label={ label }
 			className="googlesitekit-draggable-list__handle"
 			disabled={ disabled }
+			type="button"
 		>
 			<DragHandleIcon
 				aria-hidden="true"

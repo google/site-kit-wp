@@ -33,6 +33,7 @@ import {
 	monitorForElements,
 } from '@atlaskit/pragmatic-drag-and-drop/adapter/element-adapter';
 import { ButtonHTMLAttributes, HTMLAttributes, RefCallback } from 'react';
+import { useUnmount } from 'react-use';
 
 /**
  * WordPress dependencies
@@ -123,7 +124,7 @@ export default function useDraggableList< Item >( {
 		null
 	);
 
-	const listElementRef = useRef< HTMLUListElement | null >( null );
+	const listElementRef = useRef< HTMLOListElement | null >( null );
 	const itemBindingsRef = useRef( new Map< string, ItemBinding >() );
 	const currentDataRef = useRef( { items, itemIDs, onChange } );
 	const activeDragRef = useRef< ActiveDrag | null >( null );
@@ -162,7 +163,7 @@ export default function useDraggableList< Item >( {
 	}
 
 	const captureListElement = useCallback(
-		( element: HTMLUListElement | null ) => {
+		( element: HTMLOListElement | null ) => {
 			if ( listElementRef.current !== element ) {
 				listElementRef.current = element;
 				setElementsRevision( ( revision ) => revision + 1 );
@@ -308,14 +309,11 @@ export default function useDraggableList< Item >( {
 		}, 100 );
 	}, [ items, itemIDs, onChange ] );
 
-	useEffect(
-		() => () => {
-			if ( announcementTimerRef.current !== null ) {
-				clearTimeout( announcementTimerRef.current );
-			}
-		},
-		[]
-	);
+	useUnmount( () => {
+		if ( announcementTimerRef.current !== null ) {
+			clearTimeout( announcementTimerRef.current );
+		}
+	} );
 
 	useEffect( () => {
 		const cleanupFunctions: Array< () => void > = [];
