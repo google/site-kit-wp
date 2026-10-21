@@ -112,6 +112,92 @@ describe( 'getPreviousDate', () => {
 			);
 		}
 	);
+
+	describe.each( [
+		[
+			'New York spring forward',
+			'America/New_York',
+			'2026-03-09',
+			[
+				[ 1, '2026-03-08' ],
+				[ 28, '2026-02-09' ],
+			],
+			240,
+			300,
+		],
+		[
+			'Sydney spring forward',
+			'Australia/Sydney',
+			'2026-10-05',
+			[
+				[ 1, '2026-10-04' ],
+				[ 28, '2026-09-07' ],
+			],
+			-660,
+			-600,
+		],
+		[
+			'New York fall back',
+			'America/New_York',
+			'2026-11-02',
+			[
+				[ 1, '2026-11-01' ],
+				[ 28, '2026-10-05' ],
+			],
+			300,
+			240,
+		],
+		[
+			'UTC',
+			'UTC',
+			'2026-03-09',
+			[
+				[ 1, '2026-03-08' ],
+				[ 28, '2026-02-09' ],
+			],
+			0,
+			0,
+		],
+	] )(
+		'%s',
+		(
+			_label,
+			timezone,
+			relativeDate,
+			cases,
+			relativeDateOffset,
+			previousDateOffset
+		) => {
+			let originalTimezone: string | undefined;
+
+			beforeEach( () => {
+				originalTimezone = provideTimezone( timezone as string );
+			} );
+
+			afterEach( () => {
+				provideTimezone( originalTimezone );
+			} );
+
+			it( 'should count calendar days', () => {
+				// Ensure this case actually crosses the expected DST transition.
+				expect(
+					stringToDate( relativeDate as string ).getTimezoneOffset()
+				).toBe( relativeDateOffset );
+
+				( cases as [ number, string ][] ).forEach(
+					( [ daysBefore, expected ] ) => {
+						expect(
+							stringToDate( expected ).getTimezoneOffset()
+						).toBe( previousDateOffset );
+
+						expect(
+							getPreviousDate( relativeDate, daysBefore )
+						).toBe( expected );
+					}
+				);
+			} );
+		}
+	);
 } );
 
 describe( 'stringToDate', () => {
