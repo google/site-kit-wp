@@ -55,10 +55,14 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 	);
 	const headingID = `${ instanceID }`;
 
-	const usingPlainPermalinks = useSelect(
+	const isUsingPlainPermalinks = useSelect(
 		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
 		[]
 	);
+
+	const PostsColumn = isUsingPlainPermalinks
+		? PlainPermalinkTopPostsColumn
+		: TopPostsColumn;
 
 	return (
 		<section
@@ -75,12 +79,7 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 				{ __( 'What’s affecting recent traffic?', 'google-site-kit' ) }
 			</Typography>
 			<div className="googlesitekit-traffic-overview__recent-traffic-breakdown-columns">
-				{ ! hasNoPublishedPosts &&
-					( usingPlainPermalinks ? (
-						<PlainPermalinkTopPostsColumn />
-					) : (
-						<TopPostsColumn />
-					) ) }
+				{ ! hasNoPublishedPosts && <PostsColumn /> }
 				<TopChannelsColumn />
 				<TopReferralsColumn />
 			</div>
