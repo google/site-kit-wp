@@ -53,7 +53,7 @@ const baseActions = {
 	 * @param {string}  error.description              Error notification message.
 	 * @param {string}  [error.format]                 Optional. Error notification format. Valid values "small" and "large". Default is "small".
 	 * @param {string}  [error.type]                   Optional. Error notification type. Valid values "win-warning" and "win-error". Default is "win-error".
-	 * @param {boolean} [error.showGlobalNotification] Optional. Whether the error is shown in the banner at the top of the page. Default is `true`.
+	 * @param {boolean} [error.showGlobalNotification] Optional. Whether the error is shown in the `InternalServerError` banner at the top of the page. Default is `true`.
 	 * @return {Object} Redux-style action.
 	 */
 	setInternalServerError( error ) {

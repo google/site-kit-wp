@@ -83,7 +83,7 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	// This CTA shows its own error state, so the activation error is not also
-	// shown in the banner at the top of the page.
+	// shown in the `InternalServerError` banner at the top of the page.
 	const activateModuleCallback = useActivateModuleCallback(
 		MODULE_SLUG_ANALYTICS_4,
 		{ internalServerErrorOptions: { showGlobalNotification: false } }
