@@ -24,10 +24,14 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import * as pendingSetup from '@/js/googlesitekit/feature-discovery/pending-setup';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -61,7 +65,6 @@ describe( 'KeyMetricsSetupApp', () => {
 	mockLocation();
 
 	let registry;
-	let pendingSetupReturnURLSpy;
 
 	const analytics4SettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -145,10 +148,9 @@ describe( 'KeyMetricsSetupApp', () => {
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
-	afterEach( () => {
-		pendingSetupReturnURLSpy?.mockRestore();
-		pendingSetupReturnURLSpy = undefined;
-		jest.resetAllMocks();
+	afterEach( async () => {
+		await consumePendingSetup();
+		jest.clearAllMocks();
 	} );
 
 	it( 'should render correctly', async () => {
@@ -300,13 +302,12 @@ describe( 'KeyMetricsSetupApp', () => {
 		expect( console ).toHaveErrored();
 	} );
 
-	it( 'should navigate back to the Feature Discovery hub when pending setup matches Analytics', async () => {
+	it( 'should navigate back to the Feature Discovery Hub when pending setup matches Analytics', async () => {
+		await setPendingSetup( 'analytics', ALL_SERVICES_TAB_PATH );
+
 		const featuresURL = registry
 			.select( CORE_SITE )
 			.getAdminURL( 'googlesitekit-features' );
-		pendingSetupReturnURLSpy = jest
-			.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
-			.mockResolvedValue( featuresURL );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {
@@ -345,10 +346,8 @@ describe( 'KeyMetricsSetupApp', () => {
 		} );
 	} );
 
-	it( 'should navigate to the dashboard success URL when pending setup does not match Analytics', async () => {
-		pendingSetupReturnURLSpy = jest
-			.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
-			.mockResolvedValue( undefined );
+	it( 'should navigate on the dashboard success URL when pending setup does not match Analytics', async () => {
+		await setPendingSetup( 'ads', ALL_SERVICES_TAB_PATH );
 
 		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
 			body: {

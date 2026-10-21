@@ -24,9 +24,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { VIEW_CONTEXT_AD_BLOCKING_RECOVERY } from '@/js/googlesitekit/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
-import * as pendingSetup from '@/js/googlesitekit/feature-discovery/pending-setup';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
 import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import * as tracking from '@/js/util/tracking';
@@ -49,7 +53,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 	let registry;
 	let container;
 	let getByRole;
-	let pendingSetupReturnURLSpy;
 
 	beforeEach( () => {
 		mockTrackEvent.mockClear();
@@ -75,9 +78,8 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 		getByRole = renderResult.getByRole;
 	} );
 
-	afterEach( () => {
-		pendingSetupReturnURLSpy?.mockRestore();
-		pendingSetupReturnURLSpy = undefined;
+	afterEach( async () => {
+		await consumePendingSetup();
 	} );
 
 	describe( 'Place Tag step', () => {
@@ -443,7 +445,12 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to the Feature Discovery hub when `I published my message` is clicked and pending setup matches', async () => {
+		it( 'should return to the Feature Discovery Hub when `I published my message` is clicked and pending setup matches', async () => {
+			await setPendingSetup(
+				'ad-blocking-recovery',
+				ALL_SERVICES_TAB_PATH
+			);
+
 			const pendingRegistry = createTestRegistry();
 			provideSiteInfo( pendingRegistry );
 			provideModules( pendingRegistry, [
@@ -460,9 +467,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			const featuresURL = pendingRegistry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-features' );
-			pendingSetupReturnURLSpy = jest
-				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
-				.mockResolvedValue( featuresURL );
 
 			const { container: pendingContainer } = render( <SetupMain />, {
 				registry: pendingRegistry,
@@ -620,7 +624,12 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			);
 		} );
 
-		it( 'should return to the Feature Discovery hub when `My message is ready` is clicked and pending setup matches', async () => {
+		it( 'should return to the Feature Discovery Hub when `My message is ready` is clicked and pending setup matches', async () => {
+			await setPendingSetup(
+				'ad-blocking-recovery',
+				ALL_SERVICES_TAB_PATH
+			);
+
 			const pendingRegistry = createTestRegistry();
 			provideSiteInfo( pendingRegistry );
 			provideModules( pendingRegistry, [
@@ -637,9 +646,6 @@ describe( 'AdBlockingRecoverySetupCTAWidget - SetupMain', () => {
 			const featuresURL = pendingRegistry
 				.select( CORE_SITE )
 				.getAdminURL( 'googlesitekit-features' );
-			pendingSetupReturnURLSpy = jest
-				.spyOn( pendingSetup, 'getPendingSetupReturnURL' )
-				.mockResolvedValue( featuresURL );
 
 			const { container: pendingContainer } = render( <SetupMain />, {
 				registry: pendingRegistry,

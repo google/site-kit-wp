@@ -24,9 +24,13 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import * as pendingSetup from '@/js/googlesitekit/feature-discovery/pending-setup';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
@@ -102,6 +106,10 @@ describe( 'SetupMain', () => {
 		registry.dispatch( MODULES_ADS ).receiveGetSettings( {} );
 
 		providePluginState();
+	} );
+
+	afterEach( async () => {
+		await consumePendingSetup();
 	} );
 
 	it( 'should not open the WooCommerce modal when WooCommerce is not active', async () => {
@@ -206,14 +214,12 @@ describe( 'SetupMain', () => {
 		expect( global.location.assign ).toHaveBeenCalled();
 	} );
 
-	it( 'should finish setup to the Feature Discovery hub when pending setup matches Ads', async () => {
+	it( 'should finish setup on the Feature Discovery Hub when pending setup matches Ads', async () => {
+		await setPendingSetup( 'ads', ALL_SERVICES_TAB_PATH );
+
 		const featuresURL = registry
 			.select( CORE_SITE )
 			.getAdminURL( 'googlesitekit-features' );
-		jest.spyOn(
-			pendingSetup,
-			'getPendingSetupReturnURL'
-		).mockResolvedValue( featuresURL );
 		provideUserAuthentication( registry, {
 			grantedScopes: [ ADWORDS_SCOPE ],
 		} );
@@ -243,11 +249,9 @@ describe( 'SetupMain', () => {
 		expect( finishSetup ).toHaveBeenCalledWith( featuresURL );
 	} );
 
-	it( 'should finish setup to the dashboard success URL when pending setup does not match Ads', async () => {
-		jest.spyOn(
-			pendingSetup,
-			'getPendingSetupReturnURL'
-		).mockResolvedValue( undefined );
+	it( 'should finish setup on the dashboard success URL when pending setup does not match Ads', async () => {
+		await setPendingSetup( 'analytics', ALL_SERVICES_TAB_PATH );
+
 		provideUserAuthentication( registry, {
 			grantedScopes: [ ADWORDS_SCOPE ],
 		} );

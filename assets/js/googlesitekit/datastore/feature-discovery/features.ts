@@ -188,7 +188,6 @@ export const actions = {
 			slug: string
 		): Generator< unknown, SetupFeatureResult, unknown > {
 			const registry = ( yield commonActions.getRegistry() ) as Registry;
-			const select = registry.select;
 
 			const feature = registry
 				.select( CORE_FEATURE_DISCOVERY )
@@ -201,7 +200,7 @@ export const actions = {
 			const { moduleSlug, getSetupURL } = feature.setup;
 
 			if ( getSetupURL ) {
-				const setupURL = getSetupURL( select );
+				const setupURL = getSetupURL( registry.select );
 
 				if ( ! setupURL ) {
 					return {};
