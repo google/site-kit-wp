@@ -33,8 +33,9 @@ final class WP_Query_Factory {
 	 * majority of the code is a direct copy of certain parts of these functions.
 	 *
 	 * @since 1.15.0
+	 * @since n.e.x.t Takes a page path with no host, such as `/?p=123`, as a URL of this site.
 	 *
-	 * @param string $url URL to get WordPress query object for.
+	 * @param string $url URL to get WordPress query object for, or a page path with no host, such as `/?p=123`.
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
 	 */
 	public static function from_url( $url ) {
@@ -61,17 +62,40 @@ final class WP_Query_Factory {
 	}
 
 	/**
+	 * Gets the public query vars, the query vars that WordPress reads from a URL, such as `p` and `page_id`.
+	 *
+	 * They include the query var of each public post type, and each query var that a plugin adds through the
+	 * `query_vars` filter.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return string[] The public query vars.
+	 */
+	public static function get_public_query_vars() {
+		global $wp;
+
+		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
+		// either manually trigger the filter or not.
+		if ( did_action( 'parse_request' ) ) {
+			return $wp->public_query_vars;
+		}
+
+		return apply_filters( 'query_vars', $wp->public_query_vars );
+	}
+
+	/**
 	 * Normalizes the URL for further processing.
 	 *
 	 * @since 1.15.0
+	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later.
 	 *
-	 * @param string $url URL to normalize.
+	 * @param string $url URL to normalize, or a page path with no host, such as `/?p=123`.
 	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.
 	 */
 	private static function normalize_url( $url ) {
 		global $wp_rewrite;
 
-		// A path with no host, such as `/?p=123`, has no host to compare.
+		// A page path, such as `/?p=123`, has no host, so `URL::parse()` returns `null` for it.
 		$url_host      = str_replace( 'www.', '', (string) URL::parse( $url, PHP_URL_HOST ) );
 		$home_url_host = str_replace( 'www.', '', URL::parse( home_url(), PHP_URL_HOST ) );
 
@@ -203,6 +227,7 @@ final class WP_Query_Factory {
 	 * into query arguments in a similar way.
 	 *
 	 * @since 1.15.0
+	 * @since n.e.x.t Reads the public query vars through `get_public_query_vars()`.
 	 *
 	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
 	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.
@@ -277,27 +302,5 @@ final class WP_Query_Factory {
 		$query_args = apply_filters( 'request', $query_args );
 
 		return $query_args;
-	}
-
-	/**
-	 * Gets the query vars that WordPress reads from a URL.
-	 *
-	 * The list holds WordPress's public query vars, such as `p` and `s`, and the
-	 * query var of each viewable post type and taxonomy, such as `product`.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return string[] Query var names.
-	 */
-	public static function get_public_query_vars() {
-		global $wp;
-
-		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
-		// either manually trigger the filter or not.
-		if ( did_action( 'parse_request' ) ) {
-			return $wp->public_query_vars;
-		}
-
-		return apply_filters( 'query_vars', $wp->public_query_vars );
 	}
 }

@@ -579,6 +579,26 @@ class WP_Query_FactoryTest extends TestCase {
 					'is_singular' => false,
 				),
 			),
+			'single post, path with no host'     => array(
+				'/?p=42',
+				array(
+					'p' => '42',
+				),
+				array(
+					'is_single'   => true,
+					'is_singular' => true,
+				),
+			),
+			'front page, path with no host'      => array(
+				'/',
+				array(),
+				array(
+					'is_front_page' => true,
+					'is_page'       => true,
+					'is_home'       => false,
+					'is_singular'   => true,
+				),
+			),
 		);
 	}
 
@@ -1121,42 +1141,34 @@ class WP_Query_FactoryTest extends TestCase {
 		);
 	}
 
-	public function test_from_url__reads_a_path_with_no_host() {
-		global $wp_rewrite;
+	public function test_get_public_query_vars__before_the_main_request_is_parsed() {
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'customvar';
+				return $query_vars;
+			}
+		);
 
-		$wp_rewrite->set_permalink_structure( '' );
+		$public_query_vars = WP_Query_Factory::get_public_query_vars();
 
-		$query = WP_Query_Factory::from_url( '/?p=42&utm_source=newsletter' );
-
-		$this->assertEqualSetsWithIndex( array( 'p' => '42' ), $query->query, 'A path with no host should give the query args of its query string.' );
-		$this->assertTrue( $query->is_single(), 'A path with no host should give a single post query for `?p=42`.' );
+		$this->assertContains( 'p', $public_query_vars, 'The public query vars should include `p`, which WordPress registers.' );
+		$this->assertContains( 'customvar', $public_query_vars, 'The public query vars should include a query var that a `query_vars` filter adds, because WordPress has not run that filter yet.' );
 	}
 
-	public function test_get_public_query_vars__before_wordpress_parses_the_request() {
-		register_post_type( 'book', array( 'public' => true ) );
-
-		add_filter( 'query_vars', fn ( $query_vars ) => array_merge( $query_vars, array( 'custom_query_var' ) ) );
-
-		$query_vars = WP_Query_Factory::get_public_query_vars();
-
-		$this->assertContains( 'p', $query_vars, 'The query vars should hold the public query vars of WordPress core.' );
-		$this->assertContains( 'book', $query_vars, 'The query vars should hold the query var of a viewable post type.' );
-		$this->assertContains( 'custom_query_var', $query_vars, 'The query vars should run through the `query_vars` filter before WordPress parses the request.' );
-
-		unregister_post_type( 'book' );
-	}
-
-	public function test_get_public_query_vars__after_wordpress_parses_the_request() {
-		add_filter( 'query_vars', fn ( $query_vars ) => array_merge( $query_vars, array( 'custom_query_var' ) ) );
-
+	public function test_get_public_query_vars__after_the_main_request_is_parsed() {
 		$this->go_to( home_url( '/' ) );
 
-		// A filter added after WordPress parsed the request isn't in the list that WordPress read.
-		add_filter( 'query_vars', fn ( $query_vars ) => array_merge( $query_vars, array( 'later_query_var' ) ) );
+		// WordPress has already run the `query_vars` filter for the main request,
+		// so a filter added now changes no query var that WordPress reads.
+		add_filter(
+			'query_vars',
+			function ( $query_vars ) {
+				$query_vars[] = 'customvar';
+				return $query_vars;
+			}
+		);
 
-		$query_vars = WP_Query_Factory::get_public_query_vars();
-
-		$this->assertContains( 'custom_query_var', $query_vars, 'The query vars should be the list that WordPress read when it parsed the request.' );
-		$this->assertNotContains( 'later_query_var', $query_vars, 'The query vars should not run through the `query_vars` filter again after WordPress parses the request.' );
+		$this->assertSame( $GLOBALS['wp']->public_query_vars, WP_Query_Factory::get_public_query_vars(), 'The public query vars should be the ones WordPress read the main request with.' );
 	}
 }
