@@ -24,7 +24,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
-import { LATEST_CONTENT_TAB_ID } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { createTestRegistry } from '@tests/js/utils';
 import { MODULES_ANALYTICS_4 } from './constants';
 
@@ -48,21 +47,21 @@ describe( 'modules/analytics-4 ui', () => {
 			it( 'should store the tab ID', () => {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
-					.setActiveContentTab( LATEST_CONTENT_TAB_ID );
+					.setActiveContentTab( 'googlesitekit-latest-content-tab' );
 
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-				).toBe( LATEST_CONTENT_TAB_ID );
+				).toBe( 'googlesitekit-latest-content-tab' );
 			} );
 		} );
 	} );
 
 	describe( 'selectors', () => {
 		describe( 'getActiveContentTab', () => {
-			it( 'should return `undefined` before a tab is selected', () => {
+			it( 'should return the Top content tab before a tab is selected', () => {
 				expect(
 					registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-				).toBeUndefined();
+				).toBe( 'googlesitekit-top-content-tab' );
 			} );
 		} );
 	} );

@@ -18,7 +18,9 @@
 
 export const TOP_CONTENT_TAB_ID = 'googlesitekit-top-content-tab';
 export const LATEST_CONTENT_TAB_ID = 'googlesitekit-latest-content-tab';
-export const LATEST_CONTENT_COUNT = 10;
-export const LATEST_CONTENT_RECENT_CONTENT_OPTIONS = {
-	count: LATEST_CONTENT_COUNT,
-};
+
+/**
+ * The `getRecentContent` options for the posts the Latest content tab lists.
+ * The "See all recent posts" link uses them too, so both read the same posts.
+ */
+export const LATEST_CONTENT_RECENT_CONTENT_OPTIONS = { count: 10 };

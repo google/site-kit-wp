@@ -25,10 +25,11 @@ import invariant from 'invariant';
  * Internal dependencies
  */
 import { createReducer } from 'googlesitekit-data';
+import { TOP_CONTENT_TAB_ID } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 
 interface UIState {
-	/** ID of the active tab of the Content card, `undefined` until a tab is selected. */
-	activeContentTab: string | undefined;
+	/** ID of the active tab of the Content card. */
+	activeContentTab: string;
 }
 
 const SET_ACTIVE_CONTENT_TAB = 'SET_ACTIVE_CONTENT_TAB' as const;
@@ -39,7 +40,7 @@ type Action = {
 };
 
 export const initialState: UIState = {
-	activeContentTab: undefined,
+	activeContentTab: TOP_CONTENT_TAB_ID,
 };
 
 export const actions = {
@@ -86,9 +87,9 @@ export const selectors = {
 	 * @since n.e.x.t
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {(string|undefined)} ID of the active tab, or `undefined` until a tab is selected.
+	 * @return {string} ID of the active tab.
 	 */
-	getActiveContentTab( state: UIState ): string | undefined {
+	getActiveContentTab( state: UIState ): string {
 		return state.activeContentTab;
 	},
 };

@@ -32,6 +32,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -43,8 +44,9 @@ import {
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	EARLIER_POST,
+	LATEST_POST,
 	provideInsightReport,
-	provideLatestContent,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
@@ -184,7 +186,11 @@ function provideRecentActivityData( registry: WPDataRegistry ) {
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );
 	provideLatestPost( registry );
-	provideLatestContent( registry );
+	provideRecentContent(
+		registry,
+		[ LATEST_POST, EARLIER_POST ],
+		LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+	);
 	provideLatestPostAnalyticsReports( registry );
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );

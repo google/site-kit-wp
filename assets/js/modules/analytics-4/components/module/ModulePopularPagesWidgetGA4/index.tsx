@@ -62,8 +62,7 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 
 	const activeTabID = useSelect(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getActiveContentTab() ??
-			TOP_CONTENT_TAB_ID,
+			select( MODULES_ANALYTICS_4 ).getActiveContentTab(),
 		[]
 	);
 

@@ -45,7 +45,6 @@ import {
 import {
 	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
-	TOP_CONTENT_TAB_ID,
 } from './constants';
 import ModulePopularPagesWidgetGA4 from '.';
 
@@ -216,7 +215,7 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		);
 		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
 			'aria-labelledby',
-			LATEST_CONTENT_TAB_ID
+			'googlesitekit-latest-content-tab'
 		);
 	} );
 
@@ -234,7 +233,7 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 
 		expect(
 			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-		).toBeUndefined();
+		).toBe( 'googlesitekit-top-content-tab' );
 		expect( getAllByRole( 'tab' )[ 0 ] ).toHaveAttribute(
 			'aria-selected',
 			'true'
@@ -253,7 +252,7 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		);
 		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
 			'aria-labelledby',
-			LATEST_CONTENT_TAB_ID
+			'googlesitekit-latest-content-tab'
 		);
 	} );
 
@@ -276,7 +275,7 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 
 		expect(
 			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-		).toBe( LATEST_CONTENT_TAB_ID );
+		).toBe( 'googlesitekit-latest-content-tab' );
 
 		await act( async () => {
 			fireEvent.click( getAllByRole( 'tab' )[ 0 ] );
@@ -285,6 +284,6 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 
 		expect(
 			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-		).toBe( TOP_CONTENT_TAB_ID );
+		).toBe( 'googlesitekit-top-content-tab' );
 	} );
 } );

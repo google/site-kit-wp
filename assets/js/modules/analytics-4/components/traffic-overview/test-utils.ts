@@ -25,7 +25,6 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	FreshDataDateRange,
@@ -104,24 +103,6 @@ export function provideLatestPost( registry: WPDataRegistry ) {
 		registry,
 		[ LATEST_POST ],
 		LATEST_POST_RECENT_CONTENT_OPTIONS
-	);
-}
-
-/**
- * Stores `LATEST_POST` and `EARLIER_POST` as the recent posts that the Latest
- * content table lists, so the "See all recent posts" link renders without a
- * request.
- *
- * @since n.e.x.t
- *
- * @param {Object} registry The registry to put the posts in.
- * @return {void}
- */
-export function provideLatestContent( registry: WPDataRegistry ) {
-	provideRecentContent(
-		registry,
-		[ LATEST_POST, EARLIER_POST ],
-		LATEST_CONTENT_RECENT_CONTENT_OPTIONS
 	);
 }
 

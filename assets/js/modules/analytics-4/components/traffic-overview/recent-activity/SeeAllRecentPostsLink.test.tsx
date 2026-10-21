@@ -28,13 +28,10 @@ import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/consta
 import { PERMISSION_READ_SHARED_MODULE_DATA } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import { BREAKPOINT_DESKTOP } from '@/js/hooks/useBreakpoint';
+import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
 import {
-	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
-	LATEST_CONTENT_TAB_ID,
-} from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
-import {
+	EARLIER_POST,
 	LATEST_POST,
-	provideLatestContent,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -87,7 +84,11 @@ describe( 'SeeAllRecentPostsLink', () => {
 	} );
 
 	it( 'should render the link when the site has two or more recent posts', () => {
-		provideLatestContent( registry );
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
 
 		render( <SeeAllRecentPostsLink />, { registry } );
 
@@ -171,7 +172,11 @@ describe( 'SeeAllRecentPostsLink', () => {
 	} );
 
 	it( 'should select the Latest content tab, set the URL hash, and scroll to the content section when clicked', () => {
-		provideLatestContent( registry );
+		provideRecentContent(
+			registry,
+			[ LATEST_POST, EARLIER_POST ],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
 
 		render( <SeeAllRecentPostsLink />, { registry } );
 
@@ -181,7 +186,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 
 		expect(
 			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
-		).toBe( LATEST_CONTENT_TAB_ID );
+		).toBe( 'googlesitekit-latest-content-tab' );
 		expect( global.location.hash ).toBe( '#content' );
 		expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
 			'#content',
