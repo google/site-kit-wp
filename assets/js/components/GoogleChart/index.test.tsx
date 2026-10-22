@@ -26,6 +26,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getDateString } from '@/js/util';
 import {
 	act,
 	createTestRegistry,
@@ -33,7 +34,6 @@ import {
 	render,
 } from '@tests/js/test-utils';
 import GoogleChart from './';
-import { createChartWrapper } from './test-utils';
 
 const mockChart = jest.fn();
 
@@ -45,6 +45,62 @@ jest.mock( 'react-google-charts', () => ( {
 		return <div className="googlesitekit-chart__inner" />;
 	},
 } ) );
+
+/**
+ * Fires the chart's `ready` event, as Google Charts does once it has drawn the
+ * chart, so `GoogleChart` draws its date markers.
+ *
+ * Call it after `render()`. The chart layout puts the three days of the range
+ * 20px apart, so a line drawn on the day before or after the marked day is
+ * 20px off.
+ *
+ * @since n.e.x.t
+ *
+ * @return {void}
+ */
+function fireChartReadyEvent() {
+	const xLocations: Record< string, number > = {
+		'2025-01-14': 100,
+		'2025-01-15': 120,
+		'2025-01-16': 140,
+	};
+	const chartWrapper = {
+		getChart: () => ( {
+			getChartLayoutInterface: () => ( {
+				getChartAreaBoundingBox: () => ( {
+					top: 8,
+					height: 224,
+				} ),
+				getXLocation: ( day: Date ) =>
+					xLocations[ getDateString( day ) ],
+			} ),
+		} ),
+		getDataTable: () => ( {} ),
+	};
+	const google = {
+		visualization: {
+			events: { removeAllListeners: jest.fn() },
+		},
+	};
+
+	const { getChartWrapper } = mockChart.mock.calls[ 0 ][ 0 ];
+
+	act( () => {
+		getChartWrapper( chartWrapper, google );
+	} );
+
+	const { calls } = mockChart.mock;
+	const { chartEvents } = calls[ calls.length - 1 ][ 0 ];
+
+	act( () => {
+		chartEvents
+			.find(
+				( { eventName }: { eventName: string } ) =>
+					eventName === 'ready'
+			)
+			.callback( { chartWrapper, google } );
+	} );
+}
 
 describe( 'GoogleChart', () => {
 	let registry: WPDataRegistry;
@@ -61,160 +117,119 @@ describe( 'GoogleChart', () => {
 		mockChart.mockClear();
 	} );
 
-	it( 'should draw a date marker outside the selected date range but inside the plotted days', () => {
+	it( 'should draw only the date markers inside the selected date range', () => {
 		const { container } = render(
 			<GoogleChart
 				chartType="LineChart"
 				dateMarkers={ [
-					{ date: '2025-01-05', text: 'Property created' },
-				] }
-				plottedStartDate="2025-01-01"
-				plottedEndDate="2025-01-16"
-			/>,
-			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-		);
-
-		expect(
-			container.querySelectorAll(
-				'.googlesitekit-chart__date-marker-line'
-			)
-		).toHaveLength( 1 );
-	} );
-
-	it( 'should draw only the date markers inside the selected date range when no plotted days are passed', () => {
-		const { container } = render(
-			<GoogleChart
-				chartType="LineChart"
-				dateMarkers={ [
-					{ date: '2025-01-05', text: 'Outside the range' },
+					{ date: '2025-01-05', text: 'Before the range' },
 					{ date: '2025-01-15', text: 'Inside the range' },
+					{ date: '2025-01-17', text: 'After the range' },
 				] }
 			/>,
 			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
 		);
+
+		fireChartReadyEvent();
 
 		const markerTooltips = container.querySelectorAll(
 			'.googlesitekit-chart__date-marker-tooltip'
 		);
+		const markerLines = container.querySelectorAll(
+			'.googlesitekit-chart__date-marker-line'
+		);
 
 		expect( markerTooltips ).toHaveLength( 1 );
-		expect(
-			container.querySelectorAll(
-				'.googlesitekit-chart__date-marker-line'
-			)
-		).toHaveLength( 1 );
+		expect( markerLines ).toHaveLength( 1 );
+		// `2025-01-15` sits at 120px in the chart layout, and the line is drawn
+		// 1px left of it.
+		expect( markerLines[ 0 ] ).toHaveStyle( { left: '119px' } );
 	} );
 
-	// Jest runs in the machine's time zone, so these tests pin one zone west
-	// and one east of UTC, where UTC midnight isn't local midnight.
-	describe.each( [ 'America/New_York', 'Asia/Riyadh' ] )(
-		'in the %s time zone',
-		( timezone ) => {
-			let originalTimezone: string | undefined;
+	// Jest runs in the machine's time zone, so the tests that follow pin a zone
+	// where UTC midnight isn't local midnight. West of UTC, a marker's day read
+	// as UTC midnight falls on the evening before, so these cases catch a range
+	// check or a line that reads it that way.
+	describe( 'in the America/New_York time zone', () => {
+		let originalTimezone: string | undefined;
 
-			beforeEach( () => {
-				originalTimezone = provideTimezone( timezone );
-			} );
+		beforeEach( () => {
+			originalTimezone = provideTimezone( 'America/New_York' );
+		} );
 
-			afterEach( () => {
-				provideTimezone( originalTimezone );
-			} );
+		afterEach( () => {
+			provideTimezone( originalTimezone );
+		} );
 
-			it( 'should draw a date marker on the first plotted day', () => {
-				const { container } = render(
-					<GoogleChart
-						chartType="LineChart"
-						dateMarkers={ [
-							{ date: '2025-01-01', text: 'Property created' },
-						] }
-						plottedStartDate="2025-01-01"
-						plottedEndDate="2025-01-16"
-					/>,
-					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-				);
+		it( 'should draw a date marker on the first day of the selected date range', () => {
+			const { container } = render(
+				<GoogleChart
+					chartType="LineChart"
+					dateMarkers={ [
+						{ date: '2025-01-14', text: 'Property created' },
+					] }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
 
-				expect(
-					container.querySelectorAll(
-						'.googlesitekit-chart__date-marker-line'
-					)
-				).toHaveLength( 1 );
-			} );
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-chart__date-marker-line'
+				)
+			).toHaveLength( 1 );
+		} );
 
-			it( 'should draw a date marker on the last plotted day', () => {
-				const { container } = render(
-					<GoogleChart
-						chartType="LineChart"
-						dateMarkers={ [
-							{ date: '2025-01-16', text: 'Property created' },
-						] }
-						plottedStartDate="2025-01-01"
-						plottedEndDate="2025-01-16"
-					/>,
-					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-				);
+		it( 'should draw the date marker line at the position of the marked day', () => {
+			const { container } = render(
+				<GoogleChart
+					chartType="LineChart"
+					dateMarkers={ [
+						{ date: '2025-01-15', text: 'Property created' },
+					] }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
 
-				expect(
-					container.querySelectorAll(
-						'.googlesitekit-chart__date-marker-line'
-					)
-				).toHaveLength( 1 );
-			} );
+			fireChartReadyEvent();
 
-			it( 'should draw the date marker line at the position of the marked day', () => {
-				const { container } = render(
-					<GoogleChart
-						chartType="LineChart"
-						dateMarkers={ [
-							{ date: '2025-01-05', text: 'Property created' },
-						] }
-						plottedStartDate="2025-01-01"
-						plottedEndDate="2025-01-16"
-					/>,
-					{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
-				);
+			// The line is drawn 1px left of the day's position.
+			expect(
+				container.querySelector(
+					'.googlesitekit-chart__date-marker-line'
+				)
+			).toHaveStyle( { left: '119px', top: '8px', height: '224px' } );
+		} );
+	} );
 
-				const chartWrapper = {
-					...createChartWrapper(
-						{
-							'2025-01-04': 100,
-							'2025-01-05': 120,
-							'2025-01-06': 140,
-						},
-						{ top: 8, height: 224 }
-					),
-					getDataTable: () => ( {} ),
-				};
-				const google = {
-					visualization: {
-						events: { removeAllListeners: jest.fn() },
-					},
-				};
+	// East of UTC, a marker's day read as UTC midnight falls after that day's
+	// local midnight, so this case catches a range check that reads it that way.
+	describe( 'in the Asia/Riyadh time zone', () => {
+		let originalTimezone: string | undefined;
 
-				const { getChartWrapper } = mockChart.mock.calls[ 0 ][ 0 ];
+		beforeEach( () => {
+			originalTimezone = provideTimezone( 'Asia/Riyadh' );
+		} );
 
-				act( () => {
-					getChartWrapper( chartWrapper, google );
-				} );
+		afterEach( () => {
+			provideTimezone( originalTimezone );
+		} );
 
-				const { calls } = mockChart.mock;
-				const { chartEvents } = calls[ calls.length - 1 ][ 0 ];
+		it( 'should draw a date marker on the last day of the selected date range', () => {
+			const { container } = render(
+				<GoogleChart
+					chartType="LineChart"
+					dateMarkers={ [
+						{ date: '2025-01-16', text: 'Property created' },
+					] }
+				/>,
+				{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+			);
 
-				act( () => {
-					chartEvents
-						.find(
-							( { eventName }: { eventName: string } ) =>
-								eventName === 'ready'
-						)
-						.callback( { chartWrapper, google } );
-				} );
-
-				// The line is drawn 1px left of the day's position.
-				expect(
-					container.querySelector(
-						'.googlesitekit-chart__date-marker-line'
-					)
-				).toHaveStyle( { left: '119px', top: '8px', height: '224px' } );
-			} );
-		}
-	);
+			expect(
+				container.querySelectorAll(
+					'.googlesitekit-chart__date-marker-line'
+				)
+			).toHaveLength( 1 );
+		} );
+	} );
 } );

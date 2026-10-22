@@ -82,8 +82,6 @@ export default function GoogleChart( props ) {
 		onMouseOut,
 		onReady,
 		onSelect,
-		plottedEndDate,
-		plottedStartDate,
 		selectedStats,
 		width,
 		options,
@@ -217,21 +215,28 @@ export default function GoogleChart( props ) {
 		}
 	}, [ onMouseOver, onMouseOut ] );
 
-	// A chart that plots days outside the selected date range passes its own
-	// first and last day, so its markers on those days are still drawn.
-	const firstPlottedDate = plottedStartDate || startDate;
-	const lastPlottedDate = plottedEndDate || endDate;
-
-	// Every date here is a `YYYY-MM-DD` string, so comparing the strings
-	// compares the days in any time zone.
+	/**
+	 * Checks whether a date marker's day falls inside the selected date range,
+	 * its first and last days included.
+	 *
+	 * Every date here is a `YYYY-MM-DD` string, so comparing the strings
+	 * compares the days in any time zone.
+	 *
+	 * @since 1.99.0
+	 * @since n.e.x.t Parameter `date` changed from a `Date` to a `YYYY-MM-DD` string.
+	 *
+	 * @param {string} date The marker's day, as `YYYY-MM-DD`.
+	 * @return {boolean} Whether the day falls inside the range.
+	 */
 	function isDateWithinRange( date ) {
-		if ( ! date || ! firstPlottedDate || ! lastPlottedDate ) {
+		if ( ! date || ! startDate || ! endDate ) {
 			return false;
 		}
 
-		return date >= firstPlottedDate && date <= lastPlottedDate;
+		return date >= startDate && date <= endDate;
 	}
 
+	// Only use markers if the date is within the current date range.
 	const dateMarkersInRange = dateMarkers.filter( ( dateMarker ) =>
 		isDateWithinRange( dateMarker.date )
 	);
@@ -270,8 +275,9 @@ export default function GoogleChart( props ) {
 			// We need to make sure the dates we use on the chart and on
 			// this line are exactly the same, so we get the position on the
 			// chart that matches the date we create from the date string.
-			// `stringToDate()` reads the day in the browser's time zone, the
-			// way the plotted days are read.
+			// `stringToDate()` returns midnight of the marker's day in the
+			// browser's time zone, as `parseDimensionStringToDate()` does for
+			// each plotted day of the charts that pass `dateMarkers`.
 			//
 			// This prevents the line and the chart data from being
 			// slightly out-of-alignment, see:
@@ -492,16 +498,6 @@ GoogleChart.propTypes = {
 	onMouseOver: PropTypes.func,
 	onReady: PropTypes.func,
 	onSelect: PropTypes.func,
-	/**
-	 * The last day the chart plots, in the format `'YYYY-MM-DD'`. Default is
-	 * the last day of the selected date range.
-	 */
-	plottedEndDate: PropTypes.string,
-	/**
-	 * The first day the chart plots, in the format `'YYYY-MM-DD'`. Default is
-	 * the first day of the selected date range.
-	 */
-	plottedStartDate: PropTypes.string,
 	selectedStats: PropTypes.arrayOf( PropTypes.number ),
 	width: PropTypes.string,
 	options: PropTypes.object,
