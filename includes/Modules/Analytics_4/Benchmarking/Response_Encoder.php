@@ -13,10 +13,10 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 /**
  * Encodes an assembled benchmarking response for the browser.
  *
- * Thirteen months of daily counts next to seven ranked lists is tens of
- * kilobytes written as objects, and the dashboard keeps one of those per date
- * range in browser storage. The encoded response drops the repeated field
- * names, the date of every day but the first, and every repeated string.
+ * Up to 90 daily counts next to seven ranked lists run to several kilobytes
+ * written as objects, and the dashboard keeps one of those per date range in
+ * browser storage. The encoded response leaves out the repeated field names,
+ * the date of every day but the first, and every repeated string.
  *
  * @since 1.189.0
  * @access private
