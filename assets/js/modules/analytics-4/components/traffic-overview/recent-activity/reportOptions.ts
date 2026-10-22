@@ -20,6 +20,7 @@
  * Internal dependencies
  */
 import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
+import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { getFreshDataWindow } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getFreshDataWindow';
 import {
@@ -30,6 +31,7 @@ import {
 	TOTAL_USERS_METRIC,
 	getGraphReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { ExcludedProducts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { MINUTE_IN_SECONDS } from '@/js/util';
 
@@ -171,5 +173,162 @@ export function getSearchPerformanceReportOptions(
 		dimensions: 'hour',
 		reportID:
 			'search-console_fresh-metrics-row_widget_searchPerformanceArgs',
+	};
+}
+
+/**
+ * Builds the options of a column's report, which counts a metric for each
+ * value of a dimension, most first.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The date range of the Recent activity tab.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @param {string} dimension           The dimension, such as `sessionSource`.
+ * @param {string} metric              The metric, `sessions` or `screenPageViews`.
+ * @param {string} reportID            The ID of the report.
+ * @return {Object} The report options.
+ */
+function getColumnReportOptions(
+	{ startDate, endDate }: FreshDataDateRange,
+	dimension: string,
+	metric: string,
+	reportID: string
+): ReportOptions {
+	return {
+		startDate,
+		endDate,
+		dimensions: [ dimension ],
+		metrics: [ { name: metric } ],
+		orderby: [ { metric: { metricName: metric }, desc: true } ],
+		reportID,
+	};
+}
+
+/**
+ * Builds the filter that removes the product pages from the report of views for
+ * each page.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} excludedProducts The way to recognize a product page.
+ * @return {Object} The dimension filters.
+ */
+function getExcludedProductsFilters(
+	excludedProducts: ExcludedProducts
+): ReportOptions[ 'dimensionFilters' ] {
+	if ( excludedProducts.by === 'pathPrefix' ) {
+		return {
+			pagePath: {
+				filterType: 'stringFilter',
+				matchType: 'BEGINS_WITH',
+				value: excludedProducts.pathPrefix,
+				notExpression: true,
+			},
+		};
+	}
+
+	return {
+		'customEvent:googlesitekit_post_type': {
+			filterType: 'stringFilter',
+			matchType: 'EXACT',
+			value: excludedProducts.postType,
+			notExpression: true,
+		},
+	};
+}
+
+/**
+ * Builds the options of the report of views for each page.
+ *
+ * The report has only the pages with the most views, as many as a column
+ * shows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}      dateRange           The date range of the Recent activity tab.
+ * @param {string}      dateRange.startDate The first day of the date range.
+ * @param {string}      dateRange.endDate   The last day of the date range.
+ * @param {Object|null} [excludedProducts]  Optional. The way to recognize the product pages that the report leaves out, or `null` to keep them. Default `null`.
+ * @return {Object} The report options.
+ */
+export function getTopPostsReportOptions(
+	dateRange: FreshDataDateRange,
+	excludedProducts: ExcludedProducts | null = null
+): ReportOptions {
+	return {
+		...getColumnReportOptions(
+			dateRange,
+			'pagePath',
+			'screenPageViews',
+			'analytics-4_recent-traffic-breakdown_widget_topPostsArgs'
+		),
+		...( excludedProducts
+			? {
+					dimensionFilters:
+						getExcludedProductsFilters( excludedProducts ),
+			  }
+			: {} ),
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
+	};
+}
+
+/**
+ * Builds the options of the report of visits for each channel.
+ *
+ * The report has only the channels with the most visits, as many as a column
+ * shows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The date range of the Recent activity tab.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @return {Object} The report options.
+ */
+export function getTopChannelsReportOptions(
+	dateRange: FreshDataDateRange
+): ReportOptions {
+	return {
+		...getColumnReportOptions(
+			dateRange,
+			'sessionDefaultChannelGroup',
+			'sessions',
+			'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs'
+		),
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
+	};
+}
+
+/**
+ * Builds the options of the report of visits for each site that referred
+ * them.
+ *
+ * The report counts only the "Referral" channel, so the column lists referring
+ * sites instead of repeating the channels column. The report has only the
+ * sites with the most visits, as many as a column shows.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The date range of the Recent activity tab.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @return {Object} The report options.
+ */
+export function getTopReferralsReportOptions(
+	dateRange: FreshDataDateRange
+): ReportOptions {
+	return {
+		...getColumnReportOptions(
+			dateRange,
+			'sessionSource',
+			'sessions',
+			'analytics-4_recent-traffic-breakdown_widget_topReferralsArgs'
+		),
+		dimensionFilters: {
+			sessionDefaultChannelGroup: 'Referral',
+		},
+		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
 	};
 }

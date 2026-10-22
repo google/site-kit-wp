@@ -40,6 +40,7 @@ import { addQueryArgs } from '@wordpress/url';
  */
 import { SpinnerButton } from 'googlesitekit-components';
 import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import Link from '@/js/components/Link';
 import NewBadge from '@/js/components/NewBadge';
 import AdBlockerWarning from '@/js/components/notifications/AdBlockerWarning';
@@ -49,11 +50,13 @@ import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Row } from '@/js/material-components';
 import { WooCommerceRedirectModal } from '@/js/modules/ads/components/common';
 import PAXEmbeddedApp from '@/js/modules/ads/components/common/PAXEmbeddedApp';
+import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import {
 	ADWORDS_SCOPE,
 	MODULES_ADS,
@@ -178,12 +181,16 @@ export default function SetupMain( { finishSetup } ) {
 		// Encapsulate dependencies to avoid function changing after launch.
 		const { select, resolveSelect } = registry;
 		await resolveSelect( CORE_SITE ).getSiteInfo();
-		const redirectURL = select( CORE_SITE ).getAdminURL(
-			'googlesitekit-dashboard',
-			{
-				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
-			}
+		const pendingSetupURL = await getPendingSetupReturnURL(
+			select,
+			MODULE_SLUG_TO_FEATURE_SLUG[ MODULE_SLUG_ADS ]
 		);
+
+		const redirectURL =
+			pendingSetupURL ||
+			select( CORE_SITE ).getAdminURL( 'googlesitekit-dashboard', {
+				notification: PAX_SETUP_SUCCESS_NOTIFICATION,
+			} );
 		await Promise.all( [
 			trackEvent( `${ viewContext }_pax`, 'pax_setup_completed' ),
 			triggerSurvey( 'pax_setup_completed' ),
