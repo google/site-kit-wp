@@ -226,6 +226,7 @@ class Enhanced_ConversionsTest extends TestCase {
 		);
 
 		$this->assertStringContainsString( $expected_script, $head_html, 'The inline script containing user data should be in the HTML.' );
+		$this->assertStringContainsString( 'gtag("set", "developer_id.' . GTag::USER_DATA_DEVELOPER_ID . '", true);', $head_html, 'The user data developer ID should be set when user data is set.' );
 	}
 
 	public function data_gtag_modules() {
@@ -268,5 +269,6 @@ class Enhanced_ConversionsTest extends TestCase {
 		$head_html = $this->capture_action( 'wp_head' );
 
 		$this->assertStringNotContainsString( 'gtag("set","user_data"', $head_html, 'The inline script containing user data should not be in the HTML.' );
+		$this->assertStringNotContainsString( 'developer_id.' . GTag::USER_DATA_DEVELOPER_ID, $head_html, 'The user data developer ID should not be set when no user data is set.' );
 	}
 }
