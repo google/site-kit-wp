@@ -255,6 +255,43 @@ class GTagTest extends TestCase {
 		}
 	}
 
+	public function test_user_data_developer_id__set_when_user_data_is_set() {
+		add_action(
+			'googlesitekit_setup_gtag',
+			function ( GTag $gtag ) {
+				$gtag->add_command( 'set', array( 'user_data', array( 'sha256_email_address' => 'test' ) ) );
+			}
+		);
+
+		do_action( 'wp_enqueue_scripts' );
+
+		$this->assertInlineScriptsInOrder(
+			array(
+				'gtag("set", "developer_id.dZTNiMT", true);',
+				'gtag("set", "developer_id.' . GTag::USER_DATA_DEVELOPER_ID . '", true);',
+				'gtag("config", "' . static::TEST_TAG_ID_1 . '");',
+			),
+			'after',
+			'Inline script should include the user data developer ID after the Site Kit developer ID when user data is set.'
+		);
+	}
+
+	public function test_user_data_developer_id__not_set_without_user_data() {
+		add_action(
+			'googlesitekit_setup_gtag',
+			function ( GTag $gtag ) {
+				$gtag->add_command( 'set', array( 'linker', array( 'domains' => array( 'example.com' ) ) ) );
+			}
+		);
+
+		do_action( 'wp_enqueue_scripts' );
+
+		$inline_scripts = $this->get_inline_scripts( 'after' );
+
+		$this->assertContains( 'gtag("set", "developer_id.dZTNiMT", true);', $inline_scripts, 'Inline script should still include the Site Kit developer ID.' );
+		$this->assertNotContains( 'gtag("set", "developer_id.' . GTag::USER_DATA_DEVELOPER_ID . '", true);', $inline_scripts, 'Inline script should not include the user data developer ID when no user data is set.' );
+	}
+
 	public function test_hat_script_presence_in_wp_head__no_gtg() {
 		$output = $this->capture_action( 'wp_head' ); // includes wp_enqueue_scripts.
 
