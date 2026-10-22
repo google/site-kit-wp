@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import type { Select } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
@@ -31,7 +32,13 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
@@ -267,6 +274,41 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 				ctaLabel: __( 'Set up a sign-up form', 'google-site-kit' ),
+				moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				getSetupURL: ( select: Select ) =>
+					select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL(
+						{
+							redirectQueryArgs: {
+								expressSetup: 'true',
+								cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+							},
+							additionalScopes: EXPRESS_SETUP_SCOPES,
+						}
+					),
+				// Connecting RRM doesn't mean a newsletter form exists, so
+				// completion is based on the publication's configured CTAs.
+				isEnabled: ( select: Select ) => {
+					// Settings can't load until RRM is active.
+					const isActive = select( CORE_MODULES ).isModuleActive(
+						MODULE_SLUG_READER_REVENUE_MANAGER
+					);
+
+					if ( isActive === undefined || isActive === false ) {
+						return isActive;
+					}
+
+					const configuredCTAs = select(
+						MODULES_READER_REVENUE_MANAGER
+					).getConfiguredCTAs();
+
+					if ( configuredCTAs === undefined ) {
+						return undefined;
+					}
+
+					return Object.values( configuredCTAs ).includes(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					);
+				},
 			},
 		} );
 	}
