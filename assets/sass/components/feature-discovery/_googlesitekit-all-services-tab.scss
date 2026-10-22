@@ -25,8 +25,7 @@
 	}
 
 	.googlesitekit-all-services-tab__notifications {
-		// Offsets the tab's gap, which grows with the viewport, so the
-		// notice keeps a tighter, fixed 24px above and below it.
+		// Offsets the tab's gap to provide a fixed 24px above and below the notice.
 		margin-block: calc(24px - var(--googlesitekit-feature-discovery-padding-l));
 
 		// Collapsed while empty, so it adds no gap above the feature list.
