@@ -46,9 +46,3 @@ export const TRAFFIC_BREAKDOWN_MAX_ROWS = 5;
 
 /** The `getRecentContent` options that select the most recently published post. */
 export const LATEST_POST_RECENT_CONTENT_OPTIONS = { count: 1 };
-
-/**
- * The number of days the Typical Traffic chart plots, ending on the last day of
- * the selected date range.
- */
-export const TYPICAL_TRAFFIC_CHART_DAYS = 395;
