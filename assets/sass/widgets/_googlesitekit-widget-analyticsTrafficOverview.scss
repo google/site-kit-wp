@@ -18,83 +18,11 @@
 
 @use "sass:map";
 
+// The space between the columns of a breakdown and between the groups of fresh
+// figures, so the groups line up with the columns below them.
+$traffic-overview-column-gap: 42px;
+
 .googlesitekit-plugin {
-	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__tabs {
-		position: relative;
-
-		&::after {
-			border-bottom: 1px solid $c-utility-divider;
-			bottom: 0;
-			content: "";
-			display: block;
-			left: 0;
-			position: absolute;
-			width: 100%;
-			z-index: 0;
-		}
-
-		.mdc-tab-bar {
-			position: relative;
-			z-index: 1;
-		}
-
-		@each $size in map.keys($mdc-layout-grid-columns) {
-
-			@include mdc-layout-grid-media-query_($size) {
-				$margin: map.get($mdc-layout-grid-default-margin, $size);
-
-				.mdc-tab-scroller__scroll-content {
-					padding-left: var(--mdc-layout-grid-margin-#{$size}, #{$margin});
-				}
-			}
-		}
-
-		.mdc-tab {
-			height: 54px;
-			padding: 0 28px;
-		}
-
-		.mdc-tab .mdc-tab__content {
-			height: 52px;
-		}
-
-		.mdc-tab .mdc-tab__text-label {
-			color: $c-surfaces-on-background-variant;
-			font-size: $fs-body-md;
-			font-weight: $fw-normal;
-			letter-spacing: $ls-s;
-			line-height: 20px;
-
-			// Material draws the label of a tab that is not selected at 60%
-			// opacity, but the design draws it at 100%.
-			opacity: 1;
-		}
-
-		.mdc-tab--active .mdc-tab__text-label {
-			color: $c-content-primary;
-			font-weight: $fw-medium;
-			letter-spacing: 0;
-		}
-
-		// The label sets its color on its own span, so the icon repeats it, and
-		// Material's color transition for the label, to match the label in the
-		// selected and the unselected tab.
-		.mdc-tab .googlesitekit-traffic-overview__tab-icon {
-			color: $c-surfaces-on-background-variant;
-			margin-right: 4px;
-			transition: 150ms color linear;
-		}
-
-		.mdc-tab--active .googlesitekit-traffic-overview__tab-icon {
-			color: $c-content-primary;
-			transition-delay: 100ms;
-		}
-
-		.mdc-tab .googlesitekit-badge {
-			margin-left: 10px;
-		}
-	}
-
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel {
 		display: flex;
 		flex-direction: column;
@@ -214,7 +142,7 @@
 			margin-top: 18px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 42px;
+				gap: $traffic-overview-column-gap;
 
 				// Equal fractions, so a column with no rows keeps its width.
 				grid-template-columns: repeat(3, 1fr);
@@ -232,29 +160,7 @@
 			padding: 8px 0 8px 19px;
 			position: relative;
 
-			// The rail is a `::before` rather than a border, so it and the dot
-			// centered on it both sit inside the column's own box. `left`
-			// centers the 2px rail in the 9px dot: (9px - 2px) / 2.
-			&::before {
-				background: $c-utility-divider;
-				bottom: 0;
-				content: "";
-				left: 3.5px;
-				position: absolute;
-				top: 0;
-				width: 2px;
-			}
-
-			&::after {
-				background: $c-utility-divider;
-				border-radius: 50%;
-				content: "";
-				height: 9px;
-				left: 0;
-				position: absolute;
-				top: 15px;
-				width: 9px;
-			}
+			@include tile-connector(15px);
 		}
 
 		// The typography classes carry the font; only colour and spacing here.
@@ -315,15 +221,70 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__fresh-metrics-row {
+			display: grid;
+			gap: 32px;
+			grid-template-columns: minmax(0, 1fr);
+
+			// Each group takes a third of the row, the width of a column of
+			// the traffic breakdown below.
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		// The notice in place of the visitors figure spans the whole row, above
+		// the search figures.
+		.googlesitekit-traffic-overview__fresh-metrics-notice {
+			grid-column: 1 / -1;
+		}
+
 		.googlesitekit-traffic-overview__insight-notice-content {
-			align-items: center;
 			background-color: $c-blue-b-50;
 			border-radius: $br-xxs;
 			color: $c-blue-b-700;
 			display: flex;
-			gap: 16px;
+			flex-direction: column;
+			gap: 10px;
 			min-height: 72px;
-			padding: 16px 24px;
+			padding: 12px $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex-direction: row;
+				gap: 48px;
+				padding: 16px $grid-gap-desktop;
+			}
+
+			.googlesitekit-thumbs-survey-trigger {
+				align-self: flex-end;
+
+				// The thumb buttons are 32px around 20px icons. This margin
+				// trims each button to its icon, plus 4px at the top and bottom.
+				margin: -2px -6px;
+
+				@media (min-width: $bp-tablet) {
+					align-self: auto;
+				}
+			}
+
+			.googlesitekit-thumbs-survey-trigger__button.mdc-button {
+				@include mdc-button-ink-color( $c-blue-b-700 );
+			}
+		}
+
+		.googlesitekit-traffic-overview__insight-notice-message {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex: 1;
+				flex-direction: row;
+				gap: 16px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__insight-notice-text {
@@ -350,6 +311,69 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__fresh-metrics-group-header {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+
+			// The gap applies to the figures and to a report error alike.
+			margin-bottom: 12px;
+
+			// The icon's line box would make this header taller than the one
+			// without a tooltip.
+			.googlesitekit-info-tooltip {
+				height: 16px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-group-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics {
+			display: flex;
+			gap: 24px;
+
+			@media (min-width: $bp-tablet) {
+				gap: 48px;
+			}
+		}
+
+		// On phones the figures of a group share its width.
+		.googlesitekit-traffic-overview__fresh-metric {
+			color: $c-surfaces-on-surface;
+			flex: 1 1 0;
+
+			@media (min-width: $bp-tablet) {
+				flex: none;
+				min-width: 120px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric:not(:last-child) {
+			border-right: 1px solid $c-utility-divider;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric-label {
+			margin: 0;
+		}
+
+		// The notice takes the height of the figures it replaces.
+		.googlesitekit-traffic-overview__fresh-metrics-empty {
+			color: $c-surfaces-on-surface-variant;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-height: 80px;
+			padding-top: 6px;
+
+			.googlesitekit-typography {
+				color: inherit;
+				margin: 0;
+			}
+		}
+
 		.googlesitekit-traffic-overview__recent-traffic-breakdown {
 			margin-top: 50px;
 
@@ -365,6 +389,175 @@
 				margin-top: 80px;
 			}
 		}
+
+		.googlesitekit-traffic-overview__see-all-recent-posts {
+			@include googlesitekit-typography(label, small);
+			margin-top: 16px;
+
+			.googlesitekit-icon-wrapper {
+				background-color: $c-teal-t-10;
+				border-radius: 50%;
+				height: 20px;
+				justify-content: center;
+				margin-left: 8px !important; // To override the inline set margin.
+				width: 20px;
+			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__latest-post-performance {
+
+		.googlesitekit-traffic-overview__latest-post-performance-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0 0 18px;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-header {
+			align-items: center;
+			display: flex;
+			gap: 18px;
+			margin-bottom: 18px;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-icon {
+			align-items: center;
+			background: $c-blue-b-50;
+			border-radius: 50%;
+			color: $c-blue-b-500;
+			display: flex;
+			flex-shrink: 0;
+			height: 36px;
+			justify-content: center;
+			width: 36px;
+
+			svg {
+				transform: rotate(45deg);
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-title {
+			font-size: $fs-body-lg;
+			overflow-wrap: anywhere;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-date {
+			color: $c-surfaces-on-surface-variant;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__latest-post-tiles {
+			display: grid;
+			gap: 16px;
+			grid-template-columns: 1fr;
+
+			@media (min-width: $bp-desktop) {
+				gap: 50px;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-tile {
+			background: $c-surfaces-background;
+			border-radius: $br-xs;
+			padding: 22px;
+		}
+
+		.googlesitekit-table-tile__title.googlesitekit-typography {
+			margin-bottom: 12px;
+		}
+
+		// The labels are short, so the value takes the remaining width, and a
+		// long value, e.g. a referring site, is cut off instead of its label.
+		.googlesitekit-table-tile__row {
+			grid-template-columns: auto minmax(0, 1fr);
+		}
+
+		// The tiles align the value to the end of its column, which lets a long
+		// value overflow it, so the value fills the column instead, and its
+		// preview block keeps to the end.
+		.googlesitekit-table-tile__cell--value {
+			justify-self: stretch;
+			overflow: hidden;
+			text-overflow: ellipsis;
+
+			.googlesitekit-preview-block {
+				margin-left: auto;
+			}
+		}
+
+		.googlesitekit-traffic-overview__latest-post-row--error {
+			display: block;
+
+			.googlesitekit-table-tile__error {
+				margin-top: 8px;
+			}
+		}
+	}
+
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__recent-traffic-breakdown {
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-columns {
+			display: grid;
+			gap: 8px;
+
+			// The design stacks the columns on tablets too.
+			grid-template-columns: minmax(0, 1fr);
+			margin-top: 12px;
+
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+
+				// Without the posts column, the other two stay a third wide.
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			// The left padding makes room for the rail and its dot.
+			.googlesitekit-table-tile {
+				padding: 8px 16px 8px $tile-content-offset;
+				position: relative;
+
+				@include tile-connector(15px);
+			}
+
+			.googlesitekit-table-tile__title.googlesitekit-typography {
+				line-height: $lh-body-md;
+			}
+
+			.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+				margin-top: 4px;
+			}
+
+			// The 4px padding keeps a post link's focus outline visible, and
+			// the -4px margin cancels it, so the text stays in place.
+			.googlesitekit-table-tile__cell--label {
+				margin: -4px;
+				padding: 4px;
+			}
+
+			.googlesitekit-table-tile__cell--label .googlesitekit-cta-link__contents {
+				font-weight: $fw-medium;
+			}
+
+			.googlesitekit-table-tile__cell--value {
+				font-variant-numeric: tabular-nums;
+				letter-spacing: $ls-s;
+			}
+
+			// The fixed width fits the widest share, such as `(99.9%)`, so the
+			// counts line up.
+			.googlesitekit-table-tile__secondary-value {
+				color: $c-surfaces-on-surface;
+				display: inline-block;
+				margin-left: 5px;
+				min-width: 7ch;
+				text-align: right;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
@@ -378,4 +571,9 @@
 			margin-left: 4px;
 		}
 	}
+}
+
+// The padding comes on top, so the tooltip is 210px wide as in the design.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
+	max-width: 186px;
 }

@@ -43,11 +43,11 @@ export default function ExitSetup( { gaTrackingEventArgs, url } ) {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	async function handleClick() {
-		await trackEvent(
-			gaTrackingEventArgs.category,
-			gaTrackingEventArgs.action,
-			gaTrackingEventArgs.label
-		);
+		const { category, action, label } = gaTrackingEventArgs;
+
+		if ( category && action ) {
+			await trackEvent( category, action, label );
+		}
 
 		navigateTo( url ? untrailingslashit( url ) : adminURL );
 	}

@@ -34,6 +34,7 @@ import {
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { Registry } from '@/js/googlesitekit-data';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
@@ -50,6 +51,9 @@ import FeatureDiscoveryApp from './FeatureDiscoveryApp';
 interface StoryArgs {
 	setupRegistry?: ( registry: Registry ) => void;
 }
+
+const AUDIENCE_CHIP_SELECTOR =
+	'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"]';
 
 function Template( { setupRegistry = () => {} }: StoryArgs ) {
 	function setupStoryRegistry( registry: Registry ) {
@@ -87,6 +91,54 @@ AllServices.args = {
 	},
 };
 AllServices.scenario = {};
+
+export const AllServicesFiltered = Template.bind( {} ) as Story< StoryArgs >;
+AllServicesFiltered.storyName = 'All services filtered to one category';
+AllServicesFiltered.parameters = { route: '/all-services' };
+AllServicesFiltered.args = AllServices.args;
+AllServicesFiltered.scenario = {
+	readySelector:
+		'.googlesitekit-category-filter-chips .mdc-chip[data-chip-id="audience"].mdc-chip--selected',
+};
+AllServicesFiltered.play = async () => {
+	await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
+
+	const chip = document.querySelector( AUDIENCE_CHIP_SELECTOR );
+
+	chip?.dispatchEvent( new MouseEvent( 'click', { bubbles: true } ) );
+};
+
+export const AllServicesWithSetupError = Template.bind(
+	{}
+) as Story< StoryArgs >;
+AllServicesWithSetupError.storyName = 'All services with Analytics setup error';
+AllServicesWithSetupError.parameters = { route: '/all-services' };
+AllServicesWithSetupError.args = {
+	setupRegistry: ( registry: Registry ) => {
+		provideModules( registry, sampleModules );
+
+		registry
+			.dispatch( CORE_USER )
+			.receiveInitialSiteKitVersion( INITIAL_VERSION );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
+
+		provideFeatures( registry, sampleFeatures );
+
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'activation_failed',
+				message: 'Could not activate service.',
+				data: { status: 500 },
+			},
+			'setupFeature',
+			[ 'analytics-setup' ]
+		);
+	},
+};
+AllServicesWithSetupError.scenario = {
+	readySelector: '.googlesitekit-feature-setup-error-notice',
+};
 
 export const WhatsNewUnread = Template.bind( {} ) as Story< StoryArgs >;
 WhatsNewUnread.storyName = '"What’s new" unread features';

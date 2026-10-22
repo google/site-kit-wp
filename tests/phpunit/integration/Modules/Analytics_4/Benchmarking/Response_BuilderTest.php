@@ -126,10 +126,61 @@ class Response_BuilderTest extends TestCase {
 	}
 
 	/**
+	 * Builds the report the fake Analytics API returns for one report request,
+	 * from the rows in `$report_rows` for the report's first dimension.
+	 *
+	 * @since 1.190.0
+	 *
+	 * @param array $report_request The report request, as the batch call sent it.
+	 * @return array The report, in the shape Analytics returns it.
+	 */
+	private function build_report( array $report_request ) {
+		$dimension_names = array_column( $report_request['dimensions'], 'name' );
+
+		// Analytics adds a `dateRange` dimension to a report with two periods.
+		if ( count( $report_request['dateRanges'] ) > 1 ) {
+			$dimension_names[] = 'dateRange';
+		}
+
+		$report = array(
+			'dimensionHeaders' => array_map(
+				fn( $dimension_name ) => array( 'name' => $dimension_name ),
+				$dimension_names
+			),
+			'metricHeaders'    => array(
+				array(
+					'name' => 'totalUsers',
+					'type' => 'TYPE_INTEGER',
+				),
+			),
+		);
+
+		$rows = array_map(
+			fn( $row ) => array(
+				'dimensionValues' => array_map(
+					fn( $dimension_value ) => array( 'value' => $dimension_value ),
+					array_slice( $row, 0, -1 )
+				),
+				'metricValues'    => array(
+					array( 'value' => (string) $row[ count( $row ) - 1 ] ),
+				),
+			),
+			$this->report_rows[ $dimension_names[0] ] ?? array()
+		);
+
+		// Analytics omits the `rows` key from a report with no rows.
+		if ( ! empty( $rows ) ) {
+			$report['rows'] = $rows;
+		}
+
+		return $report;
+	}
+
+	/**
 	 * Gets the dimensions of each report `Response_Builder` asked for, grouped by
 	 * batch call.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return array List of batch calls, each a list of reports, each a list of dimension names.
 	 */
@@ -149,7 +200,7 @@ class Response_BuilderTest extends TestCase {
 	 *
 	 * Two channels score the same, and two pages score the same.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	private function provide_reports_for_every_dimension() {
 		$this->custom_dimensions_data_available->set_data_available( 'googlesitekit_post_date' );

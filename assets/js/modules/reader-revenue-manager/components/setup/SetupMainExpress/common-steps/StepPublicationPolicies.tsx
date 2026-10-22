@@ -45,6 +45,7 @@ import ProgressBar from '@/js/googlesitekit/components-gm2/ProgressBar';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import useFormValue from '@/js/hooks/useFormValue';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -78,6 +79,8 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 	description,
 	onComplete,
 } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isSaving, setIsSaving ] = useState( false );
 
 	const defaultDescription = __(
@@ -92,7 +95,18 @@ const StepPublicationPolicies: FC< StepPublicationPoliciesProps > = ( {
 			description || defaultDescription
 		),
 		{
-			a: <DocumentationLink slug="rrm-publication-policies" external />,
+			a: (
+				<DocumentationLink
+					slug="rrm-publication-policies"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.PUBLICATION_POLICIES
+						)
+					}
+					external
+				/>
+			),
 		}
 	);
 

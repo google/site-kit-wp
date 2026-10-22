@@ -113,7 +113,7 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 	/**
 	 * Builds the request the REST route makes for one widget.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param string|null $widget Optional. Widget category to send. Default null, which sends no widget.
 	 * @return Data_Request The request for the removal datapoint.
@@ -244,7 +244,7 @@ class Remove_Site_Goals_WidgetTest extends TestCase {
 	/**
 	 * Shares Analytics with editors on a site that has finished the Site Kit setup.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 */
 	private function grant_editors_view_only_dashboard_access() {
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );

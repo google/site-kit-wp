@@ -30,6 +30,8 @@ import {
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	setEnabledFeatures,
 	untilResolved,
 	waitFor,
@@ -38,6 +40,7 @@ import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
+import { provideIncludeProductsState } from './test-utils';
 
 const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -54,34 +57,10 @@ describe( 'modules/analytics-4 fresh data', () => {
 	} );
 
 	describe( 'shouldIncludeWooCommerceProducts', () => {
-		function receiveState( {
-			analyticsConnected = true,
-			wooCommerceActive = true,
-			setting = true,
-		}: {
-			analyticsConnected?: boolean;
-			wooCommerceActive?: boolean;
-			setting?: boolean;
-		} = {} ) {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: analyticsConnected,
-				},
-			] );
-
-			provideSiteInfo( registry, { wooCommerceActive } );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
-			} );
-		}
-
 		it( 'should return true when the flag is enabled, Analytics is connected, WooCommerce is active, and the setting is on', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState();
+			provideIncludeProductsState( registry );
 
 			expect(
 				registry
@@ -91,7 +70,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return false when the freshData flag is disabled', () => {
-			receiveState();
+			provideIncludeProductsState( registry );
 
 			expect(
 				registry
@@ -103,7 +82,9 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when Analytics is not connected', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { analyticsConnected: false } );
+			provideIncludeProductsState( registry, {
+				analyticsConnected: false,
+			} );
 
 			expect(
 				registry
@@ -115,7 +96,9 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when WooCommerce is installed but not active', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { wooCommerceActive: false } );
+			provideIncludeProductsState( registry, {
+				wooCommerceActive: false,
+			} );
 
 			expect(
 				registry
@@ -127,7 +110,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when the setting is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { setting: false } );
+			provideIncludeProductsState( registry, { setting: false } );
 
 			expect(
 				registry
@@ -186,6 +169,235 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 	} );
 
+	describe( 'getExcludedProducts', () => {
+		it( 'should return the path that every product URL starts with when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'pathPrefix', pathPrefix: '/product/' } );
+		} );
+
+		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'postTypeDimension', postType: 'product' } );
+		} );
+
+		it( "should return null when product URLs share no path and the Analytics property doesn't have the `googlesitekit_post_type` custom dimension", () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( "should return null when product URLs share no path and the user can't sync the unknown custom dimensions of the Analytics property", async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			// A user who hasn't signed in with Google, such as a view-only user,
+			// can't sync the custom dimensions.
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getAvailableCustomDimensions();
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the custom dimensions of the Analytics property sync', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				)
+			);
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				)
+			);
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+		} );
+
+		it( 'should return null when the setting to include products is on', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: true,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return null when WooCommerce is not active, even when the setting to include products is off and product URLs share a path', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				wooCommerceActive: false,
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return null when the site has no product post type, even when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPostType: null,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the setting to include products loads', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			fetchMock.getOnce( analytics4SettingsEndpoint, {
+				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false },
+				status: 200,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+		} );
+
+		it( 'should return null when the Analytics settings request fails', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			fetchMock.getOnce( analytics4SettingsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the module list loads, after the setting to include products has loaded', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			freezeFetch(
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false,
+			} );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+		} );
+	} );
+
 	describe( 'getRecentContent', () => {
 		const baseData = global._googlesitekitBaseData;
 
@@ -212,12 +424,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 9,
+						date: '2026-09-21T04:30:00',
 						date_gmt: '2026-09-21T08:30:00',
 						link: 'http://example.com/summer-recap/',
 						title: { rendered: 'Summer recap' },
@@ -241,7 +455,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '2',
-					_fields: 'id,date_gmt,link,title',
+					_fields: 'id,date,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -255,6 +469,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 				{
 					id: 9,
@@ -262,6 +477,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/summer-recap/',
 					pagePath: '/summer-recap/',
 					publishedAt: '2026-09-21T08:30:00Z',
+					sitePublishedAt: '2026-09-21T04:30:00',
 				},
 			] );
 		} );
@@ -320,6 +536,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -341,12 +558,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 9,
+						date: '2026-09-21T04:30:00',
 						date_gmt: '2026-09-21T08:30:00',
 						link: 'http://example.com/summer-recap/',
 						title: { rendered: 'Summer recap' },
@@ -375,6 +594,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 			expect(
@@ -388,6 +608,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 				{
 					id: 9,
@@ -395,6 +616,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/summer-recap/',
 					pagePath: '/summer-recap/',
 					publishedAt: '2026-09-21T08:30:00Z',
+					sitePublishedAt: '2026-09-21T04:30:00',
 				},
 			] );
 		} );
@@ -412,12 +634,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
 					},
 					{
 						id: 4,
+						date: '2026-09-20T07:00:00',
 						date_gmt: '2026-09-20T11:00:00',
 						link: 'http://example.com/store-opening/',
 						title: { rendered: 'Store opening' },
@@ -429,12 +653,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 31,
+						date: '2026-09-25T06:15:00',
 						date_gmt: '2026-09-25T10:15:00',
 						link: 'http://example.com/product/ceramic-mug/',
 						title: { rendered: 'Ceramic mug' },
 					},
 					{
 						id: 27,
+						date: '2026-09-22T12:40:00',
 						date_gmt: '2026-09-22T16:40:00',
 						link: 'http://example.com/product/tea-cup/',
 						title: { rendered: 'Tea cup' },
@@ -458,7 +684,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					orderby: 'date',
 					order: 'desc',
 					per_page: '3',
-					_fields: 'id,date_gmt,link,title',
+					_fields: 'id,date,date_gmt,link,title',
 				},
 			} );
 			expect(
@@ -472,6 +698,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/ceramic-mug/',
 					pagePath: '/product/ceramic-mug/',
 					publishedAt: '2026-09-25T10:15:00Z',
+					sitePublishedAt: '2026-09-25T06:15:00',
 				},
 				{
 					id: 12,
@@ -479,6 +706,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 				{
 					id: 27,
@@ -486,6 +714,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/tea-cup/',
 					pagePath: '/product/tea-cup/',
 					publishedAt: '2026-09-22T16:40:00Z',
+					sitePublishedAt: '2026-09-22T12:40:00',
 				},
 			] );
 		} );
@@ -503,6 +732,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -533,6 +763,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 		} );
@@ -570,6 +801,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -581,6 +813,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 31,
+						date: '2026-09-25T06:15:00',
 						date_gmt: '2026-09-25T10:15:00',
 						link: 'http://example.com/product/ceramic-mug/',
 						title: { rendered: 'Ceramic mug' },
@@ -609,6 +842,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/product/ceramic-mug/',
 					pagePath: '/product/ceramic-mug/',
 					publishedAt: '2026-09-25T10:15:00Z',
+					sitePublishedAt: '2026-09-25T06:15:00',
 				},
 				{
 					id: 12,
@@ -616,6 +850,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 		} );
@@ -637,6 +872,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -668,6 +904,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 		} );
@@ -681,6 +918,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 5,
+						date: '2026-09-23T13:45:00',
 						date_gmt: '2026-09-23T17:45:00',
 						link: 'http://example.com/blog/2026/09/coffee-and-cake/',
 						title: {
@@ -713,6 +951,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 						'http://example.com/blog/2026/09/coffee-and-cake/',
 					pagePath: '/blog/2026/09/coffee-and-cake/',
 					publishedAt: '2026-09-23T17:45:00Z',
+					sitePublishedAt: '2026-09-23T13:45:00',
 				},
 			] );
 		} );
@@ -778,6 +1017,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -869,6 +1109,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -908,6 +1149,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 		} );
@@ -921,6 +1163,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -942,12 +1185,14 @@ describe( 'modules/analytics-4 fresh data', () => {
 				body: [
 					{
 						id: 15,
+						date: '2026-09-26T03:20:00',
 						date_gmt: '2026-09-26T07:20:00',
 						link: 'http://example.com/first-frost/',
 						title: { rendered: 'First frost' },
 					},
 					{
 						id: 12,
+						date: '2026-09-24T10:05:00',
 						date_gmt: '2026-09-24T14:05:00',
 						link: 'http://example.com/autumn-recipes/',
 						title: { rendered: 'Autumn recipes' },
@@ -981,6 +1226,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/first-frost/',
 					pagePath: '/first-frost/',
 					publishedAt: '2026-09-26T07:20:00Z',
+					sitePublishedAt: '2026-09-26T03:20:00',
 				},
 				{
 					id: 12,
@@ -988,6 +1234,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 					permalink: 'http://example.com/autumn-recipes/',
 					pagePath: '/autumn-recipes/',
 					publishedAt: '2026-09-24T14:05:00Z',
+					sitePublishedAt: '2026-09-24T10:05:00',
 				},
 			] );
 		} );

@@ -34,7 +34,7 @@ import { trackEvent } from '@/js/util';
  *
  * The callback tracks nothing outside a widget, or with no view context.
  *
- * @since n.e.x.t
+ * @since 1.190.0
  *
  * @return {Function} The callback that tracks the click.
  */

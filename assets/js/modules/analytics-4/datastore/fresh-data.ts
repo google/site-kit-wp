@@ -60,9 +60,11 @@ export interface RecentContentItem {
 	pagePath: string;
 	/** The publish time in UTC, in ISO 8601 format, e.g. `2026-09-24T14:05:00Z`. */
 	publishedAt: string;
+	/** The publish time in the site's time zone, as WordPress shows it, e.g. `2026-09-24T10:05:00`, with no time zone suffix. */
+	sitePublishedAt: string;
 }
 
-interface RecentContentOptions {
+export interface RecentContentOptions {
 	/** The maximum number of posts and products to return. */
 	count: number;
 }
@@ -72,9 +74,25 @@ interface RecentContentParams extends RecentContentOptions {
 	includeProducts: boolean;
 }
 
+export type ExcludedProducts =
+	| {
+			/** The way to recognize a product page: by the path that every product URL starts with. */
+			by: 'pathPrefix';
+			/** The path that every product URL starts with, such as `/product/`, never a full URL. */
+			pathPrefix: string;
+	  }
+	| {
+			/** The way to recognize a product page: by the `googlesitekit_post_type` custom dimension. */
+			by: 'postTypeDimension';
+			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
+			postType: string;
+	  };
+
 interface WordPressPost {
 	/** The post ID. */
 	id: number;
+	/** The publish time in the site's time zone, e.g. `2026-09-24T10:05:00`, with no time zone suffix. */
+	date: string;
 	/** The publish time in UTC, e.g. `2026-09-24T14:05:00`, with no time zone suffix. */
 	// eslint-disable-next-line camelcase -- The WordPress REST API returns this field as `date_gmt`.
 	date_gmt: string;
@@ -112,7 +130,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 						orderby: 'date',
 						order: 'desc',
 						per_page: count,
-						_fields: 'id,date_gmt,link,title',
+						_fields: 'id,date,date_gmt,link,title',
 					} ),
 				} )
 			)
@@ -133,6 +151,7 @@ const fetchGetRecentContentStore = createFetchStore( {
 				permalink: post.link,
 				pagePath: new URL( post.link ).pathname,
 				publishedAt: `${ post.date_gmt }Z`,
+				sitePublishedAt: post.date,
 			} ) )
 			.sort(
 				( itemA, itemB ) =>
@@ -228,7 +247,7 @@ const baseSelectors = {
 	 * `shouldIncludeWooCommerceProducts()` returns `true`. Read a request error
 	 * with `getErrorForSelector( 'getRecentContent', [ options ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state         The data store's state.
 	 * @param {Object} options       The options for the list.
@@ -246,7 +265,7 @@ const baseSelectors = {
 	 * Determines whether WooCommerce products should be included alongside
 	 * WordPress posts for "Fresh Data" cards/widgets.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @return {(boolean|undefined)} `true` if WooCommerce products should be included, `false` if not. Returns `undefined` if not yet loaded.
 	 */
@@ -275,6 +294,81 @@ const baseSelectors = {
 			}
 
 			return analyticsConnected && wooCommerceActive && setting === true;
+		}
+	),
+
+	/**
+	 * Gets the way the Recent activity tab recognizes the product pages that
+	 * it hides from its list of posts.
+	 *
+	 * The tab hides products only while WooCommerce is active and the setting
+	 * to include products is off. Without WooCommerce, the setting doesn't
+	 * show, so the tab lists every page. The tab recognizes a product page:
+	 *
+	 * 1. By the path that every product URL starts with, such as `/product/`.
+	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
+	 *    custom dimension, if the Analytics property has it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab lists products or can't recognize them. Returns `undefined` if not yet loaded.
+	 */
+	getExcludedProducts: createRegistrySelector(
+		( select: Select ) => (): ExcludedProducts | null | undefined => {
+			const shouldIncludeProducts =
+				select(
+					MODULES_ANALYTICS_4
+				).shouldIncludeWooCommerceProducts();
+
+			if ( shouldIncludeProducts === undefined ) {
+				// `shouldIncludeWooCommerceProducts()` stays `undefined` when
+				// the Analytics settings request fails, and the tab then lists
+				// every page.
+				const hasSettingFailedToLoad =
+					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getSettings'
+					) &&
+					select(
+						MODULES_ANALYTICS_4
+					).getFreshDataIncludesWooCommerceProducts() === undefined;
+
+				return hasSettingFailedToLoad ? null : undefined;
+			}
+
+			const postType = select( CORE_SITE ).getProductPostType();
+
+			if (
+				shouldIncludeProducts ||
+				! select( CORE_SITE ).isWooCommerceActivated() ||
+				! postType
+			) {
+				return null;
+			}
+
+			const pathPrefix = select( CORE_SITE ).getProductPathPrefix();
+
+			if ( pathPrefix ) {
+				return { by: 'pathPrefix', pathPrefix };
+			}
+
+			const hasPostTypeDimension = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( 'googlesitekit_post_type' );
+
+			// `hasCustomDimensions()` stays `undefined` when nobody has synced
+			// the property's custom dimensions and the user can't sync them,
+			// such as a view-only user.
+			if ( hasPostTypeDimension === undefined ) {
+				return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAvailableCustomDimensions'
+				)
+					? null
+					: undefined;
+			}
+
+			return hasPostTypeDimension
+				? { by: 'postTypeDimension', postType }
+				: null;
 		}
 	),
 };

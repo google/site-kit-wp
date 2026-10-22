@@ -1288,7 +1288,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Gets the publicly visible URL to set up the plugin with the authentication proxy.
 	 *
 	 * @since 1.17.0
-	 * @since n.e.x.t Added the `purpose=intent` argument when the current request has it.
+	 * @since 1.190.0 Added the `purpose=intent` argument when the current request has it.
 	 *
 	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */

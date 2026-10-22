@@ -49,7 +49,7 @@ export const selectors = {
 	 * Gets the record of the setup the user left the hub to complete, as
 	 * consumed when the hub mounted.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.190.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {(Object|null)} The pending setup (`featureSlug` and `returnTab`), or `null` if there is none.
@@ -124,9 +124,41 @@ export const selectors = {
 			),
 		};
 
+		const chipLabels = {
+			[ FEATURE_CATEGORIES.AUDIENCE ]: __(
+				'Know your audience',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.ENGAGEMENT ]: __(
+				'Engage your visitors',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.MONETIZATION ]: __(
+				'Monetize',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.TRAFFIC ]: __(
+				'Drive traffic',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PRIVACY ]: __(
+				'Manage privacy',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PERFORMANCE ]: __(
+				'Improve site speed',
+				'google-site-kit'
+			),
+			[ FEATURE_CATEGORIES.PRODUCTIVITY ]: __(
+				'Collaborate',
+				'google-site-kit'
+			),
+		};
+
 		return FEATURE_CATEGORY_ORDER.map( ( slug ) => ( {
 			slug,
 			title: titles[ slug ],
+			chipLabel: chipLabels[ slug ],
 		} ) );
 	},
 
@@ -339,33 +371,43 @@ export const selectors = {
 	),
 
 	/**
-	 * Gets the available features to show under a goal category.
+	 * Gets available features to show under a category for the current filter.
 	 *
-	 * Features are listed under their primary goal category only.
+	 * @since n.e.x.t
 	 *
-	 * @since 1.186.0
-	 *
-	 * @param {Object} state    Data store's state.
-	 * @param {string} category Goal category slug.
-	 * @return {Array.<Object>} Features to show, in registration order.
+	 * @param {Object} state              Data store's state.
+	 * @param {string} category           Goal category slug.
+	 * @param {Array}  selectedCategories Selected filter category slugs.
+	 * @return {Array.<Object>} Filtered features with in-progress items first.
 	 */
-	getFeaturesByGoal: createRegistrySelector(
+	getFeaturesFilteredByGoal: createRegistrySelector(
 		( select: Select ) =>
 			(
 				state: FeatureDiscoveryState,
-				category: FeatureCategorySlug
+				category: FeatureCategorySlug,
+				selectedCategories: FeatureCategorySlug[] = []
 			): Feature[] => {
 				invariant(
 					category,
-					'category is required to get features by goal.'
+					'category is required to get filtered features by goal.'
 				);
 
 				return select( CORE_FEATURE_DISCOVERY )
 					.getAvailableFeatures()
-					.filter(
-						( feature: Feature ) =>
-							feature.goalCategories?.[ 0 ] === category
-					)
+					.filter( ( feature: Feature ) => {
+						const primaryCategory = feature.goalCategories[ 0 ];
+
+						if ( selectedCategories.length === 0 ) {
+							return primaryCategory === category;
+						}
+
+						const firstSelectedCategory =
+							feature.goalCategories.find( ( goal ) =>
+								selectedCategories.includes( goal )
+							);
+
+						return firstSelectedCategory === category;
+					} )
 					.sort( ( first: Feature, second: Feature ) => {
 						const firstInProgress =
 							select(

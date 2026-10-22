@@ -13,6 +13,8 @@
 		"extends @wordpress/browserslist-config"
 	],
 	"dependencies": {
+		"@atlaskit/pragmatic-drag-and-drop": "4.0.0",
+		"@atlaskit/pragmatic-drag-and-drop-hitbox": "3.0.0",
 		"@material-ui/core": "^4.11.4",
 		"@material/button": "^2.3.0",
 		"@material/checkbox": "^2.3.0",
@@ -78,7 +80,7 @@
 		"mini-css-extract-plugin": "^2.9.2",
 		"postcss-import-url": "^7.0.0",
 		"postcss-loader": "^8.1.1",
-		"postcss-preset-env": "^9.5.11",
+		"postcss-preset-env": "^10.6.1",
 		"rimraf": "^6.0.1",
 		"rxjs": "^6.6.7",
 		"sass": "^1.30.0",
