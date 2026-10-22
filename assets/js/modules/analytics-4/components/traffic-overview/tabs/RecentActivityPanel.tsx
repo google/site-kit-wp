@@ -45,6 +45,7 @@ import FreshMetricsRow from '@/js/modules/analytics-4/components/traffic-overvie
 import InsightNotice from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/InsightNotice';
 import LatestPostPerformance from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/LatestPostPerformance';
 import RecentTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentTrafficBreakdown';
+import SeeAllRecentPostsLink from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/SeeAllRecentPostsLink';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -104,9 +105,16 @@ const RecentActivityPanel: FC = () => {
 					) }
 					{ isGatheringData === false && <InsightNotice /> }
 					<FreshMetricsRow />
-					{ isGatheringData === false && <RecentTrafficBreakdown /> }
+					{ isGatheringData === false && (
+						<RecentTrafficBreakdown
+							hasNoPublishedPosts={ hasNoPublishedPosts }
+						/>
+					) }
 					{ canViewSharedAnalytics4 && ! hasNoPublishedPosts && (
-						<LatestPostPerformance />
+						<Fragment>
+							<LatestPostPerformance />
+							<SeeAllRecentPostsLink />
+						</Fragment>
 					) }
 				</Fragment>
 			) }

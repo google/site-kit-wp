@@ -24,10 +24,14 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MODULE_SETUP,
 } from '@/js/googlesitekit/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
-import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_CTA_FORMS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
 import {
 	providePublication,
@@ -51,6 +55,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { NEWSLETTER_SIGNUP_FORM } from './constants';
 import SetupCTANewsletterSignup from './index';
 
 jest.mock(
@@ -100,12 +105,118 @@ const STEP_CONTENT = {
 	'setup-complete': 'Your newsletter signup form is ready!',
 };
 
+const settingsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+);
+
+const createCTAEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
+);
+
+const publicationEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+);
+
+const ctasEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+);
+
+const userSettingsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
+);
+
+/**
+ * Gets the `lastActionedExpressSetups` entries sent by each user settings save.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @return {Array.<Object>} The entries sent by each save, in order.
+ */
+function getSavedExpressSetupEntries(): Record< string, number | null >[] {
+	return fetchMock
+		.calls( userSettingsEndpoint )
+		.map(
+			( call ) =>
+				JSON.parse( String( call[ 1 ]?.body ) ).data
+					.lastActionedExpressSetups
+		);
+}
+
 describe( 'SetupCTANewsletterSignup', () => {
 	mockLocation();
 
 	let registry: Registry;
 
+	// Publication with accepted terms of service and its policies added, so
+	// every step before the sign-up form is complete.
+	const readyPublication = publications[ 3 ];
+
+	/* eslint-disable sitekit/acronym-case */
+	const readyOrganizationID = readyPublication.organizationId;
+	const readyPublicationID = readyPublication.publicationId;
+	/* eslint-enable sitekit/acronym-case */
+
+	const preExistingCTA = {
+		name: `organizations/${ readyOrganizationID }/publications/${ readyPublicationID }/ctas/1`,
+		type: CTA_TYPES.NEWSLETTER_SIGNUP,
+	};
+
+	const newsletterCTA = {
+		name: `organizations/${ readyOrganizationID }/publications/${ readyPublicationID }/ctas/5`,
+		type: CTA_TYPES.NEWSLETTER_SIGNUP,
+	};
+
+	/**
+	 * Sets up a new registry with the ready publication connected.
+	 *
+	 * @since n.e.x.t
+	 * @private
+	 *
+	 * @param {Object}         [options]             Optional. Registry options.
+	 * @param {Array.<Object>} [options.ctas]        Optional. The publication's CTAs. Default the newsletter CTA.
+	 * @param {string}         [options.snippetMode] Optional. Snippet mode setting. Default `sitewide`.
+	 * @param {Array.<string>} [options.postTypes]   Optional. Post types setting. Default empty.
+	 * @return {Object} The module settings received by the registry.
+	 */
+	function setupRegistryWithReadyPublication( {
+		ctas = [ newsletterCTA ] as { name: string; type: string }[],
+		snippetMode = 'sitewide',
+		postTypes = [] as string[],
+	} = {} ) {
+		registry = createTestRegistry() as Registry;
+		provideUserAuthentication( registry, {
+			grantedScopes: EXPRESS_SETUP_SCOPES,
+		} );
+		provideSiteInfo( registry );
+		provideUserInfo( registry );
+
+		const settings = {
+			organizationID: readyOrganizationID,
+			publicationID: readyPublicationID,
+			snippetMode,
+			postTypes,
+		};
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetSettings( settings );
+
+		providePublication( registry, readyPublication );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetCTAs( { ctas, params: {} } );
+
+		return settings;
+	}
+
 	beforeEach( () => {
+		fetchMock.post( userSettingsEndpoint, {
+			body: { lastActionedExpressSetups: {} },
+			status: 200,
+		} );
+
 		registry = createTestRegistry() as Registry;
 		provideUserAuthentication( registry, {
 			grantedScopes: EXPRESS_SETUP_SCOPES,
@@ -239,24 +350,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 	} );
 
 	describe( 'setup complete step', () => {
-		// Publication with accepted terms of service.
-		const publication = publications[ 3 ];
-
-		/* eslint-disable sitekit/acronym-case */
-		const organizationID = publication.organizationId;
-		const publicationID = publication.publicationId;
-		/* eslint-enable sitekit/acronym-case */
-
-		const preExistingCTA = {
-			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/1`,
-			type: CTA_TYPES.NEWSLETTER_SIGNUP,
-		};
-
-		const newsletterCTA = {
-			name: `organizations/${ organizationID }/publications/${ publicationID }/ctas/5`,
-			type: CTA_TYPES.NEWSLETTER_SIGNUP,
-		};
-
 		const setupCompleteURL =
 			'http://example.com/?cta=newsletter-signup&step=setup-complete';
 
@@ -264,36 +357,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		let originalHref: string;
 
-		function setupRegistry( {
-			ctas = [ newsletterCTA ],
-			snippetMode = 'sitewide',
-			postTypes = [] as string[],
-		} = {} ) {
-			registry = createTestRegistry() as Registry;
-			provideUserAuthentication( registry, {
-				grantedScopes: EXPRESS_SETUP_SCOPES,
-			} );
-			provideSiteInfo( registry );
-			provideUserInfo( registry );
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( {
-					organizationID,
-					publicationID,
-					snippetMode,
-					postTypes,
-				} );
-
-			providePublication( registry, publication );
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetCTAs( { ctas, params: {} } );
-		}
-
 		beforeEach( () => {
-			setupRegistry();
+			setupRegistryWithReadyPublication();
 
 			originalHref = global.location.href;
 			global.location.href = setupCompleteURL;
@@ -317,7 +382,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 		} );
 
 		it( 'renders correctly with pre-existing CTAs', () => {
-			setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+			setupRegistryWithReadyPublication( {
+				ctas: [ preExistingCTA, newsletterCTA ],
+			} );
 
 			const { container, getByText } = render(
 				<SetupCTANewsletterSignup />,
@@ -333,7 +400,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		describe( 'links', () => {
 			it( 'links the display order detail to the Publisher Center overview', () => {
-				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+				setupRegistryWithReadyPublication( {
+					ctas: [ preExistingCTA, newsletterCTA ],
+				} );
 
 				const { getAllByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
@@ -356,7 +425,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					'/reader-revenue-manager/content-access/overview'
 				);
 				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
-					publicationID
+					readyPublicationID
 				);
 			} );
 
@@ -379,7 +448,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					'/reader-revenue-manager/content-access/ctas/newsletter/5'
 				);
 				expect( serviceURL.searchParams.get( 'publication' ) ).toBe(
-					publicationID
+					readyPublicationID
 				);
 			} );
 
@@ -450,7 +519,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 				async ( { action, name, hasPreExistingCTAs } ) => {
 					const eventCategory = `${ viewContext }_rrm-express-setup_newsletter-signup`;
 
-					setupRegistry( {
+					setupRegistryWithReadyPublication( {
 						ctas: hasPreExistingCTAs
 							? [ preExistingCTA, newsletterCTA ]
 							: [ newsletterCTA ],
@@ -511,12 +580,16 @@ describe( 'SetupCTANewsletterSignup', () => {
 		} );
 
 		describe( '"View on your site" CTA', () => {
+			let openSpy: jest.SpyInstance;
+
 			beforeEach( () => {
-				jest.spyOn( global, 'open' ).mockImplementation( () => null );
+				openSpy = jest
+					.spyOn( global, 'open' )
+					.mockImplementation( () => null );
 			} );
 
 			afterEach( () => {
-				jest.restoreAllMocks();
+				openSpy.mockRestore();
 			} );
 
 			it( 'opens the front page for the sitewide snippet mode', () => {
@@ -546,7 +619,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					status: 200,
 				} );
 
-				setupRegistry( {
+				setupRegistryWithReadyPublication( {
 					snippetMode: 'post_types',
 					postTypes: [ 'post' ],
 				} );
@@ -586,7 +659,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 					status: 200,
 				} );
 
-				setupRegistry( {
+				setupRegistryWithReadyPublication( {
 					snippetMode: 'post_types',
 					postTypes: [ 'post' ],
 				} );
@@ -605,7 +678,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			it( 'is not rendered for an unsupported snippet mode', () => {
-				setupRegistry( { snippetMode: 'per_post' } );
+				setupRegistryWithReadyPublication( {
+					snippetMode: 'per_post',
+				} );
 
 				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
@@ -617,7 +692,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			it( 'is not rendered when the publication has pre-existing CTAs', () => {
-				setupRegistry( { ctas: [ preExistingCTA, newsletterCTA ] } );
+				setupRegistryWithReadyPublication( {
+					ctas: [ preExistingCTA, newsletterCTA ],
+				} );
 
 				const { queryByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
@@ -629,10 +706,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 			} );
 
 			it( 'opens the resolved URL in a new tab', () => {
-				const openSpy = jest
-					.spyOn( global, 'open' )
-					.mockImplementation( () => null );
-
 				const { getByRole } = render( <SetupCTANewsletterSignup />, {
 					registry,
 				} );
@@ -648,6 +721,220 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 				openSpy.mockRestore();
 			} );
+		} );
+	} );
+
+	describe( 'recording setup progress', () => {
+		const savedTimestamp = {
+			'newsletter-signup:new': expect.any( Number ),
+		};
+
+		it( 'saves an entry when the setup opens on its first incomplete step', async () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID: '' } );
+
+			const { getByText } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'connect-publication' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( getSavedExpressSetupEntries() ).toEqual( [
+				savedTimestamp,
+			] );
+		} );
+
+		it( 'saves an entry each time the user moves on to the next step', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=connect-publication';
+
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			const publicationID = publications[ 0 ].publicationId;
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID } );
+
+			providePublications( registry, [ publications[ 0 ] ] );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect( getSavedExpressSetupEntries() ).toEqual( [
+				savedTimestamp,
+			] );
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Test: complete step' } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'publication-policies' ] )
+				).toBeInTheDocument();
+			} );
+
+			await waitFor( () => {
+				expect( getSavedExpressSetupEntries() ).toEqual( [
+					savedTimestamp,
+					savedTimestamp,
+				] );
+			} );
+		} );
+
+		it( 'saves an entry when the user is sent back to an earlier incomplete step', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=publication-policies';
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID: '' } );
+
+			const { getByText } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'connect-publication' ] )
+				).toBeInTheDocument();
+			} );
+
+			expect( global.location.href ).toContain(
+				'step=connect-publication'
+			);
+
+			// The requested step renders, and so saves, before the flow sends
+			// the user back, which saves again for the earlier step.
+			await waitFor( () => {
+				expect( getSavedExpressSetupEntries() ).toEqual( [
+					savedTimestamp,
+					savedTimestamp,
+				] );
+			} );
+		} );
+
+		it( 'removes the entry when the setup complete step begins', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
+
+			const settings = setupRegistryWithReadyPublication();
+
+			// Publishing saves the module settings, which needs the module.
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			registry
+				.dispatch( CORE_FORMS )
+				.setValues( EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP, {
+					[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]:
+						'Newsletter signup',
+				} );
+
+			// Saves the settings both when submitting the step and after the CTA
+			// is created.
+			fetchMock.post( settingsEndpoint, {
+				body: settings,
+				status: 200,
+			} );
+
+			fetchMock.postOnce( createCTAEndpoint, {
+				body: newsletterCTA,
+				status: 200,
+			} );
+
+			// Creating the CTA reloads the publication and the CTAs.
+			fetchMock.getOnce( publicationEndpoint, {
+				body: readyPublication,
+				status: 200,
+			} );
+
+			fetchMock.getOnce( ctasEndpoint, {
+				body: [ newsletterCTA ],
+				status: 200,
+			} );
+
+			const { getByRole, getByText, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{ registry }
+			);
+
+			await waitForRegistry();
+
+			expect( getSavedExpressSetupEntries() ).toEqual( [
+				savedTimestamp,
+			] );
+
+			fireEvent.click(
+				getByRole( 'button', { name: 'Publish to your site' } )
+			);
+
+			await waitFor( () => {
+				expect(
+					getByText( STEP_CONTENT[ 'setup-complete' ] )
+				).toBeInTheDocument();
+			} );
+
+			await waitFor( () => {
+				expect( getSavedExpressSetupEntries() ).toEqual( [
+					savedTimestamp,
+					{ 'newsletter-signup:new': null },
+				] );
+			} );
+		} );
+
+		it( 'renders the step as usual when saving the entry fails', async () => {
+			global.location.href =
+				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			fetchMock.post(
+				userSettingsEndpoint,
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				},
+				{ overwriteRoutes: true }
+			);
+
+			const { queryByText, getByText } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			await waitFor( () => {
+				expect( fetchMock ).toHaveFetched( userSettingsEndpoint );
+			} );
+
+			expect( console ).toHaveErrored();
+			expect(
+				getByText( STEP_CONTENT[ 'terms-of-service' ] )
+			).toBeInTheDocument();
+
+			expect(
+				queryByText( 'Error: Internal server error' )
+			).not.toBeInTheDocument();
 		} );
 	} );
 
@@ -668,14 +955,16 @@ describe( 'SetupCTANewsletterSignup', () => {
 			mockTrackEvent.mockRestore();
 		} );
 
-		it( 'should track the start of the setup', () => {
+		it( 'should track the start of the setup', async () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
 
-			render( <SetupCTANewsletterSignup />, {
+			const { waitForRegistry } = render( <SetupCTANewsletterSignup />, {
 				registry,
 				viewContext: VIEW_CONTEXT_MODULE_SETUP,
 			} );
+
+			await waitForRegistry();
 
 			expect( mockTrackEvent ).toHaveBeenCalledWith(
 				eventCategory,
@@ -807,31 +1096,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		describe( 'setup complete step', () => {
 			beforeEach( () => {
-				const publication = publications[ 3 ];
-
-				registry = createTestRegistry() as Registry;
-				provideUserAuthentication( registry, {
-					grantedScopes: EXPRESS_SETUP_SCOPES,
-				} );
-				provideSiteInfo( registry );
-				provideUserInfo( registry );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetSettings( {
-						/* eslint-disable sitekit/acronym-case */
-						organizationID: publication.organizationId,
-						publicationID: publication.publicationId,
-						/* eslint-enable sitekit/acronym-case */
-						snippetMode: 'sitewide',
-						postTypes: [],
-					} );
-
-				providePublication( registry, publication );
-
-				registry
-					.dispatch( MODULES_READER_REVENUE_MANAGER )
-					.receiveGetCTAs( { ctas: [], params: {} } );
+				setupRegistryWithReadyPublication( { ctas: [] } );
 
 				global.location.href =
 					'http://example.com/?cta=newsletter-signup&step=setup-complete';

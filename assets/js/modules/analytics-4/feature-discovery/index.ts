@@ -49,6 +49,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'analytics', {
+		name: __( 'Analytics', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __(
 			'Understand how visitors interact with your content',
@@ -122,8 +123,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -154,6 +155,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 	registerFeature( 'key-metrics', {
+		name: __( 'Key metrics', 'google-site-kit' ),
 		title: __(
 			'Get personalized suggestions for user interaction metrics based on your goals',
 			'google-site-kit'
@@ -256,6 +258,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'enhanced-measurement', {
+		name: __( 'Enhanced measurement', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
@@ -341,8 +344,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -368,6 +371,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'visitor-groups', {
+		name: __( 'Visitor groups', 'google-site-kit' ),
 		title: __( 'Learn about your visitor groups', 'google-site-kit' ),
 		shortDescription: __(
 			'Segment your visitors into categories that help you understand site behaviour for demographcs of subsets of visitors that you define',
