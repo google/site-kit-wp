@@ -380,8 +380,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'PDF report screenshot showing the full report with all selected metrics',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 				{
 					src: splashScreenScreenshotURL,
@@ -389,8 +389,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'PDF report screenshot showing the export panel with selected metrics',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
