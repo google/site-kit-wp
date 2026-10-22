@@ -30,69 +30,89 @@ import {
 	decodedBenchmarkingResponse,
 	provideBenchmarkingData,
 } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry, freezeFetch, render } from '@tests/js/test-utils';
+import {
+	act,
+	createTestRegistry,
+	freezeFetch,
+	render,
+} from '@tests/js/test-utils';
 import TypicalTrafficPanel from './TypicalTrafficPanel';
 
-const mockTypicalTrafficChart = jest.fn();
+const mockGoogleChart = jest.fn();
 
-// The chart has tests of its own, so the mock records the props the panel
-// passes it.
-jest.mock(
-	'@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart',
-	() => {
-		return function TypicalTrafficChartMock(
-			props: Record< string, unknown >
-		) {
-			mockTypicalTrafficChart( props );
-			return null;
-		};
-	}
-);
+// Google Charts never loads under Jest. The mock keeps the props, so a test
+// reads the days the panel's chart plots.
+jest.mock( '@/js/components/GoogleChart', () => {
+	return function GoogleChartMock( props: Record< string, unknown > ) {
+		mockGoogleChart( props );
+		return <div className="googlesitekit-chart" />;
+	};
+} );
 
 describe( 'TypicalTrafficPanel', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
-		// `last-28-days` against the `2026-09-15` reference date covers
-		// `2026-08-19` to `2026-09-15`.
+		// The default `last-28-days` range against the `2026-09-15` reference
+		// date covers `2026-08-19` to `2026-09-15`.
 		registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-15' );
-		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
-		registry
-			.dispatch( MODULES_ANALYTICS_4 )
-			.setPropertyCreateTime( 1736510400000 );
 	} );
 
 	afterEach( () => {
-		mockTypicalTrafficChart.mockClear();
+		mockGoogleChart.mockClear();
 	} );
 
-	it( 'should pass the chart the rows of the response, the selected range, its length, and the creation time', async () => {
-		const dailyTraffic = createDailyTrafficRows( '2026-09-15', () => 120 );
-
+	it( 'should plot the 28 days of "Last 28 days", then the 90 days of "Last 90 days" when the date range changes', () => {
 		provideBenchmarkingData(
 			registry,
 			{ startDate: '2026-08-19', endDate: '2026-09-15' },
-			{ ...decodedBenchmarkingResponse, dailyTraffic }
+			{
+				...decodedBenchmarkingResponse,
+				dailyTraffic: createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				),
+			}
+		);
+		// `last-90-days` against the same reference date covers `2026-06-18` to
+		// `2026-09-15`.
+		provideBenchmarkingData(
+			registry,
+			{ startDate: '2026-06-18', endDate: '2026-09-15' },
+			{
+				...decodedBenchmarkingResponse,
+				dailyTraffic: createDailyTrafficRows(
+					90,
+					'2026-09-15',
+					() => 80
+				),
+			}
 		);
 
-		const { waitForRegistry } = render( <TypicalTrafficPanel />, {
-			registry,
+		const { getByRole } = render( <TypicalTrafficPanel />, { registry } );
+
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+		).toHaveLength( 28 );
+		expect( getByRole( 'listitem' ) ).toHaveTextContent(
+			'Last 28 days traffic'
+		);
+
+		act( () => {
+			registry.dispatch( CORE_USER ).setDateRange( 'last-90-days' );
 		} );
 
-		await waitForRegistry();
-
-		expect( mockTypicalTrafficChart ).toHaveBeenLastCalledWith( {
-			dailyTraffic: createDailyTrafficRows( '2026-09-15', () => 120 ),
-			selectedStartDate: '2026-08-19',
-			selectedEndDate: '2026-09-15',
-			daysInSelectedRange: 28,
-			propertyCreateTime: 1736510400000,
-		} );
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+		).toHaveLength( 90 );
+		expect( getByRole( 'listitem' ) ).toHaveTextContent(
+			'Last 90 days traffic'
+		);
 	} );
 
-	it( 'should not render the chart before the response arrives', () => {
+	it( 'should render no chart while the benchmarking data loads', () => {
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
@@ -101,6 +121,6 @@ describe( 'TypicalTrafficPanel', () => {
 
 		render( <TypicalTrafficPanel />, { registry } );
 
-		expect( mockTypicalTrafficChart ).not.toHaveBeenCalled();
+		expect( mockGoogleChart ).not.toHaveBeenCalled();
 	} );
 } );

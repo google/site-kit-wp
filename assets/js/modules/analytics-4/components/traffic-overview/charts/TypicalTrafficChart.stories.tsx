@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { DESIGN_DAILY_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
-import {
-	createDailyTrafficRows,
-	getPropertyCreateTimeAtMidday,
-} from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
+import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Story } from '@/js/types/Story';
 import TypicalTrafficChart, {
 	TypicalTrafficChartProps,
@@ -43,59 +40,60 @@ function Template( props: TypicalTrafficChartProps ) {
 	);
 }
 
-const selectedRange = {
-	selectedStartDate: '2026-08-19',
-	selectedEndDate: '2026-09-15',
-	daysInSelectedRange: 28,
-};
-
 /**
- * This story runs no visual check, because the `TrafficOverviewWidget`
- * "Typical Traffic Selected" scenario already captures the chart.
+ * A 28-day range, with the daily visitors of the design's line. The value axis
+ * ends at `150`, a round number above the busiest day of `140`.
  */
-export const Ready = Template.bind( {} ) as Story< TypicalTrafficChartProps >;
-Ready.storyName = 'Ready';
-Ready.args = {
-	...selectedRange,
+export const Last28Days = Template.bind(
+	{}
+) as Story< TypicalTrafficChartProps >;
+Last28Days.storyName = 'Last 28 Days';
+Last28Days.args = {
 	dailyTraffic: createDailyTrafficRows(
+		28,
 		'2026-09-15',
 		( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ]
 	),
+	daysInSelectedRange: 28,
+};
+Last28Days.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
 };
 
 /**
- * The Analytics property was created six weeks into the window. The chart
- * marks that day, which explains the days at zero before it.
+ * A 90-day range. No frame of the design shows one, so the story repeats the
+ * design's 28 days. The date labels sit more days apart than on a 28-day range.
  */
-export const PropertyCreatedInWindow = Template.bind(
+export const Last90Days = Template.bind(
 	{}
 ) as Story< TypicalTrafficChartProps >;
-PropertyCreatedInWindow.storyName = 'Property Created In Window';
-PropertyCreatedInWindow.args = {
-	...selectedRange,
-	dailyTraffic: createDailyTrafficRows( '2026-09-15', ( dayIndex ) =>
-		dayIndex < 42 ? 0 : DESIGN_DAILY_VISITORS[ dayIndex ]
+Last90Days.storyName = 'Last 90 Days';
+Last90Days.args = {
+	dailyTraffic: createDailyTrafficRows(
+		90,
+		'2026-09-15',
+		( dayIndex ) =>
+			DESIGN_DAILY_VISITORS[ dayIndex % DESIGN_DAILY_VISITORS.length ]
 	),
-	// `2025-09-28` is the first day with visitors.
-	propertyCreateTime: getPropertyCreateTimeAtMidday( '2025-09-28' ),
+	daysInSelectedRange: 90,
 };
-// Every viewport, because desktop and smaller screens make room for the
-// marker's icon with different styles.
-PropertyCreatedInWindow.scenario = {
+Last90Days.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
 };
 
 /**
- * A site with no visitors on any day of the window. The value axis ends at
- * `100`, and the line runs flat along the bottom.
+ * A range with no visitors on any day. The value axis ends at `100`, and the
+ * line runs flat along the bottom.
  */
 export const NoVisitors = Template.bind(
 	{}
 ) as Story< TypicalTrafficChartProps >;
 NoVisitors.storyName = 'No Visitors';
 NoVisitors.args = {
-	...selectedRange,
-	dailyTraffic: createDailyTrafficRows( '2026-09-15', () => 0 ),
+	dailyTraffic: createDailyTrafficRows( 28, '2026-09-15', () => 0 ),
+	daysInSelectedRange: 28,
 };
 NoVisitors.scenario = {
 	readySelector: '[id^="googlesitekit-chart-"] svg',
@@ -105,4 +103,7 @@ NoVisitors.scenario = {
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/TypicalTrafficChart',
 	component: TypicalTrafficChart,
+	parameters: {
+		features: [ 'typicalTraffic' ],
+	},
 };

@@ -258,11 +258,14 @@ TypicalTrafficSelected.args = {
 
 		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
-		// The checked-in response has only four days, so the chart gets
-		// thirteen months of daily visitors in the thousands instead.
+		// The checked-in response has only four days. So the chart gets the 28
+		// days of `DESIGN_DAILY_VISITORS` times 100, which puts labels in the
+		// thousands on the value axis, and the reference images show each label
+		// in full.
 		provideBenchmarkingData( registry, dates, {
 			...decodedBenchmarkingResponse,
 			dailyTraffic: createDailyTrafficRows(
+				28,
 				dates.endDate,
 				( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ] * 100
 			),

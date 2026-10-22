@@ -29,21 +29,14 @@ import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import TypicalTrafficChart from '@/js/modules/analytics-4/components/traffic-overview/charts/TypicalTrafficChart';
 import { TYPICAL_TRAFFIC_TAB_ID } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { useBenchmarkingData } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingData';
-import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 
 const TypicalTrafficPanel: FC = () => {
 	// TODO: #13601 -- Show the key factors from the response.
 	// TODO: #13602 -- Show the loading and error states.
-	const { startDate, endDate, response } = useBenchmarkingData();
+	const { response } = useBenchmarkingData();
 
 	const daysInSelectedRange = useSelect(
 		( select: Select ) => select( CORE_USER ).getDateRangeNumberOfDays(),
-		[]
-	);
-
-	const propertyCreateTime = useSelect(
-		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getPropertyCreateTime(),
 		[]
 	);
 
@@ -56,10 +49,7 @@ const TypicalTrafficPanel: FC = () => {
 			{ response && (
 				<TypicalTrafficChart
 					dailyTraffic={ response.dailyTraffic }
-					selectedStartDate={ startDate }
-					selectedEndDate={ endDate }
 					daysInSelectedRange={ daysInSelectedRange }
-					propertyCreateTime={ propertyCreateTime }
 				/>
 			) }
 		</div>

@@ -36,27 +36,20 @@ export interface TypicalTrafficChartDataOptions {
 export interface TypicalTrafficChartData {
 	/** The table `GoogleChart` reads as `data`. */
 	chartData: TrafficChartTable;
-	/** The first day of each month in the window, where the horizontal axis shows a month label. */
+	/** The days the horizontal axis shows a date label under. */
 	ticks: Date[];
-	/** The most visitors on any day of the window. */
+	/** The most visitors on any day of the rows. */
 	maximumVisitors: number;
-	/** The first plotted day, as `YYYY-MM-DD`, or `undefined` when there are no rows. */
-	windowStartDate: string | undefined;
-	/** The last plotted day, as `YYYY-MM-DD`, or `undefined` when there are no rows. */
-	windowEndDate: string | undefined;
 }
 
 /**
  * Builds the Typical Traffic chart table from the daily rows.
  *
- * The window runs from the first row to the last, so the length of the
- * selected date range changes nothing here.
- *
  * @since n.e.x.t
  *
  * @param {Object}         options              Options.
  * @param {Array.<Object>} options.dailyTraffic The daily rows of the benchmarking response, oldest first.
- * @return {Object} The chart table, its month ticks, the most visitors on a day, and the window's first and last days.
+ * @return {Object} The chart table, the days the axis shows a date label under, and the most visitors on a day.
  */
 export function getTypicalTrafficChartData( {
 	dailyTraffic,
@@ -72,18 +65,19 @@ export function getTypicalTrafficChartData( {
 		chartData: [
 			[
 				{ type: 'date', label: __( 'Day', 'google-site-kit' ) },
-				{ type: 'number', label: __( 'Users', 'google-site-kit' ) },
+				// The Typical Traffic tab calls each day's count its visits. Until
+				// #13845 moves the daily report from `totalUsers` to `sessions`,
+				// the count is visitors.
+				{ type: 'number', label: __( 'Visits', 'google-site-kit' ) },
 			],
 			...points,
 		],
-		ticks: points
-			.filter( ( [ day ] ) => day.getDate() === 1 )
-			.map( ( [ day ] ) => day ),
+		// The labels start on the second day, as `getTrafficChartData()` starts
+		// them, so both tabs of the widget label the same days.
+		ticks: points.slice( 1 ).map( ( [ date ] ) => date ),
 		maximumVisitors: Math.max(
 			0,
 			...dailyTraffic.map( ( { visitors } ) => visitors )
 		),
-		windowStartDate: dailyTraffic[ 0 ]?.date,
-		windowEndDate: dailyTraffic[ dailyTraffic.length - 1 ]?.date,
 	};
 }

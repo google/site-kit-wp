@@ -23,88 +23,79 @@ import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traf
 import { getTypicalTrafficChartData } from './getTypicalTrafficChartData';
 
 describe( 'getTypicalTrafficChartData', () => {
-	it( 'should return one point per row in date order, with a day of 0 visitors as a point at 0', () => {
-		// Every seventh day, from the first, has no visitors.
+	it( 'should return one point for each of 28 rows, oldest first, with a day of 0 visitors as a point at 0', () => {
+		// The second day has no visitors.
 		const dailyTraffic = createDailyTrafficRows(
+			28,
 			'2026-09-15',
-			( dayIndex ) => ( dayIndex % 7 === 0 ? 0 : 50 )
+			( dayIndex ) => ( dayIndex === 1 ? 0 : 50 )
 		);
 
-		const { chartData } = getTypicalTrafficChartData( { dailyTraffic } );
-		const [ columns, ...points ] = chartData;
+		const [ , ...points ] = getTypicalTrafficChartData( {
+			dailyTraffic,
+		} ).chartData;
+
+		expect( points ).toHaveLength( 28 );
+		expect( points.slice( 0, 3 ) ).toEqual( [
+			[ new Date( 2026, 7, 19 ), 50 ],
+			[ new Date( 2026, 7, 20 ), 0 ],
+			[ new Date( 2026, 7, 21 ), 50 ],
+		] );
+		expect( points[ 27 ] ).toEqual( [ new Date( 2026, 8, 15 ), 50 ] );
+	} );
+
+	it( 'should label the number column "Visits"', () => {
+		const dailyTraffic = createDailyTrafficRows(
+			28,
+			'2026-09-15',
+			() => 50
+		);
+
+		const [ columns ] = getTypicalTrafficChartData( {
+			dailyTraffic,
+		} ).chartData;
 
 		expect( columns ).toEqual( [
 			{ type: 'date', label: 'Day' },
-			{ type: 'number', label: 'Users' },
+			{ type: 'number', label: 'Visits' },
 		] );
-		expect( points ).toHaveLength( 395 );
-		expect( points.slice( 0, 3 ) ).toEqual( [
-			[ new Date( 2025, 7, 17 ), 0 ],
-			[ new Date( 2025, 7, 18 ), 50 ],
-			[ new Date( 2025, 7, 19 ), 50 ],
-		] );
-		expect( points[ 394 ] ).toEqual( [ new Date( 2026, 8, 15 ), 50 ] );
-		points.slice( 1 ).forEach( ( [ day ], index ) => {
-			expect( day.getTime() ).toBeGreaterThan(
-				points[ index ][ 0 ].getTime()
-			);
-		} );
 	} );
 
-	it( 'should keep a point for each day of the first weeks when they have no visitors', () => {
-		// The first 42 days have no visitors.
+	it( 'should return the date of every day but the first as `ticks`', () => {
 		const dailyTraffic = createDailyTrafficRows(
+			28,
 			'2026-09-15',
-			( dayIndex ) => ( dayIndex < 42 ? 0 : 80 )
+			() => 50
 		);
-
-		const { chartData } = getTypicalTrafficChartData( { dailyTraffic } );
-		const [ , ...points ] = chartData;
-
-		expect( points ).toHaveLength( 395 );
-		expect(
-			points.slice( 0, 42 ).map( ( [ , visitors ] ) => visitors )
-		).toEqual( Array( 42 ).fill( 0 ) );
-		expect( points[ 42 ] ).toEqual( [ new Date( 2025, 8, 28 ), 80 ] );
-	} );
-
-	it( 'should place a tick on the first day of each month in the window, and on no other day', () => {
-		const dailyTraffic = createDailyTrafficRows( '2026-09-15', () => 10 );
 
 		const { ticks } = getTypicalTrafficChartData( { dailyTraffic } );
 
-		expect( ticks ).toEqual( [
-			new Date( 2025, 8, 1 ),
-			new Date( 2025, 9, 1 ),
-			new Date( 2025, 10, 1 ),
-			new Date( 2025, 11, 1 ),
-			new Date( 2026, 0, 1 ),
-			new Date( 2026, 1, 1 ),
-			new Date( 2026, 2, 1 ),
-			new Date( 2026, 3, 1 ),
-			new Date( 2026, 4, 1 ),
-			new Date( 2026, 5, 1 ),
-			new Date( 2026, 6, 1 ),
-			new Date( 2026, 7, 1 ),
-			new Date( 2026, 8, 1 ),
-		] );
+		expect( ticks ).toHaveLength( 27 );
+		expect( ticks[ 0 ] ).toEqual( new Date( 2026, 7, 20 ) );
+		expect( ticks[ 26 ] ).toEqual( new Date( 2026, 8, 15 ) );
 	} );
 
-	it( 'should return the most visitors on any day, including a peak eleven months before the last day', () => {
+	it( 'should return the most visitors on any day as `maximumVisitors`', () => {
+		// The busiest day is the tenth, so neither end of the rows decides it.
 		const dailyTraffic = createDailyTrafficRows(
+			28,
 			'2026-09-15',
-			( _dayIndex, date ) => ( date === '2025-10-15' ? 900 : 100 )
+			( dayIndex ) => ( dayIndex === 9 ? 2376 : 120 )
 		);
 
 		const { maximumVisitors } = getTypicalTrafficChartData( {
 			dailyTraffic,
 		} );
 
-		expect( maximumVisitors ).toBe( 900 );
+		expect( maximumVisitors ).toBe( 2376 );
 	} );
 
-	it( 'should return 0 as the most visitors when every day has none', () => {
-		const dailyTraffic = createDailyTrafficRows( '2026-09-15', () => 0 );
+	it( 'should return 0 as `maximumVisitors` when every day has 0 visitors', () => {
+		const dailyTraffic = createDailyTrafficRows(
+			28,
+			'2026-09-15',
+			() => 0
+		);
 
 		const { maximumVisitors } = getTypicalTrafficChartData( {
 			dailyTraffic,
@@ -113,23 +104,13 @@ describe( 'getTypicalTrafficChartData', () => {
 		expect( maximumVisitors ).toBe( 0 );
 	} );
 
-	it( 'should return the dates of the first and the last row as the window', () => {
-		const dailyTraffic = createDailyTrafficRows( '2026-09-15', () => 10 );
-
-		const { windowStartDate, windowEndDate } = getTypicalTrafficChartData( {
-			dailyTraffic,
+	it( 'should return 0 as `maximumVisitors` when there are no rows', () => {
+		// `decodeBenchmarkingResponse()` returns no rows for a response that
+		// carries no daily counts.
+		const { maximumVisitors } = getTypicalTrafficChartData( {
+			dailyTraffic: [],
 		} );
 
-		expect( windowStartDate ).toBe( '2025-08-17' );
-		expect( windowEndDate ).toBe( '2026-09-15' );
-	} );
-
-	it( 'should return only the columns and no window when there are no rows', () => {
-		const { chartData, windowStartDate, windowEndDate } =
-			getTypicalTrafficChartData( { dailyTraffic: [] } );
-
-		expect( chartData ).toHaveLength( 1 );
-		expect( windowStartDate ).toBeUndefined();
-		expect( windowEndDate ).toBeUndefined();
+		expect( maximumVisitors ).toBe( 0 );
 	} );
 } );
