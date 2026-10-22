@@ -25,6 +25,8 @@ import fetchMock from 'fetch-mock';
  * Internal dependencies
  */
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { mockCreateComponent } from '@tests/js/mock-component-utils';
 import {
 	createTestRegistry,
@@ -120,6 +122,10 @@ describe( 'DashboardMainApp', () => {
 		provideSiteInfo( registry );
 		provideModules( registry );
 		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.receiveIsGatheringData( false );
 		fetchMock.get(
 			new RegExp(
 				'^/google-site-kit/v1/core/user/data/(audience-settings|dismissed-items)'
