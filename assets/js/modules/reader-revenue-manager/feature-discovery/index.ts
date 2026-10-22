@@ -32,7 +32,6 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
-import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import {
@@ -288,15 +287,6 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				// Connecting RRM doesn't mean a newsletter form exists, so
 				// completion is based on the publication's configured CTAs.
 				isEnabled: ( select: Select ) => {
-					// Settings can't load until RRM is active.
-					const isActive = select( CORE_MODULES ).isModuleActive(
-						MODULE_SLUG_READER_REVENUE_MANAGER
-					);
-
-					if ( isActive === undefined || isActive === false ) {
-						return isActive;
-					}
-
 					const configuredCTAs = select(
 						MODULES_READER_REVENUE_MANAGER
 					).getConfiguredCTAs();
