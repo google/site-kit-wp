@@ -234,10 +234,16 @@ function requireFeatureDiscoverySetupSuccess( returnTab ) {
 		// Wait for the state the feature's connection check may depend on.
 		await resolveSelect( CORE_MODULES ).getModules();
 
-		if ( feature.setup?.moduleSlug ) {
-			const module = select( CORE_MODULES ).getModule(
-				feature.setup.moduleSlug
-			);
+		// A feature's completion can depend on the settings of the module it
+		// sets up, or of a prerequisite module it configures, as for ad
+		// blocking recovery in AdSense.
+		const moduleSlugs = [
+			feature.setup?.moduleSlug,
+			...( feature.prerequisiteModules || [] ),
+		].filter( Boolean );
+
+		for ( const moduleSlug of moduleSlugs ) {
+			const module = select( CORE_MODULES ).getModule( moduleSlug );
 
 			if (
 				module?.storeName &&

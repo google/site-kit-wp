@@ -691,6 +691,40 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 					.hasFinishedResolution( 'getSiteInfo' )
 			).toBe( true );
 		} );
+
+		it( 'should wait for a prerequisite module’s settings before checking', async () => {
+			// Only reports the feature as set up once the prerequisite
+			// module's settings have loaded, so this passes only if they're
+			// waited for.
+			function isEnabled( select ) {
+				return (
+					select( MODULES_ANALYTICS_4 ).getSettings()?.propertyID ===
+					'12345'
+				);
+			}
+
+			provideModuleRegistrations( registry );
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					prerequisiteModules: [ MODULE_SLUG_ANALYTICS_4 ],
+					setup: { isEnabled },
+					successNotice,
+				},
+			] );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			);
+			fetchMock.getOnce( settingsEndpoint, {
+				body: { propertyID: '12345' },
+				status: 200,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+		} );
 	} );
 
 	describe( 'feature discovery setup success placements', () => {
