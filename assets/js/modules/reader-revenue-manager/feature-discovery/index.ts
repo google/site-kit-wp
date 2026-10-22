@@ -126,8 +126,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Reader Revenue Manager contribution prompt screenshot',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -233,8 +233,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up prompt screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 					{
 						src: splashScreenScreenshotURL,
@@ -242,8 +242,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up form dashboard screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 				],
 			},
