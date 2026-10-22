@@ -16,7 +16,6 @@ use Google\Site_Kit\Core\Modules\Shareable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Report\Request as Analytics_4_Report_Request;
-use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use WP_Error;
@@ -132,23 +131,12 @@ class Get_Batch_Report extends Shareable_Datapoint implements Executable_Datapoi
 	 * Parses a response.
 	 *
 	 * @since 1.181.0
-	 * @since n.e.x.t Keeps only the public query vars of each `pagePathPlusQueryString` value in the reports that a view-only user gets.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Parsed response data.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		if ( ! ( $this->is_shared_request )( $this ) || ! $response instanceof Google_Service_AnalyticsData\BatchRunReportsResponse ) {
-			return $response;
-		}
-
-		$report = new Analytics_4_Report_Response( $this->context );
-
-		foreach ( (array) $response->getReports() as $report_response ) {
-			$report->keep_only_public_query_vars( $report_response );
-		}
-
 		return $response;
 	}
 }

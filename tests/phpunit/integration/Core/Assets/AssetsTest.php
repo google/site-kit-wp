@@ -65,8 +65,8 @@ class AssetsTest extends TestCase {
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
 		}
-		if ( post_type_exists( 'book' ) ) {
-			unregister_post_type( 'book' );
+		if ( post_type_exists( 'digital_product' ) ) {
+			unregister_post_type( 'digital_product' );
 		}
 	}
 
@@ -398,49 +398,22 @@ class AssetsTest extends TestCase {
 		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty when no products exist.' );
 	}
 
-	public function test_base_data__product_post_type__hidden_post_type() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		register_post_type( 'product', array( 'public' => false ) );
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for hidden post types.' );
-	}
-
-	public function test_base_data__product_post_type__filter_change_product_post() {
-		register_post_type( 'digital_product', array( 'public' => true ) );
-
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'digital_product';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertEquals( 'digital_product', $data['productPostType'], 'Product post type should match filter value.' );
-	}
-
-	public function test_base_data__product_post_type__invalid_post_type() {
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'invalid_post_type';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for invalid post types.' );
-	}
-
 	public function test_base_data__product_post_type() {
 		register_post_type( 'product', array( 'public' => true ) );
 
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
+	}
+
+	public function test_base_data__product_post_type__filtered_to_digital_product() {
+		register_post_type( 'digital_product', array( 'public' => true ) );
+
+		add_filter( 'googlesitekit_product_post_type', fn() => 'digital_product' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'digital_product', $data['productPostType'], '`productPostType` should be `digital_product`, the post type that the `googlesitekit_product_post_type` filter returns.' );
 	}
 
 	public function test_base_data__product_path_prefix__no_product_post_type() {
@@ -525,48 +498,6 @@ class AssetsTest extends TestCase {
 		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the reference site URL.' );
 	}
 
-	public function test_base_data__product_query_var() {
-		register_post_type( 'product', array( 'public' => true ) );
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertSame( 'product', $data['productQueryVar'], '`productQueryVar` should be the query var of the product post type, such as `product` in `/?product=hoodie`.' );
-	}
-
-	public function test_base_data__product_query_var__no_query_var() {
-		register_post_type(
-			'product',
-			array(
-				'public'    => true,
-				'query_var' => false,
-			)
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the product post type has no query var.' );
-	}
-
-	public function test_base_data__product_query_var__custom_query_var() {
-		register_post_type(
-			'product',
-			array(
-				'public'    => true,
-				'query_var' => 'item',
-			)
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertSame( 'item', $data['productQueryVar'], '`productQueryVar` should be the query var the product post type registers, such as `item` in `/?item=hoodie`, rather than the name of the post type.' );
-	}
-
-	public function test_base_data__product_query_var__no_product_post_type() {
-		$data = $this->get_inline_base_data();
-
-		$this->assertNull( $data['productQueryVar'], '`productQueryVar` should be `null` when the site has no product post type.' );
-	}
-
 	public function test_base_data__using_plain_permalinks() {
 		$this->set_permalink_structure( '' );
 
@@ -581,31 +512,6 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertFalse( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `false` when the site has a permalink structure.' );
-	}
-
-	public function test_base_data__public_query_vars() {
-		register_post_type( 'book', array( 'public' => true ) );
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertContains( 'p', $data['publicQueryVars'], '`publicQueryVars` should include `p`, which WordPress registers.' );
-		$this->assertContains( 'book', $data['publicQueryVars'], '`publicQueryVars` should include the query var of a public custom post type.' );
-	}
-
-	public function test_base_data__public_query_vars__query_vars_filter() {
-		// WooCommerce adds each endpoint, such as `order-received`, as a public
-		// query var through the `query_vars` filter.
-		add_filter(
-			'query_vars',
-			function ( $query_vars ) {
-				$query_vars[] = 'order-received';
-				return $query_vars;
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertContains( 'order-received', $data['publicQueryVars'], '`publicQueryVars` should include a query var that a plugin adds through the `query_vars` filter.' );
 	}
 
 	public function test_base_data__woocommerce_not_installed() {

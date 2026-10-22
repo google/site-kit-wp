@@ -16,9 +16,7 @@ use Google\Site_Kit\Modules\Analytics_4\Report\Row_Trait as Analytics_4_Report_R
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\MetricHeader;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
-use Google\Site_Kit\Tests\Fake_Report_Response_Trait;
 use Google\Site_Kit\Tests\TestCase;
-use WP_Error;
 
 /**
  * @group Modules
@@ -28,7 +26,6 @@ use WP_Error;
 class ResponseTest extends TestCase {
 
 	use Analytics_4_Report_Row_Trait;
-	use Fake_Report_Response_Trait;
 
 	const DEFAULT_VALUE_FOR_EXISTING_ROWS = '99';
 
@@ -222,87 +219,5 @@ class ResponseTest extends TestCase {
 			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[0]->getValue(), 'First metric value should match expected.' );
 			$this->assertEquals( $args['expected_dates_ranges_and_values'][ $i ][ $expected_value_index ], $row->getMetricValues()[1]->getValue(), 'Second metric value should match expected.' );
 		}
-	}
-
-	public function test_keep_only_public_query_vars__removes_the_query_args_that_wordpress_does_not_read() {
-		// WooCommerce adds each endpoint, such as `order-received`, as a public
-		// query var through the `query_vars` filter.
-		add_filter(
-			'query_vars',
-			function ( $query_vars ) {
-				$query_vars[] = 'order-received';
-				return $query_vars;
-			}
-		);
-
-		$response = $this->create_report_response(
-			array( 'pagePathPlusQueryString' ),
-			array(
-				array( '/?p=1&utm_source=newsletter' ),
-				array( '/?page_id=19&order-received=123&key=wc_order_abc' ),
-				array( '/?s=hats&email=jo%40example.com' ),
-				array( '/?key=wc_order_abc' ),
-				array( '/' ),
-			)
-		);
-
-		$this->report_response->keep_only_public_query_vars( $response );
-
-		$this->assertSame(
-			array( '/?p=1', '/?page_id=19&order-received=123', '/?s=hats', '/', '/' ),
-			$this->get_dimension_values( $response, 0 ),
-			'Each URL should keep only the query vars that WordPress reads, so an order key or an email address never reaches a view-only user.'
-		);
-	}
-
-	public function test_keep_only_public_query_vars__reads_a_list_query_var_by_its_name() {
-		$response = $this->create_report_response(
-			array( 'pagePathPlusQueryString' ),
-			array( array( '/?post_type%5B%5D=book&key=wc_order_abc' ) )
-		);
-
-		$this->report_response->keep_only_public_query_vars( $response );
-
-		$this->assertSame(
-			array( '/?post_type%5B%5D=book' ),
-			$this->get_dimension_values( $response, 0 ),
-			'A list query arg, such as `post_type[]=book`, should stay in the URL, because the name before its brackets, `post_type`, is a public query var.'
-		);
-	}
-
-	public function test_keep_only_public_query_vars__leaves_other_dimensions_unchanged() {
-		$response = $this->create_report_response(
-			array( 'pagePathPlusQueryString', 'pageTitle' ),
-			array( array( '/?p=1&key=wc_order_abc', 'Order?key=wc_order_abc' ) )
-		);
-
-		$this->report_response->keep_only_public_query_vars( $response );
-
-		$this->assertSame(
-			array( 'Order?key=wc_order_abc' ),
-			$this->get_dimension_values( $response, 1 ),
-			'A dimension other than `pagePathPlusQueryString` should keep its value.'
-		);
-	}
-
-	public function test_keep_only_public_query_vars__cuts_a_url_dimension_after_another_dimension() {
-		$response = $this->create_report_response(
-			array( 'pageTitle', 'pagePathPlusQueryString' ),
-			array( array( 'Order?key=wc_order_abc', '/?p=1&key=wc_order_abc' ) )
-		);
-
-		$this->report_response->keep_only_public_query_vars( $response );
-
-		$this->assertSame(
-			array( '/?p=1' ),
-			$this->get_dimension_values( $response, 1 ),
-			'A `pagePathPlusQueryString` value should keep only its public query vars where another dimension comes first.'
-		);
-	}
-
-	public function test_keep_only_public_query_vars__returns_a_value_that_is_not_a_report_unchanged() {
-		$error = new WP_Error( 'internal_server_error', 'Internal server error' );
-
-		$this->assertSame( $error, $this->report_response->keep_only_public_query_vars( $error ), 'A value that is not a report response, such as an error, should come back unchanged.' );
 	}
 }

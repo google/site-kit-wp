@@ -69,19 +69,14 @@ final class WP_Query_Factory {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @return string[] The public query vars, as a list.
+	 * @return string[] The public query vars.
 	 */
 	public static function get_public_query_vars() {
 		global $wp;
 
-		// Depending on whether WordPress already parsed the main request (and thus filtered `query_vars`), we should
-		// either manually trigger the filter or not.
-		$public_query_vars = did_action( 'parse_request' ) ? $wp->public_query_vars : apply_filters( 'query_vars', $wp->public_query_vars );
-
-		// A `query_vars` filter that removes a query var leaves a gap in the keys. `Assets::get_inline_base_data()`
-		// sends this list to the dashboard as `publicQueryVars`, and `wp_json_encode()` writes an array with a gap in
-		// its keys as an object rather than a list.
-		return array_values( $public_query_vars );
+		// `WP::parse_request()` applies the `query_vars` filter to `$wp->public_query_vars`, so we apply it here only
+		// before that runs. A second run would add another copy of each query var a plugin appends.
+		return did_action( 'parse_request' ) ? $wp->public_query_vars : apply_filters( 'query_vars', $wp->public_query_vars );
 	}
 
 	/**
@@ -229,7 +224,7 @@ final class WP_Query_Factory {
 	 * into query arguments in a similar way.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Reads the public query vars through `get_public_query_vars()`.
+	 * @since n.e.x.t Reads the public query vars through `get_public_query_vars()`, in place of reading and filtering `$wp->public_query_vars` itself.
 	 *
 	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
 	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.

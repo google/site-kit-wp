@@ -207,43 +207,8 @@ function getColumnReportOptions(
 }
 
 /**
- * Builds the pattern that matches the query string of a single product's URL
- * on plain permalinks.
- *
- * It matches the product's slug in its query var, such as `/?product=hoodie`,
- * and the product post type with the product's ID in either order, such as
- * `/?post_type=product&p=5`. It doesn't match the shop or a product search,
- * which send `post_type=product` with no ID. Analytics reads the pattern as
- * RE2, which has no lookahead, so each order of `post_type` and `p` is an
- * alternative of its own.
- *
- * @since n.e.x.t
- *
- * @param {string}      postType The product post type, such as `product`.
- * @param {string|null} queryVar The query var of the product post type, such as `product`, or `null` where it has none.
- * @return {string} The pattern.
- */
-function getProductQueryStringPattern(
-	postType: string,
-	queryVar: string | null
-): string {
-	// WordPress keeps a post type and its query var to lowercase letters,
-	// digits, `-` and `_`, so neither needs escaping in the pattern.
-	const alternatives = [
-		`post_type=${ postType }&(?:[^&]*&)*p=[0-9]`,
-		`p=[0-9]+&(?:[^&]*&)*post_type=${ postType }(?:&|$)`,
-	];
-
-	if ( queryVar ) {
-		alternatives.unshift( `${ queryVar }=[^&]` );
-	}
-
-	return `[?&](?:${ alternatives.join( '|' ) })`;
-}
-
-/**
- * Builds the filter that removes the product pages from a report of views for
- * each page path, or for each URL with its query string on plain permalinks.
+ * Builds the filter that removes the product pages from the report of views for
+ * each page.
  *
  * @since n.e.x.t
  *
@@ -259,20 +224,6 @@ function getExcludedProductsFilters(
 				filterType: 'stringFilter',
 				matchType: 'BEGINS_WITH',
 				value: excludedProducts.pathPrefix,
-				notExpression: true,
-			},
-		};
-	}
-
-	if ( excludedProducts.by === 'queryString' ) {
-		return {
-			pagePathPlusQueryString: {
-				filterType: 'stringFilter',
-				matchType: 'PARTIAL_REGEXP',
-				value: getProductQueryStringPattern(
-					excludedProducts.postType,
-					excludedProducts.queryVar
-				),
 				notExpression: true,
 			},
 		};
@@ -320,45 +271,6 @@ export function getTopPostsReportOptions(
 			  }
 			: {} ),
 		limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS,
-	};
-}
-
-/**
- * Builds the options of the report of views for each URL on plain permalinks,
- * where every post shares the path of the home page.
- *
- * The report reads each URL with its query string, such as `/?p=123`. It asks
- * for at most 1,000 URLs, many more than the
- * `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page paths the column looks up, because
- * many URLs can show one post, such as `/?p=123&utm_source=newsletter`, and
- * some URLs show no single post.
- *
- * @since n.e.x.t
- *
- * @param {Object}      dateRange           The date range of the Recent activity tab.
- * @param {string}      dateRange.startDate The first day of the date range.
- * @param {string}      dateRange.endDate   The last day of the date range.
- * @param {Object|null} excludedProducts    The way to recognize the product URLs that the report leaves out, or `null` to keep them.
- * @return {Object} The report options.
- */
-export function getPlainPermalinkTopPostsReportOptions(
-	dateRange: FreshDataDateRange,
-	excludedProducts: ExcludedProducts | null
-): ReportOptions {
-	return {
-		...getColumnReportOptions(
-			dateRange,
-			'pagePathPlusQueryString',
-			'screenPageViews',
-			'analytics-4_recent-traffic-breakdown_widget_plainPermalinkTopPostsArgs'
-		),
-		...( excludedProducts
-			? {
-					dimensionFilters:
-						getExcludedProductsFilters( excludedProducts ),
-			  }
-			: {} ),
-		limit: 1000,
 	};
 }
 

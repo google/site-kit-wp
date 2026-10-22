@@ -190,9 +190,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				productPathPrefix,
-				productQueryVar,
 				usingPlainPermalinks,
-				publicQueryVars,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -239,9 +237,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				productPathPrefix,
-				productQueryVar,
 				usingPlainPermalinks,
-				publicQueryVars,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -344,9 +340,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			productPathPrefix,
-			productQueryVar,
 			usingPlainPermalinks,
-			publicQueryVars,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -400,9 +394,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			productPathPrefix,
-			productQueryVar,
 			usingPlainPermalinks,
-			publicQueryVars,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -1006,19 +998,6 @@ export const selectors = {
 	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
 
 	/**
-	 * Gets the query var of the product post type, such as `product` in `/?product=hoodie`.
-	 *
-	 * The query var is `null` when:
-	 * - the site has no product post type;
-	 * - the product post type has no query var.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {(string|null|undefined)} The query var, or `null` in each case above. Returns `undefined` if not loaded.
-	 */
-	getProductQueryVar: getSiteInfoProperty( 'productQueryVar' ),
-
-	/**
 	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
 	 *
 	 * @since n.e.x.t
@@ -1026,15 +1005,6 @@ export const selectors = {
 	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
 	 */
 	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
-
-	/**
-	 * Gets the public query vars, the query vars that WordPress reads from a URL, such as `p` and `page_id`.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return {(Array.<string>|undefined)} The public query vars. They include the query var of each post type that `is_post_type_viewable()` accepts, and each query var that a plugin adds through the `query_vars` filter. Returns `undefined` if not loaded.
-	 */
-	getPublicQueryVars: getSiteInfoProperty( 'publicQueryVars' ),
 
 	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user

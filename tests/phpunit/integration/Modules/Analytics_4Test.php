@@ -2037,17 +2037,17 @@ class Analytics_4Test extends TestCase {
 		$this->enable_feature( 'freshData' );
 
 		$this->assertContains(
-			'posts-by-page-path',
+			'plain-permalink-top-posts',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should expose the posts by page path datapoint with fresh data enabled.'
+			'Analytics 4 module should expose the `plain-permalink-top-posts` datapoint with the `freshData` feature flag on.'
 		);
 	}
 
 	public function test_get_datapoints__fresh_data_disabled() {
 		$this->assertNotContains(
-			'posts-by-page-path',
+			'plain-permalink-top-posts',
 			$this->analytics->get_datapoints(),
-			'Analytics 4 module should not expose the posts by page path datapoint with fresh data disabled.'
+			'Analytics 4 module should not expose the `plain-permalink-top-posts` datapoint with the `freshData` feature flag off.'
 		);
 	}
 

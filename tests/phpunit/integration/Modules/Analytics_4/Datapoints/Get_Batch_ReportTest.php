@@ -18,7 +18,6 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Batch_Report;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\Fake_Report_Response_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\BatchRunReportsResponse as Google_Service_AnalyticsData_BatchRunReportsResponse;
@@ -33,8 +32,6 @@ use WP_Error;
  * @group Datapoints
  */
 class Get_Batch_ReportTest extends TestCase {
-
-	use Fake_Report_Response_Trait;
 
 	/**
 	 * Get_Batch_Report datapoint instance.
@@ -256,62 +253,7 @@ class Get_Batch_ReportTest extends TestCase {
 		$this->assertSame(
 			$response,
 			$this->datapoint->parse_response( $response, $data_request ),
-			'The datapoint should return the response unchanged for a request that is not shared.'
-		);
-	}
-
-	public function test_parse_response__keeps_only_the_public_query_vars_of_each_url_for_a_view_only_user() {
-		$datapoint = new Get_Batch_Report(
-			array(
-				'service'           => function () {},
-				'settings'          => $this->analytics->get_settings(),
-				'context'           => new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-				'is_shared_request' => function () {
-					return true;
-				},
-			),
-		);
-
-		$response = new Google_Service_AnalyticsData_BatchRunReportsResponse();
-		$response->setReports(
-			array(
-				$this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) ),
-				$this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=2&key=wc_order_def' ) ) ),
-			)
-		);
-
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'batch-report', array() );
-
-		$parsed_response = $datapoint->parse_response( $response, $data_request );
-
-		$this->assertSame(
-			array( array( '/?p=1' ), array( '/?p=2' ) ),
-			array_map(
-				function ( $report ) {
-					return $this->get_dimension_values( $report, 0 );
-				},
-				$parsed_response->getReports()
-			),
-			'Each report of a view-only user should have each URL with its public query vars alone.'
-		);
-	}
-
-	public function test_parse_response__keeps_the_full_query_string_of_each_url_for_the_owner() {
-		$response = new Google_Service_AnalyticsData_BatchRunReportsResponse();
-		$response->setReports(
-			array(
-				$this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) ),
-			)
-		);
-
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'batch-report', array() );
-
-		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
-
-		$this->assertSame(
-			array( '/?p=1&key=wc_order_abc' ),
-			$this->get_dimension_values( $parsed_response->getReports()[0], 0 ),
-			'Each report of the module owner, who reads with their own access, should have each URL with its whole query string.'
+			'The datapoint should return the response unchanged.'
 		);
 	}
 }

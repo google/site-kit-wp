@@ -13,7 +13,6 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Report\Response as Analytics_4_Report_Response;
-use Google\Site_Kit\Tests\Fake_Report_Response_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
@@ -34,8 +33,6 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse 
  * @group Datapoints
  */
 class Get_ReportTest extends TestCase {
-
-	use Fake_Report_Response_Trait;
 
 	/**
 	 * Get_Report datapoint instance.
@@ -173,34 +170,5 @@ class Get_ReportTest extends TestCase {
 			$this->report_response->parse_response( $data_request, new Google_Service_AnalyticsData_RunReportResponse() ),
 			'The datapoint should parse the response using Analytics_4_Report_Response.'
 		);
-	}
-
-	public function test_parse_response__keeps_only_the_public_query_vars_of_each_url_for_a_view_only_user() {
-		$datapoint = new Get_Report(
-			array(
-				'service'           => function () {},
-				'settings'          => $this->analytics->get_settings(),
-				'context'           => new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ),
-				'is_shared_request' => function () {
-					return true;
-				},
-			),
-		);
-
-		$response     = $this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) );
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
-
-		$parsed_response = $datapoint->parse_response( $response, $data_request );
-
-		$this->assertSame( array( '/?p=1' ), $this->get_dimension_values( $parsed_response, 0 ), 'The report of a view-only user should have each URL with its public query vars alone.' );
-	}
-
-	public function test_parse_response__keeps_the_full_query_string_of_each_url_for_the_owner() {
-		$response     = $this->create_report_response( array( 'pagePathPlusQueryString' ), array( array( '/?p=1&key=wc_order_abc' ) ) );
-		$data_request = new Data_Request( 'GET', 'modules', 'analytics-4', 'report', array( 'metrics' => array( 'screenPageViews' ) ) );
-
-		$parsed_response = $this->datapoint->parse_response( $response, $data_request );
-
-		$this->assertSame( array( '/?p=1&key=wc_order_abc' ), $this->get_dimension_values( $parsed_response, 0 ), 'The report of the module owner, who reads with their own access, should have each URL with its whole query string.' );
 	}
 }

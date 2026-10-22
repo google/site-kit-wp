@@ -25,7 +25,7 @@ import type { MockResponseObject } from 'fetch-mock';
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-import { getQueryArg } from '@wordpress/url';
+import { getQueryArg, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -38,7 +38,7 @@ import {
 	forDimensions,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { postsByPagePath } from '@/js/modules/analytics-4/datastore/__fixtures__';
+import { plainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideIncludeProductsState } from '@/js/modules/analytics-4/datastore/test-utils';
 import {
@@ -63,6 +63,10 @@ describe( 'RecentTrafficBreakdown', () => {
 
 	const reportEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	const topPostsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
 	);
 
 	const postsRequest = forDimensions( 'pagePath' );
@@ -625,6 +629,37 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toHaveLength( 3 );
 	} );
 
+	it( 'should render the loading state in the posts column, and should not request any posts, while the site info has no `usingPlainPermalinks`', async () => {
+		// This registry reads the site info from the base data of
+		// `tests/js/setup-globals.js`, which has no `usingPlainPermalinks`. So
+		// `isUsingPlainPermalinks()` returns `undefined`, as it does while the
+		// site info loads.
+		registry = createTestRegistry();
+		provideModules( registry );
+		provideModuleRegistrations( registry );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		fetchMock.get( topPostsEndpoint, {
+			body: plainPermalinkTopPosts,
+			status: 200,
+		} );
+		mockReportRequests();
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect(
+			getColumn( 'Top posts by visitors' ).querySelector(
+				'.googlesitekit-table-tile__loading'
+			)
+		).toBeInTheDocument();
+		expect( fetchMock ).not.toHaveFetched( postsRequest );
+		expect( fetchMock ).not.toHaveFetched( topPostsEndpoint );
+	} );
+
 	it( 'should render "No data to display: no traffic from other sites to yours" in the referrals column, and the rows of the other two columns, when no visit came from another site', async () => {
 		mockReportRequests( {
 			referrals: { body: {}, status: 200 },
@@ -792,73 +827,15 @@ describe( 'RecentTrafficBreakdown', () => {
 	} );
 
 	describe( 'on plain permalinks', () => {
-		const plainPermalinkPostsRequest = forDimensions(
-			'pagePathPlusQueryString'
-		);
-		const postsByPagePathEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/analytics-4/data/posts-by-page-path'
-		);
-
-		// `/?p=1&utm_source=newsletter` shows the same post as `/?p=1`, and the
-		// home page at `/` lists the latest posts, which is no single post.
-		const plainPermalinkPostsReport = createBreakdownReport(
-			[
-				[ '/?p=1', 40 ],
-				[ '/', 35 ],
-				[ '/?page_id=2', 30 ],
-				[ '/?p=1&utm_source=newsletter', 20 ],
-				[ '/?p=3', 5 ],
-			],
-			200
-		);
-
-		/**
-		 * Answers the request for the views of each URL with its query string,
-		 * and the request for the post of each page path.
-		 *
-		 * Each request is answered with its default response unless `responses`
-		 * has another response for it. The default answer to the request for the
-		 * post of each page path is the `postsByPagePath` fixture, which has no
-		 * post for `/`.
-		 *
-		 * A route registered earlier answers first, so a test that needs a
-		 * request to fail once, or to wait, registers that route before it calls
-		 * `mockPlainPermalinkRequests()`.
-		 *
-		 * @since n.e.x.t
-		 *
-		 * @param {Object} [responses]                 Optional. The responses that replace the default ones.
-		 * @param {Object} [responses.posts]           Optional. The response to the request for the views of each URL.
-		 * @param {Object} [responses.postsByPagePath] Optional. The response to the request for the post of each page path.
-		 * @return {void}
-		 */
-		function mockPlainPermalinkRequests(
-			responses: Partial<
-				Record< 'posts' | 'postsByPagePath', MockResponseObject >
-			> = {}
-		) {
-			fetchMock.get(
-				plainPermalinkPostsRequest,
-				responses.posts ?? {
-					body: plainPermalinkPostsReport,
-					status: 200,
-				}
-			);
-			fetchMock.get(
-				postsByPagePathEndpoint,
-				responses.postsByPagePath ?? {
-					body: postsByPagePath,
-					status: 200,
-				}
-			);
-		}
-
 		beforeEach( () => {
 			provideSiteInfo( registry, { usingPlainPermalinks: true } );
 		} );
 
-		it( 'should render the title of each post that the URLs show, each linking to its post, with its share of the total of the report', async () => {
-			mockPlainPermalinkRequests();
+		it( 'should render the title of each post, each linking to its post, with its share of the views of the report', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -870,9 +847,9 @@ describe( 'RecentTrafficBreakdown', () => {
 			const postsColumn = getColumn( 'Top posts by visitors' );
 
 			expect( getRowTexts( postsColumn ) ).toEqual( [
-				[ 'Travel tips', '60(30.0%)' ],
-				[ 'About', '30(15.0%)' ],
-				[ 'Packing list', '5(2.5%)' ],
+				[ 'Travel tips', '30(30.0%)' ],
+				[ 'About', '20(20.0%)' ],
+				[ '/?p=3', '10(10.0%)' ],
 			] );
 			expect(
 				within( postsColumn )
@@ -885,8 +862,11 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should render the channels and the referrals as on a site with a permalink structure', async () => {
-			mockPlainPermalinkRequests();
+		it( 'should not request the report of views by `pagePath` or the report of page titles', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -895,58 +875,14 @@ describe( 'RecentTrafficBreakdown', () => {
 
 			await waitForRegistry();
 
-			expect(
-				getRowTexts( getColumn( 'Top channels by visitors' ) )
-			).toEqual( [
-				[ 'Direct', '82(68.3%)' ],
-				[ 'Organic Search', '21(17.5%)' ],
-				[ 'Referral', '12(10.0%)' ],
-			] );
-			expect(
-				getRowTexts( getColumn( 'Top referrals by visitors' ) )
-			).toEqual( [
-				[ 'news.example.com', '8(66.7%)' ],
-				[ 'forum.example.com', '4(33.3%)' ],
-			] );
+			expect( fetchMock ).not.toHaveFetched( postsRequest );
+			expect( fetchMock ).not.toHaveFetched( titlesRequest );
 		} );
 
-		it( 'should request the views without the URLs of single products when the setting to include products is off', async () => {
-			provideIncludeProductsState( registry, {
-				setting: false,
-				usingPlainPermalinks: true,
-			} );
-			mockPlainPermalinkRequests();
-			mockReportRequests();
-
-			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
-				registry,
-				features: [ 'freshData' ],
-			} );
-
-			await waitForRegistry();
-
-			expect( fetchMock ).toHaveFetchedTimes(
-				1,
-				plainPermalinkPostsRequest
-			);
-
-			const [ [ postsURL ] ] = fetchMock.calls(
-				plainPermalinkPostsRequest
-			);
-
-			expect( getQueryArg( postsURL, 'dimensionFilters' ) ).toEqual( {
-				pagePathPlusQueryString: {
-					filterType: 'stringFilter',
-					matchType: 'PARTIAL_REGEXP',
-					value: '[?&](?:product=[^&]|post_type=product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=product(?:&|$))',
-					notExpression: 'true',
-				},
-			} );
-		} );
-
-		it( 'should render a report error in the posts column, and the rows of the other two columns, when the report of the views fails', async () => {
-			mockPlainPermalinkRequests( {
-				posts: { body: errorResponse, status: 500 },
+		it( 'should render a report error in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: errorResponse,
+				status: 500,
 			} );
 			mockReportRequests();
 
@@ -977,16 +913,15 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should request a failed report of the views again, and render its rows, when "Retry" is clicked in the posts column', async () => {
-			fetchMock.getOnce( plainPermalinkPostsRequest, {
+		it( 'should request the posts again, and render their rows, when "Retry" is clicked in the posts column', async () => {
+			fetchMock.getOnce( topPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
 			} );
-			fetchMock.getOnce( plainPermalinkPostsRequest, {
-				body: plainPermalinkPostsReport,
+			fetchMock.getOnce( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
 				status: 200,
 			} );
-			mockPlainPermalinkRequests();
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -1008,22 +943,18 @@ describe( 'RecentTrafficBreakdown', () => {
 
 			await waitForRetry();
 
-			expect( fetchMock ).toHaveFetchedTimes(
-				2,
-				plainPermalinkPostsRequest
-			);
+			expect( fetchMock ).toHaveFetchedTimes( 2, topPostsEndpoint );
 			expect(
 				getRowTexts( getColumn( 'Top posts by visitors' ) )
 			).toEqual( [
-				[ 'Travel tips', '60(30.0%)' ],
-				[ 'About', '30(15.0%)' ],
-				[ 'Packing list', '5(2.5%)' ],
+				[ 'Travel tips', '30(30.0%)' ],
+				[ 'About', '20(20.0%)' ],
+				[ '/?p=3', '10(10.0%)' ],
 			] );
 		} );
 
-		it( 'should render the loading state in the posts column, rather than the page paths, and the rows of the other two columns, while the posts load', async () => {
-			freezeFetch( postsByPagePathEndpoint );
-			mockPlainPermalinkRequests();
+		it( 'should render the loading state in the posts column, and the rows of the other two columns, while the posts load', async () => {
+			freezeFetch( topPostsEndpoint );
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -1032,17 +963,11 @@ describe( 'RecentTrafficBreakdown', () => {
 
 			await waitForRegistry();
 
-			const postsColumn = getColumn( 'Top posts by visitors' );
-
-			expect( fetchMock ).toHaveFetched( postsByPagePathEndpoint );
 			expect(
-				postsColumn.querySelector(
+				getColumn( 'Top posts by visitors' ).querySelector(
 					'.googlesitekit-table-tile__loading'
 				)
 			).toBeInTheDocument();
-			expect(
-				within( postsColumn ).queryByText( '/?p=1' )
-			).not.toBeInTheDocument();
 			expect(
 				getRowTexts( getColumn( 'Top channels by visitors' ) )
 			).toEqual( [
@@ -1058,19 +983,10 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should render "No data to display: your posts haven’t received any visitors yet" in the posts column when the URLs had views but none showed a single post', async () => {
-			// The home page lists the latest posts, and `/?s=hats` is a search.
-			mockPlainPermalinkRequests( {
-				posts: {
-					body: createBreakdownReport(
-						[
-							[ '/', 50 ],
-							[ '/?s=hats', 25 ],
-						],
-						75
-					),
-					status: 200,
-				},
+		it( 'should render "No data to display: your posts haven’t received any visitors yet" in the posts column when the report had views but none on a single post', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: { rows: [], total: 75 },
+				status: 200,
 			} );
 			mockReportRequests();
 
@@ -1085,16 +1001,14 @@ describe( 'RecentTrafficBreakdown', () => {
 					'.googlesitekit-table-tile__zero-state'
 				)
 			).toHaveTextContent(
-				'your posts haven’t received any visitors yet'
+				'No data to display: your posts haven’t received any visitors yet'
 			);
 		} );
 
-		it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column when the URLs had no views', async () => {
-			mockPlainPermalinkRequests( {
-				posts: {
-					body: createBreakdownReport( [], 0 ),
-					status: 200,
-				},
+		it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column when the report had no views', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: { rows: [], total: 0 },
+				status: 200,
 			} );
 			mockReportRequests();
 
@@ -1108,11 +1022,16 @@ describe( 'RecentTrafficBreakdown', () => {
 				getColumn( 'Top posts by visitors' ).querySelector(
 					'.googlesitekit-table-tile__zero-state'
 				)
-			).toHaveTextContent( 'your site hasn’t received any visitors yet' );
+			).toHaveTextContent(
+				'No data to display: your site hasn’t received any visitors yet'
+			);
 		} );
 
 		it( 'should render the title of each column as a level 4 heading', async () => {
-			mockPlainPermalinkRequests();
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -1132,8 +1051,11 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should render the title of each post for a view-only user', async () => {
-			mockPlainPermalinkRequests();
+		it( 'should render the title of each post for a view-only user, from one request for the three posts of the Recent activity date range', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
 			mockReportRequests();
 
 			const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -1143,20 +1065,33 @@ describe( 'RecentTrafficBreakdown', () => {
 
 			await waitForRegistry();
 
+			expect( fetchMock ).toHaveFetchedTimes( 1, topPostsEndpoint );
+			expect(
+				getQueryArgs(
+					fetchMock.lastCall( topPostsEndpoint )?.[ 0 ] ?? ''
+				)
+			).toMatchObject( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+				limit: '3',
+			} );
 			expect(
 				getRowTexts( getColumn( 'Top posts by visitors' ) )
 			).toEqual( [
-				[ 'Travel tips', '60(30.0%)' ],
-				[ 'About', '30(15.0%)' ],
-				[ 'Packing list', '5(2.5%)' ],
+				[ 'Travel tips', '30(30.0%)' ],
+				[ 'About', '20(20.0%)' ],
+				[ '/?p=3', '10(10.0%)' ],
 			] );
 		} );
 
-		it( 'should not render the "Top posts by visitors" column, and should not request its report, when the site has no published posts', async () => {
-			mockPlainPermalinkRequests();
+		it( 'should not render the "Top posts by visitors" column, and should not request its posts, when the site has no published posts', async () => {
+			fetchMock.get( topPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
 			mockReportRequests();
 
-			const { container, waitForRegistry } = render(
+			const { waitForRegistry } = render(
 				<RecentTrafficBreakdown hasNoPublishedPosts />,
 				{ registry }
 			);
@@ -1164,16 +1099,14 @@ describe( 'RecentTrafficBreakdown', () => {
 			await waitForRegistry();
 
 			expect(
-				Array.from(
-					container.querySelectorAll(
-						'.googlesitekit-table-tile__title'
-					)
-				).map( ( title ) => title.textContent )
+				screen
+					.getAllByRole( 'heading', { level: 4 } )
+					.map( ( heading ) => heading.textContent )
 			).toEqual( [
 				'Top channels by visitors',
 				'Top referrals by visitors',
 			] );
-			expect( fetchMock ).not.toHaveFetched( plainPermalinkPostsRequest );
+			expect( fetchMock ).not.toHaveFetched( topPostsEndpoint );
 		} );
 	} );
 } );

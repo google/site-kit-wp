@@ -34,6 +34,7 @@ import { Select, useSelect } from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import PlainPermalinkTopPostsColumn from './PlainPermalinkTopPostsColumn';
 import TopChannelsColumn from './TopChannelsColumn';
 import TopPostsColumn from './TopPostsColumn';
@@ -60,9 +61,22 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 		[]
 	);
 
-	const PostsColumn = isUsingPlainPermalinks
-		? PlainPermalinkTopPostsColumn
-		: TopPostsColumn;
+	// `isUsingPlainPermalinks()` is `undefined` until the site info loads.
+	// Until then, a loading tile renders in place of either posts column, so
+	// neither sends a request for the wrong kind of site.
+	let postsColumn = (
+		<TableTile
+			title={ __( 'Top posts by visitors', 'google-site-kit' ) }
+			titleAs="h4"
+			loading
+		/>
+	);
+
+	if ( isUsingPlainPermalinks === true ) {
+		postsColumn = <PlainPermalinkTopPostsColumn />;
+	} else if ( isUsingPlainPermalinks === false ) {
+		postsColumn = <TopPostsColumn />;
+	}
 
 	return (
 		<section
@@ -79,7 +93,7 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 				{ __( 'What’s affecting recent traffic?', 'google-site-kit' ) }
 			</Typography>
 			<div className="googlesitekit-traffic-overview__recent-traffic-breakdown-columns">
-				{ ! hasNoPublishedPosts && <PostsColumn /> }
+				{ ! hasNoPublishedPosts && postsColumn }
 				<TopChannelsColumn />
 				<TopReferralsColumn />
 			</div>

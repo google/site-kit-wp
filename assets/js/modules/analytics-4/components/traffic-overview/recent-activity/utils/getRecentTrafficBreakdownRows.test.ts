@@ -20,10 +20,7 @@
  * Internal dependencies
  */
 import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import {
-	getRecentTrafficBreakdownRows,
-	getRowCounts,
-} from './getRecentTrafficBreakdownRows';
+import { getRecentTrafficBreakdownRows } from './getRecentTrafficBreakdownRows';
 
 describe( 'getRecentTrafficBreakdownRows', () => {
 	it( "should show each row's count and its share of the report's total", () => {
@@ -239,115 +236,5 @@ describe( 'getRecentTrafficBreakdownRows', () => {
 
 	it( 'should not return a row when there is no report', () => {
 		expect( getRecentTrafficBreakdownRows() ).toEqual( [] );
-	} );
-
-	it( 'should add up the rows for which `getRowKey` returns the same key into one row, labeled with the key, with its share of the total', () => {
-		// The two URLs of the first post add up to 45 of 100 views.
-		const report = createBreakdownReport(
-			[
-				[ '/?p=1', 30 ],
-				[ '/', 20 ],
-				[ '/?p=1&utm_source=newsletter', 15 ],
-				[ '/?p=2', 10 ],
-			],
-			100
-		);
-
-		expect(
-			getRecentTrafficBreakdownRows( report, ( value ) =>
-				value.startsWith( '/?p=1' ) ? 'post 1' : value
-			)
-		).toEqual( [
-			{ label: 'post 1', value: '45', secondaryValue: '(45.0%)' },
-			{ label: '/', value: '20', secondaryValue: '(20.0%)' },
-			{ label: '/?p=2', value: '10', secondaryValue: '(10.0%)' },
-		] );
-	} );
-
-	it( 'should leave out the rows for which `getRowKey` returns `null`, and keep their count in the total', () => {
-		const report = createBreakdownReport(
-			[
-				[ '/', 20 ],
-				[ '/?p=2', 10 ],
-			],
-			30
-		);
-
-		expect(
-			getRecentTrafficBreakdownRows( report, ( value ) =>
-				value === '/' ? null : value
-			)
-		).toEqual( [
-			{ label: '/?p=2', value: '10', secondaryValue: '(33.3%)' },
-		] );
-	} );
-} );
-
-describe( 'getRowCounts', () => {
-	it( 'should return the counts of all five keys, most first', () => {
-		const report = createBreakdownReport( [
-			[ '/a/', 1 ],
-			[ '/b/', 4 ],
-			[ '/c/', 2 ],
-			[ '/d/', 5 ],
-			[ '/e/', 3 ],
-		] );
-
-		expect( getRowCounts( report ) ).toEqual( [
-			{ key: '/d/', count: 5 },
-			{ key: '/b/', count: 4 },
-			{ key: '/e/', count: 3 },
-			{ key: '/c/', count: 2 },
-			{ key: '/a/', count: 1 },
-		] );
-	} );
-
-	it( 'should add up the counts of the rows for which `getRowKey` returns the same key', () => {
-		const report = createBreakdownReport( [
-			[ '/?p=1', 3 ],
-			[ '/index.php?p=1', 2 ],
-		] );
-
-		expect(
-			getRowCounts( report, ( value ) =>
-				value.includes( 'p=1' ) ? '/?p=1' : value
-			)
-		).toEqual( [ { key: '/?p=1', count: 5 } ] );
-	} );
-
-	it( 'should leave out the rows for which `getRowKey` returns `null`', () => {
-		const report = createBreakdownReport( [
-			[ '/?p=1', 3 ],
-			[ '/?s=hats', 9 ],
-		] );
-
-		expect(
-			getRowCounts( report, ( value ) =>
-				value === '/?s=hats' ? null : value
-			)
-		).toEqual( [ { key: '/?p=1', count: 3 } ] );
-	} );
-
-	it( 'should sort the keys by the sum of their counts, rather than by their first row', () => {
-		// The first row of `/?p=1` has fewer views than `/`, but its two rows
-		// add up to more.
-		const report = createBreakdownReport( [
-			[ '/', 20 ],
-			[ '/?p=1', 15 ],
-			[ '/?p=1&utm_source=newsletter', 15 ],
-		] );
-
-		expect(
-			getRowCounts( report, ( value ) =>
-				value.startsWith( '/?p=1' ) ? '/?p=1' : value
-			)
-		).toEqual( [
-			{ key: '/?p=1', count: 30 },
-			{ key: '/', count: 20 },
-		] );
-	} );
-
-	it( 'should not return a key when there is no report', () => {
-		expect( getRowCounts() ).toEqual( [] );
 	} );
 } );

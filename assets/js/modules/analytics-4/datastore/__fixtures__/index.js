@@ -29,7 +29,8 @@ export { default as createWebDataStream } from './create-webdatastream.json';
 export { default as defaultSettings } from './default-settings.json';
 export { default as defaultEnhancedMeasurementSettings } from './default-enhanced-measurement-settings.json';
 export { default as pageTitles } from './page-titles.json';
-export { default as postsByPagePath } from './posts-by-page-path.json';
+/** Three posts, the third with an empty `title`, so its row shows its `pagePath`, `/?p=3`. */
+export { default as plainPermalinkTopPosts } from './plain-permalink-top-posts.json';
 export { default as properties } from './properties.json';
 export { default as report } from './report.json';
 export { default as webDataStreams } from './webdatastreams.json';

@@ -74,8 +74,6 @@ export function provideRecentContent(
  * @param {boolean} [state.setting]                   Optional. Whether the setting to include products is on. Default `true`.
  * @param {string}  [state.productPostType]           Optional. The product post type. Default `product`.
  * @param {string}  [state.productPathPrefix]         Optional. The path that product URLs start with. Default `null`.
- * @param {string}  [state.productQueryVar]           Optional. The query var of the product post type, or `null` for none. Default `product`.
- * @param {boolean} [state.usingPlainPermalinks]      Optional. Whether the site uses plain permalinks. Default `false`.
  * @param {Array}   [state.availableCustomDimensions] Optional. The custom dimensions that the Analytics property has, or `null` when they haven't been synced. Default `undefined`, which the store reads as not loaded yet.
  * @return {void}
  */
@@ -87,8 +85,6 @@ export function provideIncludeProductsState(
 		setting = true,
 		productPostType = 'product',
 		productPathPrefix = null,
-		productQueryVar = 'product',
-		usingPlainPermalinks = false,
 		availableCustomDimensions,
 	}: {
 		analyticsConnected?: boolean;
@@ -96,8 +92,6 @@ export function provideIncludeProductsState(
 		setting?: boolean;
 		productPostType?: string | null;
 		productPathPrefix?: string | null;
-		productQueryVar?: string | null;
-		usingPlainPermalinks?: boolean;
 		availableCustomDimensions?: string[] | null;
 	} = {}
 ) {
@@ -113,8 +107,6 @@ export function provideIncludeProductsState(
 		wooCommerceActive,
 		productPostType,
 		productPathPrefix,
-		productQueryVar,
-		usingPlainPermalinks,
 	} );
 
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {

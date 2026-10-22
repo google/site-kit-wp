@@ -201,7 +201,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
- * @since n.e.x.t Sets `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars` by default.
+ * @since n.e.x.t Sets `usingPlainPermalinks` to `false` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -245,59 +245,7 @@ export function provideSiteInfo(
 		],
 		productPostType: 'product',
 		productPathPrefix: null,
-		productQueryVar: 'product',
 		usingPlainPermalinks: false,
-		// The default `WP::$public_query_vars` of WordPress core, and the query
-		// var of the `product` post type.
-		publicQueryVars: [
-			'm',
-			'p',
-			'posts',
-			'w',
-			'cat',
-			'withcomments',
-			'withoutcomments',
-			's',
-			'search',
-			'exact',
-			'sentence',
-			'calendar',
-			'page',
-			'paged',
-			'more',
-			'tb',
-			'pb',
-			'author',
-			'order',
-			'orderby',
-			'year',
-			'monthnum',
-			'day',
-			'hour',
-			'minute',
-			'second',
-			'name',
-			'category_name',
-			'tag',
-			'feed',
-			'author_name',
-			'pagename',
-			'page_id',
-			'error',
-			'attachment',
-			'attachment_id',
-			'subpost',
-			'subpost_id',
-			'preview',
-			'robots',
-			'favicon',
-			'taxonomy',
-			'term',
-			'cpage',
-			'post_type',
-			'embed',
-			'product',
-		],
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,

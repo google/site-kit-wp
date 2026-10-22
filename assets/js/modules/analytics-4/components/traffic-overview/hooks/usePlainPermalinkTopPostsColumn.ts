@@ -25,175 +25,119 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useSelect } from 'googlesitekit-data';
-import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import {
+	Select,
+	useDispatch,
+	useInViewSelect,
+	useSelect,
+} from 'googlesitekit-data';
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
-import { getPlainPermalinkTopPostsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
-import { getPageURL } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPageURL';
-import { getPlainPermalinkPagePath } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getPlainPermalinkPagePath';
-import {
-	getRecentTrafficBreakdownRows,
-	getRowCounts,
-} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
-import {
-	MODULES_ANALYTICS_4,
-	POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
-} from '@/js/modules/analytics-4/datastore/constants';
-import { PagePathPost } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { PlainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ErrorObject } from '@/js/util/errors';
-import { FreshDataDateRange } from './useFreshDataDateRange';
-import { useFreshDataReport } from './useFreshDataReport';
-import { usePostsByPagePath } from './usePostsByPagePath';
+import { useFreshDataDateRange } from './useFreshDataDateRange';
 
 interface PlainPermalinkTopPostsColumn {
-	/** The rows the column renders: one for each post, or one for each page path after the request for the posts fails. */
+	/** The rows the column renders, one for each post. */
 	rows: TableTileRow[];
-	/** `true` until the request for the column's report finishes. Once the report has loaded, it stays `true` until the request for the posts of its page paths finishes. */
+	/** `true` until the request for the posts finishes, whether it succeeded or failed. */
 	loading: boolean;
-	/** The error of the column's report, or `undefined` when its request hasn't failed. */
+	/** The error of the request for the posts, or `undefined` when it hasn't failed. */
 	error?: ErrorObject;
-	/** Requests the column's report again. */
+	/** Sends the request for the posts again. */
 	retry: () => void;
 	/** The message the column shows with no rows where the report has views, or `undefined` for the default message, which says the site had no visitors. */
 	zeroState?: string;
 }
 
 /**
- * Resolves the report of the "Top posts by visitors" column on a site with plain permalinks, and builds the column's rows from it.
- *
- * On plain permalinks, which have no permalink structure, every post shares
- * the path of the home page, so the report reads each URL with its query
- * string. The column asks which post each page path shows, for up to
- * `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS` page paths with the most views, and adds
- * up the views of each post into one row, such as the views of `/?p=1` and of
- * `/?p=1&utm_source=newsletter`. When the request for the posts fails, the
- * column has one row for each page path instead.
+ * Builds the rows of the "Top posts by visitors" column on a site with plain permalinks, which has no permalink structure.
  *
  * @since n.e.x.t
  *
- * @return {Object} The column's rows, its loading state, its report's error, a function that requests the report again, and its zero state message.
+ * @return {Object} The column's rows, its loading state, its error, a function that requests the posts again, and its zero state message.
  */
 export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn {
-	const excludedProducts = useSelect(
+	const dateRange = useFreshDataDateRange();
+
+	const options = useMemo(
+		() => ( { ...dateRange, limit: RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } ),
+		[ dateRange ]
+	);
+
+	const topPosts = useInViewSelect< PlainPermalinkTopPosts | undefined >(
 		( select: Select ) =>
-			select( MODULES_ANALYTICS_4 ).getExcludedProducts(),
-		[]
+			select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				options,
+				FRESH_DATA_FETCH_OPTIONS
+			),
+		[ options ]
 	);
 
-	const siteURL = useSelect(
-		( select: Select ) => select( CORE_SITE ).getReferenceSiteURL(),
-		[]
+	const loading = useSelect(
+		( select: Select ) =>
+			! select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+				'getPlainPermalinkTopPosts',
+				[ options, FRESH_DATA_FETCH_OPTIONS ]
+			),
+		[ topPosts, options ]
 	);
 
-	const publicQueryVars = useSelect(
-		( select: Select ) => select( CORE_SITE ).getPublicQueryVars(),
-		[]
+	// The fetch store saves the error under the options alone.
+	const error = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getPlainPermalinkTopPosts',
+				[ options ]
+			),
+		[ topPosts, options ]
 	);
 
-	// As in `TopPostsColumn`, the options stay `undefined` until
-	// `getExcludedProducts()` loads, and `useFreshDataReport()` requests no
-	// report for `undefined` options. So the report is never requested without
-	// its product filter.
-	const buildReportOptions = useCallback(
-		( dateRange: FreshDataDateRange ) =>
-			excludedProducts === undefined
-				? undefined
-				: getPlainPermalinkTopPostsReportOptions(
-						dateRange,
-						excludedProducts
-				  ),
-		[ excludedProducts ]
-	);
+	const { invalidateResolution } = useDispatch( MODULES_ANALYTICS_4 );
 
-	const {
-		report,
-		loading: reportLoading,
-		error,
-		retry,
-	} = useFreshDataReport( buildReportOptions );
-
-	const getPagePath = useCallback(
-		( url: string ) =>
-			getPlainPermalinkPagePath( url, siteURL, publicQueryVars ),
-		[ siteURL, publicQueryVars ]
-	);
-
-	// `getRowCounts()` returns the page paths most viewed first, so the slice
-	// keeps the ones with the most views.
-	const pagePaths = useMemo(
-		() =>
-			report
-				? getRowCounts( report, getPagePath )
-						.slice( 0, POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS )
-						.map( ( { key } ) => key )
-				: undefined,
-		[ report, getPagePath ]
-	);
-
-	const {
-		posts,
-		loading: postsLoading,
-		error: postsError,
-	} = usePostsByPagePath( pagePaths );
+	const retry = useCallback( () => {
+		invalidateResolution( 'getPlainPermalinkTopPosts', [
+			options,
+			FRESH_DATA_FETCH_OPTIONS,
+		] );
+	}, [ invalidateResolution, options ] );
 
 	const rows = useMemo( () => {
-		if ( posts && pagePaths ) {
-			// Each post's row takes the post's most viewed page path as its key.
-			// A post with no title shows that page path as its label.
-			const rowKeys = new Map< number, string >();
-
-			pagePaths.forEach( ( pagePath ) => {
-				const post = posts[ pagePath ];
-
-				if ( post && ! rowKeys.has( post.id ) ) {
-					rowKeys.set( post.id, pagePath );
-				}
-			} );
-
-			return getRecentTrafficBreakdownRows( report, ( url ) => {
-				const pagePath = getPagePath( url );
-				const post = pagePath ? posts[ pagePath ] : null;
-
-				return post ? rowKeys.get( post.id ) ?? null : null;
-			} ).map( ( row ) => {
-				// `getRecentTrafficBreakdownRows()` labels each row with its key, a
-				// page path whose post is in `posts`, so the post is never `null`.
-				const post = posts[ row.label ] as PagePathPost;
-
-				return {
-					...row,
-					label: post.title || row.label,
-					url: post.url,
-				};
-			} );
+		if ( ! topPosts ) {
+			return [];
 		}
 
-		if ( postsError ) {
-			return getRecentTrafficBreakdownRows( report, getPagePath ).map(
-				( row ) => ( { ...row, url: getPageURL( siteURL, row.label ) } )
-			);
-		}
-
-		return [];
-	}, [ posts, pagePaths, postsError, report, getPagePath, siteURL ] );
-
-	const hasViews = useMemo(
-		() => getRowCounts( report ).length > 0,
-		[ report ]
-	);
+		// The server returns only posts with views, most viewed first, so
+		// `getRecentTrafficBreakdownRows()` keeps each row at the index of
+		// its post.
+		return getRecentTrafficBreakdownRows( {
+			rows: topPosts.rows.map( ( { title, pagePath, views } ) => ( {
+				dimensionValues: [ { value: title || pagePath } ],
+				metricValues: [ { value: String( views ) } ],
+			} ) ),
+			totals: [
+				{ metricValues: [ { value: String( topPosts.total ) } ] },
+			],
+		} ).map( ( row, index ) => ( {
+			...row,
+			url: topPosts.rows[ index ].url,
+		} ) );
+	}, [ topPosts ] );
 
 	return {
 		rows,
-		// Once the report has loaded, the column waits for the posts, so no row
-		// shows a page path first.
-		loading: reportLoading || ( report !== undefined && postsLoading ),
+		loading,
 		error,
 		retry,
-		zeroState: hasViews
-			? __(
-					'No data to display: your posts haven’t received any visitors yet',
-					'google-site-kit'
-			  )
-			: undefined,
+		zeroState:
+			topPosts && topPosts.total > 0
+				? __(
+						'No data to display: your posts haven’t received any visitors yet',
+						'google-site-kit'
+				  )
+				: undefined,
 	};
 }

@@ -39,16 +39,6 @@ export const FORM_SETUP = 'analyticsSetup';
 export const FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS =
 	'freshDataIncludesWooCommerceProducts';
 
-/**
- * The maximum number of page paths that one `posts-by-page-path` request can look up.
- *
- * `Get_Posts_By_Page_Path::MAX_PAGE_PATHS` sets the same limit on the server,
- * which answers a longer list with a `400` error.
- *
- * @since n.e.x.t
- */
-export const POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS = 50;
-
 export const MAX_WEBDATASTREAMS_PER_BATCH = 10;
 
 /**

@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -40,19 +41,15 @@ import {
 	createRegistrySelector,
 } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
-// The built plugin's `googlesitekit-api` global has no `createCacheKey()`.
-import { createCacheKey } from '@/js/googlesitekit/api';
-import { getItem, setItem } from '@/js/googlesitekit/api/cache';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { stringifyObject } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
-import {
-	MODULES_ANALYTICS_4,
-	POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
-} from './constants';
+import { MODULES_ANALYTICS_4 } from './constants';
 
 const { clearSelectorError, setErrorForSelector } = errorStoreActions;
 
@@ -93,40 +90,50 @@ export type ExcludedProducts =
 			by: 'postTypeDimension';
 			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
 			postType: string;
-	  }
-	| {
-			/** The way to recognize a product page on plain permalinks: by its query string. */
-			by: 'queryString';
-			/** The product post type, such as `product`, which a URL can name as `post_type=product` with the product's ID. */
-			postType: string;
-			/** The query var of a product, such as `product` in `/?product=hoodie`, or `null` where the product post type has none. */
-			queryVar: string | null;
 	  };
 
 /**
- * A published single post that a page path shows, as `GET:posts-by-page-path` returns it.
+ * One of the published single posts with the most views on a site with plain permalinks, as `GET:plain-permalink-top-posts` returns it.
  *
  * @since n.e.x.t
  */
-export interface PagePathPost {
+export interface PlainPermalinkTopPost {
 	/** The ID of the post. */
 	id: number;
 	/** The title as text, such as `Don’t miss it`, or an empty string for a post with no title. */
 	title: string;
-	/** The URL of the post, such as `https://example.com/?p=123`. */
+	/** The permalink of the post, such as `https://example.com/?p=123`. */
 	url: string;
+	/** The permalink with no scheme or host, such as `/?p=123`. */
+	pagePath: string;
+	/** The views of the report's URLs that show the post, at least `1`. */
+	views: number;
 }
 
 /**
- * The post each page path shows, keyed by the page path, such as `/?p=123`, with `null` where it shows no single published post.
+ * The response of `GET:plain-permalink-top-posts`, with the most viewed posts and the report's total views.
  *
  * @since n.e.x.t
  */
-export type PostsByPagePath = Record< string, PagePathPost | null >;
+export interface PlainPermalinkTopPosts {
+	/** The posts, most viewed first. */
+	rows: PlainPermalinkTopPost[];
+	/** The views of every URL of the report, including the URLs that show no single post. */
+	total: number;
+}
 
-interface PostsByPagePathParams {
-	/** The page paths to look up, such as `/?p=123`. */
-	pagePaths: string[];
+/**
+ * The options of `getPlainPermalinkTopPosts()`.
+ *
+ * @since n.e.x.t
+ */
+export interface PlainPermalinkTopPostsOptions {
+	/** The first day of the report, such as `2026-10-21`. */
+	startDate: string;
+	/** The last day of the report, such as `2026-10-22`. */
+	endDate: string;
+	/** The maximum number of posts, from 1 to `Plain_Permalink_Top_Posts::MAX_PAGE_PATHS`, which is 50. The server refuses any other limit. */
+	limit: number;
 }
 
 interface WordPressPost {
@@ -149,8 +156,8 @@ interface WordPressPost {
 interface FreshDataState {
 	/** The newest posts and products, saved under the `count` of the request. */
 	recentContent: Record< number, RecentContentItem[] >;
-	/** The post of each page path loaded so far. */
-	postsByPagePath: PostsByPagePath;
+	/** The response of each request, saved under the hash that `stringifyObject()` builds from its options. */
+	plainPermalinkTopPosts: Record< string, PlainPermalinkTopPosts >;
 }
 
 const fetchGetRecentContentStore = createFetchStore( {
@@ -231,100 +238,49 @@ const fetchGetRecentContentStore = createFetchStore( {
 	};
 };
 
-/**
- * Builds the key under which the API cache keeps the post of one page path.
- *
- * @since n.e.x.t
- *
- * @param {string} pagePath The page path, such as `/?p=123`.
- * @return {string} The cache key.
- */
-function getPostCacheKey( pagePath: string ): string {
-	return createCacheKey(
-		'modules',
-		MODULE_SLUG_ANALYTICS_4,
-		'posts-by-page-path',
-		{ pagePath }
-	);
-}
-
-const fetchGetPostsByPagePathStore = createFetchStore( {
-	baseName: 'getPostsByPagePath',
-	async controlCallback( {
-		pagePaths,
-	}: PostsByPagePathParams ): Promise< PostsByPagePath > {
-		// `setItem()` keeps the post of each page path in the API cache for its
-		// default `ttl` of an hour, so a list with one new page path asks the
-		// server for that page path alone.
-		const cachedPosts = await Promise.all(
-			pagePaths.map( ( pagePath ) =>
-				getItem( getPostCacheKey( pagePath ) )
-			)
-		);
-
-		const posts: PostsByPagePath = {};
-		const pagePathsToRequest: string[] = [];
-
-		pagePaths.forEach( ( pagePath, index ) => {
-			if ( cachedPosts[ index ].cacheHit ) {
-				posts[ pagePath ] = cachedPosts[ index ].value;
-			} else {
-				pagePathsToRequest.push( pagePath );
-			}
-		} );
-
-		if ( ! pagePathsToRequest.length ) {
-			return posts;
-		}
-
-		// `get()` would cache the response under the whole list of page paths,
-		// which a list with any other page path never reads.
-		const response = ( await get(
+const fetchGetPlainPermalinkTopPostsStore = createFetchStore( {
+	baseName: 'getPlainPermalinkTopPosts',
+	controlCallback: (
+		{ options }: { options: PlainPermalinkTopPostsOptions },
+		fetchOptions?: ReportFetchOptions
+	): Promise< PlainPermalinkTopPosts > =>
+		get(
 			'modules',
 			MODULE_SLUG_ANALYTICS_4,
-			'posts-by-page-path',
-			{ pagePaths: pagePathsToRequest },
-			{ useCache: false }
-		) ) as PostsByPagePath;
-
-		// A page path the response leaves out gets `null`, because
-		// `undefined` reads as not loaded and would keep the posts loading.
-		pagePathsToRequest.forEach( ( pagePath ) => {
-			posts[ pagePath ] = response[ pagePath ] ?? null;
-		} );
-
-		await Promise.all(
-			pagePathsToRequest.map( ( pagePath ) =>
-				setItem( getPostCacheKey( pagePath ), posts[ pagePath ] )
-			)
-		);
-
-		return posts;
-	},
+			'plain-permalink-top-posts',
+			options,
+			fetchOptions
+		),
 	reducerCallback: createReducer(
-		( state: FreshDataState, posts: PostsByPagePath ) => {
-			Object.entries( posts ).forEach( ( [ pagePath, post ] ) => {
-				state.postsByPagePath[ pagePath ] = post;
-			} );
+		(
+			state: FreshDataState,
+			topPosts: PlainPermalinkTopPosts,
+			{ options }: { options: PlainPermalinkTopPostsOptions }
+		) => {
+			state.plainPermalinkTopPosts[ stringifyObject( { ...options } ) ] =
+				topPosts;
 		}
 	),
-	argsToParams: ( pagePaths: string[] ) => ( { pagePaths } ),
-	validateParams: ( { pagePaths }: Partial< PostsByPagePathParams > ) => {
-		invariant(
-			Array.isArray( pagePaths ) &&
-				pagePaths.length <= POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS,
-			`pagePaths must be a list of at most ${ POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS } page paths.`
-		);
+	argsToParams: ( options: PlainPermalinkTopPostsOptions ) => ( {
+		options,
+	} ),
+	validateParams: ( {
+		options,
+	}: Partial< { options: PlainPermalinkTopPostsOptions } > ) => {
+		invariant( isPlainObject( options ), 'options must be an object.' );
 	},
 } ) as {
 	actions: {
-		fetchGetPostsByPagePath: ( pagePaths: string[] ) => unknown;
+		fetchGetPlainPermalinkTopPosts: (
+			options: PlainPermalinkTopPostsOptions,
+			fetchOptions?: ReportFetchOptions
+		) => unknown;
 	};
 };
 
 const baseInitialState: FreshDataState = {
 	recentContent: {},
-	postsByPagePath: {},
+	plainPermalinkTopPosts: {},
 };
 
 const baseResolvers = {
@@ -373,38 +329,14 @@ const baseResolvers = {
 		}
 	},
 
-	*getPostsByPagePath(
-		pagePaths: string[]
+	*getPlainPermalinkTopPosts(
+		options: PlainPermalinkTopPostsOptions,
+		fetchOptions?: ReportFetchOptions
 	): Generator< unknown, void, unknown > {
-		const registry = ( yield commonActions.getRegistry() ) as Registry;
-
-		// An earlier failed request saved its error under the selector's
-		// arguments, `[ pagePaths ]`, where the fetch store doesn't clear it.
-		yield clearSelectorError( 'getPostsByPagePath', [ pagePaths ] );
-
-		const pagePathsToLoad = pagePaths.filter(
-			( pagePath ) =>
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( pagePath ) === undefined
+		yield fetchGetPlainPermalinkTopPostsStore.actions.fetchGetPlainPermalinkTopPosts(
+			options,
+			fetchOptions
 		);
-
-		const { error } =
-			( yield fetchGetPostsByPagePathStore.actions.fetchGetPostsByPagePath(
-				pagePathsToLoad
-			) ) as { error?: ErrorObject };
-
-		// We move the error from the fetch store's arguments,
-		// `[ pagePathsToLoad ]`, to the selector's, `[ pagePaths ]`, so a
-		// component can read it and retry the request.
-		if ( error ) {
-			yield clearSelectorError( 'getPostsByPagePath', [
-				pagePathsToLoad,
-			] );
-			yield setErrorForSelector( error, 'getPostsByPagePath', [
-				pagePaths,
-			] );
-		}
 	},
 };
 
@@ -431,53 +363,30 @@ const baseSelectors = {
 	},
 
 	/**
-	 * Gets the post that each of a list of page paths shows.
+	 * Gets the published single posts with the most views on a site with plain permalinks, which has no permalink structure.
 	 *
-	 * On plain permalinks, every post shares the path of the home page, so a
-	 * page path keeps its query string, such as `/?p=123`. The resolver asks
-	 * `GET:posts-by-page-path` only for the page paths that haven't loaded yet,
-	 * and the API cache keeps the post of each page path for an hour. Read a
-	 * request error with `getErrorForSelector( 'getPostsByPagePath', [ pagePaths ] )`.
+	 * Read a request error with
+	 * `getErrorForSelector( 'getPlainPermalinkTopPosts', [ options ] )`.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Object}         state     The data store's state.
-	 * @param {Array.<string>} pagePaths The page paths, at most `POSTS_BY_PAGE_PATH_MAX_PAGE_PATHS`, such as `/?p=123`.
-	 * @return {(Object|undefined)} The post of each page path, keyed by the page path, with `null` where the page path shows no single published post. Returns `undefined` until every page path has loaded.
+	 * @param {Object} state             The data store's state.
+	 * @param {Object} options           The options of the report.
+	 * @param {string} options.startDate The first day of the report, such as `2026-10-21`.
+	 * @param {string} options.endDate   The last day of the report, such as `2026-10-22`.
+	 * @param {number} options.limit     The maximum number of posts, from 1 to `Plain_Permalink_Top_Posts::MAX_PAGE_PATHS`, which is 50. The server refuses any other limit.
+	 * @param {Object} [fetchOptions]    Optional. Fetch options that change how the request runs, such as `{ cacheTTL }`, the seconds the response stays cached.
+	 * @return {(Object|undefined)} The posts, most viewed first, as `rows`, and the views of every URL of the report as `total`. Returns `undefined` until the request succeeds.
 	 */
-	getPostsByPagePath(
+	getPlainPermalinkTopPosts(
 		state: FreshDataState,
-		pagePaths: string[]
-	): PostsByPagePath | undefined {
-		const posts: PostsByPagePath = {};
-
-		for ( const pagePath of pagePaths ) {
-			const post = state.postsByPagePath[ pagePath ];
-
-			if ( post === undefined ) {
-				return undefined;
-			}
-
-			posts[ pagePath ] = post;
-		}
-
-		return posts;
-	},
-
-	/**
-	 * Gets the post that one page path shows, once `getPostsByPagePath()` has loaded it.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Object} state    The data store's state.
-	 * @param {string} pagePath The page path, such as `/?p=123`.
-	 * @return {(Object|null|undefined)} The post, or `null` where the page path shows no single published post. Returns `undefined` until the page path has loaded.
-	 */
-	getPostByPagePath(
-		state: FreshDataState,
-		pagePath: string
-	): PagePathPost | null | undefined {
-		return state.postsByPagePath[ pagePath ];
+		options: PlainPermalinkTopPostsOptions,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+		fetchOptions?: ReportFetchOptions
+	): PlainPermalinkTopPosts | undefined {
+		return state.plainPermalinkTopPosts[
+			stringifyObject( { ...options } )
+		];
 	},
 
 	/**
@@ -524,10 +433,8 @@ const baseSelectors = {
 	 * to include products is off. Without WooCommerce, the setting doesn't
 	 * show, so the tab lists every page. The tab recognizes a product page:
 	 *
-	 * 1. On plain permalinks, by its query string, such as `/?product=hoodie`.
-	 * 2. Otherwise by the path that every product URL starts with, such as
-	 *    `/product/`.
-	 * 3. When product URLs share no such path, by the `googlesitekit_post_type`
+	 * 1. By the path that every product URL starts with, such as `/product/`.
+	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
 	 *    custom dimension, if the Analytics property has it.
 	 *
 	 * @since n.e.x.t
@@ -566,14 +473,6 @@ const baseSelectors = {
 				return null;
 			}
 
-			if ( select( CORE_SITE ).isUsingPlainPermalinks() ) {
-				return {
-					by: 'queryString',
-					postType,
-					queryVar: select( CORE_SITE ).getProductQueryVar(),
-				};
-			}
-
 			const pathPrefix = select( CORE_SITE ).getProductPathPrefix();
 
 			if ( pathPrefix ) {
@@ -604,7 +503,7 @@ const baseSelectors = {
 
 const store = combineStores(
 	fetchGetRecentContentStore,
-	fetchGetPostsByPagePathStore,
+	fetchGetPlainPermalinkTopPostsStore,
 	{
 		initialState: baseInitialState,
 		resolvers: baseResolvers,

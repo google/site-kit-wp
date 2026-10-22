@@ -111,20 +111,13 @@ class Get_Report extends Shareable_Datapoint implements Executable_Datapoint {
 	 * Parses a response.
 	 *
 	 * @since 1.177.0
-	 * @since n.e.x.t Keeps only the public query vars of each `pagePathPlusQueryString` value in a report that a view-only user gets.
 	 *
 	 * @param mixed        $response Request response.
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Parsed response data on success, or WP_Error on failure.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
-		$report   = new Analytics_4_Report_Response( $this->context );
-		$response = $report->parse_response( $data, $response );
-
-		if ( ( $this->is_shared_request )( $this ) ) {
-			return $report->keep_only_public_query_vars( $response );
-		}
-
-		return $response;
+		$report = new Analytics_4_Report_Response( $this->context );
+		return $report->parse_response( $data, $response );
 	}
 }

@@ -72,16 +72,14 @@ class RequestHelpersTest extends TestCase {
 		$this->validate_shared_dimension( 'landingPagePlusQueryString' );
 	}
 
-	public function test_validate_shared_dimensions__accepts_page_path_plus_query_string_with_the_fresh_data_flag() {
+	public function test_validate_shared_dimensions__rejects_page_path_plus_query_string_with_the_fresh_data_flag() {
+		// Under the `freshData` flag, the Recent activity posts column runs its
+		// `pagePathPlusQueryString` report in the `plain-permalink-top-posts`
+		// datapoint, not as a shared report.
 		$this->enable_feature( 'freshData' );
 
-		$this->validate_shared_dimension( 'pagePathPlusQueryString' );
-
-		$this->addToAssertionCount( 1 );
-	}
-
-	public function test_validate_shared_dimensions__refuses_page_path_plus_query_string_without_the_fresh_data_flag() {
 		$this->expectException( Invalid_Report_Dimensions_Exception::class );
+		$this->expectExceptionMessage( 'Unsupported dimension requested: pagePathPlusQueryString' );
 
 		$this->validate_shared_dimension( 'pagePathPlusQueryString' );
 	}

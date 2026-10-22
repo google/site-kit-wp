@@ -81,7 +81,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Properties;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Property;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Has_Property_Access;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Key_Events;
-use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Posts_By_Page_Path;
+use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Plain_Permalink_Top_Posts;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Report;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Site_Goals_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Webdatastreams;
@@ -100,6 +100,7 @@ use Google\Site_Kit\Modules\Analytics_4\Datapoints\Update_Enhanced_Measurement_S
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_Property;
 use Google\Site_Kit\Modules\Analytics_4\Synchronize_AdSenseLinked;
 use Google\Site_Kit\Modules\Analytics_4\GoogleAnalyticsAdmin\AccountProvisioningService;
+use Google\Site_Kit\Modules\Analytics_4\Plain_Permalink_Top_Posts;
 use Google\Site_Kit\Modules\Analytics_4\Resource_Data_Availability_Date;
 use Google\Site_Kit\Modules\Analytics_4\Settings;
 use Google\Site_Kit\Modules\Analytics_4\Site_Goals_Settings;
@@ -797,7 +798,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Registers `GET:posts-by-page-path` with the `freshData` feature flag on.
+	 * @since n.e.x.t Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
@@ -1107,7 +1108,19 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 
 		// TODO: #13568 -- Remove the `freshData` check when the flag is removed.
 		if ( Feature_Flags::enabled( 'freshData' ) ) {
-			$this->datapoints['GET:posts-by-page-path'] = new Get_Posts_By_Page_Path( array() );
+			$this->datapoints['GET:plain-permalink-top-posts'] = new Get_Plain_Permalink_Top_Posts(
+				array(
+					'service'           => function () {
+						return $this->get_service( 'analyticsdata' );
+					},
+					'settings'          => $this->get_settings(),
+					'context'           => $this->context,
+					'is_shared_request' => function ( Datapoint $datapoint ) {
+						return $this->is_shared_datapoint_request( $datapoint );
+					},
+					'top_posts'         => new Plain_Permalink_Top_Posts( $this->context ),
+				)
+			);
 		}
 
 		return $this->datapoints;

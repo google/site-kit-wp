@@ -20,12 +20,12 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
-import { getQueryArg } from '@wordpress/url';
+import { getQueryArg, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
-import { clearCache } from '@/js/googlesitekit/api/cache';
+import { get } from 'googlesitekit-api';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
@@ -38,12 +38,17 @@ import {
 	untilResolved,
 	waitFor,
 } from '@tests/js/test-utils';
-import { postsByPagePath } from './__fixtures__';
+import { plainPermalinkTopPosts } from './__fixtures__';
 import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
 import { provideIncludeProductsState } from './test-utils';
+
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -51,8 +56,9 @@ const analytics4SettingsEndpoint = new RegExp(
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 /** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
-const postsByPagePathEndpoint = new RegExp(
-	'^/google-site-kit/v1/modules/analytics-4/data/posts-by-page-path'
+/** The route of the `plain-permalink-top-posts` datapoint, with any query string after it. */
+const plainPermalinkTopPostsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
 );
 
 describe( 'modules/analytics-4 fresh data', () => {
@@ -60,6 +66,10 @@ describe( 'modules/analytics-4 fresh data', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		jest.mocked( get ).mockClear();
 	} );
 
 	describe( 'shouldIncludeWooCommerceProducts', () => {
@@ -187,60 +197,6 @@ describe( 'modules/analytics-4 fresh data', () => {
 			expect(
 				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
 			).toEqual( { by: 'pathPrefix', pathPrefix: '/product/' } );
-		} );
-
-		it( 'should return the product post type and its query var on plain permalinks when the setting to include products is off', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
-			// The property has the `googlesitekit_post_type` custom dimension, and
-			// product URLs share no path on plain permalinks. So the selector would
-			// recognize products by the dimension if it didn't check for plain
-			// permalinks first.
-			provideIncludeProductsState( registry, {
-				setting: false,
-				usingPlainPermalinks: true,
-				productQueryVar: 'product',
-				availableCustomDimensions: [ 'googlesitekit_post_type' ],
-			} );
-
-			expect(
-				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-			).toEqual( {
-				by: 'queryString',
-				postType: 'product',
-				queryVar: 'product',
-			} );
-		} );
-
-		it( 'should return the product post type with no query var on plain permalinks when the product post type has none', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
-			provideIncludeProductsState( registry, {
-				setting: false,
-				usingPlainPermalinks: true,
-				productQueryVar: null,
-			} );
-
-			expect(
-				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-			).toEqual( {
-				by: 'queryString',
-				postType: 'product',
-				queryVar: null,
-			} );
-		} );
-
-		it( 'should return null on plain permalinks when the setting to include products is on', () => {
-			setEnabledFeatures( [ 'freshData' ] );
-
-			provideIncludeProductsState( registry, {
-				setting: true,
-				usingPlainPermalinks: true,
-			} );
-
-			expect(
-				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-			).toBeNull();
 		} );
 
 		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
@@ -1346,659 +1302,315 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 	} );
 
-	describe( 'getPostsByPagePath', () => {
-		const travelTips = postsByPagePath[ '/?p=1' ];
-		const about = postsByPagePath[ '/?page_id=2' ];
+	describe( 'getPlainPermalinkTopPosts', () => {
+		const errorResponse = {
+			code: 'internal_server_error',
+			message: 'Internal server error',
+			data: { status: 500 },
+		};
 
-		let dateNowSpy: jest.SpyInstance;
+		it( 'should return the posts with the most views and the total of the report for the dates and the limit of the options', async () => {
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			};
 
-		beforeEach( () => {
-			dateNowSpy = jest.spyOn( Date, 'now' );
-		} );
-
-		afterEach( () => {
-			dateNowSpy.mockRestore();
-		} );
-
-		it( 'should return the post of each page path, and `null` for a page path that shows no single post', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips, '/?s=hats': null },
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?s=hats' ] );
+				.getPlainPermalinkTopPosts( options );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?s=hats' ] );
+			).getPlainPermalinkTopPosts( options );
 
 			expect(
-				getQueryArg(
-					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
-					'pagePaths'
+				getQueryArgs(
+					fetchMock.lastCall(
+						plainPermalinkTopPostsEndpoint
+					)?.[ 0 ] ?? ''
 				)
-			).toEqual( [ '/?p=1', '/?s=hats' ] );
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?s=hats' ] )
-			).toEqual( { '/?p=1': travelTips, '/?s=hats': null } );
-		} );
-
-		it( 'should return `null` for a page path that the response leaves out', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
+			).toMatchObject( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: '3',
 			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?p=999' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?p=999' ] );
-
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?p=999' ] )
-			).toEqual( { '/?p=1': travelTips, '/?p=999': null } );
+					.getPlainPermalinkTopPosts( options )
+			).toEqual( plainPermalinkTopPosts );
 		} );
 
 		it( 'should return `undefined` while the posts load', async () => {
-			freezeFetch( postsByPagePathEndpoint );
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			};
+
+			freezeFetch( plainPermalinkTopPostsEndpoint );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
+				.getPlainPermalinkTopPosts( options );
 
 			await waitFor( () =>
-				expect( fetchMock ).toHaveFetched( postsByPagePathEndpoint )
+				expect( fetchMock ).toHaveFetched(
+					plainPermalinkTopPostsEndpoint
+				)
 			);
 
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1' ] )
+					.getPlainPermalinkTopPosts( options )
 			).toBeUndefined();
 		} );
 
-		it( 'should request only the page paths whose posts have not loaded yet', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
+		it( 'should request the posts with the fetch options, such as a cache of five minutes', async () => {
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			};
+
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
+				.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
+			).getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
-			// Without the cache, only the registry's state keeps the post of
-			// `/?p=1` out of the next request.
-			await clearCache();
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?page_id=2': about },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect(
-				getQueryArg(
-					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
-					'pagePaths'
-				)
-			).toEqual( [ '/?page_id=2' ] );
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
-			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
+			expect( get ).toHaveBeenCalledTimes( 1 );
+			expect( get ).toHaveBeenCalledWith(
+				'modules',
+				'analytics-4',
+				'plain-permalink-top-posts',
+				options,
+				{ cacheTTL: 300 }
+			);
 		} );
 
-		it( 'should not request a page path again once its post loaded as `null`', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?s=hats': null },
-				status: 200,
-			} );
+		it( 'should keep the posts of each set of options apart', async () => {
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			};
+			const optionsWithLimit2 = { ...options, limit: 2 };
+			const optionsFromOctober20 = {
+				...options,
+				startDate: '2026-10-20',
+			};
+			const optionsToOctober23 = { ...options, endDate: '2026-10-23' };
 
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?s=hats' ] );
+			const postsWithLimit2 = {
+				rows: plainPermalinkTopPosts.rows.slice( 0, 2 ),
+				total: 100,
+			};
+			const postsFromOctober20 = {
+				...plainPermalinkTopPosts,
+				total: 150,
+			};
+			const postsToOctober23 = { ...plainPermalinkTopPosts, total: 120 };
 
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?s=hats' ] );
-
-			// Without the cache, only the registry's state keeps `/?s=hats` out of
-			// the next request.
-			await clearCache();
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?page_id=2': about },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?s=hats', '/?page_id=2' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?s=hats', '/?page_id=2' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect(
-				getQueryArg(
-					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
-					'pagePaths'
-				)
-			).toEqual( [ '/?page_id=2' ] );
-		} );
-
-		it( 'should take the post of each page path from the API cache when the page reloads, and request only the page paths the cache has no post for', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			// A new registry has no posts in its state, as after a reload of the
-			// page, while the API cache keeps its entries.
-			const reloadedRegistry = createTestRegistry();
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?page_id=2': about },
-				status: 200,
-			} );
-
-			reloadedRegistry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			await untilResolved(
-				reloadedRegistry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-			expect(
-				getQueryArg(
-					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
-					'pagePaths'
-				)
-			).toEqual( [ '/?page_id=2' ] );
-			expect(
-				reloadedRegistry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
-			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
-		} );
-
-		it( 'should take the post of a page path from the API cache when the page reloads a second under an hour after its request', async () => {
-			// The API cache times its entries by `Date.now()`, not by the
-			// reference date.
-			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:59:59Z' ) );
-
-			const reloadedRegistry = createTestRegistry();
-
-			reloadedRegistry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				reloadedRegistry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect(
-				reloadedRegistry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1' ] )
-			).toEqual( { '/?p=1': travelTips } );
-		} );
-
-		it( 'should return `null` from the API cache, with no request, for a page path that shows no single post when the page reloads', async () => {
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?s=hats': null },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?s=hats' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?s=hats' ] );
-
-			// A new registry has no posts in its state, as after a reload of the
-			// page, while the API cache keeps its entries.
-			const reloadedRegistry = createTestRegistry();
-
-			reloadedRegistry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?s=hats' ] );
-
-			await untilResolved(
-				reloadedRegistry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?s=hats' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect(
-				reloadedRegistry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?s=hats' ] )
-			).toEqual( { '/?s=hats': null } );
-		} );
-
-		it( 'should return the posts of each list of page paths when two requests for them answer out of order', async () => {
-			let answerFirstRequest: ( () => void ) | undefined;
-
-			// The first request answers only after the second one, so its post
-			// of `/?p=1` reaches the state last.
 			fetchMock.getOnce(
-				postsByPagePathEndpoint,
-				() =>
-					new Promise( ( resolve ) => {
-						answerFirstRequest = () =>
-							resolve( {
-								body: { '/?p=1': travelTips },
-								status: 200,
-							} );
-					} )
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'limit' ) === '2',
+				{ body: postsWithLimit2, status: 200 }
 			);
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips, '/?page_id=2': about },
-				status: 200,
-			} );
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-20',
+				{ body: postsFromOctober20, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'endDate' ) === '2026-10-23',
+				{ body: postsToOctober23, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-21' &&
+					getQueryArg( url, 'endDate' ) === '2026-10-22' &&
+					getQueryArg( url, 'limit' ) === '3',
+				{ body: plainPermalinkTopPosts, status: 200 }
+			);
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
+				.getPlainPermalinkTopPosts( optionsWithLimit2 );
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+				.getPlainPermalinkTopPosts( optionsFromOctober20 );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPlainPermalinkTopPosts( optionsToOctober23 );
+			registry
+				.select( MODULES_ANALYTICS_4 )
+				.getPlainPermalinkTopPosts( options );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			answerFirstRequest?.();
-
+			).getPlainPermalinkTopPosts( optionsWithLimit2 );
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
+			).getPlainPermalinkTopPosts( optionsFromOctober20 );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( optionsToOctober23 );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( options );
 
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1' ] )
-			).toEqual( { '/?p=1': travelTips } );
+					.getPlainPermalinkTopPosts( optionsWithLimit2 )
+			).toEqual( postsWithLimit2 );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
-			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
+					.getPlainPermalinkTopPosts( optionsFromOctober20 )
+			).toEqual( postsFromOctober20 );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1', '/?page_id=2' ],
-					] )
-			).toBeUndefined();
+					.getPlainPermalinkTopPosts( optionsToOctober23 )
+			).toEqual( postsToOctober23 );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( options )
+			).toEqual( plainPermalinkTopPosts );
 		} );
 
-		it( 'should request the post of a page path again when the page reloads an hour after its request', async () => {
-			// The API cache times its entries by `Date.now()`, not by the
-			// reference date.
-			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T09:00:00Z' ) );
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			dateNowSpy.mockReturnValue( Date.parse( '2026-10-21T10:00:00Z' ) );
-
-			const reloadedRegistry = createTestRegistry();
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			reloadedRegistry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				reloadedRegistry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			expect( fetchMock ).toHaveFetchedTimes( 2 );
-		} );
-
-		it( 'should return `undefined` and store the error for `getErrorForSelector()` when the request fails', async () => {
-			const errorResponse = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` under the options when the request fails', async () => {
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
 			};
 
-			fetchMock.getOnce( postsByPagePathEndpoint, {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
+				.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
+			).getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
 			expect( console ).toHaveErrored();
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1' ],
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						options,
 					] )
 			).toEqual( errorResponse );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1' ] )
+					.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } )
 			).toBeUndefined();
 		} );
 
-		it( 'should store the error under the whole list of page paths passed to `getPostsByPagePath()` when the request for the ones not loaded yet fails', async () => {
-			const errorResponse = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
+		it( 'should request the posts again, and remove the error from `getErrorForSelector()`, when the resolution is invalidated after a failed request', async () => {
+			const options = {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
 			};
 
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
 			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			expect( console ).toHaveErrored();
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1', '/?page_id=2' ],
-					] )
-			).toEqual( errorResponse );
-			// The request asked for `/?page_id=2` alone, and its error moved
-			// to the page paths of the selector.
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?page_id=2' ],
-					] )
-			).toBeUndefined();
-		} );
-
-		it( 'should remove the error from `getErrorForSelector()` when a retry succeeds for page paths that partly loaded after the failed request', async () => {
-			const errorResponse = {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			};
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: errorResponse,
-				status: 500,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
-
-			expect( console ).toHaveErrored();
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1', '/?page_id=2' ],
-					] )
-			).toEqual( errorResponse );
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
 				status: 200,
 			} );
 
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
+				.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
+			).getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?page_id=2': about },
-				status: 200,
-			} );
+			expect( console ).toHaveErrored();
+
+			// Without the saved error here, the check of the error after the
+			// retry would prove nothing.
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						options,
+					] )
+			).toEqual( errorResponse );
 
 			registry
 				.dispatch( MODULES_ANALYTICS_4 )
-				.invalidateResolution( 'getPostsByPagePath', [
-					[ '/?p=1', '/?page_id=2' ],
+				.invalidateResolution( 'getPlainPermalinkTopPosts', [
+					options,
+					{ cacheTTL: 300 },
 				] );
-
 			registry
 				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+				.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
 			await untilResolved(
 				registry,
 				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] );
+			).getPlainPermalinkTopPosts( options, { cacheTTL: 300 } );
 
+			expect( fetchMock ).toHaveFetchedTimes(
+				2,
+				plainPermalinkTopPostsEndpoint
+			);
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getErrorForSelector( 'getPostsByPagePath', [
-						[ '/?p=1', '/?page_id=2' ],
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						options,
 					] )
 			).toBeUndefined();
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
-					.getPostsByPagePath( [ '/?p=1', '/?page_id=2' ] )
-			).toEqual( { '/?p=1': travelTips, '/?page_id=2': about } );
-		} );
-
-		it( 'should request the posts of 50 page paths in one request', async () => {
-			const pagePaths = Array.from(
-				{ length: 50 },
-				( _value, index ) => `/?p=${ index + 1 }`
-			);
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: {},
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( pagePaths );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( pagePaths );
-
-			expect( fetchMock ).toHaveFetchedTimes( 1 );
-			expect(
-				getQueryArg(
-					fetchMock.lastCall( postsByPagePathEndpoint )?.[ 0 ] ?? '',
-					'pagePaths'
-				)
-			).toHaveLength( 50 );
-		} );
-
-		it( 'should store the "pagePaths must be a list of at most 50 page paths." error for `getResolutionError()` and not request posts when `pagePaths` has 51 page paths', async () => {
-			const pagePaths = Array.from(
-				{ length: 51 },
-				( _value, index ) => `/?p=${ index + 1 }`
-			);
-
-			fetchMock.get( postsByPagePathEndpoint, {
-				body: {},
-				status: 200,
-			} );
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( pagePaths );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( pagePaths );
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getResolutionError( 'getPostsByPagePath', [ pagePaths ] )
-			).toEqual(
-				new Error(
-					'pagePaths must be a list of at most 50 page paths.'
-				)
-			);
-			expect( fetchMock ).toHaveFetchedTimes( 0 );
-		} );
-	} );
-
-	describe( 'getPostByPagePath', () => {
-		it( 'should return `undefined` for a page path that has not loaded, and its post once it has', async () => {
-			const travelTips = postsByPagePath[ '/?p=1' ];
-
-			fetchMock.getOnce( postsByPagePathEndpoint, {
-				body: { '/?p=1': travelTips },
-				status: 200,
-			} );
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( '/?p=1' )
-			).toBeUndefined();
-
-			registry
-				.select( MODULES_ANALYTICS_4 )
-				.getPostsByPagePath( [ '/?p=1' ] );
-
-			await untilResolved(
-				registry,
-				MODULES_ANALYTICS_4
-			).getPostsByPagePath( [ '/?p=1' ] );
-
-			expect(
-				registry
-					.select( MODULES_ANALYTICS_4 )
-					.getPostByPagePath( '/?p=1' )
-			).toEqual( travelTips );
+					.getPlainPermalinkTopPosts( options, { cacheTTL: 300 } )
+			).toEqual( plainPermalinkTopPosts );
 		} );
 	} );
 } );

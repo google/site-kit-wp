@@ -14,7 +14,6 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Dimensions_Exception;
 use Google\Site_Kit\Core\Validation\Exception\Invalid_Report_Metrics_Exception;
-use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\URL;
 use Google\Site_Kit\Modules\Analytics_4\Report\Filters\Empty_Filter;
 use Google\Site_Kit\Modules\Analytics_4\Report\Filters\In_List_Filter;
@@ -197,11 +196,12 @@ class RequestHelpers {
 	 *
 	 * @since 1.99.0
 	 * @since 1.130.0 Moved into RequestHelpers for shared use in reports.
+	 * @since n.e.x.t Method changed from protected to public.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
-	protected function validate_shared_metrics( $metrics ) {
+	public function validate_shared_metrics( $metrics ) {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
@@ -267,47 +267,37 @@ class RequestHelpers {
 	 * @since 1.99.0
 	 * @since 1.130.0 Moved into RequestHelpers for shared use in reports.
 	 * @since n.e.x.t Added `landingPage` and `sessionCampaignName` to the shareable dimensions.
-	 * @since n.e.x.t Accepts `pagePathPlusQueryString` with the `freshData` feature flag on.
 	 *
 	 * @param Google_Service_AnalyticsData_Dimension[] $dimensions The dimensions to validate.
 	 * @throws Invalid_Report_Dimensions_Exception Thrown if the dimensions are invalid.
 	 */
 	public function validate_shared_dimensions( $dimensions ) {
-		$shareable_dimensions = array(
-			'audienceResourceName',
-			'adSourceName',
-			'city',
-			'country',
-			'date',
-			'deviceCategory',
-			'eventName',
-			'landingPage',
-			'newVsReturning',
-			'pagePath',
-			'pageTitle',
-			'sessionCampaignName',
-			'sessionDefaultChannelGroup',
-			'sessionDefaultChannelGrouping',
-			'sessionSource',
-			'customEvent:googlesitekit_event_provider',
-			'customEvent:googlesitekit_form_id',
-			'customEvent:googlesitekit_post_author',
-			'customEvent:googlesitekit_post_categories',
-			'customEvent:googlesitekit_post_date',
-			'customEvent:googlesitekit_post_type',
+		$valid_dimensions = apply_filters(
+			'googlesitekit_shareable_analytics_4_dimensions',
+			array(
+				'audienceResourceName',
+				'adSourceName',
+				'city',
+				'country',
+				'date',
+				'deviceCategory',
+				'eventName',
+				'landingPage',
+				'newVsReturning',
+				'pagePath',
+				'pageTitle',
+				'sessionCampaignName',
+				'sessionDefaultChannelGroup',
+				'sessionDefaultChannelGrouping',
+				'sessionSource',
+				'customEvent:googlesitekit_event_provider',
+				'customEvent:googlesitekit_form_id',
+				'customEvent:googlesitekit_post_author',
+				'customEvent:googlesitekit_post_categories',
+				'customEvent:googlesitekit_post_date',
+				'customEvent:googlesitekit_post_type',
+			)
 		);
-
-		// On plain permalinks, the posts column of the Recent activity tab tells
-		// posts apart by their query string, which `pagePath` leaves out. A
-		// view-only user gets only the public query vars of each
-		// `pagePathPlusQueryString` value, because
-		// `Response::keep_only_public_query_vars()` removes the rest.
-		// TODO: #13568 -- Remove the `freshData` check when the flag is removed.
-		if ( Feature_Flags::enabled( 'freshData' ) ) {
-			$shareable_dimensions[] = 'pagePathPlusQueryString';
-		}
-
-		$valid_dimensions = apply_filters( 'googlesitekit_shareable_analytics_4_dimensions', $shareable_dimensions );
 
 		$invalid_dimensions = array_diff(
 			array_map(

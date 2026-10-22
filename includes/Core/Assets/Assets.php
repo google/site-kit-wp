@@ -19,10 +19,9 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Core\Util\Product_Post_Type;
 use Google\Site_Kit\Core\Util\URL;
-use Google\Site_Kit\Core\Util\WP_Query_Factory;
 use WP_Dependencies;
-use WP_Post_Type;
 
 /**
  * Class managing assets.
@@ -849,14 +848,15 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
-	 * @since n.e.x.t Adds `productQueryVar`, `usingPlainPermalinks` and `publicQueryVars`.
+	 * @since n.e.x.t Adds `usingPlainPermalinks`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
 		global $wpdb, $wp_rewrite;
 		$site_url           = $this->context->get_reference_site_url();
-		$product_post_type  = $this->get_product_post_type();
+		$product_type       = Product_Post_Type::get();
+		$product_post_type  = $product_type ? $product_type->name : null;
 		$woocommerce_active = class_exists( 'WooCommerce' );
 
 		$inline_data = array(
@@ -880,9 +880,7 @@ final class Assets {
 			'referenceDate'        => Date::reference_date(),
 			'productPostType'      => $product_post_type,
 			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
-			'productQueryVar'      => $this->get_post_type_query_var( $product_post_type ),
 			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
-			'publicQueryVars'      => WP_Query_Factory::get_public_query_vars(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1251,31 +1249,6 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the product post type.
-	 *
-	 * @since 1.116.0
-	 *
-	 * @return string|null The product post type name or null if not present on the website.
-	 */
-	protected function get_product_post_type() {
-		/**
-		 * Filters the product post type.
-		 *
-		 * @since 1.116.0
-		 *
-		 * @param string $product_post_type The product post type name.
-		 */
-		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
-		$product_type      = get_post_type_object( $product_post_type );
-
-		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			return $product_post_type;
-		}
-
-		return null;
-	}
-
-	/**
 	 * Gets the path that the URL of every post of a post type starts with.
 	 *
 	 * The part of the post type's permalink structure before its first rewrite
@@ -1315,26 +1288,5 @@ final class Assets {
 			trailingslashit( $this->context->get_reference_site_url() ) . ltrim( $path, '/' ),
 			PHP_URL_PATH
 		);
-	}
-
-	/**
-	 * Gets the query var of a post type, such as `product` in `/?product=hoodie`.
-	 *
-	 * On plain permalinks, the URL of a post of the type names its slug with this
-	 * query var.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param string|null $post_type The post type name, or `null` for none.
-	 * @return string|null The query var, or `null` for no post type or a post type with no query var.
-	 */
-	protected function get_post_type_query_var( $post_type ) {
-		$post_type_object = get_post_type_object( $post_type );
-
-		if ( ! $post_type_object || ! $post_type_object->query_var ) {
-			return null;
-		}
-
-		return $post_type_object->query_var;
 	}
 }
