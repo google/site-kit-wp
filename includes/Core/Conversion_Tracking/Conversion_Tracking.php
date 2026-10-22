@@ -166,7 +166,13 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 					delete window._googlesitekit.throttledEvents[ key ];
 				}, 5 );
 
-				gtag( "event", name, { ...data, event_source: "site-kit" } );
+				var params = { ...data, event_source: "site-kit" };
+
+				if ( data && data.user_data ) {
+					params[ "developer_id.' . GTag::USER_DATA_DEVELOPER_ID . '" ] = true;
+				}
+
+				gtag( "event", name, params );
 			};
 		';
 
