@@ -33,7 +33,7 @@ import { TRAFFIC_CHART_LINE_COLOR } from './trafficChartOptions';
  *
  * @since n.e.x.t
  *
- * @param {number} daysInSelectedRange The number of days in the selected date range.
+ * @param {number} daysInSelectedRange The number of days in the selected date range, which the label names and which picks between its singular and plural forms.
  * @return {Object} The legend item's label, and the color of the line.
  */
 export function getTrafficLegendItem(
