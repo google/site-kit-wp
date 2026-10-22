@@ -159,8 +159,10 @@ export type TestAudience = {
  *
  * The `e2e-pdf-generation-state.php` must-use plugin applies the selection, so a
  * section that renders the configured metrics has a deterministic set of tiles.
+ * It also marks Key Metrics setup as complete, so the dashboard shows them.
  *
  * @since 1.186.0
+ * @since n.e.x.t Marks Key Metrics setup as complete.
  *
  * @param {string[]} widgetSlugs The key metric widget slugs to select.
  * @return {TestDetailsAnnotation} The annotation to use for the test.
@@ -191,6 +193,35 @@ export function withAudiences(
 }
 
 /**
+ * Marks modules and Analytics custom dimensions as having data for the test, so
+ * widgets request their reports instead of showing the gathering data state.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object}   dataAvailable                  The data to mark as available.
+ * @param {string[]} dataAvailable.modules          Module slugs, e.g. `analytics-4`.
+ * @param {string[]} dataAvailable.customDimensions Analytics custom dimension slugs, e.g. `googlesitekit_post_date`.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withDataAvailable( {
+	modules = [],
+	customDimensions = [],
+}: {
+	modules?: string[];
+	customDimensions?: string[];
+} ): TestDetailsAnnotation {
+	return {
+		type: '_wp:data-available',
+		description: [
+			...modules,
+			...customDimensions.map(
+				( customDimension ) => `custom_dimension_${ customDimension }`
+			),
+		].join( ANNOTATION_SEPARATOR ),
+	};
+}
+
+/**
  * Sets the fixtures to use for the test.
  *
  * @since 1.177.0
@@ -202,6 +233,24 @@ export function withFixtures( fixtures: string ): TestDetailsAnnotation {
 	return {
 		type: '_wp:fixtures',
 		description: fixtures,
+	};
+}
+
+/**
+ * Sets the Site Kit reference date for the test, in place of the default
+ * `2026-01-01`.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} referenceDate The reference date, as `YYYY-MM-DD`.
+ * @return {TestDetailsAnnotation} The annotation to use for the test.
+ */
+export function withReferenceDate(
+	referenceDate: string
+): TestDetailsAnnotation {
+	return {
+		type: '_wp:reference-date',
+		description: referenceDate,
 	};
 }
 

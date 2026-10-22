@@ -48,7 +48,7 @@ This infrastructure enables fast, fully isolated, repeatable E2E tests without r
 -   **Annotation-driven configuration** — tests declare their requirements (plugins, user, feature flags, fixtures) as Playwright annotations, keeping setup out of test bodies.
 -   **Google API mocking** — a local fixtures service intercepts all Google API calls and returns pre-recorded responses.
 -   **Email capture** — a Mailpit SMTP server captures all outgoing emails for assertion in tests.
--   **Fixed reference date** — a must-use plugin fixes the WordPress reference date to `2026-01-01` for deterministic time-based tests.
+-   **Fixed reference date** — a must-use plugin fixes the WordPress reference date to `2026-01-01` for deterministic time-based tests, and a test can set another with `withReferenceDate()`.
 
 ---
 
@@ -80,12 +80,13 @@ tests/playwright/
 │       ├── db.php                      # DB drop-in: routes connections and logs PHP errors
 │       ├── mu-plugins/
 │       │   ├── e2e-authenticate-admin.php  # Authenticates user via cookie, applies dismissed items
+│       │   ├── e2e-data-available.php      # Marks modules and custom dimensions as having data via cookie
 │       │   ├── e2e-feature-flags.php       # Enables feature flags via cookie
 │       │   ├── e2e-fixtures.php            # Disables SSL verification, forwards fixture header
 │       │   ├── e2e-module-activation.php   # Connects modules (and applies settings) via cookie
 │       │   ├── e2e-module-sharing.php      # Forces dashboard-sharing settings via cookie
 │       │   ├── e2e-pdf-generation-state.php # Applies the Key Metrics/audience state a PDF export test declares via withKeyMetrics()/withAudiences()
-│       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01
+│       │   └── e2e-reference-date.php      # Fixes reference date to 2026-01-01, or the date set via cookie
 │       └── plugins/                    # Test helper plugins (auto-mounted)
 │           ├── email-reporting.php     # REST endpoint to trigger email reporting cron
 │           ├── gcp-credentials.php     # Mock GCP OAuth credentials
@@ -103,7 +104,7 @@ tests/playwright/
 │   ├── database.ts                     # Per-test DB create/drop and error log retrieval
 │   ├── cookies.ts                      # Test routing cookies
 │   ├── plugins.ts                      # Plugin activation via DB
-│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures, withConnectedModules, withSharedModules)
+│   ├── options.ts                      # Annotation helpers (withPlugins, asUser, withFeatureFlags, withFixtures, withConnectedModules, withSharedModules, withReferenceDate, withDataAvailable)
 │   ├── mailpit.ts                      # Mailpit email client
 │   └── error-log-ignore-list.ts        # Known PHP errors to ignore per WP version
 ├── docker-compose.yml
@@ -223,6 +224,22 @@ See [Email Assertions](#email-assertions) for usage examples.
 ### Reference Date
 
 `docker/wordpress/mu-plugins/e2e-reference-date.php` fixes the WordPress reference date to `2026-01-01 00:00:00`. This ensures that any date-dependent logic in Site Kit (e.g., date range calculations, report periods) behaves deterministically regardless of when the tests are run.
+
+Use the `withReferenceDate()` annotation to set a different reference date for a test. It sets the `_wp_test_reference_date` cookie, which the plugin reads. Combine it with Playwright's `timezoneId` option to test dates in a given browser timezone:
+
+```typescript
+import { withReferenceDate } from '../wordpress';
+
+test.describe( 'after the clocks move forward', () => {
+	test.use( { timezoneId: 'America/New_York' } );
+
+	test(
+		'test on a given date',
+		{ annotation: withReferenceDate( '2026-03-09' ) },
+		async ( { wp } ) => { ... }
+	);
+} );
+```
 
 ### PHP Error Logging
 
@@ -451,6 +468,23 @@ withConnectedModules( {
 
 Bare slugs and `{ slug, settings }` objects can be mixed in one call.
 
+**`withDataAvailable({ modules, customDimensions })`** — Mark modules and Analytics custom dimensions as having data, so widgets request their reports instead of showing the gathering data state. Handled by the `e2e-data-available.php` must-use plugin:
+
+```typescript
+import { withDataAvailable } from '../wordpress';
+
+test(
+    'widget that needs a custom dimension',
+    {
+        annotation: withDataAvailable( {
+            modules: [ 'analytics-4' ],
+            customDimensions: [ 'googlesitekit_post_date' ],
+        } ),
+    },
+    async ( { wp } ) => { ... }
+);
+```
+
 **`withSharedModules(sharing)`** — Force dashboard-sharing settings so a shared module's sections appear on a view-only dashboard. Handled by the `e2e-module-sharing.php` must-use plugin:
 
 ```typescript
@@ -624,7 +658,10 @@ Hooks into `googlesitekit_is_feature_enabled` at priority 999 to force the featu
 Disables SSL certificate verification so WordPress can reach the local fixtures service (which uses a self-signed certificate). Forwards the `_wp_test_fixtures` cookie value as an `X-WP-Test-Fixtures` HTTP header on all outbound requests.
 
 **`e2e-reference-date.php`**
-Fixes the Site Kit reference date to `2026-01-01 00:00:00` so that date-dependent calculations in reports are deterministic across test runs.
+Fixes the Site Kit reference date to `2026-01-01 00:00:00` so that date-dependent calculations in reports are deterministic across test runs. A valid `YYYY-MM-DD` date in the `_wp_test_reference_date` cookie replaces it. Use the `withReferenceDate()` annotation to set the cookie.
+
+**`e2e-data-available.php`**
+Reads the `_wp_test_data_available` cookie (a comma-separated list) and filters the matching `googlesitekit_{entry}_data_available` transients to `true`, so modules and Analytics custom dimensions read as having data. Use the `withDataAvailable()` annotation to configure this.
 
 **`e2e-module-activation.php`**
 Hooks into `googlesitekit_is_module_connected` at priority 999. Reads the `_wp_test_connected_modules` cookie (a JSON array of `{ slug, settings }` entries) and forces those modules to return `true` for the connection check. For entries with settings the plugin also activates the module and merges its settings, so the module reads as connected on the client (which relies on the REST modules list, not the connection filter). Use the `withConnectedModules()` annotation to configure this.

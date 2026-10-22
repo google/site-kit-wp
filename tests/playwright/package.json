@@ -18,6 +18,7 @@
 	},
 	"devDependencies": {
 		"@types/node": "^24.0.0",
-		"pdf-to-png-converter": "^4.1.1"
+		"pdf-to-png-converter": "^4.1.1",
+		"pdfjs-dist": "~6.2.108"
 	}
 }
