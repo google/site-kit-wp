@@ -24,7 +24,7 @@ import { FC, useMemo } from 'react';
 /**
  * WordPress dependencies
  */
-import { _n, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,10 +38,8 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
-import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
 import { getTrafficChartData } from './getTrafficChartData';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
-import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 
 export interface TrafficChartProps {
@@ -122,6 +120,18 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			? propertyCreateDate
 			: undefined;
 
+	const dateMarkers = markerDate
+		? [
+				{
+					date: markerDate,
+					text: __(
+						'Google Analytics property created',
+						'google-site-kit'
+					),
+				},
+		  ]
+		: undefined;
+
 	const dayFormatter = useMemo(
 		() =>
 			new Intl.DateTimeFormat( getLocale(), {
@@ -137,7 +147,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
-				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
+				dateMarkers={ dateMarkers }
 				gatheringData={ gatheringData }
 				height="256px"
 				loaded={ loaded }
@@ -168,7 +178,16 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 					</VisuallyHidden>
 				) ) }
 			{ loaded && markerDate && (
-				<PropertyCreatedScreenReaderText date={ markerDate } />
+				<VisuallyHidden>
+					{ sprintf(
+						/* translators: %s: the day the property was created, such as "January 15, 2025" */
+						__(
+							'Google Analytics property created on %s.',
+							'google-site-kit'
+						),
+						dayFormatter.format( stringToDate( markerDate ) )
+					) }
+				</VisuallyHidden>
 			) }
 		</div>
 	);
