@@ -10,13 +10,13 @@
 ***Author(s):** [Eugene Manuilov](mailto:eugene.manuilov@fueled.com)*  
 ***PRD:** [Performance intelligence: site benchmarking & forecasts in Site Kit \[PRD\]](https://docs.google.com/document/d/1zwM9ogRlrFO__rLFVYT6SE1qqsjIwzfFUELBiLnYHUQ/edit?pli=1&tab=t.0)*  
 ***Figma Designs:** [Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=552-10409&m=dev)*  
-***Last Major Revision:** Aug 18, 2026* 
+***Last Major Revision:** Oct 22, 2026* 
 
 # **Context**
 
 ## **Objective**
 
-This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard: the site's daily traffic across the selected period in one chart, drawn against the range the site's own history says to expect on each day and continued a week past the end of the period, and a section naming the factors that moved traffic in the selected period — together with the server-side datapoint that gathers and derives everything the tab draws.
+This epic adds a second tab, **Typical Traffic**, to the `analyticsTrafficOverview` widget on the main dashboard, for every site whatever its history: the site's daily traffic across the selected period in one chart, drawn against the range the site's own history says to expect on each day, and a section naming the factors that moved traffic in the selected period — together with the server-side datapoint that gathers and derives everything the tab draws.
 
 ## **Background**
 
@@ -32,26 +32,26 @@ None of the three is something the browser should be computing. Up to fifteen mo
 
 We will add a second tab to the existing `analyticsTrafficOverview` widget, behind a new `typicalTraffic` feature flag. The tab renders two sections:
 
-1. **Typical traffic chart** — daily visits across the selected date range, the same days the Overview chart plots, with the expected range under the line as a band fitted on the site's own trailing year, so every day reads against what the site's own history expected of it. The band continues seven days past the end of the period, beyond a divider, so the days just ahead have a shape rather than being blank.
-2. **Key factors** — what moved traffic in the selected period: up to three cards, each naming one driver — a channel, a landing page, a search keyword, a referring site or a campaign — with its share of the site's movement and the two attributes that best explain it.
+1. **Typical traffic chart** — daily visits across the selected date range, the same days the Overview chart plots, with the expected range under the line as a band fitted on up to a year of the site's own history, so every day reads against what that history expected of it.
+2. **Key factors** — what moved traffic in the selected period: up to three cards, each naming one driver — a channel, a landing page, a search keyword, a referring site or a campaign — with its share of the site's movement and the two attributes that best explain it, shown once the period before the selected one has recorded traffic on every day.
 
 Behind it, five new pieces:
 
-1. **A datapoint that gathers and derives.** `GET:benchmarking-data` on `Analytics_4` runs the GA4 reports, collects Search Console rows through a filter, derives the daily series, its expected range, the week ahead and the key factor cards, and returns everything the tab draws.  
-2. **An expected-range model.** `Expected_Baseline`, a PHP class, fits each plotted day on the history up to and including it and returns that day's band, and carries the fit at `endDate` seven days forward — see [Expected range](#expected-range).  
+1. **A datapoint that gathers and derives.** `GET:benchmarking-data` on `Analytics_4` runs the GA4 reports, collects Search Console rows through a filter, derives the daily series, its expected range, the first day with recorded traffic and the key factor cards, and returns everything the tab draws.  
+2. **An expected-range model.** `Expected_Baseline`, a PHP class, fits each plotted day on the history up to and including it and returns that day's band — see [Expected range](#expected-range).  
 3. **A filter Search Console answers.** `googlesitekit_benchmarking_contextual_data` is where the search-keyword rows come from, so no module holds a reference to another.  
 4. **A flat wire format.** One positional encoding, written in PHP and read in JS, which is what keeps a response of up to ninety daily rows, their bounds and the key factor cards compact in browser storage.  
 5. **A datastore slice.** `modules/analytics-4` gains a `benchmarking` slice that resolves the response and decodes it.
 
 **Nothing about this feature is cached on the server.** Search Console and Analytics report data is not stored server-side, which rules out a transient in front of the datapoint. The response is cached by the API layer in browser storage under the two dates it depends on, like any other `GET`.
 
-**The expected range is derived in PHP, from the daily series the datapoint already gathers, and so is its week ahead.** Both arrive in the same response as the line they are drawn beside and cost no request of their own, and the browser draws bounds it is handed rather than computing any — see [Expected range](#expected-range). **Nothing about either is generated**: the week ahead is the fit at `endDate` carried forward along the site's own trend, which is arithmetic, not a model call.
+**The expected range is derived in PHP, from the daily series the datapoint already gathers.** It arrives in the same response as the line it is drawn beside and costs no request of its own, and the browser draws bounds it is handed rather than computing any — see [Expected range](#expected-range). **Nothing about it is generated**: every bound is arithmetic over the site's own history, not a model call. **The chart stops at `endDate`**: it draws nothing for a day that has not happened.
 
 **The expected range says what is normal for the site's current level, not for the time of year.** Each day's band is centered on the site's level over the four weeks ending on it and shaped by the weekday pattern of the year behind it, so a seasonal swing moves the band with it rather than being anticipated by it, and a January decline the site has every year reads against the band the same way as one it has never had. Telling the two apart takes a comparison with the same weeks a year earlier, which only the [generated insight](./traffic-insights-design-doc.md#what-the-service-is-told) makes, in words rather than on the chart — see [Expected range](#expected-range).
 
 **Every count in the tab is a visit — a GA4 session — except a search keyword's clicks.** The line, the period totals, the expected range and the key factor cards are all in sessions, because sessions add up across the channels, pages, sources and campaigns the cards name, and a line in the same unit is a line the cards are parts of. The Traffic Overview tab beside it counts visitors, so the two tabs plot different numbers for the same day — see [Report gathering](#report-gathering).
 
-**The tab is gated on thirteen months of property history and the Traffic Overview tab is not.** A property younger than that cannot put a year of its own history behind the days the chart plots, and the gate is on the tab rather than on the widget so that a young site keeps the traffic card it already has — see [Gating and visibility](#gating-and-visibility).
+**The tab shows for every site, whatever its history.** What it draws follows from how much traffic the site has recorded: the band needs four weeks of it up to a day, and the key factor cards need recorded traffic on every day of the period before the selected one. Until then a notice says what is still to come, and a site with too little for either gets a message in place of the chart — see [Gating and visibility](#gating-and-visibility) and [Panel states](#panel-states).
 
 **The tab is main-dashboard only.** The analysis is a whole-site one, and a year of one URL's traffic is not the question the entity dashboard asks; `GET:benchmarking-data` has no URL parameter at all.
 
@@ -72,7 +72,7 @@ Six reuses carry weight in the design, because it depends on a particular proper
 * **`GET:batch-report` on `Analytics_4` runs up to five report requests per GA4 call.** The five reports every response needs therefore cost one round trip, and the reports behind the selected cards' attributes at most two more, chunked the way `Email_Reporting_Data_Requests::collect_batch_reports()` chunks them.  
 * **`POST:searchanalytics-batch` on `Search_Console`** answers the search-keyword rows and their page and device breakdowns in one call, which is what the [contextual-data filter](#cross-module-contextual-data) hands back, and it answers them on a shared request too.  
 * **The API layer caches `GET` responses in browser storage, keyed on the datapoint and an MD5 of its query parameters.** That is what holds the response, under the two dates it depends on, with no cache of the slice's own.  
-* **`GoogleChart` passes Google Charts interval roles through untouched.** `getFilteredChartData()` returns the table as given when no `selectedStats` is passed, and `getChartOptions()` does not touch `intervals`, so the expected range and its week ahead are interval columns and an option rather than a change to the component — see [Typical traffic chart](#typical-traffic-chart).
+* **`GoogleChart` passes Google Charts interval roles through untouched.** `getFilteredChartData()` returns the table as given when no `selectedStats` is passed, and `getChartOptions()` does not touch `intervals`, so the expected range is two interval columns and an option rather than a change to the component — see [Typical traffic chart](#typical-traffic-chart).
 
 The new infrastructure is the gathering, the model and the transport in front of them: one `Analytics_4` datapoint, the [expected-range model](#expected-range), the filter Search Console answers, the [wire format](#wire-format) both languages read, and the `benchmarking` datastore slice behind them. The external dependencies are the GA4 Data API and the Search Console API, reached the way they always are.
 
@@ -84,7 +84,7 @@ The epic is built behind a new `typicalTraffic` feature flag.
 
 The tab descriptor is added to the widget shell's tab list under the flag check, so with the flag off the widget carries the tabs it carries today and nothing about the Traffic section changes. The datapoint is added to `Analytics_4::get_datapoint_definitions()` only when the flag is enabled, and Search Console adds its [contextual-data callback](#cross-module-contextual-data) under the same check — with the flag off neither module carries any benchmarking code into a request.
 
-Two additions sit outside the flag: `sessionSource`, `landingPage` and `sessionCampaignName` among the [shareable dimensions](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility). Both are entries in allow-lists the rest of the plugin reads on every request, and making what a shared report may query depend on a feature flag is a worse property than the widening itself. Neither is reachable by the tab with the flag off.
+Two additions sit outside the flag: `sessionSource`, `landingPage` and `sessionCampaignName` among the [shareable dimensions](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#typical-traffic-chart). Both are entries in allow-lists the rest of the plugin reads on every request, and making what a shared report may query depend on a feature flag is a worse property than the widening itself. Neither is reachable by the tab with the flag off.
 
 ### **Gating and visibility** {#gating-and-visibility}
 
@@ -92,19 +92,17 @@ The tab is present when all of:
 
 1. The `typicalTraffic` flag is enabled — implicit, since the descriptor is added under the check.  
 2. The view context is the main dashboard, authenticated or view-only. The entity dashboard renders the widget with the Traffic Overview tab alone.  
-3. The property has enough history: `getPropertyCreateTime()` on `modules/analytics-4` is at least 13 months back.
+3. The Analytics module is connected, since everything the tab draws comes from its reports.
 
-**Condition 3 gates the tab and not the widget, and that distinction is the load-bearing one.** The widget is the site's traffic card: a property connected last month must keep its visitor total and its daily chart. Putting a history requirement on the widget's own `isActive` would take the whole card away from exactly the sites least able to spare it. So a young property gets the widget with one tab, and the tab appears — with no dismissal, notification or announcement — on the day the property is old enough to support it.
+**Nothing about the site's history hides the tab.** A property connected yesterday gets the tab beside its Traffic Overview tab, and how much recorded traffic the site has decides what the panel draws rather than whether the tab is there: a notice where a part is still waiting, and a message in place of the chart where nothing can be drawn yet — see [Panel states](#panel-states).
 
-**Condition 3 holds in the view-only dashboard, and nothing is relaxed for it.** It needs `propertyCreateTime` added to `Analytics_4\Settings::get_view_only_keys()` — without it a view-only user resolves `getPropertyCreateTime()` to nothing and the condition can never pass, and with it the history gate stays one condition evaluated the same way for everyone.
+**History is counted from the first day the site recorded traffic, not from the property's creation.** The band and the cards both read the recorded daily series, and a property created long before its site was tagged has months of zeros that say nothing about the site. The datapoint finds that day in the daily report it already runs and returns it as `firstTrafficDate`, so every state is decided from the one response — see [Response assembly](#response-assembly).
 
-**That widening has one visible side effect outside this tab, and it is a welcome one.** The Traffic Overview chart marks the property's creation date from the same selector and currently draws nothing for a view-only user, because the value does not reach them. Once the key is shared, the marker appears there too — the same explanation of the same cliff, for a reader who could previously only see the cliff.
+The band under each plotted day reads up to the 365 days ending on it, so the [daily report](#report-gathering) reaches 364 days before the selected range's `startDate` — 392 days in all on a 28-day range, and 454 on a 90-day range. **The band is fitted on whatever recorded traffic the site has rather than waiting for a full year.** A day needs 28 days of it, up to and including the day, to have a band at all, so a day less than a year into the site's recorded traffic is fitted on less than a year, and a day less than four weeks into it has no band. **That gap does not hide the line**: a day without a band is a day the model has nothing to say about, not a day the chart leaves out.
 
-The gate and the [expected range](#expected-range) do not measure the same history. The gate asks for 13 months from the property's creation; the band under each plotted day reads up to the 365 days ending on it, so the [daily report](#report-gathering) reaches 364 days before the selected range's `startDate` — 392 days in all on a 28-day range, and 454 on a 90-day range. Thirteen months is a full year behind every day of a 28-day range. On a 90-day range, a property that has only just passed the gate has a report whose earliest weeks predate the property, so its earliest plotted days are fitted on less than a year. **The band is fitted on whatever history the property has rather than waiting for a full year**; what the gate buys is that every plotted day has most of a year behind it.
+**The key factor cards need recorded traffic on every day of the previous period.** A card compares the selected period with the one before it, so the cards wait until the site's first recorded day is no later than that period's first day — see [Key factor scoring](#key-factor-scoring).
 
-The band's history has one more boundary: the first day the series records any traffic. A day needs 28 days of that history behind it to have a band, so on a property tagged long after it was created the band starts four weeks after the tagging, and a selected range that begins sooner than that has no band under its first days. **That gap does not hide the line**: a day without a band is a day the model has nothing to say about, not a day the chart leaves out. A property whose first recorded traffic is less than four weeks old has no band under `endDate` either, and therefore no [week ahead](#the-week-ahead).
-
-Where the property is old enough but the traffic is thin, the tab still renders. Whether it should — and what "too thin to call anything typical" means — is an [open question](#what-is-the-minimum-history-and-volume-for-the-typical-traffic-tab?).
+Where the traffic is thin, the tab still renders. Whether it should say something different — and what "too thin to call anything typical" means — is an [open question](#is-there-a-minimum-traffic-volume-for-the-typical-traffic-tab?).
 
 ### **Widget shell changes**
 
@@ -128,8 +126,8 @@ The response decodes into the fields the sections render:
 | :---- | :---- | :---- |
 | `visits` | `{ current, previous }`: the sessions of the selected period and of the period before it | no section; the period totals the [generated insight's payload](./traffic-insights-design-doc.md#payload-assembly) sends |
 | `dailyTraffic` | one row per day of the selected range: `{ date, visits, expectedMin, expectedMax }`, `visits` the day's sessions and the bounds `null` on a day the [expected range](#expected-range) cannot fit | `TypicalTrafficChart` |
-| `forecast` | seven rows past `endDate`: `{ date, expectedMin, expectedMax }`; omitted without a fit at `endDate` | `TypicalTrafficChart`'s [week ahead](#the-week-ahead) |
-| `keyFactors` | up to three cards, ranked: `{ kind, label, current, previous, sharePct, attributes }`, each attribute `{ kind, label, current, previous, sharePct }`, at most two | `KeyFactors` |
+| `firstTrafficDate` | `YYYY-MM-DD`: the first day of the daily report with recorded traffic, or `null` when the report records none | no section; the panel's [states](#panel-states) and their notice |
+| `keyFactors` | up to three cards, ranked: `{ kind, label, current, previous, sharePct, attributes }`, each attribute `{ kind, label, current, previous, sharePct }`, at most two; empty when no candidate survives, and when the previous period starts before `firstTrafficDate` | `KeyFactors` |
 
 Both the response's shape and its field names are the plugin's own: camelCase, flat, and unrelated to anything the reports return. What crosses the wire is the positional [wire format](#wire-format); the table above is what the slice's decoder produces from it, and it is the shape every section component is written against.
 
@@ -137,40 +135,26 @@ Every section component takes rows and numbers as props and touches no store, wh
 
 ### **Typical traffic chart** {#typical-traffic-chart}
 
-`TypicalTrafficChart` renders `GoogleChart` with `chartType="LineChart"` over a four-column table — date, daily visits, and the expected range's lower and upper bounds — and three more columns for the [week ahead](#the-week-ahead), built by a pure function in `traffic-overview/charts/`, with a header above the plot and a legend below it, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them.
+`TypicalTrafficChart` renders `GoogleChart` with `chartType="LineChart"` over a four-column table — date, daily visits, and the expected range's lower and upper bounds — built by a pure function in `traffic-overview/charts/`, with a header above the plot and a legend below it, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them.
 
 **The line plots the site's sessions, and its hover names them as visits.** Its column is labelled `Visits`, where the Overview chart's is labelled `Users`: the two charts plot different metrics over the same days, so their values differ — see [Report gathering](#report-gathering). The label is what the chart's tooltip prints beside a day's value.
 
-**The window is the selected date range, as on the Overview chart.** The chart plots every day from the selected range's `startDate` to its `endDate`, one point per day — 28 days on a 28-day range and 90 on a 90-day range — and the week after it. The history the tab's question needs is in the band rather than in the line: each day's [expected range](#expected-range) is fitted on up to the 365 days ending on it, centered on the site's current level and shaped by the weekday pattern of the year behind it, so each day reads against what the site's recent traffic makes normal for it without that history being plotted. What the band does not carry is the season: no fit compares a day with the same weeks a year earlier, so the chart says whether a day is normal for the site's current level, not whether the period is normal for the time of year. The unit is the one thing about the line a reader has to be told, because it differs from the Overview chart beside it, and the support page behind the chart's info tooltip covers it alongside the band — see [Documentation in-product](#documentation-in-product).
+**The window is the selected date range, as on the Overview chart.** The chart plots every day from the selected range's `startDate` to its `endDate`, one point per day — 28 days on a 28-day range and 90 on a 90-day range — and nothing after `endDate`, so it never draws a day that has not happened. The history the tab's question needs is in the band rather than in the line: each day's [expected range](#expected-range) is fitted on up to the 365 days ending on it, centered on the site's current level and shaped by the weekday pattern of the year behind it, so each day reads against what the site's recent traffic makes normal for it without that history being plotted. What the band does not carry is the season: no fit compares a day with the same weeks a year earlier, so the chart says whether a day is normal for the site's current level, not whether the period is normal for the time of year. The unit is the one thing about the line a reader has to be told, because it differs from the Overview chart beside it, and the support page behind the chart's info tooltip covers it alongside the band — see [Documentation in-product](#documentation-in-product).
 
 Two consequences follow from sharing the Overview chart's window:
 
-* **The x axis is the Overview chart's.** One tick per plotted day from the second on, formatted `MMM d` over transparent gridlines, which Google Charts thins to the labels that fit, as it does on the Overview chart. The [week ahead](#the-week-ahead) extends the axis seven days past `endDate`, with no labels of its own.  
-* **The value axis is fitted to the line and both bands.** Its maximum clears the higher of the largest daily value and the largest upper bound, the week ahead's included, since on a day the site underperforms the band sits well above the line, and in the week ahead it climbs further wherever the site's trend is rising; an axis fitted to the line alone clips it.  
+* **The x axis is the Overview chart's.** One tick per plotted day from the second on, formatted `MMM d` over transparent gridlines, which Google Charts thins to the labels that fit, as it does on the Overview chart, and the axis ends on `endDate`.  
+* **The value axis is fitted to the line and the band.** Its maximum clears the higher of the largest daily value and the largest upper bound, since on a day the site underperforms the band sits well above the line; an axis fitted to the line alone clips it.  
 
-**The expected range runs under the whole line.** The two bound columns are declared with `role: 'interval'` and follow the visits column they annotate, and the `intervals` option draws them as a filled area — `style: 'area'`, with `lineWidth: 0` and `pointSize: 0` so the band has no edge lines or points of its own — the way the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it. A day the [model](#expected-range) cannot fit carries `null` in both columns, and `interpolateNulls: false` is what keeps the band from being drawn straight across such days. The band is a tint of the line's violet. Every bound comes from the response; the chart computes none of its own.
+**The expected range runs under the line wherever a day has one.** The two bound columns are declared with `role: 'interval'` and follow the visits column they annotate, and the `intervals` option draws them as a filled area — `style: 'area'`, with `lineWidth: 0` and `pointSize: 0` so the band has no edge lines or points of its own — the way the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it. A day the [model](#expected-range) cannot fit carries `null` in both columns, and `interpolateNulls: false` is what keeps the band from being drawn straight across such days, so on a site with only weeks of recorded traffic the band starts partway into the range rather than at its left edge. The band is a tint of the line's violet. Every bound comes from the response; the chart computes none of its own.
 
-**The chart carries no property-creation marker.** The Overview chart marks the day the property was created when that day falls inside the selected range; here it never can, because the [history gate](#gating-and-visibility) puts the property's creation at least thirteen months back and the range is at most 90 days.
+**The chart marks the property's creation date, as the Overview chart does.** Where the day the property was created falls inside the selected range, the chart passes it to `GoogleChart` in `dateMarkers`, labelled `Google Analytics property created`, with the screen-reader sentence `TrafficChart` renders beside its own marker, so the days before the property existed read as such on both tabs. For a view-only reader that needs `propertyCreateTime` among `Analytics_4\Settings::get_view_only_keys()`, which this epic adds, and which lets the Overview chart draw its marker for a view-only reader too, where before it drew nothing.
 
-`gatheringData` is not passed. `getChartOptions()` clamps `hAxis.viewWindow` to the *selected date range* in that state, which would crop the [week ahead](#the-week-ahead) off the right edge of the plot; the panel's own [loading and insufficient-data states](#panel-states) cover what the flag would.
+`gatheringData` is not passed: a site with too little recorded traffic gets one of the panel's [zero states](#panel-states) in place of the chart, so the chart never renders in the state the flag describes.
 
 **The chart's support link lives inside its info tooltip.** `TypicalTrafficChartHeader`, a new component in `traffic-overview/charts/`, renders the chart's [title](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32707&m=dev), `Your traffic compared to your expected range`, with an `InfoTooltip` beside it. The [tooltip](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-35810&m=dev) reads `Site Kit analyzes the last 12 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. Learn more`, and its `Learn more` link opens the support page described in [Documentation in-product](#documentation-in-product). Until that page exists, the link points at `#`.
 
 **The legend is the Overview chart's, with one item more.** `ChartLegend` renders two items below the plot. The first names the line, in the line's color, with the Overview chart's label for the selected range's length — `Last 28 days traffic` on a 28-day range — so both tabs name their line with the same strings, which name traffic rather than a unit and so fit a line of visitors on one tab and a line of visits on the other. The second is `Expected range`, beside a swatch in the band's tint. `ChartLegend` draws every swatch as a short bar today, which is right for a line and wrong for an area, so an item gains a swatch shape and the band's is a filled block. That is the one change this epic makes to a component the Overview chart renders, and it leaves the Overview chart's legend exactly as it is. Google Charts' own legend stays off; it cannot show a band in any case, since an interval column is not a series. The legend row also carries the chart's [feedback control](#feedback) at its right end. The chart's design also shows published-post markers with a legend item of their own; they are built separately — see [Future Work](#published-posts-on-the-chart).
-
-#### *The week ahead* {#the-week-ahead}
-
-The expected range continues seven days past `endDate`, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws it: band only, with no line through it, beyond a one-pixel divider on `endDate`. The [charts PoC](https://storage.googleapis.com/site-kit-github-artifacts/temp/performance-benchmarking-charts.html) is the reference implementation, drawn against the same chart version `GoogleChart` pins; the columns are in the [appendix](#chart-table-and-options).
-
-**The week ahead is the fit at `endDate` carried forward, and nothing else.** Each forward day's band is the corridor fitted on `endDate`, moved along the fit's own monthly trend and spread onto the day with its weekday's factor — the arithmetic is under [The seven days ahead](#the-seven-days-ahead). It carries no projected line, as the design draws it: what the model can say about next Tuesday is the range a normal Tuesday would fall in if the site keeps its current course, and a line through the middle of that range would read as a prediction the band does not make.
-
-**The horizon is seven days at every range**, the same week whether the reader has 7 or 90 days selected, because it describes the site's current course rather than the selected period. `forecast` carries the seven rows, and the axis extends seven days past `endDate` to hold them. **`forecast` is its own array rather than seven more rows on `dailyTraffic`**: every other consumer of `dailyTraffic` reads days that happened — the line, the period totals, the band — and a forward row carrying no `visits` value would have to be filtered out by each of them. Keeping the two apart is also what lets the horizon stay fixed while the window behind it changes.
-
-**The band runs on without a gap.** The forward band is an interval pair of its own, because interval columns bind to the series they follow, and the row for `endDate` carries that pair as well, set to the measured band's bounds on that day. The two bands therefore meet where the measured one ends, with neither a day's gap nor a step between them — which the arithmetic makes natural, since the measured band on `endDate` is the same fit with no distance travelled. The forward band takes the measured band's tint, because it is the same range.
-
-**The divider marks `endDate`**, a one-pixel overlay drawn as a React child of `GoogleChart` and positioned in its `ready` handler from `getChartLayoutInterface()` — `getChartAreaBoundingBox()` for its top and height, and `getXLocation( endDate )` for its position — the way `DateMarker` already positions its line; it re-positions on redraw because `ready` fires again. It paints *behind* the plotted line, which needs a negative `z-index` inside a stacking context, so the chart's wrapper takes a modifier class giving it `z-index: 0` and the chart declares `backgroundColor: 'transparent'`. It is what tells the reader where the line stops because the days after it have not happened. The week ahead adds nothing to hover over, so the chart's tooltip is unchanged.
-
-**Without a fit at `endDate` there is no week ahead.** A property whose first recorded traffic is less than four weeks old has no band under its last day either, so the response carries no `forecast`, the table stops at the measured columns, and the divider is not drawn.
 
 ### **Key factors** {#key-factors}
 
@@ -214,7 +198,7 @@ A card shows at most two of its candidates: the two whose leading value moved mo
 
 New components live in `traffic-overview/factors/`, each taking its values as props:
 
-* `KeyFactors` — the heading and one `KeyFactorCard` per entry of `keyFactors`. With no entries it renders nothing, heading included.  
+* `KeyFactors` — the heading and one `KeyFactorCard` per entry of `keyFactors`. With no entries it renders nothing, heading included; cards withheld for want of history are the [panel's notice](#panel-states) to explain, not the section's.  
 * `KeyFactorCard` — the driver kind's title, the driver's label, its change in its own unit, a `KeyFactorShareBadge`, and one `KeyFactorAttribute` per attribute, with the card's [feedback control](#feedback) in its top-right corner.  
 * `KeyFactorAttribute` — the attribute kind's title, its value, its change and a small `KeyFactorShareBadge`.  
 * `KeyFactorShareBadge` — `9.8% of traffic growth` or `71.4% of traffic drop` on a card, `4.3% of growth` on an attribute, its direction taken from the sign of the row's own change. `ChangeBadge` prints a percentage change between two values, which is a different number with different copy.  
@@ -226,7 +210,7 @@ The panel passes the site's reference URL down with `keyFactors`, so a path can 
 
 A landing page — as a `CONTENT` card's label or as a `Landing page` attribute — renders as a link to that path on the site, opening in a new tab, as `DetailsPermaLinks` links a page's path. Device and visitor-type values are translated by the plugin: GA4 reports them as fixed tokens, so `mobile` renders as `Mobile` and `new` as `New visitors`, and a token the plugin does not know renders as GA4 gave it. Channel names, paths, hostnames, campaign names and queries render exactly as the response gives them.
 
-**The selection, the order and every share are derived server-side, not in the browser.** The datapoint scores every candidate driver, keeps three, and picks each card's attributes — see [Key factor scoring](#key-factor-scoring). Ranking in the browser would mean every consumer of these rows re-deriving the same arithmetic over the same numbers, and it would put the decision about what counts as movement on the side of the wire with the weakest guarantees about how a number is printed.
+**The selection, the order and every share are derived server-side, not in the browser.** The datapoint scores every candidate driver, keeps three, and picks each card's attributes — or withholds every card while the previous period predates the site's recorded traffic — see [Key factor scoring](#key-factor-scoring). Ranking in the browser would mean every consumer of these rows re-deriving the same arithmetic over the same numbers, and it would put the decision about what counts as movement on the side of the wire with the weakest guarantees about how a number is printed.
 
 Each card's copy is the plugin's own: translated patterns filled with `sprintf` over values formatted through `numFmt` — `%s visits`, `%s of traffic growth` — with the plural form chosen by `_n()` on the change's absolute value.
 
@@ -258,12 +242,12 @@ The insight blocks are rendered by the Traffic Insights epic, and they carry the
 
 `GET:benchmarking-data` is a `Shareable_Datapoint` implementing `Executable_Datapoint` under `includes/Modules/Analytics_4/Datapoints/`, taking the module instance, `Credentials` and `Context` through its `$definition` array.
 
-**Its only request parameters are `startDate` and `endDate`**, the two every report datapoint already takes. The plotted days, the year of history behind them, the comparison window, the reports, the expected range and its week ahead, and the key factor cards are all derived from them. **A range longer than 90 days is refused with a `400`**: 90 days is the longest range the date-range selector offers, and a range's length sets how many days are plotted and fitted.
+**Its only request parameters are `startDate` and `endDate`**, the two every report datapoint already takes. The plotted days, the year of history behind them, the comparison window, the reports, the expected range, and the key factor cards are all derived from them. **A range longer than 90 days is refused with a `400`**: 90 days is the longest range the date-range selector offers, and a range's length sets how many days are plotted and fitted.
 
 Unlike the module's other datapoints it is not a wrapper over one service call, so it does not use `create_request()`/`parse_response()` to shape a single Google API call. It returns a closure over three steps:
 
 1. **Gather.** One batched GA4 report call and one Search Console call through the filter, then at most two more GA4 calls for the selected cards' attributes — see [Report gathering](#report-gathering). A GA4 failure ends the request with the module's own `WP_Error`, which is what puts the tab in its error state. A Search Console failure costs the search-keyword candidates and attributes and nothing else.  
-2. **Derive.** The zero-filled daily series, its [expected range](#expected-range) and the week ahead, the period totals, and the key factor cards with their attributes — see [Response assembly](#response-assembly).  
+2. **Derive.** The zero-filled daily series, its [expected range](#expected-range), the first day with recorded traffic, the period totals, and the key factor cards with their attributes, withheld while the previous period starts before that day — see [Response assembly](#response-assembly).  
 3. **Encode.** The [wire format](#wire-format): the positional arrays the tab decodes.
 
 The datapoint implements `Permission_Aware_Datapoint`, and the check it declares is the dashboard-viewing capability rather than the authenticated-dashboard one, so a view-only user reaches it.
@@ -345,14 +329,15 @@ Every field is derived in PHP by [the data datapoint](#data-datapoint), from the
 | Response field | Derived from |
 | :---- | :---- |
 | `dailyTraffic` | the daily series' days from `startDate` to `endDate`, zero-filled, each with the bounds the [expected range](#expected-range) fits for it |
-| `forecast` | the fit at `endDate`, carried seven days forward — see [The seven days ahead](#the-seven-days-ahead) |
+| `firstTrafficDate` | the daily series' first day with recorded traffic — the day the [expected range's](#expected-range) history starts on |
 | `visits` | the same series, summed over the selected window and the one before it |
-| `keyFactors` | the [contextual data](#cross-module-contextual-data): every candidate driver scored, gated and ranked, the first three kept, and each given its attributes — see [Key factor scoring](#key-factor-scoring) |
+| `keyFactors` | the [contextual data](#cross-module-contextual-data): every candidate driver scored, gated and ranked, the first three kept, and each given its attributes, or none while the previous period starts before `firstTrafficDate` — see [Key factor scoring](#key-factor-scoring) |
 
-Six rules the assembly holds to:
+Seven rules the assembly holds to:
 
 * **GA4 returns no row for a day with no traffic**, so the series is keyed by date and the gaps are filled with zeros before anything is computed. A missing day must not shorten the window or shift every later row's position, which in a format whose [date axis is implicit](#wire-format) it otherwise would.  
 * **Each plotted day's bounds are fitted on the series as it stood on that day.** A fit reads the rows up to and including its own day, from the first day with recorded traffic, so no bound is computed from a day after the one it describes — see [Expected range](#expected-range).  
+* **The cards wait for a previous period with recorded traffic on every day.** The comparison window's first day is checked against `firstTrafficDate` before anything is scored, and every card is withheld while the window starts earlier — see [Key factor scoring](#key-factor-scoring). The panel tells withheld cards from an empty selection by the same comparison, so the response carries no flag for it.  
 * **A breakdown's two windows are paired by value, not by row index.** A value present in one window and absent from the other has no counterpart row, so the pairing is a lookup keyed on the row's dimension values and a missing counterpart is a count of zero.  
 * **A placeholder value is never a driver or an attribute.** GA4 reports an empty value, or a value in parentheses — `(not set)`, `(direct)`, `(organic)`, `(referral)` and the like — for a session that has no such value. Its sessions still count toward its channel and the site's totals; it is never a card and never a row.  
 * **The response carries at most three cards and two attributes on each**, so what a reader sees and what browser storage holds are bounded by the design rather than by a cap to tune.  
@@ -365,6 +350,8 @@ The assembly has to be deterministic — stable ordering, stable rounding, stabl
 Assembly lives in `includes/Modules/Analytics_4/Benchmarking/` — `Report_Options` for the windows and dimensions, `Expected_Baseline` for the expected range, a response builder over the report rows, and the [wire format](#wire-format)'s encoder — as classes with no dependency on the REST layer, so PHPUnit can drive them from fixed report fixtures.
 
 ### **Key factor scoring** {#key-factor-scoring}
+
+**No card is scored before the previous period has recorded traffic on every day.** Every card compares the selected period with the one before it, and a comparison window that starts before `firstTrafficDate` holds days the site was not yet measured: against them every driver reads as growth, and the largest channels become the cards. So when the comparison window's first day is earlier than `firstTrafficDate`, `keyFactors` is empty, nothing is scored and the [second pass](#report-gathering) does not run. A day on or after `firstTrafficDate` counts even without traffic, as it does for the [expected range](#expected-range). The cards therefore need at least twice the range's length in recorded traffic up to `endDate`: 14 days on a 7-day range, 28 on 14 days, 56 on 28 days and 180 on 90 days.
 
 The cards come out of one pass over every candidate driver in the [contextual data](#cross-module-contextual-data): each channel, summed across its devices and visitor types; each landing page, campaign and referring site, summed across the channels its visits came through; and each search keyword. Five steps, in order, decide which three become cards.
 
@@ -408,7 +395,7 @@ The expected range is the band of daily visits that the site's own recent histor
 
 **Each day is fitted on the history up to and including that day, and on nothing after it.** A spike on any day moves the band under that day and under the later days whose fits include it, never the band under an earlier day, so a band drawn under last March is what last March's history expected. A fit reads at most the 365 days ending on the day it describes and needs at least 28 of them; a day with fewer has no band. That is why the [daily report](#report-gathering) starts 364 days before `startDate`: the earliest plotted day needs the 364 days before it, so the report is 392 days long on a 28-day range and 454 on a 90-day range, and only the selected range's days cross the wire.
 
-**The history starts on the first day the series records any traffic.** The series is zero-filled, which is right for the line and wrong for a fit. On a property tagged long after it was created, most of the year behind a plotted day can be zeros for days the site was not yet measured, and a fit over them puts the upper quartile at zero and clamps every real day to 25 visits for months. Dropping the leading zeros before fitting removes that, and the same rule keeps out of the fits the days before a young property existed, which a 90-day range's report reaches for a property under fifteen months old. Zeros after the first recorded day stay: they are days without traffic.
+**The history starts on the first day the series records any traffic.** The series is zero-filled, which is right for the line and wrong for a fit. On a property tagged long after it was created, most of the year behind a plotted day can be zeros for days the site was not yet measured, and a fit over them puts the upper quartile at zero and clamps every real day to 25 visits for months. Dropping the leading zeros before fitting removes that, and the same rule keeps out of the fits the days before a young property existed, which the report reaches on any range for a property younger than the report. Zeros after the first recorded day stay: they are days without traffic. That first recorded day is the one the response carries as `firstTrafficDate`, and the one the [panel's states](#panel-states) and the cards' [previous-period rule](#key-factor-scoring) count from, so the band, the states and the cards measure one history.
 
 Each fit derives three quantities from its window, and the band is built from them:
 
@@ -427,23 +414,11 @@ The band on a day `t` spreads the 28-day corridor onto that day with its weekday
 | `400` visits | 18% to 24%, by how steady the last 28 days were |
 | `10,000` visits | 14% to 24%, by how steady the last 28 days were |
 
-The fit also measures a trend — a recency-weighted line through the window's 28-day totals, sampled every 14 days — which the band does not read. The [week ahead](#the-seven-days-ahead) reads it from the fit at `endDate`, and so does [Traffic Insights](./traffic-insights-design-doc.md#expected-baseline), to summarize the period; keeping the fit whole in one class is what lets both read it without a second model. Where a window holds too few 28-day totals for a trend at all, the fit falls back to the raw total of its last 28 days as the center and a wider margin.
+The fit also measures a trend — a recency-weighted line through the window's 28-day totals, sampled every 14 days — which the band does not read. [Traffic Insights](./traffic-insights-design-doc.md#expected-baseline) reads it from the fit at `endDate`, to summarize the period; keeping the fit whole in one class is what lets it do so without a second model. Where a window holds too few 28-day totals for a trend at all, the fit falls back to the raw total of its last 28 days as the center and a wider margin.
 
 **The model is deterministic to one decimal, and its tests hold it there.** Every step is fixed arithmetic — the quartile positions, the clamps, the order of the sums, the guard on each division — so a daily series has exactly one set of bounds. The PHPUnit fixtures pair daily series with those bounds, and the arithmetic order is part of the specification: a sum taken in a different order can move a bound across a rounding boundary. Every step and constant is in the [appendix](#expected-range-model).
 
 The cost is a sort and a handful of linear passes over at most 365 values for each of the at most 90 plotted days, in the request that already holds the rows. It is small beside the report calls that precede it.
-
-#### *The seven days ahead* {#the-seven-days-ahead}
-
-For each day `endDate + h`, with `h` from 1 to 7, the fit at `endDate` is carried forward along its own monthly trend: the center becomes `B * MAX( 0, 1 + slope / 100 * h / 30.4375 )`, where `slope` is the fit's monthly trend in percent; the margin stays `M`; and the band is spread onto the day with that day's weekday factor `S` exactly as a measured day's is, from `MAX( 0, center - M ) / 28 * S` to `( center + M ) / 28 * S`, rounded to one decimal.
-
-Three properties follow:
-
-1. **The band does not widen with distance.** The margin is the end-date fit's, unchanged, so the week ahead is drawn with the confidence of the weeks behind it — which a seven-day horizon can carry and a month could not.  
-2. **The trend is the only thing that moves.** A growing site's week ahead rises, a shrinking one's falls, and the clamp at zero stops a steep decline from projecting negative traffic.  
-3. **No report row is needed.** Everything the projection reads is already in the fit.
-
-The projection is a method on `Expected_Baseline`, beside the fit it reads, and it reads no clock: it counts its days from `endDate`, which is what keeps its fixtures deterministic. A projection is a claim about days that have not happened, and one that read the clock itself would have no fixed answer to assert against.
 
 ### **Wire format** {#wire-format}
 
@@ -482,17 +457,26 @@ The hour the API layer holds the response for is its default and is the right on
 
 ### **Panel states** {#panel-states}
 
-Three states the panel distinguishes, all decided by the one request:
+Six states the panel distinguishes, all decided by the one request:
 
 * **Loading** — `PreviewBlock` placeholders sized per section, held until the response resolves. This is the state the tab is in the first time a reader selects it.  
 * **Error** — the request failed: the GA4 reports behind it errored, or the datapoint itself did. Renders `WidgetReportError` with the module slug, so the existing retry and request-access affordances apply.  
-* **Ready** — the chart and the key factor cards are on screen.
+* **Ready** — the chart with the band under every plotted day, and the key factor cards the selection kept.  
+* **Partial** — the chart, with the band missing from some or all of the plotted days, or the cards withheld, for want of recorded traffic. A `Notice` above the chart names each part that is waiting and what it waits for: 28 days of recorded traffic up to and including a day, for that day's band, and recorded traffic on every day of the previous period, for the cards.  
+* **Not enough data for this range** — a zero state: no plotted day has a band and the cards are withheld, but a shorter range would show the cards. A message titled `Not enough data to show typical traffic`, as the [design iteration](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2381-53216) draws it, replaces the chart and the cards, and suggests the longest range the date-range selector offers that would show them.  
+* **Collecting** — a zero state: no range the selector offers would show either part, because the site has fewer than 14 days of recorded traffic — too few for a band on any day, and too few for the previous period of even the selector's shortest range. The message is titled `We're still collecting data for your typical traffic` and suggests no range.
 
-There is no separate gathering-data state. A property gathering data cannot be 13 months old, so the [history gate](#gating-and-visibility) has already removed the tab. There is no zero-data state either: a property with 13 months of history and no traffic in the selected period gets a chart showing exactly that, against the band its own history expected, which is a more honest answer than a CTA. Whether it also gets key factor cards depends on what moved: a period with no traffic after one that had some is a drop every channel accounts for, and a period with none on either side has no candidate that clears the significance floor, so the [section](#key-factors) renders nothing.
+**A zero state replaces everything the panel draws**, the [Traffic Insights](./traffic-insights-design-doc.md) blocks included, so a message about missing history never sits beside a reading of that history.
+
+**Every state comes from the response.** A pure function in `traffic-overview/utils/` takes `firstTrafficDate`, the bounds on `dailyTraffic`, the selected range's dates and the ranges `getAvailableDateRanges()` offers, and returns the state and what its notice or message names. No state costs a request, and each is reachable from a decoded fixture. **The history that decides the state is the history the band and the cards use** — counted from the first day with recorded traffic, not from the property's creation — so the notice can never say a part is waiting that the response already carries, or the reverse.
+
+The thresholds above are open: the band is drawn at any share of the range, the cards show before any band can, and a notice says what a part waits for but not when it arrives — see the [open question](#what-does-the-tab-show-while-a-site-history-is-short?).
+
+There is no separate gathering-data state: the panel decides from the response rather than from the module's gathering-data check, so a property that has not yet recorded 14 days of traffic is in the Collecting state whatever that check says. A site with recorded traffic and none in the selected period gets a chart showing exactly that, against the band its own history expected, which is a more honest answer than a CTA. Whether it also gets key factor cards depends on what moved: a period with no traffic after one that had some is a drop every channel accounts for, and a period with none on either side has no candidate that clears the significance floor, so the [section](#key-factors) renders nothing.
 
 ### **Architecture requirements**
 
-New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/`, its chart under `charts/`, the key factor catalog and its card components under `factors/`, one hook, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
+New front-end code joins the existing widget directory: `assets/js/modules/analytics-4/components/traffic-overview/` gains a panel under `tabs/` with its notice and its two zero states beside it, its chart under `charts/`, the key factor catalog and its card components under `factors/`, one hook, the [state function](#panel-states) under `utils/`, and the format's field indices in `constants.ts` — where nothing outside that file holds a literal index. Components are TypeScript function components, one component per file, with co-located tests and Storybook stories.
 
 New PHP lives in two places: `includes/Modules/Analytics_4/Datapoints/` for the datapoint, and `includes/Modules/Analytics_4/Benchmarking/` for the report options, `Expected_Baseline`, the response builder and the wire format's encoder — with `includes/Modules/Search_Console/Benchmarking/` for the callback that answers the [contextual-data filter](#cross-module-contextual-data), the same per-module layout `Email_Reporting/` already uses on both modules.
 
@@ -510,7 +494,7 @@ One new datapoint, no new route. `GET:benchmarking-data` is dispatched by the `R
 
 The tab follows the existing Dashboard Sharing rules for the `analytics-4` module. It renders wherever the widget does, and **`GET:benchmarking-data` is shareable**, so a view-only user gets the whole tab.
 
-It needs no branch for it: the reports run under the module owner's credentials through `get_oauth_client_for_datapoint()`, exactly as every other shared report does. Two changes are what make that work, specified where each belongs — `sessionSource`, `landingPage` and `sessionCampaignName` in the [shareable dimension list](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#gating-and-visibility).
+It needs no branch for it: the reports run under the module owner's credentials through `get_oauth_client_for_datapoint()`, exactly as every other shared report does. Two changes are what make that work, specified where each belongs — `sessionSource`, `landingPage` and `sessionCampaignName` in the [shareable dimension list](#report-gathering), and `propertyCreateTime` among the [view-only settings keys](#typical-traffic-chart).
 
 **Nothing is pooled across users, so no sharing boundary runs through a cache.** Every stored copy of every response lives in the requesting user's own browser, behind a key prefix that hashes their login and session. A view-only user with Analytics but not Search Console shared gets a response built without the search-keyword rows and a tab built on that response and no other — which follows from where the cache lives rather than from anything the datapoint does.
 
@@ -520,11 +504,11 @@ The [feedback controls](#feedback) are the one part of the tab a view-only reade
 
 ### **Tester plugin** {#tester-plugin}
 
-The states that matter for QA are hard to produce on a real site: a property with 13+ months of history and a genuine weekly shape, and each combination of drivers that produces a different set of key factor cards.
+The states that matter for QA are hard to produce on a real site: a property with a year of recorded traffic and a genuine weekly shape, a site on either side of each boundary the panel's states switch on, and each combination of drivers that produces a different set of key factor cards.
 
-One filter over the response covers almost all of it, and it is the single point where the states behind it are reachable: no cards at all, one card, three cards of three different kinds, a card with no attributes and one with two, a falling card on a growing site, a card whose label is a long path or query, a daily series with gaps GA4 would have omitted, a band the line leaves both above and below, a band that starts partway into the range because the site's first recorded traffic is recent, a week ahead on a steeply rising and on a steeply falling trend, and a response with no fit at `endDate`, and therefore no week ahead.
+One filter over the response covers almost all of it, and it is the single point where the states behind it are reachable: no cards at all, one card, three cards of three different kinds, a card with no attributes and one with two, a falling card on a growing site, a card whose label is a long path or query, a daily series with gaps GA4 would have omitted, a band the line leaves both above and below, a band that starts partway into the range because the site's first recorded traffic is recent, a range with no band on any day, cards withheld because the previous period starts before the first recorded traffic, and a response with no recorded traffic at all.
 
-The history gate should be forceable on and off, so the tab is reachable without a mature property and absent with one.
+The first day with recorded traffic should be forceable on its own, applied before anything is derived, so that the band, the cards and `firstTrafficDate` all follow from it and each of the panel's states — the notice for a missing band, the notice for withheld cards, and both zero states — is reachable on a mature property.
 
 Reaching any forced state needs the browser cache out of the way, which `setUsingCache( false )` covers. **There is nothing to clear on the server**: a forced response takes effect on the next request rather than after a stored one expires.
 
@@ -538,7 +522,7 @@ The epic adds no debug fields. Nothing about the tab is persisted or scheduled, 
 
 The tab is introduced by nothing — no notification, tour step or badge. It appears in a card the reader already uses, beside a tab they already read, and a tab bar is its own affordance.
 
-The one discovery question the tab does raise is answered by not answering it: a property that becomes eligible gains the tab silently rather than announcing it. Announcing it would mean a notification whose trigger is a date computed from `getPropertyCreateTime()`, for a tab the reader has never seen and cannot miss.
+Nothing announces a part arriving either. A site whose recorded traffic grows into the band or the cards finds them in a tab it already has, and the notice that named what was missing stops naming it. Whether the tab offers to tell a reader when a part is ready is an [open question](#what-does-the-tab-show-while-a-site-history-is-short?).
 
 ### **Internal Measurement: GA4 Events** {#internal-measurement-ga4-events}
 
@@ -584,29 +568,35 @@ The filter wins on which module owns what. Search Console's connection state, it
 
 The cost is that the response's contents are not enumerable from the datapoint alone, and a badly behaved callback holds up the one request the tab is waiting on. The first is answered by specifying the keys and row shapes under [Response assembly](#response-assembly); the second is the same exposure any `apply_filters()` in a request path carries.
 
-### **Gating the whole widget on thirteen months of history**
+### **Hiding the tab until the property is thirteen months old**
 
-The history requirement could sit on the widget's `isActive`, which is one condition in one place and removes the need for the panel to reason about eligibility at all.
+The tab could stay out of the widget until `getPropertyCreateTime()` is thirteen months back, so that every plotted day has most of a year of history behind it and the panel never reasons about too little of it. The same condition could sit on the widget's `isActive` instead, which is one check in one place.
 
-We gate the tab. The widget is the site's traffic card, and a property connected two months ago needs its visitor total and its daily chart more than a mature one does. Moving the gate up would take the whole card away from those sites — a regression introduced by an epic that adds a feature — in exchange for a simpler conditional.
-
-### **Telling the reader why the tab is missing**
-
-A young property could get the tab anyway, with a panel explaining that thirteen months of history are needed and naming the date the analysis becomes available — which is exactly computable from `getPropertyCreateTime()`.
-
-We show no tab. A tab is a promise that there is something behind it, and an empty one that explains its own absence is a worse version of not being there: it costs a reader a click to learn nothing actionable, on every visit, for up to a year. The eligibility date is better placed in support documentation, which is where a reader who wonders why goes — see [Documentation in-product](#documentation-in-product).
+We show the tab for every site, as agreed on the [Oct 20 sync](https://docs.google.com/document/d/1gv96CQnDowY6l_joXOZ7f5xethIHucJaz5f4STf8r94/edit). A missing tab tells a young site nothing for up to a year — neither that the analysis exists nor what it is waiting for — where a tab that names what it is waiting for says both. Property age is also the wrong measure: a property created long before its site was tagged passes the gate with a few weeks of recorded traffic, while the band and the cards both depend on recorded traffic rather than on the property. Putting the condition on the widget would be worse again, taking the traffic card away from the sites least able to spare it. The cost is the panel's notice and its two zero states, and a tab a young site can open to find a message in place of the chart.
 
 ### **Plotting thirteen months on the Typical Traffic chart**
 
 The chart could plot the 395 days up to and including the selected range's `endDate` whatever the range, with the selected range marked inside them as a shaded region, so that the period is read against the year around it on the plot itself — the seasons leading up to it and the same time a year earlier.
 
-We plot the selected range. Whether a day is normal for the site is the band's to say rather than a longer line's: every plotted day's expected range is fitted on the 365 days ending on it, centered on the site's current level and shaped by the weekday pattern of the year behind it, so a day reads against what the site's recent traffic makes normal for it without the year being drawn. Drawing the year as well costs the period its legibility: 395 points put about two pixels between days, so the weekday cycle becomes most of what a reader sees; a seasonal peak months back sets the scale and flattens the period being asked about; and the chart becomes the one in the dashboard that does not follow the selector, labelled `Last 28 days traffic` over thirteen months of line, with a shaded region and a support page to explain it. It would also carry 395 daily rows in every response rather than the selected range's. The costs of following the selector are two. The first is the season: the same time a year earlier is no longer on the plot, and the band does not stand in for it, because its fit has no term for the time of year — a seasonal swing moves the band with the site's recent level rather than being explained by it — so the one comparison with a year earlier left in the tab is the [generated insight's](./traffic-insights-design-doc.md#what-the-service-is-told), in words rather than on the chart. The second is the unit: the Overview chart counts visitors and this chart visits, so the two tabs plot different numbers for the same days, which the `Visits` label on the line and the support page behind the chart's info tooltip are what make legible.
+We plot the selected range. Whether a day is normal for the site is the band's to say rather than a longer line's: every plotted day's expected range is fitted on up to the 365 days ending on it, centered on the site's current level and shaped by the weekday pattern of the year behind it, so a day reads against what the site's recent traffic makes normal for it without the year being drawn. Drawing the year as well costs the period its legibility: 395 points put about two pixels between days, so the weekday cycle becomes most of what a reader sees; a seasonal peak months back sets the scale and flattens the period being asked about; and the chart becomes the one in the dashboard that does not follow the selector, labelled `Last 28 days traffic` over thirteen months of line, with a shaded region and a support page to explain it. It would also carry 395 daily rows in every response rather than the selected range's. The costs of following the selector are two. The first is the season: the same time a year earlier is no longer on the plot, and the band does not stand in for it, because its fit has no term for the time of year — a seasonal swing moves the band with the site's recent level rather than being explained by it — so the one comparison with a year earlier left in the tab is the [generated insight's](./traffic-insights-design-doc.md#what-the-service-is-told), in words rather than on the chart. The second is the unit: the Overview chart counts visitors and this chart visits, so the two tabs plot different numbers for the same days, which the `Visits` label on the line and the support page behind the chart's info tooltip are what make legible.
+
+### **Carrying the band seven days past `endDate`**
+
+The band could continue a week past `endDate`, beyond a divider: the fit at `endDate` moved along its own monthly trend and spread onto each day with its weekday's factor, so the days just ahead have a shape rather than being blank. Everything it reads is already in the fit, so it costs no report.
+
+We stop at `endDate`: the tab never shows a day that has not happened, as [decided after the Oct 20 sync](./typical-traffic-data-scenarios.md#settled). A band over the coming week reads as a forecast whatever the copy calls it — a reader sees what next Tuesday should bring — from a model that carries the site's current course and nothing about the season it is heading into. Stopping also takes a response member, three chart columns, the divider overlay and the stacking context it paints in out of the design. What it costs is the look ahead itself: the chart says what was normal, and nothing about what comes next.
 
 ### **One section per dimension instead of driver cards**
 
 The key factors could be one section per dimension — channels, devices, visitor mix, referrers, search queries, content and categories — each listing its values that moved, ranked within the section, with the sections ordered by how much movement each explains. That needs one report per dimension and no cross reports, and every row is the same arithmetic.
 
 We build driver cards. Seven parallel lists put the same visits in front of a reader several times over: a referral surge from one site is a `Referral` row, a referrer row, a `desktop` row, a `returning` row and a row for the page it landed on, each competing with the others for attention and none saying they are one event. A device or a visitor type, standing alone, also crowds out the specific drivers it only mirrors. Cards answer a different question — which few things moved traffic — and put device and visitor type where they explain something, under the driver they qualify. The cost is the cross reports, the parent-child suppression and a second pass for the kept cards' attributes, all of it in PHP.
+
+### **Scoring the cards against a partly recorded previous period**
+
+The cards could compare the selected period with whatever part of the previous one has recorded traffic — scaled up to the period's length, or matched day for day against the same number of days at the end of the selected period — so that a young site gets cards from a couple of weeks of history whatever the range.
+
+We withhold the cards until the previous period has recorded traffic on every day, as agreed on the [Oct 20 sync](https://docs.google.com/document/d/1gv96CQnDowY6l_joXOZ7f5xethIHucJaz5f4STf8r94/edit). A scaled comparison invents traffic for days the site was not yet measured, and a shortened one compares a different period from the one selected; either way a card's change and its share would describe a movement the site did not have. The cost is the wait: on the default 28-day range, a site has no card until it has 56 days of recorded traffic.
 
 ### **Counting visitors instead of sessions**
 
@@ -626,11 +616,7 @@ Low-traffic sites need rolling averages, more cautious language and de-emphasize
 
 ### **Published posts on the chart** {#published-posts-on-the-chart}
 
-The chart's design carries one element beyond the line, the band, the week ahead and the [feedback control](#feedback): a marker for each published post, with a legend item of its own beside the line's and the band's. It is built separately from this epic.
-
-### **A longer projection and a look-ahead summary** {#a-longer-projection-and-a-look-ahead-summary}
-
-The [week ahead](#the-week-ahead) stops at seven days and says nothing in words. A longer horizon needs a forward model with a seasonal term — this one carries the site's current course and nothing about the season it is heading into — and a sentence about the coming weeks belongs to the [generated insight](./traffic-insights-design-doc.md#generated-insight), whose request has no forward-looking field to narrate from. Neither is a matter of raising a limit.
+The chart's design carries one element beyond the line, the band and the [feedback control](#feedback): a marker for each published post, with a legend item of its own beside the line's and the band's. It is built separately from this epic.
 
 ## **Dependencies**
 
@@ -693,7 +679,7 @@ No new OAuth scope is requested. No new custom dimension is created, so no addit
 
 Report count does not grow with the size of the site: every query is aggregated, each breakdown carries its current and comparison window as two date ranges in one request and asks for at most 250 rows, and the second pass runs for at most three cards whatever the number of candidates. Batching is what keeps the five first-pass reports to one call and the second pass to at most two, which matters here more than it does elsewhere because they are serial inside one PHP request rather than parallel across the browser's connection pool.
 
-The largest of them is the daily series: at most 454 rows — the longest range's 90 days and the 364 before them — well inside the GA4 Data API's default row limit, and linear to zero-fill and sum. The [expected range](#expected-range) fits each of the at most 90 plotted days on at most 365 of them — a sort and a few linear passes per day, small beside the report calls. Only the plotted days cross the wire, as one count and two one-decimal bounds each, followed by seven pairs of bounds for the week ahead, and the [wire format](#wire-format) is what keeps those to a few kilobytes in the response rather than several times that. The projection is seven multiplications over a fit that already exists.
+The largest of them is the daily series: at most 454 rows — the longest range's 90 days and the 364 before them — well inside the GA4 Data API's default row limit, and linear to zero-fill and sum. The [expected range](#expected-range) fits each of the at most 90 plotted days on at most 365 of them — a sort and a few linear passes per day, small beside the report calls. Only the plotted days cross the wire, as one count and two one-decimal bounds each, beside one offset for the first day with recorded traffic, and the [wire format](#wire-format) is what keeps those to a few kilobytes in the response rather than several times that.
 
 Nothing in the feature iterates posts, users or terms, so a site with 100k posts behaves the same as a small one.
 
@@ -701,7 +687,9 @@ Nothing in the feature iterates posts, users or terms, so a site with 100k posts
 
 The tab panel needs correct `role="tabpanel"` and `aria-labelledby` wiring, and the tab bar's own keyboard behavior is `TabBar`'s and already correct.
 
-The chart's title is a heading inside the tab panel. Its info tooltip opens on keyboard focus as well as on hover and touch, so its copy does not need a pointer, and it stays open while the pointer is over it, so the `Learn more` link can be clicked; `InfoTooltip` already behaves both ways. The legend names the line and the band in text, each beside a swatch of its own shape — a bar for the line, a block for the band — so neither is identified by its color alone. The boundary between the measured days and the [week ahead](#the-week-ahead) has to be conveyed in text as well as by the divider, so that a reader who cannot see the plot knows the band past `endDate` describes days that have not happened.
+The chart's title is a heading inside the tab panel. Its info tooltip opens on keyboard focus as well as on hover and touch, so its copy does not need a pointer, and it stays open while the pointer is over it, so the `Learn more` link can be clicked; `InfoTooltip` already behaves both ways. The legend names the line and the band in text, each beside a swatch of its own shape — a bar for the line, a block for the band — so neither is identified by its color alone. The property-creation marker carries the sentence the Overview chart already gives screen readers for the same day.
+
+The notice and the zero states are text in the panel's reading order, ahead of the chart, so a reader who cannot see the plot learns which part is missing, and why, before reaching it.
 
 The key factor cards are text in reading order, which is the easy case — each card is a labelled region named by its driver, and each attribute row pairs its title with its value, its change and its share. A change carries its sign in text, and a share badge says `growth` or `drop` in words, so direction is never carried by color alone. The vertical rule and dot beside each card are decorative.
 
@@ -709,7 +697,7 @@ The [feedback buttons](#feedback) keep the accessible names `ThumbsSurveyTrigger
 
 ## **Internationalization (i18n)**
 
-Every string in the tab is a plugin string translated as usual, and every number and percentage is formatted through `numFmt`, including inside the key factor copy. The cards' changes and share badges are `sprintf` over translated patterns rather than concatenated fragments, so a language that orders a sentence differently can. The chart's tooltip is one translated string with its `Learn more` link as a tag inside it, for the same reason, and the chart's legend reuses the Overview chart's plural forms for the line and adds one string, `Expected range`, for the band. The line's column adds one more, `Visits`, since the Overview chart's `Users` would misname a session count.
+Every string in the tab is a plugin string translated as usual, and every number and percentage is formatted through `numFmt`, including inside the key factor copy. The cards' changes and share badges are `sprintf` over translated patterns rather than concatenated fragments, so a language that orders a sentence differently can. The chart's tooltip is one translated string with its `Learn more` link as a tag inside it, for the same reason, and the chart's legend reuses the Overview chart's plural forms for the line and adds one string, `Expected range`, for the band. The line's column adds one more, `Visits`, since the Overview chart's `Users` would misname a session count. The notice and the zero states are translated patterns as well: a count of days in them takes its plural form from `_n()`, and the range a zero state suggests is named by the label `getAvailableDateRanges()` already gives the selector.
 
 Two constraints worth naming:
 
@@ -732,18 +720,16 @@ Two constraints worth naming:
 | 8 | Add the Typical Traffic tab to the widget shell with its history gate | 11 |  |
 | 9 | Typical Traffic: the traffic chart for the selected date range | 11 |  |
 | 10 | Typical Traffic: key factor cards | 15 |  |
-| 11 | Loading and error states for the Typical Traffic tab | 11 |  |
+| 11 | Loading, error and short-history states for the Typical Traffic tab, in place of its history gate | 15 |  |
 | 12 | Typical Traffic: feedback controls on the chart and the key factor cards | 11 |  |
 | 13 | Add the expected-range model in PHP | 15 |  |
-| 14 | Carry the expected range in the benchmarking response and the wire format | 11 |  |
+| 14 | Carry the expected range and the first day with recorded traffic in the benchmarking response and the wire format | 11 |  |
 | 15 | Typical Traffic: the expected range on the chart | 11 |  |
-| 16 | Project the expected range seven days past `endDate` and carry it in the response and the wire format | 7 |  |
-| 17 | Typical Traffic: the expected range seven days ahead on the chart | 11 |  |
-| 18 | Add `landingPage` and `sessionCampaignName` to the shareable Analytics dimensions | 3 |  |
-| 19 | Carry key factor cards in the benchmarking wire format in place of the dimension arrays, and rename `visitors` to `visits` | 11 |  |
-| 20 | Select the key factor cards and their attributes in the benchmarking response | 19 |  |
+| 16 | Add `landingPage` and `sessionCampaignName` to the shareable Analytics dimensions | 3 |  |
+| 17 | Carry key factor cards in the benchmarking wire format in place of the dimension arrays, and rename `visitors` to `visits` | 11 |  |
+| 18 | Select the key factor cards and their attributes in the benchmarking response | 19 |  |
 
-**TOTAL: 224 STORY POINTS across 20 issues**
+**TOTAL: 210 STORY POINTS across 18 issues**
 
 **The wire format is the first thing to land after the flag and the contract everything else is built against.** The encoder, the decoder and the [shared fixture](#wire-format) are a small, self-contained issue with no dependency on a report, a datapoint or a component, and once it exists the server-side half writes against the encoder while the panel and its sections read a decoded fixture. Agreeing the layout early is what lets the two halves proceed in parallel, and the [panel data flow](#panel-data-flow) table is the version to agree.
 
@@ -751,51 +737,50 @@ Report gathering and response assembly is the largest server-side issue and the 
 
 Sharing is critical path rather than a follow-up: without it the view-only dashboard shows an error where the tab should be. It is separate from the datapoint because it is verifiable on its own — a dispatch as a view-only user — and because the two allow-list additions need reviewing as what they are.
 
-**The chart follows the selector, and its issue narrows the response to match.** The response assembly shipped with a fixed 395-day `dailyTraffic`, and the datapoint holds a request to half of it; rather than reopening either, the chart issue narrows `dailyTraffic` to the selected range and holds a request to the selector's 90 days, so the chart and the days it draws land together. The chart itself shares the Overview chart's axis, options and legend, so its work is the table built from `dailyTraffic`, the header with its tooltip, and the legend. The overlay positioned from the chart layout interface, and the stacking-context rule that paints it behind the line — invisible in review and obvious in VRT — arrive with the week ahead's divider.
+**The chart follows the selector, and its issue narrows the response to match.** The response assembly shipped with a fixed 395-day `dailyTraffic`, and the datapoint holds a request to half of it; rather than reopening either, the chart issue narrows `dailyTraffic` to the selected range and holds a request to the selector's 90 days, so the chart and the days it draws land together. The chart itself shares the Overview chart's axis, options, legend and property-creation marker, so its work is the table built from `dailyTraffic`, the header with its tooltip, the legend and the marker.
 
-**The week ahead lands after the band it continues, as two issues.** The projection issue adds the forward reading beside the fit, asserted on fixed series the way the fit is, with the `forecast` field and its wire-format member. The chart issue adds the forward interval pair, the joining row and the divider, sized against the [PoC](#the-week-ahead) rather than against a plain band. Its risk is the join: the two bands have to meet on `endDate` without a gap or a step, and the divider is positioned from the chart layout interface in a `ready` callback and painted behind the line inside a stacking context of its own — the same kind of thing VRT catches and review does not.
-
-**The driver cards replace the per-dimension sections in work that has already started, and three issues carry them there.** The wire format, the response builder, the contextual-data filter and the datastore slice shipped against seven ranked dimension arrays, and the sharing issue was already in progress with `sessionSource` as its only new shareable dimension. Rather than reopening any of them, the change lands as three. The first adds `landingPage` and `sessionCampaignName` to the shareable dimensions, beside the `sessionSource` the sharing issue adds; it is small and lands first, because without it the server-side change fails every shared request. The other two follow in the order the format went in originally. The first of those replaces wire members `5` and `6` with the cards and their attributes and moves the decoder, the decoded type and the shared fixture with them, so the front end has the contract before the server fills it, and renames the shipped `visitors` fields to `visits` on both sides of the format, so the expected-range and week-ahead work is written against the new names. The second does everything server-side: the session breakdowns in place of the seven dimension reports, the daily series on `sessions` in place of `totalUsers`, the scoring by driver kind, the gate, the suppression, the selection, the second pass, and Search Console's keyword breakdowns through the existing filter. It is the larger of the two, and the one to split by pass — candidates and selection first, attributes second — if its brief needs splitting.
+**The driver cards replace the per-dimension sections in work that has already started, and three issues carry them there.** The wire format, the response builder, the contextual-data filter and the datastore slice shipped against seven ranked dimension arrays, and the sharing issue was already in progress with `sessionSource` as its only new shareable dimension. Rather than reopening any of them, the change lands as three. The first adds `landingPage` and `sessionCampaignName` to the shareable dimensions, beside the `sessionSource` the sharing issue adds; it is small and lands first, because without it the server-side change fails every shared request. The other two follow in the order the format went in originally. The first of those replaces wire members `5` and `6` with the cards and their attributes and moves the decoder, the decoded type and the shared fixture with them, so the front end has the contract before the server fills it, and renames the shipped `visitors` fields to `visits` on both sides of the format, so the expected-range work is written against the new names. The second does everything server-side: the session breakdowns in place of the seven dimension reports, the daily series on `sessions` in place of `totalUsers`, the scoring by driver kind, the gate, the suppression, the selection, the second pass, the rule that withholds every card while the previous period starts before the first recorded traffic, and Search Console's keyword breakdowns through the existing filter. It is the larger of the two, and the one to split by pass — candidates and selection first, attributes second — if its brief needs splitting.
 
 The key factors issue carries the catalog and one card renderer for every kind. It renders whatever the response gives it, so its brief has to name the cases that are awkward to reach naturally: no cards at all, a card with no attributes, a falling card on a growing site, and a kind the catalog does not know.
 
-The states issue lands last because it needs both sections present to be worth reviewing, and it owns the decision to render a chart of zeros rather than a zero-data CTA.
+**The states issue lands last, and it is the one that takes the history gate out.** It needs both sections present to be worth reviewing, and `firstTrafficDate` in the response, which lands with the expected range's own response member because it is the day the band's history starts on. The tab and its gate shipped together; the states issue drops the property-age condition from `useHasTypicalTrafficTab()` in the same change that adds the notice and the zero states, so no build shows a young site an empty panel. It also owns the decision to render a chart of zeros, rather than a zero-data CTA, for a site with recorded traffic and none in the selected period.
 
 ## **Documentation in-product** {#documentation-in-product}
 
 The tab needs support links in two places, resolved through `getDocumentationLinkURL()` on `core/site`:
 
-1. **Behind the `Learn more` link in the chart's info tooltip**, explaining the line and the band under it: that the line counts visits rather than the visitors the Traffic Overview tab counts, so the two tabs show different numbers for the same day; that the band is the range the site's recent traffic makes normal for each day, centered on its level over the last four weeks and shaped by the weekday pattern of its last 12 months — wider on a small site because a small site's traffic genuinely varies more, starting four weeks after the first recorded traffic, and marking a normal day rather than a good one; that the band follows the site's level and knows nothing of the season, so it moves with a seasonal rise or fall rather than expecting it; and that the band past the divider is the same range carried a week forward along the site's recent trend, over days that have not happened yet.  
-2. **An explanation of why the tab does not appear for properties with insufficient history**, reachable from support rather than from the dashboard, since the tab is absent in that case. This is where the exact eligibility rule belongs — thirteen months from property creation — for the reader who wonders why their site has one tab and a colleague's has two.
+1. **Behind the `Learn more` link in the chart's info tooltip**, explaining the line and the band under it: that the line counts visits rather than the visitors the Traffic Overview tab counts, so the two tabs show different numbers for the same day; that the band is the range the site's recent traffic makes normal for each day, centered on its level over the last four weeks and shaped by the weekday pattern of up to its last 12 months — wider on a small site because a small site's traffic genuinely varies more, starting four weeks after the first recorded traffic, and marking a normal day rather than a good one; and that the band follows the site's level and knows nothing of the season, so it moves with a seasonal rise or fall rather than expecting it.  
+2. **Behind the notice and the zero states**, explaining how much recorded traffic each part of the tab needs — 28 days up to a day for that day's band, and traffic on every day of the previous period for the key factor cards — counted from the first day the site recorded traffic rather than from the property's creation, for the reader who wonders why their site shows a notice where a colleague's shows the band.
 
-The support team drafts these before rollout; the slugs are added with the links. Until then, the tooltip's link points at `#`.
+The support team drafts these before rollout; the slugs are added with the links. Until then, both links point at `#`.
 
 ## **Testing plan considerations**
 
-The hard part is data. The tab needs a property with 13+ months of history and a real weekly shape for the band under the chart to say anything worth looking at, and the key factor cards need a period in which one channel, page, source, campaign or query genuinely moved. QA therefore depends on tester-plugin support for forcing the response, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
+The hard part is data. The band says something worth looking at only on a property with a year of recorded traffic and a real weekly shape, the panel's states need sites with days, weeks and a couple of months of it, and the key factor cards need a period in which one channel, page, source, campaign or query genuinely moved. QA therefore depends on tester-plugin support for forcing the response, listed under [Tester plugin](#tester-plugin), plus access to an Analytics property with genuine history.
 
-**The derivation is PHPUnit's and the rendering is Jest's**, and the response is the seam between them. PHPUnit covers the assembly on hand-built report fixtures: the zero-fill over days GA4 omitted, a value present in one window and absent from the other, the score and the floors, the gate at exactly `10` sessions and exactly `15%`, the suppression of a parent channel, the selection of three, the share against `gain` and `loss`, the attribute choice and its device rule, the second pass running only for the kept cards, and the filter contract — including a callback that errors and one that returns the wrong shape. Jest covers the panel's states and the cards, driven from decoded fixtures rather than from report responses. Storybook stories cover the tab in loading, error and ready states, which also gives VRT coverage.
+**The derivation is PHPUnit's and the rendering is Jest's**, and the response is the seam between them. PHPUnit covers the assembly on hand-built report fixtures: the zero-fill over days GA4 omitted, `firstTrafficDate` and the cards withheld while the previous period starts before it, a value present in one window and absent from the other, the score and the floors, the gate at exactly `10` sessions and exactly `15%`, the suppression of a parent channel, the selection of three, the share against `gain` and `loss`, the attribute choice and its device rule, the second pass running only for the kept cards, and the filter contract — including a callback that errors and one that returns the wrong shape. Jest covers the panel's states and the cards, driven from decoded fixtures rather than from report responses, and the state function on its own at every boundary it switches on. Storybook stories cover the tab in loading, error and ready states, each partial view's notice and both zero states, which also gives VRT coverage.
 
-**The [expected range](#expected-range) is asserted to the decimal.** Its arithmetic is fixed, so a daily series has exactly one set of bounds, and PHPUnit asserts every one of them on series that each exercise a rule: flat traffic, which must sit inside its band; a strong weekday pattern, which the band must follow; a viral day and a tracking outage, which the clamp must contain; a spike on the last day, which must leave every earlier day's band unchanged; a series with fewer than 28 days of history, which must have no band; leading zeros, which must be dropped before fitting; and a series that is zero throughout. The [week ahead](#the-seven-days-ahead) is asserted the same way, on a rising, a falling and a flat trend, and on a decline steep enough to clamp the projected center at zero. Jest covers the chart's side: the table builder puts the bounds in two interval columns, leaves `null` where a day has no band, adds the seven forward rows and the joining row on `endDate` that carries both bands' pairs, and fits the axis over both bands, and the legend carries the band's item with a block swatch and nothing for the week ahead. VRT covers the band itself, at a small, a medium and a large site's traffic, so the band's proportional width is in the reference images, and the week ahead on a rising and on a falling trend, so the join on `endDate` and the divider are in them too.
+**The [expected range](#expected-range) is asserted to the decimal.** Its arithmetic is fixed, so a daily series has exactly one set of bounds, and PHPUnit asserts every one of them on series that each exercise a rule: flat traffic, which must sit inside its band; a strong weekday pattern, which the band must follow; a viral day and a tracking outage, which the clamp must contain; a spike on the last day, which must leave every earlier day's band unchanged; a series with fewer than 28 days of history, which must have no band; leading zeros, which must be dropped before fitting; and a series that is zero throughout. Jest covers the chart's side: the table builder puts the bounds in two interval columns, leaves `null` where a day has no band, ends on `endDate`, and fits the axis over the band; the legend carries the band's item with a block swatch; and the property-creation marker is drawn only for a creation date inside the range. VRT covers the band itself, at a small, a medium and a large site's traffic, so the band's proportional width is in the reference images, and a band that starts partway into the range, so the edge it starts at is in them too.
 
 **The [wire format](#wire-format) is the one thing both suites test, and they test it against the same file.** The PHP encoder's test asserts that a fixed set of derived values encodes to the checked-in fixture, and the JS decoder's test asserts that the same fixture decodes to the objects the sections expect. A field added on one side without the other fails one of the two rather than producing a silent misread in the dashboard. One case beyond the happy path belongs here: an unknown version integer, which must be rejected rather than guessed at.
 
 **The view-only path belongs in PHPUnit rather than only in manual QA**: a shared request must resolve the owner's client for the reports, which is assertable by dispatching the datapoint as a view-only user. The Search-Console-not-shared case belongs beside it — a response selected without search keywords, and a tab that renders its cards rather than erroring.
 
-Six cases are worth naming because they are easy to miss and awkward to reach naturally:
+Seven cases are worth naming because they are easy to miss and awkward to reach naturally:
 
-1. **A property between 13 and 15 months old on a 90-day range**, whose daily report reaches back before the property was created and whose earliest plotted days are fitted on less than a year — the zeros before its first recorded traffic must stay out of every fit.  
+1. **A property younger than its daily report**, whose report reaches back before the property was created and whose earliest plotted days are fitted on less than a year — the zeros before its first recorded traffic must stay out of every fit, and `firstTrafficDate` must be the day the fits start on rather than the report's first day.  
 2. **Two candidates with the same score, and two attribute kinds whose values moved by the same amount**, which the selection has to break deterministically rather than by report order.  
 3. **A referring site that clears the gate under a `Referral` channel that would otherwise lead**, which must take the channel's place rather than sit beside it.  
 4. **A channel that fell on a site that grew**, whose badge must read as a share of the site's loss rather than as a negative share of its gain.  
 5. **Selecting the tab twice**, which must issue one request rather than two — the property that the API layer's hour-long entry is what makes cheap, and the one that silently regresses if the resolver is keyed on anything but the two dates.  
-6. **A property tagged long after it was created**, whose daily report is zero for months before the first recorded traffic, and whose band must start four weeks after that day rather than fitting the zeros before it.
+6. **A property tagged long after it was created**, whose daily report is zero for months before the first recorded traffic, and whose band must start four weeks after that day rather than fitting the zeros before it — and whose cards must stay withheld until its previous period starts on or after that day.  
+7. **History on each side of a state's boundary**: 27 and 28 days of recorded traffic up to `endDate`, for the band under the last day; a previous period that starts on `firstTrafficDate`, which shows the cards, and one that starts the day before, which withholds them; and 13 and 14 days on a 28-day range, which separate the Collecting state from the Not enough data state.
 
 ## **Launch plans**
 
 The epic follows Site Kit's usual staged rollout. The `typicalTraffic` flag is enabled for 20% of users, and — absent critical issues — for the remaining 80% two weeks later.
 
-There is no external dependency, so the flag can be enabled as soon as the epic is complete. What gates it in practice is the eligible population: only properties with 13+ months of history see anything at all, so the 20% cohort's usable size is smaller than the percentage suggests and the first two weeks' feedback will be correspondingly thinner.
+There is no external dependency, so the flag can be enabled as soon as the epic is complete. Every site in the 20% cohort sees the tab — a young site with a notice or a zero state where a mature one has the band and the cards — so the first two weeks' feedback covers sites at every length of history rather than only the mature ones.
 
 An issue to remove the `typicalTraffic` flag and its conditional logic should be raised once the feature is stable at 100%.
 
@@ -825,17 +810,21 @@ Undecided: whether a Direct card does this at all; the list of identifiers and t
 
 Blocked on this: a third breakdown for the Direct card, `landingPagePlusQueryString` among the shareable dimensions, and the card's design.
 
-## **What is the minimum history and volume for the Typical Traffic tab?** {#what-is-the-minimum-history-and-volume-for-the-typical-traffic-tab?}
+## **What does the tab show while a site's history is short?** {#what-does-the-tab-show-while-a-site-history-is-short?}
 
-The tab gates on property age alone: thirteen months from `getPropertyCreateTime()`. Two things that gate does not look at are both capable of making the tab meaningless.
+The mechanism is fixed: the response carries the first day with recorded traffic, and the [panel](#panel-states) derives every state from it. The rules it applies are not: the band is drawn on whichever plotted days have one, at any share of the range; the line and the key factor cards show before any band can; and the tab turns to a zero state only when neither the band nor the cards can show. The cases each alternative changes are worked through in the [data scenarios](./typical-traffic-data-scenarios.md#decisions-needed).
 
-**Volume.** A site averaging two visits a day has thirteen months of history and nothing typical about any of it: the chart is noise, and a key factor card can name a driver whose whole change is a dozen visits. Nothing currently declines to render for such a site. The band is the one part that already allows for it — its margin floor puts a two-visit day's band at about 80% either side — but a band that wide holds almost anything, and says correspondingly little.
+Undecided: whether a day needs more than 28 days of recorded traffic for a band, and whether a band with a few weeks of history behind it is drawn differently from one with a year; how much of the range the band must cover before the chart draws it; whether the line and the cards show before any band does, or the tab shows a zero state until the band can; the shortest range the tab serves; whether the notice and the zero states say when a part will be ready — as a date, roughly, or with an offer to tell the reader — and the notice's copy, for which there is no design; and the chart tooltip's `last 12 months`, which is not true of a site with less history.
 
-**Actual collected history, as opposed to property age.** A property created fourteen months ago and tagged last month passes the gate with one month of data: a 90-day range plots two months of zeros before it, which read as a site without traffic rather than one not yet measured, and the band has nothing to say until four weeks after the tagging. The band does not add to the confusion — its fits start at the first recorded traffic, so it draws nothing under the zeros — but it does not explain them either.
+Blocked on this: the thresholds in the panel's state function, and the copy of the notice, the zero states and the tooltip. The response is not blocked: it carries `firstTrafficDate` whatever the thresholds become.
 
-Undecided: whether either has a floor; if so, what it is measured over and what the tab shows beneath it; and whether the check belongs beside the age gate in the browser — where it would need a report to answer — or in the datapoint, which has the series in hand and could say so in the response.
+## **Is there a minimum traffic volume for the Typical Traffic tab?** {#is-there-a-minimum-traffic-volume-for-the-typical-traffic-tab?}
 
-Blocked on this: the tab's gating condition, and whether the panel needs a state it does not currently have.
+A site averaging two visits a day can have a year of history and nothing typical about any of it: the chart is noise, and a key factor card can name a driver whose whole change is a dozen visits. Nothing currently declines to render for such a site. The band is the one part that already allows for it — its margin floor puts a two-visit day's band at about 80% either side — but a band that wide holds almost anything, and says correspondingly little. Unlike a short history, a low volume is not something time fixes, so a state for it would say something none of the panel's states says.
+
+Undecided: whether there is a floor; if so, what it is measured over and what the tab shows beneath it; and whether the datapoint, which has the series in hand, reports it in the response the way it reports the first day with recorded traffic.
+
+Blocked on this: whether the panel needs a state about volume.
 
 # **Appendices**
 
@@ -849,8 +838,8 @@ What `GET:benchmarking-data` returns once decoded, and therefore the fixtures ev
 | :---- | :---- | :---: |
 | `visits` | `{ current: int, previous: int }`, the sessions of the selected period and of the period before it | Always |
 | `dailyTraffic` | `Array<{ date, visits, expectedMin, expectedMax }>`, one row per day of the selected range; `visits` is the day's sessions, and `expectedMin` and `expectedMax` are one-decimal floats, or `null` on a day the expected range cannot fit | Always |
-| `forecast` | `Array<{ date, expectedMin, expectedMax }>`, 7 rows from the day after `endDate`, the bounds one-decimal floats | With a fit at `endDate` |
-| `keyFactors` | `Array<KeyFactor>`, at most 3, in rank order; empty when no candidate survives | Always |
+| `firstTrafficDate` | `string`, `YYYY-MM-DD`, the first day of the daily report with recorded traffic, or `null` when the report records none | Always |
+| `keyFactors` | `Array<KeyFactor>`, at most 3, in rank order; empty when no candidate survives, and when the previous period starts before `firstTrafficDate` | Always |
 
 `KeyFactor` is `{ kind: KeyFactorKind, label: string, current: int, previous: int, sharePct: float, attributes: Array<KeyFactorAttribute> }`, with at most 2 attributes, and `KeyFactorAttribute` is `{ kind: KeyFactorAttributeKind, label: string, current: int, previous: int, sharePct: float }`. `current` and `previous` count sessions, or clicks where the kind is `SEARCH_KEYWORD`; `sharePct` is a one-decimal float between `0` and `100`.
 
@@ -886,7 +875,7 @@ The positional layout the [wire format](#wire-format) fixes, at the level the en
 | `5` | the key factor cards, in rank order: each `[ kind, label, current, previous, sharePct ]` |
 | `6` | the cards' attributes: one array per entry of member `5`, in the same order, each attribute `[ kind, label, current, previous, sharePct ]` |
 | `7` | the expected range: one `[ expectedMin, expectedMax ]` pair per day of member `3`, in the same order, or `null` for a day without a band |
-| `8` | the week ahead: one `[ expectedMin, expectedMax ]` pair per day for the seven days after `endDate`, or empty without a fit at `endDate` |
+| `8` | the first day with recorded traffic, as its offset in days from member `2` — negative when it falls before the range — or `null` when the daily report records no traffic |
 
 Four conventions the table does not show, and the encoder and decoder both depend on:
 
@@ -902,28 +891,23 @@ The table, in column order. Interval columns annotate the series column they fol
 | \# | Column |
 | :---- | :---- |
 | 0 | `date` |
-| 1 | `visits`, labelled `Visits`; `null` on the seven forward rows |
-| 2 | `expectedMin`, `role: 'interval'`; `null` on a day without a band and on the forward rows |
+| 1 | `visits`, labelled `Visits` |
+| 2 | `expectedMin`, `role: 'interval'`; `null` on a day without a band |
 | 3 | `expectedMax`, `role: 'interval'`, the same |
-| 4 | the forward series, drawn with no line: the midpoint of its row's forward band; `null` until the row for `endDate`, which carries the midpoint of that day's measured band |
-| 5 | forward `expectedMin`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMin` |
-| 6 | forward `expectedMax`, `role: 'interval'`; on the row for `endDate`, that day's measured `expectedMax` |
 
-Columns 4 to 6 and the seven forward rows are absent when the response carries no `forecast`.
+The table's last row is `endDate`: nothing is plotted for a day that has not happened.
 
 The chart starts from the Overview chart's `TRAFFIC_CHART_OPTIONS`, so its line color, its date labels, its value axis on the right, its gridlines and its crosshair match the Overview chart, as the [chart's design](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev) draws them. The options that carry a decision rather than a preference:
 
 | Option | Value | Why |
 | :---- | :---- | :---- |
-| `hAxis.ticks` | one per plotted day from the second on, and none in the week ahead | The Overview chart's ticks, which Google Charts thins to the labels that fit; the first day's label would sit against the edge of the plot. |
+| `hAxis.ticks` | one per plotted day from the second on | The Overview chart's ticks, which Google Charts thins to the labels that fit; the first day's label would sit against the edge of the plot. |
 | `hAxis.baseline` | the last plotted day | Draws the gray line along the right edge of the plot, as on the Overview chart. |
-| `vAxis.viewWindow` | fitted over the line and both bands' upper bounds | An axis fitted to the line alone clips the band wherever it sits above the line, and the week ahead wherever the trend rises. |
-| `intervals` | `style: 'area'`, the band's tint and opacity, `lineWidth: 0`, `pointSize: 0` | Draws the expected range and its week ahead as filled areas with no edge lines or points. |
-| `series` for the forward series | `lineWidth: 0`, `pointSize: 0` | Carries the week ahead's band without drawing a line or points of its own; the divider is what separates the measured days from it. |
+| `vAxis.viewWindow` | fitted over the line and the band's upper bounds | An axis fitted to the line alone clips the band wherever it sits above the line. |
+| `intervals` | `style: 'area'`, the band's tint and opacity, `lineWidth: 0`, `pointSize: 0` | Draws the expected range as a filled area with no edge lines or points. |
 | `interpolateNulls` | `false` | Leaves a day without a band empty rather than bridging the band across it. |
-| `backgroundColor` | `'transparent'` | Lets the divider on `endDate`, which paints behind the SVG, show through. |
 | `legend` | `position: 'none'` | The legend is HTML: `ChartLegend` below the plot, as on the Overview chart. Google Charts cannot show a band in its own legend. |
-| `gatheringData` | never passed | `getChartOptions()` would clamp `hAxis.viewWindow` to the selected range and crop the week ahead. |
+| `gatheringData` | never passed | A site with too little recorded traffic gets one of the panel's [zero states](#panel-states) in place of the chart, so the chart never renders in the state the flag describes. |
 
 ### **Expected range model** {#expected-range-model}
 
@@ -934,12 +918,11 @@ The [expected range](#expected-range) step by step, as `Expected_Baseline` compu
 | Clamp | Sort `W`. `Q1` and `Q3` are the values at zero-based positions `FLOOR( n / 4 )` and `FLOOR( 3 * n / 4 )`, and `IQR = MAX( 10, Q3 - Q1 )`. Every value in `W` is clamped to `[ MAX( 0, Q1 - 2.5 * IQR ), Q3 + 2.5 * IQR ]`. |
 | 28-day totals | The clamped sums over positions `[ 0, 28 )`, `[ 14, 42 )`, `[ 28, 56 )` and so on while `W` lasts, then the clamped sum of the last 28 days unless the last of those already equals it. `K` is how many there are. |
 | Weekday shape | `S( d ) = 0.10 + 0.90 * mean( d ) / mean_all`, where `mean( d )` is weekday `d`'s mean over the clamped `W` and `mean_all` is the mean of the seven; a `mean_all` of `0` or less is read as `1`. |
-| Trend | Weighted least squares over the 28-day totals against `x_k = k * 14 / 30.4375` months, with weights `EXP( -0.18 * ( K - 1 - k ) )`. The monthly slope is the fitted slope over the weighted mean of the totals, as a percentage, and `0` when the fit's denominator is `0` or the weighted mean is not positive. `UP` above `+4%`, `DOWN` below `-4%`, `STABLE` otherwise. The band does not read it; the week ahead does. |
+| Trend | Weighted least squares over the 28-day totals against `x_k = k * 14 / 30.4375` months, with weights `EXP( -0.18 * ( K - 1 - k ) )`. The monthly slope is the fitted slope over the weighted mean of the totals, as a percentage, and `0` when the fit's denominator is `0` or the weighted mean is not positive. `UP` above `+4%`, `DOWN` below `-4%`, `STABLE` otherwise. The band does not read it; [Traffic Insights](./traffic-insights-design-doc.md#expected-baseline) does. |
 | Center | Ordinary least squares through the last 28 clamped days; its value on the last of them, held to `[ 0.6, 1.2 ]` times their mean; `B = MAX( 10, 28 * that )`. |
 | Margin | `RMSE = SQRT( SUM( ( v - B / 28 * S( d ) )^2 ) / 21 ) * SQRT( 28 )` over the last 28 clamped days `v`, each with its weekday `d`. `floor = 5 * SQRT( B ) + 0.13 * B`, `ceiling = MAX( floor, 0.24 * B )`, and `M = MAX( 15, floor, MIN( ceiling, 2.5 * RMSE ) )`. |
 | Short history | With `K < 2`: `B` is the raw sum of the last 28 days of `H`, `M = MAX( 15, 0.18 * B + 6.5 * SQRT( B ), 0.25 * B )`, and the trend is `STABLE`. |
 | Band | `expectedMin = ROUND( MAX( 0, B - M ) / 28 * S( d ), 1 )` and `expectedMax = ROUND( ( B + M ) / 28 * S( d ), 1 )`, with `d` the weekday of `t` and `S` from the fit at `t`. |
-| Week ahead | For `h` from 1 to 7, with the fit at `endDate` and its monthly slope in percent: `growth = MAX( 0, 1 + slope / 100 * h / 30.4375 )`, and the band on `endDate + h` is the Band step with `B * growth` in place of `B`, `M` unchanged, and `S( d )` from the fit at `endDate`, with `d` the weekday of `endDate + h`. Without a fit at `endDate` there are no forward rows. |
 
 Three properties the implementation has to hold, because the fixtures' bounds depend on each: the quartiles are positions in the sorted window rather than interpolated percentiles; `ROUND` rounds half away from zero, as PHP's `round()` does by default; and every sum runs over its days oldest first, since a sum in another order can move a bound across a rounding boundary.
 

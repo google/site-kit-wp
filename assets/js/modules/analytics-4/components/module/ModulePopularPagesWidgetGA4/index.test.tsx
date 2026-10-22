@@ -42,6 +42,10 @@ import {
 	provideSiteInfo,
 	provideUserInfo,
 } from '@tests/js/utils';
+import {
+	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
+	LATEST_CONTENT_TAB_ID,
+} from './constants';
 import ModulePopularPagesWidgetGA4 from '.';
 
 describe( 'ModulePopularPagesWidgetGA4', () => {
@@ -73,7 +77,11 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
-		provideRecentContent( registry, [], { count: 10 } );
+		provideRecentContent(
+			registry,
+			[],
+			LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+		);
 		fetchMock.get( reportEndpoint, { body: {}, status: 200 } );
 	} );
 
@@ -183,5 +191,99 @@ describe( 'ModulePopularPagesWidgetGA4', () => {
 
 		expect( getAllByRole( 'tab' )[ 1 ] ).toBe( latestContentTab );
 		expect( latestContentTab ).toHaveFocus();
+	} );
+
+	it( 'should select the Latest content tab when it is the active content tab before the first render', async () => {
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setActiveContentTab( LATEST_CONTENT_TAB_ID );
+
+		const { getAllByRole, getByRole, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( getAllByRole( 'tab' )[ 1 ] ).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-latest-content-tab'
+		);
+	} );
+
+	it( 'should select the Latest content tab when it becomes the active content tab after the first render', async () => {
+		const { getAllByRole, getByRole, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
+		).toBe( 'googlesitekit-top-content-tab' );
+		expect( getAllByRole( 'tab' )[ 0 ] ).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+
+		await act( async () => {
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setActiveContentTab( LATEST_CONTENT_TAB_ID );
+			await waitForRegistry();
+		} );
+
+		expect( getAllByRole( 'tab' )[ 1 ] ).toHaveAttribute(
+			'aria-selected',
+			'true'
+		);
+		expect( getByRole( 'tabpanel' ) ).toHaveAttribute(
+			'aria-labelledby',
+			'googlesitekit-latest-content-tab'
+		);
+	} );
+
+	it( 'should set the active content tab to the tab the user selects', async () => {
+		const { getAllByRole, waitForRegistry } = render(
+			<ModulePopularPagesWidgetGA4 { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		await act( async () => {
+			fireEvent.click( getAllByRole( 'tab' )[ 1 ] );
+			await waitForRegistry();
+		} );
+
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
+		).toBe( 'googlesitekit-latest-content-tab' );
+
+		await act( async () => {
+			fireEvent.click( getAllByRole( 'tab' )[ 0 ] );
+			await waitForRegistry();
+		} );
+
+		expect(
+			registry.select( MODULES_ANALYTICS_4 ).getActiveContentTab()
+		).toBe( 'googlesitekit-top-content-tab' );
 	} );
 } );

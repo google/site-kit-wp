@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'reader-revenue-manager', {
+		name: __( 'Reader Revenue Manager', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 		title: __(
 			'Open up new revenue opportunities while growing, retaining and engaging your audience',
@@ -125,8 +126,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Reader Revenue Manager contribution prompt screenshot',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -146,6 +147,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
 		registerFeature( 'newsletter-signup', {
+			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
 				'Collect reader emails directly on your site',
@@ -231,8 +233,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up prompt screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 					{
 						src: splashScreenScreenshotURL,
@@ -240,8 +242,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							'Reader Revenue Manager newsletter sign-up form dashboard screenshot',
 							'google-site-kit'
 						),
-						width: 659,
-						height: 577,
+						width: 292,
+						height: 210,
 					},
 				],
 			},

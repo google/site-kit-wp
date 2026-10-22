@@ -25,7 +25,7 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
 import Layout from '@/js/components/layout/Layout';
 import Link from '@/js/components/Link';
 import PageHeader from '@/js/components/PageHeader';
@@ -35,6 +35,7 @@ import P from '@/js/components/Typography/P';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useViewContext from '@/js/hooks/useViewContext';
 import { Cell, Grid, Row } from '@/js/material-components';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
@@ -49,8 +50,11 @@ import Content from './Content';
 import CreateMessageStep from './steps/CreateMessageStep';
 import PlaceTagsStep from './steps/PlaceTagsStep';
 
+const FEATURE_SLUG_AD_BLOCKING_RECOVERY = 'ad-blocking-recovery';
+
 export default function SetupMain() {
 	const viewContext = useViewContext();
+	const registry = useRegistry();
 
 	const settingsURL = useSelect( ( select ) =>
 		select( CORE_SITE ).getAdminURL( 'googlesitekit-settings' )
@@ -92,6 +96,8 @@ export default function SetupMain() {
 	const setupSuccessURL = addQueryArgs( dashboardURL, {
 		notification: 'ad_blocking_recovery_setup_success',
 	} );
+	const [ pendingSetupReturnURL, setPendingSetupReturnURL ] = useState();
+	const completionURL = pendingSetupReturnURL || setupSuccessURL;
 	const adsenseAccountID = useSelect( ( select ) =>
 		select( MODULES_ADSENSE ).getAccountID()
 	);
@@ -110,6 +116,25 @@ export default function SetupMain() {
 	const { navigateTo } = useDispatch( CORE_LOCATION );
 
 	const [ activeStep, setActiveStep ] = useState( initialActiveStep );
+
+	useEffect( () => {
+		let isMounted = true;
+
+		getPendingSetupReturnURL(
+			registry.select,
+			FEATURE_SLUG_AD_BLOCKING_RECOVERY
+		)
+			.then( ( url ) => {
+				if ( isMounted && url ) {
+					setPendingSetupReturnURL( url );
+				}
+			} )
+			.catch( () => {} );
+
+		return () => {
+			isMounted = false;
+		};
+	}, [ registry ] );
 
 	const onCancel = useCallback( async () => {
 		if ( activeStep === 0 ) {
@@ -213,7 +238,7 @@ export default function SetupMain() {
 						) }
 						className="googlesitekit-ad-blocking-recovery__step googlesitekit-ad-blocking-recovery__step-create-message"
 					>
-						<CreateMessageStep />
+						<CreateMessageStep completionURL={ completionURL } />
 					</Step>
 				</Stepper>
 				{ ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE ===
@@ -240,7 +265,7 @@ export default function SetupMain() {
 					{ ENUM_AD_BLOCKING_RECOVERY_SETUP_STEP.COMPLETE ===
 					activeStep ? (
 						<div className="googlesitekit-ad-blocking-recovery__complete-actions">
-							<SpinnerButton href={ setupSuccessURL }>
+							<SpinnerButton href={ completionURL }>
 								{ __(
 									'My message is ready',
 									'google-site-kit'

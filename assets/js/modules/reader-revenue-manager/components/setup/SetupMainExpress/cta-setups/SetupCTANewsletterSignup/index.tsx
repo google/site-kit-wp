@@ -43,11 +43,15 @@ import {
 	useExpressSetupScopes,
 	useExpressSetupStepEventLabel,
 	useExpressSetupTrackEvent,
+	useRecordExpressSetupProgress,
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import ObservedStep from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ObservedStep';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
 import ViewOnSiteCTANewsletterSignup from './ViewOnSiteCTANewsletterSignup';
@@ -64,6 +68,11 @@ const SetupCTANewsletterSignup: FC = () => {
 	useExpressSetupScopes();
 
 	const { currentStep, advance } = useSetupFlow( STEPS );
+
+	useRecordExpressSetupProgress(
+		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+		currentStep?.slug
+	);
 
 	const trackEvent = useExpressSetupTrackEvent();
 	const stepEventLabel = useExpressSetupStepEventLabel( currentStep?.slug );
