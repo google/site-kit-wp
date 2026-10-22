@@ -721,7 +721,7 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 			);
 		} );
 
-		it( 'should keep the All services notice out of the auto-updates notice’s queue', () => {
+		it( 'should keep the "All services" notice out of the auto-updates notice’s queue', () => {
 			const successNotification =
 				DEFAULT_NOTIFICATIONS[
 					FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION
