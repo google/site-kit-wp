@@ -17,9 +17,15 @@
  */
 
 /**
+ * External dependencies
+ */
+import { isEqual, map } from 'lodash';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getQueryArg } from '@wordpress/url';
 
 /**
  * Internal dependencies
@@ -44,10 +50,14 @@ import {
 	getInsightReportArgs,
 	getSearchPerformanceReportOptions,
 	getTimeZoneReportOptions,
+	getTopChannelsReportOptions,
+	getTopPostsReportOptions,
+	getTopReferralsReportOptions,
 	getTotalVisitorsReportOptions,
 } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { SearchPerformanceTotals } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/aggregateSearchConsoleRows';
 import { getFreshDataWindowStart } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getFreshDataWindow';
+import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
 import {
 	getComparisonDateRange,
 	getDateDimensionValues,
@@ -60,6 +70,7 @@ import {
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
+import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { getDateString, stringToDate } from '@/js/util';
 
@@ -70,6 +81,26 @@ interface FreshMetricsFigures {
 	searchPerformance?: SearchPerformanceTotals;
 }
 
+export interface RecentTrafficBreakdownReportOptions {
+	/** The options of the "Top posts by visitors" report. */
+	posts: ReportOptions;
+	/** The options of the "Top channels by visitors" report. */
+	channels: ReportOptions;
+	/** The options of the "Top referrals by visitors" report. */
+	referrals: ReportOptions;
+}
+
+export interface RecentTrafficBreakdownReports {
+	/** The report of views for each page path. */
+	posts?: Report;
+	/** The title of each page path, for the pages the posts column shows. */
+	postTitles?: Record< string, string >;
+	/** The report of visits for each channel. */
+	channels?: Report;
+	/** The report of visits for each site that referred them. */
+	referrals?: Report;
+}
+
 export const LATEST_POST: RecentContentItem = {
 	id: 12,
 	title: 'Ice cream is good for your health',
@@ -77,6 +108,15 @@ export const LATEST_POST: RecentContentItem = {
 	pagePath: '/ice-cream/',
 	publishedAt: '2026-09-17T12:30:00Z',
 	sitePublishedAt: '2026-09-17T08:30:00',
+};
+
+export const EARLIER_POST: RecentContentItem = {
+	id: 11,
+	title: 'Sorbet is good for your health',
+	permalink: 'https://example.com/sorbet/',
+	pagePath: '/sorbet/',
+	publishedAt: '2026-09-10T12:30:00Z',
+	sitePublishedAt: '2026-09-10T08:30:00',
 };
 
 /**
@@ -242,21 +282,55 @@ export function provideLatestPostKeywordReport( registry: WPDataRegistry ) {
 /**
  * Builds a breakdown report from label and visitor pairs, in the order given.
  *
- * The visitors are strings, the way the API returns them.
+ * The visitors are strings, the way the API returns them. With `total`, the
+ * report has its `totals` too, which count every value of the dimension, also
+ * the values a `limit` leaves out of `rows`.
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
+ * @since n.e.x.t Takes an optional total.
  *
- * @param {Array<Array>} pairs `[ label, visitors ]` pairs.
+ * @param {Array<Array>} pairs   `[ label, visitors ]` pairs.
+ * @param {number}       [total] Optional. The visitors of every value of the dimension. Without it, the report has no `totals`.
  * @return {Object} The breakdown report.
  */
 export function createBreakdownReport(
-	pairs: Array< [ string, number ] >
+	pairs: Array< [ string, number ] >,
+	total?: number
 ): Report {
 	return {
 		rows: pairs.map( ( [ label, visitors ] ) => ( {
 			dimensionValues: [ { value: label } ],
 			metricValues: [ { value: String( visitors ) } ],
+		} ) ),
+		...( total === undefined
+			? {}
+			: {
+					totals: [
+						{
+							dimensionValues: [ { value: 'RESERVED_TOTAL' } ],
+							metricValues: [ { value: String( total ) } ],
+						},
+					],
+			  } ),
+	};
+}
+
+/**
+ * Builds a report of page titles from page path and title pairs, in the order
+ * given.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Array<Array<string>>} pairs `[ pagePath, pageTitle ]` pairs.
+ * @return {Object} The report of page titles.
+ */
+export function createTitlesReport(
+	pairs: Array< [ string, string ] >
+): Report {
+	return {
+		rows: pairs.map( ( [ pagePath, pageTitle ] ) => ( {
+			dimensionValues: [ { value: pagePath }, { value: pageTitle } ],
 		} ) ),
 	};
 }
@@ -408,6 +482,126 @@ export function provideFreshMetricsReports(
 			{ options: getSearchPerformanceReportOptions( windowStart ) }
 		);
 	}
+}
+
+/**
+ * Gets the options of the reports of the Recent activity tab's traffic
+ * breakdown, for the registry's reference date.
+ *
+ * The posts report leaves out the product pages that `getExcludedProducts()`
+ * recognizes, the way the posts column does.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry, with its reference date and its site info set.
+ * @return {Object} The options of the posts, channels, and referrals reports.
+ */
+export function getRecentTrafficBreakdownReportOptions(
+	registry: WPDataRegistry
+): RecentTrafficBreakdownReportOptions {
+	const dateRange = getFreshDataDateRange(
+		registry.select( CORE_USER ).getReferenceDate()
+	);
+
+	return {
+		posts: getTopPostsReportOptions(
+			dateRange,
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+		),
+		channels: getTopChannelsReportOptions( dateRange ),
+		referrals: getTopReferralsReportOptions( dateRange ),
+	};
+}
+
+/**
+ * Puts the given reports of the Recent activity tab's traffic breakdown in the
+ * store, so the breakdown renders without sending a request. When
+ * `reports.posts` is given, the report of titles that the posts column
+ * requests goes in the store too.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry             The registry, with its reference date and its site info set.
+ * @param {Object} reports              The reports.
+ * @param {Object} [reports.posts]      Optional. The report of views for each page path.
+ * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
+ * @param {Object} [reports.channels]   Optional. The report of visits for each channel.
+ * @param {Object} [reports.referrals]  Optional. The report of visits for each site that referred them.
+ * @return {void}
+ */
+export function provideRecentTrafficBreakdownReports(
+	registry: WPDataRegistry,
+	{
+		posts,
+		postTitles = {},
+		channels,
+		referrals,
+	}: RecentTrafficBreakdownReports
+) {
+	const reportOptions = getRecentTrafficBreakdownReportOptions( registry );
+	const { receiveGetReport } = registry.dispatch( MODULES_ANALYTICS_4 );
+
+	if ( posts ) {
+		receiveGetReport( posts, { options: reportOptions.posts } );
+
+		const pagePaths = getRecentTrafficBreakdownRows( posts ).map(
+			( { label } ) => label
+		);
+
+		if ( pagePaths.length ) {
+			receiveGetReport(
+				createTitlesReport(
+					pagePaths
+						.filter( ( pagePath ) => postTitles[ pagePath ] )
+						.map( ( pagePath ): [ string, string ] => [
+							pagePath,
+							postTitles[ pagePath ],
+						] )
+				),
+				{
+					options: getPageTitlesReportOptions(
+						reportOptions.posts,
+						pagePaths
+					),
+				}
+			);
+		}
+	}
+
+	if ( channels ) {
+		receiveGetReport( channels, { options: reportOptions.channels } );
+	}
+
+	if ( referrals ) {
+		receiveGetReport( referrals, { options: reportOptions.referrals } );
+	}
+}
+
+/**
+ * Gets a matcher for the Analytics report requests that ask for exactly the
+ * given dimensions.
+ *
+ * @since n.e.x.t
+ *
+ * @param {...string} dimensions The dimension names, in order.
+ * @return {Function} The matcher, for `fetchMock`.
+ */
+export function forDimensions( ...dimensions: string[] ) {
+	const reportEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/analytics-4/data/report'
+	);
+
+	return ( url: string ) =>
+		reportEndpoint.test( url ) &&
+		isEqual(
+			map(
+				getQueryArg( url, 'dimensions' ) as
+					| Array< { name: string } >
+					| undefined,
+				'name'
+			),
+			dimensions
+		);
 }
 
 /**
