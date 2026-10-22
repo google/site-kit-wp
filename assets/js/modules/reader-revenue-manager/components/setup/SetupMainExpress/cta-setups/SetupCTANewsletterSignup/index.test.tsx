@@ -113,6 +113,14 @@ const createCTAEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
 );
 
+const publicationEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+);
+
+const ctasEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+);
+
 const userSettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
 );
@@ -839,13 +847,26 @@ describe( 'SetupCTANewsletterSignup', () => {
 						'Newsletter signup',
 				} );
 
-			fetchMock.postOnce( settingsEndpoint, {
+			// Saves the settings both when submitting the step and after the CTA
+			// is created.
+			fetchMock.post( settingsEndpoint, {
 				body: settings,
 				status: 200,
 			} );
 
 			fetchMock.postOnce( createCTAEndpoint, {
 				body: newsletterCTA,
+				status: 200,
+			} );
+
+			// Creating the CTA reloads the publication and the CTAs.
+			fetchMock.getOnce( publicationEndpoint, {
+				body: readyPublication,
+				status: 200,
+			} );
+
+			fetchMock.getOnce( ctasEndpoint, {
+				body: [ newsletterCTA ],
 				status: 200,
 			} );
 

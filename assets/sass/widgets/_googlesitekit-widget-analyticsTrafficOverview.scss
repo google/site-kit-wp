@@ -353,6 +353,20 @@ $traffic-overview-column-gap: 42px;
 				margin-top: 80px;
 			}
 		}
+
+		.googlesitekit-traffic-overview__see-all-recent-posts {
+			@include googlesitekit-typography(label, small);
+			margin-top: 16px;
+
+			.googlesitekit-icon-wrapper {
+				background-color: $c-teal-t-10;
+				border-radius: 50%;
+				height: 20px;
+				justify-content: center;
+				margin-left: 8px !important; // To override the inline set margin.
+				width: 20px;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__latest-post-performance {
