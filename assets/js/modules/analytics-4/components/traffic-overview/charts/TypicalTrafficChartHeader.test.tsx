@@ -23,36 +23,45 @@ import { fireEvent, render, screen, waitFor } from '@tests/js/test-utils';
 import TypicalTrafficChartHeader from './TypicalTrafficChartHeader';
 
 describe( 'TypicalTrafficChartHeader', () => {
-	it( 'should show the title as a heading', () => {
+	it( 'should show "Your traffic compared to your typical range" as a heading', () => {
 		const { getByRole } = render( <TypicalTrafficChartHeader /> );
 
 		expect(
 			getByRole( 'heading', {
-				name: 'Your traffic compared to your expected range',
+				name: 'Your traffic compared to your typical range',
 			} )
 		).toBeInTheDocument();
 	} );
 
-	it( 'should show the tooltip text and a "Learn more" link to `#` when the info icon is hovered', async () => {
+	it( 'should show the tooltip text "to estimate a typical range" and a "Learn more" link to `#` when the info icon is hovered', async () => {
 		const { container } = render( <TypicalTrafficChartHeader /> );
+
+		// The popup renders outside the header, at the end of the document.
+		expect(
+			document.querySelector(
+				'.googlesitekit-info-tooltip__content--typical-traffic'
+			)
+		).not.toBeInTheDocument();
 
 		fireEvent.mouseOver(
 			container.querySelector( '.googlesitekit-info-tooltip' ) as Element
 		);
 
-		// The popup renders outside the header, at the end of the document.
 		await waitFor( () => {
 			expect(
 				document.querySelector(
 					'.googlesitekit-info-tooltip__content--typical-traffic'
 				)
-			).toHaveTextContent(
-				'Site Kit analyzes the last 18 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. Learn more'
-			);
+			).toHaveTextContent( 'to estimate a typical range' );
 		} );
 
-		expect(
-			screen.getByRole( 'link', { name: /Learn more/ } )
-		).toHaveAttribute( 'href', '#' );
+		const learnMoreLink = screen.getByRole( 'link', {
+			name: 'Learn more (opens in a new tab)',
+		} );
+
+		expect( learnMoreLink ).toHaveAttribute( 'href', '#' );
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		// The design shows no external link icon after "Learn more".
+		expect( learnMoreLink.querySelector( 'svg' ) ).not.toBeInTheDocument();
 	} );
 } );

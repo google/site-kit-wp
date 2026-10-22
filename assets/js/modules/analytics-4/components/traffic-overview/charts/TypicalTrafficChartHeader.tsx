@@ -36,25 +36,27 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 
 const TypicalTrafficChartHeader: FC = () => {
+	const tooltipContent = createInterpolateElement(
+		__(
+			'Site Kit analyzes the last 18 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>',
+			'google-site-kit'
+		),
+		{
+			// TODO: #13875 -- Point the link at the chart's support page.
+			a: <Link href="#" external hideExternalIndicator />,
+		}
+	);
+
 	return (
 		<div className="googlesitekit-traffic-overview__typical-traffic-chart-header">
 			<Typography as="h3" type={ TYPE_TITLE } size={ SIZE_MEDIUM }>
 				{ __(
-					'Your traffic compared to your expected range',
+					'Your traffic compared to your typical range',
 					'google-site-kit'
 				) }
 			</Typography>
 			<InfoTooltip
-				title={ createInterpolateElement(
-					__(
-						'Site Kit analyzes the last 18 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. <a>Learn more</a>',
-						'google-site-kit'
-					),
-					{
-						// TODO: #13875 -- Point the link at the chart's support page.
-						a: <Link href="#" external hideExternalIndicator />,
-					}
-				) }
+				title={ tooltipContent }
 				tooltipClassName="googlesitekit-info-tooltip__content--typical-traffic"
 			/>
 		</div>
