@@ -92,7 +92,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		render( <SeeAllRecentPostsLink />, { registry } );
 
 		expect(
-			screen.getByRole( 'button', { name: 'See all recent posts' } )
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
 		).toBeInTheDocument();
 	} );
 
@@ -180,7 +180,7 @@ describe( 'SeeAllRecentPostsLink', () => {
 		render( <SeeAllRecentPostsLink />, { registry } );
 
 		fireEvent.click(
-			screen.getByRole( 'button', { name: 'See all recent posts' } )
+			screen.getByRole( 'link', { name: 'See all recent posts' } )
 		);
 
 		expect(
