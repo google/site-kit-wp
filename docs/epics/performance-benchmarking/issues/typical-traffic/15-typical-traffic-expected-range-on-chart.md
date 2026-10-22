@@ -2,25 +2,11 @@
 
 ## Feature Description
 
-The Typical Traffic chart from #13600 draws a single line of daily visits across the selected date range. A reader can see that traffic went down, but not whether that is normal for their site. The chart's title, `Your traffic compared to your expected range`, already promises the comparison, and the chart does not draw it.
+The Typical Traffic chart (#13600) draws a line of daily visits, but not what is normal for the site, although its title promises that comparison. This issue draws the expected range from #13799 as a band under the line ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev)), and adds `Expected range` to the legend. The chart draws the bounds the response gives it and computes none itself.
 
-This issue draws the expected range on the chart: a shaded band under the line that shows, for every day, the lowest and the highest number of visits the site's own history makes normal for that day. A day where the line goes above the band had more visits than expected; a day where it goes below had fewer. The legend gets a second item that names the band.
+A day without bounds, in the first four weeks of a site's recorded traffic, is left empty, so on a young site the band starts partway into the range. The band's legend item is a filled block, so it is told apart from the line's bar without relying on color. The info tooltip names 12 months, the history the range reads.
 
-**The band runs under the whole line.** Every `dailyTraffic` row of the benchmarking response now carries `expectedMin` and `expectedMax`, and the chart draws the band between them on every plotted day. The chart computes no bound itself; it draws the numbers the response gives it.
-
-**Some days have no band, and the chart leaves them empty.** A day needs four weeks of recorded traffic behind it to have an expected range. On a property that was tagged long after it was created, the days less than four weeks after its first recorded traffic have no bounds. The chart draws no band on those days and does not join the band across them, so the band starts where the expected range starts. The line is still drawn on those days.
-
-**The band is drawn as an area, as the design shows it.** It is a light tint of the line's violet, with no edge lines and no points ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=1747-32704&m=dev)).
-
-**The value axis makes room for the band.** On a day the site gets fewer visits than expected, the band sits above the line. An axis fitted to the line alone would cut off the top of the band, so the axis maximum now covers the higher of the largest daily value and the largest upper bound.
-
-**The legend names the band with a block.** The legend below the chart is the same `ChartLegend` the Traffic Overview chart uses, and it draws every item with a short bar, which is right for a line. The band is an area, so its item gets a filled block in the band's tint instead, labelled `Expected range`. Because the two items have different shapes, a reader who cannot tell the two colors apart can still tell the line from the band. The Traffic Overview chart's legend keeps its bar exactly as it is.
-
-**The tooltip says 12 months.** The info tooltip next to the chart's title currently says that Site Kit analyzes the last 18 months of traffic history. The expected range reads the last 12 months, so the tooltip now says 12.
-
-This issue needs the chart from #13600 and the `expectedMin` and `expectedMax` bounds that #13799 adds to the benchmarking response.
-
-Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1 (see "Typical traffic chart" and "Chart table and options")
 
 ---------------
 
@@ -28,21 +14,11 @@ _Do not alter or remove anything below. The following sections will be managed b
 
 ## Acceptance criteria
 
-* On the Typical Traffic tab, the chart draws a filled band under the line of daily visits, from each day's `expectedMin` to its `expectedMax`, on every plotted day that has both bounds.
-* The band has no edge lines and no points, and its color is the tint of the line color `#462083` given in the design.
-* The line is drawn over the band.
-* A day whose `expectedMin` and `expectedMax` are `null` has no band, and the band is not drawn across it from the day before to the day after:
-  * On a series whose first 10 days have `null` bounds, the band starts on day 11 and the line is drawn from day 1.
-  * On a series whose bounds are `null` on every day, the chart draws the line and no band.
-* The value axis runs from `0` to the higher of the largest daily count and the largest `expectedMax` in the selected range. On a series whose largest count is `120` and whose largest `expectedMax` is `183.1`, the top of the band is fully visible on every day.
-* On a series with `0` visits and `null` bounds on every day, the value axis runs from `0` to `100`, as it does today.
-* The legend below the chart shows two items, in this order:
-  * The line's item as it is today, such as `Last 28 days traffic` for a 28-day range, beside a short bar in `#462083`.
-  * `Expected range`, beside a filled block in the band's color.
-* The Traffic Overview chart's legend is unchanged: one item, `Last 28 days traffic` for a 28-day range, beside a short bar in `#462083`.
-* The info tooltip beside the chart's title reads `Site Kit analyzes the last 12 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. Learn more`, and `Learn more` is still a link.
-* Changing the date range from `Last 28 days` to `Last 90 days` draws the band under each of the 90 days, from the bounds of the response for the new range.
-* The band and the line stay aligned with their days when the browser window is resized.
+* The chart draws a filled band under the line, from each day's `expectedMin` to its `expectedMax`, in a tint of `#462083` with no edge lines and no points, as in the design.
+* A day with `null` bounds has no band, and the band is not joined across it. When the first 10 days have `null` bounds, the band starts on day 11 and the line on day 1. When every day has `null` bounds, the chart draws only the line.
+* The value axis reaches the higher of the largest daily count and the largest `expectedMax`: with `120` and `183.1`, the whole band is visible.
+* The legend shows the line's item, then `Expected range` beside a filled block in the band's color. The Traffic Overview chart's legend is unchanged.
+* The info tooltip reads `Site Kit analyzes the last 12 months of your traffic history to estimate a typical range, so you can see when visits are higher or lower than expected. Learn more`.
 
 ## Implementation Brief
 

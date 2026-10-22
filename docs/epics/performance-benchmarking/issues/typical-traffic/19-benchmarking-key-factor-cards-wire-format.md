@@ -1,16 +1,12 @@
-# Benchmarking wire format — key factor cards in place of the dimension arrays, and `visits` in place of `visitors`
+# Benchmarking wire format — key factor cards and visit counts
 
 ## Feature Description
 
-The benchmarking response the Typical Traffic tab reads is encoded in a positional wire format (#13593), and the browser decodes it into the object the tab's sections are written against (#13598). Today members `5` and `6` of that format carry seven ranked dimension arrays — channels, devices, visitor mix, referrers, search queries, content and categories — and the decoder turns them into `dimensions` and `contextualData`.
+The Key factors section shows up to three **cards** ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev)). Each card names one **driver** (a channel, a landing page, a search keyword, a referring site or a campaign) and has up to two **attributes**: the values inside the driver that carried its change, such as the referring site behind a `Referral` card or the device behind a `Direct` card. A card and each of its attributes carry a label, two counts and a share of the site's change in the same direction, shown as `9.8% of traffic growth` on a card and as `4.3% of growth` on an attribute.
 
-The design for the Key factors section has changed. It no longer shows one list per dimension. It shows up to three **cards**, and each card names one **driver**: a channel, a landing page, a search keyword, a referring site or a campaign. Each card also has up to two **attributes**: the values inside the driver that carried its change, such as the referring site behind a `Referral` card or the device behind a `Direct` card ([Figma](https://www.figma.com/design/MWN8TXAjfTeKLF0DZ91bIX/Performance-benchmarking?node-id=2096-14304&m=dev)). A card and each of its attributes carry a label, two counts and a share: the part of the site's change, in the same direction, that the card or attribute accounts for. The design shows that share as `9.8% of traffic growth` on a card and as `4.3% of growth` on an attribute.
+This issue carries the cards in the benchmarking wire format (#13593) and decodes them into `keyFactors` (#13598), so the key factors section (#13601) is written against them before the server fills them in #13845. Member `5` holds the cards in rank order, and member `6` one list of attributes for each card, in the same order. A kind travels as its position in a fixed list, a label as a position in the string table, and a share as a number rounded to one decimal. The format version stays `1`, because no response in format `1` has been released to users.
 
-This issue changes the wire format and the decoder to carry those cards instead of the dimension arrays. The tab's key factors section is then written against the cards. The work that fills them on the server comes later, in #13845.
-
-**The format changes in two members.** Member `5` carries the cards in rank order. Member `6` carries their attributes: one list for each card, in the same order as member `5`. The format version stays `1`, because no response in format `1` has been released to users. A kind — the kind of a driver or the kind of an attribute — travels as its position in a fixed list, the same way a dimension code does today. A label travels as a position in the string table, and a share travels as a number rounded to one decimal.
-
-**`visitors` becomes `visits`.** The response's period totals and each day's count are named `visitors`, but from #13845 on every count in the tab is a session, which the tab calls a visit. This issue renames them `visits` on both sides of the format — in the assembled response, the encoder, the decoder, the decoded types and the constants that name members `3` and `4` — so that the expected-range and week-ahead work is written against the new names. Nothing on the wire changes for the rename: the format is positional, so it moves names and no bytes.
+**Every count is named `visits`.** Every count in the tab is a session, which the tab calls a visit (#13845), so the period totals and each day's count are named `visits` on both sides of the format: in the assembled response, the encoder, the decoder, the decoded types and the constants that name members `3` and `4`. The format is positional, so the names change no bytes on the wire.
 
 A response with two cards decodes to this:
 
@@ -68,9 +64,9 @@ and travels as this:
 
 A card is `[ kind, label, current, previous, sharePct ]`, and so is an attribute. The driver kinds are listed `CHANNEL`, `CONTENT`, `SEARCH_KEYWORD`, `REFERRING_SITE`, `CAMPAIGN`, so `3` is `REFERRING_SITE`. The attribute kinds are listed `TRAFFIC_CHANNEL`, `LANDING_PAGE`, `SEARCH_KEYWORD`, `REFERRING_SITE`, `PLATFORM`, `CAMPAIGN`, `DEVICE`, `USER_TYPE`, so `1` is `LANDING_PAGE` and `6` is `DEVICE`. A kind is only ever added at the end of its list, so an index never changes meaning.
 
-The checked-in fixture that both the PHP encoder test and the JavaScript decoder test read changes with the format, so a change on one side without the other still fails one of the two tests.
+The checked-in fixture that both the PHP encoder test and the JavaScript decoder test read carries members `5` and `6`, so a change on one side without the other fails one of the two tests.
 
-Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1 (see "Wire format" and "Wire format layout")
 
 ---------------
 
@@ -103,8 +99,7 @@ _Do not alter or remove anything below. The following sections will be managed b
   * Add `KEY_FACTOR_KINDS`, mapping each driver kind to its index: `CHANNEL` `0`, `CONTENT` `1`, `SEARCH_KEYWORD` `2`, `REFERRING_SITE` `3`, `CAMPAIGN` `4`.
   * Add `KEY_FACTOR_ATTRIBUTE_KINDS`, mapping each attribute kind to its index: `TRAFFIC_CHANNEL` `0`, `LANDING_PAGE` `1`, `SEARCH_KEYWORD` `2`, `REFERRING_SITE` `3`, `PLATFORM` `4`, `CAMPAIGN` `5`, `DEVICE` `6`, `USER_TYPE` `7`.
   * Replace `POSITION_DECIMAL_PLACES` with `SHARE_DECIMAL_PLACES`, set to `1`.
-  * Rename `MEMBER_DAILY_VISITORS` to `MEMBER_DAILY_VISITS` and `MEMBER_VISITOR_TOTALS` to `MEMBER_VISIT_TOTALS`. Their values stay `3` and `4`.
-  * Leave `DIMENSION_INDEXES` and `CONTEXTUAL_DATA_KEYS` in place. `Response_Builder` and `Contextual_Data_Validator` still read them until #13845.
+  * Rename `MEMBER_DAILY_VISITORS` to `MEMBER_DAILY_VISITS` and `MEMBER_VISITOR_TOTALS` to `MEMBER_VISIT_TOTALS`.
 
 * [ ] In `includes/Modules/Analytics_4/Benchmarking/Response_Encoder.php`:
   * In `encode()`, read `$response['keyFactors']`, or an empty array when it is absent, and stop reading `dimensions` and `contextualData`.
@@ -137,9 +132,6 @@ _Do not alter or remove anything below. The following sections will be managed b
 * [ ] In `assets/js/modules/analytics-4/datastore/benchmarking.ts`:
   * Update the `getBenchmarkingData` docblock to name `visits`, `dailyTraffic` and `keyFactors`.
 
-* [ ] In `getTypicalTrafficChartData.ts` and `TypicalTrafficChart.tsx` under `assets/js/modules/analytics-4/components/traffic-overview/charts/`, and in `traffic-overview/test-utils.ts` (all added in #13600):
-  * Read and build each day's `visits` in place of `visitors`, and rename `maximumVisitors` to `maximumVisits`.
-
 * [ ] In `assets/js/modules/analytics-4/datastore/__fixtures__/benchmarking-data.json`:
   * Replace members `5` and `6` with three cards: a `REFERRING_SITE` card with a `LANDING_PAGE` and a `DEVICE` attribute; a `CHANNEL` card with no attributes, whose `current` is below its `previous`; and a `CONTENT` card for the same path as the first card's `LANDING_PAGE` attribute, with one `TRAFFIC_CHANNEL` attribute. Remove from member `1` every string no member still refers to.
 
@@ -160,9 +152,11 @@ _Do not alter or remove anything below. The following sections will be managed b
   * A card and an attribute shorter than five fields are each dropped.
   * Each of these decodes to `null`: a member `5` that is not a list, a member `6` that is not a list, and a member `6` with one entry more or one entry fewer than member `5`.
   * Remove the cases that cover dimension rows.
-* Update `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php`: replace the assertion on `Wire_Format::MEMBER_DIMENSION_ORDER` with one that member `Wire_Format::MEMBER_KEY_FACTORS` is a list.
-* Fix any other test that reads `dimensions` or `contextualData` from the decoded response, including `assets/js/modules/analytics-4/datastore/benchmarking.test.ts` and `assets/js/modules/analytics-4/components/traffic-overview/hooks/useBenchmarkingData.test.ts`.
-* Rename `visitors` to `visits` in every assembled and decoded response the tests write out: `Response_BuilderTest.php`, where `test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for` becomes `test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for`, `Get_Benchmarking_DataTest.php`, `benchmarking.test.ts`, `__factories__/benchmarking.test.ts`, `TrafficOverviewWidget.test.tsx`, and the chart's tests from #13600.
+* Update `tests/phpunit/integration/Modules/Analytics_4/Datapoints/Get_Benchmarking_DataTest.php`:
+  * In `test_rest_endpoint__answers_with_the_encoded_response`, replace the assertion on `Wire_Format::MEMBER_DIMENSION_ORDER` with assertions on members `Wire_Format::MEMBER_KEY_FACTORS` and `Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES`.
+  * The two `test_rest_endpoint__answers_a_view_only_reader_…` cases read the reader's dimensions from `Wire_Format::MEMBER_DIMENSION_ORDER`, which the encoded response does not carry. Make them assert the `contextualData` keys the builder received, read by a `googlesitekit_benchmarking_contextual_data` callback that runs after Search Console's.
+* Fix any other test that reads `dimensions` or `contextualData` from the decoded response, such as `assets/js/modules/analytics-4/datastore/benchmarking.test.ts` and `assets/js/modules/analytics-4/datastore/__factories__/benchmarking.test.ts`.
+* Rename `visitors` to `visits` in every assembled and decoded response the tests write out: `Response_BuilderTest.php`, `Get_Benchmarking_DataTest.php`, `benchmarking.test.ts` and `__factories__/benchmarking.test.ts`. In `Response_BuilderTest.php`, `test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for` becomes `test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for`, and `test_build__sums_the_visitors_of_each_period_from_the_daily_series` becomes `test_build__sums_the_visits_of_each_period_from_the_daily_series`.
 * No Storybook story is required, because the change adds no UI.
 * No VRT changes expected.
 

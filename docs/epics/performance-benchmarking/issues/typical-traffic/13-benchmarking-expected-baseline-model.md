@@ -2,15 +2,13 @@
 
 ## Feature Description
 
-The Typical Traffic chart is going to show an expected range under its line: for each day, the lowest and the highest number of visits that are normal for the site on that day. A site owner can then see whether a dip is normal for their site or a real problem.
+The Typical Traffic chart is going to show an expected range, shown below as the light purple background behind the thick line in the chart. The range is based on, for each day: the lowest and the highest number of visits that are normal for the site on that day. A site owner can then see whether a dip is normal for their site or a real problem.
 
 <img width="868" height="230" alt="Image" src="https://github.com/user-attachments/assets/1302fa79-d6b6-4155-9538-a8af20990030" />
 
-This issue adds the calculation of that range. `Expected_Baseline` is a PHP class that takes a site's daily visits and returns the expected range for any day in the series. It also returns the site's monthly trend, which the week ahead (#13841) uses. Nothing calls the class yet: #13799 adds its range to the benchmarking response, and #13800 draws it on the chart. Nothing changes for users in this issue.
+This issue adds the calculation of that range: `Expected_Baseline`, a PHP class that takes a site's daily visits and returns the range for any day, with the site's monthly trend for Traffic Insights. A day's range reads only that day and up to 364 days before it, follows the site's recent level and weekday pattern, and is not moved by one unusual day. Nothing calls the class yet: #13799 adds its range to the response, and #13800 draws it.
 
-A day's range depends only on that day and up to 364 days before it, never on a later day. It follows the site's recent level and its weekday pattern, and its width follows how much the site's visits normally vary. One unusual day does not move it. Days before the first day with recorded visits are ignored, and a day has no range until the site has 28 days of history.
-
-Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1
+Link to the design doc: https://docs.google.com/document/d/1dsEs6-NjlP_LNqz5md5fnJMuxh9Vd9f88w4DTrZdLok/edit?tab=t.y7e2u5h52vf1 (see "Expected range" and "Expected range model")
 
 ---------------
 
@@ -35,16 +33,15 @@ _Do not alter or remove anything below. The following sections will be managed b
 * 365 days at `100` with one day of `5000` in the middle give every day the same results as the same series with `125` on that day. With one day of `0` instead, they give the same results as with `75` on that day.
 * Changing the visits on the last day of a series changes no result on any earlier day.
 * On 365 days with `120` visits on every weekday and `50` on every Saturday and Sunday, both bounds of every weekday in the last week are higher than both bounds of every weekend day in that week.
-* `Expected_Baseline` makes no request, reads no option and writes nothing.
 
 ## Implementation Brief
 
 * [ ] Add `includes/Modules/Analytics_4/Benchmarking/Expected_Baseline.php`, following `Row_Scorer` for the file header, the docblocks and the constants:
-  * The constructor takes only the daily series: a list of `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`, oldest first, which is the shape `Response_Builder` builds its daily rows in.
+  * The constructor takes only the daily series: a list of `array( 'date' => 'YYYY-MM-DD', 'visits' => int )`, oldest first, which is the shape of the daily series `Response_Builder::get_daily_series()` builds after #13600 and #13844.
   * Add the constants `MINIMUM_HISTORY_DAYS` (`28`), `MAXIMUM_HISTORY_DAYS` (`365`, which #13799 uses), and `DIRECTION_UP`, `DIRECTION_DOWN` and `DIRECTION_STABLE`. The other numbers in the formulas can stay inline, as in `Row_Scorer::score_row()`.
   * Add `get_fit( $day_index )`, where `$day_index` is the day's zero-based position in the series. It returns `expectedMin`, `expectedMax`, `monthlyTrendPercent` (not rounded) and `trendDirection`, all `null` when the day has no range.
-  * Compute the fit in a private method that returns `B`, `M`, the seven weekday factors and the monthly trend, and build the band in a separate private method. #13841 reuses both for the week ahead.
-  * The fit for a day reads the window `W` of `n` days: from the later of the first day with visits and the day 364 days earlier, up to and including the day. It computes:
+  * Compute the fit in a private method that returns `B`, `M`, the seven weekday factors and the monthly trend, and build the band in a separate private method.
+  * The fit for a day reads the window `W` of `n` days: from the later of the first day with visits and the day 364 days earlier, up to and including the day. When `n` is less than `MINIMUM_HISTORY_DAYS`, or the series has no day with visits up to that day, the day has no range. Otherwise the fit computes:
     | Step | Computation |
     | :---- | :---- |
     | Limit | Sort `W`. `Q1` and `Q3` are the values at zero-based positions `FLOOR( n / 4 )` and `FLOOR( 3 * n / 4 )`, and `IQR = MAX( 10, Q3 - Q1 )`. Every value in `W` is limited to `[ MAX( 0, Q1 - 2.5 * IQR ), Q3 + 2.5 * IQR ]`. |
