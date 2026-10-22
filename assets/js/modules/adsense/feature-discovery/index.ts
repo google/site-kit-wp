@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import { ANCHOR_ID_MONETIZATION } from '@/js/googlesitekit/constants';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -133,6 +134,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_MONETIZATION }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},

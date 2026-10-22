@@ -27,10 +27,15 @@ import { __ } from '@wordpress/i18n';
  */
 import Link from '@/js/components/Link';
 import {
+	ANCHOR_ID_KEY_METRICS,
+	ANCHOR_ID_TRAFFIC,
+} from '@/js/googlesitekit/constants';
+import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import kmwWidgetScreenshotURL from '@/svg/graphics/kmw-widget.svg?path';
@@ -136,6 +141,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_TRAFFIC }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
@@ -244,6 +253,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			title: __( 'Success! Key metrics are set up', 'google-site-kit' ),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_KEY_METRICS }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
