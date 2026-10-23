@@ -20,6 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
+import fetchMock from 'fetch-mock';
 
 /**
  * WordPress dependencies
@@ -34,6 +35,8 @@ import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traff
 import { provideInsightReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { Story } from '@/js/types/Story';
+import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
+import { provideSiteInfo, provideUserAuthentication } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import InsightNotice from './InsightNotice';
 import {
@@ -95,6 +98,8 @@ Typical.args = {
 };
 Typical.scenario = {};
 
+// `Up` and `Down` run no visual check, because only their text is different
+// from `Typical`.
 export const Up = Template.bind( {} ) as Story< InsightNoticeStoryProps >;
 Up.storyName = 'Up';
 Up.args = {
@@ -103,7 +108,6 @@ Up.args = {
 		provideInsightReport( registry, 132, [ 100, 100, 100, 100 ] );
 	},
 };
-Up.scenario = {};
 
 export const Down = Template.bind( {} ) as Story< InsightNoticeStoryProps >;
 Down.storyName = 'Down';
@@ -113,7 +117,32 @@ Down.args = {
 		provideInsightReport( registry, 68, [ 100, 100, 100, 100 ] );
 	},
 };
-Down.scenario = {};
+
+export const Voted = Template.bind( {} ) as Story< InsightNoticeStoryProps >;
+Voted.storyName = 'Voted';
+Voted.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+		fetchMock.post(
+			surveyTriggerEndpoint,
+			{ body: {} },
+			{ overwriteRoutes: true }
+		);
+		provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
+	},
+};
+Voted.parameters = {
+	// Leaves room above the notice for the "Thanks for the feedback!" message.
+	padding: '80px 24px 24px',
+};
+Voted.scenario = {
+	viewport: 'large',
+	clickSelector: '.googlesitekit-thumbs-survey-trigger__button--up',
+	postInteractionWait: 200,
+};
 
 export const Loading = Template.bind( {} ) as Story< InsightNoticeStoryProps >;
 Loading.storyName = 'Loading';

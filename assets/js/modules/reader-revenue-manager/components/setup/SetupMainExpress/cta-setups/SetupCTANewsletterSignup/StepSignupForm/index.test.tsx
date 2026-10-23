@@ -74,6 +74,19 @@ const createCTAEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/create-cta'
 );
 
+const publicationEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication(?:\\?|$)'
+);
+
+const ctasEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/reader-revenue-manager/data/ctas'
+);
+
+const createdCTA = {
+	name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
+	type: CTA_TYPES.NEWSLETTER_SIGNUP,
+};
+
 /* eslint-disable sitekit/acronym-case -- `Url` is the identifier used by the API. */
 const testPublication = {
 	...publications[ 0 ],
@@ -81,6 +94,23 @@ const testPublication = {
 	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
 } as Publication;
 /* eslint-enable sitekit/acronym-case */
+
+// Mocks the requests made after the CTA is created: the publication and CTAs
+// are refreshed, then the settings are saved.
+function mockPostCreateRequests( { mockSettings = true } = {} ) {
+	fetchMock.getOnce( publicationEndpoint, {
+		body: testPublication,
+		status: 200,
+	} );
+	fetchMock.getOnce( ctasEndpoint, { body: [ createdCTA ], status: 200 } );
+
+	if ( mockSettings ) {
+		fetchMock.postOnce( settingsEndpoint, ( url, opts ) => ( {
+			body: JSON.parse( opts.body as string ).data,
+			status: 200,
+		} ) );
+	}
+}
 
 function renderStepSignupForm(
 	formValues: Record< string, string | boolean > = {},
@@ -280,22 +310,17 @@ describe( 'StepSignupForm', () => {
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.setPostTypes( [ 'post', 'page' ] );
 
-		fetchMock.postOnce( settingsEndpoint, {
-			body: {
-				...validSettings,
-				snippetMode: 'post_types',
-				postTypes: [ 'post', 'page' ],
-			},
+		// Used for both `submitChanges()` and the save after the CTA is created.
+		fetchMock.post( settingsEndpoint, ( url, opts ) => ( {
+			body: JSON.parse( opts.body as string ).data,
 			status: 200,
-		} );
+		} ) );
 
 		fetchMock.postOnce( createCTAEndpoint, {
-			body: {
-				name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
-				type: CTA_TYPES.NEWSLETTER_SIGNUP,
-			},
+			body: createdCTA,
 			status: 200,
 		} );
+		mockPostCreateRequests( { mockSettings: false } );
 
 		renderStepSignupForm(
 			{
@@ -337,12 +362,10 @@ describe( 'StepSignupForm', () => {
 
 	it( 'should call onComplete on successful publish', async () => {
 		fetchMock.postOnce( createCTAEndpoint, {
-			body: {
-				name: 'organizations/ABCD1234/publications/ABCDEFGH/ctas/1',
-				type: CTA_TYPES.NEWSLETTER_SIGNUP,
-			},
+			body: createdCTA,
 			status: 200,
 		} );
+		mockPostCreateRequests();
 
 		const onComplete = jest.fn();
 
@@ -361,6 +384,74 @@ describe( 'StepSignupForm', () => {
 		await waitFor( () => {
 			expect( onComplete ).toHaveBeenCalledTimes( 1 );
 		} );
+	} );
+
+	it( 'should refresh the publication and CTAs and save settings before calling onComplete', async () => {
+		fetchMock.postOnce( createCTAEndpoint, {
+			body: createdCTA,
+			status: 200,
+		} );
+		mockPostCreateRequests();
+
+		const onComplete = jest.fn( () => {
+			// Verify the requests were made before `onComplete()` was called.
+			expect( fetchMock ).toHaveFetchedTimes( 1, publicationEndpoint );
+			expect( fetchMock ).toHaveFetchedTimes( 1, ctasEndpoint );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+		} );
+
+		renderStepSignupForm(
+			{
+				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
+			},
+			registry,
+			onComplete
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Publish to your site' } )
+		);
+
+		await waitFor( () => {
+			expect( onComplete ).toHaveBeenCalledTimes( 1 );
+		} );
+	} );
+
+	it( 'should not refresh the publication or CTAs, or call onComplete, when createCTA fails', async () => {
+		fetchMock.postOnce( createCTAEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'CTA creation failed',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+
+		const onComplete = jest.fn();
+
+		renderStepSignupForm(
+			{
+				[ NEWSLETTER_SIGNUP_FORM.DISPLAY_NAME ]: 'Newsletter signup',
+			},
+			registry,
+			onComplete
+		);
+
+		fireEvent.click(
+			screen.getByRole( 'button', { name: 'Publish to your site' } )
+		);
+
+		await waitFor( () => {
+			expect( screen.getByRole( 'status' ) ).toHaveTextContent(
+				/CTA creation failed/
+			);
+		} );
+
+		expect( fetchMock ).not.toHaveFetched( publicationEndpoint );
+		expect( fetchMock ).not.toHaveFetched( ctasEndpoint );
+		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+		expect( onComplete ).not.toHaveBeenCalled();
+		expect( console ).toHaveErrored();
 	} );
 
 	describe( 'event tracking', () => {

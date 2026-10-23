@@ -17,10 +17,21 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { addQueryArgs } from '@wordpress/url';
+
+/**
  * Internal dependencies
  */
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { VIEW_CONTEXT_KEY_METRICS_SETUP } from '@/js/googlesitekit/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	consumePendingSetup,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { withConnected } from '@/js/googlesitekit/modules/datastore/__fixtures__';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -137,8 +148,9 @@ describe( 'KeyMetricsSetupApp', () => {
 			.receiveGetModules( withConnected( MODULE_SLUG_ANALYTICS_4 ) );
 	} );
 
-	afterEach( () => {
-		jest.resetAllMocks();
+	afterEach( async () => {
+		await consumePendingSetup();
+		jest.clearAllMocks();
 	} );
 
 	it( 'should render correctly', async () => {
@@ -288,6 +300,98 @@ describe( 'KeyMetricsSetupApp', () => {
 
 		expect( global.location.assign ).not.toHaveBeenCalled();
 		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should navigate back to the Feature Discovery Hub when pending setup matches Analytics', async () => {
+		await setPendingSetup( 'analytics', ALL_SERVICES_TAB_PATH );
+
+		const featuresURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-features' );
+
+		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+			body: {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+			},
+			status: 200,
+		} );
+
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: true,
+					hasSitePurposeAnswer: true,
+				},
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				featuresURL
+			);
+		} );
+	} );
+
+	it( 'should navigate on the dashboard success URL when pending setup does not match Analytics', async () => {
+		await setPendingSetup( 'ads', ALL_SERVICES_TAB_PATH );
+
+		fetchMock.postOnce( coreUserInputSettingsEndpointRegExp, {
+			body: {
+				purpose: {
+					values: [ 'publish_blog' ],
+					scope: 'site',
+				},
+			},
+			status: 200,
+		} );
+
+		fetchMock.postOnce( initialSetupSettingsEndpoint, {
+			body: {
+				settings: {
+					isAnalyticsSetupComplete: true,
+					hasSitePurposeAnswer: true,
+				},
+			},
+			status: 200,
+		} );
+
+		const { getByRole, waitForRegistry } = render( <KeyMetricsSetupApp />, {
+			registry,
+			viewContext: VIEW_CONTEXT_KEY_METRICS_SETUP,
+		} );
+
+		await waitForRegistry();
+
+		fireEvent.click( getByRole( 'radio', { name: 'Publish a blog' } ) );
+		fireEvent.click( getByRole( 'button', { name: 'Complete setup' } ) );
+
+		const dashboardURL = registry
+			.select( CORE_SITE )
+			.getAdminURL( 'googlesitekit-dashboard' );
+		const expectedURL = addQueryArgs( dashboardURL, {
+			notification: 'authentication_success',
+			slug: 'analytics-4',
+		} );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalledWith(
+				expectedURL
+			);
+		} );
 	} );
 
 	it( 'should show the analytics setup success toast notice', async () => {
