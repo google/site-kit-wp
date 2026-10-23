@@ -25,7 +25,9 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
+import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -57,6 +59,8 @@ const TOP_CONTENT = [
 		serviceURL: 'https://example.com/analytics-report/second-post',
 	},
 ];
+
+const BADGE_MIN_HEIGHT = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
 
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
@@ -93,6 +97,54 @@ function renderTile(
  */
 function countPartialDataBadges( json: string ) {
 	return json.split( 'Partial data' ).length - 1;
+}
+
+/**
+ * Finds the first row that directly holds the given title text.
+ *
+ * @since n.e.x.t
+ *
+ * @param node  The rendered tree, or a node within it.
+ * @param title The title text the row holds.
+ * @return The row, or `undefined` when no row holds the title.
+ */
+function findTitleRow(
+	node: TestRenderer.ReactTestRendererJSON,
+	title: string
+): TestRenderer.ReactTestRendererJSON | undefined {
+	const children = ( node.children ?? [] ).filter(
+		( child ): child is TestRenderer.ReactTestRendererJSON =>
+			typeof child === 'object'
+	);
+
+	if ( children.some( ( child ) => child.children?.includes( title ) ) ) {
+		return node;
+	}
+
+	for ( const child of children ) {
+		const row = findTitleRow( child, title );
+
+		if ( row ) {
+			return row;
+		}
+	}
+
+	return undefined;
+}
+
+/**
+ * Finds the style of the row that holds the given title text.
+ *
+ * @since n.e.x.t
+ *
+ * @param json  The rendered PDF content, serialized to a string.
+ * @param title The title text the row holds.
+ * @return The row's style, flattened to one object.
+ */
+function findTitleRowStyle( json: string, title: string ) {
+	const row = findTitleRow( JSON.parse( json ), title );
+
+	return Object.assign( {}, ...[ row?.props.style ].flat() );
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -178,6 +230,42 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				} )
 			)
 		).toBe( 2 );
+	} );
+
+	it( 'should reserve the badge height on the card header with or without a badge', () => {
+		// Header flag set: the badge shows beside the audience name.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isAudiencePartialData: true } ),
+				'New visitors'
+			)
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+
+		// Header flag unset: no badge, but the header keeps its height.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isAudiencePartialData: false } ),
+				'New visitors'
+			)
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+	} );
+
+	it( 'should reserve the badge height on the Top content title row with or without a badge', () => {
+		// Top content flag set: the badge shows beside the title.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: true } ),
+				'Top content by pageviews'
+			)
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+
+		// Top content flag unset: no badge, but the row keeps its height.
+		expect(
+			findTitleRowStyle(
+				renderTile( { isTopContentPartialData: false } ),
+				'Top content by pageviews'
+			)
+		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
 	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {

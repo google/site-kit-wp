@@ -17,24 +17,27 @@
  */
 
 /**
- * External dependencies
- */
-import TestRenderer from 'react-test-renderer';
-
-/**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import PDFPartialDataBadge from './PDFPartialDataBadge';
+import { renderJSON } from '@/js/components/pdf-export/test-utils';
+import PDFPartialDataBadge, {
+	PDF_PARTIAL_DATA_BADGE_HEIGHT,
+} from './PDFPartialDataBadge';
 
 describe( 'PDFPartialDataBadge', () => {
 	it( 'renders the Partial data label in the warning colors', () => {
-		const badgeJSON = JSON.stringify(
-			TestRenderer.create( <PDFPartialDataBadge /> ).toJSON()
-		);
+		const badgeJSON = renderJSON( <PDFPartialDataBadge /> );
 
 		expect( badgeJSON ).toContain( 'Partial data' );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_WARNING_CONTAINER );
 		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_700 );
+	} );
+
+	it( 'should render at a fixed height', () => {
+		expect( renderJSON( <PDFPartialDataBadge /> ) ).toContain(
+			`"height":${ scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ) }`
+		);
 	} );
 } );
