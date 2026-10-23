@@ -29,8 +29,10 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
@@ -45,6 +47,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'adsense', {
+		name: __( 'AdSense', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Place ads on your site', 'google-site-kit' ),
 		shortDescription: __(
@@ -118,8 +121,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Top earning pages widget showing top pages and earnings data',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -145,6 +148,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	} );
 
 	registerFeature( 'ad-blocking-recovery', {
+		name: __( 'Ad blocking recovery', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADSENSE,
 		title: __( 'Recover revenue lost to ad blockers', 'google-site-kit' ),
 		shortDescription: __(
@@ -225,8 +229,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -248,6 +252,12 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 			ctaLabel: __( 'Set up Ad blocking recovery', 'google-site-kit' ),
+			getSetupURL: ( select ) =>
+				select( CORE_SITE ).getAdminURL(
+					'googlesitekit-ad-blocking-recovery'
+				),
+			isEnabled: ( select ) =>
+				select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet(),
 		},
 	} );
 }

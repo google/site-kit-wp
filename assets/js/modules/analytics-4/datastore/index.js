@@ -44,6 +44,7 @@ import settings from './settings';
 import siteGoalsBreakdown from './site-goals-breakdown';
 import siteGoalsSettings from './site-goals-settings';
 import tags from './tags';
+import ui from './ui';
 import webdatastreams from './webdatastreams';
 
 const store = combineStores(
@@ -70,6 +71,7 @@ const store = combineStores(
 	siteGoalsBreakdown,
 	siteGoalsSettings,
 	tags,
+	ui,
 	webdatastreams
 );
 

@@ -25,6 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { combineStores, commonStore } from 'googlesitekit-data';
+import { createErrorStore } from '@/js/googlesitekit/data/create-error-store';
 import { CORE_FEATURE_DISCOVERY } from './constants';
 import featuresStore from './features';
 import newnessStore from './newness';
@@ -50,7 +51,8 @@ const store = combineStores(
 	featuresStore,
 	newnessStore,
 	relevancyStore,
-	selectorsStore
+	selectorsStore,
+	createErrorStore( CORE_FEATURE_DISCOVERY )
 ) as Store;
 
 export const initialState = store.initialState;

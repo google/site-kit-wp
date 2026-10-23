@@ -19,8 +19,9 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Core\Util\Product_Post_Type;
+use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
-use WP_Post_Type;
 
 /**
  * Class managing assets.
@@ -847,12 +848,15 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
+	 * @since n.e.x.t Adds `usingPlainPermalinks`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
-		global $wpdb;
+		global $wpdb, $wp_rewrite;
 		$site_url           = $this->context->get_reference_site_url();
+		$product_type       = Product_Post_Type::get();
+		$product_post_type  = $product_type ? $product_type->name : null;
 		$woocommerce_active = class_exists( 'WooCommerce' );
 
 		$inline_data = array(
@@ -874,7 +878,9 @@ final class Assets {
 			'storagePrefix'        => $this->get_storage_prefix(),
 			'wpPrivacyURL'         => get_privacy_policy_url(),
 			'referenceDate'        => Date::reference_date(),
-			'productPostType'      => $this->get_product_post_type(),
+			'productPostType'      => $product_post_type,
+			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
+			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1243,27 +1249,44 @@ final class Assets {
 	}
 
 	/**
-	 * Gets the product post type.
+	 * Gets the path that the URL of every post of a post type starts with.
 	 *
-	 * @since 1.116.0
+	 * The part of the post type's permalink structure before its first rewrite
+	 * tag, such as `product/` in `product/%product%`, is the same in the URL of
+	 * every post of the type. The path starts with the path of the reference
+	 * site URL, which the dashboard builds its page links from.
 	 *
-	 * @return string|null The product post type name or null if not present on the website.
+	 * @since n.e.x.t
+	 *
+	 * @param string|null $post_type The post type name, or `null` for none.
+	 * @return string|null The path, such as `/product/`, or `null` for no post type, no permalink structure, or a structure that starts with a rewrite tag.
 	 */
-	protected function get_product_post_type() {
-		/**
-		 * Filters the product post type.
-		 *
-		 * @since 1.116.0
-		 *
-		 * @param string $product_post_type The product post type name.
-		 */
-		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
-		$product_type      = get_post_type_object( $product_post_type );
+	protected function get_post_type_path_prefix( $post_type ) {
+		global $wp_rewrite;
 
-		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			return $product_post_type;
+		// `get_extra_permastruct()` reads the name as an array key, and PHP 8.5
+		// deprecates `null` as an array key.
+		if ( ! $post_type ) {
+			return null;
 		}
 
-		return null;
+		// On plain permalinks, `get_extra_permastruct()` returns `false` for
+		// every post type.
+		$permastruct = $wp_rewrite->get_extra_permastruct( $post_type );
+
+		if ( ! $permastruct ) {
+			return null;
+		}
+
+		$path = (string) strstr( $permastruct, '%', true );
+
+		if ( '' === trim( $path, '/' ) ) {
+			return null;
+		}
+
+		return URL::parse(
+			trailingslashit( $this->context->get_reference_site_url() ) . ltrim( $path, '/' ),
+			PHP_URL_PATH
+		);
 	}
 }

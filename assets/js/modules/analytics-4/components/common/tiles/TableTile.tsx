@@ -27,31 +27,48 @@ import { FC, ReactNode } from 'react';
 import Link from '@/js/components/Link';
 import PreviewBlock from '@/js/components/PreviewBlock';
 import ReportError from '@/js/components/ReportError';
-import TileShell from './TileShell';
+import TileShell, { TileShellProps } from './TileShell';
 import TileZeroDataMessage, { MetricLabel } from './TileZeroDataMessage';
 
 export interface TableTileRow {
+	/** Row label, shown as a link when the row has a `url`. */
 	label: string;
+	/** Row value, such as a visitor count. */
 	value: string | number;
 	/** A second value shown after `value`, such as a share of the total. */
 	secondaryValue?: string | number;
+	/** URL the label links to, opened in a new tab. */
 	url?: string;
+	/** Page path of a row that lists a page, which `TableTile` itself doesn't render. */
 	pagePath?: string;
 }
 
 export interface TableTileProps {
+	/** Title shown at the top of the tile. */
 	title: string;
+	/** Heading element of the title, `h3` by default. */
+	titleAs?: TileShellProps[ 'titleAs' ];
+	/** Header label after the title, such as a column name. */
 	headerLabel?: string;
+	/** Rows to render, with the zero state shown when there are none. */
 	rows?: TableTileRow[];
+	/** Whether to show loading placeholders in place of the rows. */
 	loading?: boolean;
+	/** Error to show in place of the rows, as a `ReportError`. */
 	error?: unknown;
+	/** Maximum number of rows to show, or every row when not set. */
 	limit?: number;
+	/** Metric in the zero state message: `visitors` by default, `sales`, or `leads`. */
 	noDataMetricLabel?: MetricLabel;
+	/** Content shown in place of the default zero state message. */
 	zeroState?: ReactNode;
+	/** Called on a "Retry" click in the error state, to request a report with fetch options, such as `cacheTTL`, again. Passing `onRetry` also shows "Retry" for a retryable error of a selector other than `getReport`. */
+	onRetry?: () => void;
 }
 
 const TableTile: FC< TableTileProps > = ( {
 	title,
+	titleAs,
 	headerLabel,
 	rows = [],
 	loading = false,
@@ -59,6 +76,7 @@ const TableTile: FC< TableTileProps > = ( {
 	limit,
 	noDataMetricLabel,
 	zeroState,
+	onRetry,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
@@ -66,6 +84,7 @@ const TableTile: FC< TableTileProps > = ( {
 		<TileShell
 			baseClassName="googlesitekit-table-tile"
 			title={ title }
+			titleAs={ titleAs }
 			headerLabel={ headerLabel }
 		>
 			{ loading && (
@@ -78,7 +97,11 @@ const TableTile: FC< TableTileProps > = ( {
 
 			{ ! loading && !! error && (
 				<div className="googlesitekit-table-tile__error">
-					<ReportError moduleSlug="analytics-4" error={ error } />
+					<ReportError
+						moduleSlug="analytics-4"
+						error={ error }
+						onRetry={ onRetry }
+					/>
 				</div>
 			) }
 
