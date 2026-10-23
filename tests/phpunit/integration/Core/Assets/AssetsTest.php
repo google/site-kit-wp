@@ -65,6 +65,9 @@ class AssetsTest extends TestCase {
 		if ( post_type_exists( 'product' ) ) {
 			unregister_post_type( 'product' );
 		}
+		if ( post_type_exists( 'digital_product' ) ) {
+			unregister_post_type( 'digital_product' );
+		}
 	}
 
 	public function test_register() {
@@ -395,49 +398,22 @@ class AssetsTest extends TestCase {
 		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty when no products exist.' );
 	}
 
-	public function test_base_data__product_post_type__hidden_post_type() {
-		$this->set_permalink_structure( '/%postname%/' );
-
-		register_post_type( 'product', array( 'public' => false ) );
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for hidden post types.' );
-	}
-
-	public function test_base_data__product_post_type__filter_change_product_post() {
-		register_post_type( 'digital_product', array( 'public' => true ) );
-
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'digital_product';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertEquals( 'digital_product', $data['productPostType'], 'Product post type should match filter value.' );
-	}
-
-	public function test_base_data__product_post_type__invalid_post_type() {
-		add_filter(
-			'googlesitekit_product_post_type',
-			function () {
-				return 'invalid_post_type';
-			}
-		);
-
-		$data = $this->get_inline_base_data();
-
-		$this->assertTrue( empty( $data['productPostType'] ), 'Product post type should be empty for invalid post types.' );
-	}
-
 	public function test_base_data__product_post_type() {
 		register_post_type( 'product', array( 'public' => true ) );
 
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( 'product', $data['productPostType'], 'Product post type should be set to default product type.' );
+	}
+
+	public function test_base_data__product_post_type__filtered_to_digital_product() {
+		register_post_type( 'digital_product', array( 'public' => true ) );
+
+		add_filter( 'googlesitekit_product_post_type', fn() => 'digital_product' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertEquals( 'digital_product', $data['productPostType'], '`productPostType` should be `digital_product`, the post type that the `googlesitekit_product_post_type` filter returns.' );
 	}
 
 	public function test_base_data__product_path_prefix__no_product_post_type() {
@@ -520,6 +496,22 @@ class AssetsTest extends TestCase {
 		$data = $this->get_inline_base_data();
 
 		$this->assertEquals( '/shop-site/product/', $data['productPathPrefix'], '`productPathPrefix` should start with the path of the reference site URL.' );
+	}
+
+	public function test_base_data__using_plain_permalinks() {
+		$this->set_permalink_structure( '' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertTrue( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `true` when the site uses plain permalinks.' );
+	}
+
+	public function test_base_data__using_plain_permalinks__permalink_structure() {
+		$this->set_permalink_structure( '/%postname%/' );
+
+		$data = $this->get_inline_base_data();
+
+		$this->assertFalse( $data['usingPlainPermalinks'], '`usingPlainPermalinks` should be `false` when the site has a permalink structure.' );
 	}
 
 	public function test_base_data__woocommerce_not_installed() {

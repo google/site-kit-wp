@@ -20,10 +20,12 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getQueryArg, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { get } from 'googlesitekit-api';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
@@ -36,11 +38,17 @@ import {
 	untilResolved,
 	waitFor,
 } from '@tests/js/test-utils';
+import { plainPermalinkTopPosts } from './__fixtures__';
 import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
 import { provideIncludeProductsState } from './test-utils';
+
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -48,12 +56,20 @@ const analytics4SettingsEndpoint = new RegExp(
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 /** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
+/** The route of the `plain-permalink-top-posts` datapoint, with any query string after it. */
+const plainPermalinkTopPostsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
+);
 
 describe( 'modules/analytics-4 fresh data', () => {
 	let registry: WPDataRegistry;
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+	} );
+
+	afterEach( () => {
+		jest.mocked( get ).mockClear();
 	} );
 
 	describe( 'shouldIncludeWooCommerceProducts', () => {
@@ -1283,6 +1299,423 @@ describe( 'modules/analytics-4 fresh data', () => {
 					] )
 			).toEqual( new Error( 'count must be a positive integer.' ) );
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+	} );
+
+	describe( 'getPlainPermalinkTopPosts', () => {
+		it( 'should return the posts with the most views and the total of the report for the dates and the limit of the options', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			expect(
+				getQueryArgs(
+					fetchMock.lastCall(
+						plainPermalinkTopPostsEndpoint
+					)?.[ 0 ] ?? ''
+				)
+			).toMatchObject( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: '3',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( plainPermalinkTopPosts );
+		} );
+
+		it( 'should return `undefined` while the posts load', async () => {
+			freezeFetch( plainPermalinkTopPostsEndpoint );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					plainPermalinkTopPostsEndpoint
+				)
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toBeUndefined();
+		} );
+
+		it( 'should request the posts with the fetch options, such as a cache of five minutes', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( get ).toHaveBeenCalledTimes( 1 );
+			expect( get ).toHaveBeenCalledWith(
+				'modules',
+				'analytics-4',
+				'plain-permalink-top-posts',
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+		} );
+
+		it( 'should keep the posts of each set of options apart', async () => {
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'limit' ) === '2',
+				{
+					body: {
+						rows: plainPermalinkTopPosts.rows.slice( 0, 2 ),
+						total: 100,
+					},
+					status: 200,
+				}
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-20',
+				{ body: { ...plainPermalinkTopPosts, total: 150 }, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'endDate' ) === '2026-10-23',
+				{ body: { ...plainPermalinkTopPosts, total: 120 }, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-21' &&
+					getQueryArg( url, 'endDate' ) === '2026-10-22' &&
+					getQueryArg( url, 'limit' ) === '3',
+				{ body: plainPermalinkTopPosts, status: 200 }
+			);
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 2,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-20',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-23',
+				limit: 3,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 2,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-20',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-23',
+				limit: 3,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 2,
+					} )
+			).toEqual( {
+				rows: plainPermalinkTopPosts.rows.slice( 0, 2 ),
+				total: 100,
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-20',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( { ...plainPermalinkTopPosts, total: 150 } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-23',
+						limit: 3,
+					} )
+			).toEqual( { ...plainPermalinkTopPosts, total: 120 } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( plainPermalinkTopPosts );
+		} );
+
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` under the options when the request fails', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts(
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+						{ cacheTTL: 300 }
+					)
+			).toBeUndefined();
+		} );
+
+		it( 'should request the posts again, and remove the error from `getErrorForSelector()`, when the resolution is invalidated after a failed request', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( console ).toHaveErrored();
+
+			// Without the saved error here, the check of the error after the
+			// retry would prove nothing.
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getPlainPermalinkTopPosts', [
+					{
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					},
+					{ cacheTTL: 300 },
+				] );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes(
+				2,
+				plainPermalinkTopPostsEndpoint
+			);
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toBeUndefined();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts(
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+						{ cacheTTL: 300 }
+					)
+			).toEqual( plainPermalinkTopPosts );
 		} );
 	} );
 } );
