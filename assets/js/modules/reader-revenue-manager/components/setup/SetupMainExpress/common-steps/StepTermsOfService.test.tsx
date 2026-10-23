@@ -33,7 +33,10 @@ import {
 import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -65,6 +68,8 @@ function provideTermsOfService( registry: Registry ) {
 }
 
 describe( 'StepTermsOfService', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const publicationEndpoint = new RegExp(

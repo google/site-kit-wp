@@ -22,6 +22,7 @@
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { ERROR_REASON_INSUFFICIENT_PERMISSIONS } from '@/js/util/errors';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	provideModules,
@@ -72,5 +73,49 @@ describe( 'StoreErrorNotices', () => {
 		).toBeInTheDocument();
 		expect( queryByText( 'Error:' ) ).not.toBeInTheDocument();
 		expect( queryByText( '(Please try again.)' ) ).not.toBeInTheDocument();
+	} );
+
+	describe( 'scrollIntoView', () => {
+		mockBrowserScrolling();
+
+		beforeEach( async () => {
+			await registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.setErrorForSelector(
+					{ code: 'second-error', message: 'A second error.' },
+					'getReports',
+					[]
+				);
+		} );
+
+		it( 'should scroll only the first error notice into view when `scrollIntoView` is set', () => {
+			const { container } = render(
+				<StoreErrorNotices
+					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
+					storeName={ MODULES_ANALYTICS_4 }
+					scrollIntoView
+				/>,
+				{ registry }
+			);
+
+			expect(
+				container.querySelectorAll( '.googlesitekit-notice-container' )
+			).toHaveLength( 2 );
+			expect( Element.prototype.scrollIntoView ).toHaveBeenCalledTimes(
+				1
+			);
+		} );
+
+		it( 'should not scroll any notice into view by default', () => {
+			render(
+				<StoreErrorNotices
+					moduleSlug={ MODULE_SLUG_ANALYTICS_4 }
+					storeName={ MODULES_ANALYTICS_4 }
+				/>,
+				{ registry }
+			);
+
+			expect( Element.prototype.scrollIntoView ).not.toHaveBeenCalled();
+		} );
 	} );
 } );
