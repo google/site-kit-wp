@@ -22,6 +22,11 @@
 import type { FC } from 'react';
 
 /**
+ * WordPress dependencies
+ */
+import { __ } from '@wordpress/i18n';
+
+/**
  * Internal dependencies
  */
 import {
@@ -35,6 +40,7 @@ import {
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
+import ExpressSetupFallback from './ExpressSetupFallback';
 import ExpressSetupLayout from './ExpressSetupLayout';
 import ExpressSetupSteps from './ExpressSetupSteps';
 
@@ -46,22 +52,34 @@ const STEPS: SetupStep[] = [
 ];
 
 const ExpressSetupDefault: FC = () => {
-	useExpressSetupScopes();
+	const hasRequiredScopes = useExpressSetupScopes();
 
 	const { currentStep, advance } = useSetupFlow( STEPS );
 
-	const StepComponent = currentStep?.Component;
+	if ( hasRequiredScopes !== true || ! currentStep ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ hasRequiredScopes === true }
+				errorTitle={ __(
+					'We couldn’t set up Reader Revenue Manager',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	const StepComponent = currentStep.Component;
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
 					steps={ STEPS }
-					activeSlug={ currentStep?.slug }
+					activeSlug={ currentStep.slug }
 				/>
 			}
 		>
-			{ StepComponent ? <StepComponent onComplete={ advance } /> : null }
+			<StepComponent onComplete={ advance } />
 		</ExpressSetupLayout>
 	);
 };

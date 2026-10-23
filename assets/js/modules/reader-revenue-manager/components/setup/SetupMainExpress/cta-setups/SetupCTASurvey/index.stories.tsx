@@ -43,6 +43,7 @@ import {
 	EXPRESS_SETUP_CTAS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { Story } from '@/js/types/Story';
 import {
@@ -59,6 +60,26 @@ import { surveyQuestionsStep } from './StepSurveyQuestions';
 
 const ORGANIZATION_ID = 'ABCD1234';
 const PUBLICATION_ID = 'ABCD_123-4';
+
+/* eslint-disable sitekit/acronym-case -- `Id` and `Url` are the identifiers used by the API. */
+const PUBLICATION_WITHOUT_TERMS = {
+	...publications[ 2 ],
+	organizationId: ORGANIZATION_ID,
+	publicationId: PUBLICATION_ID,
+} as Publication;
+
+const PUBLICATION_WITHOUT_POLICIES = {
+	...publications[ 0 ],
+	organizationId: ORGANIZATION_ID,
+	publicationId: PUBLICATION_ID,
+} as Publication;
+
+const COMPLETE_PUBLICATION = {
+	...PUBLICATION_WITHOUT_POLICIES,
+	publicationTosUrl: 'https://example.com/terms',
+	publicationPrivacyPolicyUrl: 'https://example.com/privacy',
+} as Publication;
+/* eslint-enable sitekit/acronym-case */
 
 const BASE_QUERY = {
 	cta: EXPRESS_SETUP_CTAS.SURVEY,
@@ -88,6 +109,13 @@ function setupBaseRegistry( registry: WPDataRegistry ) {
 	} );
 }
 
+function connectPublication(
+	registry: WPDataRegistry,
+	publication: Publication
+) {
+	providePublications( registry, [ ...publications, publication ] );
+}
+
 function Template() {
 	return <SetupCTASurvey />;
 }
@@ -100,6 +128,13 @@ ConnectPublication.parameters = {
 		step: publicationSetupStep.slug,
 	},
 };
+ConnectPublication.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.setPublicationID( '' );
+	},
+};
 ConnectPublication.scenario = {};
 
 export const TermsOfService = Template.bind( {} ) as Story;
@@ -109,6 +144,10 @@ TermsOfService.parameters = {
 		...BASE_QUERY,
 		step: termsOfServiceStep.slug,
 	},
+};
+TermsOfService.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, PUBLICATION_WITHOUT_TERMS ),
 };
 TermsOfService.scenario = {};
 
@@ -120,6 +159,10 @@ PublicationPolicies.parameters = {
 		step: publicationPoliciesStep.slug,
 	},
 };
+PublicationPolicies.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, PUBLICATION_WITHOUT_POLICIES ),
+};
 PublicationPolicies.scenario = {};
 
 export const SurveyQuestions = Template.bind( {} ) as Story;
@@ -129,6 +172,10 @@ SurveyQuestions.parameters = {
 		...BASE_QUERY,
 		step: surveyQuestionsStep.slug,
 	},
+};
+SurveyQuestions.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, COMPLETE_PUBLICATION ),
 };
 SurveyQuestions.scenario = {};
 
@@ -140,6 +187,10 @@ SurveyCTA.parameters = {
 		step: surveyCTAStep.slug,
 	},
 };
+SurveyCTA.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, COMPLETE_PUBLICATION ),
+};
 SurveyCTA.scenario = {};
 
 export const SetupComplete = Template.bind( {} ) as Story;
@@ -149,6 +200,10 @@ SetupComplete.parameters = {
 		...BASE_QUERY,
 		step: setupCompleteStep.slug,
 	},
+};
+SetupComplete.args = {
+	setupRegistry: ( registry: WPDataRegistry ) =>
+		connectPublication( registry, COMPLETE_PUBLICATION ),
 };
 SetupComplete.scenario = {};
 
