@@ -29,7 +29,10 @@ import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fi
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublication } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -45,6 +48,8 @@ const TEST_PUBLICATION = publications[ 0 ];
 const TEST_PUBLICATION_WITH_EXISTING_VALUES = publications[ 3 ];
 
 describe( 'StepPublicationPolicies', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const publicationEndpoint = new RegExp(

@@ -198,6 +198,7 @@ const ConnectPublication: FC< ConnectPublicationProps > = ( {
 				<StoreErrorNotices
 					moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 					storeName={ MODULES_READER_REVENUE_MANAGER }
+					scrollIntoView
 					hasButton
 				/>
 
