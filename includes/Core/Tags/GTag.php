@@ -31,13 +31,6 @@ class GTag {
 	const HANDLE = 'google_gtagjs';
 
 	/**
-	 * Developer ID for hits that carry user-provided data.
-	 *
-	 * @since n.e.x.t
-	 */
-	const USER_DATA_DEVELOPER_ID = 'dZjRkOT';
-
-	/**
 	 * Options instance.
 	 *
 	 * @var Options
@@ -162,7 +155,6 @@ JS;
 	 * configs and commands.
 	 *
 	 * @since 1.124.0
-	 * @since n.e.x.t Sets the user data developer ID when user data is set for the page.
 	 * @access protected
 	 *
 	 * @return void
@@ -194,10 +186,6 @@ JS;
 
 		if ( $this->is_google_tag_gateway_active() ) {
 			wp_add_inline_script( self::HANDLE, 'gtag("set", "developer_id.dZmZmYj", true);' );
-		}
-
-		if ( $this->has_user_data_command() ) {
-			wp_add_inline_script( self::HANDLE, sprintf( 'gtag("set", "developer_id.%s", true);', self::USER_DATA_DEVELOPER_ID ) );
 		}
 
 		foreach ( $this->tags as $tag ) {
@@ -254,23 +242,6 @@ JS;
 		);
 
 		return sprintf( 'gtag(%s);', implode( ',', $gtag_args ) );
-	}
-
-	/**
-	 * Checks whether a command sets user data for the page.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return bool True if a `set` command for `user_data` has been added, otherwise false.
-	 */
-	private function has_user_data_command() {
-		foreach ( $this->commands as $command ) {
-			if ( 'set' === $command['command'] && 'user_data' === ( $command['parameters'][0] ?? null ) ) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	/**
