@@ -173,6 +173,24 @@ export class WordPressCookies {
 			} );
 		}
 
+		const dataAvailable = this.getAnnotation( '_wp:data-available' );
+		if ( dataAvailable ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_data_available',
+				value: dataAvailable,
+			} );
+		}
+
+		const referenceDate = this.getAnnotation( '_wp:reference-date' );
+		if ( referenceDate ) {
+			cookies.push( {
+				...defaults,
+				name: '_wp_test_reference_date',
+				value: referenceDate,
+			} );
+		}
+
 		return this.context.addCookies( cookies );
 	}
 
