@@ -28,30 +28,13 @@
 		padding-block: 8px;
 		position: sticky;
 
-		// Sits directly below the sticky Site Kit header.
-		top: 68px;
+		// Sits directly below the sticky feature discovery tab bar.
+		top: calc(var(--googlesitekit-feature-discovery-sticky-top) + var(--googlesitekit-feature-discovery-tab-bar-height));
 		z-index: 10;
 
 		body.googlesitekit-showing-feature-tour &,
 		body.googlesitekit-showing-tooltip & {
 			position: static;
-		}
-
-		// Offsets match `.googlesitekit-navigation`, which sticks below the
-		// same header.
-		body.admin-bar & {
-
-			@media (min-width: $width-tablet + 1 + px) {
-				top: 114px;
-			}
-
-			@media (min-width: $bp-wpAdminBarTablet) {
-				top: 100px;
-			}
-
-			@media (min-width: $width-desktop + 1 + px) {
-				top: 116px;
-			}
 		}
 
 		.googlesitekit-chip-multi-select {
