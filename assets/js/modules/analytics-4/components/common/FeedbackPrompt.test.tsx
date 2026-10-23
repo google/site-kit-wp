@@ -80,6 +80,24 @@ describe( 'FeedbackPrompt', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should hide the "Is this section helpful?" question but still read it to a screen reader when `hideQuestion` is set', () => {
+		const { getByRole, queryByText } = render(
+			<FeedbackPrompt
+				voteID="test_vote"
+				gaTrackingEventArgs={ { category: 'test-feedback-survey' } }
+				hideQuestion
+			/>,
+			{ registry }
+		);
+
+		expect(
+			queryByText( 'Is this section helpful?' )
+		).not.toBeInTheDocument();
+		expect(
+			getByRole( 'group', { name: 'Is this section helpful?' } )
+		).toBeInTheDocument();
+	} );
+
 	it.each( [
 		[ 'vote_up', 'Yes, this was helpful', 'up' ],
 		[ 'vote_down', 'No, this was not helpful', 'down' ],
