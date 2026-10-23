@@ -37,9 +37,16 @@ const NOTIFICATION_ID = 'internal-server-error';
 
 export default function InternalServerError() {
 	const breakpoint = useBreakpoint();
-	const error = useSelect( ( select ) =>
-		select( CORE_SITE ).getInternalServerError()
-	);
+	const error = useSelect( ( select ) => {
+		const internalServerError =
+			select( CORE_SITE ).getInternalServerError();
+
+		// Treat an error with `showGlobalNotification` set to `false` as no error, so
+		// this component neither renders the banner nor scrolls the page to it.
+		return internalServerError?.showGlobalNotification === false
+			? undefined
+			: internalServerError;
+	} );
 
 	// Scroll to the notification when the error is present.
 	useEffect( () => {
