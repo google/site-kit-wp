@@ -1,0 +1,64 @@
+/**
+ * DragHandle component.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * External dependencies
+ */
+import { FC } from 'react';
+
+/**
+ * WordPress dependencies
+ */
+import { useContext } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import DragHandleIcon from '@/svg/icons/drag-handle.svg';
+import { DragHandleContext } from './DragHandleContext';
+
+export interface DragHandleProps {
+	'aria-label': string;
+	disabled?: boolean;
+}
+
+const DragHandle: FC< DragHandleProps > = ( {
+	'aria-label': label,
+	disabled,
+} ) => {
+	const handleProps = useContext( DragHandleContext );
+
+	return (
+		<button
+			{ ...handleProps }
+			aria-label={ label }
+			className="googlesitekit-draggable-list__handle"
+			disabled={ disabled }
+			type="button"
+		>
+			<DragHandleIcon
+				aria-hidden="true"
+				focusable="false"
+				height={ 18 }
+				width={ 18 }
+			/>
+		</button>
+	);
+};
+
+export default DragHandle;

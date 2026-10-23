@@ -108,6 +108,15 @@ export const LATEST_POST: RecentContentItem = {
 	sitePublishedAt: '2026-09-17T08:30:00',
 };
 
+export const EARLIER_POST: RecentContentItem = {
+	id: 11,
+	title: 'Sorbet is good for your health',
+	permalink: 'https://example.com/sorbet/',
+	pagePath: '/sorbet/',
+	publishedAt: '2026-09-10T12:30:00Z',
+	sitePublishedAt: '2026-09-10T08:30:00',
+};
+
 /**
  * Gets the report arguments of `LATEST_POST` for the registry's reference date.
  *
