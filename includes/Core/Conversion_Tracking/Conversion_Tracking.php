@@ -24,6 +24,7 @@ use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\PopupMak
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WooCommerce;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Event_Providers\WPForms;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
@@ -152,7 +153,12 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 			}
 		);
 
-		$gtag_event = '
+		$user_data_params = wp_json_encode(
+			array( 'developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID => true )
+		);
+
+		$gtag_event = sprintf(
+			'
 			window._googlesitekit = window._googlesitekit || {};
 			window._googlesitekit.throttledEvents = [];
 			window._googlesitekit.gtagEvent = (name, data) => {
@@ -166,9 +172,11 @@ class Conversion_Tracking implements Provides_Feature_Metrics {
 					delete window._googlesitekit.throttledEvents[ key ];
 				}, 5 );
 
-				gtag( "event", name, { ...data, event_source: "site-kit" } );
+				gtag( "event", name, { ...data, event_source: "site-kit", ...( data && data.user_data ? %s : {} ) } );
 			};
-		';
+			',
+			$user_data_params
+		);
 
 		if ( Feature_Flags::enabled( 'gtagUserData' ) ) {
 			$gtag_event .= 'window._googlesitekit.gtagUserData = true;';
