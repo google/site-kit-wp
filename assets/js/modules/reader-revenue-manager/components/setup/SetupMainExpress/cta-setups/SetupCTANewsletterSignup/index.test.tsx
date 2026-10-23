@@ -396,9 +396,6 @@ describe( 'SetupCTANewsletterSignup', () => {
 		const authenticationEndpoint = new RegExp(
 			'^/google-site-kit/v1/core/user/data/authentication'
 		);
-		const publicationEndpoint = new RegExp(
-			'^/google-site-kit/v1/modules/reader-revenue-manager/data/publication'
-		);
 
 		const errorResponse = {
 			code: 'internal_server_error',
