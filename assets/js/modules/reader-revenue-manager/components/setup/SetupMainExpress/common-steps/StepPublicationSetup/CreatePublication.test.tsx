@@ -30,7 +30,10 @@ import {
 	SHOW_PUBLICATION_CREATE,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	act,
 	createTestRegistry,
@@ -45,6 +48,8 @@ import {
 import CreatePublication from './CreatePublication';
 
 describe( 'CreatePublication', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const createPublicationEndpoint = new RegExp(
