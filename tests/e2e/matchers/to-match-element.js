@@ -1,0 +1,59 @@
+/**
+ * Custom toMatchElement Jest matcher.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/**
+ * Internal dependencies
+ */
+import {
+	describeTarget,
+	findMatches,
+	poll,
+	waitForMatch,
+	withDefaultOptions,
+} from './find-element';
+
+/**
+ * Asserts that an element matching the selector, and the text if given,
+ * appears within the timeout. With `.not`, asserts that none does.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} root             Page or element handle to search in.
+ * @param {string} selector         CSS selector.
+ * @param {Object} [matcherOptions] Options: `text`, `visible`, `timeout`, `polling`.
+ * @return {Object} Object with `pass` and `message` keys.
+ */
+export async function toMatchElement( root, selector, matcherOptions ) {
+	const options = withDefaultOptions( matcherOptions );
+
+	if ( this.isNot ) {
+		const absent = await poll(
+			async () =>
+				( await findMatches( root, selector, options ) ).length === 0,
+			options
+		);
+		return {
+			pass: ! absent,
+			message: () =>
+				`Element ${ describeTarget( selector, options ) } found`,
+		};
+	}
+
+	await waitForMatch( root, selector, options );
+	return { pass: true, message: () => '' };
+}

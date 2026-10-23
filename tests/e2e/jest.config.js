@@ -4,13 +4,12 @@
 const path = require( 'path' );
 
 module.exports = {
-	preset: 'jest-puppeteer',
+	testEnvironment: '<rootDir>/config/playwright-environment.js',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/screenshots.js',
 		'<rootDir>/config/bootstrap.js',
 		'<rootDir>/config/wordpress-debug-log',
 		'@wordpress/jest-console',
-		'expect-puppeteer',
 	],
 	testMatch: [
 		'<rootDir>/**/*.test.js',
