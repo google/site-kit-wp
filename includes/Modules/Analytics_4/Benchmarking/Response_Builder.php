@@ -71,6 +71,7 @@ class Response_Builder {
 	 * Nothing is saved to the site, so every call builds the response again.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t `dailyTraffic` changed from the 395 days that end on the end date to the days of the selected period.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -78,7 +79,7 @@ class Response_Builder {
 	 *     The assembled response, or the error a failed report returned.
 	 *
 	 *     @type array $visitors       Visitor totals for the selected period and the one before it.
-	 *     @type array $dailyTraffic   Daily visitor counts, oldest first.
+	 *     @type array $dailyTraffic   List of the days of the selected period, oldest first, each as `array( 'date' => 'YYYY-MM-DD', 'visitors' => int )`.
 	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
@@ -92,12 +93,12 @@ class Response_Builder {
 			return $reports;
 		}
 
-		$daily_traffic = $this->get_daily_traffic( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'] );
+		$daily_series  = $this->get_daily_series( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'], $end_date );
 		$compare_range = $report_options->get_compare_range();
 
 		$visitors = array(
-			'current'  => $this->sum_visitors( $daily_traffic, $start_date, $end_date ),
-			'previous' => $this->sum_visitors( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
+			'current'  => $this->sum_visitors( $daily_series, $start_date, $end_date ),
+			'previous' => $this->sum_visitors( $daily_series, $compare_range['startDate'], $compare_range['endDate'] ),
 		);
 
 		$contextual_data = $this->filter_contextual_data(
@@ -115,7 +116,7 @@ class Response_Builder {
 
 		return array(
 			'visitors'       => $visitors,
-			'dailyTraffic'   => $daily_traffic,
+			'dailyTraffic'   => $this->get_daily_traffic( $daily_series, $start_date ),
 			'dimensions'     => $ranked_data['dimensions'],
 			'contextualData' => $ranked_data['contextualData'],
 		);
@@ -309,23 +310,27 @@ class Response_Builder {
 	 * day has to be in the list.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Method renamed from `get_daily_traffic()`, and changed from walking 395 days to walking every day from `$first_date` to `$end_date`.
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
+	 * @param string $end_date    The last day of the daily series, as `YYYY-MM-DD`.
 	 * @return array List of days, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 */
-	private function get_daily_traffic( array $report_rows, $first_date ) {
+	private function get_daily_series( array $report_rows, $first_date, $end_date ) {
 		$visitors_by_date = array();
 
 		foreach ( $report_rows as $report_row ) {
 			$visitors_by_date[ $report_row['values'][0] ] = $report_row['visitors'];
 		}
 
-		$date          = new DateTimeImmutable( $first_date, new DateTimeZone( 'UTC' ) );
-		$daily_traffic = array();
+		$date         = new DateTimeImmutable( $first_date, new DateTimeZone( 'UTC' ) );
+		$daily_series = array();
 
-		for ( $day = 0; $day < Report_Options::DAILY_SERIES_DAYS; $day++ ) {
-			$daily_traffic[] = array(
+		// Both dates are zero-padded `YYYY-MM-DD`, so `<=` on the strings
+		// compares the days.
+		while ( $date->format( 'Y-m-d' ) <= $end_date ) {
+			$daily_series[] = array(
 				'date'     => $date->format( 'Y-m-d' ),
 				'visitors' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
 			);
@@ -333,23 +338,46 @@ class Response_Builder {
 			$date = $date->modify( '+1 day' );
 		}
 
-		return $daily_traffic;
+		return $daily_series;
+	}
+
+	/**
+	 * Gets the days of the selected period from the daily series, oldest first.
+	 *
+	 * The daily series starts with the compare period, which `dailyTraffic`
+	 * leaves out.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array  $daily_series The days of the daily series, oldest first, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @param string $start_date   The first day of the selected period, as `YYYY-MM-DD`.
+	 * @return array List of days from `$start_date` on, keyed from `0`.
+	 */
+	private function get_daily_traffic( array $daily_series, $start_date ) {
+		// The daily series runs with no gap from the compare period's first day
+		// to the end date, so `array_search()` finds `$start_date`. The `(int)`
+		// only narrows its `int|string|false` return to the `int` that
+		// `array_slice()` takes.
+		$start_index = array_search( $start_date, array_column( $daily_series, 'date' ), true );
+
+		return array_slice( $daily_series, (int) $start_index );
 	}
 
 	/**
 	 * Adds up each day's visitors from one date to another.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now holds the selected period alone.
 	 *
-	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
-	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
-	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
+	 * @param array  $daily_series The days of the daily series, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @param string $start_date   The first day to count, as `YYYY-MM-DD`.
+	 * @param string $end_date     The last day to count, as `YYYY-MM-DD`.
 	 * @return int The total visitors from `$start_date` to `$end_date`.
 	 */
-	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
+	private function sum_visitors( array $daily_series, $start_date, $end_date ) {
 		$visitors = 0;
 
-		foreach ( $daily_traffic as $day ) {
+		foreach ( $daily_series as $day ) {
 			if ( $day['date'] >= $start_date && $day['date'] <= $end_date ) {
 				$visitors += $day['visitors'];
 			}

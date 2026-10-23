@@ -39,10 +39,8 @@ import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-c
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
 import { getTrafficChartData } from './getTrafficChartData';
-import {
-	TRAFFIC_CHART_LINE_COLOR,
-	TRAFFIC_CHART_OPTIONS,
-} from './trafficChartOptions';
+import { getTrafficLegendItem } from './getTrafficLegendItem';
+import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 
 export interface TrafficChartProps {
 	/** The daily-visitors report for the selected range. */
@@ -134,22 +132,6 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 		  ]
 		: undefined;
 
-	const legendItems = [
-		{
-			label: sprintf(
-				/* translators: %d: the number of days in the selected date range, such as "28" */
-				_n(
-					'Last %d day traffic',
-					'Last %d days traffic',
-					daysInRange,
-					'google-site-kit'
-				),
-				daysInRange
-			),
-			color: TRAFFIC_CHART_LINE_COLOR,
-		},
-	];
-
 	const dayFormatter = useMemo(
 		() =>
 			new Intl.DateTimeFormat( getLocale(), {
@@ -173,7 +155,11 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 				options={ options }
 				width="100%"
 			/>
-			{ loaded && <ChartLegend items={ legendItems } /> }
+			{ loaded && (
+				<ChartLegend
+					items={ [ getTrafficLegendItem( daysInRange ) ] }
+				/>
+			) }
 			{ loaded &&
 				! gatheringData &&
 				points.map( ( [ day, visitors ] ) => (

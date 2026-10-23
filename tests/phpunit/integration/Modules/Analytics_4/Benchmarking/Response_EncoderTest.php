@@ -365,7 +365,7 @@ class Response_EncoderTest extends TestCase {
 		$this->assertSame(
 			'2025-08-18',
 			$encoded[ Wire_Format::MEMBER_FIRST_DATE ],
-			'The first plotted day should be the first row of the daily series.'
+			'The first plotted day should be the date of the first row of `dailyTraffic`.'
 		);
 	}
 
