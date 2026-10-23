@@ -16,6 +16,11 @@
  * limitations under the License.
  */
 
+interface Viewport {
+	width: number;
+	height: number;
+}
+
 /**
  * Viewport sizes to refer to by name.
  */
@@ -29,6 +34,8 @@ const VIEWPORTS = {
  * Clears the local storage.
  *
  * @since n.e.x.t
+ *
+ * @return Resolves once the local storage is empty.
  */
 export async function clearLocalStorage() {
 	await page.evaluate( () => window.localStorage.clear() );
@@ -38,6 +45,8 @@ export async function clearLocalStorage() {
  * Accepts every dialog the page opens, such as the "leave site" prompt.
  *
  * @since n.e.x.t
+ *
+ * @return {void}
  */
 export function enablePageDialogAccept() {
 	page.on( 'dialog', ( dialog ) => dialog.accept() );
@@ -48,9 +57,12 @@ export function enablePageDialogAccept() {
  *
  * @since n.e.x.t
  *
- * @param {string|Object} viewport Viewport name (`large`, `medium` or `small`), or `width` and `height`.
+ * @param viewport Viewport name, or `width` and `height`.
+ * @return Resolves once the viewport has the new size.
  */
-export async function setBrowserViewport( viewport ) {
+export async function setBrowserViewport(
+	viewport: keyof typeof VIEWPORTS | Viewport
+) {
 	const { width, height } =
 		typeof viewport === 'string' ? VIEWPORTS[ viewport ] : viewport;
 	await page.setViewportSize( { width, height } );

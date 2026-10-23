@@ -22,6 +22,107 @@
  */
 
 /**
+ * External dependencies
+ */
+import type {
+	BrowserContext,
+	CDPSession,
+	Cookie,
+	ElementHandle,
+	Frame,
+	Page,
+	Request,
+	Response,
+} from '@playwright/test';
+
+type PlaywrightWaitUntil =
+	| 'load'
+	| 'domcontentloaded'
+	| 'networkidle'
+	| 'commit';
+
+export interface NavigationOptions {
+	timeout?: number;
+	waitUntil?: PlaywrightWaitUntil | 'networkidle0' | 'networkidle2';
+}
+
+export interface SelectorOptions {
+	visible?: boolean;
+	hidden?: boolean;
+	timeout?: number;
+}
+
+export interface NetworkIdleOptions {
+	idleTime?: number;
+	timeout?: number;
+	maxInFlight?: number;
+}
+
+// Page functions run in the browser, so their arguments are not checked here.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type PageFunction = string | ( ( ...args: any[] ) => unknown );
+
+// Playwright's evaluate methods are generic overloads, which a single
+// signature cannot describe.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type EvaluateMethod = ( ...args: any[] ) => Promise< any >;
+
+/**
+ * The methods the wrapper adds, or adapts from Puppeteer.
+ *
+ * @since n.e.x.t
+ */
+export interface CompatOverrides {
+	__interceptionEnabled: boolean;
+	__ignoreForNetworkIdle( request: Request ): void;
+	setRequestInterception( enabled: boolean ): Promise< void >;
+	waitForSelector(
+		selector: string,
+		options?: SelectorOptions
+	): Promise< ElementHandle | null >;
+	waitForNavigation(
+		options?: NavigationOptions
+	): Promise< Response | null >;
+	goto(
+		url: string,
+		options?: NavigationOptions
+	): Promise< Response | null >;
+	reload( options?: NavigationOptions ): Promise< Response | null >;
+	waitForNetworkIdle( options?: NetworkIdleOptions ): Promise< void >;
+	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+	evaluate( fn: PageFunction, ...args: unknown[] ): Promise< any >;
+	$eval(
+		selector: string,
+		fn: PageFunction,
+		...args: unknown[]
+	): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	Promise< any >;
+	$$eval(
+		selector: string,
+		fn: PageFunction,
+		...args: unknown[]
+	): // eslint-disable-next-line @typescript-eslint/no-explicit-any
+	Promise< any >;
+	waitForFunction(
+		fn: PageFunction,
+		options?: { timeout?: number; polling?: number | 'raf' },
+		...args: unknown[]
+	): Promise< unknown >;
+	select( selector: string, ...values: string[] ): Promise< string[] >;
+	setViewport( viewport: { width: number; height: number } ): Promise< void >;
+	cookies(): Promise< Cookie[] >;
+	deleteCookie( ...cookies: Array< { name: string } > ): Promise< void >;
+	setJavaScriptEnabled( enabled: boolean ): Promise< void >;
+}
+
+/**
+ * A Playwright page with the Puppeteer-style methods the specs use.
+ *
+ * @since n.e.x.t
+ */
+export type CompatPage = Omit< Page, keyof CompatOverrides > & CompatOverrides;
+
+/**
  * Maximum open requests for Puppeteer's network idle `waitUntil` values.
  *
  * Playwright's `networkidle` allows none. It also does not know which
@@ -40,16 +141,22 @@ const NETWORK_IDLE_MAX_IN_FLIGHT = {
  *
  * @since n.e.x.t
  *
- * @param {Function}        method                Bound Playwright method.
- * @param {Array}           prefix                Leading arguments, e.g. a selector.
- * @param {Function|string} fn                    Function or expression to evaluate.
- * @param {Array}           args                  Puppeteer-style arguments.
- * @param {Object}          [options]             Options.
- * @param {Object}          [options.extra]       Trailing options argument for the method.
- * @param {boolean}         [options.withElement] Whether the browser passes an element first.
- * @return {Promise<*>} Evaluation result.
+ * @param method              Bound Playwright method.
+ * @param prefix              Leading arguments, e.g. a selector.
+ * @param fn                  Function or expression to evaluate.
+ * @param args                Puppeteer-style arguments.
+ * @param options             Options.
+ * @param options.extra       Trailing options argument for the method.
+ * @param options.withElement Whether the browser passes an element first.
+ * @return Evaluation result.
  */
-function callEvaluate( method, prefix, fn, args, { extra, withElement } = {} ) {
+function callEvaluate(
+	method: EvaluateMethod,
+	prefix: string[],
+	fn: PageFunction,
+	args: unknown[],
+	{ extra, withElement }: { extra?: object; withElement?: boolean } = {}
+) {
 	const trailing = extra ? [ extra ] : [];
 
 	if ( typeof fn !== 'function' || args.length <= 1 ) {
@@ -58,11 +165,14 @@ function callEvaluate( method, prefix, fn, args, { extra, withElement } = {} ) {
 
 	const payload = { source: fn.toString(), values: args };
 
+	type Payload = typeof payload;
+
 	/* eslint-disable no-eval */
 	const spread = withElement
-		? ( element, { source, values } ) =>
+		? ( element: unknown, { source, values }: Payload ) =>
 				( 0, eval )( `(${ source })` )( element, ...values )
-		: ( { source, values } ) => ( 0, eval )( `(${ source })` )( ...values );
+		: ( { source, values }: Payload ) =>
+				( 0, eval )( `(${ source })` )( ...values );
 	/* eslint-enable no-eval */
 
 	return method( ...prefix, spread, payload, ...trailing );
@@ -76,12 +186,12 @@ function callEvaluate( method, prefix, fn, args, { extra, withElement } = {} ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} options Puppeteer options.
- * @return {Object} Playwright options.
+ * @param options Puppeteer options.
+ * @return Playwright options.
  */
-function toSelectorOptions( options = {} ) {
+function toSelectorOptions( options: SelectorOptions = {} ) {
 	const { visible, hidden, ...rest } = options;
-	let state = 'attached';
+	let state: 'attached' | 'visible' | 'hidden' = 'attached';
 	if ( visible ) {
 		state = 'visible';
 	} else if ( hidden ) {
@@ -96,12 +206,15 @@ function toSelectorOptions( options = {} ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} options Puppeteer navigation options.
- * @return {Object} Playwright options, and `maxInFlight` when the caller waits for network idle.
+ * @param options Puppeteer navigation options.
+ * @return Playwright options, and `maxInFlight` when the caller waits for network idle.
  */
-function toNavigationOptions( options = {} ) {
+function toNavigationOptions( options: NavigationOptions = {} ): {
+	playwrightOptions: { timeout?: number; waitUntil?: PlaywrightWaitUntil };
+	maxInFlight?: number;
+} {
 	const { waitUntil, ...rest } = options;
-	if ( waitUntil in NETWORK_IDLE_MAX_IN_FLIGHT ) {
+	if ( waitUntil === 'networkidle0' || waitUntil === 'networkidle2' ) {
 		return {
 			playwrightOptions: { ...rest, waitUntil: 'load' },
 			maxInFlight: NETWORK_IDLE_MAX_IN_FLIGHT[ waitUntil ],
@@ -120,26 +233,29 @@ function toNavigationOptions( options = {} ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} page    Playwright page.
- * @param {Object} context Playwright browser context.
- * @return {Object} Wrapped page.
+ * @param page    Playwright page.
+ * @param context Playwright browser context.
+ * @return Wrapped page.
  */
-function createCompatPage( page, context ) {
-	const inFlight = new Set();
-	const ignored = new WeakSet();
-	let cdpSession;
+export function createCompatPage(
+	page: Page,
+	context: BrowserContext
+): CompatPage {
+	const inFlight = new Set< Request >();
+	const ignored = new WeakSet< Request >();
+	let cdpSession: CDPSession | undefined;
 	// Network idle tracking measures elapsed test time, so the reference
 	// date does not apply here or below.
 	let lastActivity = Date.now(); // eslint-disable-line sitekit/no-direct-date
 
-	function trackRequest( request ) {
+	function trackRequest( request: Request ) {
 		if ( ! ignored.has( request ) ) {
 			inFlight.add( request );
 		}
 		lastActivity = Date.now(); // eslint-disable-line sitekit/no-direct-date
 	}
 
-	function settleRequest( request ) {
+	function settleRequest( request: Request ) {
 		inFlight.delete( request );
 		lastActivity = Date.now(); // eslint-disable-line sitekit/no-direct-date
 	}
@@ -150,7 +266,7 @@ function createCompatPage( page, context ) {
 	page.on( 'response', ( response ) => settleRequest( response.request() ) );
 	page.on( 'requestfinished', settleRequest );
 	page.on( 'requestfailed', settleRequest );
-	page.on( 'framenavigated', ( frame ) => {
+	page.on( 'framenavigated', ( frame: Frame ) => {
 		if ( frame === page.mainFrame() ) {
 			inFlight.clear();
 		}
@@ -162,11 +278,18 @@ function createCompatPage( page, context ) {
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param {Function} run     Calls the Playwright method with the given options.
-	 * @param {Object}   options Puppeteer navigation options.
-	 * @return {Promise<*>} The navigation method's result.
+	 * @param run     Calls the Playwright method with the given options.
+	 * @param options Puppeteer navigation options.
+	 * @return The navigation method's result.
 	 */
-	async function navigate( run, options ) {
+	async function navigate(
+		run: (
+			navigationOptions: ReturnType<
+				typeof toNavigationOptions
+			>[ 'playwrightOptions' ]
+		) => Promise< Response | null >,
+		options?: NavigationOptions
+	) {
 		const { playwrightOptions, maxInFlight } =
 			toNavigationOptions( options );
 		const result = await run( playwrightOptions );
@@ -179,7 +302,7 @@ function createCompatPage( page, context ) {
 		return result;
 	}
 
-	const overrides = {
+	const overrides: CompatOverrides = {
 		// Read by `useRequestInterception()`.
 		__interceptionEnabled: false,
 
@@ -324,15 +447,12 @@ function createCompatPage( page, context ) {
 	const proxy = new Proxy( page, {
 		get( target, prop ) {
 			if ( Object.prototype.hasOwnProperty.call( overrides, prop ) ) {
-				return overrides[ prop ];
+				return overrides[ prop as keyof CompatOverrides ];
 			}
-			const value = target[ prop ];
+			const value = target[ prop as keyof Page ];
 			return typeof value === 'function' ? value.bind( target ) : value;
 		},
 	} );
 
-	return proxy;
+	return proxy as unknown as CompatPage;
 }
-
-// The Jest environment loads this file without Babel, so it uses CommonJS.
-module.exports = { createCompatPage };

@@ -20,6 +20,8 @@
  * Internal dependencies
  */
 import {
+	type ElementMatcherOptions,
+	type ElementRoot,
 	describeTarget,
 	findMatches,
 	poll,
@@ -33,12 +35,18 @@ import {
  *
  * @since n.e.x.t
  *
- * @param {Object} root             Page or element handle to search in.
- * @param {string} selector         CSS selector.
- * @param {Object} [matcherOptions] Options: `text`, `visible`, `timeout`, `polling`.
- * @return {Object} Object with `pass` and `message` keys.
+ * @param this           Jest matcher context.
+ * @param root           Page or element handle to search in.
+ * @param selector       CSS selector.
+ * @param matcherOptions Options: `text`, `visible`, `timeout`, `polling`.
+ * @return Object with `pass` and `message` keys.
  */
-export async function toMatchElement( root, selector, matcherOptions ) {
+export async function toMatchElement(
+	this: jest.MatcherContext,
+	root: ElementRoot,
+	selector: string,
+	matcherOptions?: ElementMatcherOptions
+) {
 	const options = withDefaultOptions( matcherOptions );
 
 	if ( this.isNot ) {

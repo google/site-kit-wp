@@ -19,13 +19,23 @@
 /**
  * External dependencies
  */
-const { chromium } = require( '@playwright/test' );
-const NodeEnvironment = require( 'jest-environment-node' ).TestEnvironment;
+import { type Browser, type BrowserContext, chromium } from '@playwright/test';
+import { TestEnvironment as NodeEnvironment } from 'jest-environment-node';
 
 /**
  * Internal dependencies
  */
-const { createCompatPage } = require( './compat-page' );
+import { type CompatPage, createCompatPage } from './compat-page';
+
+/**
+ * The `browser` global: opens more pages in the same browser context.
+ *
+ * @since n.e.x.t
+ */
+export interface E2EBrowser {
+	newPage(): Promise< CompatPage >;
+	version(): string;
+}
 
 /**
  * Launches Chromium for each spec file and exposes `browser` and `page`
@@ -41,7 +51,11 @@ const { createCompatPage } = require( './compat-page' );
  *
  * @since n.e.x.t
  */
-class PlaywrightEnvironment extends NodeEnvironment {
+export default class PlaywrightEnvironment extends NodeEnvironment {
+	private browser?: Browser;
+
+	private browserContext?: BrowserContext;
+
 	async setup() {
 		await super.setup();
 
@@ -53,13 +67,13 @@ class PlaywrightEnvironment extends NodeEnvironment {
 			args.push( '--auto-open-devtools-for-tabs' );
 		}
 
-		this.browser = await chromium.launch( {
+		const browser = await chromium.launch( {
 			headless: process.env.E2E_HEADLESS !== 'false',
-			slowMo: parseInt( process.env.E2E_SLOWMO, 10 ) || 0,
+			slowMo: parseInt( process.env.E2E_SLOWMO || '', 10 ) || 0,
 			args,
 		} );
 
-		this.browserContext = await this.browser.newContext( {
+		const context = await browser.newContext( {
 			// Puppeteer's default viewport. The bootstrap sets the size tests use.
 			viewport: { width: 800, height: 600 },
 			// WordPress 7.0+ enables cross-document View Transitions in
@@ -70,28 +84,30 @@ class PlaywrightEnvironment extends NodeEnvironment {
 		} );
 
 		if ( process.env.E2E_TRACE ) {
-			await this.browserContext.tracing.start( {
+			await context.tracing.start( {
 				screenshots: true,
 				snapshots: true,
 			} );
 		}
 
-		const page = await this.browserContext.newPage();
+		this.browser = browser;
+		this.browserContext = context;
 
-		this.global.browser = {
+		const e2eBrowser: E2EBrowser = {
 			newPage: async () =>
-				createCompatPage(
-					await this.browserContext.newPage(),
-					this.browserContext
-				),
-			version: () => this.browser.version(),
+				createCompatPage( await context.newPage(), context ),
+			version: () => browser.version(),
 		};
-		this.global.page = createCompatPage( page, this.browserContext );
+
+		Object.assign( this.global, {
+			browser: e2eBrowser,
+			page: createCompatPage( await context.newPage(), context ),
+		} );
 	}
 
 	async teardown() {
 		if ( process.env.E2E_TRACE ) {
-			await this.browserContext.tracing.stop( {
+			await this.browserContext?.tracing.stop( {
 				path: process.env.E2E_TRACE,
 			} );
 		}
@@ -99,5 +115,3 @@ class PlaywrightEnvironment extends NodeEnvironment {
 		await super.teardown();
 	}
 }
-
-module.exports = PlaywrightEnvironment;

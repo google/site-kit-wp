@@ -43,10 +43,11 @@ const REGEXP_PHP_ERROR =
  *
  * @since n.e.x.t
  *
- * @param {string} adminPath Path relative to `wp-admin/`.
- * @param {string} [query]   Query string, without the leading `?`.
+ * @param adminPath Path relative to `wp-admin/`.
+ * @param query     Query string, without the leading `?`.
+ * @return Resolves once the page loads without a PHP error.
  */
-export async function visitAdminPage( adminPath, query ) {
+export async function visitAdminPage( adminPath: string, query?: string ) {
 	await page.goto( createURL( join( 'wp-admin', adminPath ), query ) );
 
 	if ( isCurrentURL( 'wp-login.php' ) ) {

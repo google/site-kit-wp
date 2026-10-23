@@ -27,9 +27,10 @@ import { visitAdminPage } from './visit-admin-page';
  *
  * @since n.e.x.t
  *
- * @param {string} slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
+ * @param slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
+ * @return Resolves once the plugin is active.
  */
-export async function activatePlugin( slug ) {
+export async function activatePlugin( slug: string ) {
 	await switchUserToAdmin();
 	await visitAdminPage( 'plugins.php' );
 
@@ -46,9 +47,10 @@ export async function activatePlugin( slug ) {
  *
  * @since n.e.x.t
  *
- * @param {string} slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
+ * @param slug Plugin slug, as in the `data-slug` attribute on the Plugins screen.
+ * @return Resolves once the plugin is inactive.
  */
-export async function deactivatePlugin( slug ) {
+export async function deactivatePlugin( slug: string ) {
 	await switchUserToAdmin();
 	await visitAdminPage( 'plugins.php' );
 

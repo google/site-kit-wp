@@ -4,7 +4,7 @@
 const path = require( 'path' );
 
 module.exports = {
-	testEnvironment: '<rootDir>/config/playwright-environment.js',
+	testEnvironment: '<rootDir>/config/playwright-environment.ts',
 	setupFilesAfterEnv: [
 		'<rootDir>/config/screenshots.js',
 		'<rootDir>/config/bootstrap.js',

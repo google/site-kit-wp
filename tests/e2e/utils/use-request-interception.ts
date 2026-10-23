@@ -1,4 +1,51 @@
 /**
+ * External dependencies
+ */
+import type { Request, Route } from '@playwright/test';
+
+/**
+ * A mocked response, as passed to `request.respond()`.
+ */
+export interface MockedResponse {
+	status?: number;
+	headers?: Record< string, string >;
+	contentType?: string;
+	body?: string | Buffer;
+}
+
+/**
+ * The request object that request handlers receive.
+ */
+export interface InterceptedRequest {
+	url(): string;
+	method(): string;
+	headers(): Record< string, string >;
+	postData(): string | null | undefined;
+	resourceType(): string;
+	isNavigationRequest(): boolean;
+	respond( response: MockedResponse ): Promise< void >;
+	continue(): Promise< void >;
+	abort(): Promise< void >;
+}
+
+export type RequestHandler = ( request: InterceptedRequest ) => void;
+
+export type RequestInterceptionConfig =
+	| RequestHandler
+	| Record< string, MockedResponse | RequestHandler >;
+
+export interface RequestCase {
+	isMatch( request: InterceptedRequest ): boolean;
+	getResponse( request: InterceptedRequest ): MockedResponse;
+}
+
+interface TrackedRequest extends InterceptedRequest {
+	// Whether the handler responded, continued or aborted.
+	handled: boolean;
+	request: Request;
+}
+
+/**
  * Asks a handler what to do with the target of a redirect.
  *
  * Playwright only routes the first request of a redirect chain. Specs mock
@@ -7,12 +54,12 @@
  *
  * @since n.e.x.t
  *
- * @param {Function} handler Request handler.
- * @param {string}   url     Redirect target URL.
- * @return {Object|null} The handler's response, or `null` to follow the redirect.
+ * @param handler Request handler.
+ * @param url     Redirect target URL.
+ * @return The handler's response, or `null` to follow the redirect.
  */
-function resolveRedirectTarget( handler, url ) {
-	let result = null;
+function resolveRedirectTarget( handler: RequestHandler, url: string ) {
+	let result = null as MockedResponse | null;
 	handler( {
 		url: () => url,
 		method: () => 'GET',
@@ -35,14 +82,19 @@ function resolveRedirectTarget( handler, url ) {
  *
  * @since n.e.x.t
  *
- * @param {Object} response               Mocked response.
- * @param {number} [response.status]      HTTP status. Defaults to 200.
- * @param {Object} [response.headers]     Response headers.
- * @param {string} [response.contentType] Content type.
- * @param {string} [response.body]        Response body. Defaults to an empty string.
- * @return {Object} Playwright fulfill options.
+ * @param response             Mocked response.
+ * @param response.status      HTTP status. Defaults to 200.
+ * @param response.headers     Response headers.
+ * @param response.contentType Content type.
+ * @param response.body        Response body. Defaults to an empty string.
+ * @return Playwright fulfill options.
  */
-function toFulfillOptions( { status = 200, headers, contentType, body = '' } ) {
+function toFulfillOptions( {
+	status = 200,
+	headers,
+	contentType,
+	body = '',
+}: MockedResponse ) {
 	return { status, headers, contentType, body };
 }
 
@@ -52,11 +104,11 @@ function toFulfillOptions( { status = 200, headers, contentType, body = '' } ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}   route   Playwright route.
- * @param {Function} handler Request handler.
- * @return {Promise} Resolves once the route is fulfilled.
+ * @param route   Playwright route.
+ * @param handler Request handler.
+ * @return Resolves once the route is fulfilled.
  */
-async function continueNavigation( route, handler ) {
+async function continueNavigation( route: Route, handler: RequestHandler ) {
 	const response = await route.fetch( { maxRedirects: 0 } );
 	const status = response.status();
 	const location = response.headers().location;
@@ -77,24 +129,29 @@ async function continueNavigation( route, handler ) {
  *
  * @since n.e.x.t
  *
- * @param {Object}   route   Playwright route.
- * @param {Function} handler Request handler.
- * @return {Object} Request with `respond()`, `continue()` and `abort()` methods.
+ * @param route   Playwright route.
+ * @param handler Request handler.
+ * @return Request with `respond()`, `continue()` and `abort()` methods.
  */
-function toInterceptedRequest( route, handler ) {
+function toInterceptedRequest(
+	route: Route,
+	handler: RequestHandler
+): TrackedRequest {
 	const request = route.request();
 
-	function settle( action ) {
+	function settle( action: () => Promise< void > ) {
 		intercepted.handled = true;
 		return action().catch( ( error ) => {
 			// A navigation can cancel a request before it is answered.
-			if ( ! /Target page|Route is already handled/.test( error ) ) {
+			if (
+				! /Target page|Route is already handled/.test( String( error ) )
+			) {
 				throw error;
 			}
 		} );
 	}
 
-	const intercepted = {
+	const intercepted: TrackedRequest = {
 		handled: false,
 		request,
 		url: () => request.url(),
@@ -125,11 +182,11 @@ function toInterceptedRequest( route, handler ) {
  *
  * @since n.e.x.t
  *
- * @param {Function} handler Receives the intercepted request.
- * @return {Function} Removes the route.
+ * @param handler Receives the intercepted request.
+ * @return Removes the route.
  */
-function routeRequests( handler ) {
-	function routeHandler( route ) {
+function routeRequests( handler: RequestHandler ) {
+	function routeHandler( route: Route ) {
 		if ( ! page.__interceptionEnabled ) {
 			route.fallback();
 			return;
@@ -158,10 +215,10 @@ function routeRequests( handler ) {
  * @since 1.154.0 Added support for path:response mapping object to simplify request handling.
  * @since n.e.x.t Runs on Playwright routing.
  *
- * @param {Function|Object} config Either a callback function or a path:response mapping object.
- * @return {Function} Function that can be called to remove the added handler function from the page.
+ * @param config Either a callback function or a path:response mapping object.
+ * @return Function that can be called to remove the added handler function from the page.
  */
-export function useRequestInterception( config ) {
+export function useRequestInterception( config: RequestInterceptionConfig ) {
 	return routeRequests( ( request ) => {
 		// If config is a function, use the original callback pattern.
 		if ( typeof config === 'function' ) {
@@ -173,7 +230,7 @@ export function useRequestInterception( config ) {
 		const matchingPath = Object.keys( config ).find( ( pattern ) =>
 			request.url().match( pattern )
 		);
-		const response = matchingPath && config[ matchingPath ];
+		const response = matchingPath ? config[ matchingPath ] : undefined;
 
 		if ( typeof response === 'function' ) {
 			// If response is a function, call it with the request.
@@ -199,10 +256,10 @@ export function useRequestInterception( config ) {
  * @since 1.93.0
  * @since n.e.x.t Runs on Playwright routing.
  *
- * @param {Array.<{isMatch: Function, getResponse: Function}>} requestCases An array of request cases to add to the shared request interception.
- * @return {Object} Methods that can be called to remove the added handler function from the page and add new request cases.
+ * @param requestCases An array of request cases to add to the shared request interception.
+ * @return Methods that can be called to remove the added handler function from the page and add new request cases.
  */
-export function useSharedRequestInterception( requestCases ) {
+export function useSharedRequestInterception( requestCases: RequestCase[] ) {
 	const cases = [ ...requestCases ];
 	const cleanUp = routeRequests( ( request ) => {
 		const requestCase = cases.find( ( { isMatch } ) => isMatch( request ) );
@@ -215,7 +272,7 @@ export function useSharedRequestInterception( requestCases ) {
 
 	return {
 		cleanUp,
-		addRequestCases: ( newCases ) => {
+		addRequestCases: ( newCases: RequestCase[] ) => {
 			cases.push( ...newCases );
 		},
 	};

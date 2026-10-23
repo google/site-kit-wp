@@ -31,11 +31,11 @@ import { WP_BASE_URL } from './wp-config';
  *
  * @since n.e.x.t
  *
- * @param {string} WPPath  Path relative to the site root.
- * @param {string} [query] Query string, without the leading `?`.
- * @return {string} Full URL.
+ * @param WPPath Path relative to the site root.
+ * @param query  Query string, without the leading `?`.
+ * @return Full URL.
  */
-export function createURL( WPPath, query = '' ) {
+export function createURL( WPPath: string, query = '' ) {
 	const url = new URL( WP_BASE_URL );
 	url.pathname = join( url.pathname, WPPath );
 	url.search = query;
@@ -47,11 +47,11 @@ export function createURL( WPPath, query = '' ) {
  *
  * @since n.e.x.t
  *
- * @param {string} WPPath  Path relative to the site root.
- * @param {string} [query] Query string to compare, without the leading `?`.
- * @return {boolean} Whether the current URL matches.
+ * @param WPPath Path relative to the site root.
+ * @param query  Query string to compare, without the leading `?`.
+ * @return Whether the current URL matches.
  */
-export function isCurrentURL( WPPath, query = '' ) {
+export function isCurrentURL( WPPath: string, query = '' ) {
 	const currentURL = new URL( page.url() );
 	currentURL.search = query;
 	return createURL( WPPath, query ) === currentURL.href;

@@ -27,8 +27,9 @@ import { WP_ADMIN_USER, WP_PASSWORD, WP_USERNAME } from './wp-config';
  *
  * @since n.e.x.t
  *
- * @param {string} [username] Username. Defaults to the test user.
- * @param {string} [password] Password. Defaults to the test user's password.
+ * @param username Username. Defaults to the test user.
+ * @param password Password. Defaults to the test user's password.
+ * @return Resolves once the login form submits.
  */
 export async function loginUser(
 	username = WP_USERNAME,
@@ -51,6 +52,8 @@ export async function loginUser(
  * Logs in as the admin user, unless the tests already run as the admin user.
  *
  * @since n.e.x.t
+ *
+ * @return Resolves once the admin user is logged in.
  */
 export async function switchUserToAdmin() {
 	if ( WP_USERNAME === WP_ADMIN_USER.username ) {
@@ -63,6 +66,8 @@ export async function switchUserToAdmin() {
  * Logs back in as the test user, unless the tests run as the admin user.
  *
  * @since n.e.x.t
+ *
+ * @return Resolves once the test user is logged in.
  */
 export async function switchUserToTest() {
 	if ( WP_USERNAME === WP_ADMIN_USER.username ) {

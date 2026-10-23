@@ -1,5 +1,5 @@
 /**
- * Custom toFill Jest matcher.
+ * Custom toClick Jest matcher.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -19,22 +19,31 @@
 /**
  * Internal dependencies
  */
-import { waitForMatch, withDefaultOptions } from './find-element';
+import {
+	type ElementMatcherOptions,
+	type ElementRoot,
+	waitForMatch,
+	withDefaultOptions,
+} from './find-element';
 
 /**
- * Waits for a field matching the selector, then replaces its value.
+ * Waits for an element matching the selector, and the text if given, then
+ * clicks it.
  *
  * @since n.e.x.t
  *
- * @param {Object} root             Page or element handle to search in.
- * @param {string} selector         CSS selector.
- * @param {string} value            Value to fill in.
- * @param {Object} [matcherOptions] Options: `text`, `visible`, `timeout`, `polling`.
- * @return {Object} Object with `pass` and `message` keys.
+ * @param root           Page or element handle to search in.
+ * @param selector       CSS selector.
+ * @param matcherOptions Options: `text`, `visible`, `button`, `timeout`, `polling`.
+ * @return Object with `pass` and `message` keys.
  */
-export async function toFill( root, selector, value, matcherOptions ) {
+export async function toClick(
+	root: ElementRoot,
+	selector: string,
+	matcherOptions?: ElementMatcherOptions
+) {
 	const options = withDefaultOptions( matcherOptions );
 	const element = await waitForMatch( root, selector, options );
-	await element.fill( value );
+	await element.click( options.button ? { button: options.button } : {} );
 	return { pass: true, message: () => '' };
 }
