@@ -73,6 +73,16 @@
 			}
 		}
 
+		// Keep scrolled-to error notices clear of the header. The admin bar
+		// offset is covered by the `scroll-padding-top` WordPress sets on the root.
+		.googlesitekit-notice-container {
+			scroll-margin-block-start: 72px; // Header height.
+
+			@media (min-width: $bp-nonTablet) {
+				scroll-margin-block-start: 88px; // Header height.
+			}
+		}
+
 		.googlesitekit-rrm-express-setup__footer {
 			background-color: $c-surfaces-surface;
 		}

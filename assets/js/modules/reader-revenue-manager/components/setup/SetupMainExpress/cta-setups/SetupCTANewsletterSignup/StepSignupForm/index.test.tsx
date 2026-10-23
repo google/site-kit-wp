@@ -35,7 +35,10 @@ import {
 import { type Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -147,6 +150,8 @@ function renderStepSignupForm(
 }
 
 describe( 'StepSignupForm', () => {
+	mockBrowserScrolling();
+
 	mockLocation();
 
 	let registry: Registry;

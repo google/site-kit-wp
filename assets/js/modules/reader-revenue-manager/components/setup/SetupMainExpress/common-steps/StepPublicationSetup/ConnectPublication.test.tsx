@@ -26,7 +26,10 @@ import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fi
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import * as tracking from '@/js/util/tracking';
-import { mockLocation } from '@tests/js/mock-browser-utils';
+import {
+	mockBrowserScrolling,
+	mockLocation,
+} from '@tests/js/mock-browser-utils';
 import {
 	createTestRegistry,
 	fireEvent,
@@ -43,6 +46,8 @@ const TEST_DEFAULT_PUBLICATION = publications[ publications.length - 1 ];
 const TEST_PUBLICATION_WITH_ACCEPTED_TERMS = publications[ 3 ];
 
 describe( 'ConnectPublication', () => {
+	mockBrowserScrolling();
+
 	let registry: Registry;
 
 	const publicationsEndpoint = new RegExp(
