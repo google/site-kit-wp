@@ -25,6 +25,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Owner_ContractTests;
 use Google\Site_Kit\Tests\Core\Modules\Module_With_Scopes_ContractTests;
@@ -218,6 +219,98 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		foreach ( Reader_Revenue_Manager::PRODUCT_ID_NOTIFICATIONS as $notification ) {
 			$this->assertFalse( $dismissed_items->is_dismissed( $notification ), 'Product ID notification dismissals should be reset when publication ID changes.' );
 		}
+	}
+
+	public function test_register__clears_configured_ctas_on_publication_change() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		// Establish the existing settings before the on_change listener is registered,
+		// so setting up this initial state does not itself trigger the reset below.
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'OLD_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'old-cta-id' => 'newsletter-signup',
+				),
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'NEW_PUBLICATION',
+			)
+		);
+
+		$this->assertEquals(
+			(object) array(),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be cleared immediately when the publication ID changes, so the previous publication CTAs are not shown.'
+		);
+	}
+
+	public function test_register__triggers_cta_sync_on_publication_change() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'OLD_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'NEW_PUBLICATION',
+			)
+		);
+
+		$this->assertSame(
+			1,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should be triggered immediately when the publication ID changes and both the publication and organization IDs are set.'
+		);
+	}
+
+	public function test_register__does_not_trigger_cta_sync_when_publication_unchanged() {
+		$this->enable_feature( 'rrmExpressSetup' );
+
+		$this->reader_revenue_manager->get_settings()->set(
+			array(
+				'publicationID'  => 'SAME_PUBLICATION',
+				'organizationID' => 'test-organization-id',
+			)
+		);
+
+		$this->reader_revenue_manager->register();
+		$this->reader_revenue_manager->get_settings()->register();
+
+		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
+		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+
+		$this->reader_revenue_manager->get_settings()->merge(
+			array(
+				'publicationID' => 'SAME_PUBLICATION',
+			)
+		);
+
+		$this->assertSame(
+			0,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should not be triggered when the publication ID is unchanged.'
+		);
 	}
 
 	public function test_magic_methods() {
