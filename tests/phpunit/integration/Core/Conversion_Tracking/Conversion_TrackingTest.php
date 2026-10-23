@@ -24,6 +24,7 @@ use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\Fa
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeEcommerceEventProvider_Active_Two;
 use Google\Site_Kit\Tests\Core\Conversion_Tracking\Conversion_Event_Providers\FakeLeadEventProvider_Active;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Tags\Enhanced_Conversions\Enhanced_Conversions;
 use Google\Site_Kit\Core\Tags\GTag;
 use Google\Site_Kit\Tests\TestCase;
 
@@ -143,7 +144,7 @@ class Conversion_TrackingTest extends TestCase {
 		$inline_script = implode( '', wp_scripts()->registered[ GTag::HANDLE ]->extra['after'] );
 
 		$this->assertStringContainsString(
-			'var params = { ...data, event_source: "site-kit" }; if ( data && data.user_data ) { params[ "developer_id.' . GTag::USER_DATA_DEVELOPER_ID . '" ] = true; } gtag( "event", name, params );',
+			'data && data.user_data ? {"developer_id.' . Enhanced_Conversions::USER_DATA_DEVELOPER_ID . '":true} : {}',
 			$inline_script,
 			'The gtagEvent wrapper should add the user data developer ID to the event params only when the event has user data.'
 		);
