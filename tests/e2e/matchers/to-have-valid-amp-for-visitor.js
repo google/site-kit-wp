@@ -23,14 +23,10 @@ import ampHTMLValidator from 'amphtml-validator';
 import jsdom from 'jsdom';
 
 /**
- * WordPress dependencies
- */
-import { createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { fetchPageContent } from '../utils';
+import { createURL } from '../utils/create-url';
 
 const { JSDOM } = jsdom;
 

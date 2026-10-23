@@ -882,6 +882,31 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		$this->assertFalse( $registered, 'Product ID meta key should not be registered when publication ID is empty.' );
 	}
 
+	public function test_get_assets() {
+		$script = $this->reader_revenue_manager->get_assets()[0];
+		$script->register( $this->context );
+
+		$dependency = wp_scripts()->registered['googlesitekit-modules-reader-revenue-manager'];
+
+		$this->assertEqualSets(
+			array(
+				'googlesitekit-vendor',
+				'googlesitekit-api',
+				'googlesitekit-data',
+				'googlesitekit-feature-discovery',
+				'googlesitekit-modules',
+				'googlesitekit-notifications',
+				'googlesitekit-datastore-site',
+				'googlesitekit-datastore-user',
+				'googlesitekit-components',
+				// Needed in the block editor too, where nothing else loads it.
+				'googlesitekit-widgets',
+			),
+			$dependency->deps,
+			'Reader Revenue Manager script should have the correct dependencies.'
+		);
+	}
+
 	public function test_block_editor_assets_set_up() {
 		if ( version_compare( get_bloginfo( 'version' ), '5.8', '<' ) ) {
 			$this->markTestSkipped( 'This test only runs on WordPress 5.8 and above.' );

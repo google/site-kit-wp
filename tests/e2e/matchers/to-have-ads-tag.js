@@ -17,14 +17,10 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { fetchPageContent } from '../utils';
+import { createURL } from '../utils/create-url';
 
 /**
  * Asserts the URL at the given path contains an Ads web tag.

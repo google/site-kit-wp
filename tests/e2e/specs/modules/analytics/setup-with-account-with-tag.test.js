@@ -1,13 +1,9 @@
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import * as fixtures from '../../../../../assets/js/modules/analytics-4/datastore/__fixtures__';
 import {
+	activatePlugin,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAnalyticsExistingPropertyID,
@@ -17,6 +13,7 @@ import {
 	setSiteVerification,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 async function proceedToSetUpAnalytics() {

@@ -58,9 +58,13 @@ function hasArgInCLI( arg ) {
 	return getArgFromCLI( arg ) !== undefined;
 }
 
-const result = spawn( 'node', [ require.resolve( 'puppeteer/install' ) ], {
-	stdio: 'inherit',
-} );
+// Install the Playwright browser if it is missing. This is quick when it is
+// already installed.
+const result = spawn(
+	'node',
+	[ require.resolve( '@playwright/test/cli' ), 'install', 'chromium' ],
+	{ stdio: 'inherit' }
+);
 
 if ( result.status > 0 ) {
 	process.exit( result.status );
@@ -71,14 +75,14 @@ const config = [ '--config=jest.config.js' ];
 const hasRunInBand = hasArgInCLI( '--runInBand' ) || hasArgInCLI( '-i' );
 const runInBand = ! hasRunInBand ? [ '--runInBand' ] : [];
 
-if ( hasArgInCLI( '--puppeteer-interactive' ) ) {
-	process.env.PUPPETEER_HEADLESS = 'false';
-	process.env.PUPPETEER_SLOWMO = getArgFromCLI( '--puppeteer-slowmo' ) || 80;
+if ( hasArgInCLI( '--browser-interactive' ) ) {
+	process.env.E2E_HEADLESS = 'false';
+	process.env.E2E_SLOWMO = getArgFromCLI( '--browser-slowmo' ) || 80;
 }
 
-if ( hasArgInCLI( '--puppeteer-devtools' ) ) {
-	process.env.PUPPETEER_HEADLESS = 'false';
-	process.env.PUPPETEER_DEVTOOLS = 'true';
+if ( hasArgInCLI( '--browser-devtools' ) ) {
+	process.env.E2E_HEADLESS = 'false';
+	process.env.E2E_DEVTOOLS = 'true';
 }
 
 const configsMapping = {
@@ -93,6 +97,6 @@ Object.entries( configsMapping ).forEach( ( [ envKey, argName ] ) => {
 	}
 } );
 
-const cleanUpPrefixes = [ '--puppeteer-', '--wordpress-' ];
+const cleanUpPrefixes = [ '--browser-', '--wordpress-' ];
 
 jest.run( [ ...config, ...runInBand, ...getArgsFromCLI( cleanUpPrefixes ) ] );
