@@ -93,7 +93,8 @@ export interface FeatureSetup {
 	resumeCTALabel?: string;
 	// The module to activate, for `setup-flow` features.
 	moduleSlug?: string;
-	// Target override for `setup-flow` features that are not module activation.
+	// The setup destination for `setup-flow` features. Where `moduleSlug` is also
+	// set, the module is activated first and this replaces its own setup URL.
 	getSetupURL?: ( select: Select ) => string | undefined;
 	// Target override for in-progress setups that can be resumed.
 	getResumeURL?: ( select: Select ) => string | undefined;

@@ -31,18 +31,32 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Button } from 'googlesitekit-components';
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import {
+	Registry,
+	Select,
+	useDispatch,
+	useRegistry,
+	useSelect,
+} from 'googlesitekit-data';
 import Typography from '@/js/components/Typography';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import useQueryArg from '@/js/hooks/useQueryArg';
 import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/components/common';
 import {
 	SetupStep,
 	SetupStepProps,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
+
+// The Feature Discovery catalog's slug for the newsletter sign-up feature.
+// This is the feature slug, not the CTA slug, even though the values match.
+const FEATURE_SLUG_NEWSLETTER_SIGNUP = 'newsletter-signup';
 
 interface StepSetupCompleteProps extends SetupStepProps {
 	title?: string;
@@ -65,16 +79,32 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	);
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	// `@wordpress/data` types `useRegistry()` as returning `Function`.
+	const registry = useRegistry() as unknown as Registry;
 
 	// "Return to Dashboard" completes this last step, so the flow can track it
 	// before the page is left.
 	const onReturnToDashboardClick = useCallback( async () => {
 		await onComplete();
 
+		// Where the newsletter sign-up form was set up from the hub, return
+		// the user there rather than to the dashboard.
+		if ( cta === EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ) {
+			const hubURL = await getPendingSetupReturnURL(
+				registry.select as Select,
+				FEATURE_SLUG_NEWSLETTER_SIGNUP
+			);
+
+			if ( hubURL ) {
+				navigateTo( hubURL );
+				return;
+			}
+		}
+
 		if ( dashboardURL ) {
 			navigateTo( dashboardURL );
 		}
-	}, [ dashboardURL, navigateTo, onComplete ] );
+	}, [ cta, dashboardURL, navigateTo, onComplete, registry ] );
 
 	// The CTA details only make sense within a CTA-specific setup flow, which
 	// is identified by the `cta` query argument.
