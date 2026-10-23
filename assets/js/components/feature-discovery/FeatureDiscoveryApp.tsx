@@ -60,6 +60,7 @@ import FeatureDetailPanel from './detail/FeatureDetailPanel';
 import FeatureDiscoveryContent, {
 	type FeatureDiscoveryTab,
 } from './FeatureDiscoveryContent';
+import FeatureEffects from './FeatureEffects';
 import WhatsNewTab from './whats-new/WhatsNewTab';
 
 const FEATURE_DISCOVERY_TABS: FeatureDiscoveryTab[] = [
@@ -97,6 +98,7 @@ const FeatureDiscoveryApp: FC = () => {
 
 	return (
 		<Fragment>
+			<FeatureEffects />
 			<Header>
 				<HelpMenu />
 			</Header>
