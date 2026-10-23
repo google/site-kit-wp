@@ -138,6 +138,7 @@
 		"glob-to-regexp": "^0.4.1",
 		"husky": "^3.1.0",
 		"lint-staged": "^17.0.5",
+		"node-fetch": "^2.7.0",
 		"patch-package": "^8.0.0",
 		"playwright": "^1.14.0",
 		"prettier": "npm:wp-prettier@2.6.2",
