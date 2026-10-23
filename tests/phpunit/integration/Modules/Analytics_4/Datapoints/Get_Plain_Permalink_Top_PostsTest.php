@@ -12,11 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
-use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Invalid_Param_Exception;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
@@ -26,9 +22,8 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Datapoints\Get_Plain_Permalink_Top_Posts;
 use Google\Site_Kit\Modules\Analytics_4\Plain_Permalink_Top_Posts;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\FakeHttp;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData as Google_Service_AnalyticsData;
 use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\DimensionValue;
@@ -38,7 +33,6 @@ use Google\Site_Kit_Dependencies\Google\Service\AnalyticsData\RunReportResponse;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
-use WP_Error;
 use WP_REST_Request;
 
 /**
@@ -48,8 +42,7 @@ use WP_REST_Request;
  */
 class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 
-	use Fake_Site_Connection_Trait;
-	use RestTestTrait;
+	use Dashboard_Sharing_Trait;
 
 	/**
 	 * Analytics_4 instance.
@@ -85,14 +78,6 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * @var Modules
 	 */
 	private $modules;
-
-	/**
-	 * The `Authorization` header of each report request that reached the fake
-	 * Analytics of `switch_to_user()`.
-	 *
-	 * @var array
-	 */
-	private $report_authorizations = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -194,6 +179,24 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	}
 
 	/**
+	 * Gets whether the pattern of a product filter matches each of the given URLs.
+	 *
+	 * Analytics reads the pattern as RE2, and `preg_match()` matches these URLs
+	 * the same way.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array    $product_filter The product filter, as `get_product_filter()` returns it.
+	 * @param string[] $urls           The URLs, each a path with its query string, such as `/?product=hoodie`.
+	 * @return array Whether the pattern matches each URL, keyed by the URL.
+	 */
+	private function get_product_filter_matches( array $product_filter, array $urls ) {
+		$pattern = $product_filter['notExpression']['filter']['stringFilter']['value'];
+
+		return array_combine( $urls, array_map( fn ( $url ) => 1 === preg_match( "~$pattern~", $url ), $urls ) );
+	}
+
+	/**
 	 * Makes `class_exists( 'WooCommerce' )` true for the rest of the process, as an active WooCommerce does.
 	 *
 	 * `class_alias()` can't be undone, so each test that calls this runs in a
@@ -255,22 +258,11 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * @param int $owner_id The ID of the administrator who owns Analytics.
 	 */
 	private function share_analytics_with_editors( $owner_id ) {
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
-		$user_options   = new User_Options( $context, $owner_id );
-		$authentication = new Authentication( $context, $options, $user_options );
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $owner_id );
 
-		$this->fake_proxy_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
-
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
-		$authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$authentication->get_oauth_client()->get_required_scopes(),
-				array( Analytics_4::READONLY_SCOPE )
-			)
-		);
+		$this->authenticate_user( $owner_id, array( Analytics_4::READONLY_SCOPE ) );
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -280,28 +272,19 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 				'ownerID'         => $owner_id,
 			)
 		);
-		( new Module_Sharing_Settings( $options ) )->set(
-			array( Analytics_4::MODULE_SLUG => array( 'sharedRoles' => array( 'editor' ) ) )
-		);
+		$this->share_modules_with_editors( array( Analytics_4::MODULE_SLUG ) );
 
-		$this->modules = new Modules( $context, $options, $user_options, $authentication );
+		$this->modules = new Modules( $context, $options, $user_options, new Authentication( $context, $options, $user_options ) );
 		$options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
 
-		// A REST server that an earlier test class left behind keeps that class's
-		// routes, because `rest_get_server()` registers routes only when it builds a
-		// server.
-		unset( $GLOBALS['wp_rest_server'] );
-
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		( new REST_Modules_Controller( $this->modules ) )->register();
-		$this->register_rest_routes();
+		$this->register_modules_rest_routes( $this->modules );
 	}
 
 	/**
 	 * Makes the given user the current one, and builds that user's Analytics module and `Permissions` for the REST route.
 	 *
 	 * The module's reports go to a fake Analytics, which answers with the given
-	 * views and saves each `Authorization` header in `$report_authorizations`.
+	 * views and saves each `Authorization` header in `$google_api_authorizations`.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -311,33 +294,22 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	private function switch_to_user( $user_id, array $views_by_url ) {
 		wp_set_current_user( $user_id );
 
-		$context        = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
-		$options        = new Options( $context );
-		$user_options   = new User_Options( $context, $user_id );
-		$authentication = new Authentication( $context, $options, $user_options );
-		$analytics      = new Analytics_4( $context, $options, $user_options, $authentication );
-		$report         = wp_json_encode( $this->create_report_response( $views_by_url, array_sum( $views_by_url ) )->toSimpleObject() );
-
-		$handler = function ( Request $request ) use ( $report ) {
-			if ( '' === $request->getHeaderLine( 'Authorization' ) ) {
-				return new FulfilledPromise( new Response( 401 ) );
-			}
-
-			$this->report_authorizations[] = $request->getHeaderLine( 'Authorization' );
-
-			return new FulfilledPromise( new Response( 200, array(), $report ) );
-		};
+		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options      = new Options( $context );
+		$user_options = new User_Options( $context, $user_id );
+		$analytics    = new Analytics_4( $context, $options, $user_options, new Authentication( $context, $options, $user_options ) );
+		$report       = wp_json_encode( $this->create_report_response( $views_by_url, array_sum( $views_by_url ) )->toSimpleObject() );
 
 		// A module sends a request with the current user's token, or with its
 		// owner's token when the current user reads a shared module.
-		FakeHttp::fake_google_http_handler( $analytics->get_client(), $handler );
-		FakeHttp::fake_google_http_handler( $analytics->get_owner_oauth_client()->get_client(), $handler );
+		$this->fake_google_api(
+			array( $analytics->get_client(), $analytics->get_owner_oauth_client()->get_client() ),
+			fn () => new Response( 200, array(), $report )
+		);
 
 		$this->force_set_property( $this->modules, 'modules', array( Analytics_4::MODULE_SLUG => $analytics ) );
 
-		remove_all_filters( 'map_meta_cap' );
-		remove_all_filters( 'user_has_cap' );
-		( new Permissions( $context, $authentication, $this->modules, $user_options, new Dismissed_Items( $user_options ) ) )->register();
+		$this->register_permissions_for_user( $user_id, $this->modules );
 	}
 
 	/**
@@ -619,7 +591,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * @runInSeparateProcess
 	 */
-	public function test_create_request__leaves_out_the_urls_of_single_products_with_the_products_setting_off() {
+	public function test_create_request__sends_a_product_filter_that_matches_only_the_urls_of_single_products_with_the_products_setting_off() {
 		$this->activate_woocommerce();
 		register_post_type( 'product', array( 'public' => true ) );
 		$this->analytics->get_settings()->merge( array( 'freshDataIncludesWooCommerceProducts' => false ) );
@@ -632,43 +604,8 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals(
-			array(
-				'notExpression' => array(
-					'filter' => array(
-						'fieldName'    => 'pagePathPlusQueryString',
-						'stringFilter' => array(
-							'matchType' => 'PARTIAL_REGEXP',
-							'value'     => '[?&](?:product=[^&]|post_type=product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=product(?:&|$))',
-						),
-					),
-				),
-			),
-			$this->get_product_filter( $body ),
-			'The report should leave out each URL whose query string names a single product, with the products setting off.'
-		);
-	}
-
-	/**
-	 * @runInSeparateProcess
-	 */
-	public function test_create_request__sends_a_product_filter_that_matches_only_the_urls_of_single_products() {
-		$this->activate_woocommerce();
-		register_post_type( 'product', array( 'public' => true ) );
-		$this->analytics->get_settings()->merge( array( 'freshDataIncludesWooCommerceProducts' => false ) );
-
-		$body = $this->get_report_request_body(
-			array(
-				'startDate' => '2026-10-21',
-				'endDate'   => '2026-10-22',
-				'limit'     => 3,
-			)
-		);
-
-		// Analytics reads the pattern as RE2, and `preg_match()` matches these URLs
-		// the same way.
-		$pattern = $this->get_product_filter( $body )['notExpression']['filter']['stringFilter']['value'];
-		$urls    = array(
+		$product_filter = $this->get_product_filter( $body );
+		$urls           = array(
 			'/?product=hoodie',
 			'/?product=hoodie&attribute_pa_color=red',
 			'/?post_type=product&p=5',
@@ -678,14 +615,30 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			'/?p=5&post_type=product&utm_source=x',
 			'/?post_type=product',
 			'/?s=hats&post_type=product',
+			'/?post_type=product&p=hoodie',
+			'/?p=hoodie&post_type=product',
+			'/?p=&post_type=product',
+			'/?top=5&post_type=product',
 			'/?product_cat=hats',
 			'/?post_type=products&p=5',
 			'/?p=5&post_type=products',
 			'/?featured_product=hoodie',
 			'/?product=',
+			'/?product=&utm_source=x',
 			'/?p=5',
 		);
 
+		$this->assertSame(
+			array(
+				'fieldName' => 'pagePathPlusQueryString',
+				'matchType' => 'PARTIAL_REGEXP',
+			),
+			array(
+				'fieldName' => $product_filter['notExpression']['filter']['fieldName'] ?? null,
+				'matchType' => $product_filter['notExpression']['filter']['stringFilter']['matchType'] ?? null,
+			),
+			'The product filter should leave out each URL of the report where its pattern matches any part of `pagePathPlusQueryString`, with the products setting off.'
+		);
 		$this->assertSame(
 			array(
 				'/?product=hoodie'                        => true,
@@ -697,15 +650,20 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 				'/?p=5&post_type=product&utm_source=x'    => true,
 				'/?post_type=product'                     => false,
 				'/?s=hats&post_type=product'              => false,
+				'/?post_type=product&p=hoodie'            => false,
+				'/?p=hoodie&post_type=product'            => false,
+				'/?p=&post_type=product'                  => false,
+				'/?top=5&post_type=product'               => false,
 				'/?product_cat=hats'                      => false,
 				'/?post_type=products&p=5'                => false,
 				'/?p=5&post_type=products'                => false,
 				'/?featured_product=hoodie'               => false,
 				'/?product='                              => false,
+				'/?product=&utm_source=x'                 => false,
 				'/?p=5'                                   => false,
 			),
-			array_combine( $urls, array_map( fn ( $url ) => 1 === preg_match( "~$pattern~", $url ), $urls ) ),
-			'The product filter should match the URL of each single product, by its query var or by its post type with an ID in either order, and no shop, search, category, other post type, product query var with no slug or plain post.'
+			$this->get_product_filter_matches( $product_filter, $urls ),
+			'The product filter should match the URL of each single product, by its query var or by its post type with an ID in either order, and no shop, search, ID that is no number, query var that ends in `p`, category, other post type, product query var with no slug or plain post.'
 		);
 	}
 
@@ -733,9 +691,24 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 
 		$this->assertSame(
-			'[?&](?:item=[^&]|post_type=digital_product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=digital_product(?:&|$))',
-			$this->get_product_filter( $body )['notExpression']['filter']['stringFilter']['value'],
-			'The product filter should name the product post type and the query var of the site, such as `digital_product` and `item`.'
+			array(
+				'/?item=ebook'                    => true,
+				'/?post_type=digital_product&p=5' => true,
+				'/?p=5&post_type=digital_product' => true,
+				'/?product=hoodie'                => false,
+				'/?post_type=product&p=5'         => false,
+			),
+			$this->get_product_filter_matches(
+				$this->get_product_filter( $body ),
+				array(
+					'/?item=ebook',
+					'/?post_type=digital_product&p=5',
+					'/?p=5&post_type=digital_product',
+					'/?product=hoodie',
+					'/?post_type=product&p=5',
+				)
+			),
+			'The product filter should match a single product by the post type and the query var of the site, such as `digital_product` and `item`, and no URL that names `product`.'
 		);
 	}
 
@@ -761,10 +734,25 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
+		// `/?=hoodie` has a query var with no name, which only a query var
+		// alternative built from the missing query var matches.
 		$this->assertSame(
-			'[?&](?:post_type=product&(?:[^&]*&)*p=[0-9]|p=[0-9]+&(?:[^&]*&)*post_type=product(?:&|$))',
-			$this->get_product_filter( $body )['notExpression']['filter']['stringFilter']['value'],
-			'The product filter should match a product by its post type and ID alone, where the product post type has no query var.'
+			array(
+				'/?post_type=product&p=5' => true,
+				'/?p=5&post_type=product' => true,
+				'/?product=hoodie'        => false,
+				'/?=hoodie'               => false,
+			),
+			$this->get_product_filter_matches(
+				$this->get_product_filter( $body ),
+				array(
+					'/?post_type=product&p=5',
+					'/?p=5&post_type=product',
+					'/?product=hoodie',
+					'/?=hoodie',
+				)
+			),
+			'The product filter should match a product by its post type and ID alone, and no `product` query var or query var with no name, where the product post type has no query var.'
 		);
 	}
 
@@ -915,10 +903,6 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 	}
 
-	public function test_is_shareable__returns_true() {
-		$this->assertTrue( $this->datapoint->is_shareable(), 'The datapoint should be shareable, so a view-only user sees the same posts.' );
-	}
-
 	public function test_get_data__returns_the_posts_of_the_owner_to_a_view_only_reader() {
 		$owner_id     = get_current_user_id();
 		$post_id      = $this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
@@ -929,16 +913,11 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		$this->switch_to_user( $owner_id, $views_by_url );
 		$owner_response = $this->request_top_posts();
 
-		// `Permissions` lets an editor with no Google account of their own read
-		// the shared dashboard only once they dismiss its splash screen.
-		$reader_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		( new Dismissed_Items( new User_Options( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ), $reader_id ) ) )->add( 'shared_dashboard_splash', 0 );
-
-		$this->switch_to_user( $reader_id, $views_by_url );
+		$this->switch_to_user( $this->create_view_only_reader(), $views_by_url );
 		$reader_response = $this->request_top_posts();
 
 		$this->assertSame( 200, $reader_response->get_status(), 'The response to a view-only reader should have the status `200`.' );
-		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->report_authorizations, 'The reports of the owner and of the reader should both run with the token of the administrator who owns Analytics.' );
+		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run with the token of the administrator who owns Analytics.' );
 		$this->assertSame(
 			array(
 				'rows'  => array(

@@ -52,12 +52,6 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
 	);
 
-	const errorResponse = {
-		code: 'internal_server_error',
-		message: 'Internal server error',
-		data: { status: 500 },
-	};
-
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
@@ -183,7 +177,11 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 
 	it( 'should return the error, with no rows, and should not be loading, once the request for the posts fails', async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
-			body: errorResponse,
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 
@@ -198,13 +196,21 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		expect( result.current ).toMatchObject( {
 			rows: [],
 			loading: false,
-			error: errorResponse,
+			error: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 		} );
 	} );
 
 	it( 'should request the posts again, with the same cache, when `retry` is called after the request fails', async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
-			body: errorResponse,
+			body: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 			status: 500,
 		} );
 		fetchMock.getOnce( topPostsEndpoint, {
@@ -226,7 +232,11 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		expect( result.current ).toMatchObject( {
 			rows: [],
 			loading: false,
-			error: errorResponse,
+			error: {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			},
 		} );
 
 		const waitForRetry = createWaitForRegistry( registry );

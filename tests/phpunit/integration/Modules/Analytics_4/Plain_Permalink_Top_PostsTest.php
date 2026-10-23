@@ -747,4 +747,20 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 			'the 51st page path' => array( '51st', 50, false ),
 		);
 	}
+
+	public function test_get__adds_up_the_views_of_the_urls_of_a_page_path_before_it_picks_the_50_page_paths_with_the_most_views() {
+		$post_id      = $this->factory()->post->create();
+		$views_by_url = array();
+
+		// No post has an ID from `999901` on.
+		for ( $position = 1; $position <= 50; $position++ ) {
+			$views_by_url[ '/?p=' . ( 999900 + $position ) ] = 10;
+		}
+
+		for ( $source = 1; $source <= 60; $source++ ) {
+			$views_by_url[ "/?p=$post_id&utm_source=s$source" ] = 1;
+		}
+
+		$this->assertSame( array( $post_id ), array_column( $this->get( $views_by_url ), 'id' ), 'A post whose URLs together have the most views should be looked up, even when each of its URLs has fewer views than the 50th page path.' );
+	}
 }

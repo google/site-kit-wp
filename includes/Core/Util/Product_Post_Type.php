@@ -24,7 +24,8 @@ final class Product_Post_Type {
 	/**
 	 * Gets the post type of the site's products, which the `googlesitekit_product_post_type` filter names.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.116.0
+	 * @since n.e.x.t Moved from `Assets::get_product_post_type()`, and returns the post type object instead of its name.
 	 *
 	 * @return WP_Post_Type|null The post type, or `null` where no public post type has that name.
 	 */
