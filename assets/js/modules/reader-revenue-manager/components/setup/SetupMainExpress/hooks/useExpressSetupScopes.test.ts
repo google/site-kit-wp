@@ -106,7 +106,7 @@ describe( 'useExpressSetupScopes', () => {
 	it( 'should wait for authentication to resolve before requesting scopes', () => {
 		registry = createTestRegistry() as Registry;
 		freezeFetch(
-			/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+			new RegExp( '^/google-site-kit/v1/core/user/data/authentication' )
 		);
 		renderHook( () => useExpressSetupScopes(), {
 			registry,
@@ -120,7 +120,9 @@ describe( 'useExpressSetupScopes', () => {
 		it( 'should return undefined while the granted scopes are loading', () => {
 			registry = createTestRegistry() as Registry;
 			freezeFetch(
-				/^\/google-site-kit\/v1\/core\/user\/data\/authentication/
+				new RegExp(
+					'^/google-site-kit/v1/core/user/data/authentication'
+				)
 			);
 
 			const { result } = renderHook( () => useExpressSetupScopes(), {
