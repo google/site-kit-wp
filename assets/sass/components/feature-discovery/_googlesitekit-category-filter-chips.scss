@@ -19,7 +19,40 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-category-filter-chips {
-		margin-top: 32px;
+		background-color: $c-base;
+
+		// Padding gives the chips breathing room over the content scrolling
+		// beneath them while stuck; the margins offset it so the resting
+		// layout is unchanged.
+		margin-block: 24px -8px;
+		padding-block: 8px;
+		position: sticky;
+
+		// Sits directly below the sticky Site Kit header.
+		top: 68px;
+		z-index: 10;
+
+		body.googlesitekit-showing-feature-tour &,
+		body.googlesitekit-showing-tooltip & {
+			position: static;
+		}
+
+		// Offsets match `.googlesitekit-navigation`, which sticks below the
+		// same header.
+		body.admin-bar & {
+
+			@media (min-width: $width-tablet + 1 + px) {
+				top: 114px;
+			}
+
+			@media (min-width: $bp-wpAdminBarTablet) {
+				top: 100px;
+			}
+
+			@media (min-width: $width-desktop + 1 + px) {
+				top: 116px;
+			}
+		}
 
 		.googlesitekit-chip-multi-select {
 			gap: 10px;
