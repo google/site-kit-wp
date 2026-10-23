@@ -31,6 +31,7 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
@@ -258,6 +259,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				cta: {
 					label: __( 'Go to Publisher center', 'google-site-kit' ),
+					getURL: ( select ) =>
+						select( CORE_MODULES ).getDetailsLinkURL(
+							MODULE_SLUG_READER_REVENUE_MANAGER
+						),
+					external: true,
 				},
 				dismissLabel: __( 'Got it', 'google-site-kit' ),
 			},
