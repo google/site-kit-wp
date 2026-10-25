@@ -179,7 +179,7 @@ describe( 'registerDefaults - keyMetricsPDFSection', () => {
 } );
 
 describe( 'registerDefaults - Monetization area', () => {
-	it( 'registers the Monetization area with a pdfTitle of Monetization', () => {
+	it( 'should register the Monetization area with "Monetization" as its pdfTitle', () => {
 		const widgetsAPI = createWidgetsAPI();
 		registerDefaults( widgetsAPI );
 
