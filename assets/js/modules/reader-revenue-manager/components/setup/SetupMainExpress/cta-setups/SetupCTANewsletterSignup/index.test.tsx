@@ -33,6 +33,7 @@ import {
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { CTA_TYPES } from '@/js/modules/reader-revenue-manager/datastore/cta-types';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import {
 	providePublication,
 	providePublications,
@@ -47,6 +48,7 @@ import {
 	act,
 	createTestRegistry,
 	fireEvent,
+	freezeFetch,
 	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
@@ -105,6 +107,12 @@ const STEP_CONTENT = {
 	'setup-complete': 'Your newsletter signup form is ready!',
 };
 
+// Has accepted the terms of service and set both policy URLs.
+const completePublication = publications[ 3 ] as Publication;
+
+// Has not accepted the terms of service.
+const publicationWithoutTerms = publications[ 2 ] as Publication;
+
 const settingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
 );
@@ -124,6 +132,30 @@ const ctasEndpoint = new RegExp(
 const userSettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
 );
+
+/**
+ * Connects the given publication with no CTAs.
+ *
+ * @since n.e.x.t
+ * @private
+ *
+ * @param {Object} registry    Registry to seed.
+ * @param {Object} publication Publication to connect.
+ * @return {void}
+ */
+function connectPublication( registry: Registry, publication: Publication ) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		.setPublicationID( publication.publicationId );
+
+	providePublications( registry, [ publication ] );
+
+	// CTAs are keyed by the publication ID, so receive them after setting it.
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { ctas: [], params: {} } );
+}
 
 /**
  * Gets the `lastActionedExpressSetups` entries sent by each user settings save.
@@ -235,19 +267,30 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( { publicationID: '' } );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
 
 		providePublications( registry, [] );
+
+		provideSiteInfo( registry );
 	} );
 
-	it( 'renders its steps in order, with the newsletter CTA step before setup complete', () => {
-		const { container } = render( <SetupCTANewsletterSignup />, {
-			registry,
-		} );
+	it( 'renders its steps in order, with the newsletter CTA step before setup complete', async () => {
+		global.location.href = 'http://example.com/';
+
+		connectPublication( registry, publicationWithoutTerms );
+
+		const { container, waitForRegistry } = render(
+			<SetupCTANewsletterSignup />,
+			{
+				registry,
+			}
+		);
+
+		await waitForRegistry();
 
 		const steps = container.querySelectorAll(
 			'.googlesitekit-stepper__step'
@@ -279,14 +322,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=connect-publication';
 
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			const publicationID = publication.publicationId;
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID } );
-
-			providePublications( registry, [ publication ] );
+			connectPublication( registry, publication as Publication );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SetupCTANewsletterSignup />,
@@ -309,6 +345,13 @@ describe( 'SetupCTANewsletterSignup', () => {
 		'renders the %s step content',
 		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
+
+			// Each step's copy depends on the connected publication.
+			if ( step === 'terms-of-service' ) {
+				connectPublication( registry, publicationWithoutTerms );
+			} else if ( step !== 'connect-publication' ) {
+				connectPublication( registry, completePublication );
+			}
 
 			const { getByText, queryByText } = render(
 				<SetupCTANewsletterSignup />,
@@ -347,6 +390,298 @@ describe( 'SetupCTANewsletterSignup', () => {
 		} );
 
 		expect( global.location.href ).toContain( 'step=connect-publication' );
+	} );
+
+	describe( 'while the initial step is unresolved', () => {
+		const authenticationEndpoint = new RegExp(
+			'^/google-site-kit/v1/core/user/data/authentication'
+		);
+
+		const errorResponse = {
+			code: 'internal_server_error',
+			message: 'Internal server error',
+			data: { status: 500 },
+		};
+
+		const ERROR_TITLE = 'We couldn’t set up your sign-up form';
+
+		/**
+		 * Sets up a registry without resolved settings or publication.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {Object}         [options]               Optional. Options.
+		 * @param {Array.<string>} [options.grantedScopes] Optional. Granted scopes; omit to leave them loading.
+		 * @return {void}
+		 */
+		function setupRegistry( {
+			grantedScopes,
+		}: { grantedScopes?: string[] } = {} ) {
+			registry = createTestRegistry() as Registry;
+
+			if ( grantedScopes ) {
+				provideUserAuthentication( registry, { grantedScopes } );
+			} else {
+				freezeFetch( authenticationEndpoint );
+			}
+
+			const moduleData = [
+				{
+					slug: MODULE_SLUG_READER_REVENUE_MANAGER,
+					active: true,
+					connected: false,
+				},
+			];
+
+			provideModules( registry, moduleData );
+			provideModuleRegistrations( registry, moduleData );
+			providePublications( registry, [] );
+		}
+
+		/**
+		 * Resolves the settings with the given publication ID.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {string} publicationID Publication ID.
+		 * @return {void}
+		 */
+		function provideSettings( publicationID: string ) {
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.receiveGetSettings( { publicationID } );
+
+			registry
+				.dispatch( MODULES_READER_REVENUE_MANAGER )
+				.finishResolution( 'getSettings', [] );
+		}
+
+		/**
+		 * Asserts that only the progress bar is rendered.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {Element} container Rendered container.
+		 * @return {void}
+		 */
+		function expectOnlyProgressBar( container: Element ) {
+			expect(
+				container.querySelector( '.mdc-linear-progress' )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector( '.googlesitekit-stepper' )
+			).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-express-setup-step__headline'
+				)
+			).not.toBeInTheDocument();
+		}
+
+		beforeEach( () => {
+			global.location.href = 'http://example.com/?cta=newsletter-signup';
+		} );
+
+		it( 'should show only a progress bar while the settings are loading', () => {
+			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
+			freezeFetch( settingsEndpoint );
+
+			const { container } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			expectOnlyProgressBar( container );
+		} );
+
+		it( 'should show only a progress bar while the connected publication is loading', () => {
+			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			provideSettings( publicationWithoutTerms.publicationId );
+			freezeFetch( publicationEndpoint );
+
+			const { container } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			expectOnlyProgressBar( container );
+		} );
+
+		it( 'should show only a progress bar while the granted scopes are loading', () => {
+			setupRegistry();
+			provideSettings( '' );
+
+			const { container } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			expectOnlyProgressBar( container );
+		} );
+
+		it( 'should show only a progress bar while a required scope is missing, when no publication is connected', () => {
+			setupRegistry( { grantedScopes: [] } );
+			provideSettings( '' );
+
+			const { container } = render( <SetupCTANewsletterSignup />, {
+				registry,
+			} );
+
+			expectOnlyProgressBar( container );
+		} );
+
+		it( 'should show only a progress bar while a required scope is missing, when the publication request has failed', async () => {
+			setupRegistry( { grantedScopes: [] } );
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			provideSettings( publicationWithoutTerms.publicationId );
+
+			fetchMock.getOnce( publicationEndpoint, {
+				body: {
+					code: 'forbidden',
+					message: 'Missing required scopes.',
+					data: { status: 403 },
+				},
+				status: 403,
+			} );
+
+			const { container, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect( fetchMock ).toHaveFetched( publicationEndpoint );
+			expect(
+				registry.select( MODULES_READER_REVENUE_MANAGER ).hasErrors()
+			).toBe( true );
+			expectOnlyProgressBar( container );
+			expect( console ).toHaveErrored();
+		} );
+
+		it.each( [
+			[
+				'settings',
+				settingsEndpoint,
+				() => undefined,
+				{ publicationID: '' },
+				'.googlesitekit-stepper__step--active',
+			],
+			[
+				'connected publication',
+				publicationEndpoint,
+				() =>
+					// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+					provideSettings( publicationWithoutTerms.publicationId ),
+				publicationWithoutTerms,
+				'.googlesitekit-stepper__step--active',
+			],
+		] )(
+			'should show the error with a Retry button when the %s request fails, and recover once it succeeds',
+			async (
+				_,
+				endpoint,
+				provideData,
+				successResponse,
+				activeStepSelector
+			) => {
+				setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
+				provideData();
+
+				fetchMock.getOnce( endpoint, {
+					body: errorResponse,
+					status: 500,
+				} );
+
+				const { container, getByRole, getByText } = render(
+					<SetupCTANewsletterSignup />,
+					{ registry }
+				);
+
+				await waitFor( () => {
+					expect( getByText( ERROR_TITLE ) ).toBeInTheDocument();
+				} );
+
+				expect(
+					getByText( /Internal server error/ )
+				).toBeInTheDocument();
+				expect(
+					container.querySelector( '.mdc-linear-progress' )
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector( '.googlesitekit-stepper' )
+				).not.toBeInTheDocument();
+				expect( console ).toHaveErrored();
+
+				let respond: ( ( response: object ) => void ) | undefined;
+
+				fetchMock.getOnce(
+					endpoint,
+					new Promise( ( resolve ) => {
+						respond = resolve;
+					} )
+				);
+
+				fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
+
+				await waitFor( () => {
+					expectOnlyProgressBar( container );
+				} );
+
+				expect(
+					container.querySelector( '.googlesitekit-notice' )
+				).not.toBeInTheDocument();
+
+				await act( async () => {
+					respond?.( { body: successResponse, status: 200 } );
+					await waitFor( () => {
+						expect(
+							container.querySelector( activeStepSelector )
+						).toBeInTheDocument();
+					} );
+				} );
+
+				expect(
+					container.querySelector( '.mdc-linear-progress' )
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-express-setup__content'
+					)
+				).not.toBeEmptyDOMElement();
+			}
+		);
+
+		it( 'should show the stepper and the step once the scopes are granted and the step has resolved', async () => {
+			setupRegistry( { grantedScopes: EXPRESS_SETUP_SCOPES } );
+			provideSettings( '' );
+
+			const { container, waitForRegistry } = render(
+				<SetupCTANewsletterSignup />,
+				{
+					registry,
+				}
+			);
+
+			await waitForRegistry();
+
+			expect(
+				container.querySelector( '.googlesitekit-stepper' )
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-express-setup-step__headline'
+				)
+			).toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-rrm-express-setup__content > .mdc-linear-progress'
+				)
+			).not.toBeInTheDocument();
+		} );
 	} );
 
 	describe( 'setup complete step', () => {
@@ -815,11 +1150,9 @@ describe( 'SetupCTANewsletterSignup', () => {
 				'step=connect-publication'
 			);
 
-			// The requested step renders, and so saves, before the flow sends
-			// the user back, which saves again for the earlier step.
+			// The requested step never renders, so only the earlier step saves.
 			await waitFor( () => {
 				expect( getSavedExpressSetupEntries() ).toEqual( [
-					savedTimestamp,
 					savedTimestamp,
 				] );
 			} );
@@ -903,6 +1236,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
 
+			connectPublication( registry, publicationWithoutTerms );
+
 			fetchMock.post(
 				userSettingsEndpoint,
 				{
@@ -976,6 +1311,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 		it( 'should track the start of a step once it is in view', async () => {
 			global.location.href =
 				'http://example.com/?cta=newsletter-signup&step=terms-of-service';
+
+			connectPublication( registry, publicationWithoutTerms );
 
 			const { getByText } = render( <SetupCTANewsletterSignup />, {
 				registry,
@@ -1075,6 +1412,8 @@ describe( 'SetupCTANewsletterSignup', () => {
 
 		it( 'should not track any events outside a CTA setup flow', async () => {
 			global.location.href = 'http://example.com/?step=terms-of-service';
+
+			connectPublication( registry, publicationWithoutTerms );
 
 			const { getByText } = render( <SetupCTANewsletterSignup />, {
 				registry,
