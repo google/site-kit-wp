@@ -22,9 +22,7 @@
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { renderJSON } from '@/js/components/pdf-export/test-utils';
-import PDFPartialDataBadge, {
-	PDF_PARTIAL_DATA_BADGE_HEIGHT,
-} from './PDFPartialDataBadge';
+import PDFPartialDataBadge from './PDFPartialDataBadge';
 
 describe( 'PDFPartialDataBadge', () => {
 	it( 'renders the Partial data label in the warning colors', () => {
@@ -37,7 +35,7 @@ describe( 'PDFPartialDataBadge', () => {
 
 	it( 'should render at a fixed height', () => {
 		expect( renderJSON( <PDFPartialDataBadge /> ) ).toContain(
-			`"height":${ scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT ) }`
+			`"height":${ scalePDFValue( 28 ) }`
 		);
 	} );
 } );

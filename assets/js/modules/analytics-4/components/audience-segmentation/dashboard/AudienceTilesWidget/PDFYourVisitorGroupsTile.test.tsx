@@ -27,7 +27,7 @@ import TestRenderer from 'react-test-renderer';
  */
 import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
-import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
 
 const METRICS = {
@@ -59,8 +59,6 @@ const TOP_CONTENT = [
 		serviceURL: 'https://example.com/analytics-report/second-post',
 	},
 ];
-
-const BADGE_MIN_HEIGHT = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
 
 /**
  * Renders `PDFYourVisitorGroupsTile` with default props, as a JSON tree string.
@@ -144,7 +142,7 @@ function findTitleRow(
 function findTitleRowStyle( json: string, title: string ) {
 	const row = findTitleRow( JSON.parse( json ), title );
 
-	return Object.assign( {}, ...[ row?.props.style ].flat() );
+	return flattenPDFStyle( row?.props.style );
 }
 
 describe( 'PDFYourVisitorGroupsTile', () => {
@@ -233,13 +231,16 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 	} );
 
 	it( 'should reserve the badge height on the card header with or without a badge', () => {
-		// Header flag set: the badge shows beside the audience name.
-		expect(
-			findTitleRowStyle(
-				renderTile( { isAudiencePartialData: true } ),
-				'New visitors'
-			)
-		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+		// Header flag set: the badge shows beside the audience name. The row
+		// holding the height can't be the padded header, as `minHeight`
+		// includes padding there.
+		const headerRow = findTitleRowStyle(
+			renderTile( { isAudiencePartialData: true } ),
+			'New visitors'
+		);
+
+		expect( headerRow ).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
+		expect( headerRow ).not.toHaveProperty( 'paddingVertical' );
 
 		// Header flag unset: no badge, but the header keeps its height.
 		expect(
@@ -247,7 +248,7 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				renderTile( { isAudiencePartialData: false } ),
 				'New visitors'
 			)
-		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
 	} );
 
 	it( 'should reserve the badge height on the Top content title row with or without a badge', () => {
@@ -257,7 +258,7 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				renderTile( { isTopContentPartialData: true } ),
 				'Top content by pageviews'
 			)
-		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
 
 		// Top content flag unset: no badge, but the row keeps its height.
 		expect(
@@ -265,7 +266,7 @@ describe( 'PDFYourVisitorGroupsTile', () => {
 				renderTile( { isTopContentPartialData: false } ),
 				'Top content by pageviews'
 			)
-		).toMatchObject( { minHeight: BADGE_MIN_HEIGHT } );
+		).toMatchObject( { minHeight: scalePDFValue( 28 ) } );
 	} );
 
 	it( 'truncates a long city name to one line with an ellipsis', () => {
