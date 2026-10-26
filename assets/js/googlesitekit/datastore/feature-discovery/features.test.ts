@@ -316,6 +316,11 @@ describe( 'core/feature-discovery features', () => {
 				expect(
 					registry.dispatch( CORE_MODULES ).activateModule
 				).toHaveBeenCalledWith( 'test-module' );
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
 				expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
 
 				// The record is stored (and so would survive the OAuth round trip).
@@ -372,8 +377,54 @@ describe( 'core/feature-discovery features', () => {
 
 				expect( result ).toEqual( { error } );
 				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toEqual( error );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should clear any stale setupFeature action error once setup succeeds', async () => {
+				registerSetupFlowFeature();
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+					{
+						code: 'activation_failed',
+						message: 'Old error',
+						data: { status: 500 },
+					},
+					'setupFeature',
+					[ 'test-feature' ]
+				);
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeDefined();
+
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
+				expect( navigateTo ).not.toHaveBeenCalled();
 			} );
 
 			it( 'should stop without recording or navigating when the module has no setup component', async () => {
@@ -401,8 +452,68 @@ describe( 'core/feature-discovery features', () => {
 				expect( await consumePendingSetup() ).toBeNull();
 			} );
 
+			it( 'should record pending setup and navigate when setup provides a URL', async () => {
+				global.history.replaceState( {}, '', '/#/whats-new' );
+				const setupURL =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-ad-blocking-recovery';
+				const activateModuleSpy = jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				);
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+							getSetupURL: () => setupURL,
+						},
+					} )
+				);
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect( activateModuleSpy ).not.toHaveBeenCalled();
+				expect( navigateTo ).toHaveBeenCalledWith( setupURL );
+				expect( await consumePendingSetup() ).toEqual( {
+					featureSlug: 'test-feature',
+					returnTab: '/whats-new',
+				} );
+			} );
+
+			it( 'should not record pending setup or navigate when setup URL is undefined', async () => {
+				const activateModuleSpy = jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				);
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+							getSetupURL: () => undefined,
+						},
+					} )
+				);
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect( activateModuleSpy ).not.toHaveBeenCalled();
+				expect( navigateTo ).not.toHaveBeenCalled();
+				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
 			describe( 'for an in-place-panel feature', () => {
-				it( 'should close the detail panel before opening the feature’s panel', async () => {
+				it( "should close the detail panel before opening the feature's panel", async () => {
 					// Records the detail panel's state at the moment the
 					// feature's panel opens.
 					let detailPanelSlugOnOpen: unknown;

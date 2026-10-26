@@ -20,6 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
+import { isPlainObject } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -30,6 +31,7 @@ import { addQueryArgs } from '@wordpress/url';
 /**
  * Internal dependencies
  */
+import { get } from 'googlesitekit-api';
 import {
 	Registry,
 	Select,
@@ -41,9 +43,11 @@ import {
 import { isFeatureEnabled } from '@/js/features';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createFetchStore } from '@/js/googlesitekit/data/create-fetch-store';
+import { ReportFetchOptions } from '@/js/googlesitekit/data/create-get-report-resolver';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { stringifyObject } from '@/js/util';
 import { ErrorObject } from '@/js/util/errors';
 import { MODULES_ANALYTICS_4 } from './constants';
 
@@ -74,6 +78,64 @@ interface RecentContentParams extends RecentContentOptions {
 	includeProducts: boolean;
 }
 
+export type ExcludedProducts =
+	| {
+			/** The way to recognize a product page: by the path that every product URL starts with. */
+			by: 'pathPrefix';
+			/** The path that every product URL starts with, such as `/product/`, never a full URL. */
+			pathPrefix: string;
+	  }
+	| {
+			/** The way to recognize a product page: by the `googlesitekit_post_type` custom dimension. */
+			by: 'postTypeDimension';
+			/** The product post type, such as `product`, which is the custom dimension's value for a product page. */
+			postType: string;
+	  };
+
+/**
+ * One of the published single posts with the most views on a site with plain permalinks, as `GET:plain-permalink-top-posts` returns it.
+ *
+ * @since n.e.x.t
+ */
+export interface PlainPermalinkTopPost {
+	/** The ID of the post. */
+	id: number;
+	/** The title as text, such as `Don’t miss it`, or an empty string for a post with no title. */
+	title: string;
+	/** The permalink of the post, such as `https://example.com/?p=123`. */
+	url: string;
+	/** The permalink with no scheme or host, such as `/?p=123`. */
+	pagePath: string;
+	/** The views of the report's URLs that show the post, at least `1`. */
+	views: number;
+}
+
+/**
+ * The response of `GET:plain-permalink-top-posts`, with the most viewed posts and the report's total views.
+ *
+ * @since n.e.x.t
+ */
+export interface PlainPermalinkTopPosts {
+	/** The posts, most viewed first. */
+	rows: PlainPermalinkTopPost[];
+	/** The views of every URL of the report, including the URLs that show no single post. */
+	total: number;
+}
+
+/**
+ * The options of `getPlainPermalinkTopPosts()`.
+ *
+ * @since n.e.x.t
+ */
+export interface PlainPermalinkTopPostsOptions {
+	/** The first day of the report, such as `2026-10-21`. */
+	startDate: string;
+	/** The last day of the report, such as `2026-10-22`. */
+	endDate: string;
+	/** The maximum number of posts, from 1 to `Plain_Permalink_Top_Posts::MAX_PAGE_PATHS`, which is 50. The server refuses any other limit. */
+	limit: number;
+}
+
 interface WordPressPost {
 	/** The post ID. */
 	id: number;
@@ -94,6 +156,8 @@ interface WordPressPost {
 interface FreshDataState {
 	/** The newest posts and products, saved under the `count` of the request. */
 	recentContent: Record< number, RecentContentItem[] >;
+	/** The response of each request, saved under the hash that `stringifyObject()` builds from its options. */
+	plainPermalinkTopPosts: Record< string, PlainPermalinkTopPosts >;
 }
 
 const fetchGetRecentContentStore = createFetchStore( {
@@ -174,8 +238,49 @@ const fetchGetRecentContentStore = createFetchStore( {
 	};
 };
 
+const fetchGetPlainPermalinkTopPostsStore = createFetchStore( {
+	baseName: 'getPlainPermalinkTopPosts',
+	controlCallback: (
+		{ options }: { options: PlainPermalinkTopPostsOptions },
+		fetchOptions?: ReportFetchOptions
+	): Promise< PlainPermalinkTopPosts > =>
+		get(
+			'modules',
+			MODULE_SLUG_ANALYTICS_4,
+			'plain-permalink-top-posts',
+			options,
+			fetchOptions
+		),
+	reducerCallback: createReducer(
+		(
+			state: FreshDataState,
+			topPosts: PlainPermalinkTopPosts,
+			{ options }: { options: PlainPermalinkTopPostsOptions }
+		) => {
+			state.plainPermalinkTopPosts[ stringifyObject( { ...options } ) ] =
+				topPosts;
+		}
+	),
+	argsToParams: ( options: PlainPermalinkTopPostsOptions ) => ( {
+		options,
+	} ),
+	validateParams: ( {
+		options,
+	}: Partial< { options: PlainPermalinkTopPostsOptions } > ) => {
+		invariant( isPlainObject( options ), 'options must be an object.' );
+	},
+} ) as {
+	actions: {
+		fetchGetPlainPermalinkTopPosts: (
+			options: PlainPermalinkTopPostsOptions,
+			fetchOptions?: ReportFetchOptions
+		) => unknown;
+	};
+};
+
 const baseInitialState: FreshDataState = {
 	recentContent: {},
+	plainPermalinkTopPosts: {},
 };
 
 const baseResolvers = {
@@ -223,6 +328,16 @@ const baseResolvers = {
 			yield setErrorForSelector( error, 'getRecentContent', [ options ] );
 		}
 	},
+
+	*getPlainPermalinkTopPosts(
+		options: PlainPermalinkTopPostsOptions,
+		fetchOptions?: ReportFetchOptions
+	): Generator< unknown, void, unknown > {
+		yield fetchGetPlainPermalinkTopPostsStore.actions.fetchGetPlainPermalinkTopPosts(
+			options,
+			fetchOptions
+		);
+	},
 };
 
 const baseSelectors = {
@@ -245,6 +360,33 @@ const baseSelectors = {
 		{ count }: RecentContentOptions
 	): RecentContentItem[] | undefined {
 		return state.recentContent[ count ];
+	},
+
+	/**
+	 * Gets the published single posts with the most views on a site with plain permalinks, which has no permalink structure.
+	 *
+	 * Read a request error with
+	 * `getErrorForSelector( 'getPlainPermalinkTopPosts', [ options ] )`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state             The data store's state.
+	 * @param {Object} options           The options of the report.
+	 * @param {string} options.startDate The first day of the report, such as `2026-10-21`.
+	 * @param {string} options.endDate   The last day of the report, such as `2026-10-22`.
+	 * @param {number} options.limit     The maximum number of posts, from 1 to `Plain_Permalink_Top_Posts::MAX_PAGE_PATHS`, which is 50. The server refuses any other limit.
+	 * @param {Object} [fetchOptions]    Optional. Fetch options that change how the request runs, such as `{ cacheTTL }`, the seconds the response stays cached.
+	 * @return {(Object|undefined)} The posts, most viewed first, as `rows`, and the views of every URL of the report as `total`. Returns `undefined` until the request succeeds.
+	 */
+	getPlainPermalinkTopPosts(
+		state: FreshDataState,
+		options: PlainPermalinkTopPostsOptions,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars -- The fetch options only change how the request runs, so the selector does not read them.
+		fetchOptions?: ReportFetchOptions
+	): PlainPermalinkTopPosts | undefined {
+		return state.plainPermalinkTopPosts[
+			stringifyObject( { ...options } )
+		];
 	},
 
 	/**
@@ -282,12 +424,91 @@ const baseSelectors = {
 			return analyticsConnected && wooCommerceActive && setting === true;
 		}
 	),
+
+	/**
+	 * Gets the way the Recent activity tab recognizes the product pages that
+	 * it hides from its list of posts.
+	 *
+	 * The tab hides products only while WooCommerce is active and the setting
+	 * to include products is off. Without WooCommerce, the setting doesn't
+	 * show, so the tab lists every page. The tab recognizes a product page:
+	 *
+	 * 1. By the path that every product URL starts with, such as `/product/`.
+	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
+	 *    custom dimension, if the Analytics property has it.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab lists products or can't recognize them. Returns `undefined` if not yet loaded.
+	 */
+	getExcludedProducts: createRegistrySelector(
+		( select: Select ) => (): ExcludedProducts | null | undefined => {
+			const shouldIncludeProducts =
+				select(
+					MODULES_ANALYTICS_4
+				).shouldIncludeWooCommerceProducts();
+
+			if ( shouldIncludeProducts === undefined ) {
+				// `shouldIncludeWooCommerceProducts()` stays `undefined` when
+				// the Analytics settings request fails, and the tab then lists
+				// every page.
+				const hasSettingFailedToLoad =
+					select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+						'getSettings'
+					) &&
+					select(
+						MODULES_ANALYTICS_4
+					).getFreshDataIncludesWooCommerceProducts() === undefined;
+
+				return hasSettingFailedToLoad ? null : undefined;
+			}
+
+			const postType = select( CORE_SITE ).getProductPostType();
+
+			if (
+				shouldIncludeProducts ||
+				! select( CORE_SITE ).isWooCommerceActivated() ||
+				! postType
+			) {
+				return null;
+			}
+
+			const pathPrefix = select( CORE_SITE ).getProductPathPrefix();
+
+			if ( pathPrefix ) {
+				return { by: 'pathPrefix', pathPrefix };
+			}
+
+			const hasPostTypeDimension = select(
+				MODULES_ANALYTICS_4
+			).hasCustomDimensions( 'googlesitekit_post_type' );
+
+			// `hasCustomDimensions()` stays `undefined` when nobody has synced
+			// the property's custom dimensions and the user can't sync them,
+			// such as a view-only user.
+			if ( hasPostTypeDimension === undefined ) {
+				return select( MODULES_ANALYTICS_4 ).hasFinishedResolution(
+					'getAvailableCustomDimensions'
+				)
+					? null
+					: undefined;
+			}
+
+			return hasPostTypeDimension
+				? { by: 'postTypeDimension', postType }
+				: null;
+		}
+	),
 };
 
-const store = combineStores( fetchGetRecentContentStore, {
-	initialState: baseInitialState,
-	resolvers: baseResolvers,
-	selectors: baseSelectors,
-} );
+const store = combineStores(
+	fetchGetRecentContentStore,
+	fetchGetPlainPermalinkTopPostsStore,
+	{
+		initialState: baseInitialState,
+		resolvers: baseResolvers,
+		selectors: baseSelectors,
+	}
+);
 
 export default store;

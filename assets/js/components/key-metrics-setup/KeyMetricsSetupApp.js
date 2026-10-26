@@ -41,7 +41,8 @@ import { addQueryArgs } from '@wordpress/url';
  * Internal dependencies
  */
 import { SpinnerButton } from 'googlesitekit-components';
-import { useDispatch, useSelect } from 'googlesitekit-data';
+import { useDispatch, useRegistry, useSelect } from 'googlesitekit-data';
+import { MODULE_SLUG_TO_FEATURE_SLUG } from '@/js/components/feature-discovery/constants';
 import Header from '@/js/components/Header';
 import HelpMenu from '@/js/components/help/HelpMenu';
 import AdaptiveFooterLayout from '@/js/components/key-metrics-setup/AdaptiveFooterLayout';
@@ -64,6 +65,7 @@ import { hasErrorForAnswer } from '@/js/components/user-input/util/validation';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { getPendingSetupReturnURL } from '@/js/googlesitekit/feature-discovery/pending-setup';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useForwardableParams from '@/js/hooks/useForwardableParams';
 import useQueryArg from '@/js/hooks/useQueryArg';
@@ -169,6 +171,7 @@ export default function KeyMetricsSetupApp() {
 	} );
 
 	const { navigateTo } = useDispatch( CORE_LOCATION );
+	const registry = useRegistry();
 
 	// Query arg derived state (declared before callbacks that depend on it).
 	const [ showProgress ] = useQueryArg( 'showProgress' );
@@ -211,6 +214,16 @@ export default function KeyMetricsSetupApp() {
 			return;
 		}
 
+		const hubURL = await getPendingSetupReturnURL(
+			registry.select,
+			MODULE_SLUG_TO_FEATURE_SLUG[ MODULE_SLUG_ANALYTICS_4 ]
+		);
+
+		if ( hubURL ) {
+			navigateTo( hubURL );
+			return;
+		}
+
 		const url = new URL( dashboardURL );
 
 		url.searchParams.set(
@@ -227,6 +240,7 @@ export default function KeyMetricsSetupApp() {
 		navigateTo( addQueryArgs( url.toString(), forwardableParams ) );
 	}, [
 		dashboardURL,
+		registry,
 		saveInitialSetupSettings,
 		setHasSitePurposeAnswer,
 		setIsAnalyticsSetupComplete,

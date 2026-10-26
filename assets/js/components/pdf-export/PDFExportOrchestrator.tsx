@@ -463,11 +463,7 @@ const PDFExportOrchestrator: FC< PDFExportOrchestratorProps > = ( {
 						discoveredAreas.push( {
 							areaSlug: area.slug,
 							areaContextSlug: contextSlug,
-							areaTitle:
-								area.pdfReportTitle ||
-								area.pdfTitle ||
-								area.title ||
-								'',
+							areaTitle: area.pdfTitle || area.title || '',
 							widgets: pdfWidgets,
 						} );
 					} );
