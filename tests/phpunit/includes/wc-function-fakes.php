@@ -95,3 +95,24 @@ if ( ! function_exists( 'is_wc_endpoint_url' ) ) {
 		return false;
 	}
 }
+
+if ( ! function_exists( 'wc_get_page_id' ) ) {
+	/**
+	 * Fakes `wc_get_page_id()` for a test that runs WooCommerce-aware code
+	 * with the WooCommerce plugin inactive.
+	 *
+	 * Like the real function, it reads the `woocommerce_<page>_page_id` option
+	 * and runs the `woocommerce_get_<page>_page_id` filter. A test can set either
+	 * one, such as the shop page through the `woocommerce_shop_page_id` option.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param string $page The WooCommerce page, such as `shop` or `checkout`.
+	 * @return int The page's ID, or `-1` where the store has no such page.
+	 */
+	function wc_get_page_id( $page ) {
+		$page_id = apply_filters( 'woocommerce_get_' . $page . '_page_id', get_option( 'woocommerce_' . $page . '_page_id' ) );
+
+		return $page_id ? absint( $page_id ) : -1;
+	}
+}

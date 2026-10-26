@@ -68,6 +68,7 @@ describe( 'core/site site info', () => {
 			],
 			productPostType: [ 'product' ],
 			productPathPrefix: '/product/',
+			usingPlainPermalinks: true,
 			anyoneCanRegister: false,
 			anyoneCanRegisterWooCommerce: false,
 			isMultisite: false,
@@ -521,6 +522,7 @@ describe( 'core/site site info', () => {
 			[ 'isWebStoriesActive', 'webStoriesActive' ],
 			[ 'getProductPostType', 'productPostType' ],
 			[ 'getProductPathPrefix', 'productPathPrefix' ],
+			[ 'isUsingPlainPermalinks', 'usingPlainPermalinks' ],
 			[ 'isKeyMetricsSetupCompleted', 'keyMetricsSetupCompletedBy' ],
 			[ 'getConsentModeRegions', 'consentModeRegions' ],
 			[ 'getAnyoneCanRegister', 'anyoneCanRegister' ],
@@ -619,6 +621,39 @@ describe( 'core/site site info', () => {
 
 				expect( result ).toEqual( undefined );
 				expect( console ).toHaveErrored();
+			} );
+		} );
+
+		describe( 'isUsingPlainPermalinks', () => {
+			beforeEach( () => {
+				global[ entityInfoKey ] = entityInfo;
+			} );
+
+			it( 'should return `true` when the site uses plain permalinks', async () => {
+				global[ baseInfoKey ] = baseInfo;
+
+				registry.select( CORE_SITE ).isUsingPlainPermalinks();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isUsingPlainPermalinks()
+				).toEqual( true );
+			} );
+
+			it( 'should return `false` when the site has a permalink structure', async () => {
+				global[ baseInfoKey ] = {
+					...baseInfo,
+					usingPlainPermalinks: false,
+				};
+
+				registry.select( CORE_SITE ).isUsingPlainPermalinks();
+
+				await untilResolved( registry, CORE_SITE ).getSiteInfo();
+
+				expect(
+					registry.select( CORE_SITE ).isUsingPlainPermalinks()
+				).toEqual( false );
 			} );
 		} );
 

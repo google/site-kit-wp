@@ -12,10 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -28,15 +25,11 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Authenticated_Search_Console_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_REST_Request;
 
@@ -48,9 +41,8 @@ use WP_REST_Request;
 class Get_Benchmarking_DataTest extends TestCase {
 
 	use Authenticated_Search_Console_Trait;
+	use Dashboard_Sharing_Trait;
 	use Fake_Benchmarking_Reports_Trait;
-	use Fake_Site_Connection_Trait;
-	use RestTestTrait;
 	use Saved_Site_Data_Trait;
 
 	const START_DATE = '2026-08-19';
@@ -91,14 +83,6 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 */
 	private $admin_id;
 
-	/**
-	 * The `Authorization` header of each `batchRunReports` request the fake
-	 * Analytics API answered.
-	 *
-	 * @var array
-	 */
-	private $report_authorizations = array();
-
 	public function set_up() {
 		parent::set_up();
 
@@ -109,19 +93,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->options = new Options( $this->context );
 		$user_options  = new User_Options( $this->context, $this->admin_id );
 
-		$this->fake_proxy_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->authenticate_user( $this->admin_id, array( Analytics_4::READONLY_SCOPE ) );
 
-		$authentication = new Authentication( $this->context, $this->options, $user_options );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
-		$authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$authentication->get_oauth_client()->get_required_scopes(),
-				array( Analytics_4::READONLY_SCOPE )
-			)
-		);
-
+		$authentication  = new Authentication( $this->context, $this->options, $user_options );
 		$this->analytics = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
 		$this->modules   = new Modules( $this->context, $this->options, $user_options, $authentication );
 
@@ -130,43 +104,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->force_set_property( $this->modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
 
-		$this->register_permissions_for_user( $this->admin_id );
-
-		// A REST server left behind by an earlier test class still holds that
-		// class's routes, and the request would reach its module rather than
-		// the one built above.
-		unset( $GLOBALS['wp_rest_server'] );
-
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		( new REST_Modules_Controller( $this->modules ) )->register();
-		$this->register_rest_routes();
-	}
-
-	/**
-	 * Registers the capability map for a user.
-	 *
-	 * The instance the plugin registered at bootstrap stays bound to the user
-	 * it was built for, so a test that switches users needs its own.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @param int $user_id The user the capabilities are resolved for.
-	 */
-	private function register_permissions_for_user( $user_id ) {
-		remove_all_filters( 'map_meta_cap' );
-		remove_all_filters( 'user_has_cap' );
-
-		$user_options = new User_Options( $this->context, $user_id );
-
-		// Authentication reads the token of the user it was built for, so a
-		// reader checked against the administrator's would look authenticated.
-		( new Permissions(
-			$this->context,
-			new Authentication( $this->context, $this->options, $user_options ),
-			$this->modules,
-			$user_options,
-			new Dismissed_Items( $user_options )
-		) )->register();
+		$this->register_permissions_for_user( $this->admin_id, $this->modules );
+		$this->register_modules_rest_routes( $this->modules );
 	}
 
 	public function tear_down() {
@@ -256,13 +195,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->enable_feature( 'typicalTraffic' );
 
 		// `set_up()` grants the administrator the Analytics scope only.
-		$oauth_client = ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $this->admin_id ) ) )->get_oauth_client();
-		$oauth_client->set_granted_scopes(
-			array_merge(
-				$oauth_client->get_required_scopes(),
-				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/webmasters' )
-			)
-		);
+		$this->authenticate_user( $this->admin_id, array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/webmasters' ) );
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -280,9 +213,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 				'ownerID'    => $this->admin_id,
 			)
 		);
-		( new Module_Sharing_Settings( $this->options ) )->set(
-			array_fill_keys( $shared_module_slugs, array( 'sharedRoles' => array( 'editor' ) ) )
-		);
+		$this->share_modules_with_editors( $shared_module_slugs );
 
 		// The site doubles, from 200 visitors in the compare period to 400 in
 		// the selected one, while each row grows from 200 to 240. That change is
@@ -331,31 +262,24 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$analytics      = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
 		$search_console = new Search_Console( $this->context, $this->options, $user_options, $authentication );
 
-		$handler = function ( Request $request ) {
-			if ( '' === $request->getHeaderLine( 'Authorization' ) ) {
-				return new FulfilledPromise( new Response( 401 ) );
-			}
-
-			if ( 'analyticsdata.googleapis.com' === $request->getUri()->getHost() ) {
-				$this->report_authorizations[] = $request->getHeaderLine( 'Authorization' );
-
-				return new FulfilledPromise( $this->create_analytics_batch_response( json_decode( (string) $request->getBody(), true ) ) );
-			}
-
-			return new FulfilledPromise( $this->create_plant_garlic_batch_response( $request ) );
-		};
-
 		// A module sends a request with the current user's token, or with its
 		// owner's token when the current user reads a shared module. Both
 		// modules send the current user's requests through the same client, so
 		// faking the Analytics module's client covers Search Console too.
-		foreach ( array(
-			$analytics->get_client(),
-			$analytics->get_owner_oauth_client()->get_client(),
-			$search_console->get_owner_oauth_client()->get_client(),
-		) as $client ) {
-			FakeHttp::fake_google_http_handler( $client, $handler );
-		}
+		$this->fake_google_api(
+			array(
+				$analytics->get_client(),
+				$analytics->get_owner_oauth_client()->get_client(),
+				$search_console->get_owner_oauth_client()->get_client(),
+			),
+			function ( Request $request ) {
+				if ( 'analyticsdata.googleapis.com' === $request->getUri()->getHost() ) {
+					return $this->create_analytics_batch_response( json_decode( (string) $request->getBody(), true ) );
+				}
+
+				return $this->create_plant_garlic_batch_response( $request );
+			}
+		);
 
 		$this->force_set_property(
 			$this->modules,
@@ -371,22 +295,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
 		$search_console->register();
 
-		$this->register_permissions_for_user( $user_id );
-	}
-
-	/**
-	 * Creates an editor who can view the shared dashboard without an account of
-	 * their own.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @return int The editor's user ID.
-	 */
-	private function create_view_only_reader() {
-		$reader_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		( new Dismissed_Items( new User_Options( $this->context, $reader_id ) ) )->add( 'shared_dashboard_splash', 0 );
-
-		return $reader_id;
+		$this->register_permissions_for_user( $user_id, $this->modules );
 	}
 
 	/**
@@ -722,7 +631,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		sort( $dimension_order );
 
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
-		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->report_authorizations, 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
+		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
 		$this->assertSame( array( 0, 1, 2, 3, 4 ), $dimension_order, 'The response should list the channels, devices, visitor mix, referrers, and search queries.' );
 	}
@@ -748,7 +657,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// about the dashboard instead. This administrator is where they disagree.
 		$other_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $other_admin );
-		$this->register_permissions_for_user( $other_admin );
+		$this->register_permissions_for_user( $other_admin, $this->modules );
 
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'The administrator should be able to run setup, which is what the route default accepts.' );
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The administrator should not be able to view the dashboard without an account of their own.' );
@@ -764,7 +673,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
-		$this->register_permissions_for_user( $subscriber_id );
+		$this->register_permissions_for_user( $subscriber_id, $this->modules );
 
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The subscriber should not be able to view the dashboard.' );
 
