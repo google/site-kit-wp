@@ -68,21 +68,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use Analytics?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Decide with data:', 'google-site-kit' ),
+						term: __( 'Decide with data', 'google-site-kit' ),
 						description: __(
 							'Replace guesswork with clear insights',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Track what works:', 'google-site-kit' ),
+						term: __( 'Track what works', 'google-site-kit' ),
 						description: __(
 							'Pinpoint your most popular content and traffic sources',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Boost performance:', 'google-site-kit' ),
+						term: __( 'Boost performance', 'google-site-kit' ),
 						description: __(
 							'Optimize your site based on real visitor behavior',
 							'google-site-kit'
@@ -131,7 +131,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		successNotice: {
 			title: __( 'Success! Analytics is set up', 'google-site-kit' ),
 			description: __(
-				'Analytics data is now on your dashboard.',
+				'Analytics data is now on your dashboard',
 				'google-site-kit'
 			),
 			cta: {
@@ -173,21 +173,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use key metrics?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Pin metrics:', 'google-site-kit' ),
+						term: __( 'Pin metrics', 'google-site-kit' ),
 						description: __(
 							'Attach your most critical GA4 metrics directly to your main WordPress dashboard',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'At-a-glance data:', 'google-site-kit' ),
+						term: __( 'At-a-glance data', 'google-site-kit' ),
 						description: __(
 							'View vital performance stats immediately upon logging in',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Save time:', 'google-site-kit' ),
+						term: __( 'Save time', 'google-site-kit' ),
 						description: __(
 							'Skip navigating through complex external Analytics menus',
 							'google-site-kit'
@@ -195,14 +195,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 
 					{
-						term: __( 'Team alignment:', 'google-site-kit' ),
+						term: __( 'Team alignment', 'google-site-kit' ),
 						description: __(
 							'Keep everyone focused on core goals with a simplified performance view',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Spot trends:', 'google-site-kit' ),
+						term: __( 'Spot trends', 'google-site-kit' ),
 						description: __(
 							'Instantly recognize traffic spikes, drops, and changing user patterns',
 							'google-site-kit'
@@ -277,28 +277,28 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Saves time:', 'google-site-kit' ),
+						term: __( 'Saves time', 'google-site-kit' ),
 						description: __(
 							'Automates event tracking immediately with a single toggle',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Zero coding:', 'google-site-kit' ),
+						term: __( 'Zero coding', 'google-site-kit' ),
 						description: __(
 							'Tracks file downloads, video plays, and outbound clicks without developer help',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Immediate data:', 'google-site-kit' ),
+						term: __( 'Immediate data', 'google-site-kit' ),
 						description: __(
 							'Collects baseline user behavior data from the moment it is turned on',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'No Tag Manager needed:', 'google-site-kit' ),
+						term: __( 'No Tag Manager needed', 'google-site-kit' ),
 						description: __(
 							'Eliminates complex setup by running directly through your standard tracking',
 							'google-site-kit'
@@ -355,7 +355,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				'google-site-kit'
 			),
 			description: __(
-				'You are now automatically tracking valuable interactions like file downloads and video plays.',
+				'You are now automatically tracking valuable interactions like file downloads and video plays',
 				'google-site-kit'
 			),
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
@@ -398,7 +398,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Segment traffic:', 'google-site-kit' ),
+						term: __( 'Segment traffic', 'google-site-kit' ),
 						description: __(
 							'Group visitors by criteria like traffic source or new versus returning directly in WordPress',
 							'google-site-kit'
@@ -406,7 +406,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 					{
 						term: __(
-							'Side-by-side comparison:',
+							'Side-by-side comparison',
 							'google-site-kit'
 						),
 						description: __(
@@ -415,21 +415,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Identify top content:', 'google-site-kit' ),
+						term: __( 'Identify top content', 'google-site-kit' ),
 						description: __(
 							'Pinpoint exactly which posts and pages resonate best with specific audience types',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Tailored insights:', 'google-site-kit' ),
+						term: __( 'Tailored insights', 'google-site-kit' ),
 						description: __(
 							'Uncover deep audience behavior patterns to improve user engagement and retention',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Data-driven decisions:', 'google-site-kit' ),
+						term: __( 'Data-driven decisions', 'google-site-kit' ),
 						description: __(
 							'Optimize your site strategy using segment-specific data without leaving your dashboard',
 							'google-site-kit'
