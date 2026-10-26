@@ -83,6 +83,14 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 */
 	private $admin_id;
 
+	/**
+	 * The `contextualData` keys the builder had rows for, after the Search
+	 * Console module added its search query rows.
+	 *
+	 * @var array
+	 */
+	private $contextual_data_keys = array();
+
 	public function set_up() {
 		parent::set_up();
 
@@ -150,10 +158,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 				if ( null === $this->result ) {
 					return array(
-						'visitors'       => array(),
-						'dailyTraffic'   => array(),
-						'dimensions'     => array(),
-						'contextualData' => array(),
+						'visits'       => array(),
+						'dailyTraffic' => array(),
+						'keyFactors'   => array(),
 					);
 				}
 
@@ -299,6 +306,27 @@ class Get_Benchmarking_DataTest extends TestCase {
 	}
 
 	/**
+	 * Records the `contextualData` keys the builder has rows for, after the
+	 * Search Console module adds its search query rows.
+	 *
+	 * The encoded response doesn't carry these rows, so the test reads them
+	 * here, before they are ranked.
+	 *
+	 * @since n.e.x.t
+	 */
+	private function record_contextual_data_keys() {
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$this->contextual_data_keys = array_keys( $contextual_data );
+
+				return $contextual_data;
+			},
+			20
+		);
+	}
+
+	/**
 	 * Requests the datapoint.
 	 *
 	 * @since 1.190.0
@@ -323,28 +351,28 @@ class Get_Benchmarking_DataTest extends TestCase {
 	public function test_rest_endpoint__answers_with_the_encoded_response() {
 		$builder = $this->enable_datapoint(
 			array(
-				'visitors'       => array(
+				'visits'       => array(
 					'current'  => 1200,
 					'previous' => 1000,
 				),
-				'dailyTraffic'   => array(
+				'dailyTraffic' => array(
 					array(
-						'date'     => '2026-08-19',
-						'visitors' => 40,
+						'date'   => '2026-08-19',
+						'visits' => 40,
 					),
 					array(
-						'date'     => '2026-08-20',
-						'visitors' => 55,
+						'date'   => '2026-08-20',
+						'visits' => 55,
 					),
 				),
-				'dimensions'     => array( 'CHANNELS' ),
-				'contextualData' => array(
-					'channels' => array(
-						array(
-							'label'    => 'Organic Search',
-							'current'  => 700,
-							'previous' => 600,
-						),
+				'keyFactors'   => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Organic Search',
+						'current'    => 700,
+						'previous'   => 600,
+						'sharePct'   => 58.3,
+						'attributes' => array(),
 					),
 				),
 			)
@@ -363,10 +391,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// The response travels in the wire format rather than as named fields.
 		$this->assertSame( Wire_Format::FORMAT_VERSION, $data[ Wire_Format::MEMBER_VERSION ], 'The response should carry the wire format version.' );
 		$this->assertSame( '2026-08-19', $data[ Wire_Format::MEMBER_FIRST_DATE ], 'The response should carry the first daily traffic date.' );
-		$this->assertSame( array( 40, 55 ), $data[ Wire_Format::MEMBER_DAILY_VISITORS ], 'The response should carry the daily visitor counts.' );
-		$this->assertSame( array( 1200, 1000 ), $data[ Wire_Format::MEMBER_VISITOR_TOTALS ], 'The response should carry the two visitor totals.' );
-		$this->assertSame( array( Wire_Format::DIMENSION_INDEXES['CHANNELS'] ), $data[ Wire_Format::MEMBER_DIMENSION_ORDER ], 'The response should carry the dimension order.' );
-		$this->assertContains( 'Organic Search', $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the row values in its string table.' );
+		$this->assertSame( array( 40, 55 ), $data[ Wire_Format::MEMBER_DAILY_VISITS ], 'The response should carry the daily visit counts.' );
+		$this->assertSame( array( 1200, 1000 ), $data[ Wire_Format::MEMBER_VISIT_TOTALS ], 'The response should carry the two visit totals.' );
+		$this->assertSame( array( 'Organic Search' ), $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the card label in its string table.' );
+		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
+		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
 	}
 
 	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
@@ -626,28 +655,26 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$this->assertFalse( ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $reader_id ) ) )->is_authenticated(), 'The reader should not have connected a Google account of their own.' );
 
+		$this->record_contextual_data_keys();
 		$reader_response = $this->request();
-		$dimension_order = $reader_response->get_data()[ Wire_Format::MEMBER_DIMENSION_ORDER ];
-		sort( $dimension_order );
 
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
 		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 0, 1, 2, 3, 4 ), $dimension_order, 'The response should list the channels, devices, visitor mix, referrers, and search queries.' );
+		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers', 'searchQueries' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, referrers, and search queries for the reader.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the builder returns no cards.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since the builder returns no cards.' );
 	}
 
-	public function test_rest_endpoint__answers_a_view_only_reader_without_search_console_shared_with_every_dimension_except_the_search_queries() {
+	public function test_rest_endpoint__builds_every_dimension_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
 		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG ) );
 		$this->switch_to_user( $this->create_view_only_reader() );
+		$this->record_contextual_data_keys();
 
-		$response        = $this->request();
-		$data            = $response->get_data();
-		$dimension_order = $data[ Wire_Format::MEMBER_DIMENSION_ORDER ];
-		sort( $dimension_order );
+		$response = $this->request();
 
 		$this->assertSame( 200, $response->get_status(), 'A reader without Search Console shared should get the benchmarking data.' );
-		$this->assertSame( array( 0, 1, 2, 3 ), $dimension_order, 'The response should list the channels, devices, visitor mix, and referrers, without the search queries.' );
-		$this->assertNotContains( 'plant garlic', $data[ Wire_Format::MEMBER_STRINGS ], 'The response should not contain any search query.' );
+		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, and referrers for the reader, without the search queries.' );
 	}
 
 	public function test_rest_endpoint__refuses_an_administrator_who_is_not_authenticated() {
