@@ -19,12 +19,12 @@
 /**
  * External dependencies
  */
-import { ComponentType, FC } from 'react';
+import { ComponentType, FC, Ref } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { useState } from '@wordpress/element';
+import { forwardRef, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -40,6 +40,7 @@ import useDashboardType, {
 	DASHBOARD_TYPE_ENTITY,
 } from '@/js/hooks/useDashboardType';
 import { useFeature } from '@/js/hooks/useFeature';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
@@ -52,10 +53,17 @@ import RecentActivityPanel from '@/js/modules/analytics-4/components/traffic-ove
 import TrafficOverviewPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TrafficOverviewPanel';
 import TypicalTrafficPanel from '@/js/modules/analytics-4/components/traffic-overview/tabs/TypicalTrafficPanel';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import { trackEvent } from '@/js/util';
+import withIntersectionObserver from '@/js/util/withIntersectionObserver';
 import SparkleIcon from '@/svg/icons/sparkle.svg';
 import TrafficOverviewSourceLink from './TrafficOverviewSourceLink';
 
 type WidgetComponentProps = ReturnType< typeof getWidgetComponentProps >;
+
+interface TrafficOverviewWidgetProps extends WidgetComponentProps {
+	/** Set by `withIntersectionObserver` once the widget is in view. */
+	hasBeenInView?: boolean;
+}
 
 interface TrafficOverviewTabDescriptor extends WidgetTab {
 	/** The panel the widget renders while the tab is active. */
@@ -64,15 +72,19 @@ interface TrafficOverviewTabDescriptor extends WidgetTab {
 	FooterComponent: ComponentType;
 }
 
-const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
-	Widget,
-	WidgetNull,
-} ) => {
+const TrafficOverviewWidget = forwardRef<
+	HTMLDivElement,
+	TrafficOverviewWidgetProps
+>( ( { Widget, WidgetNull, hasBeenInView }, ref ) => {
 	// `getWidgetComponentProps` lives in a JavaScript file, so TypeScript reads
 	// `Widget` as a component that takes no props. The cast leaves `widgetSlug`
-	// out, because `getWidgetComponentProps` already sets it.
-	const WidgetComponent = Widget as FC< Omit< WidgetProps, 'widgetSlug' > >;
+	// out, because `getWidgetComponentProps` already sets it, and adds the
+	// `ref` that `Widget` passes to its root element.
+	const WidgetComponent = Widget as FC<
+		Omit< WidgetProps, 'widgetSlug' > & { ref?: Ref< HTMLDivElement > }
+	>;
 
+	const viewContext = useViewContext();
 	const freshDataEnabled = useFeature( 'freshData' );
 	const dashboardType = useDashboardType();
 
@@ -123,16 +135,7 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
 	const hasTypicalTrafficTab = useHasTypicalTrafficTab();
 
 	const [ activeTabID, setActiveTabID ] = useState( TRAFFIC_OVERVIEW_TAB_ID );
-
-	// While the modules or the dismissed items load, the widget returns
-	// `null` rather than `WidgetNull`, which would mark the widget as
-	// inactive until they load.
-	if (
-		isAnalyticsConnected === undefined ||
-		shouldShowRecentActivityTab === undefined
-	) {
-		return null;
-	}
+	const [ hasTrackedView, setHasTrackedView ] = useState( false );
 
 	const tabs: TrafficOverviewTabDescriptor[] = [];
 
@@ -167,21 +170,64 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
 		} );
 	}
 
-	if ( tabs.length === 0 ) {
+	// When Analytics is not connected, Recent activity is the only tab, so the
+	// widget shows it while `activeTabID` is still the Traffic overview tab.
+	const shownTab: TrafficOverviewTabDescriptor | undefined =
+		tabs.find( ( tab ) => tab.id === activeTabID ) ?? tabs[ 0 ];
+	const shownTabID = shownTab?.id;
+
+	// `hasBeenInView` stays `true` once the card has been in view, so
+	// `hasTrackedView` keeps a change of the shown tab from sending
+	// `view_widget` again.
+	useEffect( () => {
+		if ( hasBeenInView && ! hasTrackedView ) {
+			trackEvent(
+				`${ viewContext }_traffic-insights`,
+				'view_widget',
+				shownTabID
+			);
+			setHasTrackedView( true );
+		}
+	}, [ hasBeenInView, hasTrackedView, shownTabID, viewContext ] );
+
+	// While the modules or the dismissed items load, the widget returns
+	// `null` rather than `WidgetNull`, which would mark the widget as
+	// inactive until they load.
+	if (
+		isAnalyticsConnected === undefined ||
+		shouldShowRecentActivityTab === undefined
+	) {
+		return null;
+	}
+
+	if ( ! shownTab ) {
 		return <WidgetNull />;
 	}
 
 	// Only the selected tab's panel mounts, so the Typical Traffic request is
 	// not sent until a reader selects its tab.
-	const { PanelComponent, FooterComponent } =
-		tabs.find( ( tab ) => tab.id === activeTabID ) ?? tabs[ 0 ];
+	const { PanelComponent, FooterComponent } = shownTab;
 
 	// When Analytics is not connected, the widget shows no report, so it has
 	// no source to name in a footer.
 	const Footer = isAnalyticsConnected ? FooterComponent : undefined;
 
+	function handleTabChange( tabID: string ) {
+		// The tab bar also calls this for a click on the tab already shown.
+		if ( tabID !== shownTabID ) {
+			trackEvent(
+				`${ viewContext }_traffic-insights`,
+				'change_tab',
+				tabID
+			);
+		}
+
+		setActiveTabID( tabID );
+	}
+
 	return (
 		<WidgetComponent
+			ref={ ref }
 			className="googlesitekit-widget--footer-v2"
 			Footer={ Footer }
 			noPadding
@@ -189,11 +235,14 @@ const TrafficOverviewWidget: FC< WidgetComponentProps > = ( {
 			<WidgetTabBar
 				tabs={ tabs }
 				activeTabID={ activeTabID }
-				onTabChange={ setActiveTabID }
+				onTabChange={ handleTabChange }
 			/>
 			<PanelComponent />
 		</WidgetComponent>
 	);
-};
+} );
 
-export default TrafficOverviewWidget;
+// The card counts as in view as soon as one pixel of it shows.
+export default withIntersectionObserver( TrafficOverviewWidget, {
+	threshold: 0,
+} );
