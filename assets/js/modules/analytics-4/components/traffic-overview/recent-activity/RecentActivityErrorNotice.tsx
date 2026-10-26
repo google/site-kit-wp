@@ -80,7 +80,7 @@ const RecentActivityErrorNotice: FC< RecentActivityErrorNoticeProps > = ( {
 	// A rate limit error comes back until the quota recovers, and a
 	// permissions error until the user's access changes, so neither gets
 	// "Retry".
-	const isRetryable = isRetryableErrorType( error );
+	const isRetryable = isRetryableErrorType( error ) && !! onRetry;
 
 	return (
 		<Notice
