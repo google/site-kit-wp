@@ -1,0 +1,174 @@
+name: CA Trust Check
+
+# Checks that the HTTPS clients on the GitHub-hosted runner reject certificates
+# from distrusted certificate authorities. Each client must fail with a
+# certificate error for every test host, and still reach a normal host.
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/ca-trust-check.yml'
+  workflow_dispatch:
+
+concurrency:
+  group: ca-trust-check-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Check CA trust (PHP ${{ matrix.php_version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        php_version: ['7.4', '8.1', '8.5']
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Setup Node.js (.nvmrc)
+        uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # ratchet:actions/setup-node@v6
+        with:
+          node-version-file: .nvmrc
+
+      - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php_version }}
+          coverage: none
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Print versions
+        run: |
+          echo "Runner image: ${ImageOS:-unknown} ${ImageVersion:-unknown}"
+          dpkg-query -W ca-certificates
+          curl --version | head -1
+          git --version
+          node --version
+          python3 --version
+          python3 -m pip --version
+          php --version | head -1
+
+      - name: Check clients against the test hosts
+        run: |
+          set -uo pipefail
+
+          BAD_HOSTS=(
+            https://dv-g3b-emudhra.we-have-a-problem.com/
+            https://dv-g3b-aaa-emudhra.we-have-a-problem.com/
+          )
+          GOOD_HOST=https://www.google.com/
+
+          # Each client prints `OK` when the TLS handshake succeeds (whatever the
+          # HTTP status), or an error message when it fails.
+          client_curl() {
+            curl -sS -o /dev/null -m 25 "$1" 2>&1 && echo OK
+          }
+          client_git() {
+            local out
+            out=$( GIT_TERMINAL_PROMPT=0 timeout 30 git ls-remote "$1" 2>&1 )
+            if grep -qE 'is this a git repository|not found|Authentication failed' <<< "$out"; then
+              echo OK
+            else
+              echo "$out"
+            fi
+          }
+          client_node() {
+            node -e "fetch(process.argv[1], { signal: AbortSignal.timeout(25000) }).then(() => console.log('OK'), (e) => console.log(String(e.cause?.code || e.cause || e)))" "$1" 2>&1
+          }
+          client_python() {
+            python3 - "$1" 2>&1 <<'EOF'
+          import sys, urllib.error, urllib.request
+          try:
+              urllib.request.urlopen(sys.argv[1], timeout=25)
+              print('OK')
+          except urllib.error.HTTPError:
+              print('OK')
+          except Exception as e:
+              print(repr(e))
+          EOF
+          }
+          client_pip() {
+            local out
+            out=$( python3 -m pip download --no-deps --dest "$RUNNER_TEMP/pip" --index-url "${1}simple/" --retries 0 --timeout 25 six 2>&1 )
+            if grep -qE 'CERTIFICATE_VERIFY_FAILED|SSLError|[Tt]imed out|Timeout' <<< "$out"; then
+              echo "$out" | grep -m1 -E 'CERTIFICATE_VERIFY_FAILED|SSLError|[Tt]imed out|Timeout'
+            else
+              echo OK
+            fi
+          }
+          # The PHP code is single-quoted on purpose, so the shell doesn't expand it.
+          # shellcheck disable=SC2016
+          client_php_curl() {
+            php -r '$c = curl_init( $argv[1] ); curl_setopt_array( $c, array( CURLOPT_NOBODY => true, CURLOPT_TIMEOUT => 25 ) ); echo false !== curl_exec( $c ) ? "OK" : curl_errno( $c ) . ": " . curl_error( $c );' "$1" 2>&1
+          }
+          # shellcheck disable=SC2016
+          client_php_stream() {
+            php -r '$errors = array(); set_error_handler( function ( $no, $message ) use ( &$errors ) { $errors[] = $message; return true; } ); $ctx = stream_context_create( array( "http" => array( "method" => "HEAD", "timeout" => 25, "ignore_errors" => true ) ) ); echo false !== file_get_contents( $argv[1], false, $ctx ) ? "OK" : implode( " | ", $errors );' "$1" 2>&1
+          }
+
+          # Prints OK, REJECTED, TIMEOUT or ERROR. Retries timeouts, because the test
+          # hosts are slow. Only a certificate error counts as REJECTED, so a client
+          # that fails for another reason (a missing PHP extension, a DNS error)
+          # fails the check instead of passing it.
+          classify() {
+            local client=$1 url=$2 out attempt
+            for attempt in 1 2 3; do
+              out=$( "client_$client" "$url" | tail -1 )
+              if [[ "$out" == OK ]]; then
+                echo OK; return
+              elif grep -qiE 'timed? ?out|timeout|AbortError|^28:' <<< "$out"; then
+                echo "  attempt $attempt: timeout ($out)" >&2
+                continue
+              fi
+              echo "  $out" >&2
+              if grep -qiE 'cert|issuer|ssl' <<< "$out"; then
+                echo REJECTED
+              else
+                echo ERROR
+              fi
+              return
+            done
+            echo TIMEOUT
+          }
+
+          failed=0
+          {
+            echo "## CA trust check (PHP ${{ matrix.php_version }})"
+            echo
+            echo "| Client | Host | Result |"
+            echo "|---|---|---|"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          for client in curl git node python pip php_curl php_stream; do
+            for url in "${BAD_HOSTS[@]}" "$GOOD_HOST"; do
+              echo "== $client $url"
+              result=$( classify "$client" "$url" )
+              if [[ "$url" == "$GOOD_HOST" ]]; then
+                if [[ "$result" == OK ]]; then
+                  verdict="✅ reachable"
+                else
+                  verdict="❌ unreachable ($result)"; failed=1
+                fi
+              else
+                case $result in
+                  REJECTED) verdict="✅ rejected" ;;
+                  OK) verdict="❌ trusted"; failed=1 ;;
+                  TIMEOUT) verdict="⚠️ timed out"; failed=1 ;;
+                  *) verdict="⚠️ error"; failed=1 ;;
+                esac
+              fi
+              echo "$verdict"
+              echo "| $client | $url | $verdict |" >> "$GITHUB_STEP_SUMMARY"
+            done
+          done
+
+          if [[ $failed -ne 0 ]]; then
+            echo "::error::At least one client accepts a certificate that should be rejected, or a check did not complete. See the job summary."
+            exit 1
+          fi
