@@ -115,7 +115,7 @@ export async function poll< T >(
 ): Promise< T > {
 	// Elapsed test time, so the reference date does not apply.
 	const start = Date.now(); // eslint-disable-line sitekit/no-direct-date
-	for (;;) {
+	while ( true ) {
 		const value = await condition();
 		// eslint-disable-next-line sitekit/no-direct-date
 		if ( value || Date.now() - start >= timeout ) {

@@ -18,7 +18,7 @@
 
 // `tests/e2e/config/playwright-environment.ts` sets up `page` and `browser`
 // as globals for every spec file.
-declare const page: import('../config/compat-page').CompatPage;
+declare const page: import('../config/puppeteer-shim-compatibility').CompatPage;
 declare const browser: import('../config/playwright-environment').E2EBrowser;
 
 declare namespace jest {

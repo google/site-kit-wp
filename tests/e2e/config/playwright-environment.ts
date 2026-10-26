@@ -25,7 +25,10 @@ import { TestEnvironment as NodeEnvironment } from 'jest-environment-node';
 /**
  * Internal dependencies
  */
-import { type CompatPage, createCompatPage } from './compat-page';
+import {
+	type CompatPage,
+	createCompatPage,
+} from './puppeteer-shim-compatibility';
 
 /**
  * The `browser` global: opens more pages in the same browser context.
