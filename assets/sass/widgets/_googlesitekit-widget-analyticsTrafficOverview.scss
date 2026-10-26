@@ -403,6 +403,79 @@ $traffic-overview-column-gap: 42px;
 				width: 20px;
 			}
 		}
+
+		// The access error and the zero data state, in place of the tab's
+		// sections.
+		.googlesitekit-traffic-overview__recent-activity-message {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			padding-top: 20px;
+			text-align: center;
+
+			@media (min-width: $bp-desktop) {
+				padding-top: 0;
+			}
+		}
+
+		// Where the message is the whole tab body, the design leaves 100px
+		// under it on phones. From `$bp-desktop` up, it centers the message in
+		// a body 813px high. Where the latest post follows the message, the
+		// latest post's top margin sets the gap instead.
+		.googlesitekit-traffic-overview__recent-activity-message:last-child {
+			padding-bottom: 100px;
+
+			@media (min-width: $bp-desktop) {
+				justify-content: center;
+				min-height: 813px;
+				padding-bottom: 0;
+			}
+		}
+
+		// The design draws each illustration 162px high on phones and 192px
+		// high on desktop, and its width follows its own ratio.
+		.googlesitekit-traffic-overview__recent-activity-message-illustration svg {
+			display: block;
+			height: 162px;
+			width: auto;
+
+			@media (min-width: $bp-desktop) {
+				height: 192px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-activity-message-title {
+			color: $c-surfaces-on-surface;
+			margin: 19px 0 12px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 9px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-activity-message-description {
+			color: $c-surfaces-on-surface;
+
+			.googlesitekit-typography {
+				margin: 0;
+			}
+
+			// The design draws "get help" in the color of the text around it,
+			// underlined.
+			.googlesitekit-cta-link {
+				color: inherit;
+				text-decoration: underline;
+			}
+		}
+
+		// The design puts each sentence on a line of its own from
+		// `$bp-desktop` up, and flows them as one paragraph below it.
+		.googlesitekit-traffic-overview__recent-activity-message-sentence {
+
+			@media (min-width: $bp-desktop) {
+				display: block;
+			}
+		}
 	}
 
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__latest-post-performance {
