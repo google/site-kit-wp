@@ -26,6 +26,8 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
@@ -166,9 +168,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		),
 		detail: {
 			description: {
-				whatIs: __(
-					"Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighting what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals. You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.",
-					'google-site-kit'
+				whatIs: createInterpolateElement(
+					__(
+						"<p>Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighting what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals.</p><p>You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.</p>",
+						'google-site-kit'
+					),
+					{
+						p: createElement( P, { size: SIZE_MEDIUM } ),
+					}
 				),
 				whyUseHeading: __( 'Why use key metrics?', 'google-site-kit' ),
 				whyUseList: [
