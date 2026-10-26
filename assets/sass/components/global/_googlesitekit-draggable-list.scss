@@ -70,6 +70,7 @@
 		display: grid;
 		grid-auto-rows: max-content;
 		grid-template-columns: max-content auto;
+		padding-block: 4px;
 
 		.mdc-text-field-helper-line {
 			grid-column: 2;
