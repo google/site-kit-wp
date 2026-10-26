@@ -534,6 +534,8 @@ class Response_BuilderTest extends TestCase {
 		$sorted_dates  = $dates;
 		sort( $sorted_dates );
 
+		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should have exactly 28 rows, one for each day of the selected period.' );
+		$this->assertCount( 28, array_unique( $dates ), '`dailyTraffic` should have 28 different dates.' );
 		$this->assertSame(
 			array(
 				'date'   => '2026-08-19',
@@ -543,8 +545,6 @@ class Response_BuilderTest extends TestCase {
 			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visits.'
 		);
 		$this->assertSame( '2026-09-15', $dates[27], '`dailyTraffic` should end on `2026-09-15`, the last day of the selected period.' );
-		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should have exactly 28 rows, one for each day of the selected period.' );
-		$this->assertCount( 28, array_unique( $dates ), '`dailyTraffic` should have 28 different dates.' );
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
 	}
 
