@@ -56,7 +56,6 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migrated_options = array(
 			Migration_N_E_X_T::DB_VERSION_OPTION,
 			Modules::OPTION_ACTIVE_MODULES,
-			'googlesitekit-active-modules',
 			Module_Sharing_Settings::OPTION,
 			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
 			Analytics_Settings::OPTION,
@@ -200,21 +199,6 @@ class Migration_N_E_X_TTest extends TestCase {
 			),
 			$this->options->get( Module_Sharing_Settings::OPTION )['analytics-4'],
 			'The `analytics` sharing settings should be copied to `analytics-4`.'
-		);
-	}
-
-	public function test_migrate__migrates_the_legacy_analytics_module_from_the_legacy_active_modules_option() {
-		$migration = $this->get_new_migration_instance();
-
-		$this->options->set( 'googlesitekit-active-modules', array( 'analytics' ) );
-		$this->analytics_settings->set( array( 'accountID' => '12345678' ) );
-
-		$migration->migrate();
-
-		$this->assertSame(
-			array( 'analytics', 'analytics-4' ),
-			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
-			'Analytics 4 should be activated when `analytics` is active only in the legacy active modules option.'
 		);
 	}
 

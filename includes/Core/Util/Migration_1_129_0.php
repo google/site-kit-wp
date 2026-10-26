@@ -25,8 +25,6 @@ use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
  * @ignore
  */
 class Migration_1_129_0 {
-	use Active_Modules_Option_Trait;
-
 	/**
 	 * Target DB version.
 	 */
@@ -168,12 +166,11 @@ class Migration_1_129_0 {
 	 * Activates the ads module if the Ads Conversion ID was previously set.
 	 *
 	 * @since 1.129.0
-	 * @since n.e.x.t Changed to read the active modules the same way as `Modules`.
 	 */
 	protected function activate_ads_module() {
-		$active_modules = $this->get_active_modules_option();
+		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
-		if ( in_array( Ads::MODULE_SLUG, $active_modules, true ) ) {
+		if ( is_array( $active_modules ) && in_array( 'ads', $active_modules, true ) ) {
 			return;
 		}
 

@@ -25,8 +25,6 @@ use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
  * @ignore
  */
 class Migration_1_123_0 {
-	use Active_Modules_Option_Trait;
-
 	/**
 	 * Target DB version.
 	 */
@@ -173,10 +171,18 @@ class Migration_1_123_0 {
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Changed to read the active modules the same way as `Modules`.
 	 */
 	protected function activate_analytics() {
-		$option = $this->get_active_modules_option();
+		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+
+		// Check legacy option.
+		if ( ! is_array( $option ) ) {
+			$option = $this->options->get( 'googlesitekit-active-modules' );
+		}
+
+		if ( ! is_array( $option ) ) {
+			return;
+		}
 
 		$analytics_active = in_array( Analytics_4::MODULE_SLUG, $option, true );
 
