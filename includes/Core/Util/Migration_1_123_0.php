@@ -105,32 +105,21 @@ class Migration_1_123_0 {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$this->apply_changes();
+			$this->migrate_legacy_analytics_settings();
+			$this->activate_analytics();
+			$this->migrate_legacy_analytics_sharing_settings();
 
 			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
 	}
 
 	/**
-	 * Copies the legacy Analytics settings and sharing settings to Analytics 4, and activates it.
-	 *
-	 * This neither checks nor updates `googlesitekit_db_version`.
-	 *
-	 * @since n.e.x.t
-	 */
-	public function apply_changes() {
-		$this->migrate_legacy_analytics_settings();
-		$this->activate_analytics();
-		$this->migrate_legacy_analytics_sharing_settings();
-	}
-
-	/**
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Changed to skip a legacy option that is not an array, and any missing keys.
+	 * @since n.e.x.t Made method public, and changed to skip missing keys and a legacy option that is not an array.
 	 */
-	protected function migrate_legacy_analytics_settings() {
+	public function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {
 			return;
 		}
@@ -170,8 +159,9 @@ class Migration_1_123_0 {
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Made method public.
 	 */
-	protected function activate_analytics() {
+	public function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 		// Check legacy option.
@@ -207,8 +197,9 @@ class Migration_1_123_0 {
 	 * Replicates sharing settings from the legacy analytics module to analytics-4.
 	 *
 	 * @since 1.123.0
+	 * @since n.e.x.t Made method public.
 	 */
-	protected function migrate_legacy_analytics_sharing_settings() {
+	public function migrate_legacy_analytics_sharing_settings() {
 		$option = $this->options->get( Module_Sharing_Settings::OPTION );
 
 		if ( ! is_array( $option ) ) {
