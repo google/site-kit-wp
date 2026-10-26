@@ -31,10 +31,13 @@ import { __ } from '@wordpress/i18n';
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { usePlainPermalinkTopPostsColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/usePlainPermalinkTopPostsColumn';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 
 const PlainPermalinkTopPostsColumn: FC = () => {
 	const { rows, loading, error, retry, zeroState } =
 		usePlainPermalinkTopPostsColumn();
+
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
 
 	return (
 		<TableTile
@@ -45,6 +48,7 @@ const PlainPermalinkTopPostsColumn: FC = () => {
 			error={ error }
 			onRetry={ retry }
 			zeroState={ zeroState }
+			onLinkClick={ trackPostLinkClick }
 		/>
 	);
 };

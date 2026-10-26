@@ -36,6 +36,7 @@ import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
@@ -80,6 +81,8 @@ const TopPostsColumn: FC = () => {
 		reportOptions
 	);
 
+	const trackPostLinkClick = useTrackPostLinkClick( 'top-posts' );
+
 	const rows = pathRows.map( ( row ) => ( {
 		...row,
 		// A page with no title shows its path, also when the request for the
@@ -96,6 +99,7 @@ const TopPostsColumn: FC = () => {
 			loading={ loading || titlesLoading }
 			error={ error }
 			onRetry={ retry }
+			onLinkClick={ trackPostLinkClick }
 		/>
 	);
 };

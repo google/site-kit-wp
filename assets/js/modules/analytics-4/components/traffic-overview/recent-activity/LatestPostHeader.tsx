@@ -34,6 +34,7 @@ import Link from '@/js/components/Link';
 import { SIZE_SMALL } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { useTrackPostLinkClick } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useTrackPostLinkClick';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { formatDate } from '@/js/util';
 import PushPinIcon from '@/svg/icons/push-pin.svg';
@@ -51,6 +52,8 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 			} ),
 		[ post.permalink ]
 	);
+
+	const trackPostLinkClick = useTrackPostLinkClick( 'latest-post-header' );
 
 	// The site time has no time zone suffix, so reading it as UTC and
 	// formatting it in UTC shows it unchanged, as WordPress shows it. This
@@ -73,6 +76,7 @@ const LatestPostHeader: FC< LatestPostHeaderProps > = ( { post } ) => {
 				<Link
 					className="googlesitekit-traffic-overview__latest-post-title"
 					href={ entityDashboardURL }
+					onClick={ trackPostLinkClick }
 				>
 					{ post.title }
 				</Link>
