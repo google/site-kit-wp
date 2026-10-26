@@ -112,7 +112,6 @@ describe( 'RecentTrafficBreakdown', () => {
 		12
 	);
 
-	// `ReportError` shows the message of an error whose code is `test_error`.
 	const errorResponse = {
 		code: 'test_error',
 		message: 'Test error message',
@@ -421,7 +420,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	} );
 
-	it( 'should render a report error in the column whose report fails, and the rows of the other two columns', async () => {
+	it( 'should render "Something went wrong" in the column whose report fails, and the rows of the other two columns', async () => {
 		mockReportRequests( {
 			channels: { body: errorResponse, status: 500 },
 		} );
@@ -437,7 +436,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			getColumn( 'Top channels by visitors' ).querySelector(
 				'.googlesitekit-table-tile__error'
 			)
-		).toHaveTextContent( 'Test error message' );
+		).toHaveTextContent( 'Something went wrong' );
 		expect(
 			within( getColumn( 'Top posts by visitors' ) ).getAllByRole(
 				'link'
@@ -448,6 +447,37 @@ describe( 'RecentTrafficBreakdown', () => {
 				'news.example.com'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render "Something went wrong" in each of the three columns when all three reports fail', async () => {
+		mockReportRequests( {
+			posts: { body: errorResponse, status: 500 },
+			channels: { body: errorResponse, status: 500 },
+			referrals: { body: errorResponse, status: 500 },
+		} );
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect(
+			getColumn( 'Top posts by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top channels by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top referrals by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
 	} );
 
 	it( 'should request a failed report again, and render its rows, when "Retry" is clicked in its column', async () => {
@@ -879,7 +909,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect( fetchMock ).not.toHaveFetched( titlesRequest );
 		} );
 
-		it( 'should render a report error in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
+		it( 'should render "Something went wrong" in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
@@ -897,7 +927,7 @@ describe( 'RecentTrafficBreakdown', () => {
 				getColumn( 'Top posts by visitors' ).querySelector(
 					'.googlesitekit-table-tile__error'
 				)
-			).toHaveTextContent( 'Test error message' );
+			).toHaveTextContent( 'Something went wrong' );
 			expect(
 				getRowTexts( getColumn( 'Top channels by visitors' ) )
 			).toEqual( [

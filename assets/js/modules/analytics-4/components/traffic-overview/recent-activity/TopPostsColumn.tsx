@@ -37,6 +37,7 @@ import { FreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
 import { useReportPageTitles } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useReportPageTitles';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopPostsReportOptions } from './reportOptions';
 import { getPageURL } from './utils/getPageURL';
 
@@ -96,6 +97,7 @@ const TopPostsColumn: FC = () => {
 			loading={ loading || titlesLoading }
 			error={ error }
 			onRetry={ retry }
+			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);
 };
