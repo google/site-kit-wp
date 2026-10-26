@@ -87,8 +87,6 @@ const SearchPerformanceMetrics: FC< SearchPerformanceMetricsProps > = ( {
 
 	const { invalidateResolution } = useDispatch( MODULES_SEARCH_CONSOLE );
 
-	// "Retry" requests again only reports without fetch options, so this
-	// requests the Search Console report again.
 	function handleRetry() {
 		invalidateResolution( 'getReport', [
 			reportOptions,

@@ -108,6 +108,14 @@ const SiteTrafficMetrics: FC< SiteTrafficMetricsProps > = ( {
 		[ timeZoneReportOptions, totalVisitorsReportOptions ]
 	);
 
+	const timeZoneReportError: ErrorObject | undefined = useSelect(
+		( select: Select ) =>
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector( 'getReport', [
+				timeZoneReportOptions,
+			] ),
+		[ timeZoneReportOptions ]
+	);
+
 	const isGatheringData = useInViewSelect< boolean | undefined >(
 		( select: Select ) => select( MODULES_ANALYTICS_4 ).isGatheringData(),
 		[]
@@ -115,10 +123,12 @@ const SiteTrafficMetrics: FC< SiteTrafficMetricsProps > = ( {
 
 	const { invalidateResolution } = useDispatch( MODULES_ANALYTICS_4 );
 
-	// "Retry" requests again only reports without fetch options, such as the
-	// time zone report, so this requests the Total visitors report again.
+	// The Total visitors report waits for the time zone report, so only one
+	// of the two can have failed. "Retry" requests that one again.
 	function handleRetry() {
-		if ( totalVisitorsReportOptions ) {
+		if ( timeZoneReportError ) {
+			invalidateResolution( 'getReport', [ timeZoneReportOptions ] );
+		} else if ( totalVisitorsReportOptions ) {
 			invalidateResolution( 'getReport', [
 				totalVisitorsReportOptions,
 				FRESH_DATA_FETCH_OPTIONS,
