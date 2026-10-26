@@ -19,24 +19,41 @@
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { render } from '@tests/js/test-utils';
 import TypicalTrafficChart from './TypicalTrafficChart';
 
-const mockGoogleChart = jest.fn();
+jest.mock( '@/js/components/GoogleChart', () =>
+	jest
+		.requireActual( '@tests/js/mock-google-chart-utils' )
+		.mockGoogleChartModule()
+);
 
-// Google Charts loads from the web and draws nothing under Jest. The mock keeps
-// the props, so each test reads what the chart received.
-jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartMock( props: Record< string, unknown > ) {
-		mockGoogleChart( props );
-		return <div className="googlesitekit-chart" />;
-	};
-} );
+const mockGoogleChart = jest.mocked( GoogleChart );
 
 describe( 'TypicalTrafficChart', () => {
 	afterEach( () => {
 		mockGoogleChart.mockClear();
+	} );
+
+	it( 'should show the title "Your traffic compared to your typical range"', () => {
+		const { getByRole } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+			/>
+		);
+
+		expect(
+			getByRole( 'heading', {
+				name: 'Your traffic compared to your typical range',
+			} )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should plot 28 points for the 28 rows of a 28-day range', () => {
@@ -52,7 +69,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+			mockGoogleChart.mock.lastCall?.[ 0 ].data.slice( 1 )
 		).toHaveLength( 28 );
 	} );
 
@@ -69,7 +86,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+			mockGoogleChart.mock.lastCall?.[ 0 ].data.slice( 1 )
 		).toHaveLength( 90 );
 	} );
 
@@ -85,7 +102,7 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		const { hAxis } = mockGoogleChart.mock.lastCall[ 0 ].options;
+		const { hAxis } = mockGoogleChart.mock.lastCall?.[ 0 ].options;
 
 		expect( hAxis.format ).toBe( 'MMM d' );
 		expect( hAxis.ticks ).toHaveLength( 27 );
@@ -105,7 +122,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].options.hAxis.gridlines.color
+			mockGoogleChart.mock.lastCall?.[ 0 ].options.hAxis.gridlines.color
 		).toBe( 'transparent' );
 	} );
 
@@ -121,7 +138,7 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		const { hAxis } = mockGoogleChart.mock.lastCall[ 0 ].options;
+		const { hAxis } = mockGoogleChart.mock.lastCall?.[ 0 ].options;
 
 		expect( hAxis.baseline ).toEqual( new Date( 2026, 8, 15 ) );
 		expect( hAxis.baselineColor ).toBe( '#b8bdb9' );
@@ -140,7 +157,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].options.vAxis.viewWindow
+			mockGoogleChart.mock.lastCall?.[ 0 ].options.vAxis.viewWindow
 		).toEqual( { min: 0 } );
 	} );
 
@@ -157,7 +174,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].options.vAxis.viewWindow
+			mockGoogleChart.mock.lastCall?.[ 0 ].options.vAxis.viewWindow
 		).toEqual( { min: 0, max: 100 } );
 	} );
 
@@ -176,7 +193,7 @@ describe( 'TypicalTrafficChart', () => {
 		// `GoogleChart` shows its gathering data notice over the chart when it
 		// gets `gatheringData`.
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].gatheringData
+			mockGoogleChart.mock.lastCall?.[ 0 ].gatheringData
 		).toBeUndefined();
 	} );
 
@@ -193,7 +210,7 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+		expect( mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers ).toEqual( [
 			{
 				date: '2026-08-19',
 				text: 'Google Analytics property created',
@@ -253,7 +270,7 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+		expect( mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers ).toEqual( [
 			{
 				date: '2026-09-01',
 				text: 'Google Analytics property created',
@@ -279,7 +296,7 @@ describe( 'TypicalTrafficChart', () => {
 			/>
 		);
 
-		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+		expect( mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers ).toEqual( [
 			{
 				date: '2026-09-15',
 				text: 'Google Analytics property created',
@@ -306,7 +323,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+			mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers
 		).toBeUndefined();
 		expect(
 			queryByText( /Google Analytics property created/ )
@@ -327,7 +344,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+			mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers
 		).toBeUndefined();
 		expect(
 			queryByText( /Google Analytics property created/ )
@@ -347,7 +364,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+			mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers
 		).toBeUndefined();
 		expect(
 			queryByText( /Google Analytics property created/ )
@@ -366,7 +383,7 @@ describe( 'TypicalTrafficChart', () => {
 		);
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+			mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers
 		).toBeUndefined();
 		expect(
 			queryByText( /Google Analytics property created/ )

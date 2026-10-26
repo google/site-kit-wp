@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
@@ -40,16 +41,13 @@ import {
 } from '@tests/js/test-utils';
 import TypicalTrafficPanel from './TypicalTrafficPanel';
 
-const mockGoogleChart = jest.fn();
+jest.mock( '@/js/components/GoogleChart', () =>
+	jest
+		.requireActual( '@tests/js/mock-google-chart-utils' )
+		.mockGoogleChartModule()
+);
 
-// Google Charts never loads under Jest. The mock keeps the props, so a test
-// reads the days the panel's chart plots.
-jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartMock( props: Record< string, unknown > ) {
-		mockGoogleChart( props );
-		return <div className="googlesitekit-chart" />;
-	};
-} );
+const mockGoogleChart = jest.mocked( GoogleChart );
 
 describe( 'TypicalTrafficPanel', () => {
 	let registry: WPDataRegistry;
@@ -97,7 +95,7 @@ describe( 'TypicalTrafficPanel', () => {
 		const { getByRole } = render( <TypicalTrafficPanel />, { registry } );
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+			mockGoogleChart.mock.lastCall?.[ 0 ].data.slice( 1 )
 		).toHaveLength( 28 );
 		expect( getByRole( 'listitem' ) ).toHaveTextContent(
 			'Last 28 days traffic'
@@ -108,7 +106,7 @@ describe( 'TypicalTrafficPanel', () => {
 		} );
 
 		expect(
-			mockGoogleChart.mock.lastCall[ 0 ].data.slice( 1 )
+			mockGoogleChart.mock.lastCall?.[ 0 ].data.slice( 1 )
 		).toHaveLength( 90 );
 		expect( getByRole( 'listitem' ) ).toHaveTextContent(
 			'Last 90 days traffic'
@@ -136,7 +134,7 @@ describe( 'TypicalTrafficPanel', () => {
 
 		render( <TypicalTrafficPanel />, { registry } );
 
-		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+		expect( mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers ).toEqual( [
 			{
 				date: '2026-09-01',
 				text: 'Google Analytics property created',
@@ -168,7 +166,7 @@ describe( 'TypicalTrafficPanel', () => {
 			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 		} );
 
-		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+		expect( mockGoogleChart.mock.lastCall?.[ 0 ].dateMarkers ).toEqual( [
 			{
 				date: '2026-09-01',
 				text: 'Google Analytics property created',
