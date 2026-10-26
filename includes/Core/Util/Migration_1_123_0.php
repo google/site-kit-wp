@@ -105,28 +105,40 @@ class Migration_1_123_0 {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$this->migrate_legacy_analytics_settings();
-			$this->activate_analytics();
-			$this->migrate_legacy_analytics_sharing_settings();
+			$this->apply_changes();
 
 			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
 	}
 
 	/**
+	 * Copies the legacy Analytics settings, activates Analytics 4 and copies the
+	 * legacy Analytics sharing settings.
+	 *
+	 * This neither checks nor updates `googlesitekit_db_version`.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function apply_changes() {
+		$this->migrate_legacy_analytics_settings();
+		$this->activate_analytics();
+		$this->migrate_legacy_analytics_sharing_settings();
+	}
+
+	/**
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public, and changed to skip keys the legacy option does not have.
+	 * @since n.e.x.t Changed to skip a legacy option that is not an array, and keys it does not have.
 	 */
-	public function migrate_legacy_analytics_settings() {
+	protected function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {
 			return;
 		}
 
 		$legacy_settings = $this->options->get( self::LEGACY_ANALYTICS_OPTION );
 
-		if ( empty( $legacy_settings ) ) {
+		if ( ! is_array( $legacy_settings ) || empty( $legacy_settings ) ) {
 			return;
 		}
 
@@ -159,9 +171,8 @@ class Migration_1_123_0 {
 	 * Activates the analytics-4 module if the legacy analytics module was active.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public.
 	 */
-	public function activate_analytics() {
+	protected function activate_analytics() {
 		$option = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
 		// Check legacy option.
@@ -197,9 +208,8 @@ class Migration_1_123_0 {
 	 * Replicates sharing settings from the legacy analytics module to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public.
 	 */
-	public function migrate_legacy_analytics_sharing_settings() {
+	protected function migrate_legacy_analytics_sharing_settings() {
 		$option = $this->options->get( Module_Sharing_Settings::OPTION );
 
 		if ( ! is_array( $option ) ) {

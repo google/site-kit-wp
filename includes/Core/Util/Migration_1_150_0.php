@@ -34,6 +34,15 @@ class Migration_1_150_0 {
 	const DB_VERSION_OPTION = 'googlesitekit_db_version';
 
 	/**
+	 * Keys moved from the Analytics settings to the Audience settings.
+	 */
+	const AUDIENCE_SETTINGS_KEYS = array(
+		'availableAudiences',
+		'availableAudiencesLastSyncedAt',
+		'audienceSegmentationSetupCompletedBy',
+	);
+
+	/**
 	 * Context instance.
 	 *
 	 * @since 1.151.0
@@ -126,15 +135,9 @@ class Migration_1_150_0 {
 
 		$audience_settings = (array) $this->audience_settings->get();
 
-		$keys_to_migrate = array(
-			'availableAudiences',
-			'availableAudiencesLastSyncedAt',
-			'audienceSegmentationSetupCompletedBy',
-		);
-
 		$has_migration = false;
 
-		foreach ( $keys_to_migrate as $key ) {
+		foreach ( self::AUDIENCE_SETTINGS_KEYS as $key ) {
 			if ( array_key_exists( $key, $analytics_settings ) ) {
 				$audience_settings[ $key ] = $analytics_settings[ $key ];
 				unset( $analytics_settings[ $key ] );

@@ -224,6 +224,47 @@ class Migration_1_129_0Test extends TestCase {
 
 		$analytics_4_settings = $this->analytics_settings->get();
 		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should be removed from the Analytics settings after migration.' );
+
+		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+		$this->assertTrue( in_array( 'ads', $active_modules, true ), 'Ads module should be activated after migration.' );
+	}
+
+	// When the active modules are stored only in the legacy option, the
+	// migration should add the Ads module to those modules.
+	public function test_migration_with_legacy_active_modules_option() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->options->delete( Modules::OPTION_ACTIVE_MODULES );
+		$this->options->set( 'googlesitekit-active-modules', array( 'pagespeed-insights', 'analytics-4' ) );
+
+		$this->configure_analytics_module( '1234567890' );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			array( 'pagespeed-insights', 'analytics-4', 'ads' ),
+			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
+			'Ads module should be added to the modules in the legacy active modules option.'
+		);
+	}
+
+	// When no active modules are stored, the migration should add the Ads
+	// module to the default active modules.
+	public function test_migration_with_no_active_modules_option() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->options->delete( Modules::OPTION_ACTIVE_MODULES );
+		$this->options->delete( 'googlesitekit-active-modules' );
+
+		$this->configure_analytics_module( '1234567890' );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			array( 'pagespeed-insights', 'ads' ),
+			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
+			'Ads module should be added to the default active modules.'
+		);
 	}
 
 	protected function configure_analytics_module( $adsConversionID ) {

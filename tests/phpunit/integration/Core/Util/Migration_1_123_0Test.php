@@ -159,6 +159,18 @@ class Migration_1_123_0Test extends TestCase {
 		$this->assertSame( array( 'loggedinUsers' ), $analytics_4_settings['trackingDisabled'], 'Migration should keep the Analytics 4 `trackingDisabled` value when the legacy option has none.' );
 	}
 
+	public function test_migrate__skips_a_legacy_option_that_is_not_an_array() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->reset_analytics_4_options();
+
+		$this->options->set( Migration_1_123_0::LEGACY_ANALYTICS_OPTION, 'not-an-array' );
+
+		$migration->migrate();
+
+		$this->assertSame( '', $this->analytics_settings->get()['accountID'], 'Migration should not copy anything from a legacy option that is not an array.' );
+	}
+
 	protected function filter_settings( $settings, $keys_to_filter ) {
 		return array_filter(
 			$settings,

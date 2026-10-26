@@ -52,10 +52,22 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		// Remove every option the migration reads or writes, so each test relies
 		// only on the values it creates and stores.
-		foreach ( $this->get_migrated_options() as $option ) {
+		$migrated_options = array(
+			Migration_N_E_X_T::DB_VERSION_OPTION,
+			Modules::OPTION_ACTIVE_MODULES,
+			'googlesitekit-active-modules',
+			Module_Sharing_Settings::OPTION,
+			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
+			Analytics_Settings::OPTION,
+			Audience_Settings::OPTION,
+			Ads_Settings::OPTION,
+			Sign_In_With_Google_Settings::OPTION,
+			Reader_Revenue_Manager_Settings::OPTION,
+		);
+
+		foreach ( $migrated_options as $option ) {
 			$this->options->delete( $option );
 		}
-		$this->options->delete( Migration_N_E_X_T::DB_VERSION_OPTION );
 	}
 
 	/**
@@ -191,6 +203,21 @@ class Migration_N_E_X_TTest extends TestCase {
 		);
 	}
 
+	public function test_migrate__migrates_the_legacy_analytics_module_from_the_legacy_active_modules_option() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->options->set( 'googlesitekit-active-modules', array( 'analytics' ) );
+		$this->analytics_settings->set( array( 'accountID' => '12345678' ) );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			array( 'analytics', 'analytics-4' ),
+			$this->options->get( Modules::OPTION_ACTIVE_MODULES ),
+			'Analytics 4 should be activated when `analytics` is active only in the legacy active modules option.'
+		);
+	}
+
 	public function test_migrate__skips_the_legacy_analytics_module_when_analytics_4_is_active() {
 		$migration = $this->get_new_migration_instance();
 
@@ -253,7 +280,39 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings, 'The `audienceSegmentationSetupCompletedBy` should be removed from the Analytics settings.' );
 	}
 
-	public function test_migrate__keeps_one_tap_disabled_when_enabled_on_all_pages() {
+	public function test_migrate__fills_only_empty_audience_settings() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->audience_settings->set(
+			array(
+				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/2' ) ),
+				'availableAudiencesLastSyncedAt'       => 1700000000,
+				'audienceSegmentationSetupCompletedBy' => null,
+			)
+		);
+		$this->analytics_settings->set(
+			array(
+				'accountID'                            => '12345678',
+				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
+				'availableAudiencesLastSyncedAt'       => 1678886400,
+				'audienceSegmentationSetupCompletedBy' => 2,
+			)
+		);
+
+		$migration->migrate();
+
+		$audience_settings = $this->audience_settings->get();
+		$this->assertSame( array( array( 'name' => 'properties/123/audiences/2' ) ), $audience_settings['availableAudiences'], 'A stored `availableAudiences` should not be overwritten.' );
+		$this->assertSame( 1700000000, $audience_settings['availableAudiencesLastSyncedAt'], 'A stored `availableAudiencesLastSyncedAt` should not be overwritten.' );
+		$this->assertSame( 2, $audience_settings['audienceSegmentationSetupCompletedBy'], 'An empty `audienceSegmentationSetupCompletedBy` should be filled from the Analytics settings.' );
+
+		$analytics_settings = $this->analytics_settings->get();
+		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The `availableAudiences` should be removed from the Analytics settings.' );
+		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings, 'The `availableAudiencesLastSyncedAt` should be removed from the Analytics settings.' );
+		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings, 'The `audienceSegmentationSetupCompletedBy` should be removed from the Analytics settings.' );
+	}
+
+	public function test_migrate__keeps_one_tap_disabled_when_one_tap_on_all_pages_is_true() {
 		$migration = $this->get_new_migration_instance();
 
 		$this->sign_in_with_google_settings->set(
@@ -270,7 +329,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertArrayNotHasKey( 'oneTapOnAllPages', $sign_in_with_google_settings, 'The legacy `oneTapOnAllPages` key should be removed.' );
 	}
 
-	public function test_migrate__disables_one_tap_when_not_enabled_on_all_pages() {
+	public function test_migrate__disables_one_tap_when_one_tap_on_all_pages_is_false() {
 		$migration = $this->get_new_migration_instance();
 
 		$this->sign_in_with_google_settings->set(
@@ -287,7 +346,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertArrayNotHasKey( 'oneTapOnAllPages', $sign_in_with_google_settings, 'The legacy `oneTapOnAllPages` key should be removed.' );
 	}
 
-	public function test_migrate__keeps_one_tap_without_the_legacy_key() {
+	public function test_migrate__keeps_one_tap_without_one_tap_on_all_pages() {
 		$migration = $this->get_new_migration_instance();
 
 		$this->sign_in_with_google_settings->set( array( 'oneTapEnabled' => true ) );
@@ -321,6 +380,38 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$this->assertSame( $active_modules, $this->options->get( Modules::OPTION_ACTIVE_MODULES ), 'Ads should not be activated without a conversion ID.' );
 		$this->assertOptionNotExists( Ads_Settings::OPTION );
+	}
+
+	public function test_migrate__changes_nothing_when_settings_are_already_converted() {
+		$migration = $this->get_new_migration_instance();
+
+		// Store settings as a site that ran 1.177.0 before 1.185.0 has them.
+		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.177.0' );
+		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( 'analytics', 'analytics-4', 'ads', 'sign-in-with-google', 'reader-revenue-manager' ) );
+		$this->analytics_settings->set( array( 'accountID' => '12345678' ) );
+		$this->audience_settings->set( array( 'availableAudiencesLastSyncedAt' => 1700000000 ) );
+		$this->ads_settings->set( array( 'conversionID' => 'AW-123456789' ) );
+		$this->sign_in_with_google_settings->set( array( 'oneTapEnabled' => true ) );
+		$this->rrm_settings->set(
+			array(
+				'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+				'policyInfoLink'     => 'https://example.com/policy-info',
+			)
+		);
+
+		$settings_options = array(
+			Modules::OPTION_ACTIVE_MODULES,
+			Analytics_Settings::OPTION,
+			Audience_Settings::OPTION,
+			Ads_Settings::OPTION,
+			Sign_In_With_Google_Settings::OPTION,
+			Reader_Revenue_Manager_Settings::OPTION,
+		);
+		$stored_values    = array_map( array( $this->options, 'get' ), $settings_options );
+
+		$migration->migrate();
+
+		$this->assertSame( $stored_values, array_map( array( $this->options, 'get' ), $settings_options ), 'Settings that are already converted should not change.' );
 	}
 
 	public function test_migrate__changes_nothing_on_a_fresh_install() {
@@ -379,22 +470,6 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		return $wpdb->get_col(
 			$wpdb->prepare( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s", 'googlesitekit\_%' )
-		);
-	}
-
-	/**
-	 * Gets the options the migration reads or writes, other than the database version.
-	 */
-	protected function get_migrated_options() {
-		return array(
-			Modules::OPTION_ACTIVE_MODULES,
-			Module_Sharing_Settings::OPTION,
-			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
-			Analytics_Settings::OPTION,
-			Audience_Settings::OPTION,
-			Ads_Settings::OPTION,
-			Sign_In_With_Google_Settings::OPTION,
-			Reader_Revenue_Manager_Settings::OPTION,
 		);
 	}
 }

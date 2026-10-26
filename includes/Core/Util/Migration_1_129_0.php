@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
+use Google\Site_Kit\Modules\PageSpeed_Insights;
 
 /**
  * Class Migration_1_129_0.
@@ -166,11 +167,22 @@ class Migration_1_129_0 {
 	 * Activates the ads module if the Ads Conversion ID was previously set.
 	 *
 	 * @since 1.129.0
+	 * @since n.e.x.t Changed to read the active modules the same way as `Modules`.
 	 */
 	protected function activate_ads_module() {
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
-		if ( is_array( $active_modules ) && in_array( 'ads', $active_modules, true ) ) {
+		// Check legacy option.
+		if ( ! is_array( $active_modules ) ) {
+			$active_modules = $this->options->get( 'googlesitekit-active-modules' );
+		}
+
+		// If both options are not arrays, use the default value.
+		if ( ! is_array( $active_modules ) ) {
+			$active_modules = array( PageSpeed_Insights::MODULE_SLUG );
+		}
+
+		if ( in_array( 'ads', $active_modules, true ) ) {
 			return;
 		}
 

@@ -21,6 +21,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
 use Google\Site_Kit\Core\Util\Migration_1_185_0;
+use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
@@ -135,9 +136,6 @@ class PluginTest extends TestCase {
 		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/complete-intent', $routes, 'The plugin should register the `core/intents/data/complete-intent` route.' );
 	}
 
-	// `Migration_N_E_X_T` never runs here until release, because
-	// `version_compare()` sorts `n.e.x.t` below `1.185.0`. Until then this
-	// covers only the migrations running in registration order.
 	public function test_register__runs_every_migration_in_order() {
 		remove_all_actions( 'init' );
 		remove_all_actions( 'admin_init' );
@@ -205,7 +203,12 @@ class PluginTest extends TestCase {
 		do_action( 'init' );
 		do_action( 'admin_init' );
 
-		$this->assertSame( '1.185.0', $options->get( Migration_1_185_0::DB_VERSION_OPTION ), 'The database version should be the last migration version.' );
+		// `Migration_N_E_X_T` runs only once `n.e.x.t` is replaced with the release version.
+		$last_db_version = version_compare( Migration_N_E_X_T::DB_VERSION, Migration_1_185_0::DB_VERSION, '>' )
+			? Migration_N_E_X_T::DB_VERSION
+			: Migration_1_185_0::DB_VERSION;
+
+		$this->assertSame( $last_db_version, $options->get( Migration_1_185_0::DB_VERSION_OPTION ), 'The database version should be the last migration version.' );
 
 		$this->assertSame( array( 'analytics', 'analytics-4', 'ads' ), $options->get( Modules::OPTION_ACTIVE_MODULES ), 'The 1.123.0 and 1.129.0 migrations should activate Analytics 4 and Ads.' );
 		$this->assertSame(

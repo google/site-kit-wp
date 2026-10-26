@@ -119,8 +119,7 @@ class Migration_N_E_X_T {
 
 		if ( ! $db_version || version_compare( $db_version, static::DB_VERSION, '<' ) ) {
 			if ( $this->is_legacy_analytics_active() ) {
-				$this->migrate_legacy_analytics_settings();
-				$this->migrate_legacy_analytics_module();
+				( new Migration_1_123_0( $this->context, $this->options ) )->apply_changes();
 			}
 
 			( new Migration_1_129_0( $this->context, $this->options ) )->apply_changes();
@@ -150,29 +149,14 @@ class Migration_N_E_X_T {
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 
+		// Check legacy option.
+		if ( ! is_array( $active_modules ) ) {
+			$active_modules = $this->options->get( 'googlesitekit-active-modules' );
+		}
+
 		return is_array( $active_modules )
 			&& in_array( Migration_1_123_0::LEGACY_ANALYTICS_MODULE_SLUG, $active_modules, true )
 			&& ! in_array( Analytics_4::MODULE_SLUG, $active_modules, true );
-	}
-
-	/**
-	 * Copies the legacy Analytics settings over to Analytics 4.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function migrate_legacy_analytics_settings() {
-		( new Migration_1_123_0( $this->context, $this->options ) )->migrate_legacy_analytics_settings();
-	}
-
-	/**
-	 * Activates Analytics 4 and copies the legacy Analytics sharing settings.
-	 *
-	 * @since n.e.x.t
-	 */
-	protected function migrate_legacy_analytics_module() {
-		$migration_1_123_0 = new Migration_1_123_0( $this->context, $this->options );
-		$migration_1_123_0->activate_analytics();
-		$migration_1_123_0->migrate_legacy_analytics_sharing_settings();
 	}
 
 	/**
@@ -198,15 +182,9 @@ class Migration_N_E_X_T {
 			$audience_settings = array();
 		}
 
-		$keys_to_migrate = array(
-			'availableAudiences',
-			'availableAudiencesLastSyncedAt',
-			'audienceSegmentationSetupCompletedBy',
-		);
-
 		$has_migration = false;
 
-		foreach ( $keys_to_migrate as $key ) {
+		foreach ( Migration_1_150_0::AUDIENCE_SETTINGS_KEYS as $key ) {
 			if ( ! array_key_exists( $key, $analytics_settings ) ) {
 				continue;
 			}
@@ -247,14 +225,8 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		if (
-			true === ( $sign_in_with_google_settings['oneTapEnabled'] ?? false ) &&
-			true === $sign_in_with_google_settings['oneTapOnAllPages']
-		) {
-			$sign_in_with_google_settings['oneTapEnabled'] = true;
-		} else {
-			$sign_in_with_google_settings['oneTapEnabled'] = false;
-		}
+		$sign_in_with_google_settings['oneTapEnabled'] = true === ( $sign_in_with_google_settings['oneTapEnabled'] ?? false )
+			&& true === $sign_in_with_google_settings['oneTapOnAllPages'];
 
 		unset( $sign_in_with_google_settings['oneTapOnAllPages'] );
 
