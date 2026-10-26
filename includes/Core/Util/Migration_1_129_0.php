@@ -139,11 +139,7 @@ class Migration_1_129_0 {
 			return;
 		}
 
-		$ads_settings = $this->ads_settings->get();
-
-		if ( ! is_array( $ads_settings ) ) {
-			$ads_settings = array();
-		}
+		$ads_settings = (array) $this->ads_settings->get();
 
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.

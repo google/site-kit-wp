@@ -192,11 +192,7 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		$audience_settings = $this->audience_settings->get();
-
-		if ( ! is_array( $audience_settings ) ) {
-			$audience_settings = array();
-		}
+		$audience_settings = (array) $this->audience_settings->get();
 
 		$has_migration = false;
 
