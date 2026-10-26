@@ -19,12 +19,15 @@ concurrency:
 
 jobs:
   check:
-    name: Check CA trust (PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)
-    runs-on: ubuntu-latest
+    name: Check CA trust (${{ matrix.runner }}, PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)
+    runs-on: ${{ matrix.runner }}
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
+        # `ubuntu-latest` is moving from Ubuntu 24.04 to 26.04, so it can be
+        # either image. `ubuntu-24.04` always tests the older image.
+        runner: ['ubuntu-latest', 'ubuntu-24.04']
         php_version: ['7.4', '8.1', '8.5']
         # `image` tests the runner as GitHub ships it. `upgraded` installs the
         # latest `ca-certificates` package first, to check whether that fixes
@@ -157,7 +160,7 @@ jobs:
 
           failed=0
           {
-            echo "## CA trust check (PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)"
+            echo "## CA trust check (${{ matrix.runner }}, PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)"
             echo
             echo "| Client | Host | Result |"
             echo "|---|---|---|"
