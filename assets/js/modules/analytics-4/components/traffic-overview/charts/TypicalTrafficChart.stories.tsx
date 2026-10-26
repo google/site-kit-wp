@@ -25,7 +25,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { DESIGN_DAILY_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
+import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Story } from '@/js/types/Story';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
@@ -65,7 +65,7 @@ function Template( props: TypicalTrafficChartProps ) {
 }
 
 /**
- * A 28-day range, with the daily visitors of the design's line. The value axis
+ * A 28-day range, with the daily visits of the design's line. The value axis
  * ends at `150`, a round number above the busiest day of `140`.
  */
 export const Last28Days = Template.bind(
@@ -76,7 +76,7 @@ Last28Days.args = {
 	dailyTraffic: createDailyTrafficRows(
 		28,
 		'2026-09-15',
-		( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ]
+		( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ]
 	),
 	daysInSelectedRange: 28,
 };
@@ -98,7 +98,7 @@ Last90Days.args = {
 		90,
 		'2026-09-15',
 		( dayIndex ) =>
-			DESIGN_DAILY_VISITORS[ dayIndex % DESIGN_DAILY_VISITORS.length ]
+			DESIGN_DAILY_VISITS[ dayIndex % DESIGN_DAILY_VISITS.length ]
 	),
 	daysInSelectedRange: 90,
 };
@@ -108,7 +108,7 @@ Last90Days.scenario = {
 };
 
 /**
- * A range with no visitors on any day. The value axis ends at `100`, and the
+ * A range with no visits on any day. The value axis ends at `100`, and the
  * line runs flat along the bottom.
  */
 export const NoVisitors = Template.bind(
@@ -126,9 +126,8 @@ NoVisitors.scenario = {
 
 /**
  * A 28-day range with the day the Analytics property was created inside it,
- * `2026-08-26`. The chart marks that day with a dotted line, whose icon shows
- * "Google Analytics property created", and the days before it have no
- * visitors.
+ * `2026-08-26`. The chart marks that day with a dashed line, whose icon shows
+ * "Google Analytics property created", and the days before it have no visits.
  */
 export const PropertyCreatedInRange = Template.bind(
 	{}
@@ -136,7 +135,7 @@ export const PropertyCreatedInRange = Template.bind(
 PropertyCreatedInRange.storyName = 'Property Created In Range';
 PropertyCreatedInRange.args = {
 	dailyTraffic: createDailyTrafficRows( 28, '2026-09-15', ( dayIndex ) =>
-		dayIndex < 7 ? 0 : DESIGN_DAILY_VISITORS[ dayIndex ]
+		dayIndex < 7 ? 0 : DESIGN_DAILY_VISITS[ dayIndex ]
 	),
 	daysInSelectedRange: 28,
 	propertyCreateDate: '2026-08-26',

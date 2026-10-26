@@ -17,7 +17,7 @@
  */
 
 /**
- * The daily visitors the Typical Traffic stories plot for a 28-day range,
+ * The daily visits the Typical Traffic stories plot for a 28-day range,
  * oldest first.
  *
  * They follow the line of the design's chart, which stays low for two weeks
@@ -25,7 +25,7 @@
  *
  * @since n.e.x.t
  */
-export const DESIGN_DAILY_VISITORS = [
+export const DESIGN_DAILY_VISITS = [
 	39, 34, 59, 40, 42, 40, 39, 41, 44, 39, 31, 36, 58, 61, 74, 69, 70, 61, 70,
 	78, 64, 108, 113, 139, 124, 140, 125, 137,
 ];

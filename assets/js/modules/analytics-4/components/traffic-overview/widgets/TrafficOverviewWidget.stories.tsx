@@ -33,7 +33,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
-import { DESIGN_DAILY_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
+import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -309,7 +309,7 @@ TypicalTrafficSelected.args = {
 		const dates = registry.select( CORE_USER ).getDateRangeDates();
 
 		// The checked-in response has only four days. So the chart gets the 28
-		// days of `DESIGN_DAILY_VISITORS` times 100, which puts labels in the
+		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
 		// thousands on the value axis, and the reference images show each label
 		// in full.
 		provideBenchmarkingData( registry, dates, {
@@ -317,7 +317,7 @@ TypicalTrafficSelected.args = {
 			dailyTraffic: createDailyTrafficRows(
 				28,
 				dates.endDate,
-				( dayIndex ) => DESIGN_DAILY_VISITORS[ dayIndex ] * 100
+				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
 			),
 		} );
 	},

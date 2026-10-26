@@ -23,8 +23,8 @@ import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traf
 import { getTypicalTrafficChartData } from './getTypicalTrafficChartData';
 
 describe( 'getTypicalTrafficChartData', () => {
-	it( 'should return one point for each of 28 rows, oldest first, with a day of 0 visitors as a point at 0', () => {
-		// The second day has no visitors.
+	it( 'should return one point for each of 28 rows, oldest first, with a day of 0 visits as a point at 0', () => {
+		// The second day has no visits.
 		const dailyTraffic = createDailyTrafficRows(
 			28,
 			'2026-09-15',
@@ -75,28 +75,28 @@ describe( 'getTypicalTrafficChartData', () => {
 		expect( ticks[ 26 ] ).toEqual( new Date( 2026, 8, 15 ) );
 	} );
 
-	it( 'should return true as `hasVisitors` when one day has visitors', () => {
-		// Only the tenth day has visitors, so neither end of the rows decides it.
+	it( 'should return true as `hasVisits` when one day has visits', () => {
+		// Only the tenth day has visits, so neither end of the rows decides it.
 		const dailyTraffic = createDailyTrafficRows(
 			28,
 			'2026-09-15',
 			( dayIndex ) => ( dayIndex === 9 ? 120 : 0 )
 		);
 
-		const { hasVisitors } = getTypicalTrafficChartData( { dailyTraffic } );
+		const { hasVisits } = getTypicalTrafficChartData( { dailyTraffic } );
 
-		expect( hasVisitors ).toBe( true );
+		expect( hasVisits ).toBe( true );
 	} );
 
-	it( 'should return false as `hasVisitors` when every day has 0 visitors', () => {
+	it( 'should return false as `hasVisits` when every day has 0 visits', () => {
 		const dailyTraffic = createDailyTrafficRows(
 			28,
 			'2026-09-15',
 			() => 0
 		);
 
-		const { hasVisitors } = getTypicalTrafficChartData( { dailyTraffic } );
+		const { hasVisits } = getTypicalTrafficChartData( { dailyTraffic } );
 
-		expect( hasVisitors ).toBe( false );
+		expect( hasVisits ).toBe( false );
 	} );
 } );

@@ -50,7 +50,7 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 	daysInSelectedRange,
 	propertyCreateDate,
 } ) => {
-	const { chartData, ticks, hasVisitors } = getTypicalTrafficChartData( {
+	const { chartData, ticks, hasVisits } = getTypicalTrafficChartData( {
 		dailyTraffic,
 	} );
 
@@ -72,7 +72,7 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 			// as in `TrafficChart`.
 			viewWindow: {
 				...TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
-				...( hasVisitors ? {} : { max: 100 } ),
+				...( hasVisits ? {} : { max: 100 } ),
 			},
 		},
 	};

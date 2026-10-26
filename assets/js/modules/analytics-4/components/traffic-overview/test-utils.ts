@@ -612,15 +612,15 @@ export function forDimensions( ...dimensions: string[] ) {
  *
  * @since n.e.x.t
  *
- * @param {number}   days        The number of rows, one for each day.
- * @param {string}   endDate     The last day, as `YYYY-MM-DD`.
- * @param {Function} getVisitors Returns a day's visitors, given the day's position in the rows, from `0`.
- * @return {Array.<Object>} The `{ date, visitors }` rows, oldest first.
+ * @param {number}   days      The number of rows, one for each day.
+ * @param {string}   endDate   The last day, as `YYYY-MM-DD`.
+ * @param {Function} getVisits Returns a day's visits, given the day's position in the rows, from `0`.
+ * @return {Array.<Object>} The `{ date, visits }` rows, oldest first.
  */
 export function createDailyTrafficRows(
 	days: number,
 	endDate: string,
-	getVisitors: ( dayIndex: number ) => number
+	getVisits: ( dayIndex: number ) => number
 ): BenchmarkingDailyTrafficRow[] {
 	// `setDate()` moves the calendar day and keeps the time of day, so a
 	// daylight-saving change inside the rows doesn't skip or repeat a day.
@@ -632,6 +632,6 @@ export function createDailyTrafficRows(
 
 		day.setDate( day.getDate() + 1 );
 
-		return { date, visitors: getVisitors( dayIndex ) };
+		return { date, visits: getVisits( dayIndex ) };
 	} );
 }
