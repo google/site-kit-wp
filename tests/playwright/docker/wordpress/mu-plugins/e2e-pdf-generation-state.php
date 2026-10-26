@@ -59,10 +59,6 @@ add_action(
 					'isWidgetHidden' => false,
 				)
 			);
-
-			// The dashboard shows the selected metrics only once Key Metrics
-			// setup is complete.
-			update_option( 'googlesitekit_key_metrics_setup_completed_by', $admin->ID );
 		}
 
 		if ( ! empty( $audiences ) ) {

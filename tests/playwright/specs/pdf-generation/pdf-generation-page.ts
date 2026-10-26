@@ -341,39 +341,6 @@ export class PDFGenerationPage {
 	}
 
 	/**
-	 * Reads the text of the downloaded PDF report's first page, with runs of
-	 * whitespace collapsed to single spaces.
-	 *
-	 * @since n.e.x.t
-	 *
-	 * @param {Download} download The completed download from `download()`.
-	 * @return {Promise<string>} The first page's text.
-	 */
-	async readPDFFirstPageText( download: Download ): Promise< string > {
-		const path = ( await download.path() ) as string;
-		const { getDocument } = await import(
-			'pdfjs-dist/legacy/build/pdf.mjs'
-		);
-
-		const loadingTask = getDocument( {
-			data: new Uint8Array( readFileSync( path ) ),
-		} );
-
-		try {
-			const document = await loadingTask.promise;
-			const firstPage = await document.getPage( 1 );
-			const { items } = await firstPage.getTextContent();
-
-			return items
-				.map( ( item ) => ( 'str' in item ? item.str : '' ) )
-				.join( ' ' )
-				.replace( /\s+/g, ' ' );
-		} finally {
-			await loadingTask.destroy();
-		}
-	}
-
-	/**
 	 * Cancels an in-progress export via the progress snackbar's Cancel action.
 	 *
 	 * @since 1.184.0
