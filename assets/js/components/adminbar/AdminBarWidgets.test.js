@@ -339,7 +339,6 @@ describe( 'AdminBarWidgets', () => {
 			<AdminBarWidgets />,
 			{
 				registry,
-				features: [ 'setupFlowRefreshPhase4' ],
 			}
 		);
 
@@ -383,7 +382,6 @@ describe( 'AdminBarWidgets', () => {
 
 		const { getByRole, waitForRegistry } = render( <AdminBarWidgets />, {
 			registry,
-			features: [ 'setupFlowRefreshPhase4' ],
 		} );
 
 		await waitForRegistry();

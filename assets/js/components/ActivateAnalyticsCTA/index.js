@@ -40,7 +40,6 @@ import useNotificationEvents from '@/js/googlesitekit/notifications/hooks/useNot
 import useActivateModuleCallback from '@/js/hooks/useActivateModuleCallback';
 import useCompleteModuleActivationCallback from '@/js/hooks/useCompleteModuleActivationCallback';
 import { useDebounce } from '@/js/hooks/useDebounce';
-import { useFeature } from '@/js/hooks/useFeature';
 import useViewContext from '@/js/hooks/useViewContext';
 import {
 	ANALYTICS_SETUP_ERROR,
@@ -56,9 +55,6 @@ export default function ActivateAnalyticsCTA( {
 	dismissedItemSlug,
 	analyticsEventLabel,
 } ) {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
 	const viewContext = useViewContext();
 
 	const trackEvents = useNotificationEvents(
@@ -86,8 +82,11 @@ export default function ActivateAnalyticsCTA( {
 		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
 	} );
 
+	// This CTA shows its own error state, so the activation error is not also
+	// shown in the `InternalServerError` banner at the top of the page.
 	const activateModuleCallback = useActivateModuleCallback(
-		MODULE_SLUG_ANALYTICS_4
+		MODULE_SLUG_ANALYTICS_4,
+		{ internalServerErrorOptions: { showGlobalNotification: false } }
 	);
 	const completeModuleActivationCallback =
 		useCompleteModuleActivationCallback( MODULE_SLUG_ANALYTICS_4 );
@@ -108,10 +107,6 @@ export default function ActivateAnalyticsCTA( {
 	} );
 
 	const hasActivationError = useSelect( ( select ) => {
-		if ( ! setupFlowRefreshPhase4Enabled ) {
-			return false;
-		}
-
 		const internalServerError =
 			select( CORE_SITE ).getInternalServerError();
 

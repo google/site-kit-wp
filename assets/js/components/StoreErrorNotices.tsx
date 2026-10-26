@@ -32,7 +32,6 @@ import { __ } from '@wordpress/i18n';
  */
 import { Select, useSelect } from 'googlesitekit-data';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import { useFeature } from '@/js/hooks/useFeature';
 import { isInsufficientPermissionsError } from '@/js/util/errors';
 import { getInsufficientPermissionsErrorDescription } from '@/js/util/insufficient-permissions-error-description';
 import ErrorNotice from './ErrorNotice';
@@ -40,18 +39,16 @@ import ErrorNotice from './ErrorNotice';
 export interface StoreErrorNoticesProps {
 	hasButton?: boolean;
 	moduleSlug?: string;
+	scrollIntoView?: boolean;
 	storeName: string;
 }
 
 const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 	hasButton = false,
 	moduleSlug,
+	scrollIntoView = false,
 	storeName,
 } ) => {
-	const setupFlowRefreshPhase4Enabled = useFeature(
-		'setupFlowRefreshPhase4'
-	);
-
 	const errors = useSelect(
 		( select: Select ): { message?: string }[] =>
 			select( storeName ).getErrors(),
@@ -84,10 +81,6 @@ const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 					const isInsufficientPermissions =
 						isInsufficientPermissionsError( error );
 
-					const hasTitle =
-						isInsufficientPermissions &&
-						setupFlowRefreshPhase4Enabled;
-
 					const message = isInsufficientPermissions
 						? getInsufficientPermissionsErrorDescription(
 								error.message,
@@ -95,7 +88,7 @@ const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 						  )
 						: error.message;
 
-					const title = hasTitle
+					const title = isInsufficientPermissions
 						? __( 'Insufficient permissions', 'google-site-kit' )
 						: undefined;
 
@@ -107,8 +100,9 @@ const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 							storeName={ storeName }
 							message={ message }
 							title={ title }
-							noPrefix={ hasTitle }
-							skipRetryMessage={ hasTitle }
+							noPrefix={ isInsufficientPermissions }
+							skipRetryMessage={ isInsufficientPermissions }
+							scrollIntoView={ scrollIntoView && key === 0 }
 						/>
 					);
 				} ) }

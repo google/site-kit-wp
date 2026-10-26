@@ -149,80 +149,42 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		);
 	} );
 
-	it( 'renders legacy splash content when setupFlowRefreshPhase4 is disabled', () => {
-		const { container, getByText, getByRole } = render(
+	it( 'keeps the words "Site Kit" in the splash header, by adding `googlesitekit-setup-flow` to the body', () => {
+		render( <SetupUsingProxyViewOnly />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+		} );
+
+		expect( global.document.body ).toHaveClass(
+			'googlesitekit-setup-flow'
+		);
+	} );
+
+	it( 'should show the "You need administrator access to continue" notice, and keep the "Go to dashboard" button, when the URL has `purpose=intent`', async () => {
+		global.location.href =
+			'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
+
+		const { getByRole, getByText, waitForRegistry } = render(
 			<SetupUsingProxyViewOnly />,
 			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [],
 			}
 		);
+		await waitForRegistry();
 
-		expect(
-			container.querySelector( '.googlesitekit-progress-indicator' )
-		).toBeNull();
+		const notice = getByText(
+			'You need administrator access to continue'
+		).closest( '.googlesitekit-notice' );
 
-		expect(
-			getByText( /to view stats from all shared Google services/ )
-		).toBeInTheDocument();
-
-		expect( getByRole( 'link', { name: /Learn more/i } ) ).toHaveAttribute(
-			'href',
-			registry
-				.select( CORE_SITE )
-				.getDocumentationLinkURL( 'dashboard-sharing' )
+		expect( notice ).toHaveClass( 'googlesitekit-notice--warning' );
+		expect( notice ).toHaveTextContent(
+			'Only administrators of this site can sign in to Site Kit and finish this setup. To complete setup, you can ask a site administrator to give you administrator access, then go back to where you started and try again.'
 		);
-
 		expect(
-			container.querySelector( '.googlesitekit-layout--rounded' )
+			getByRole( 'button', { name: 'Go to dashboard' } )
 		).toBeInTheDocument();
 	} );
-
-	it( 'keeps the words "Site Kit" in the splash header, by adding `googlesitekit-setup-splash` to the body', () => {
-		render( <SetupUsingProxyViewOnly />, {
-			registry,
-			viewContext: VIEW_CONTEXT_SPLASH,
-			features: [],
-		} );
-
-		expect( global.document.body ).toHaveClass(
-			'googlesitekit-setup-splash'
-		);
-	} );
-
-	it.each( [
-		[ 'disabled', [] ],
-		[ 'enabled', [ 'setupFlowRefreshPhase4' ] ],
-	] )(
-		'should show the "You need administrator access to continue" notice, and keep the "Go to dashboard" button, when the URL has `purpose=intent` and `setupFlowRefreshPhase4` is %s',
-		async ( _, features ) => {
-			global.location.href =
-				'http://example.com/wp-admin/admin.php?page=googlesitekit-splash&purpose=intent';
-
-			const { getByRole, getByText, waitForRegistry } = render(
-				<SetupUsingProxyViewOnly />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_SPLASH,
-					features,
-				}
-			);
-			await waitForRegistry();
-
-			const notice = getByText(
-				'You need administrator access to continue'
-			).closest( '.googlesitekit-notice' );
-
-			expect( notice ).toHaveClass( 'googlesitekit-notice--warning' );
-			expect( notice ).toHaveTextContent(
-				'Only administrators of this site can sign in to Site Kit and finish this setup. To complete setup, you can ask a site administrator to give you administrator access, then go back to where you started and try again.'
-			);
-			expect(
-				getByRole( 'button', { name: 'Go to dashboard' } )
-			).toBeInTheDocument();
-		}
-	);
 
 	it( 'should not show the "You need administrator access to continue" notice when the URL has no `purpose=intent`', async () => {
 		const { queryByText, waitForRegistry } = render(
@@ -239,12 +201,10 @@ describe( 'SetupUsingProxyViewOnly', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	describe( 'with the `setupFlowRefreshPhase4` feature flag enabled', () => {
-		it( 'renders phase4 splash content and progress indicator', async () => {
-			registry.dispatch( CORE_MODULES ).receiveGetModules(
-				Object.values(
-					registry.select( CORE_MODULES ).getModules()
-				).map( ( module ) => {
+	it( 'renders the splash content and progress indicator', async () => {
+		registry.dispatch( CORE_MODULES ).receiveGetModules(
+			Object.values( registry.select( CORE_MODULES ).getModules() ).map(
+				( module ) => {
 					if (
 						MODULE_SLUG_ANALYTICS_4 === module.slug ||
 						MODULE_SLUG_SEARCH_CONSOLE === module.slug
@@ -258,88 +218,82 @@ describe( 'SetupUsingProxyViewOnly', () => {
 					}
 
 					return module;
-				} )
-			);
-
-			registry.dispatch( CORE_USER ).receiveGetCapabilities( {
-				'googlesitekit_read_shared_module_data::["analytics-4"]': true,
-				'googlesitekit_read_shared_module_data::["search-console"]': true,
-			} );
-
-			const { container, getByText, getByRole, waitForRegistry } = render(
-				<SetupUsingProxyViewOnly />,
-				{
-					registry,
-					viewContext: VIEW_CONTEXT_SPLASH,
-					features: [ 'setupFlowRefreshPhase4' ],
 				}
-			);
+			)
+		);
 
-			await waitForRegistry();
-
-			expect(
-				container.querySelector( '.googlesitekit-progress-indicator' )
-			).toBeInTheDocument();
-
-			expect(
-				getByText(
-					/how people find and use your site as well as how to improve and monetize your content/
-				)
-			).toBeInTheDocument();
-
-			expect(
-				getByText(
-					/containing stats from these shared Google services/
-				)
-			).toBeInTheDocument();
-
-			expect(
-				getByRole( 'link', { name: /Learn more/i } )
-			).toHaveAttribute(
-				'href',
-				registry
-					.select( CORE_SITE )
-					.getDocumentationLinkURL( 'dashboard-sharing' )
-			);
-
-			expect(
-				container.querySelector( '.googlesitekit-layout--rounded' )
-			).toBeNull();
-
-			expect( getByText( 'Search Console' ) ).toBeInTheDocument();
-			expect( getByText( 'Analytics' ) ).toBeInTheDocument();
-
-			expect(
-				Array.from(
-					container.querySelectorAll(
-						'.googlesitekit-setup__services-list-item-name'
-					)
-				).map( ( element ) => element.textContent )
-			).toEqual( [ 'Search Console', 'Analytics' ] );
+		registry.dispatch( CORE_USER ).receiveGetCapabilities( {
+			'googlesitekit_read_shared_module_data::["analytics-4"]': true,
+			'googlesitekit_read_shared_module_data::["search-console"]': true,
 		} );
 
-		it( 'should allow exiting the setup', async () => {
-			registry.dispatch( CORE_SITE ).receiveSiteInfo( {
-				adminURL: 'http://example.com/wp-admin/',
-			} );
-
-			const { queryByText } = render( <SetupUsingProxyViewOnly />, {
+		const { container, getByText, getByRole, waitForRegistry } = render(
+			<SetupUsingProxyViewOnly />,
+			{
 				registry,
 				viewContext: VIEW_CONTEXT_SPLASH,
-				features: [ 'setupFlowRefreshPhase4' ],
-			} );
+			}
+		);
 
-			expect( queryByText( /Exit setup/ ) ).toBeInTheDocument();
+		await waitForRegistry();
 
-			fireEvent.click( queryByText( /Exit setup/ ) );
+		expect(
+			container.querySelector( '.googlesitekit-progress-indicator' )
+		).toBeInTheDocument();
 
-			await waitFor( () => {
-				expect( global.location.assign ).toHaveBeenCalled();
-			} );
+		expect(
+			getByText(
+				/how people find and use your site as well as how to improve and monetize your content/
+			)
+		).toBeInTheDocument();
 
-			expect( global.location.assign ).toHaveBeenCalledWith(
-				'http://example.com/wp-admin'
-			);
+		expect(
+			getByText( /containing stats from these shared Google services/ )
+		).toBeInTheDocument();
+
+		expect( getByRole( 'link', { name: /Learn more/i } ) ).toHaveAttribute(
+			'href',
+			registry
+				.select( CORE_SITE )
+				.getDocumentationLinkURL( 'dashboard-sharing' )
+		);
+
+		expect(
+			container.querySelector( '.googlesitekit-layout--rounded' )
+		).toBeNull();
+
+		expect( getByText( 'Search Console' ) ).toBeInTheDocument();
+		expect( getByText( 'Analytics' ) ).toBeInTheDocument();
+
+		expect(
+			Array.from(
+				container.querySelectorAll(
+					'.googlesitekit-setup__services-list-item-name'
+				)
+			).map( ( element ) => element.textContent )
+		).toEqual( [ 'Search Console', 'Analytics' ] );
+	} );
+
+	it( 'should allow exiting the setup', async () => {
+		registry.dispatch( CORE_SITE ).receiveSiteInfo( {
+			adminURL: 'http://example.com/wp-admin/',
 		} );
+
+		const { queryByText } = render( <SetupUsingProxyViewOnly />, {
+			registry,
+			viewContext: VIEW_CONTEXT_SPLASH,
+		} );
+
+		expect( queryByText( /Exit setup/ ) ).toBeInTheDocument();
+
+		fireEvent.click( queryByText( /Exit setup/ ) );
+
+		await waitFor( () => {
+			expect( global.location.assign ).toHaveBeenCalled();
+		} );
+
+		expect( global.location.assign ).toHaveBeenCalledWith(
+			'http://example.com/wp-admin'
+		);
 	} );
 } );

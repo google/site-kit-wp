@@ -11,11 +11,13 @@
 namespace Google\Site_Kit\Modules\Search_Console\Datapoints;
 
 use Exception;
+use Google\Site_Kit\Core\Authentication\Clients\Google_Site_Kit_Client;
 use Google\Site_Kit\Core\Modules\Datapoint;
 use Google\Site_Kit\Core\Modules\Executable_Datapoint;
 use Google\Site_Kit\Core\REST_API\Data_Request;
 use Google\Site_Kit\Core\REST_API\Exception\Missing_Required_Param_Exception;
 use Google\Site_Kit_Dependencies\Google\Service\Exception as Google_Service_Exception;
+use Google\Site_Kit_Dependencies\Google\Service\SearchConsole as Google_Service_SearchConsole;
 use WP_Error;
 
 /**
@@ -65,9 +67,10 @@ class Batch_Search_Analytics extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.170.0
+	 * @since n.e.x.t Sends the batch with the Google client the closure is called with.
 	 *
 	 * @param Data_Request $data_request Data request object.
-	 * @return callable Callable to execute the batch request, resolving to an empty array when no entry could be prepared.
+	 * @return callable Callable to execute the batch request with the given Google client, resolving to an empty array when no entry could be prepared.
 	 * @throws Missing_Required_Param_Exception Thrown when required parameters are missing.
 	 */
 	public function create_request( Data_Request $data_request ) {
@@ -80,31 +83,36 @@ class Batch_Search_Analytics extends Datapoint implements Executable_Datapoint {
 		$this->request_identifiers = array();
 		$this->request_errors      = array();
 
-		$batch              = $this->get_service()->createBatch();
-		$has_valid_requests = false;
+		$search_analytics_requests = array();
 
 		foreach ( $requests as $request_data ) {
 			$identifier                  = $this->normalize_identifier( $request_data );
 			$this->request_identifiers[] = $identifier;
 
 			try {
-				$args           = $this->prepare_search_analytics_request_args( $request_data );
-				$single_request = $this->create_search_analytics_request( $args );
+				$args = $this->prepare_search_analytics_request_args( $request_data );
 
-				$batch->add( $single_request, $identifier );
-				$has_valid_requests = true;
+				$search_analytics_requests[ $identifier ] = $this->create_search_analytics_request( $args );
 			} catch ( Exception $exception ) {
 				$this->request_errors[ $identifier ] = $this->exception_to_error( $exception );
 			}
 		}
 
-		if ( ! $has_valid_requests ) {
+		if ( empty( $search_analytics_requests ) ) {
 			return function () {
 				return array();
 			};
 		}
 
-		return function () use ( $batch ) {
+		return function ( Google_Site_Kit_Client $client ) use ( $search_analytics_requests ) {
+			// The module's service sends with the current user's client, which
+			// has no token for a reader of a shared dashboard.
+			$batch = ( new Google_Service_SearchConsole( $client ) )->createBatch();
+
+			foreach ( $search_analytics_requests as $identifier => $search_analytics_request ) {
+				$batch->add( $search_analytics_request, $identifier );
+			}
+
 			return $batch->execute();
 		};
 	}

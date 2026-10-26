@@ -33,6 +33,7 @@ import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
 import { getWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { TRAFFIC_OVERVIEW_WIDGET_SLUG } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import { getGraphReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
+import { provideFreshMetricsReports } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -70,6 +71,10 @@ describe( 'TrafficOverviewWidget', () => {
 	);
 
 	const postsEndpoint = new RegExp( '^/wp/v2/posts' );
+
+	const searchAnalyticsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
+	);
 
 	// When Analytics is not connected, the widget renders
 	// `ActivateAnalyticsCTA`, which needs an `IntersectionObserver` that jsdom
@@ -330,10 +335,15 @@ describe( 'TrafficOverviewWidget', () => {
 		registry
 			.dispatch( MODULES_SEARCH_CONSOLE )
 			.setPropertyID( 'https://example.com/' );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
 		fetchMock.get( postsEndpoint, {
 			body: [
 				{
 					id: 12,
+					date: '2026-09-24T10:05:00',
 					date_gmt: '2026-09-24T14:05:00',
 					link: 'http://example.com/autumn-recipes/',
 					title: { rendered: 'Autumn recipes' },
@@ -341,6 +351,7 @@ describe( 'TrafficOverviewWidget', () => {
 			],
 			status: 200,
 		} );
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
 
 		const { container, waitForRegistry } = render(
 			<TrafficOverviewWidget { ...widgetComponentProps } />,

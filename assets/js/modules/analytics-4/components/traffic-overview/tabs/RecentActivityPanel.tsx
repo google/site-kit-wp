@@ -34,10 +34,10 @@ import ActivateAnalyticsCTA from '@/js/components/ActivateAnalyticsCTA';
 import GatheringDataNotice, {
 	NOTICE_STYLE,
 } from '@/js/components/GatheringDataNotice';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
-import useViewOnly from '@/js/hooks/useViewOnly';
+import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
 import {
+	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
@@ -45,30 +45,20 @@ import FreshMetricsRow from '@/js/modules/analytics-4/components/traffic-overvie
 import InsightNotice from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/InsightNotice';
 import LatestPostPerformance from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/LatestPostPerformance';
 import RecentTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentTrafficBreakdown';
+import SeeAllRecentPostsLink from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/SeeAllRecentPostsLink';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 
 const RecentActivityPanel: FC = () => {
-	const viewOnly = useViewOnly();
-
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
 			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 		[]
 	);
 
-	const canViewSharedAnalytics4 = useSelect(
-		( select: Select ) => {
-			if ( ! viewOnly ) {
-				return true;
-			}
-
-			return select( CORE_USER ).canViewSharedModule(
-				MODULE_SLUG_ANALYTICS_4
-			);
-		},
-		[ viewOnly ]
+	const canViewSharedAnalytics4 = useCanViewSharedModule(
+		MODULE_SLUG_ANALYTICS_4
 	);
 
 	const isGatheringData = useInViewSelect< boolean | undefined >(
@@ -82,7 +72,9 @@ const RecentActivityPanel: FC = () => {
 	const recentContent = useInViewSelect< RecentContentItem[] | undefined >(
 		( select: Select ) =>
 			isAnalyticsConnected
-				? select( MODULES_ANALYTICS_4 ).getRecentContent( { count: 1 } )
+				? select( MODULES_ANALYTICS_4 ).getRecentContent(
+						LATEST_POST_RECENT_CONTENT_OPTIONS
+				  )
 				: undefined,
 		[ isAnalyticsConnected ]
 	);
@@ -113,8 +105,17 @@ const RecentActivityPanel: FC = () => {
 					) }
 					{ isGatheringData === false && <InsightNotice /> }
 					<FreshMetricsRow />
-					{ isGatheringData === false && <RecentTrafficBreakdown /> }
-					{ ! hasNoPublishedPosts && <LatestPostPerformance /> }
+					{ isGatheringData === false && (
+						<RecentTrafficBreakdown
+							hasNoPublishedPosts={ hasNoPublishedPosts }
+						/>
+					) }
+					{ canViewSharedAnalytics4 && ! hasNoPublishedPosts && (
+						<Fragment>
+							<LatestPostPerformance />
+							<SeeAllRecentPostsLink />
+						</Fragment>
+					) }
 				</Fragment>
 			) }
 		</div>

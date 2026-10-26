@@ -41,6 +41,8 @@ import { ExpressSetupStepHeadline } from '@/js/modules/reader-revenue-manager/co
 import { NEWSLETTER_SIGNUP_FORM } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/constants';
 import Preview from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/cta-setups/SetupCTANewsletterSignup/Preview';
 import CTAsPlacementFormSection from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/CTAsPlacementFormSection';
+import useCreateExpressSetupCTA from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useCreateExpressSetupCTA';
+import useExpressSetupTrackEvent from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks/useExpressSetupTrackEvent';
 import {
 	SetupStep,
 	SetupStepProps,
@@ -57,11 +59,12 @@ import FormText from './FormText';
 import GeneralDetails from './GeneralDetails';
 
 const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
+	const trackEvent = useExpressSetupTrackEvent();
+
 	const [ isPublishing, setIsPublishing ] = useState( false );
 
-	const { createCTA, submitChanges } = useDispatch(
-		MODULES_READER_REVENUE_MANAGER
-	);
+	const { submitChanges } = useDispatch( MODULES_READER_REVENUE_MANAGER );
+	const createExpressSetupCTA = useCreateExpressSetupCTA();
 
 	const [ displayName ] = useFormValue< string >(
 		EXPRESS_SETUP_CTA_FORMS.NEWSLETTER_SIGNUP,
@@ -143,7 +146,9 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 			return;
 		}
 
-		const { error: createError } = await createCTA( createCTAParams );
+		const { error: createError } = await createExpressSetupCTA(
+			createCTAParams
+		);
 
 		if ( createError ) {
 			setIsPublishing( false );
@@ -152,7 +157,7 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 
 		setIsPublishing( false );
 		onComplete();
-	}, [ createCTA, createCTAParams, onComplete, submitChanges ] );
+	}, [ createCTAParams, createExpressSetupCTA, onComplete, submitChanges ] );
 
 	const onSubmit = useCallback(
 		async ( event: FormEvent< HTMLFormElement > ) => {
@@ -168,7 +173,17 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 			'google-site-kit'
 		),
 		{
-			a: <DocumentationLink slug="rrm-newsletter-signup" />,
+			a: (
+				<DocumentationLink
+					slug="rrm-newsletter-signup"
+					onClick={ () =>
+						trackEvent(
+							'click_learn_more_link',
+							EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM
+						)
+					}
+				/>
+			),
 		}
 	);
 
@@ -194,6 +209,7 @@ const StepSignupForm: FC< SetupStepProps > = ( { onComplete } ) => {
 					<StoreErrorNotices
 						moduleSlug={ MODULE_SLUG_READER_REVENUE_MANAGER }
 						storeName={ MODULES_READER_REVENUE_MANAGER }
+						scrollIntoView
 						hasButton
 					/>
 

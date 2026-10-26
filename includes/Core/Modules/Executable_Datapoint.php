@@ -22,7 +22,13 @@ interface Executable_Datapoint {
 	/**
 	 * Creates a request object.
 	 *
+	 * When `Module::execute_data_request()` runs the request, it calls a returned
+	 * closure with the Google client chosen for the datapoint, which is the module
+	 * owner's for a shared request. That client defers its requests, so a service
+	 * call made with it returns the request instead of sending it.
+	 *
 	 * @since 1.160.0
+	 * @since n.e.x.t A returned closure is called with the Google client chosen for the datapoint.
 	 *
 	 * @param Data_Request $data Data request object.
 	 */

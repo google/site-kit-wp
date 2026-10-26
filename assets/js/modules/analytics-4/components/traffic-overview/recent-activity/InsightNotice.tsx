@@ -21,8 +21,127 @@
  */
 import { FC } from 'react';
 
+/**
+ * WordPress dependencies
+ */
+import { useMemo } from '@wordpress/element';
+import { __, sprintf } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import PreviewBlock from '@/js/components/PreviewBlock';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
+import useViewContext from '@/js/hooks/useViewContext';
+import FeedbackPrompt from '@/js/modules/analytics-4/components/common/FeedbackPrompt';
+import { FRESH_DATA_VOTE_ID_RECENT_ACTIVITY } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { useFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
+import { getInsightReportArgs } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	Insight,
+	classifyInsight,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/insight';
+import { numFmt } from '@/js/util';
+import MagnifyingGlassIcon from '@/svg/icons/magnifying-glass.svg';
+
+/**
+ * Gets the notice copy for an insight.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} insight                The insight.
+ * @param {string} insight.classification `typical`, `up` or `down`.
+ * @param {number} insight.changePercent  The change from the median, in percent.
+ * @return {string} The notice copy.
+ */
+function getInsightCopy( { classification, changePercent }: Insight ): string {
+	const change = numFmt( Math.abs( changePercent ) / 100, {
+		style: 'percent',
+		maximumFractionDigits: 1,
+	} );
+
+	if ( classification === 'up' ) {
+		return sprintf(
+			/* translators: %s: the increase in visitors, e.g. "32%" */
+			__(
+				'Your site’s traffic since yesterday is up %s compared to how it performed at the same time over the past few weeks',
+				'google-site-kit'
+			),
+			change
+		);
+	}
+
+	if ( classification === 'down' ) {
+		return sprintf(
+			/* translators: %s: the decrease in visitors, e.g. "32%" */
+			__(
+				'Your site’s traffic since yesterday is down %s compared to how it performed at the same time over the past few weeks',
+				'google-site-kit'
+			),
+			change
+		);
+	}
+
+	return __(
+		'Your site’s traffic since yesterday is typical compared to how it performed at the same time over the past few weeks',
+		'google-site-kit'
+	);
+}
+
 const InsightNotice: FC = () => {
-	return <div className="googlesitekit-traffic-overview__insight-notice" />;
+	const viewContext = useViewContext();
+	const dateRange = useFreshDataDateRange();
+
+	const { report, loading, error } =
+		useFreshDataReport( getInsightReportArgs );
+
+	const insight = useMemo(
+		() => classifyInsight( { rows: report?.rows, ...dateRange } ),
+		[ report, dateRange ]
+	);
+
+	if ( loading ) {
+		return (
+			<div className="googlesitekit-traffic-overview__insight-notice">
+				<PreviewBlock width="100%" height="72px" />
+			</div>
+		);
+	}
+
+	if ( error || ! insight ) {
+		return null;
+	}
+
+	return (
+		<div className="googlesitekit-traffic-overview__insight-notice">
+			<div className="googlesitekit-traffic-overview__insight-notice-content">
+				<div className="googlesitekit-traffic-overview__insight-notice-message">
+					<span className="googlesitekit-traffic-overview__insight-notice-icon">
+						<MagnifyingGlassIcon
+							width={ 18 }
+							height={ 18 }
+							aria-hidden="true"
+						/>
+					</span>
+					<P
+						className="googlesitekit-traffic-overview__insight-notice-text"
+						size={ SIZE_MEDIUM }
+					>
+						{ getInsightCopy( insight ) }
+					</P>
+				</div>
+				<FeedbackPrompt
+					voteID={ FRESH_DATA_VOTE_ID_RECENT_ACTIVITY }
+					gaTrackingEventArgs={ {
+						category: `${ viewContext }_recent-activity-survey`,
+					} }
+					hideQuestion
+				/>
+			</div>
+		</div>
+	);
 };
 
 export default InsightNotice;

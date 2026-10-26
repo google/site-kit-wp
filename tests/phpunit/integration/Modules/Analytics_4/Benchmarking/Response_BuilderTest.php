@@ -20,6 +20,7 @@ use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Benchmarking\Response_Builder;
 use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
@@ -31,6 +32,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
  */
 class Response_BuilderTest extends TestCase {
 
+	use Fake_Benchmarking_Reports_Trait;
 	use Saved_Site_Data_Trait;
 
 	/**
@@ -46,16 +48,6 @@ class Response_BuilderTest extends TestCase {
 	 * @var Response_Builder
 	 */
 	private $builder;
-
-	/**
-	 * Rows the fake Analytics API returns, keyed by the first dimension a report
-	 * asks for.
-	 *
-	 * Each row lists its dimension values, then its visitors.
-	 *
-	 * @var array
-	 */
-	private $report_rows = array();
 
 	/**
 	 * Body of each `batchRunReports` request the fake Analytics API received.
@@ -125,21 +117,7 @@ class Response_BuilderTest extends TestCase {
 					);
 				}
 
-				return new FulfilledPromise(
-					new Response(
-						200,
-						array(),
-						wp_json_encode(
-							array(
-								'kind'    => 'analyticsData#batchRunReports',
-								'reports' => array_map(
-									fn( $report_request ) => $this->build_report( $report_request ),
-									$batch_request['requests']
-								),
-							)
-						)
-					)
-				);
+				return new FulfilledPromise( $this->create_analytics_batch_response( $batch_request ) );
 			}
 		);
 
@@ -512,7 +490,7 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for() {
+	public function test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for() {
 		$this->report_rows = array(
 			'date' => array(
 				array( '20250817', 121 ),
@@ -525,20 +503,20 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'     => '2025-08-17',
-					'visitors' => 121,
+					'date'   => '2025-08-17',
+					'visits' => 121,
 				),
 				array(
-					'date'     => '2025-08-18',
-					'visitors' => 0,
+					'date'   => '2025-08-18',
+					'visits' => 0,
 				),
 				array(
-					'date'     => '2025-08-19',
-					'visitors' => 147,
+					'date'   => '2025-08-19',
+					'visits' => 147,
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visitors for `2025-08-18`, and keep `2025-08-19` as the third day.'
+			'`dailyTraffic` should list 0 visits for `2025-08-18`, and keep `2025-08-19` as the third day.'
 		);
 	}
 
@@ -561,7 +539,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
 	}
 
-	public function test_build__sums_the_visitors_of_each_period_from_the_daily_series() {
+	public function test_build__sums_the_visits_of_each_period_from_the_daily_series() {
 		$this->report_rows = array(
 			'date' => array(
 				array( '20250817', 99 ),
@@ -580,8 +558,8 @@ class Response_BuilderTest extends TestCase {
 				'current'  => 30,
 				'previous' => 12,
 			),
-			$response['visitors'],
-			'`visitors` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
+			$response['visits'],
+			'`visits` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
 		);
 	}
 

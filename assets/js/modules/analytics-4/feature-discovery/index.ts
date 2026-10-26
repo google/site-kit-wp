@@ -19,21 +19,163 @@
 /**
  * WordPress dependencies
  */
+import { createElement, createInterpolateElement } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import type { Registry, Select } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	getCurrentFeatureDiscoveryTabPath,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import EnhancedMeasurementSetupEffect from '@/js/modules/analytics-4/components/feature-discovery/EnhancedMeasurementSetupEffect';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamID,
+} from '@/js/modules/analytics-4/utils/validation';
+import {
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
+	type ErrorObject,
+} from '@/js/util/errors';
 import kmwWidgetScreenshotURL from '@/svg/graphics/kmw-widget.svg?path';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
+
+const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
+
+/**
+ * Checks whether enhanced measurement is on for the connected web data stream.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Registry `select` function.
+ * @return {(boolean|undefined)} Whether enhanced measurement is on, or `undefined` while loading.
+ */
+export function isEnhancedMeasurementEnabled(
+	select: Select
+): boolean | undefined {
+	const isAnalyticsConnected = select( CORE_MODULES ).isModuleConnected(
+		MODULE_SLUG_ANALYTICS_4
+	);
+
+	if ( isAnalyticsConnected === undefined ) {
+		return undefined;
+	}
+
+	if ( ! isAnalyticsConnected ) {
+		return false;
+	}
+
+	const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+	if ( propertyID === undefined || webDataStreamID === undefined ) {
+		return undefined;
+	}
+
+	if (
+		! isValidPropertyID( propertyID ) ||
+		! isValidWebDataStreamID( webDataStreamID )
+	) {
+		return false;
+	}
+
+	// The saved setting is used, so the feature only counts as set up once
+	// the change has been saved.
+	return select(
+		MODULES_ANALYTICS_4
+	).isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID );
+}
+
+/**
+ * Turns on enhanced measurement for the connected web data stream.
+ *
+ * Where the edit scope is missing, this sends the user to grant it instead,
+ * and the save resumes once they return to the hub.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Registry instance.
+ * @return {Promise<Object>} Empty object, or an object with an `error` if the setting could not be saved.
+ */
+export async function activateEnhancedMeasurement(
+	registry: Registry
+): Promise< { error?: ErrorObject } > {
+	const { dispatch, resolveSelect, select } = registry;
+
+	await resolveSelect( CORE_USER ).getAuthentication();
+
+	if ( ! select( CORE_USER ).hasScope( EDIT_SCOPE ) ) {
+		// Restores the tab the user set out from once they return to the hub.
+		await setPendingSetup(
+			ENHANCED_MEASUREMENT_FEATURE_SLUG,
+			getCurrentFeatureDiscoveryTabPath()
+		);
+
+		dispatch( CORE_FORMS ).setValues( FORM_SETUP, { autoSubmit: true } );
+
+		dispatch( CORE_USER ).setPermissionScopeError( {
+			code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+			message: __(
+				'Additional permissions are required to enable enhanced measurement for the selected web data stream',
+				'google-site-kit'
+			),
+			data: {
+				status: 403,
+				scopes: [ EDIT_SCOPE ],
+				skipModal: true,
+				redirectURL: global.location.href,
+			},
+		} );
+
+		return {};
+	}
+
+	await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+	const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled( {
+		propertyID,
+		webDataStreamID,
+		enabled: true,
+	} );
+
+	const result = await dispatch(
+		MODULES_ANALYTICS_4
+	).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+	// Without loaded settings there is nothing to save, and the error is the
+	// one from loading them.
+	const error =
+		result?.error ||
+		( ! result &&
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getEnhancedMeasurementSettings',
+				[ propertyID, webDataStreamID ]
+			) );
+
+	return error ? { error } : {};
+}
 
 /**
  * Registers Analytics module features in the Feature Discovery catalog.
@@ -47,6 +189,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'analytics', {
+		name: __( 'Analytics', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __(
 			'Understand how visitors interact with your content',
@@ -88,6 +231,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/supported-services/analytics/',
 				serviceRequirements: __(
 					'A "gathering data" message will be displayed to users with newly created Analytics properties. All Analytics data is subject to processing delays, which typically take 2 to 6 hours to process new traffic information.',
 					'google-site-kit'
@@ -105,11 +250,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable enhanced measurements (optional)',
 						'google-site-kit'
 					),
+					__(
+						'Analytics is set up! You are now capturing useful data for your site.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Analytics is set up! You are now capturing useful data for your site.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -118,8 +263,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -150,6 +295,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 	registerFeature( 'key-metrics', {
+		name: __( 'Key metrics', 'google-site-kit' ),
 		title: __(
 			'Get personalized suggestions for user interaction metrics based on your goals',
 			'google-site-kit'
@@ -205,6 +351,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/key-metrics/',
 				serviceRequirements: __(
 					'There are no service requirements for key metrics',
 					'google-site-kit'
@@ -214,11 +362,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Answer questions about the goal of your site',
 						'google-site-kit'
 					),
+					__(
+						'Your key metrics are set up! You can select which metrics to display and view them on your Site Kit dashboard.',
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					'Your key metrics are set up! You can select which metrics to display and view them on your Site Kit dashboard.',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -249,7 +397,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'enhanced-measurement', {
+	registerFeature( ENHANCED_MEASUREMENT_FEATURE_SLUG, {
+		name: __( 'Enhanced measurement', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
 		shortDescription: __(
@@ -298,6 +447,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/enhanced-measurement/',
 				serviceRequirements: __(
 					'There are no service requirements for enhanced measurement',
 					'google-site-kit'
@@ -307,15 +458,24 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable enhanced measurement for Analytics',
 						'google-site-kit'
 					),
+					createInterpolateElement(
+						__(
+							'View your enhanced measurement data in your <a>Analytics account</a>',
+							'google-site-kit'
+						),
+						{
+							a: createElement( Link, {
+								href: 'https://analytics.google.com/analytics/web/',
+								external: true,
+								hideExternalIndicator: true,
+							} ),
+						}
+					),
 					__(
-						'View your enhanced measurement data in your Analytics account',
+						'You are now tracking enhanced measurement data',
 						'google-site-kit'
 					),
 				],
-				setupComplete: __(
-					'You are now tracking enhanced measurement data',
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -324,8 +484,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -347,10 +507,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 			ctaLabel: __( 'Enable enhanced measurements', 'google-site-kit' ),
+			isEnabled: isEnhancedMeasurementEnabled,
+			activate: activateEnhancedMeasurement,
 		},
+		EffectComponent: EnhancedMeasurementSetupEffect,
 	} );
 
 	registerFeature( 'visitor-groups', {
+		name: __( 'Visitor groups', 'google-site-kit' ),
 		title: __( 'Learn about your visitor groups', 'google-site-kit' ),
 		shortDescription: __(
 			'Segment your visitors into categories that help you understand site behaviour for demographcs of subsets of visitors that you define',
@@ -358,9 +522,18 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		),
 		detail: {
 			description: {
-				whatIs: __(
-					'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics audiences to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
-					'google-site-kit'
+				whatIs: createInterpolateElement(
+					__(
+						'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
+						'google-site-kit'
+					),
+					{
+						a: createElement( Link, {
+							href: 'https://support.google.com/analytics/answer/9267572?hl=en#zippy=%2Cin-this-article',
+							external: true,
+							hideExternalIndicator: true,
+						} ),
+					}
 				),
 				whyUseHeading: __(
 					'Why use visitor groups?',
@@ -408,6 +581,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				],
 			},
 			requirements: {
+				documentationURL:
+					'https://sitekit.withgoogle.com/documentation/using-site-kit/visitor-groups/',
 				serviceRequirements: __(
 					'There are no service requirements for visitor groups',
 					'google-site-kit'
@@ -417,11 +592,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Enable visitor groups here [CTA for setup]',
 						'google-site-kit'
 					),
+					__(
+						"You're all set! Your visitor groups can be found and configured on your Site Kit dashboard.",
+						'google-site-kit'
+					),
 				],
-				setupComplete: __(
-					"You're all set! Your visitor groups can be found and configured on your Site Kit dashboard.",
-					'google-site-kit'
-				),
 			},
 			screenshots: [
 				{
@@ -446,7 +621,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
 		effort: FEATURE_EFFORTS.LOW,
-		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+		goalCategories: [
+			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.ENGAGEMENT,
+			FEATURE_CATEGORIES.TRAFFIC,
+		],
 		prerequisiteModules: [ 'analytics-4' ],
 		addedInVersion: '1.140.0',
 		setup: {

@@ -44,22 +44,9 @@ import {
 } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
-import { Report, ReportRow } from '@/js/modules/analytics-4/datastore/types';
+import { getMetricValue } from '@/js/modules/analytics-4/components/traffic-overview/utils/getMetricValue';
+import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { calculateChange, numFmt } from '@/js/util';
-
-/**
- * Reads a row's first metric value.
- *
- * The API returns metric values as strings.
- *
- * @since 1.188.0
- *
- * @param {Object} row A totals row.
- * @return {number} The row's visitor count, or `0` when it is missing or not a number.
- */
-function getTotalUsers( row?: ReportRow ): number {
-	return Number( row?.metricValues?.[ 0 ]?.value ) || 0;
-}
 
 export interface TotalVisitorsProps {
 	/** The totals report, holding the selected range then the range before it. */
@@ -82,8 +69,8 @@ const TotalVisitors: FC< TotalVisitorsProps > = ( {
 
 	const [ current, previous ] = report?.totals || [];
 
-	const currentValue = getTotalUsers( current );
-	const previousValue = getTotalUsers( previous );
+	const currentValue = getMetricValue( current );
+	const previousValue = getMetricValue( previous );
 
 	// `ChangeBadge` renders nothing when the previous value is zero. Asking
 	// the same question here stops the label being left on its own.

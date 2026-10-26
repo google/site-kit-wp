@@ -104,4 +104,46 @@ describe( 'ExpressSetupLayout', () => {
 			)
 		).toBeInTheDocument();
 	} );
+
+	describe( 'without a sidebar', () => {
+		it.each( [
+			[ 'desktop', BREAKPOINT_DESKTOP ],
+			[ 'mobile', BREAKPOINT_SMALL ],
+		] )(
+			'renders only the content at full width on %s, even when a CTA is specified',
+			( _, breakpoint ) => {
+				( useBreakpoint as jest.Mock ).mockReturnValue( breakpoint );
+				global.location.href =
+					'http://example.com/?cta=newsletter-signup';
+
+				const { container, getByText, queryByText } = render(
+					<ExpressSetupLayout>
+						<div>Step content</div>
+					</ExpressSetupLayout>
+				);
+
+				expect( getByText( 'Step content' ) ).toBeInTheDocument();
+				expect(
+					queryByText( 'Powered by RRM' )
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-express-setup__sidebar'
+					)
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-express-setup__footer'
+					)
+				).not.toBeInTheDocument();
+				expect(
+					container.querySelector(
+						'.googlesitekit-rrm-express-setup__layout'
+					)
+				).toHaveClass(
+					'googlesitekit-rrm-express-setup__layout--full-width'
+				);
+			}
+		);
+	} );
 } );

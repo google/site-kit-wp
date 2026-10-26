@@ -1,0 +1,1 @@
+../../../.agents/skills/write-context-doc/SKILL.md

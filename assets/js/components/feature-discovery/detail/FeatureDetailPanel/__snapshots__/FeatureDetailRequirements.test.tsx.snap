@@ -1,0 +1,272 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`FeatureDetailRequirements should omit empty requirements sections for { requirements: [Object] } 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Setup Effort
+      </h3>
+      <div
+        class="googlesitekit-effort-indicator"
+      >
+        <div
+          aria-hidden="true"
+          class="googlesitekit-effort-indicator__icons"
+        >
+          <svg />
+          <svg />
+          <svg />
+        </div>
+        <span
+          class="googlesitekit-typography googlesitekit-effort-indicator__label googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Just a few clicks
+        </span>
+      </div>
+    </section>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
+      You can always get help in our 
+      <a
+        aria-label="support forum (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://wordpress.org/support/plugin/google-site-kit/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          support forum
+        </span>
+      </a>
+      .
+    </p>
+  </div>
+</div>
+`;
+
+exports[`FeatureDetailRequirements should omit empty requirements sections for {} 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Setup Effort
+      </h3>
+      <div
+        class="googlesitekit-effort-indicator"
+      >
+        <div
+          aria-hidden="true"
+          class="googlesitekit-effort-indicator__icons"
+        >
+          <svg />
+          <svg />
+          <svg />
+        </div>
+        <span
+          class="googlesitekit-typography googlesitekit-effort-indicator__label googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Just a few clicks
+        </span>
+      </div>
+    </section>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
+      You can always get help in our 
+      <a
+        aria-label="support forum (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://wordpress.org/support/plugin/google-site-kit/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          support forum
+        </span>
+      </a>
+      .
+    </p>
+  </div>
+</div>
+`;
+
+exports[`FeatureDetailRequirements should omit empty requirements sections for undefined 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Setup Effort
+      </h3>
+      <div
+        class="googlesitekit-effort-indicator"
+      >
+        <div
+          aria-hidden="true"
+          class="googlesitekit-effort-indicator__icons"
+        >
+          <svg />
+          <svg />
+          <svg />
+        </div>
+        <span
+          class="googlesitekit-typography googlesitekit-effort-indicator__label googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Just a few clicks
+        </span>
+      </div>
+    </section>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
+      You can always get help in our 
+      <a
+        aria-label="support forum (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://wordpress.org/support/plugin/google-site-kit/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          support forum
+        </span>
+      </a>
+      .
+    </p>
+  </div>
+</div>
+`;
+
+exports[`FeatureDetailRequirements should render effort, service requirements, checklist and external help links 1`] = `
+<div>
+  <div
+    class="googlesitekit-feature-details-panel__text"
+  >
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Setup Effort
+      </h3>
+      <div
+        class="googlesitekit-effort-indicator"
+      >
+        <div
+          aria-hidden="true"
+          class="googlesitekit-effort-indicator__icons"
+        >
+          <svg />
+          <svg />
+          <svg />
+        </div>
+        <span
+          class="googlesitekit-typography googlesitekit-effort-indicator__label googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Just a few clicks
+        </span>
+      </div>
+    </section>
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Service requirements
+      </h3>
+      <p
+        class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+      >
+        <strong>
+          A service account
+        </strong>
+      </p>
+    </section>
+    <section
+      class="googlesitekit-feature-details-panel__section"
+    >
+      <h3
+        class="googlesitekit-typography googlesitekit-typography--label googlesitekit-typography--large"
+      >
+        Setup checklist
+      </h3>
+      <ol
+        class="googlesitekit-feature-details-panel__setup-list"
+      >
+        <li
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          Connect your account
+        </li>
+        <li
+          class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+        >
+          <span>
+            Finish setup
+          </span>
+        </li>
+      </ol>
+    </section>
+    <p
+      class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
+    >
+      You can always get help in our 
+      <a
+        aria-label="documentation (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://example.com/docs/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          documentation
+        </span>
+      </a>
+       or 
+      <a
+        aria-label="support forum (opens in a new tab)"
+        class="googlesitekit-cta-link"
+        href="https://wordpress.org/support/plugin/google-site-kit/"
+        rel="noopener noreferrer"
+        target="_blank"
+      >
+        <span
+          class="googlesitekit-cta-link__contents"
+        >
+          support forum
+        </span>
+      </a>
+      .
+    </p>
+  </div>
+</div>
+`;
