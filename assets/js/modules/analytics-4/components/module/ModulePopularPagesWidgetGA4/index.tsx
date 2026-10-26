@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useSelect } from 'googlesitekit-data';
+import { Select, useSelect } from 'googlesitekit-data';
 import WidgetTabBar from '@/js/components/WidgetTabBar';
 import { useFeature } from '@/js/hooks/useFeature';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
@@ -38,6 +38,7 @@ import whenActive from '@/js/util/when-active';
 import { LATEST_CONTENT_TAB_ID, TOP_CONTENT_TAB_ID } from './constants';
 import Footer from './Footer';
 import Header from './Header';
+import { useChangeContentTab } from './hooks/useChangeContentTab';
 import LatestContentHeader from './LatestContentHeader';
 import LatestContentTable from './LatestContentTable';
 import TopContentTable from './TopContentTable';
@@ -66,7 +67,7 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 		[]
 	);
 
-	const { setActiveContentTab } = useDispatch( MODULES_ANALYTICS_4 );
+	const changeContentTab = useChangeContentTab();
 
 	if ( ! freshDataEnabled ) {
 		return (
@@ -103,7 +104,7 @@ const ModulePopularPagesWidgetGA4: FC< ModulePopularPagesWidgetGA4Props > = ( {
 			<WidgetTabBar
 				tabs={ tabs }
 				activeTabID={ activeTabID }
-				onTabChange={ setActiveContentTab }
+				onTabChange={ changeContentTab }
 			/>
 			<div role="tabpanel" aria-labelledby={ activeTabID }>
 				<ActiveTable WidgetReportError={ WidgetReportError } />
