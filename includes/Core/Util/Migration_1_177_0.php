@@ -77,9 +77,10 @@ class Migration_1_177_0 {
 	 * Registers hooks.
 	 *
 	 * @since 1.177.0
+	 * @since n.e.x.t Changed the `admin_init` priority to 0.
 	 */
 	public function register() {
-		add_action( 'admin_init', array( $this, 'migrate' ) );
+		add_action( 'admin_init', array( $this, 'migrate' ), 0 );
 	}
 
 	/**
@@ -91,10 +92,21 @@ class Migration_1_177_0 {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$this->migrate_rrm_content_policy_status();
+			$this->apply_changes();
 
 			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
+	}
+
+	/**
+	 * Converts the legacy Reader Revenue Manager content policy setting.
+	 *
+	 * This neither checks nor updates `googlesitekit_db_version`.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function apply_changes() {
+		$this->migrate_rrm_content_policy_status();
 	}
 
 	/**

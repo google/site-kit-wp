@@ -64,7 +64,11 @@ class Migration_1_150_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ), 'Migration should register admin_init action.' );
+		$this->assertSame(
+			0,
+			has_action( 'admin_init', array( $migration, 'migrate' ) ),
+			'The migration should add `migrate()` to the `admin_init` action at priority 0, so it runs in `Plugin.php` registration order.'
+		);
 	}
 
 	public function test_migrate_audience_settings() {

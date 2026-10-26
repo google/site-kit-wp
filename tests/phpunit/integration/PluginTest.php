@@ -11,9 +11,21 @@
 namespace Google\Site_Kit\Tests;
 
 use Google\Site_Kit\Context;
+use Google\Site_Kit\Core\Authentication\Connected_Proxy_URL;
+use Google\Site_Kit\Core\Authentication\Disconnected_Reason;
+use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
+use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
+use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Util\Feature_Flags;
+use Google\Site_Kit\Core\Util\Migration_1_123_0;
+use Google\Site_Kit\Core\Util\Migration_1_185_0;
+use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
+use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Manager_Settings;
+use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 use Google\Site_Kit\Plugin;
 
 /**
@@ -21,7 +33,9 @@ use Google\Site_Kit\Plugin;
  */
 class PluginTest extends TestCase {
 
+	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
+	use UserAuthenticationTrait;
 
 	/**
 	 * Plugin instance backup.
@@ -119,6 +133,132 @@ class PluginTest extends TestCase {
 
 		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/intent', $routes, 'The plugin should register the `core/intents/data/intent` route.' );
 		$this->assertArrayHasKey( '/google-site-kit/v1/core/intents/data/complete-intent', $routes, 'The plugin should register the `core/intents/data/complete-intent` route.' );
+	}
+
+	// `Migration_N_E_X_T` never runs here until release, because
+	// `version_compare()` sorts `n.e.x.t` below `1.185.0`. Until then this
+	// covers only the migrations running in registration order.
+	public function test_register__runs_every_migration_in_order() {
+		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
+
+		$context = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$options = new Options( $context );
+
+		$user_id = self::factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $user_id );
+		$this->fake_proxy_site_connection();
+		$this->set_user_access_token( $user_id, 'valid-auth-token' );
+
+		// Store old-format data for every migration from 1.123.0 to 1.185.0.
+		$options->set( Migration_1_185_0::DB_VERSION_OPTION, '1.122.0' );
+		$options->set( Connected_Proxy_URL::OPTION, $context->get_canonical_home_url() );
+		$options->set( Modules::OPTION_ACTIVE_MODULES, array( 'analytics' ) );
+		$options->set(
+			Module_Sharing_Settings::OPTION,
+			array(
+				'analytics' => array(
+					'sharedRoles' => array( 'editor' ),
+					'management'  => 'owner',
+				),
+			)
+		);
+		$options->set(
+			Migration_1_123_0::LEGACY_ANALYTICS_OPTION,
+			array(
+				'accountID'        => '12345678',
+				'adsConversionID'  => 'AW-123456789',
+				'trackingDisabled' => array( 'loggedinUsers' ),
+			)
+		);
+		$options->set(
+			Analytics_Settings::OPTION,
+			array(
+				'accountID'                            => '',
+				'propertyID'                           => '987654321',
+				'availableAudiences'                   => array( array( 'name' => 'properties/987654321/audiences/1' ) ),
+				'availableAudiencesLastSyncedAt'       => 1678886400,
+				'audienceSegmentationSetupCompletedBy' => $user_id,
+			)
+		);
+		$options->set(
+			Sign_In_With_Google_Settings::OPTION,
+			array(
+				'oneTapEnabled'    => true,
+				'oneTapOnAllPages' => false,
+			)
+		);
+		$options->set(
+			Reader_Revenue_Manager_Settings::OPTION,
+			array(
+				'contentPolicyStatus' => array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD',
+					'policyInfoLink'     => 'https://example.com/policy-info',
+				),
+			)
+		);
+
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$plugin->register();
+
+		// The migrations are added to `admin_init` in the `init` callback.
+		do_action( 'init' );
+		do_action( 'admin_init' );
+
+		$this->assertSame( '1.185.0', $options->get( Migration_1_185_0::DB_VERSION_OPTION ), 'The database version should be the last migration version.' );
+
+		$this->assertSame( array( 'analytics', 'analytics-4', 'ads' ), $options->get( Modules::OPTION_ACTIVE_MODULES ), 'The 1.123.0 and 1.129.0 migrations should activate Analytics 4 and Ads.' );
+		$this->assertSame(
+			array(
+				'sharedRoles' => array( 'editor' ),
+				'management'  => 'owner',
+			),
+			$options->get( Module_Sharing_Settings::OPTION )['analytics-4'],
+			'The 1.123.0 migration should copy the `analytics` sharing settings to `analytics-4`.'
+		);
+
+		$analytics_settings = $options->get( Analytics_Settings::OPTION );
+		$this->assertSame( '12345678', $analytics_settings['accountID'], 'The 1.123.0 migration should copy the legacy `accountID`.' );
+		$this->assertSame( array( 'loggedinUsers' ), $analytics_settings['trackingDisabled'], 'The 1.123.0 migration should copy the legacy `trackingDisabled`.' );
+		$this->assertTrue( empty( $analytics_settings['adsConversionID'] ), 'The 1.129.0 migration should remove the `adsConversionID` from the Analytics settings.' );
+		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The 1.150.0 migration should remove the audience keys from the Analytics settings.' );
+
+		$this->assertSame( 'AW-123456789', $options->get( Ads_Settings::OPTION )['conversionID'], 'The 1.129.0 migration should move the conversion ID to the Ads settings.' );
+		$this->assertSame( $user_id, $options->get( Audience_Settings::OPTION )['audienceSegmentationSetupCompletedBy'], 'The 1.150.0 migration should move the audience keys to the Audience settings.' );
+
+		$sign_in_with_google_settings = $options->get( Sign_In_With_Google_Settings::OPTION );
+		$this->assertFalse( $sign_in_with_google_settings['oneTapEnabled'], 'The 1.163.0 migration should disable One Tap when it was limited to login pages.' );
+		$this->assertArrayNotHasKey( 'oneTapOnAllPages', $sign_in_with_google_settings, 'The 1.163.0 migration should remove `oneTapOnAllPages`.' );
+
+		$rrm_settings = $options->get( Reader_Revenue_Manager_Settings::OPTION );
+		$this->assertSame( 'CONTENT_POLICY_VIOLATION_GRACE_PERIOD', $rrm_settings['contentPolicyState'], 'The 1.177.0 migration should flatten `contentPolicyStatus`.' );
+		$this->assertArrayNotHasKey( 'contentPolicyStatus', $rrm_settings, 'The 1.177.0 migration should remove `contentPolicyStatus`.' );
+
+		$this->assertTrue(
+			( new Connected_Proxy_URL( $options ) )->matches_url( $context->get_canonical_home_url() ),
+			'The 1.185.0 migration should encode the connected proxy URL.'
+		);
+		$this->assertFalse(
+			( new User_Options( $context, $user_id ) )->get( Disconnected_Reason::OPTION ),
+			'The site should stay connected, since the connected proxy URL is encoded before `Authentication::check_connected_proxy_url()` reads it.'
+		);
+
+		$migrated_options = array(
+			Migration_1_185_0::DB_VERSION_OPTION,
+			Connected_Proxy_URL::OPTION,
+			Modules::OPTION_ACTIVE_MODULES,
+			Module_Sharing_Settings::OPTION,
+			Analytics_Settings::OPTION,
+			Audience_Settings::OPTION,
+			Ads_Settings::OPTION,
+			Sign_In_With_Google_Settings::OPTION,
+			Reader_Revenue_Manager_Settings::OPTION,
+		);
+		$stored_values    = array_map( array( $options, 'get' ), $migrated_options );
+
+		do_action( 'admin_init' );
+
+		$this->assertSame( $stored_values, array_map( array( $options, 'get' ), $migrated_options ), 'A second `admin_init` should change nothing.' );
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {
