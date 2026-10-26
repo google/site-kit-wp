@@ -22,7 +22,7 @@
 import { __ } from '@wordpress/i18n';
 
 /**
- * A day that `GoogleChart` marks with a dotted line, and the tooltip on the
+ * A day that `GoogleChart` marks with a dashed line, and the tooltip on the
  * line's icon.
  *
  * @since n.e.x.t
