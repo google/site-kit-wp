@@ -478,7 +478,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
 		effort: FEATURE_EFFORTS.LOW,
-		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+		goalCategories: [
+			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.ENGAGEMENT,
+			FEATURE_CATEGORIES.TRAFFIC,
+		],
 		prerequisiteModules: [ 'analytics-4' ],
 		addedInVersion: '1.140.0',
 		setup: {
