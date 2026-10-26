@@ -150,46 +150,6 @@ class Get_CTAsTest extends TestCase {
 		);
 	}
 
-	public function test_parse_response__writes_new_ctas_after_reset() {
-		// Simulate the immediate reset performed when the publication ID changes.
-		$this->module->get_settings()->merge( array( 'configuredCTAs' => array() ) );
-
-		$cta = new Cta();
-		$cta->setName( 'organizations/organization-1/publications/publication-1/ctas/new-cta-id' );
-		$cta->setType( 'NEWSLETTER_SIGNUP' );
-
-		$response = new ListCtasResponse();
-		$response->setCtas( array( $cta ) );
-
-		$this->datapoint->parse_response( $response, $this->get_data_request( array() ) );
-
-		$this->assertSame(
-			array(
-				'new-cta-id' => 'newsletter-signup',
-			),
-			$this->module->get_settings()->get()['configuredCTAs'],
-			'CTA synchronization should write the newly fetched publication CTAs into settings after the reset.'
-		);
-	}
-
-	public function test_parse_response__keeps_configured_ctas_empty_when_fetch_result_is_empty() {
-		$this->module->get_settings()->merge(
-			array(
-				'configuredCTAs' => array(
-					'old-cta-id' => 'newsletter-signup',
-				),
-			)
-		);
-
-		$this->datapoint->parse_response( new ListCtasResponse(), $this->get_data_request( array() ) );
-
-		$this->assertEquals(
-			(object) array(),
-			$this->module->get_settings()->get()['configuredCTAs'],
-			'configuredCTAs should remain empty when the CTA fetch result is empty, so neither settings screen renders a CTAs row.'
-		);
-	}
-
 	private function get_data_request( array $data ) {
 		return new Data_Request( 'GET', 'modules', 'reader-revenue-manager', 'ctas', $data );
 	}

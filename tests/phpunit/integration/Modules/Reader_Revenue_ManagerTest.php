@@ -221,7 +221,10 @@ class Reader_Revenue_ManagerTest extends TestCase {
 		}
 	}
 
-	public function test_register__clears_configured_ctas_on_publication_change() {
+	/**
+	 * @dataProvider data_triggers_cta_sync_on_publication_change
+	 */
+	public function test_register__triggers_cta_sync_on_publication_change( $new_publication_id, $new_organization_id, $expected_sync_count ) {
 		$this->enable_feature( 'rrmExpressSetup' );
 
 		// Establish the existing settings before the on_change listener is registered,
@@ -244,43 +247,58 @@ class Reader_Revenue_ManagerTest extends TestCase {
 
 		$this->reader_revenue_manager->get_settings()->merge(
 			array(
-				'publicationID' => 'NEW_PUBLICATION',
+				'publicationID'  => $new_publication_id,
+				'organizationID' => $new_organization_id,
 			)
+		);
+
+		$this->assertSame(
+			$expected_sync_count,
+			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
+			'CTA synchronization should only be triggered when both the publication and organization IDs are set.'
 		);
 
 		$this->assertEquals(
 			(object) array(),
 			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
-			'configuredCTAs should be cleared immediately when the publication ID changes, so the previous publication CTAs are not shown.'
+			'configuredCTAs should be cleared immediately when the publication ID changes, regardless of whether the sync runs.'
 		);
 	}
 
-	public function test_register__triggers_cta_sync_on_publication_change() {
+	public function data_triggers_cta_sync_on_publication_change() {
+		return array(
+			'both publication and organization IDs set' => array( 'NEW_PUBLICATION', 'test-organization-id', 1 ),
+			'organization ID cleared'                   => array( 'NEW_PUBLICATION', '', 0 ),
+			'publication ID cleared'                    => array( '', 'test-organization-id', 0 ),
+		);
+	}
+
+	public function test_register__triggers_cta_sync_on_fresh_setup() {
 		$this->enable_feature( 'rrmExpressSetup' );
 
-		$this->reader_revenue_manager->get_settings()->set(
-			array(
-				'publicationID'  => 'OLD_PUBLICATION',
-				'organizationID' => 'test-organization-id',
-			)
-		);
-
+		// Register before any settings exist, so the first write below goes through
+		// the `add_option_{option}` hook rather than `update_option_{option}`. This is
+		// the path taken when connecting Reader Revenue Manager for the first time,
+		// e.g. after disconnecting and setting up again from "Connect More Services".
 		$this->reader_revenue_manager->register();
 		$this->reader_revenue_manager->get_settings()->register();
+
+		$this->assertFalse( $this->reader_revenue_manager->get_settings()->has(), 'Settings should not exist yet for a fresh setup.' );
 
 		// Prevent the real CTA synchronization callback from running (and making an HTTP request).
 		remove_all_actions( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
 
 		$this->reader_revenue_manager->get_settings()->merge(
 			array(
-				'publicationID' => 'NEW_PUBLICATION',
+				'publicationID'  => 'NEW_PUBLICATION',
+				'organizationID' => 'test-organization-id',
 			)
 		);
 
 		$this->assertSame(
 			1,
 			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
-			'CTA synchronization should be triggered immediately when the publication ID changes and both the publication and organization IDs are set.'
+			'CTA synchronization should be triggered immediately when connecting to a publication for the first time.'
 		);
 	}
 
@@ -291,6 +309,9 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			array(
 				'publicationID'  => 'SAME_PUBLICATION',
 				'organizationID' => 'test-organization-id',
+				'configuredCTAs' => array(
+					'existing-cta-id' => 'newsletter-signup',
+				),
 			)
 		);
 
@@ -310,6 +331,14 @@ class Reader_Revenue_ManagerTest extends TestCase {
 			0,
 			did_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS ),
 			'CTA synchronization should not be triggered when the publication ID is unchanged.'
+		);
+
+		$this->assertSame(
+			array(
+				'existing-cta-id' => 'newsletter-signup',
+			),
+			$this->reader_revenue_manager->get_settings()->get()['configuredCTAs'],
+			'configuredCTAs should be unchanged when confirming settings without changing the publication.'
 		);
 	}
 
