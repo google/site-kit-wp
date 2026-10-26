@@ -47,8 +47,12 @@
 				content: counters(list-item, ".", decimal) ". ";
 			}
 
-			&.alpha-list > li::marker {
-				content: "(" counter(list-item, lower-alpha) ") ";
+			&.alpha-list  {
+				list-style-type: lower-alpha;
+
+				> li::marker {
+					content: "(" counter(list-item, lower-alpha) ") ";
+				}
 			}
 		}
 	}
