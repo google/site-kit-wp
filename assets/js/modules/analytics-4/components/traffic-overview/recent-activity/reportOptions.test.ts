@@ -23,6 +23,7 @@ import {
 	INSIGHT_REPORT_ID,
 	getInsightReportArgs,
 	getSearchPerformanceReportOptions,
+	getSiteVisitorsReportOptions,
 	getTimeZoneReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
@@ -44,6 +45,23 @@ describe( 'getInsightReportArgs', () => {
 			dimensions: [ 'date' ],
 			orderby: [ { dimension: { dimensionName: 'date' } } ],
 			reportID: INSIGHT_REPORT_ID,
+		} );
+	} );
+} );
+
+describe( 'getSiteVisitorsReportOptions', () => {
+	it( 'should request the total users of the whole date range, with no dimension', () => {
+		expect(
+			getSiteVisitorsReportOptions( {
+				startDate: '2025-02-03',
+				endDate: '2025-02-05',
+			} )
+		).toEqual( {
+			startDate: '2025-02-03',
+			endDate: '2025-02-05',
+			metrics: [ { name: 'totalUsers' } ],
+			reportID:
+				'analytics-4_traffic-overview_recent-activity_siteVisitorsArgs',
 		} );
 	} );
 } );

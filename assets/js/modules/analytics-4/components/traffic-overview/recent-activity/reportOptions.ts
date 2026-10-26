@@ -89,6 +89,32 @@ export function getInsightReportArgs(
 }
 
 /**
+ * Builds the options of the report of the site's visitors over the date range
+ * of the Recent activity tab.
+ *
+ * The tab reads its total to tell whether Analytics has data for that range.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} dateRange           The date range of the Recent activity tab.
+ * @param {string} dateRange.startDate The first day of the date range.
+ * @param {string} dateRange.endDate   The last day of the date range.
+ * @return {Object} The report options.
+ */
+export function getSiteVisitorsReportOptions( {
+	startDate,
+	endDate,
+}: FreshDataDateRange ): ReportOptions {
+	return {
+		startDate,
+		endDate,
+		metrics: TOTAL_USERS_METRIC,
+		reportID:
+			'analytics-4_traffic-overview_recent-activity_siteVisitorsArgs',
+	};
+}
+
+/**
  * Builds the options of the report that gives the time zone of the Analytics
  * property, in its `metadata`.
  *
