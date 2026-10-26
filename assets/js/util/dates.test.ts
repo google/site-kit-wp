@@ -115,63 +115,76 @@ describe( 'getPreviousDate', () => {
 
 	describe.each( [
 		[
-			'New York spring forward',
+			'New York spring forward, 1 day',
 			'America/New_York',
 			'2026-03-09',
-			[
-				[ 1, '2026-03-08' ],
-				[ 28, '2026-02-09' ],
-			],
+			1,
+			'2026-03-08',
 			240,
 			300,
 		],
 		[
-			'Sydney spring forward',
+			'New York spring forward, 28 days',
+			'America/New_York',
+			'2026-03-09',
+			28,
+			'2026-02-09',
+			240,
+			300,
+		],
+		[
+			'Sydney spring forward, 1 day',
 			'Australia/Sydney',
 			'2026-10-05',
-			[
-				[ 1, '2026-10-04' ],
-				[ 28, '2026-09-07' ],
-			],
+			1,
+			'2026-10-04',
 			-660,
 			-600,
 		],
 		[
-			'New York fall back',
+			'Sydney spring forward, 28 days',
+			'Australia/Sydney',
+			'2026-10-05',
+			28,
+			'2026-09-07',
+			-660,
+			-600,
+		],
+		[
+			'New York fall back, 1 day',
 			'America/New_York',
 			'2026-11-02',
-			[
-				[ 1, '2026-11-01' ],
-				[ 28, '2026-10-05' ],
-			],
+			1,
+			'2026-11-01',
 			300,
 			240,
 		],
 		[
-			'UTC',
-			'UTC',
-			'2026-03-09',
-			[
-				[ 1, '2026-03-08' ],
-				[ 28, '2026-02-09' ],
-			],
-			0,
-			0,
+			'New York fall back, 28 days',
+			'America/New_York',
+			'2026-11-02',
+			28,
+			'2026-10-05',
+			300,
+			240,
 		],
+		[ 'UTC, 1 day', 'UTC', '2026-03-09', 1, '2026-03-08', 0, 0 ],
+		[ 'UTC, 28 days', 'UTC', '2026-03-09', 28, '2026-02-09', 0, 0 ],
 	] )(
 		'%s',
 		(
 			_label,
 			timezone,
 			relativeDate,
-			cases,
+			daysBefore,
+			expected,
 			relativeDateOffset,
 			previousDateOffset
 		) => {
 			let originalTimezone: string | undefined;
 
 			beforeEach( () => {
-				originalTimezone = provideTimezone( timezone as string );
+				originalTimezone = provideTimezone( timezone );
 			} );
 
 			afterEach( () => {
@@ -179,21 +192,17 @@ describe( 'getPreviousDate', () => {
 			} );
 
 			it( 'should count calendar days', () => {
-				// Ensure this case actually crosses the expected DST transition.
+				// Check both offsets, so each row tests the case its label indicates.
 				expect(
 					stringToDate( relativeDate as string ).getTimezoneOffset()
 				).toBe( relativeDateOffset );
 
-				( cases as [ number, string ][] ).forEach(
-					( [ daysBefore, expected ] ) => {
-						expect(
-							stringToDate( expected ).getTimezoneOffset()
-						).toBe( previousDateOffset );
+				expect( stringToDate( expected ).getTimezoneOffset() ).toBe(
+					previousDateOffset
+				);
 
-						expect(
-							getPreviousDate( relativeDate, daysBefore )
-						).toBe( expected );
-					}
+				expect( getPreviousDate( relativeDate, daysBefore ) ).toBe(
+					expected
 				);
 			} );
 		}
