@@ -771,6 +771,136 @@ class Google_ProxyTest extends TestCase {
 		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Survey event should return expected response data.' );
 	}
 
+	public function test_send_feedback() {
+		list ( $credentials, $site_id, $site_secret ) = $this->get_credentials();
+
+		$expected_url              = $this->google_proxy->url( Google_Proxy::FEEDBACK_URI );
+		$expected_success_response = array( 'success' => true );
+
+		$this->mock_http_request( $expected_url, $expected_success_response );
+
+		$access_token = 'abcd';
+		$feedback     = array(
+			'namespace' => 'feature_hub',
+			'group'     => 'feature_relevancy_analytics-4',
+			'key'       => 'vote',
+			'value'     => 'up',
+		);
+
+		$response = $this->google_proxy->send_feedback( $credentials, $access_token, $feedback );
+
+		$this->assertEquals( $expected_url, $this->request_url, 'Feedback request URL should match expected.' );
+		$this->assertEquals( 'POST', $this->request_args['method'], 'Feedback request method should be POST.' );
+
+		$this->assertArrayHasKey( 'Authorization', $this->request_args['headers'], 'Feedback request should have Authorization header.' );
+		$this->assertEquals( "Bearer $access_token", $this->request_args['headers']['Authorization'], 'Feedback Authorization header should match access token.' );
+
+		$this->assertEqualSetsWithIndex(
+			array(
+				'site_id'        => $site_id,
+				'site_secret'    => $site_secret,
+				'namespace'      => 'feature_hub',
+				'group'          => 'feature_relevancy_analytics-4',
+				'key'            => 'vote',
+				'value'          => 'up',
+				'language'       => 'en_US',
+				'plugin_version' => GOOGLESITEKIT_VERSION,
+			),
+			json_decode( $this->request_args['body'], true ),
+			'Feedback request body should contain site credentials, feedback fields, language, and plugin version.'
+		);
+
+		$this->assertEqualSetsWithIndex( $expected_success_response, $response, 'Feedback should return expected response data.' );
+	}
+
+	public function test_send_feedback__without_credentials() {
+		$requested = false;
+
+		add_filter(
+			'pre_http_request',
+			function ( $preempt ) use ( &$requested ) {
+				$requested = true;
+
+				return $preempt;
+			}
+		);
+
+		$credentials = new Credentials( new Options( $this->context ) );
+		$response    = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'Feedback without site credentials should return an error.' );
+		$this->assertEquals( 'oauth_credentials_not_exist', $response->get_error_code(), 'The error should name the missing credentials.' );
+		$this->assertFalse( $requested, 'Feedback without site credentials should not reach the Service.' );
+	}
+
+	public function test_send_feedback__with_a_failing_request() {
+		list ( $credentials ) = $this->get_credentials();
+
+		$this->mock_http_failure(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			new WP_Error( 'http_request_failed', 'Service unreachable.' )
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'A failed feedback request should come back as an error.' );
+		$this->assertEquals( 'http_request_failed', $response->get_error_code(), 'The error from the request should be passed through.' );
+	}
+
+	/**
+	 * @dataProvider data_errors
+	 */
+	public function test_send_feedback__returns_error_for_invalid_response( $params ) {
+		list ( $credentials ) = $this->get_credentials();
+
+		$error_code             = $params['error_code'];
+		$error_message          = $params['error_message'];
+		$expected_error_code    = $params['expected_error_code'];
+		$expected_error_message = $params['expected_error_message'];
+
+		$this->mock_http_request(
+			$this->google_proxy->url( Google_Proxy::FEEDBACK_URI ),
+			array(
+				'error_code' => $error_code,
+				'error'      => $error_message,
+			),
+			403
+		);
+
+		$response = $this->google_proxy->send_feedback(
+			$credentials,
+			'abcd',
+			array(
+				'namespace' => 'feature_hub',
+				'group'     => 'feature_relevancy_analytics-4',
+				'key'       => 'vote',
+				'value'     => 'up',
+			)
+		);
+
+		$this->assertWPError( $response, 'An invalid feedback response should return a WP error.' );
+		$this->assertEquals( $expected_error_code, $response->get_error_code(), 'Error response should contain error code.' );
+		$this->assertEquals( $expected_error_message, $response->get_error_message(), 'Error response should contain error message.' );
+	}
+
 	/**
 	 * @dataProvider data_errors
 	 */
