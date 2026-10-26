@@ -20,24 +20,35 @@
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+import { getQueryArg, getQueryArgs } from '@wordpress/url';
 
 /**
  * Internal dependencies
  */
+import { get } from 'googlesitekit-api';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
+	provideUserAuthentication,
+	provideUserCapabilities,
 	setEnabledFeatures,
 	untilResolved,
 	waitFor,
 } from '@tests/js/test-utils';
+import { plainPermalinkTopPosts } from './__fixtures__';
 import {
 	FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS,
 	MODULES_ANALYTICS_4,
 } from './constants';
+import { provideIncludeProductsState } from './test-utils';
+
+// Spy on `get()`, because `cacheTTL` never reaches the network request.
+jest.mock( 'googlesitekit-api', () =>
+	jest.requireActual( '@tests/js/mock-api-utils' ).mockAPIModuleWithGetSpy()
+);
 
 const analytics4SettingsEndpoint = new RegExp(
 	'^/google-site-kit/v1/modules/analytics-4/data/settings'
@@ -45,6 +56,10 @@ const analytics4SettingsEndpoint = new RegExp(
 const postsEndpoint = new RegExp( '^/wp/v2/posts' );
 /** The `/wp/v2/product` route up to its `?`, so that `/wp/v2/products` doesn't match. */
 const productsEndpoint = new RegExp( '^/wp/v2/product\\?' );
+/** The route of the `plain-permalink-top-posts` datapoint, with any query string after it. */
+const plainPermalinkTopPostsEndpoint = new RegExp(
+	'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
+);
 
 describe( 'modules/analytics-4 fresh data', () => {
 	let registry: WPDataRegistry;
@@ -53,35 +68,15 @@ describe( 'modules/analytics-4 fresh data', () => {
 		registry = createTestRegistry();
 	} );
 
+	afterEach( () => {
+		jest.mocked( get ).mockClear();
+	} );
+
 	describe( 'shouldIncludeWooCommerceProducts', () => {
-		function receiveState( {
-			analyticsConnected = true,
-			wooCommerceActive = true,
-			setting = true,
-		}: {
-			analyticsConnected?: boolean;
-			wooCommerceActive?: boolean;
-			setting?: boolean;
-		} = {} ) {
-			provideModules( registry, [
-				{
-					slug: MODULE_SLUG_ANALYTICS_4,
-					active: true,
-					connected: analyticsConnected,
-				},
-			] );
-
-			provideSiteInfo( registry, { wooCommerceActive } );
-
-			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
-				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: setting,
-			} );
-		}
-
 		it( 'should return true when the flag is enabled, Analytics is connected, WooCommerce is active, and the setting is on', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState();
+			provideIncludeProductsState( registry );
 
 			expect(
 				registry
@@ -91,7 +86,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		} );
 
 		it( 'should return false when the freshData flag is disabled', () => {
-			receiveState();
+			provideIncludeProductsState( registry );
 
 			expect(
 				registry
@@ -103,7 +98,9 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when Analytics is not connected', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { analyticsConnected: false } );
+			provideIncludeProductsState( registry, {
+				analyticsConnected: false,
+			} );
 
 			expect(
 				registry
@@ -115,7 +112,9 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when WooCommerce is installed but not active', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { wooCommerceActive: false } );
+			provideIncludeProductsState( registry, {
+				wooCommerceActive: false,
+			} );
 
 			expect(
 				registry
@@ -127,7 +126,7 @@ describe( 'modules/analytics-4 fresh data', () => {
 		it( 'should return false when the setting is off', () => {
 			setEnabledFeatures( [ 'freshData' ] );
 
-			receiveState( { setting: false } );
+			provideIncludeProductsState( registry, { setting: false } );
 
 			expect(
 				registry
@@ -183,6 +182,235 @@ describe( 'modules/analytics-4 fresh data', () => {
 			).toBeUndefined();
 
 			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+		} );
+	} );
+
+	describe( 'getExcludedProducts', () => {
+		it( 'should return the path that every product URL starts with when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'pathPrefix', pathPrefix: '/product/' } );
+		} );
+
+		it( 'should return the product post type for the `googlesitekit_post_type` custom dimension when product URLs share no path and the Analytics property has the dimension', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_type' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toEqual( { by: 'postTypeDimension', postType: 'product' } );
+		} );
+
+		it( "should return null when product URLs share no path and the Analytics property doesn't have the `googlesitekit_post_type` custom dimension", () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: [ 'googlesitekit_post_author' ],
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( "should return null when product URLs share no path and the user can't sync the unknown custom dimensions of the Analytics property", async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			// A user who hasn't signed in with Google, such as a view-only user,
+			// can't sync the custom dimensions.
+			provideUserAuthentication( registry, { authenticated: false } );
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getAvailableCustomDimensions();
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the custom dimensions of the Analytics property sync', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPathPrefix: null,
+				availableCustomDimensions: null,
+			} );
+			freezeFetch(
+				new RegExp(
+					'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+				)
+			);
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/sync-custom-dimensions'
+					)
+				)
+			);
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+		} );
+
+		it( 'should return null when the setting to include products is on', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: true,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return null when WooCommerce is not active, even when the setting to include products is off and product URLs share a path', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				wooCommerceActive: false,
+				setting: false,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return null when the site has no product post type, even when the setting to include products is off', () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			provideIncludeProductsState( registry, {
+				setting: false,
+				productPostType: null,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the setting to include products loads', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			fetchMock.getOnce( analytics4SettingsEndpoint, {
+				body: { [ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false },
+				status: 200,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+		} );
+
+		it( 'should return null when the Analytics settings request fails', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			fetchMock.getOnce( analytics4SettingsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: true,
+					connected: true,
+				},
+			] );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeNull();
+		} );
+
+		it( 'should return undefined while the module list loads, after the setting to include products has loaded', async () => {
+			setEnabledFeatures( [ 'freshData' ] );
+
+			freezeFetch(
+				new RegExp( '^/google-site-kit/v1/core/modules/data/list' )
+			);
+
+			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+				[ FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ]: false,
+			} );
+
+			provideSiteInfo( registry, {
+				wooCommerceActive: true,
+				productPathPrefix: '/product/',
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts();
+
+			await untilResolved( registry, MODULES_ANALYTICS_4 ).getSettings();
+
+			expect(
+				registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
+			).toBeUndefined();
 		} );
 	} );
 
@@ -1071,6 +1299,423 @@ describe( 'modules/analytics-4 fresh data', () => {
 					] )
 			).toEqual( new Error( 'count must be a positive integer.' ) );
 			expect( fetchMock ).toHaveFetchedTimes( 0 );
+		} );
+	} );
+
+	describe( 'getPlainPermalinkTopPosts', () => {
+		it( 'should return the posts with the most views and the total of the report for the dates and the limit of the options', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			expect(
+				getQueryArgs(
+					fetchMock.lastCall(
+						plainPermalinkTopPostsEndpoint
+					)?.[ 0 ] ?? ''
+				)
+			).toMatchObject( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: '3',
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( plainPermalinkTopPosts );
+		} );
+
+		it( 'should return `undefined` while the posts load', async () => {
+			freezeFetch( plainPermalinkTopPostsEndpoint );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await waitFor( () =>
+				expect( fetchMock ).toHaveFetched(
+					plainPermalinkTopPostsEndpoint
+				)
+			);
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toBeUndefined();
+		} );
+
+		it( 'should request the posts with the fetch options, such as a cache of five minutes', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( get ).toHaveBeenCalledTimes( 1 );
+			expect( get ).toHaveBeenCalledWith(
+				'modules',
+				'analytics-4',
+				'plain-permalink-top-posts',
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+		} );
+
+		it( 'should keep the posts of each set of options apart', async () => {
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'limit' ) === '2',
+				{
+					body: {
+						rows: plainPermalinkTopPosts.rows.slice( 0, 2 ),
+						total: 100,
+					},
+					status: 200,
+				}
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-20',
+				{ body: { ...plainPermalinkTopPosts, total: 150 }, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'endDate' ) === '2026-10-23',
+				{ body: { ...plainPermalinkTopPosts, total: 120 }, status: 200 }
+			);
+			fetchMock.getOnce(
+				( url ) =>
+					plainPermalinkTopPostsEndpoint.test( url ) &&
+					getQueryArg( url, 'startDate' ) === '2026-10-21' &&
+					getQueryArg( url, 'endDate' ) === '2026-10-22' &&
+					getQueryArg( url, 'limit' ) === '3',
+				{ body: plainPermalinkTopPosts, status: 200 }
+			);
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 2,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-20',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-23',
+				limit: 3,
+			} );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 2,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-20',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-23',
+				limit: 3,
+			} );
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts( {
+				startDate: '2026-10-21',
+				endDate: '2026-10-22',
+				limit: 3,
+			} );
+
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 2,
+					} )
+			).toEqual( {
+				rows: plainPermalinkTopPosts.rows.slice( 0, 2 ),
+				total: 100,
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-20',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( { ...plainPermalinkTopPosts, total: 150 } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-23',
+						limit: 3,
+					} )
+			).toEqual( { ...plainPermalinkTopPosts, total: 120 } );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts( {
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					} )
+			).toEqual( plainPermalinkTopPosts );
+		} );
+
+		it( 'should return `undefined` and store the error for `getErrorForSelector()` under the options when the request fails', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( console ).toHaveErrored();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts(
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+						{ cacheTTL: 300 }
+					)
+			).toBeUndefined();
+		} );
+
+		it( 'should request the posts again, and remove the error from `getErrorForSelector()`, when the resolution is invalidated after a failed request', async () => {
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				},
+				status: 500,
+			} );
+			fetchMock.getOnce( plainPermalinkTopPostsEndpoint, {
+				body: plainPermalinkTopPosts,
+				status: 200,
+			} );
+
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( console ).toHaveErrored();
+
+			// Without the saved error here, the check of the error after the
+			// retry would prove nothing.
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toEqual( {
+				code: 'internal_server_error',
+				message: 'Internal server error',
+				data: { status: 500 },
+			} );
+
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.invalidateResolution( 'getPlainPermalinkTopPosts', [
+					{
+						startDate: '2026-10-21',
+						endDate: '2026-10-22',
+						limit: 3,
+					},
+					{ cacheTTL: 300 },
+				] );
+			registry.select( MODULES_ANALYTICS_4 ).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			await untilResolved(
+				registry,
+				MODULES_ANALYTICS_4
+			).getPlainPermalinkTopPosts(
+				{
+					startDate: '2026-10-21',
+					endDate: '2026-10-22',
+					limit: 3,
+				},
+				{ cacheTTL: 300 }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes(
+				2,
+				plainPermalinkTopPostsEndpoint
+			);
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getErrorForSelector( 'getPlainPermalinkTopPosts', [
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+					] )
+			).toBeUndefined();
+			expect(
+				registry
+					.select( MODULES_ANALYTICS_4 )
+					.getPlainPermalinkTopPosts(
+						{
+							startDate: '2026-10-21',
+							endDate: '2026-10-22',
+							limit: 3,
+						},
+						{ cacheTTL: 300 }
+					)
+			).toEqual( plainPermalinkTopPosts );
 		} );
 	} );
 } );

@@ -45,6 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'sign-in-with-google', {
+		name: __( 'Sign in with Google', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_SIGN_IN_WITH_GOOGLE,
 		title: __(
 			'Boost onboarding, security, and trust on your site using Sign in with Google',
@@ -115,8 +116,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Custom page showing Sign in with Google integration',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},

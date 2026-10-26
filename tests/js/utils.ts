@@ -17,6 +17,8 @@
 /**
  * External dependencies
  */
+import { attachClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge';
+import { ElementEventBasePayload } from '@atlaskit/pragmatic-drag-and-drop/adapter/element-adapter';
 import fetchMock from 'fetch-mock';
 import { debounce, keyBy, mapValues } from 'lodash';
 
@@ -201,6 +203,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
+ * @since n.e.x.t Sets `usingPlainPermalinks` to `false` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -243,6 +246,8 @@ export function provideSiteInfo(
 			},
 		],
 		productPostType: 'product',
+		productPathPrefix: null,
+		usingPlainPermalinks: false,
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,
@@ -949,4 +954,65 @@ export function unexpectedSuccess() {
 			'Some code (likely a Promise) succeeded unexpectedly; check your test.'
 		)
 	);
+}
+
+export const dragInput = {
+	altKey: false,
+	button: 0,
+	buttons: 1,
+	ctrlKey: false,
+	metaKey: false,
+	shiftKey: false,
+	clientX: 0,
+	clientY: 0,
+	pageX: 0,
+	pageY: 0,
+};
+
+/**
+ * Creates a library event with real closest-edge metadata.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} sourceData Source item data.
+ * @param {Object} targetData Target item data, or null for a canceled drag.
+ * @param {string} edge       Closest target edge.
+ * @return {Object} Drag event payload.
+ */
+export function createDragEvent(
+	sourceData: Record< string, unknown >,
+	targetData: Record< string, unknown > | null = null,
+	edge: 'top' | 'bottom' = 'bottom'
+): ElementEventBasePayload {
+	const element = document.createElement( 'li' );
+
+	const dropTargets = targetData
+		? [
+				{
+					element,
+					data: attachClosestEdge( targetData, {
+						element,
+						input: dragInput,
+						allowedEdges: [ edge ],
+					} ),
+					dropEffect: 'move' as const,
+					isActiveDueToStickiness: false,
+				},
+		  ]
+		: [];
+
+	const location = { input: dragInput, dropTargets };
+
+	return {
+		source: {
+			element,
+			dragHandle: document.createElement( 'button' ),
+			data: sourceData,
+		},
+		location: {
+			initial: { input: dragInput, dropTargets: [] },
+			current: location,
+			previous: { dropTargets: [] },
+		},
+	};
 }

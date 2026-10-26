@@ -1,0 +1,79 @@
+/**
+ * Draggable list styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-draggable-list {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.googlesitekit-draggable-list__item {
+		align-items: center;
+		border-block: 2px solid transparent;
+		display: flex;
+		gap: 4px 14px;
+		margin: 0;
+		min-width: 0;
+		position: relative;
+	}
+
+	.googlesitekit-draggable-list__item--dragging {
+		opacity: 0.25;
+	}
+
+	.googlesitekit-draggable-list__item--inserting-before {
+		border-block-start-color: currentcolor;
+	}
+
+	.googlesitekit-draggable-list__item--inserting-after {
+		border-block-end-color: currentcolor;
+	}
+
+	.googlesitekit-draggable-list__handle {
+		background: none;
+		border: 0;
+		border-radius: $br-xxs;
+		color: inherit;
+		cursor: grab;
+		flex-shrink: 0;
+		padding: 0;
+
+		&:active {
+			cursor: grabbing;
+			outline: none;
+		}
+
+		svg {
+			display: block;
+			fill: currentcolor;
+		}
+	}
+
+	.googlesitekit-draggable-list__item:has(> .mdc-text-field + .mdc-text-field-helper-line) {
+		display: grid;
+		grid-auto-rows: max-content;
+		grid-template-columns: max-content auto;
+		padding-block: 4px;
+
+		.mdc-text-field-helper-line {
+			grid-column: 2;
+		}
+	}
+}

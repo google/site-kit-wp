@@ -21,9 +21,83 @@
  */
 import { FC } from 'react';
 
-const RecentTrafficBreakdown: FC = () => {
+/**
+ * WordPress dependencies
+ */
+import { useInstanceId } from '@wordpress/compose';
+import { __ } from '@wordpress/i18n';
+
+/**
+ * Internal dependencies
+ */
+import { Select, useSelect } from 'googlesitekit-data';
+import Typography from '@/js/components/Typography';
+import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
+import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
+import PlainPermalinkTopPostsColumn from './PlainPermalinkTopPostsColumn';
+import TopChannelsColumn from './TopChannelsColumn';
+import TopPostsColumn from './TopPostsColumn';
+import TopReferralsColumn from './TopReferralsColumn';
+
+export interface RecentTrafficBreakdownProps {
+	/** Whether the site has no published posts, which leaves out the "Top posts by visitors" column. */
+	hasNoPublishedPosts?: boolean;
+}
+
+const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
+	hasNoPublishedPosts = false,
+} ) => {
+	// `useInstanceId` is typed as `string | number`, and `aria-labelledby`
+	// takes a string.
+	const instanceID = useInstanceId(
+		RecentTrafficBreakdown,
+		'googlesitekit-traffic-overview__recent-traffic-breakdown-heading'
+	);
+	const headingID = `${ instanceID }`;
+
+	const isUsingPlainPermalinks = useSelect(
+		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
+		[]
+	);
+
+	// `isUsingPlainPermalinks()` is `undefined` until the site info loads.
+	// Until then, a loading tile renders in place of either posts column, so
+	// neither sends a request for the wrong kind of site.
+	let postsColumn = (
+		<TableTile
+			title={ __( 'Top posts by visitors', 'google-site-kit' ) }
+			titleAs="h4"
+			loading
+		/>
+	);
+
+	if ( isUsingPlainPermalinks === true ) {
+		postsColumn = <PlainPermalinkTopPostsColumn />;
+	} else if ( isUsingPlainPermalinks === false ) {
+		postsColumn = <TopPostsColumn />;
+	}
+
 	return (
-		<div className="googlesitekit-traffic-overview__recent-traffic-breakdown" />
+		<section
+			className="googlesitekit-traffic-overview__recent-traffic-breakdown"
+			aria-labelledby={ headingID }
+		>
+			<Typography
+				as="h3"
+				type={ TYPE_TITLE }
+				size={ SIZE_MEDIUM }
+				id={ headingID }
+				className="googlesitekit-traffic-overview__recent-traffic-breakdown-heading"
+			>
+				{ __( 'What’s affecting recent traffic?', 'google-site-kit' ) }
+			</Typography>
+			<div className="googlesitekit-traffic-overview__recent-traffic-breakdown-columns">
+				{ ! hasNoPublishedPosts && postsColumn }
+				<TopChannelsColumn />
+				<TopReferralsColumn />
+			</div>
+		</section>
 	);
 };
 

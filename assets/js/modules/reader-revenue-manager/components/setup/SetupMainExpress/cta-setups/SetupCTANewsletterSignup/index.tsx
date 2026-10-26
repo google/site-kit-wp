@@ -37,20 +37,25 @@ import {
 	setupCompleteStep,
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import ExpressSetupFallback from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupFallback';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
 import {
 	useExpressSetupScopes,
 	useExpressSetupStepEventLabel,
 	useExpressSetupTrackEvent,
+	useRecordExpressSetupProgress,
 	useSetupFlow,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/hooks';
 import ObservedStep from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ObservedStep';
 import { SetupStep } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	EXPRESS_SETUP_STEPS,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
-import ViewOnSiteCTA from './ViewOnSiteCTA';
+import ViewOnSiteCTANewsletterSignup from './ViewOnSiteCTANewsletterSignup';
 
 const STEPS: SetupStep[] = [
 	publicationSetupStep,
@@ -61,9 +66,14 @@ const STEPS: SetupStep[] = [
 ];
 
 const SetupCTANewsletterSignup: FC = () => {
-	useExpressSetupScopes();
+	const hasRequiredScopes = useExpressSetupScopes();
 
 	const { currentStep, advance } = useSetupFlow( STEPS );
+
+	useRecordExpressSetupProgress(
+		EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+		currentStep?.slug
+	);
 
 	const trackEvent = useExpressSetupTrackEvent();
 	const stepEventLabel = useExpressSetupStepEventLabel( currentStep?.slug );
@@ -136,34 +146,41 @@ const SetupCTANewsletterSignup: FC = () => {
 				'Your newsletter signup form is ready!',
 				'google-site-kit'
 			),
-			secondaryCTA: <ViewOnSiteCTA />,
+			secondaryCTA: <ViewOnSiteCTANewsletterSignup />,
 			children: <StepSetupCompleteNewsletterSignup />,
 		},
 	};
 
-	const StepComponent = currentStep?.Component;
+	if ( hasRequiredScopes !== true || ! currentStep ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ hasRequiredScopes === true }
+				errorTitle={ __(
+					'We couldn’t set up your sign-up form',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	const StepComponent = currentStep.Component;
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
 					steps={ STEPS }
-					activeSlug={ currentStep?.slug }
+					activeSlug={ currentStep.slug }
 				/>
 			}
 		>
-			{ StepComponent ? (
-				// Keyed by step, so each step is observed from when it renders.
-				<ObservedStep
-					key={ currentStep.slug }
-					onInView={ onStepInView }
-				>
-					<StepComponent
-						{ ...stepProps[ currentStep.slug ] }
-						onComplete={ onStepComplete }
-					/>
-				</ObservedStep>
-			) : null }
+			{ /* Keyed by step, so each step is observed from when it renders. */ }
+			<ObservedStep key={ currentStep.slug } onInView={ onStepInView }>
+				<StepComponent
+					{ ...stepProps[ currentStep.slug ] }
+					onComplete={ onStepComplete }
+				/>
+			</ObservedStep>
 		</ExpressSetupLayout>
 	);
 };

@@ -46,6 +46,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'ads', {
+		name: __( 'Ads', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ADS,
 		title: __( 'Increase your visibility in Search', 'google-site-kit' ),
 		shortDescription: __(
@@ -117,8 +118,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Ads settings page showing various configuration options',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
