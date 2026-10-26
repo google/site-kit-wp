@@ -20,6 +20,7 @@ use Google\Site_Kit\Core\Storage\User_Options;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Tracking\Feature_Metrics_Trait;
 use Google\Site_Kit\Core\Tracking\Provides_Feature_Metrics;
+use Google\Site_Kit\Core\Util\Active_Modules_Option_Trait;
 use Google\Site_Kit\Core\Util\Method_Proxy_Trait;
 use Google\Site_Kit\Modules\Ads;
 use Google\Site_Kit\Modules\AdSense;
@@ -43,6 +44,7 @@ final class Modules implements Provides_Feature_Metrics {
 
 	use Method_Proxy_Trait;
 	use Feature_Metrics_Trait;
+	use Active_Modules_Option_Trait;
 
 	const OPTION_ACTIVE_MODULES = 'googlesitekit_active_modules';
 
@@ -852,28 +854,6 @@ final class Modules implements Provides_Feature_Metrics {
 		}
 
 		return $registry;
-	}
-
-	/**
-	 * Gets the option containing the active modules.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return array List of active module slugs.
-	 */
-	private function get_active_modules_option() {
-		$option = $this->options->get( self::OPTION_ACTIVE_MODULES );
-
-		if ( ! is_array( $option ) ) {
-			$option = $this->options->get( 'googlesitekit-active-modules' );
-		}
-
-		// If both options are not arrays, use the default value.
-		if ( ! is_array( $option ) ) {
-			$option = array( PageSpeed_Insights::MODULE_SLUG );
-		}
-
-		return $option;
 	}
 
 	/**

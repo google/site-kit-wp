@@ -173,7 +173,7 @@ class Migration_1_129_0 {
 	protected function activate_ads_module() {
 		$active_modules = $this->get_active_modules_option();
 
-		if ( in_array( 'ads', $active_modules, true ) ) {
+		if ( in_array( Ads::MODULE_SLUG, $active_modules, true ) ) {
 			return;
 		}
 

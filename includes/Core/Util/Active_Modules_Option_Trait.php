@@ -14,7 +14,7 @@ use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Modules\PageSpeed_Insights;
 
 /**
- * Trait for reading the active modules option in migrations.
+ * Trait for reading the active modules option.
  *
  * Classes using it need an `$options` property with an `Options` instance.
  *
@@ -25,9 +25,12 @@ use Google\Site_Kit\Modules\PageSpeed_Insights;
 trait Active_Modules_Option_Trait {
 
 	/**
-	 * Gets the active modules option the same way as `Modules`.
+	 * Gets the option containing the active modules.
 	 *
-	 * @since n.e.x.t
+	 * Falls back to the legacy option, then to the default active modules.
+	 *
+	 * @since 1.0.0
+	 * @since n.e.x.t Moved from `Modules` into this trait.
 	 *
 	 * @return array List of active module slugs.
 	 */

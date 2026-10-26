@@ -15,6 +15,7 @@ use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Migration_1_123_0;
+use Google\Site_Kit\Core\Util\Migration_1_150_0;
 use Google\Site_Kit\Core\Util\Migration_N_E_X_T;
 use Google\Site_Kit\Modules\Ads\Settings as Ads_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
@@ -142,10 +143,9 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertSame( 1678886400, $audience_settings['availableAudiencesLastSyncedAt'], 'The `availableAudiencesLastSyncedAt` should be moved to the Audience settings.' );
 		$this->assertSame( 2, $audience_settings['audienceSegmentationSetupCompletedBy'], 'The `audienceSegmentationSetupCompletedBy` should be moved to the Audience settings.' );
 
+		$this->assertAudienceKeysRemovedFromAnalyticsSettings();
+
 		$analytics_settings = $this->analytics_settings->get();
-		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The `availableAudiences` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings, 'The `availableAudiencesLastSyncedAt` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings, 'The `audienceSegmentationSetupCompletedBy` should be removed from the Analytics settings.' );
 		$this->assertTrue( empty( $analytics_settings['adsConversionID'] ), 'The `adsConversionID` should be removed from the Analytics settings.' );
 
 		$this->assertSame( 'AW-123456789', $this->ads_settings->get()['conversionID'], 'The Analytics `adsConversionID` should be moved to the Ads settings.' );
@@ -274,10 +274,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$this->assertSame( $stored_audience_settings, $this->audience_settings->get(), 'Stored Audience settings should not be overwritten by old keys in the Analytics settings.' );
 
-		$analytics_settings = $this->analytics_settings->get();
-		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The `availableAudiences` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings, 'The `availableAudiencesLastSyncedAt` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings, 'The `audienceSegmentationSetupCompletedBy` should be removed from the Analytics settings.' );
+		$this->assertAudienceKeysRemovedFromAnalyticsSettings();
 	}
 
 	public function test_migrate__fills_only_empty_audience_settings() {
@@ -306,10 +303,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertSame( 1700000000, $audience_settings['availableAudiencesLastSyncedAt'], 'A stored `availableAudiencesLastSyncedAt` should not be overwritten.' );
 		$this->assertSame( 2, $audience_settings['audienceSegmentationSetupCompletedBy'], 'An empty `audienceSegmentationSetupCompletedBy` should be filled from the Analytics settings.' );
 
-		$analytics_settings = $this->analytics_settings->get();
-		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The `availableAudiences` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'availableAudiencesLastSyncedAt', $analytics_settings, 'The `availableAudiencesLastSyncedAt` should be removed from the Analytics settings.' );
-		$this->assertArrayNotHasKey( 'audienceSegmentationSetupCompletedBy', $analytics_settings, 'The `audienceSegmentationSetupCompletedBy` should be removed from the Analytics settings.' );
+		$this->assertAudienceKeysRemovedFromAnalyticsSettings();
 	}
 
 	public function test_migrate__keeps_one_tap_disabled_when_one_tap_on_all_pages_is_true() {
@@ -471,5 +465,16 @@ class Migration_N_E_X_TTest extends TestCase {
 		return $wpdb->get_col(
 			$wpdb->prepare( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE %s", 'googlesitekit\_%' )
 		);
+	}
+
+	/**
+	 * Asserts that the audience keys were removed from the Analytics settings.
+	 */
+	protected function assertAudienceKeysRemovedFromAnalyticsSettings() {
+		$analytics_settings = $this->analytics_settings->get();
+
+		foreach ( Migration_1_150_0::AUDIENCE_SETTINGS_KEYS as $key ) {
+			$this->assertArrayNotHasKey( $key, $analytics_settings, "The `$key` should be removed from the Analytics settings." );
+		}
 	}
 }
