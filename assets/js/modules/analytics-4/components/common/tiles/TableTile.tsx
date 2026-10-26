@@ -64,6 +64,8 @@ export interface TableTileProps {
 	zeroState?: ReactNode;
 	/** Called on a "Retry" click in the error state, to request a report with fetch options, such as `cacheTTL`, again. Passing `onRetry` also shows "Retry" for a retryable error of a selector other than `getReport`. */
 	onRetry?: () => void;
+	/** Called on a click on the link of a row. */
+	onLinkClick?: () => void;
 }
 
 const TableTile: FC< TableTileProps > = ( {
@@ -77,6 +79,7 @@ const TableTile: FC< TableTileProps > = ( {
 	noDataMetricLabel,
 	zeroState,
 	onRetry,
+	onLinkClick,
 } ) => {
 	const visibleRows = rows.slice( 0, limit || rows.length );
 
@@ -127,6 +130,7 @@ const TableTile: FC< TableTileProps > = ( {
 									<Link
 										href={ row.url }
 										title={ row.label }
+										onClick={ onLinkClick }
 										external
 										hideExternalIndicator
 									>
