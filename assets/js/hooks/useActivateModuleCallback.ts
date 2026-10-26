@@ -47,6 +47,9 @@ const useSelect = useSelectWithRequiredDeps as UseSelect;
 interface ActivateModuleOptions {
 	additionalScopes?: string[];
 	redirectQueryArgs?: Record< string, string >;
+	internalServerErrorOptions?: {
+		showGlobalNotification?: boolean;
+	};
 }
 
 /**
@@ -54,9 +57,11 @@ interface ActivateModuleOptions {
  * Returns null if the module doesn't exist or the user can't manage options.
  *
  * @since 1.70.0
+ * @since n.e.x.t Added the `internalServerErrorOptions` option.
  *
- * @param {string} moduleSlug Module slug.
- * @param {Object} [options]  Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.
+ * @param {string} moduleSlug                           Module slug.
+ * @param {Object} [options]                            Optional. Activation options with `redirectQueryArgs` and `additionalScopes`.
+ * @param {Object} [options.internalServerErrorOptions] Optional. Properties to set on the internal server error when the activation fails. Supports `showGlobalNotification`.
  * @return {Function|null} Callback to activate module, null if the module doesn't exist or the user can't manage options.
  */
 export default function useActivateModuleCallback(
@@ -76,7 +81,12 @@ export default function useActivateModuleCallback(
 	const { setInternalServerError } = useDispatch( CORE_SITE );
 
 	const activateModuleCallback = useCallback( async () => {
-		const { error, response } = await activateModule( moduleSlug, options );
+		const { internalServerErrorOptions, ...activationOptions } = options;
+
+		const { error, response } = await activateModule(
+			moduleSlug,
+			activationOptions
+		);
 
 		if ( ! error ) {
 			await trackEvent(
@@ -87,7 +97,7 @@ export default function useActivateModuleCallback(
 
 			await setItem(
 				'module_setup',
-				{ slug: moduleSlug, options },
+				{ slug: moduleSlug, options: activationOptions },
 				{ ttl: 300 }
 			);
 
@@ -96,6 +106,7 @@ export default function useActivateModuleCallback(
 			setInternalServerError( {
 				id: `${ moduleSlug }-setup-error`,
 				description: error.message,
+				...internalServerErrorOptions,
 			} );
 		}
 	}, [
