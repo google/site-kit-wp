@@ -488,7 +488,7 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for() {
+	public function test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for() {
 		$this->report_rows = array(
 			'date' => array(
 				array( '20260819', 121 ),
@@ -501,20 +501,20 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'     => '2026-08-19',
-					'visitors' => 121,
+					'date'   => '2026-08-19',
+					'visits' => 121,
 				),
 				array(
-					'date'     => '2026-08-20',
-					'visitors' => 0,
+					'date'   => '2026-08-20',
+					'visits' => 0,
 				),
 				array(
-					'date'     => '2026-08-21',
-					'visitors' => 147,
+					'date'   => '2026-08-21',
+					'visits' => 147,
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visitors for `2026-08-20`, and keep `2026-08-21` as the third day.'
+			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day.'
 		);
 	}
 
@@ -536,11 +536,11 @@ class Response_BuilderTest extends TestCase {
 
 		$this->assertSame(
 			array(
-				'date'     => '2026-08-19',
-				'visitors' => 121,
+				'date'   => '2026-08-19',
+				'visits' => 121,
 			),
 			$daily_traffic[0],
-			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visitors.'
+			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visits.'
 		);
 		$this->assertSame( '2026-09-15', $dates[27], '`dailyTraffic` should end on `2026-09-15`, the last day of the selected period.' );
 		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should have exactly 28 rows, one for each day of the selected period.' );
@@ -554,8 +554,8 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'     => '9999-12-31',
-					'visitors' => 0,
+					'date'   => '9999-12-31',
+					'visits' => 0,
 				),
 			),
 			$daily_traffic,
@@ -563,7 +563,7 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__sums_the_visitors_of_each_period_from_the_daily_series() {
+	public function test_build__sums_the_visits_of_each_period_from_the_daily_series() {
 		$this->report_rows = array(
 			'date' => array(
 				// `20250817` and `20260721` sit outside both periods, so neither
@@ -584,8 +584,8 @@ class Response_BuilderTest extends TestCase {
 				'current'  => 30,
 				'previous' => 12,
 			),
-			$response['visitors'],
-			'`visitors` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
+			$response['visits'],
+			'`visits` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
 		);
 	}
 

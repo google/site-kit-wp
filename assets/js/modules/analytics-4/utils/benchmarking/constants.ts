@@ -32,34 +32,36 @@ export const BENCHMARKING_FORMAT_VERSION = 1;
 export const MEMBER_VERSION = 0;
 export const MEMBER_STRINGS = 1;
 export const MEMBER_FIRST_DATE = 2;
-export const MEMBER_DAILY_VISITORS = 3;
-export const MEMBER_VISITOR_TOTALS = 4;
-export const MEMBER_DIMENSION_ROWS = 5;
-export const MEMBER_DIMENSION_ORDER = 6;
+export const MEMBER_DAILY_VISITS = 3;
+export const MEMBER_VISIT_TOTALS = 4;
+export const MEMBER_KEY_FACTORS = 5;
+export const MEMBER_KEY_FACTOR_ATTRIBUTES = 6;
 
 /**
- * The dimension codes, in the order they travel as. A dimension's position in
- * this list is the index the encoded response carries.
+ * The driver kinds of a key factor card, in the order they travel as. A kind's
+ * position in this list is the index the encoded response carries. A kind is
+ * only ever added at the end, so a position never changes meaning.
  */
-export const BENCHMARKING_DIMENSION_CODES = [
-	'CHANNELS',
-	'DEVICES',
-	'VISITOR_MIX',
-	'REFERRERS',
-	'SEARCH_QUERIES',
+export const BENCHMARKING_KEY_FACTOR_KINDS = [
+	'CHANNEL',
 	'CONTENT',
-	'CATEGORIES',
+	'SEARCH_KEYWORD',
+	'REFERRING_SITE',
+	'CAMPAIGN',
 ] as const;
 
 /**
- * The `contextualData` key each dimension code decodes to.
+ * The kinds of a key factor card's attribute, in the order they travel as. A
+ * kind's position in this list is the index the encoded response carries. A
+ * kind is only ever added at the end, so a position never changes meaning.
  */
-export const BENCHMARKING_CONTEXTUAL_DATA_KEYS = {
-	CHANNELS: 'channels',
-	DEVICES: 'devices',
-	VISITOR_MIX: 'visitorMix',
-	REFERRERS: 'referrers',
-	SEARCH_QUERIES: 'searchQueries',
-	CONTENT: 'content',
-	CATEGORIES: 'categories',
-} as const;
+export const BENCHMARKING_KEY_FACTOR_ATTRIBUTE_KINDS = [
+	'TRAFFIC_CHANNEL',
+	'LANDING_PAGE',
+	'SEARCH_KEYWORD',
+	'REFERRING_SITE',
+	'PLATFORM',
+	'CAMPAIGN',
+	'DEVICE',
+	'USER_TYPE',
+] as const;
