@@ -78,10 +78,6 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 		}
 
 		if ( empty( $organization_id ) ) {
-			$organization_id = $this->resolve_organization_id_from_publication_id( $publication_id );
-		}
-
-		if ( empty( $organization_id ) ) {
 			throw new Missing_Required_Setting_Exception( 'organizationID' );
 		}
 
@@ -92,45 +88,6 @@ class Get_Publication extends Datapoint implements Executable_Datapoint {
 		);
 
 		return $this->get_service()->organizations_publications->get( $name );
-	}
-
-	/**
-	 * Resolves organization ID from a publication ID and persists it in settings.
-	 *
-	 * @since 1.191.0
-	 *
-	 * @param string $publication_id Publication ID.
-	 * @return string Organization ID, if found.
-	 */
-	private function resolve_organization_id_from_publication_id( $publication_id ) {
-		try {
-			$request  = $this->get_service()->organizations_publications->listOrganizationsPublications( 'organizations/-' );
-			$response = $this->get_service()->getClient()->execute( $request );
-		} catch ( \Exception $e ) {
-			return '';
-		}
-
-		$publications = (array) $response->getPublications();
-
-		foreach ( $publications as $publication ) {
-			if ( ! $publication instanceof Publication ) {
-				continue;
-			}
-
-			if ( $publication->getPublicationId() !== $publication_id ) {
-				continue;
-			}
-
-			$organization_id = $publication->getOrganizationId() ?? '';
-
-			if ( ! empty( $organization_id ) ) {
-				$this->settings->merge( array( 'organizationID' => $organization_id ) );
-			}
-
-			return $organization_id;
-		}
-
-		return '';
 	}
 
 	/**
