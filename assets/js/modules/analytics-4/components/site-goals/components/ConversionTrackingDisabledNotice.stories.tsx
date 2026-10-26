@@ -96,14 +96,12 @@ Admin.storyName = 'Admin';
 Admin.args = {
 	canManageOptions: true,
 };
-Admin.scenario = {};
 
 export const ViewOnly = Template.bind( {} ) as Story< TemplateProps >;
 ViewOnly.storyName = 'View-only';
 ViewOnly.args = {
 	canManageOptions: false,
 };
-ViewOnly.scenario = {};
 
 export default {
 	title: 'Modules/Analytics4/Components/Site Goals/Components/ConversionTrackingDisabledNotice',
