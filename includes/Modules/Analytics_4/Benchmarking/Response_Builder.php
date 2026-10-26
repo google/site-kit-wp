@@ -324,12 +324,14 @@ class Response_Builder {
 			$visitors_by_date[ $report_row['values'][0] ] = $report_row['visitors'];
 		}
 
-		$date         = new DateTimeImmutable( $first_date, new DateTimeZone( 'UTC' ) );
+		$utc          = new DateTimeZone( 'UTC' );
+		$date         = new DateTimeImmutable( $first_date, $utc );
+		$end          = new DateTimeImmutable( $end_date, $utc );
 		$daily_series = array();
 
-		// Both dates are zero-padded `YYYY-MM-DD`, so `<=` on the strings
-		// compares the days.
-		while ( $date->format( 'Y-m-d' ) <= $end_date ) {
+		// The day after `9999-12-31` formats as `10000-01-01`, which sorts
+		// before it as a string, so the loop compares the dates themselves.
+		while ( $date <= $end ) {
 			$daily_series[] = array(
 				'date'     => $date->format( 'Y-m-d' ),
 				'visitors' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
@@ -354,20 +356,19 @@ class Response_Builder {
 	 * @return array List of days from `$start_date` on, keyed from `0`.
 	 */
 	private function get_daily_traffic( array $daily_series, $start_date ) {
-		// The daily series runs with no gap from the compare period's first day
-		// to the end date, so `array_search()` finds `$start_date`. The `(int)`
-		// only narrows its `int|string|false` return to the `int` that
-		// `array_slice()` takes.
-		$start_index = array_search( $start_date, array_column( $daily_series, 'date' ), true );
-
-		return array_slice( $daily_series, (int) $start_index );
+		return array_values(
+			array_filter(
+				$daily_series,
+				fn( $day ) => $day['date'] >= $start_date
+			)
+		);
 	}
 
 	/**
 	 * Adds up each day's visitors from one date to another.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now holds the selected period alone.
+	 * @since n.e.x.t Parameter `$daily_traffic` renamed to `$daily_series`, because `dailyTraffic` now has the selected period alone.
 	 *
 	 * @param array  $daily_series The days of the daily series, each with `visitors` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date   The first day to count, as `YYYY-MM-DD`.

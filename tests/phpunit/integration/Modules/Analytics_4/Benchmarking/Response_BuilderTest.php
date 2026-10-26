@@ -548,6 +548,21 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
 	}
 
+	public function test_build__ends_the_daily_traffic_on_an_end_date_of_9999_12_31() {
+		$daily_traffic = $this->builder->build( '9999-12-31', '9999-12-31' )['dailyTraffic'];
+
+		$this->assertSame(
+			array(
+				array(
+					'date'     => '9999-12-31',
+					'visitors' => 0,
+				),
+			),
+			$daily_traffic,
+			'`dailyTraffic` should list `9999-12-31` alone, the one day of the selected period, and end there.'
+		);
+	}
+
 	public function test_build__sums_the_visitors_of_each_period_from_the_daily_series() {
 		$this->report_rows = array(
 			'date' => array(

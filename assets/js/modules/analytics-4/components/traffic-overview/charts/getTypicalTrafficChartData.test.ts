@@ -75,42 +75,28 @@ describe( 'getTypicalTrafficChartData', () => {
 		expect( ticks[ 26 ] ).toEqual( new Date( 2026, 8, 15 ) );
 	} );
 
-	it( 'should return the most visitors on any day as `maximumVisitors`', () => {
-		// The busiest day is the tenth, so neither end of the rows decides it.
+	it( 'should return true as `hasVisitors` when one day has visitors', () => {
+		// Only the tenth day has visitors, so neither end of the rows decides it.
 		const dailyTraffic = createDailyTrafficRows(
 			28,
 			'2026-09-15',
-			( dayIndex ) => ( dayIndex === 9 ? 2376 : 120 )
+			( dayIndex ) => ( dayIndex === 9 ? 120 : 0 )
 		);
 
-		const { maximumVisitors } = getTypicalTrafficChartData( {
-			dailyTraffic,
-		} );
+		const { hasVisitors } = getTypicalTrafficChartData( { dailyTraffic } );
 
-		expect( maximumVisitors ).toBe( 2376 );
+		expect( hasVisitors ).toBe( true );
 	} );
 
-	it( 'should return 0 as `maximumVisitors` when every day has 0 visitors', () => {
+	it( 'should return false as `hasVisitors` when every day has 0 visitors', () => {
 		const dailyTraffic = createDailyTrafficRows(
 			28,
 			'2026-09-15',
 			() => 0
 		);
 
-		const { maximumVisitors } = getTypicalTrafficChartData( {
-			dailyTraffic,
-		} );
+		const { hasVisitors } = getTypicalTrafficChartData( { dailyTraffic } );
 
-		expect( maximumVisitors ).toBe( 0 );
-	} );
-
-	it( 'should return 0 as `maximumVisitors` when there are no rows', () => {
-		// `decodeBenchmarkingResponse()` returns no rows for a response that
-		// carries no daily counts.
-		const { maximumVisitors } = getTypicalTrafficChartData( {
-			dailyTraffic: [],
-		} );
-
-		expect( maximumVisitors ).toBe( 0 );
+		expect( hasVisitors ).toBe( false );
 	} );
 } );

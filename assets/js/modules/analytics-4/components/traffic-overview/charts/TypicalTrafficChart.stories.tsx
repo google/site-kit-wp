@@ -17,26 +17,50 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { WPDataRegistry } from '@wordpress/data/build-types/registry';
+
+/**
  * Internal dependencies
  */
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { DESIGN_DAILY_VISITORS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { Story } from '@/js/types/Story';
+import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import TypicalTrafficChart, {
 	TypicalTrafficChartProps,
 } from './TypicalTrafficChart';
+
+/**
+ * Sets the reference date to `2026-09-15`, the last day each story plots.
+ *
+ * The selected date range stays the default `last-28-days`, from `2026-08-19`
+ * to `2026-09-15`, and `GoogleChart` draws a date marker only for a day of it.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry to set up.
+ * @return {void}
+ */
+function setupRegistry( registry: WPDataRegistry ) {
+	registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-15' );
+}
 
 function Template( props: TypicalTrafficChartProps ) {
 	// The chart's styles apply only inside the widget and its panel, so the
 	// story renders inside both.
 	return (
-		<div className="googlesitekit-widget googlesitekit-widget--analyticsTrafficOverview googlesitekit-widget--no-padding">
-			<div className="googlesitekit-widget__body">
-				<div className="googlesitekit-traffic-overview__panel">
-					<TypicalTrafficChart { ...props } />
+		<WithRegistrySetup func={ setupRegistry }>
+			<div className="googlesitekit-widget googlesitekit-widget--analyticsTrafficOverview googlesitekit-widget--no-padding">
+				<div className="googlesitekit-widget__body">
+					<div className="googlesitekit-traffic-overview__panel">
+						<TypicalTrafficChart { ...props } />
+					</div>
 				</div>
 			</div>
-		</div>
+		</WithRegistrySetup>
 	);
 }
 
@@ -100,10 +124,29 @@ NoVisitors.scenario = {
 	viewport: 'large',
 };
 
+/**
+ * A 28-day range with the day the Analytics property was created inside it,
+ * `2026-08-26`. The chart marks that day with a dotted line, whose icon shows
+ * "Google Analytics property created", and the days before it have no
+ * visitors.
+ */
+export const PropertyCreatedInRange = Template.bind(
+	{}
+) as Story< TypicalTrafficChartProps >;
+PropertyCreatedInRange.storyName = 'Property Created In Range';
+PropertyCreatedInRange.args = {
+	dailyTraffic: createDailyTrafficRows( 28, '2026-09-15', ( dayIndex ) =>
+		dayIndex < 7 ? 0 : DESIGN_DAILY_VISITORS[ dayIndex ]
+	),
+	daysInSelectedRange: 28,
+	propertyCreateDate: '2026-08-26',
+};
+PropertyCreatedInRange.scenario = {
+	readySelector: '[id^="googlesitekit-chart-"] svg',
+	viewport: 'large',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/TypicalTrafficChart',
 	component: TypicalTrafficChart,
-	parameters: {
-		features: [ 'typicalTraffic' ],
-	},
 };

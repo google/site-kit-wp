@@ -127,7 +127,7 @@ describe( 'TypicalTrafficChart', () => {
 		expect( hAxis.baselineColor ).toBe( '#b8bdb9' );
 	} );
 
-	it( 'should end the value axis on a round number at or above the busiest day when a day has visits', () => {
+	it( 'should set no maximum on the value axis when a day has visits', () => {
 		render(
 			<TypicalTrafficChart
 				dailyTraffic={ createDailyTrafficRows(
@@ -180,8 +180,162 @@ describe( 'TypicalTrafficChart', () => {
 		).toBeUndefined();
 	} );
 
-	it( 'should draw no "Google Analytics property created" marker', () => {
-		render(
+	it( 'should mark the first plotted day, and read it to a screen reader, when the Analytics property was created on it', () => {
+		const { getByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-08-19"
+			/>
+		);
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-08-19',
+				text: 'Google Analytics property created',
+			},
+		] );
+		expect(
+			getByText( 'Google Analytics property created on August 19, 2026.' )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should give the chart the class that leaves room for the marker icon when the Analytics property was created on a plotted day', () => {
+		const { container } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-09-01"
+			/>
+		);
+
+		expect( container.firstChild ).toHaveClass(
+			'googlesitekit-traffic-overview__chart--has-date-marker'
+		);
+	} );
+
+	it( 'should leave out the class that leaves room for the marker icon when the Analytics property was created a day before the plotted days', () => {
+		const { container } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-08-18"
+			/>
+		);
+
+		expect( container.firstChild ).not.toHaveClass(
+			'googlesitekit-traffic-overview__chart--has-date-marker'
+		);
+	} );
+
+	it( 'should mark a plotted day in the middle, and read it to a screen reader, when the Analytics property was created on it', () => {
+		const { getByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-09-01"
+			/>
+		);
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-09-01',
+				text: 'Google Analytics property created',
+			},
+		] );
+		expect(
+			getByText(
+				'Google Analytics property created on September 1, 2026.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should mark the last plotted day, and read it to a screen reader, when the Analytics property was created on it', () => {
+		const { getByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-09-15"
+			/>
+		);
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-09-15',
+				text: 'Google Analytics property created',
+			},
+		] );
+		expect(
+			getByText(
+				'Google Analytics property created on September 15, 2026.'
+			)
+		).toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker and read no creation day to a screen reader when the Analytics property was created a day before the plotted days', () => {
+		const { queryByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-08-18"
+			/>
+		);
+
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+		).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker and read no creation day to a screen reader when the Analytics property was created a day after the plotted days', () => {
+		const { queryByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				) }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-09-16"
+			/>
+		);
+
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+		).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker and read no creation day to a screen reader when the creation day of the Analytics property is not known', () => {
+		const { queryByText } = render(
 			<TypicalTrafficChart
 				dailyTraffic={ createDailyTrafficRows(
 					28,
@@ -195,6 +349,28 @@ describe( 'TypicalTrafficChart', () => {
 		expect(
 			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
 		).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
+	} );
+
+	it( 'should draw no marker and read no creation day to a screen reader when the response has no days', () => {
+		// `decodeBenchmarkingResponse()` returns no rows for a response that
+		// has no daily counts.
+		const { queryByText } = render(
+			<TypicalTrafficChart
+				dailyTraffic={ [] }
+				daysInSelectedRange={ 28 }
+				propertyCreateDate="2026-09-01"
+			/>
+		);
+
+		expect(
+			mockGoogleChart.mock.lastCall[ 0 ].dateMarkers
+		).toBeUndefined();
+		expect(
+			queryByText( /Google Analytics property created/ )
+		).not.toBeInTheDocument();
 	} );
 
 	it( 'should show the "Last 28 days traffic" legend item beside a line in #462083 for a 28-day range', () => {

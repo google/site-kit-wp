@@ -38,8 +38,8 @@ export interface TypicalTrafficChartData {
 	chartData: TrafficChartTable;
 	/** The days the horizontal axis shows a date label under. */
 	ticks: Date[];
-	/** The most visitors on any day of the rows. */
-	maximumVisitors: number;
+	/** Whether any day of the rows has visitors. */
+	hasVisitors: boolean;
 }
 
 /**
@@ -49,7 +49,7 @@ export interface TypicalTrafficChartData {
  *
  * @param {Object}         options              Options.
  * @param {Array.<Object>} options.dailyTraffic The daily rows of the benchmarking response, oldest first.
- * @return {Object} The chart table, the days the axis shows a date label under, and the most visitors on a day.
+ * @return {Object} The chart table, the days the axis shows a date label under, and whether any day has visitors.
  */
 export function getTypicalTrafficChartData( {
 	dailyTraffic,
@@ -72,12 +72,9 @@ export function getTypicalTrafficChartData( {
 			],
 			...points,
 		],
-		// The labels start on the second day, as `getTrafficChartData()` starts
-		// them, so both tabs of the widget label the same days.
+		// Google Charts hides the first day's label, so the labels start on the
+		// second day, as in `getTrafficChartData()`.
 		ticks: points.slice( 1 ).map( ( [ date ] ) => date ),
-		maximumVisitors: Math.max(
-			0,
-			...dailyTraffic.map( ( { visitors } ) => visitors )
-		),
+		hasVisitors: dailyTraffic.some( ( { visitors } ) => visitors > 0 ),
 	};
 }

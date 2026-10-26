@@ -24,7 +24,7 @@ import { FC, useMemo } from 'react';
 /**
  * WordPress dependencies
  */
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
@@ -38,8 +38,11 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { getPropertyCreateDate } from '@/js/modules/analytics-4/utils/property-create-date';
 import { getDateString, getLocale, numFmt, stringToDate } from '@/js/util';
 import ChartLegend from './ChartLegend';
+import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
+import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
 import { getTrafficChartData } from './getTrafficChartData';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
+import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 
 export interface TrafficChartProps {
@@ -113,24 +116,11 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 
 	// `GoogleChart` draws a marker only for a day inside the selected range.
 	// The screen-reader sentence about that day follows the same rule.
-	const markerDate =
-		propertyCreateDate &&
-		propertyCreateDate >= startDate &&
-		propertyCreateDate <= endDate
-			? propertyCreateDate
-			: undefined;
-
-	const dateMarkers = markerDate
-		? [
-				{
-					date: markerDate,
-					text: __(
-						'Google Analytics property created',
-						'google-site-kit'
-					),
-				},
-		  ]
-		: undefined;
+	const markerDate = getPropertyCreatedMarkerDate(
+		propertyCreateDate,
+		startDate,
+		endDate
+	);
 
 	const dayFormatter = useMemo(
 		() =>
@@ -147,7 +137,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
-				dateMarkers={ dateMarkers }
+				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
 				gatheringData={ gatheringData }
 				height="256px"
 				loaded={ loaded }
@@ -178,16 +168,7 @@ const TrafficChart: FC< TrafficChartProps > = ( {
 					</VisuallyHidden>
 				) ) }
 			{ loaded && markerDate && (
-				<VisuallyHidden>
-					{ sprintf(
-						/* translators: %s: the day the property was created, such as "January 15, 2025" */
-						__(
-							'Google Analytics property created on %s.',
-							'google-site-kit'
-						),
-						dayFormatter.format( stringToDate( markerDate ) )
-					) }
-				</VisuallyHidden>
+				<PropertyCreatedScreenReaderText date={ markerDate } />
 			) }
 		</div>
 	);

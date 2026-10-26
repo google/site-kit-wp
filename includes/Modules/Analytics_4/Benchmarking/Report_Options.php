@@ -27,9 +27,8 @@ class Report_Options {
 	 * The maximum number of days in the selected period, the longest preset of
 	 * `DateRangeSelector`.
 	 *
-	 * `DateRangePicker`, which the dashboard shows in its place while the
-	 * `datePicker` feature flag is on, allows a longer custom range, which
-	 * `Get_Benchmarking_Data` refuses.
+	 * The `core/user` store accepts a longer `custom` date range, which only
+	 * `DateRangePicker` can set, and `Get_Benchmarking_Data` refuses it.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -91,7 +90,7 @@ class Report_Options {
 
 	/**
 	 * Gets the options of the report that counts visitors by day, from the
-	 * first day of the compare period to the last day of the selected period.
+	 * compare period's first day to the selected period's last day.
 	 *
 	 * `Response_Builder::build()` adds up the visitors of each period from this
 	 * report, and returns the days of the selected period alone as `dailyTraffic`.

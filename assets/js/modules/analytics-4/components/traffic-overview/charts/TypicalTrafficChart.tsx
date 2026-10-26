@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC } from 'react';
 
 /**
@@ -27,8 +28,11 @@ import { FC } from 'react';
 import GoogleChart from '@/js/components/GoogleChart';
 import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import ChartLegend from './ChartLegend';
+import { getPropertyCreatedDateMarkers } from './getPropertyCreatedDateMarkers';
+import { getPropertyCreatedMarkerDate } from './getPropertyCreatedMarkerDate';
 import { getTrafficLegendItem } from './getTrafficLegendItem';
 import { getTypicalTrafficChartData } from './getTypicalTrafficChartData';
+import PropertyCreatedScreenReaderText from './PropertyCreatedScreenReaderText';
 import { TRAFFIC_CHART_OPTIONS } from './trafficChartOptions';
 import TypicalTrafficChartHeader from './TypicalTrafficChartHeader';
 
@@ -37,13 +41,16 @@ export interface TypicalTrafficChartProps {
 	dailyTraffic: BenchmarkingDailyTrafficRow[];
 	/** The number of days in the selected date range, which the legend's label names, such as "Last 28 days traffic". */
 	daysInSelectedRange: number;
+	/** The day the Analytics property was created, as `YYYY-MM-DD`. The chart marks it, and reads it to a screen reader, when it is one of the plotted days. */
+	propertyCreateDate?: string;
 }
 
 const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 	dailyTraffic,
 	daysInSelectedRange,
+	propertyCreateDate,
 } ) => {
-	const { chartData, ticks, maximumVisitors } = getTypicalTrafficChartData( {
+	const { chartData, ticks, hasVisitors } = getTypicalTrafficChartData( {
 		dailyTraffic,
 	} );
 
@@ -54,42 +61,50 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 		hAxis: {
 			...TRAFFIC_CHART_OPTIONS.hAxis,
 			ticks,
-			// The same last-day baseline as `TrafficChart`.
+			// Draws the gray line along the right edge of the chart area.
 			baseline: points[ points.length - 1 ]?.[ 0 ],
 		},
 		vAxis: {
 			...TRAFFIC_CHART_OPTIONS.vAxis,
 			// Google Charts ends the axis on a round number at or above the
 			// busiest day. When every day is `0`, it draws the line of zeros
-			// across the middle of the chart area, so the axis runs to 100, as in
-			// `TrafficChart`.
+			// across the middle of the chart area. So the axis runs to 100 then,
+			// as in `TrafficChart`.
 			viewWindow: {
 				...TRAFFIC_CHART_OPTIONS.vAxis.viewWindow,
-				...( maximumVisitors ? {} : { max: 100 } ),
+				...( hasVisitors ? {} : { max: 100 } ),
 			},
 		},
 	};
 
-	// Unlike `TrafficChart`, the chart passes no `dateMarkers`, so it never
-	// marks the day the Analytics property was created. A preset date range
-	// ends on the reference date and lasts at most 90 days, so it never
-	// includes that day: `useHasTypicalTrafficTab()` shows the tab only for a
-	// property created at least thirteen months before the reference date. A
-	// calendar month or a custom range from `DateRangePicker`, behind the
-	// `datePicker` feature flag, can include that day, and the chart does not
-	// mark it there either.
-	//
-	// The chart passes no `gatheringData` either. With it, `GoogleChart` would
-	// show its gathering data notice over the chart, and `getChartOptions()`
-	// would fit the horizontal axis to the selected date range and end the
-	// value axis at 100. No issue builds the tab's own gathering data design
-	// yet.
+	// The rows are the days of the selected date range, so the first and the
+	// last row's day bound the creation day the chart marks.
+	const firstDate = dailyTraffic[ 0 ]?.date;
+	const lastDate = dailyTraffic[ dailyTraffic.length - 1 ]?.date;
+	const markerDate = getPropertyCreatedMarkerDate(
+		propertyCreateDate,
+		firstDate,
+		lastDate
+	);
+
+	// No `gatheringData`, so `GoogleChart` doesn't show its gathering data
+	// notice over the chart or change the axes.
 	return (
-		<div className="googlesitekit-traffic-overview__chart googlesitekit-traffic-overview__chart--typical-traffic">
+		<div
+			className={ classnames(
+				'googlesitekit-traffic-overview__chart',
+				'googlesitekit-traffic-overview__chart--typical-traffic',
+				{
+					'googlesitekit-traffic-overview__chart--has-date-marker':
+						!! markerDate,
+				}
+			) }
+		>
 			<TypicalTrafficChartHeader />
 			<GoogleChart
 				chartType="LineChart"
 				data={ chartData }
+				dateMarkers={ getPropertyCreatedDateMarkers( markerDate ) }
 				height="256px"
 				options={ options }
 				width="100%"
@@ -97,6 +112,9 @@ const TypicalTrafficChart: FC< TypicalTrafficChartProps > = ( {
 			<ChartLegend
 				items={ [ getTrafficLegendItem( daysInSelectedRange ) ] }
 			/>
+			{ markerDate && (
+				<PropertyCreatedScreenReaderText date={ markerDate } />
+			) }
 		</div>
 	);
 };

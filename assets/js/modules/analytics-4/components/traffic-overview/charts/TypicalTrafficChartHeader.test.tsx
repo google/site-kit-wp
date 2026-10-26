@@ -34,7 +34,7 @@ describe( 'TypicalTrafficChartHeader', () => {
 	} );
 
 	it( 'should show the tooltip text "to estimate a typical range" and a "Learn more" link to `#` when the info icon is hovered', async () => {
-		const { container } = render( <TypicalTrafficChartHeader /> );
+		const { getByRole } = render( <TypicalTrafficChartHeader /> );
 
 		// The popup renders outside the header, at the end of the document.
 		expect(
@@ -43,9 +43,7 @@ describe( 'TypicalTrafficChartHeader', () => {
 			)
 		).not.toBeInTheDocument();
 
-		fireEvent.mouseOver(
-			container.querySelector( '.googlesitekit-info-tooltip' ) as Element
-		);
+		fireEvent.mouseOver( getByRole( 'tooltip' ) );
 
 		await waitFor( () => {
 			expect(

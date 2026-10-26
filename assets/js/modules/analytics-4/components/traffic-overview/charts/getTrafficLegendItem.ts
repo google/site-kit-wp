@@ -28,8 +28,8 @@ import { ChartLegendItem } from './ChartLegend';
 import { TRAFFIC_CHART_LINE_COLOR } from './trafficChartOptions';
 
 /**
- * Gets the legend item for the line of daily visitors, with a label such as
- * "Last 28 days traffic".
+ * Gets the legend item for the chart's line of daily counts, with a label
+ * such as "Last 28 days traffic".
  *
  * @since n.e.x.t
  *

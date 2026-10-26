@@ -79,8 +79,8 @@ $traffic-overview-column-gap: 42px;
 
 		// The design puts its insight blocks 24px under the tabs, and the chart
 		// 40px under those blocks. Until the blocks exist, the chart's title
-		// takes their place, 24px under the tabs: the panel's 20px top padding
-		// plus this 4px, in place of the 70px top margin of
+		// takes their place, 24px under the tabs. The 24px is the panel's 20px
+		// top padding plus this 4px, in place of the 70px top margin of
 		// `.googlesitekit-traffic-overview__chart`.
 		.googlesitekit-traffic-overview__chart--typical-traffic {
 			margin-top: 4px;
@@ -91,6 +91,8 @@ $traffic-overview-column-gap: 42px;
 		// end padding, the icon's 6px start margin plus its 16px width, leaves
 		// room for the icon after any line.
 		.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			// The title is inline, so the header's own font size and line height
+			// set the height of each line too.
 			font-size: $fs-title-md;
 			line-height: $lh-title-md;
 
@@ -108,7 +110,6 @@ $traffic-overview-column-gap: 42px;
 			.googlesitekit-typography {
 				color: $c-surfaces-on-surface;
 				display: inline;
-				margin: 0;
 			}
 
 			// The -22px end margin cancels the header's 22px end padding, so the
@@ -121,6 +122,16 @@ $traffic-overview-column-gap: 42px;
 				margin-inline: 6px -22px;
 				margin-top: 2px;
 				vertical-align: top;
+			}
+		}
+
+		// `GoogleChart` draws a date marker's 18px icon above the chart area, so
+		// from `$bp-desktop` up the icon would cover the title, 10px above it.
+		// A chart that marks a day keeps the 20px it has below `$bp-desktop`.
+		.googlesitekit-traffic-overview__chart--has-date-marker
+			.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 12px;
 			}
 		}
 
@@ -153,10 +164,10 @@ $traffic-overview-column-gap: 42px;
 		}
 
 		// From `$bp-desktop` up, the desktop frame centers the legend in a 28px
-		// row that starts 25px under the chart area, so its center is 39px under
-		// it. The 256px chart ends 24px under its chart area, which starts 8px in
-		// and is 224px tall. So 24px, plus this 7px, plus half the 16px legend
-		// item puts the item's center at 39px.
+		// row that starts 25px under the chart area. The 256px chart ends 24px
+		// under its chart area, which starts 8px in and is 224px tall. So 24px,
+		// plus this 7px, plus half the 16px legend item puts the item's center
+		// 39px under the chart area.
 		.googlesitekit-traffic-overview__chart--typical-traffic
 			.googlesitekit-traffic-overview__chart-legend {
 			@media (min-width: $bp-desktop) {
@@ -640,7 +651,7 @@ $traffic-overview-column-gap: 42px;
 // The info tooltip's popup renders outside the widget, so a rule nested under
 // the widget doesn't reach it. The `.googlesitekit-info-tooltip__content`
 // class makes this selector more specific than the one that sets
-// `max-width: 160px` in `_googlesitekit-info-tooltip.scss`, so this rule
+// `max-width: 160px` in `_googlesitekit-info-tooltip.scss`. So this rule
 // applies whatever order the two style sheets load in. With the popup's 12px
 // padding on each side, the popup is at most 235px wide, the width of the
 // design's tooltip.

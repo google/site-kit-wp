@@ -275,6 +275,26 @@ describe( 'TrafficChart', () => {
 		] );
 	} );
 
+	it( 'should mark the day the Analytics property was created when that day is the last day of the range', async () => {
+		providePropertyCreateTime( '2025-01-16' );
+
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		const { dateMarkers } = await getLastChartProps();
+
+		expect( dateMarkers ).toEqual( [
+			{
+				date: '2025-01-16',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
 	it( 'draws no marker when the Analytics property was created before the range', async () => {
 		providePropertyCreateTime( '2024-11-02' );
 

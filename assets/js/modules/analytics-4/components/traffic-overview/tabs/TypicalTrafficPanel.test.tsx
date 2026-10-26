@@ -24,12 +24,14 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { createDailyTrafficRows } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import {
 	decodedBenchmarkingResponse,
 	provideBenchmarkingData,
 } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	act,
 	createTestRegistry,
@@ -57,6 +59,7 @@ describe( 'TypicalTrafficPanel', () => {
 		// The default `last-28-days` range against the `2026-09-15` reference
 		// date covers `2026-08-19` to `2026-09-15`.
 		registry.dispatch( CORE_USER ).setReferenceDate( '2026-09-15' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 	} );
 
 	afterEach( () => {
@@ -110,6 +113,67 @@ describe( 'TypicalTrafficPanel', () => {
 		expect( getByRole( 'listitem' ) ).toHaveTextContent(
 			'Last 90 days traffic'
 		);
+	} );
+
+	it( 'should mark the day the Analytics property was created when that day is inside the selected range', () => {
+		// The time is midday, because a time zone can move midnight to the day
+		// before or the day after.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( '2026-09-01T12:00:00' );
+		provideBenchmarkingData(
+			registry,
+			{ startDate: '2026-08-19', endDate: '2026-09-15' },
+			{
+				...decodedBenchmarkingResponse,
+				dailyTraffic: createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				),
+			}
+		);
+
+		render( <TypicalTrafficPanel />, { registry } );
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-09-01',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
+	it( 'should mark the day the Analytics property was created on a view-only dashboard', () => {
+		// The time is midday, because a time zone can move midnight to the day
+		// before or the day after.
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setPropertyCreateTime( '2026-09-01T12:00:00' );
+		provideBenchmarkingData(
+			registry,
+			{ startDate: '2026-08-19', endDate: '2026-09-15' },
+			{
+				...decodedBenchmarkingResponse,
+				dailyTraffic: createDailyTrafficRows(
+					28,
+					'2026-09-15',
+					() => 120
+				),
+			}
+		);
+
+		render( <TypicalTrafficPanel />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+		} );
+
+		expect( mockGoogleChart.mock.lastCall[ 0 ].dateMarkers ).toEqual( [
+			{
+				date: '2026-09-01',
+				text: 'Google Analytics property created',
+			},
+		] );
 	} );
 
 	it( 'should render no chart while the benchmarking data loads', () => {
