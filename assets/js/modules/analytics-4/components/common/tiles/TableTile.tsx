@@ -62,7 +62,7 @@ export interface TableTileProps {
 	noDataMetricLabel?: MetricLabel;
 	/** Content shown in place of the default zero state message. */
 	zeroState?: ReactNode;
-	/** Called on a "Retry" click in the error state, for a report with fetch options, such as a `cacheTTL`, that the "Retry" button doesn't request again. */
+	/** Called on a "Retry" click in the error state, to request a report with fetch options, such as `cacheTTL`, again. Passing `onRetry` also shows "Retry" for a retryable error of a selector other than `getReport`. */
 	onRetry?: () => void;
 }
 

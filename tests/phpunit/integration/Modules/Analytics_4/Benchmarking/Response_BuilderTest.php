@@ -490,7 +490,7 @@ class Response_BuilderTest extends TestCase {
 		);
 	}
 
-	public function test_build__lists_0_visitors_for_a_day_analytics_returned_no_row_for() {
+	public function test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for() {
 		$this->report_rows = array(
 			'date' => array(
 				array( '20250817', 121 ),
@@ -503,20 +503,20 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'     => '2025-08-17',
-					'visitors' => 121,
+					'date'   => '2025-08-17',
+					'visits' => 121,
 				),
 				array(
-					'date'     => '2025-08-18',
-					'visitors' => 0,
+					'date'   => '2025-08-18',
+					'visits' => 0,
 				),
 				array(
-					'date'     => '2025-08-19',
-					'visitors' => 147,
+					'date'   => '2025-08-19',
+					'visits' => 147,
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visitors for `2025-08-18`, and keep `2025-08-19` as the third day.'
+			'`dailyTraffic` should list 0 visits for `2025-08-18`, and keep `2025-08-19` as the third day.'
 		);
 	}
 
@@ -539,7 +539,7 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
 	}
 
-	public function test_build__sums_the_visitors_of_each_period_from_the_daily_series() {
+	public function test_build__sums_the_visits_of_each_period_from_the_daily_series() {
 		$this->report_rows = array(
 			'date' => array(
 				array( '20250817', 99 ),
@@ -558,8 +558,8 @@ class Response_BuilderTest extends TestCase {
 				'current'  => 30,
 				'previous' => 12,
 			),
-			$response['visitors'],
-			'`visitors` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
+			$response['visits'],
+			'`visits` should add up the days from `2026-08-19` to `2026-09-15`, and from `2026-07-22` to `2026-08-18`.'
 		);
 	}
 

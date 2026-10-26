@@ -19,9 +19,9 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Core\Util\Date;
 use Google\Site_Kit\Core\Util\Feature_Flags;
 use Google\Site_Kit\Core\Util\Plugin_Status;
+use Google\Site_Kit\Core\Util\Product_Post_Type;
 use Google\Site_Kit\Core\Util\URL;
 use WP_Dependencies;
-use WP_Post_Type;
 
 /**
  * Class managing assets.
@@ -848,13 +848,15 @@ final class Assets {
 	 * This should not include anything remotely expensive to compute.
 	 *
 	 * @since 1.2.0
+	 * @since n.e.x.t Adds `usingPlainPermalinks`.
 	 *
 	 * @return array The base inline data to be output.
 	 */
 	private function get_inline_base_data() {
-		global $wpdb;
+		global $wpdb, $wp_rewrite;
 		$site_url           = $this->context->get_reference_site_url();
-		$product_post_type  = $this->get_product_post_type();
+		$product_type       = Product_Post_Type::get();
+		$product_post_type  = $product_type ? $product_type->name : null;
 		$woocommerce_active = class_exists( 'WooCommerce' );
 
 		$inline_data = array(
@@ -878,6 +880,7 @@ final class Assets {
 			'referenceDate'        => Date::reference_date(),
 			'productPostType'      => $product_post_type,
 			'productPathPrefix'    => $this->get_post_type_path_prefix( $product_post_type ),
+			'usingPlainPermalinks' => ! $wp_rewrite->using_permalinks(),
 			'wooCommerceActive'    => $woocommerce_active,
 			'wooCommerceInstalled' => $woocommerce_active || Plugin_Status::is_plugin_installed( 'woocommerce/woocommerce.php' ),
 		);
@@ -1243,31 +1246,6 @@ final class Assets {
 		$session_token = isset( $auth_cookie['token'] ) ? $auth_cookie['token'] : '';
 
 		return wp_hash( $current_user->user_login . '|' . $session_token . '|' . $blog_id );
-	}
-
-	/**
-	 * Gets the product post type.
-	 *
-	 * @since 1.116.0
-	 *
-	 * @return string|null The product post type name or null if not present on the website.
-	 */
-	protected function get_product_post_type() {
-		/**
-		 * Filters the product post type.
-		 *
-		 * @since 1.116.0
-		 *
-		 * @param string $product_post_type The product post type name.
-		 */
-		$product_post_type = apply_filters( 'googlesitekit_product_post_type', 'product' );
-		$product_type      = get_post_type_object( $product_post_type );
-
-		if ( $product_type instanceof WP_Post_Type && $product_type->public ) {
-			return $product_post_type;
-		}
-
-		return null;
 	}
 
 	/**

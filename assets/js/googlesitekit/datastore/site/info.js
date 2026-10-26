@@ -190,6 +190,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -236,6 +237,7 @@ export const reducer = createReducer( ( state, { payload, type } ) => {
 				pluginBasename,
 				productPostType,
 				productPathPrefix,
+				usingPlainPermalinks,
 				keyMetricsSetupCompletedBy,
 				keyMetricsSetupIsWidgetAreaHidden,
 				keyMetricsSetupNew,
@@ -338,6 +340,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -391,6 +394,7 @@ export const resolvers = {
 			pluginBasename,
 			productPostType,
 			productPathPrefix,
+			usingPlainPermalinks,
 			keyMetricsSetupCompletedBy,
 			keyMetricsSetupIsWidgetAreaHidden,
 			keyMetricsSetupNew,
@@ -992,6 +996,15 @@ export const selectors = {
 	 * @return {(string|null|undefined)} The path, such as `/product/`, never a full URL, or `null` when product URLs share no such path, such as on plain permalinks. Returns `undefined` if not loaded.
 	 */
 	getProductPathPrefix: getSiteInfoProperty( 'productPathPrefix' ),
+
+	/**
+	 * Checks whether the site uses plain permalinks, where each URL names its post in its query string, such as `/?p=123`.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return {(boolean|undefined)} `true` when the site uses plain permalinks, `false` when it has a permalink structure. Returns `undefined` if not loaded.
+	 */
+	isUsingPlainPermalinks: getSiteInfoProperty( 'usingPlainPermalinks' ),
 
 	/**
 	 * Checks if the Key Metrics widget has been setup either if at least one user

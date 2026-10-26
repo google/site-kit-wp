@@ -71,14 +71,15 @@ class Response_Builder {
 	 * Nothing is saved to the site, so every call builds the response again.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
 	 * @return array|WP_Error {
 	 *     The assembled response, or the error a failed report returned.
 	 *
-	 *     @type array $visitors       Visitor totals for the selected period and the one before it.
-	 *     @type array $dailyTraffic   Daily visitor counts, oldest first.
+	 *     @type array $visits         Visit totals for the selected period and the one before it.
+	 *     @type array $dailyTraffic   Daily visit counts, oldest first.
 	 *     @type array $dimensions     Dimension codes, in the order the Typical Traffic tab shows them.
 	 *     @type array $contextualData Ranked rows, keyed by the dimension they belong to.
 	 * }
@@ -95,9 +96,9 @@ class Response_Builder {
 		$daily_traffic = $this->get_daily_traffic( $reports['dailyTraffic'], $requests['dailyTraffic']['startDate'] );
 		$compare_range = $report_options->get_compare_range();
 
-		$visitors = array(
-			'current'  => $this->sum_visitors( $daily_traffic, $start_date, $end_date ),
-			'previous' => $this->sum_visitors( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
+		$visits = array(
+			'current'  => $this->sum_visits( $daily_traffic, $start_date, $end_date ),
+			'previous' => $this->sum_visits( $daily_traffic, $compare_range['startDate'], $compare_range['endDate'] ),
 		);
 
 		$contextual_data = $this->filter_contextual_data(
@@ -111,10 +112,10 @@ class Response_Builder {
 			)
 		);
 
-		$ranked_data = $this->rank_contextual_data( $contextual_data, $visitors );
+		$ranked_data = $this->rank_contextual_data( $contextual_data, $visits );
 
 		return array(
-			'visitors'       => $visitors,
+			'visits'         => $visits,
 			'dailyTraffic'   => $daily_traffic,
 			'dimensions'     => $ranked_data['dimensions'],
 			'contextualData' => $ranked_data['contextualData'],
@@ -302,17 +303,18 @@ class Response_Builder {
 	}
 
 	/**
-	 * Gets each day's visitors in the daily series, oldest first.
+	 * Gets each day's visits in the daily series, oldest first.
 	 *
-	 * Analytics returns no row for a day with no visitors, so that day is listed
-	 * with `0` visitors. `Response_Encoder` keeps only the first date, so every
+	 * Analytics returns no row for a day with no visits, so that day is listed
+	 * with `0` visits. `Response_Encoder` keeps only the first date, so every
 	 * day has to be in the list.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Lists each day's count as `visits` in place of `visitors`.
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
-	 * @return array List of days, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @return array List of days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 */
 	private function get_daily_traffic( array $report_rows, $first_date ) {
 		$visitors_by_date = array();
@@ -326,8 +328,8 @@ class Response_Builder {
 
 		for ( $day = 0; $day < Report_Options::DAILY_SERIES_DAYS; $day++ ) {
 			$daily_traffic[] = array(
-				'date'     => $date->format( 'Y-m-d' ),
-				'visitors' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
+				'date'   => $date->format( 'Y-m-d' ),
+				'visits' => $visitors_by_date[ $date->format( 'Ymd' ) ] ?? 0,
 			);
 
 			$date = $date->modify( '+1 day' );
@@ -337,25 +339,26 @@ class Response_Builder {
 	}
 
 	/**
-	 * Adds up each day's visitors from one date to another.
+	 * Adds up each day's visits from one date to another.
 	 *
 	 * @since 1.190.0
+	 * @since n.e.x.t Renamed from `sum_visitors()`.
 	 *
-	 * @param array  $daily_traffic The days, each with `visitors` and a `date` as `YYYY-MM-DD`.
+	 * @param array  $daily_traffic The days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.
 	 * @param string $end_date      The last day to count, as `YYYY-MM-DD`.
-	 * @return int The total visitors from `$start_date` to `$end_date`.
+	 * @return int The total visits from `$start_date` to `$end_date`.
 	 */
-	private function sum_visitors( array $daily_traffic, $start_date, $end_date ) {
-		$visitors = 0;
+	private function sum_visits( array $daily_traffic, $start_date, $end_date ) {
+		$visits = 0;
 
 		foreach ( $daily_traffic as $day ) {
 			if ( $day['date'] >= $start_date && $day['date'] <= $end_date ) {
-				$visitors += $day['visitors'];
+				$visits += $day['visits'];
 			}
 		}
 
-		return $visitors;
+		return $visits;
 	}
 
 	/**
