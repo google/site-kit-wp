@@ -19,7 +19,22 @@
 .googlesitekit-plugin {
 
 	.googlesitekit-rrm-express-setup {
+		--googlesitekit-rrm-express-setup-admin-bar-height: 46px;
+		--googlesitekit-rrm-express-setup-header-height: 72px;
+		--googlesitekit-rrm-express-setup-stepper-height: 50px;
+		--googlesitekit-rrm-express-setup-footer-height: 84px;
+
 		border-top: 1px solid $c-utility-divider;
+
+		@media (min-width: $bp-wpAdminBarTablet) {
+			--googlesitekit-rrm-express-setup-admin-bar-height: 32px;
+		}
+
+		@media (min-width: $bp-nonTablet) {
+			--googlesitekit-rrm-express-setup-header-height: 88px;
+			--googlesitekit-rrm-express-setup-stepper-height: 0px;
+			--googlesitekit-rrm-express-setup-footer-height: 0px;
+		}
 
 		// Two-column layout: sidebar ~25% (max 280px), content fills the rest.
 		.googlesitekit-rrm-express-setup__layout {
@@ -36,10 +51,10 @@
 				align-self: start;
 				background-color: $c-surfaces-background;
 				grid-column: 1;
-				height: calc(100vh - 120px); // 32px admin bar + 88px header.
+				height: calc(100vh - var(--googlesitekit-rrm-express-setup-admin-bar-height) - var(--googlesitekit-rrm-express-setup-header-height));
 				overflow: hidden;
 				position: sticky;
-				top: 120px; // 32px admin bar + 88px header.
+				top: calc(var(--googlesitekit-rrm-express-setup-admin-bar-height) + var(--googlesitekit-rrm-express-setup-header-height));
 			}
 		}
 
@@ -58,19 +73,44 @@
 		// Make the content full height.
 		.googlesitekit-rrm-express-setup__content {
 			background-color: $c-surfaces-surface;
-			min-height: calc( 100vh - 252px ); // 46px admin bar + 72px header + 50px stepper + 84px footer.
+			min-block-size: calc(100vh - var(--googlesitekit-rrm-express-setup-admin-bar-height) - var(--googlesitekit-rrm-express-setup-header-height) - var(--googlesitekit-rrm-express-setup-stepper-height) - var(--googlesitekit-rrm-express-setup-footer-height));
 			padding-block-end: $grid-gap-phone;
 			padding-inline: $grid-gap-phone;
 
-			@media (min-width: $bp-wpAdminBarTablet) {
-				min-height: calc( 100vh - 238px ); // 32px admin bar + 72px header + 50px stepper + 84px footer.
-			}
-
 			@media (min-width: $bp-nonTablet) {
 				grid-column: 2;
-				min-height: calc(100vh - 120px); // 32px admin bar + 88px header.
 				padding: $grid-gap-desktop ($grid-gap-desktop * 2);
 			}
+		}
+
+		// Single-column layout without the stepper or footer.
+		.googlesitekit-rrm-express-setup__layout--full-width {
+			--googlesitekit-rrm-express-setup-stepper-height: 0px;
+			--googlesitekit-rrm-express-setup-footer-height: 0px;
+
+			@media (min-width: $bp-nonTablet) {
+				grid-template-columns: 1fr;
+			}
+
+			.googlesitekit-rrm-express-setup__content {
+				padding-block-start: $grid-gap-phone;
+
+				@media (min-width: $bp-nonTablet) {
+					grid-column: 1;
+					padding-block-start: $grid-gap-desktop;
+				}
+			}
+		}
+
+		.googlesitekit-rrm-express-setup__error {
+			display: grid;
+			gap: $grid-gap-desktop;
+		}
+
+		// Keep scrolled-to error notices clear of the header. The admin bar
+		// offset is covered by the `scroll-padding-top` WordPress sets on the root.
+		.googlesitekit-notice-container {
+			scroll-margin-block-start: var(--googlesitekit-rrm-express-setup-header-height);
 		}
 
 		.googlesitekit-rrm-express-setup__footer {

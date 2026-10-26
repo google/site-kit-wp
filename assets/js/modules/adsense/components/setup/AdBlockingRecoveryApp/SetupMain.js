@@ -120,16 +120,20 @@ export default function SetupMain() {
 	useEffect( () => {
 		let isMounted = true;
 
-		getPendingSetupReturnURL(
-			registry.select,
-			FEATURE_SLUG_AD_BLOCKING_RECOVERY
-		)
-			.then( ( url ) => {
-				if ( isMounted && url ) {
-					setPendingSetupReturnURL( url );
-				}
-			} )
-			.catch( () => {} );
+		async function retrievePendingSetupReturnURL() {
+			await registry.resolveSelect( CORE_SITE ).getSiteInfo();
+
+			const url = await getPendingSetupReturnURL(
+				registry.select,
+				FEATURE_SLUG_AD_BLOCKING_RECOVERY
+			);
+
+			if ( isMounted && url ) {
+				setPendingSetupReturnURL( url );
+			}
+		}
+
+		retrievePendingSetupReturnURL();
 
 		return () => {
 			isMounted = false;

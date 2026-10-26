@@ -37,6 +37,7 @@ import {
 	setupCompleteStep,
 	termsOfServiceStep,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/common-steps';
+import ExpressSetupFallback from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupFallback';
 import ExpressSetupLayout from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupLayout';
 import ExpressSetupSteps from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/ExpressSetupSteps';
 import {
@@ -65,7 +66,7 @@ const STEPS: SetupStep[] = [
 ];
 
 const SetupCTANewsletterSignup: FC = () => {
-	useExpressSetupScopes();
+	const hasRequiredScopes = useExpressSetupScopes();
 
 	const { currentStep, advance } = useSetupFlow( STEPS );
 
@@ -150,29 +151,36 @@ const SetupCTANewsletterSignup: FC = () => {
 		},
 	};
 
-	const StepComponent = currentStep?.Component;
+	if ( hasRequiredScopes !== true || ! currentStep ) {
+		return (
+			<ExpressSetupFallback
+				showErrors={ hasRequiredScopes === true }
+				errorTitle={ __(
+					'We couldn’t set up your sign-up form',
+					'google-site-kit'
+				) }
+			/>
+		);
+	}
+
+	const StepComponent = currentStep.Component;
 
 	return (
 		<ExpressSetupLayout
 			sidebar={
 				<ExpressSetupSteps
 					steps={ STEPS }
-					activeSlug={ currentStep?.slug }
+					activeSlug={ currentStep.slug }
 				/>
 			}
 		>
-			{ StepComponent ? (
-				// Keyed by step, so each step is observed from when it renders.
-				<ObservedStep
-					key={ currentStep.slug }
-					onInView={ onStepInView }
-				>
-					<StepComponent
-						{ ...stepProps[ currentStep.slug ] }
-						onComplete={ onStepComplete }
-					/>
-				</ObservedStep>
-			) : null }
+			{ /* Keyed by step, so each step is observed from when it renders. */ }
+			<ObservedStep key={ currentStep.slug } onInView={ onStepInView }>
+				<StepComponent
+					{ ...stepProps[ currentStep.slug ] }
+					onComplete={ onStepComplete }
+				/>
+			</ObservedStep>
 		</ExpressSetupLayout>
 	);
 };

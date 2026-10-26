@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useRef } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -59,6 +59,7 @@ export interface ErrorNoticeProps {
 	skipRetryMessage?: boolean;
 	hideIcon?: boolean;
 	variant?: NOTICE_VARIANTS;
+	scrollIntoView?: boolean;
 }
 
 const ErrorNotice: FC< ErrorNoticeProps > = ( {
@@ -72,8 +73,10 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 	skipRetryMessage,
 	hideIcon = false,
 	variant,
+	scrollIntoView = false,
 } ) => {
 	const dispatch = useDispatch();
+	const noticeRef = useRef< HTMLDivElement >( null );
 
 	const selectorData = useSelect(
 		( select: Select ) => {
@@ -96,6 +99,15 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 			selectorData.args
 		);
 	}, [ dispatch, selectorData ] );
+
+	useEffect( () => {
+		if ( scrollIntoView ) {
+			noticeRef.current?.scrollIntoView( {
+				behavior: 'smooth',
+				block: 'nearest',
+			} );
+		}
+	}, [ scrollIntoView, message ] );
 
 	// Do not display if there is no error and no direct message text is passed as a direct prop.
 	// Also do not display if the error is for missing scopes as these are handled by a popup modal.
@@ -122,6 +134,7 @@ const ErrorNotice: FC< ErrorNoticeProps > = ( {
 
 	return (
 		<Notice
+			ref={ noticeRef }
 			className={ className }
 			ctaButton={
 				shouldDisplayRetry

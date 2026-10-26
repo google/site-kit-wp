@@ -39,12 +39,14 @@ import ErrorNotice from './ErrorNotice';
 export interface StoreErrorNoticesProps {
 	hasButton?: boolean;
 	moduleSlug?: string;
+	scrollIntoView?: boolean;
 	storeName: string;
 }
 
 const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 	hasButton = false,
 	moduleSlug,
+	scrollIntoView = false,
 	storeName,
 } ) => {
 	const errors = useSelect(
@@ -100,6 +102,7 @@ const StoreErrorNotices: FC< StoreErrorNoticesProps > = ( {
 							title={ title }
 							noPrefix={ isInsufficientPermissions }
 							skipRetryMessage={ isInsufficientPermissions }
+							scrollIntoView={ scrollIntoView && key === 0 }
 						/>
 					);
 				} ) }

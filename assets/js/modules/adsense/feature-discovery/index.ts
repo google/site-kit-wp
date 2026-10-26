@@ -32,6 +32,7 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_ADSENSE } from '@/js/modules/adsense/constants';
+import { MODULES_ADSENSE } from '@/js/modules/adsense/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 
 /**
@@ -255,6 +256,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				select( CORE_SITE ).getAdminURL(
 					'googlesitekit-ad-blocking-recovery'
 				),
+			isEnabled: ( select ) =>
+				select( MODULES_ADSENSE ).getUseAdBlockingRecoverySnippet(),
 		},
 	} );
 }
