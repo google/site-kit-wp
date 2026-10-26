@@ -769,6 +769,27 @@ const baseResolvers = {
 			return;
 		}
 
+		const hasParamOrganizationID = !! params?.organizationID;
+		const organizationID = registry
+			.select( MODULES_READER_REVENUE_MANAGER )
+			.getOrganizationID();
+
+		if ( ! hasParamOrganizationID && ! organizationID ) {
+			yield commonActions.await(
+				registry
+					.resolveSelect( MODULES_READER_REVENUE_MANAGER )
+					.getPublications()
+			);
+
+			const resolvedPublication = registry
+				.select( MODULES_READER_REVENUE_MANAGER )
+				.getPublication( params );
+
+			if ( resolvedPublication !== undefined ) {
+				return;
+			}
+		}
+
 		// @ts-expect-error createFetchStore is not properly typed yet.
 		yield fetchGetPublicationStore.actions.fetchGetPublication( params );
 	},
