@@ -49,6 +49,7 @@ import {
 import {
 	getInsightReportArgs,
 	getSearchPerformanceReportOptions,
+	getSiteVisitorsReportOptions,
 	getTimeZoneReportOptions,
 	getTopChannelsReportOptions,
 	getTopPostsReportOptions,
@@ -71,6 +72,7 @@ import {
 } from '@/js/modules/analytics-4/datastore/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { ErrorObject } from '@/js/util/errors';
 
 interface FreshMetricsFigures {
 	/** The number of visitors in the Total visitors report. */
@@ -115,6 +117,41 @@ export const EARLIER_POST: RecentContentItem = {
 	pagePath: '/sorbet/',
 	publishedAt: '2026-09-10T12:30:00Z',
 	sitePublishedAt: '2026-09-10T08:30:00',
+};
+
+/**
+ * An internal server error of a report request, which "Retry" can fix.
+ *
+ * @since n.e.x.t
+ */
+export const INTERNAL_SERVER_ERROR: ErrorObject = {
+	code: 'internal_server_error',
+	message: 'Internal server error',
+	data: { status: 500 },
+};
+
+/**
+ * A rate limit error of an Analytics report request. The Analytics API names
+ * no reason for a rate limit, so the status alone marks it.
+ *
+ * @since n.e.x.t
+ */
+export const RATE_LIMIT_ERROR: ErrorObject = {
+	code: 429,
+	message: 'Exhausted property tokens per hour.',
+	data: { status: 429, reason: '', cacheTTL: 600 },
+};
+
+/**
+ * A permissions error of an Analytics report request, for a Google account
+ * that can't read the Analytics property.
+ *
+ * @since n.e.x.t
+ */
+export const INSUFFICIENT_PERMISSIONS_ERROR: ErrorObject = {
+	code: 403,
+	message: 'User does not have sufficient permissions for this property.',
+	data: { status: 403, reason: 'insufficientPermissions' },
 };
 
 /**
@@ -397,6 +434,38 @@ export function provideInsightReport(
 			createInsightReport( dateRange, current, comparisons ),
 			{ options: getInsightReportArgs( dateRange ) }
 		);
+}
+
+/**
+ * Puts the report of the site's visitors over the reference date's Recent
+ * activity date range in the store.
+ *
+ * With the "Total visitors" report of `provideFreshMetricsReports()` in the
+ * store too, the tab counts the visitors without a request.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry The registry, with its reference date set.
+ * @param {number} visitors The visitors over the date range.
+ * @return {void}
+ */
+export function provideSiteVisitorsReport(
+	registry: WPDataRegistry,
+	visitors: number
+) {
+	const dateRange = getFreshDataDateRange(
+		registry.select( CORE_USER ).getReferenceDate()
+	);
+
+	// A report without dimensions has one row, even when it counts no
+	// visitors.
+	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetReport(
+		{
+			rows: [ { metricValues: [ { value: String( visitors ) } ] } ],
+			totals: [ { metricValues: [ { value: String( visitors ) } ] } ],
+		},
+		{ options: getSiteVisitorsReportOptions( dateRange ) }
+	);
 }
 
 /**
