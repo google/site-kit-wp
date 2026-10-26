@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
-import { getWPVersion, setupSiteKit } from '../../utils';
+import { getWPVersion, setupSiteKit, visitAdminPage } from '../../utils';
 import { setupReaderRevenueManager } from '../../utils/setup-reader-revenue-manager';
 import { setupSignInWithGoogle } from '../../utils/setup-sign-in-with-google';
 
@@ -42,8 +37,8 @@ describe( 'blocks', () => {
 	 * @return {Promise<boolean>} Promise resolving to true if block support is available, false otherwise.
 	 */
 	async function hasBlockSupport() {
-		const version = await getWPVersion();
-		return version.major >= 5 && version.minor >= 8;
+		const { major, minor } = await getWPVersion();
+		return major > 5 || ( major === 5 && minor >= 8 );
 	}
 
 	/**

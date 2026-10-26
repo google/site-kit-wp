@@ -17,15 +17,12 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { createURL, deactivatePlugin } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
 	activateAMPWithMode,
+	createURL,
+	deactivatePlugin,
 	deactivateUtilityPlugins,
 	setupSiteKit,
 	useSharedRequestInterception,
