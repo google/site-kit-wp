@@ -42,6 +42,14 @@ export const RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG =
 export const FRESH_DATA_VOTE_ID_RECENT_ACTIVITY =
 	'fresh_data_recent_activity_widget';
 
+/**
+ * How long the Recent activity tab stays shown, in milliseconds, before the
+ * `view_all_recent_posts` event fires.
+ *
+ * @since n.e.x.t
+ */
+export const RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS = 3000;
+
 /** The slug the Traffic Overview widget registers under. */
 export const TRAFFIC_OVERVIEW_WIDGET_SLUG = 'analyticsTrafficOverview';
 

@@ -20,11 +20,12 @@
  * External dependencies
  */
 import { FC } from 'react';
+import { useTimeoutFn } from 'react-use';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useEffect } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -36,9 +37,12 @@ import GatheringDataNotice, {
 } from '@/js/components/GatheringDataNotice';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import useCanViewSharedModule from '@/js/hooks/useCanViewSharedModule';
+import { useInView } from '@/js/hooks/useInView';
+import useViewContext from '@/js/hooks/useViewContext';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
+	RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS,
 	RECENT_ACTIVITY_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import FreshMetricsRow from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/FreshMetricsRow';
@@ -49,13 +53,44 @@ import SeeAllRecentPostsLink from '@/js/modules/analytics-4/components/traffic-o
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
+import { trackEventOnce } from '@/js/util';
 
 const RecentActivityPanel: FC = () => {
+	const viewContext = useViewContext();
+	const inView = useInView();
+
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
 			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
 		[]
 	);
+
+	function trackViewAllRecentPosts() {
+		trackEventOnce(
+			`${ viewContext }_recent-activity`,
+			'view_all_recent_posts'
+		);
+	}
+
+	// The widget mounts only the shown tab's panel, so this timer runs only
+	// while Recent activity is shown. The panel mounts again each time the tab
+	// is selected, so `trackEventOnce()` keeps the event to one per page view.
+	const [ , clearTimer, resetTimer ] = useTimeoutFn(
+		trackViewAllRecentPosts,
+		RECENT_ACTIVITY_MINIMUM_VIEW_TIME_MILLISECONDS
+	);
+
+	// `useInView()` returns the in-view state of the widget area, so the timer
+	// starts again from 0 each time the area comes back into view. Without
+	// Analytics, Recent activity shows at load as the card's only tab, so the
+	// user never chose it, and the timer doesn't run.
+	useEffect( () => {
+		if ( inView && isAnalyticsConnected ) {
+			resetTimer();
+		} else {
+			clearTimer();
+		}
+	}, [ clearTimer, inView, isAnalyticsConnected, resetTimer ] );
 
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
