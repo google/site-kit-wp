@@ -19,13 +19,17 @@ concurrency:
 
 jobs:
   check:
-    name: Check CA trust (PHP ${{ matrix.php_version }})
+    name: Check CA trust (PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)
     runs-on: ubuntu-latest
     timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
         php_version: ['7.4', '8.1', '8.5']
+        # `image` tests the runner as GitHub ships it. `upgraded` installs the
+        # latest `ca-certificates` package first, to check whether that fixes
+        # the clients that read the system certificates.
+        system_ca: ['image', 'upgraded']
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
@@ -42,6 +46,14 @@ jobs:
           coverage: none
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upgrade ca-certificates
+        if: matrix.system_ca == 'upgraded'
+        run: |
+          dpkg-query -W ca-certificates
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+          sudo update-ca-certificates --fresh
 
       - name: Print versions
         run: |
@@ -67,7 +79,13 @@ jobs:
           # Each client prints `OK` when the TLS handshake succeeds (whatever the
           # HTTP status), or an error message when it fails.
           client_curl() {
-            curl -sS -o /dev/null -m 25 "$1" 2>&1 && echo OK
+            local out
+            # curl's certificate error is on the first line, followed by help text.
+            if out=$( curl -sS -o /dev/null -m 25 "$1" 2>&1 ); then
+              echo OK
+            else
+              head -1 <<< "$out"
+            fi
           }
           client_git() {
             local out
@@ -139,7 +157,7 @@ jobs:
 
           failed=0
           {
-            echo "## CA trust check (PHP ${{ matrix.php_version }})"
+            echo "## CA trust check (PHP ${{ matrix.php_version }}, ${{ matrix.system_ca }} system CAs)"
             echo
             echo "| Client | Host | Result |"
             echo "|---|---|---|"
