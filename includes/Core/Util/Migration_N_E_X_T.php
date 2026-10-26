@@ -1,6 +1,6 @@
 <?php
 /**
- * Migration for the settings migrations skipped since 1.185.0.
+ * Migration for the settings changes skipped since 1.185.0.
  *
  * @package   Google\Site_Kit\Core\Util
  * @copyright 2026 Google LLC
@@ -24,7 +24,7 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
  * Sites that updated from 1.176.0 or earlier to 1.185.0 or later skipped the
  * older migrations, because `Migration_1_185_0` ran first and saved its
  * version. This migration runs their settings changes again, without
- * overwriting values changed since.
+ * overwriting settings changed after that update.
  *
  * @since n.e.x.t
  * @access private
@@ -136,7 +136,7 @@ class Migration_N_E_X_T {
 	 * Analytics 4.
 	 *
 	 * A site that turned Analytics off after migrating still lists the legacy
-	 * slug, but its Analytics 4 settings were deleted, so it is skipped.
+	 * slug, but its Analytics 4 settings were deleted, so this returns false.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -156,7 +156,7 @@ class Migration_N_E_X_T {
 
 	/**
 	 * Moves the audience keys from the Analytics settings to the Audience
-	 * settings, keeping any value already stored in the Audience settings.
+	 * settings, without overwriting a value the Audience settings already have.
 	 *
 	 * @since n.e.x.t
 	 */
@@ -199,7 +199,7 @@ class Migration_N_E_X_T {
 	}
 
 	/**
-	 * Removes the legacy "One Tap on all pages" setting.
+	 * Converts the legacy "One Tap on all pages" setting.
 	 *
 	 * One Tap stays enabled only when both `oneTapEnabled` and
 	 * `oneTapOnAllPages` are true, so this can turn One Tap off but never on.

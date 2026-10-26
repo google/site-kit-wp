@@ -71,7 +71,7 @@ class Migration_N_E_X_TTest extends TestCase {
 	}
 
 	/**
-	 * Gets a migration whose target version is above the current version.
+	 * Gets a migration whose target version is above the current plugin version.
 	 *
 	 * The real target version is `n.e.x.t` until release, which
 	 * `version_compare()` sorts below every numeric version.
@@ -363,7 +363,8 @@ class Migration_N_E_X_TTest extends TestCase {
 	public function test_migrate__changes_nothing_when_settings_are_already_converted() {
 		$migration = $this->get_new_migration_instance();
 
-		// Store settings as a site that ran 1.177.0 before 1.185.0 has them.
+		// Store already converted settings, as a site that ran 1.177.0 before
+		// 1.185.0 would have them.
 		$this->options->set( Migration_N_E_X_T::DB_VERSION_OPTION, '1.177.0' );
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( 'analytics', 'analytics-4', 'ads', 'sign-in-with-google', 'reader-revenue-manager' ) );
 		$this->analytics_settings->set( array( 'accountID' => '12345678' ) );

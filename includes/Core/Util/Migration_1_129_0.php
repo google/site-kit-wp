@@ -126,7 +126,7 @@ class Migration_1_129_0 {
 	 * Migrates the Ads Conversion ID to the new Ads module.
 	 *
 	 * @since 1.129.0
-	 * @since n.e.x.t Changed to handle Ads settings that are not stored.
+	 * @since n.e.x.t Changed to work when no Ads settings are stored.
 	 */
 	protected function migrate_analytics_conversion_id_setting() {
 		if ( ! $this->analytics_settings->has() ) {

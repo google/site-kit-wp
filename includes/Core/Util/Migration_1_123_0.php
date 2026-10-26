@@ -112,8 +112,7 @@ class Migration_1_123_0 {
 	}
 
 	/**
-	 * Copies the legacy Analytics settings, activates Analytics 4 and copies the
-	 * legacy Analytics sharing settings.
+	 * Copies the legacy Analytics settings and sharing settings to Analytics 4, and activates it.
 	 *
 	 * This neither checks nor updates `googlesitekit_db_version`.
 	 *
@@ -129,7 +128,7 @@ class Migration_1_123_0 {
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Changed to skip a legacy option that is not an array, and keys it does not have.
+	 * @since n.e.x.t Changed to skip a legacy option that is not an array, and any missing keys.
 	 */
 	protected function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {

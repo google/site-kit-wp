@@ -208,8 +208,8 @@ class Migration_1_129_0Test extends TestCase {
 
 		$this->configure_analytics_module( '1234567890' );
 
-		// Remove the Ads defaults, as when Ads is removed through
-		// `googlesitekit_available_modules`, so `get()` returns `false`.
+		// Remove the stored Ads option and its default filters, so `get()` returns
+		// `false`, as it does when Ads is removed through `googlesitekit_available_modules`.
 		$this->options->delete( Ads_Settings::OPTION );
 		remove_all_filters( 'option_' . Ads_Settings::OPTION );
 		remove_all_filters( 'default_option_' . Ads_Settings::OPTION );
