@@ -11,7 +11,6 @@
 namespace Google\Site_Kit\Core\Util;
 
 use Google\Site_Kit\Context;
-use Google\Site_Kit\Core\Modules\Modules;
 use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
@@ -31,6 +30,8 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
  * @ignore
  */
 class Migration_N_E_X_T {
+	use Active_Modules_Option_Trait;
+
 	/**
 	 * Target DB version.
 	 */
@@ -147,15 +148,9 @@ class Migration_N_E_X_T {
 			return false;
 		}
 
-		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+		$active_modules = $this->get_active_modules_option();
 
-		// Check legacy option.
-		if ( ! is_array( $active_modules ) ) {
-			$active_modules = $this->options->get( 'googlesitekit-active-modules' );
-		}
-
-		return is_array( $active_modules )
-			&& in_array( Migration_1_123_0::LEGACY_ANALYTICS_MODULE_SLUG, $active_modules, true )
+		return in_array( Migration_1_123_0::LEGACY_ANALYTICS_MODULE_SLUG, $active_modules, true )
 			&& ! in_array( Analytics_4::MODULE_SLUG, $active_modules, true );
 	}
 
