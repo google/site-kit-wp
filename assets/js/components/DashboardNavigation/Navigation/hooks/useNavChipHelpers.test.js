@@ -215,10 +215,10 @@ describe( 'useNavChipHelpers', () => {
 
 			// JSDOM doesn't do any rendering, so getBoundingClientRect() always returns 0, 0, 0, 0.
 			// We need to mock it to place the other element above and the widget context below the navigation.
-			const [ chip, widgetContext ] = document.querySelectorAll(
+			const [ otherElement, widgetContext ] = document.querySelectorAll(
 				`#${ ANCHOR_ID_SPEED }`
 			);
-			chip.getBoundingClientRect = () => ( { top: -100 } );
+			otherElement.getBoundingClientRect = () => ( { top: -100 } );
 			widgetContext.getBoundingClientRect = () => ( { top: 500 } );
 
 			const { result } = renderHook(
