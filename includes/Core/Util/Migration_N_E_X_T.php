@@ -26,9 +26,10 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
  * version. This migration runs their settings changes again, without
  * overwriting settings changed after that update.
  *
- * One Tap is the exception. A site that skipped 1.163.0 with One Tap enabled
- * but not on all pages has shown One Tap on every page since that update.
- * This migration turns One Tap off for it, as 1.163.0 does.
+ * One Tap is the exception. Since 1.163.0, `oneTapEnabled` shows One Tap on
+ * every page, and `oneTapOnAllPages` is no longer used. If a site skipped
+ * 1.163.0 and still stores `oneTapOnAllPages` as false, this migration turns
+ * One Tap off, even if `oneTapEnabled` is true.
  *
  * @since n.e.x.t
  * @access private
