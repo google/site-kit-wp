@@ -702,6 +702,50 @@ describe( 'BreakdownNoticeArea', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render each widget the error title of its own scope after a Side Panel permissions error', () => {
+		seedAvailableCustomDimensions( [] );
+		provideCustomDimensionError( registry, {
+			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+			error: {
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+		} );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
+			} );
+
+		[
+			{
+				goalType: GOAL_TYPES.ECOMMERCE,
+				title: 'Sales plugin breakdown setup failed',
+			},
+			{
+				goalType: GOAL_TYPES.LEAD,
+				title: 'Individual form tracking setup failed',
+			},
+		].forEach( ( { goalType, title } ) => {
+			const { getByText, queryByText, unmount } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ goalType ] }
+				/>,
+				{ registry }
+			);
+
+			expect( getByText( title ) ).toBeInTheDocument();
+			expect(
+				queryByText( 'Event breakdown setup failed' )
+			).not.toBeInTheDocument();
+
+			unmount();
+		} );
+	} );
+
 	it( 'does not render the error notice for a section whose dimension already exists', () => {
 		// The lead (form) dimension already exists; only the ecommerce one is
 		// missing.
