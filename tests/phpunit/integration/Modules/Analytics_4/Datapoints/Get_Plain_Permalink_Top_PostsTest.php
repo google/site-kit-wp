@@ -209,23 +209,23 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	}
 
 	/**
-	 * Builds a report response with the views of each URL and the total views of the report.
+	 * Builds a report response with the visitors of each URL and the total visitors of the report.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $views_by_url The views of each URL, most viewed first, such as `array( '/?p=123' => 10 )`.
-	 * @param int   $total        The views of every URL of the report.
+	 * @param array $visitors_by_url The visitors of each URL, most visitors first, such as `array( '/?p=123' => 10 )`.
+	 * @param int   $total        The visitors of every URL of the report.
 	 * @return RunReportResponse The report response.
 	 */
-	private function create_report_response( array $views_by_url, $total ) {
+	private function create_report_response( array $visitors_by_url, $total ) {
 		$rows = array();
 
-		foreach ( $views_by_url as $url => $views ) {
+		foreach ( $visitors_by_url as $url => $visitors ) {
 			$dimension_value = new DimensionValue();
 			$dimension_value->setValue( $url );
 
 			$metric_value = new MetricValue();
-			$metric_value->setValue( (string) $views );
+			$metric_value->setValue( (string) $visitors );
 
 			$row = new Row();
 			$row->setDimensionValues( array( $dimension_value ) );
@@ -284,21 +284,21 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * Makes the given user the current one, and builds that user's Analytics module and `Permissions` for the REST route.
 	 *
 	 * The module's reports go to a fake Analytics, which answers with the given
-	 * views and saves each `Authorization` header in `$google_api_authorizations`.
+	 * visitors and saves each `Authorization` header in `$google_api_authorizations`.
 	 *
 	 * @since n.e.x.t
 	 *
 	 * @param int   $user_id      The ID of the user to switch to.
-	 * @param array $views_by_url The views of each URL that the fake Analytics answers with, most viewed first, such as `array( '/?p=123' => 10 )`.
+	 * @param array $visitors_by_url The visitors of each URL that the fake Analytics answers with, most visitors first, such as `array( '/?p=123' => 10 )`.
 	 */
-	private function switch_to_user( $user_id, array $views_by_url ) {
+	private function switch_to_user( $user_id, array $visitors_by_url ) {
 		wp_set_current_user( $user_id );
 
 		$context      = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
 		$options      = new Options( $context );
 		$user_options = new User_Options( $context, $user_id );
 		$analytics    = new Analytics_4( $context, $options, $user_options, new Authentication( $context, $options, $user_options ) );
-		$report       = wp_json_encode( $this->create_report_response( $views_by_url, array_sum( $views_by_url ) )->toSimpleObject() );
+		$report       = wp_json_encode( $this->create_report_response( $visitors_by_url, array_sum( $visitors_by_url ) )->toSimpleObject() );
 
 		// A module sends a request with the current user's token, or with its
 		// owner's token when the current user reads a shared module.
@@ -313,7 +313,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	}
 
 	/**
-	 * Sends a request to the `plain-permalink-top-posts` REST route for the three posts with the most views on 2026-10-21 and 2026-10-22.
+	 * Sends a request to the `plain-permalink-top-posts` REST route for the three posts with the most visitors on 2026-10-21 and 2026-10-22.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -332,7 +332,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		return rest_get_server()->dispatch( $request );
 	}
 
-	public function test_create_request__requests_the_1000_urls_with_the_most_views() {
+	public function test_create_request__requests_the_1000_urls_with_the_most_visitors() {
 		$body = $this->get_report_request_body(
 			array(
 				'startDate' => '2026-10-21',
@@ -350,21 +350,21 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 					),
 				),
 				'dimensions' => array( array( 'name' => 'pagePathPlusQueryString' ) ),
-				'metrics'    => array( array( 'name' => 'screenPageViews' ) ),
+				'metrics'    => array( array( 'name' => 'totalUsers' ) ),
 				'orderBys'   => array(
 					array(
-						'metric' => array( 'metricName' => 'screenPageViews' ),
+						'metric' => array( 'metricName' => 'totalUsers' ),
 						'desc'   => true,
 					),
 				),
 				'limit'      => 1000,
 			),
 			array_intersect_key( $body, array_flip( array( 'dateRanges', 'dimensions', 'metrics', 'orderBys', 'limit' ) ) ),
-			'The report should ask for the views of the 1,000 URLs with the most views over the dates, most first.'
+			'The report should ask for the visitors of the 1,000 URLs with the most visitors over the dates, most first.'
 		);
 	}
 
-	public function test_create_request__leaves_out_the_urls_with_no_views() {
+	public function test_create_request__leaves_out_the_urls_with_no_visitors() {
 		$body = $this->get_report_request_body(
 			array(
 				'startDate' => '2026-10-21',
@@ -373,7 +373,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertFalse( $body['keepEmptyRows'], 'The report request should ask Analytics to leave out the URLs with no views.' );
+		$this->assertFalse( $body['keepEmptyRows'], 'The report request should ask Analytics to leave out the URLs with no visitors.' );
 	}
 
 	public function test_create_request__sends_the_report_to_the_connected_property() {
@@ -407,7 +407,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		$this->assertEquals(
 			array(
 				'dimensions' => array( array( 'name' => 'pagePathPlusQueryString' ) ),
-				'metrics'    => array( array( 'name' => 'screenPageViews' ) ),
+				'metrics'    => array( array( 'name' => 'totalUsers' ) ),
 				'filters'    => array( 'hostName' ),
 			),
 			array(
@@ -539,7 +539,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		$this->assertEquals( array( array( 'name' => 'pagePathPlusQueryString' ) ), $body['dimensions'], 'The report request of a view-only user should have the `pagePathPlusQueryString` dimension, which no shared `GET:report` allows.' );
 	}
 
-	public function test_create_request__returns_an_error_for_a_view_only_user_where_page_views_are_not_shareable() {
+	public function test_create_request__returns_an_error_for_a_view_only_user_where_visitors_are_not_shareable() {
 		$this->is_shared_request = true;
 
 		add_filter( 'googlesitekit_shareable_analytics_4_metrics', fn () => array( 'sessions' ) );
@@ -554,12 +554,12 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertWPError( $request, 'The datapoint should return an error for a view-only user where the site leaves `screenPageViews` out of the shareable metrics.' );
-		$this->assertSame( 'Unsupported metric requested: screenPageViews', $request->get_error_message(), 'The error of a view-only user should say that `screenPageViews` is unsupported where the site leaves it out of the shareable metrics.' );
-		$this->assertSame( 'invalid_analytics_4_report_metrics', $request->get_error_code(), 'The error of a view-only user should be `invalid_analytics_4_report_metrics` where `screenPageViews` is not shareable.' );
+		$this->assertWPError( $request, 'The datapoint should return an error for a view-only user where the site leaves `totalUsers` out of the shareable metrics.' );
+		$this->assertSame( 'Unsupported metric requested: totalUsers', $request->get_error_message(), 'The error of a view-only user should say that `totalUsers` is unsupported where the site leaves it out of the shareable metrics.' );
+		$this->assertSame( 'invalid_analytics_4_report_metrics', $request->get_error_code(), 'The error of a view-only user should be `invalid_analytics_4_report_metrics` where `totalUsers` is not shareable.' );
 	}
 
-	public function test_create_request__runs_the_report_for_a_user_with_their_own_access_where_page_views_are_not_shareable() {
+	public function test_create_request__runs_the_report_for_a_user_with_their_own_access_where_visitors_are_not_shareable() {
 		add_filter( 'googlesitekit_shareable_analytics_4_metrics', fn () => array( 'sessions' ) );
 
 		$body = $this->get_report_request_body(
@@ -570,7 +570,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertEquals( array( array( 'name' => 'screenPageViews' ) ), $body['metrics'], 'The report request of a user who reads with their own access should have the `screenPageViews` metric, whatever metrics are shareable.' );
+		$this->assertEquals( array( array( 'name' => 'totalUsers' ) ), $body['metrics'], 'The report request of a user who reads with their own access should have the `totalUsers` metric, whatever metrics are shareable.' );
 	}
 
 	public function test_create_request__sends_no_product_filter_with_woocommerce_inactive() {
@@ -794,7 +794,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 		$this->assertNull( $this->get_product_filter( $body ), 'The report should send no product filter where the product post type is not public.' );
 	}
 
-	public function test_parse_response__returns_the_posts_with_the_most_views_and_the_total() {
+	public function test_parse_response__returns_the_posts_with_the_most_visitors_and_the_total() {
 		$first_post_id  = $this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
 		$second_post_id = $this->factory()->post->create( array( 'post_title' => 'Packing list' ) );
 
@@ -815,14 +815,14 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 						'title'    => 'Travel tips',
 						'url'      => "http://example.org/?p=$first_post_id",
 						'pagePath' => "/?p=$first_post_id",
-						'views'    => 30,
+						'visitors' => 30,
 					),
 					array(
 						'id'       => $second_post_id,
 						'title'    => 'Packing list',
 						'url'      => "http://example.org/?p=$second_post_id",
 						'pagePath' => "/?p=$second_post_id",
-						'views'    => 10,
+						'visitors' => 10,
 					),
 				),
 				'total' => 75,
@@ -837,7 +837,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 					)
 				)
 			),
-			'The response should have the posts that the URLs of the report show, and the views of the whole report as its total.'
+			'The response should have the posts that the URLs of the report show, and the visitors of the whole report as its total.'
 		);
 	}
 
@@ -864,7 +864,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array( $first_post_id ), array_column( $parsed_response['rows'], 'id' ), 'The response should have no more posts than the limit, the ones with the most views.' );
+		$this->assertSame( array( $first_post_id ), array_column( $parsed_response['rows'], 'id' ), 'The response should have no more posts than the limit, the ones with the most visitors.' );
 	}
 
 	/**
@@ -904,16 +904,16 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	}
 
 	public function test_get_data__returns_the_posts_of_the_owner_to_a_view_only_reader() {
-		$owner_id     = get_current_user_id();
-		$post_id      = $this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
-		$views_by_url = array( "/?p=$post_id&utm_source=newsletter" => 10 );
+		$owner_id        = get_current_user_id();
+		$post_id         = $this->factory()->post->create( array( 'post_title' => 'Travel tips' ) );
+		$visitors_by_url = array( "/?p=$post_id&utm_source=newsletter" => 10 );
 
 		$this->share_analytics_with_editors( $owner_id );
 
-		$this->switch_to_user( $owner_id, $views_by_url );
+		$this->switch_to_user( $owner_id, $visitors_by_url );
 		$owner_response = $this->request_top_posts();
 
-		$this->switch_to_user( $this->create_view_only_reader(), $views_by_url );
+		$this->switch_to_user( $this->create_view_only_reader(), $visitors_by_url );
 		$reader_response = $this->request_top_posts();
 
 		$this->assertSame( 200, $reader_response->get_status(), 'The response to a view-only reader should have the status `200`.' );
@@ -926,7 +926,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 						'title'    => 'Travel tips',
 						'url'      => "http://example.org/?p=$post_id",
 						'pagePath' => "/?p=$post_id",
-						'views'    => 10,
+						'visitors' => 10,
 					),
 				),
 				'total' => 10,

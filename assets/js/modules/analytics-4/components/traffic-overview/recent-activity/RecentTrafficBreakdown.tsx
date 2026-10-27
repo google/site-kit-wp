@@ -35,7 +35,7 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
-import { useFreshDataReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataReport';
+import { useRecentTrafficBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownReport';
 import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
 import PlainPermalinkTopPostsColumn from './PlainPermalinkTopPostsColumn';
 import { getTopChannelsReportOptions } from './reportOptions';
@@ -64,11 +64,11 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 		[]
 	);
 
-	// The channels report counts every visit, so it is empty only when
-	// Analytics recorded no visit in the Recent activity date range. The Figma
-	// design leaves the section out then. `TopChannelsColumn` requests the
-	// same report, so this adds no request.
-	const { report: channelsReport } = useFreshDataReport(
+	// The channels report counts every visitor the columns count, so it is
+	// empty when the date range has none. The Figma design leaves the section
+	// out then. With products left out, that includes a range whose visitors
+	// saw only product pages.
+	const { report: channelsReport } = useRecentTrafficBreakdownReport(
 		getTopChannelsReportOptions
 	);
 
