@@ -103,6 +103,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->analytics_settings->set(
 			array(
 				'accountID'                            => '12345678',
+				'propertyID'                           => '123',
 				'adsConversionID'                      => 'AW-123456789',
 				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
 				'availableAudiencesLastSyncedAt'       => 1678886400,
@@ -248,6 +249,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->analytics_settings->set(
 			array(
 				'accountID'                            => '12345678',
+				'propertyID'                           => '123',
 				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
 				'availableAudiencesLastSyncedAt'       => 1678886400,
 				'audienceSegmentationSetupCompletedBy' => 2,
@@ -274,6 +276,7 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->analytics_settings->set(
 			array(
 				'accountID'                            => '12345678',
+				'propertyID'                           => '123',
 				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
 				'availableAudiencesLastSyncedAt'       => 1678886400,
 				'audienceSegmentationSetupCompletedBy' => 2,
@@ -288,6 +291,51 @@ class Migration_N_E_X_TTest extends TestCase {
 		$this->assertSame( 2, $audience_settings['audienceSegmentationSetupCompletedBy'], 'An empty `audienceSegmentationSetupCompletedBy` should be filled from the Analytics settings.' );
 
 		$this->assertAudienceKeysRemovedFromAnalyticsSettings();
+	}
+
+	public function test_migrate__removes_audience_settings_of_another_property() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->analytics_settings->set(
+			array(
+				'propertyID'                           => '456',
+				'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
+				'availableAudiencesLastSyncedAt'       => 1678886400,
+				'audienceSegmentationSetupCompletedBy' => 2,
+			)
+		);
+
+		$migration->migrate();
+
+		$audience_settings = $this->audience_settings->get();
+		$this->assertNull( $audience_settings['availableAudiences'], 'Audiences of another property should not be copied to the Audience settings.' );
+		$this->assertNull( $audience_settings['audienceSegmentationSetupCompletedBy'], 'Audience setup for another property should not be copied to the Audience settings.' );
+
+		$this->assertAudienceKeysRemovedFromAnalyticsSettings();
+	}
+
+	public function test_migrate__moves_audience_settings_when_audience_settings_are_not_registered() {
+		$migration = $this->get_new_migration_instance();
+
+		// Unregister the Audience settings, as when this migration activates
+		// Analytics 4 in the same request, so `get()` returns `false`.
+		unregister_setting( Audience_Settings::OPTION, Audience_Settings::OPTION );
+
+		$audience_values = array(
+			'availableAudiences'                   => array( array( 'name' => 'properties/123/audiences/1' ) ),
+			'availableAudiencesLastSyncedAt'       => 1678886400,
+			'audienceSegmentationSetupCompletedBy' => 2,
+		);
+
+		$this->analytics_settings->set( array( 'propertyID' => '123' ) + $audience_values );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			$audience_values,
+			$this->audience_settings->get(),
+			'Audience settings should hold only the moved keys when no Audience settings are stored.'
+		);
 	}
 
 	public function test_migrate__keeps_one_tap_disabled_when_one_tap_on_all_pages_is_true() {

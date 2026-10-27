@@ -92,10 +92,21 @@ class Migration_1_163_0 {
 		$db_version = $this->options->get( self::DB_VERSION_OPTION );
 
 		if ( ! $db_version || version_compare( $db_version, self::DB_VERSION, '<' ) ) {
-			$this->migrate_one_tap_enabled_setting();
+			$this->apply_changes();
 
 			$this->options->set( self::DB_VERSION_OPTION, self::DB_VERSION );
 		}
+	}
+
+	/**
+	 * Converts the legacy "One Tap on all pages" setting.
+	 *
+	 * This neither checks nor updates `googlesitekit_db_version`.
+	 *
+	 * @since n.e.x.t
+	 */
+	public function apply_changes() {
+		$this->migrate_one_tap_enabled_setting();
 	}
 
 	/**
@@ -104,9 +115,11 @@ class Migration_1_163_0 {
 	 *
 	 * Given the new setting is equivalent to the old setting of
 	 * "One Tap on all pages", we only set One Tap to be enabled if
-	 * the no-longer-used "One Tap on all pages" setting was set to true.
+	 * it was enabled and the no-longer-used "One Tap on all pages"
+	 * setting was set to true.
 	 *
 	 * @since 1.163.0
+	 * @since n.e.x.t Updated to keep One Tap disabled when it was not enabled.
 	 */
 	protected function migrate_one_tap_enabled_setting() {
 		if ( ! $this->sign_in_with_google_settings->has() ) {
@@ -120,11 +133,8 @@ class Migration_1_163_0 {
 		}
 
 		if (
-			array_key_exists(
-				'oneTapOnAllPages',
-				$sign_in_with_google_settings
-			) &&
-			true === $sign_in_with_google_settings['oneTapOnAllPages']
+			true === ( $sign_in_with_google_settings['oneTapEnabled'] ?? false ) &&
+			true === ( $sign_in_with_google_settings['oneTapOnAllPages'] ?? false )
 		) {
 			$sign_in_with_google_settings['oneTapEnabled'] = true;
 		} else {

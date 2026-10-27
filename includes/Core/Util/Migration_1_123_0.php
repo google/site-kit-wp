@@ -117,7 +117,7 @@ class Migration_1_123_0 {
 	 * Migrates the legacy analytics settings over to analytics-4.
 	 *
 	 * @since 1.123.0
-	 * @since n.e.x.t Made method public, and changed to skip missing keys and a legacy option that is not an array.
+	 * @since n.e.x.t Made method public, and updated to skip missing keys and a legacy option that is not an array.
 	 */
 	public function migrate_legacy_analytics_settings() {
 		if ( ! $this->analytics_settings->has() ) {

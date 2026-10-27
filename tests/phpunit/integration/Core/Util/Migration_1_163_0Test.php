@@ -151,6 +151,27 @@ class Migration_1_163_0Test extends TestCase {
 		$this->assertTrue( $post_migration_settings['oneTapEnabled'], 'One-tap should be enabled after migration because "One-tap on all pages" was previously enabled.' );
 	}
 
+	public function test_migrate_one_tap_settings_when_only_enabled_on_all_pages_was_true() {
+		$migration = $this->get_new_migration_instance();
+
+		$pre_migration_settings = array(
+			'clientID'         => '1234567890.googleusercontent.com',
+			'text'             => Sign_In_With_Google_Settings::TEXT_CONTINUE_WITH_GOOGLE['value'],
+			'theme'            => Sign_In_With_Google_Settings::THEME_LIGHT['value'],
+			'shape'            => Sign_In_With_Google_Settings::SHAPE_RECTANGULAR['value'],
+			'oneTapEnabled'    => false,
+			'oneTapOnAllPages' => true,
+		);
+
+		$this->sign_in_with_google_settings->set( $pre_migration_settings );
+
+		$migration->migrate();
+
+		$post_migration_settings = $this->sign_in_with_google_settings->get();
+
+		$this->assertFalse( $post_migration_settings['oneTapEnabled'], 'One-tap should not be enabled after migration because it was not previously enabled, even though "One-tap on all pages" was.' );
+	}
+
 	public function test_migrate_one_tap_settings_when_enabled_on_all_pages_not_present() {
 		$migration = $this->get_new_migration_instance();
 

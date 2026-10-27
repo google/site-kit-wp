@@ -26,6 +26,10 @@ use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_
  * version. This migration runs their settings changes again, without
  * overwriting settings changed after that update.
  *
+ * One Tap is the exception. A site that skipped 1.163.0 with One Tap enabled
+ * but not on all pages has shown One Tap on every page since that update.
+ * This migration turns One Tap off for it, as 1.163.0 does.
+ *
  * @since n.e.x.t
  * @access private
  * @ignore
@@ -179,6 +183,9 @@ class Migration_N_E_X_T {
 	 * Moves the audience keys from the Analytics settings to the Audience
 	 * settings, without overwriting a value the Audience settings already have.
 	 *
+	 * The keys are only removed, not copied, when their audiences belong to
+	 * another property than the current one.
+	 *
 	 * @since n.e.x.t
 	 */
 	protected function migrate_audience_settings() {
@@ -192,16 +199,18 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		$audience_settings = (array) $this->audience_settings->get();
+		$audience_settings = $this->audience_settings->get();
+		$audience_settings = is_array( $audience_settings ) ? $audience_settings : array();
 
-		$has_migration = false;
+		$is_current_property = $this->has_current_property_audiences( $analytics_settings );
+		$has_migration       = false;
 
 		foreach ( Migration_1_150_0::AUDIENCE_SETTINGS_KEYS as $key ) {
 			if ( ! array_key_exists( $key, $analytics_settings ) ) {
 				continue;
 			}
 
-			if ( empty( $audience_settings[ $key ] ) ) {
+			if ( $is_current_property && empty( $audience_settings[ $key ] ) ) {
 				$audience_settings[ $key ] = $analytics_settings[ $key ];
 			}
 
@@ -216,18 +225,44 @@ class Migration_N_E_X_T {
 	}
 
 	/**
+	 * Checks whether the audiences in the Analytics settings belong to the
+	 * current property.
+	 *
+	 * A site that changed its property after skipping 1.150.0 still has the
+	 * old property's audiences in its Analytics settings.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $analytics_settings Analytics settings.
+	 * @return bool True if every audience name starts with `properties/{propertyID}/` for the current property.
+	 */
+	protected function has_current_property_audiences( array $analytics_settings ) {
+		$audiences = $analytics_settings['availableAudiences'] ?? null;
+
+		if ( empty( $analytics_settings['propertyID'] ) || ! is_array( $audiences ) || empty( $audiences ) ) {
+			return false;
+		}
+
+		$prefix = 'properties/' . $analytics_settings['propertyID'] . '/';
+
+		foreach ( $audiences as $audience ) {
+			if ( ! isset( $audience['name'] ) || 0 !== strpos( $audience['name'], $prefix ) ) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	/**
 	 * Converts the legacy "One Tap on all pages" setting.
 	 *
-	 * One Tap stays enabled only when both `oneTapEnabled` and
-	 * `oneTapOnAllPages` are true, so this can turn One Tap off but never on.
+	 * Runs only when the stored settings still have `oneTapOnAllPages`, so
+	 * One Tap is left as it is on a site without that key.
 	 *
 	 * @since n.e.x.t
 	 */
 	protected function migrate_one_tap_enabled_setting() {
-		if ( ! $this->sign_in_with_google_settings->has() ) {
-			return;
-		}
-
 		$sign_in_with_google_settings = $this->sign_in_with_google_settings->get();
 
 		if (
@@ -237,11 +272,6 @@ class Migration_N_E_X_T {
 			return;
 		}
 
-		$sign_in_with_google_settings['oneTapEnabled'] = true === ( $sign_in_with_google_settings['oneTapEnabled'] ?? false )
-			&& true === $sign_in_with_google_settings['oneTapOnAllPages'];
-
-		unset( $sign_in_with_google_settings['oneTapOnAllPages'] );
-
-		$this->sign_in_with_google_settings->set( $sign_in_with_google_settings );
+		( new Migration_1_163_0( $this->context, $this->options ) )->apply_changes();
 	}
 }

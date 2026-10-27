@@ -121,6 +121,7 @@ class Migration_1_150_0 {
 	 * Migrates the Audience Settings from Analytics settings to new Audience settings.
 	 *
 	 * @since 1.151.0
+	 * @since n.e.x.t Updated to handle missing Audience settings.
 	 */
 	protected function migrate_audience_settings() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -133,7 +134,8 @@ class Migration_1_150_0 {
 			return;
 		}
 
-		$audience_settings = (array) $this->audience_settings->get();
+		$audience_settings = $this->audience_settings->get();
+		$audience_settings = is_array( $audience_settings ) ? $audience_settings : array();
 
 		$has_migration = false;
 

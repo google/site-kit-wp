@@ -111,7 +111,7 @@ class Migration_1_129_0 {
 	}
 
 	/**
-	 * Moves the Analytics Ads Conversion ID to the Ads module and activates it.
+	 * Moves the Ads Conversion ID from the Analytics settings to the Ads module, and activates Ads if needed.
 	 *
 	 * This neither checks nor updates `googlesitekit_db_version`.
 	 *
@@ -126,7 +126,7 @@ class Migration_1_129_0 {
 	 * Migrates the Ads Conversion ID to the new Ads module.
 	 *
 	 * @since 1.129.0
-	 * @since n.e.x.t Changed to work when no Ads settings are stored.
+	 * @since n.e.x.t Updated to handle missing Ads settings.
 	 */
 	protected function migrate_analytics_conversion_id_setting() {
 		if ( ! $this->analytics_settings->has() ) {
@@ -139,7 +139,8 @@ class Migration_1_129_0 {
 			return;
 		}
 
-		$ads_settings = (array) $this->ads_settings->get();
+		$ads_settings = $this->ads_settings->get();
+		$ads_settings = is_array( $ads_settings ) ? $ads_settings : array();
 
 		if ( array_key_exists( 'conversionID', $ads_settings ) && ! empty( $ads_settings['conversionID'] ) ) {
 			// If there is already an adsConversionID set in the Ads module, do not overwrite it, remove it from the Analytics module.

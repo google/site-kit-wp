@@ -216,7 +216,11 @@ class Migration_1_129_0Test extends TestCase {
 
 		$migration->migrate();
 
-		$this->assertSame( '1234567890', $this->ads_settings->get()['conversionID'], 'The conversionID should be moved to the Ads settings when no Ads option is stored.' );
+		$this->assertSame(
+			array( 'conversionID' => '1234567890' ),
+			$this->ads_settings->get(),
+			'The Ads settings should hold only the moved conversionID when no Ads option is stored.'
+		);
 
 		$analytics_4_settings = $this->analytics_settings->get();
 		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should be removed from the Analytics settings after migration.' );

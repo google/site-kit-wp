@@ -98,6 +98,30 @@ class Migration_1_150_0Test extends TestCase {
 		$this->assertEquals( 123, $audience_settings_after['audienceSegmentationSetupCompletedBy'], 'Audience segmentation setup completed by should be migrated to audience settings.' );
 	}
 
+	public function test_migrate_audience_settings_when_audience_settings_are_not_registered() {
+		$migration = $this->get_new_migration_instance();
+
+		// Unregister the Audience settings, as when Analytics 4 is inactive, so
+		// `get()` returns `false`.
+		unregister_setting( Audience_Settings::OPTION, Audience_Settings::OPTION );
+
+		$analytics_data = array(
+			'availableAudiences'                   => array( 'audience1', 'audience2' ),
+			'availableAudiencesLastSyncedAt'       => 1678886400,
+			'audienceSegmentationSetupCompletedBy' => 123,
+		);
+
+		$this->analytics_settings->set( $analytics_data );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			$analytics_data,
+			$this->audience_settings->get(),
+			'Audience settings should hold only the migrated keys when no Audience settings are stored.'
+		);
+	}
+
 	public function test_migrate_audience_settings_no_analytics_settings() {
 		$migration = $this->get_new_migration_instance();
 
