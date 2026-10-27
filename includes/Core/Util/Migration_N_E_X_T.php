@@ -16,6 +16,7 @@ use Google\Site_Kit\Core\Storage\Options;
 use Google\Site_Kit\Modules\Analytics_4;
 use Google\Site_Kit\Modules\Analytics_4\Audience_Settings;
 use Google\Site_Kit\Modules\Analytics_4\Settings as Analytics_Settings;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings as Reader_Revenue_Manager_Settings;
 use Google\Site_Kit\Modules\Sign_In_With_Google\Settings as Sign_In_With_Google_Settings;
 
 /**
@@ -87,6 +88,14 @@ class Migration_N_E_X_T {
 	protected Sign_In_With_Google_Settings $sign_in_with_google_settings;
 
 	/**
+	 * Reader_Revenue_Manager_Settings instance.
+	 *
+	 * @since n.e.x.t
+	 * @var Reader_Revenue_Manager_Settings
+	 */
+	protected Reader_Revenue_Manager_Settings $rrm_settings;
+
+	/**
 	 * Constructor.
 	 *
 	 * @since n.e.x.t
@@ -103,6 +112,7 @@ class Migration_N_E_X_T {
 		$this->analytics_settings           = new Analytics_Settings( $this->options );
 		$this->audience_settings            = new Audience_Settings( $this->options );
 		$this->sign_in_with_google_settings = new Sign_In_With_Google_Settings( $this->options );
+		$this->rrm_settings                 = new Reader_Revenue_Manager_Settings( $this->options );
 	}
 
 	/**
@@ -131,7 +141,7 @@ class Migration_N_E_X_T {
 			( new Migration_1_129_0( $this->context, $this->options ) )->apply_changes();
 			$this->migrate_audience_settings();
 			$this->migrate_one_tap_enabled_setting();
-			( new Migration_1_177_0( $this->context, $this->options ) )->apply_changes();
+			$this->migrate_rrm_content_policy_status();
 
 			$this->options->set( self::DB_VERSION_OPTION, static::DB_VERSION );
 		}
@@ -274,5 +284,36 @@ class Migration_N_E_X_T {
 		}
 
 		( new Migration_1_163_0( $this->context, $this->options ) )->apply_changes();
+	}
+
+	/**
+	 * Converts the legacy Reader Revenue Manager content policy setting.
+	 *
+	 * After the update to 1.185.0 or later, the publication sync stores the
+	 * current `contentPolicyState` and `policyInfoLink`. When
+	 * `contentPolicyState` is already set, this keeps both and only removes
+	 * the legacy `contentPolicyStatus`, which can be older.
+	 *
+	 * @since n.e.x.t
+	 */
+	protected function migrate_rrm_content_policy_status() {
+		$rrm_settings = $this->rrm_settings->get();
+
+		if (
+			! is_array( $rrm_settings ) ||
+			! array_key_exists( 'contentPolicyStatus', $rrm_settings )
+		) {
+			return;
+		}
+
+		if ( empty( $rrm_settings['contentPolicyState'] ) ) {
+			( new Migration_1_177_0( $this->context, $this->options ) )->apply_changes();
+
+			return;
+		}
+
+		unset( $rrm_settings['contentPolicyStatus'] );
+
+		$this->rrm_settings->set( $rrm_settings );
 	}
 }

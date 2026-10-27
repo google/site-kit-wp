@@ -166,7 +166,7 @@ class PluginTest extends TestCase {
 			array(
 				'accountID'        => '12345678',
 				'adsConversionID'  => 'AW-123456789',
-				'trackingDisabled' => array( 'loggedinUsers' ),
+				'trackingDisabled' => array( 'contentCreators' ),
 			)
 		);
 		$options->set(
@@ -222,7 +222,7 @@ class PluginTest extends TestCase {
 
 		$analytics_settings = $options->get( Analytics_Settings::OPTION );
 		$this->assertSame( '12345678', $analytics_settings['accountID'], 'The 1.123.0 migration should copy the legacy `accountID`.' );
-		$this->assertSame( array( 'loggedinUsers' ), $analytics_settings['trackingDisabled'], 'The 1.123.0 migration should copy the legacy `trackingDisabled`.' );
+		$this->assertSame( array( 'contentCreators' ), $analytics_settings['trackingDisabled'], 'The 1.123.0 migration should copy the legacy `trackingDisabled`.' );
 		$this->assertTrue( empty( $analytics_settings['adsConversionID'] ), 'The 1.129.0 migration should remove the `adsConversionID` from the Analytics settings.' );
 		$this->assertArrayNotHasKey( 'availableAudiences', $analytics_settings, 'The 1.150.0 migration should remove the audience keys from the Analytics settings.' );
 
@@ -262,6 +262,55 @@ class PluginTest extends TestCase {
 		do_action( 'admin_init' );
 
 		$this->assertSame( $stored_values, array_map( array( $options, 'get' ), $migrated_options ), 'A second `admin_init` should change nothing.' );
+	}
+
+	public function test_register__adds_every_migration_at_priority_0_in_version_order() {
+		global $wp_filter;
+
+		remove_all_actions( 'init' );
+		remove_all_actions( 'admin_init' );
+
+		$plugin = new Plugin( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$plugin->register();
+
+		// The migrations are added to `admin_init` in the `init` callback.
+		do_action( 'init' );
+
+		$versions = array();
+
+		foreach ( $wp_filter['admin_init']->callbacks as $priority => $callbacks ) {
+			foreach ( $callbacks as $callback ) {
+				$migration = is_array( $callback['function'] ) ? $callback['function'][0] : null;
+
+				if ( ! is_object( $migration ) || 0 !== strpos( get_class( $migration ), 'Google\\Site_Kit\\Core\\Util\\Migration_' ) ) {
+					continue;
+				}
+
+				$this->assertSame( 0, $priority, sprintf( '`%s` should add `migrate()` to `admin_init` at priority 0.', get_class( $migration ) ) );
+
+				$versions[] = $migration::DB_VERSION;
+			}
+		}
+
+		$this->assertGreaterThan( 1, count( $versions ), 'The plugin should add the migrations to `admin_init`.' );
+
+		// Until release, the newest migration's version is a placeholder, which
+		// `version_compare()` sorts below every numeric version.
+		$comparable_versions = array_map(
+			function ( $version ) {
+				return is_numeric( str_replace( '.', '', $version ) ) ? $version : '999';
+			},
+			$versions
+		);
+
+		$count = count( $comparable_versions );
+
+		for ( $i = 1; $i < $count; $i++ ) {
+			$this->assertTrue(
+				version_compare( $comparable_versions[ $i - 1 ], $comparable_versions[ $i ], '<' ),
+				sprintf( 'Migration %1$s should be added after migration %2$s, with a higher version.', $versions[ $i ], $versions[ $i - 1 ] )
+			);
+		}
 	}
 
 	protected function assertActionRendersGeneratorTag( $action ) {

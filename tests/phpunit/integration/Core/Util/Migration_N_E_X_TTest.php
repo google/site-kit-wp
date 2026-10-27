@@ -170,7 +170,7 @@ class Migration_N_E_X_TTest extends TestCase {
 			array(
 				'accountID'        => '12345678',
 				'adsConversionID'  => 'AW-123456789',
-				'trackingDisabled' => array( 'loggedinUsers' ),
+				'trackingDisabled' => array( 'contentCreators' ),
 			)
 		);
 		$this->analytics_settings->set(
@@ -184,7 +184,7 @@ class Migration_N_E_X_TTest extends TestCase {
 
 		$analytics_settings = $this->analytics_settings->get();
 		$this->assertSame( '12345678', $analytics_settings['accountID'], 'The legacy `accountID` should be copied to the Analytics 4 settings.' );
-		$this->assertSame( array( 'loggedinUsers' ), $analytics_settings['trackingDisabled'], 'The legacy `trackingDisabled` should be copied to the Analytics 4 settings.' );
+		$this->assertSame( array( 'contentCreators' ), $analytics_settings['trackingDisabled'], 'The legacy `trackingDisabled` should be copied to the Analytics 4 settings.' );
 		$this->assertTrue( empty( $analytics_settings['adsConversionID'] ), 'The legacy `adsConversionID` should be removed from the Analytics 4 settings.' );
 
 		$this->assertSame( 'AW-123456789', $this->ads_settings->get()['conversionID'], 'The legacy `adsConversionID` should be moved to the Ads settings.' );
@@ -380,6 +380,31 @@ class Migration_N_E_X_TTest extends TestCase {
 		$migration->migrate();
 
 		$this->assertTrue( $this->sign_in_with_google_settings->get()['oneTapEnabled'], 'One Tap should stay enabled when the settings have no `oneTapOnAllPages` key.' );
+	}
+
+	public function test_migrate__keeps_a_content_policy_state_stored_after_the_update() {
+		$migration = $this->get_new_migration_instance();
+
+		// The publication sync stored the flat keys after the update, and the
+		// legacy nested key from before 1.177.0 was kept alongside them.
+		$this->rrm_settings->set(
+			array(
+				'publicationID'       => 'test-pub-id',
+				'contentPolicyState'  => 'CONTENT_POLICY_STATE_OK',
+				'policyInfoLink'      => '',
+				'contentPolicyStatus' => array(
+					'contentPolicyState' => 'CONTENT_POLICY_VIOLATION_ACTIVE',
+					'policyInfoLink'     => 'https://example.com/policy-info',
+				),
+			)
+		);
+
+		$migration->migrate();
+
+		$rrm_settings = $this->rrm_settings->get();
+		$this->assertSame( 'CONTENT_POLICY_STATE_OK', $rrm_settings['contentPolicyState'], 'A `contentPolicyState` stored after the update should not be overwritten by the legacy `contentPolicyStatus`.' );
+		$this->assertSame( '', $rrm_settings['policyInfoLink'], 'A `policyInfoLink` stored after the update should not be overwritten by the legacy `contentPolicyStatus`.' );
+		$this->assertArrayNotHasKey( 'contentPolicyStatus', $rrm_settings, 'The legacy `contentPolicyStatus` key should be removed.' );
 	}
 
 	public function test_migrate__keeps_an_existing_ads_conversion_id() {
