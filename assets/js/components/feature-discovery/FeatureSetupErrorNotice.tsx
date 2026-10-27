@@ -19,11 +19,12 @@
 /**
  * External dependencies
  */
-import { FC, Fragment, ReactNode } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { Fragment } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
