@@ -225,22 +225,23 @@ OneColumnErrored.scenario = {
 
 /**
  * A report with no rows is what the API returns for a range with no traffic.
- * The referrals column says no traffic came from other sites, and the other
- * two columns say the site had no visitors.
+ * The site had visits, but none from other sites and no views in the posts
+ * report. With no visits in the Recent activity date range, the section
+ * doesn't render.
  */
-export const ZeroRows = Template.bind(
+export const ZeroRowsInPostsAndReferrals = Template.bind(
 	{}
 ) as Story< RecentTrafficBreakdownStoryProps >;
-ZeroRows.storyName = 'Zero Rows';
-ZeroRows.args = {
+ZeroRowsInPostsAndReferrals.storyName = 'Zero Rows In Posts And Referrals';
+ZeroRowsInPostsAndReferrals.args = {
 	setupRegistry: ( registry: WPDataRegistry ) =>
 		provideRecentTrafficBreakdownReports( registry, {
 			posts: {},
-			channels: {},
+			channels: CHANNELS,
 			referrals: {},
 		} ),
 };
-ZeroRows.scenario = {
+ZeroRowsInPostsAndReferrals.scenario = {
 	viewport: 'large',
 };
 
