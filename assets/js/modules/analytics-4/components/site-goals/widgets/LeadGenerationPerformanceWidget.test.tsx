@@ -1101,7 +1101,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				expanded: true,
 			} )
 		).toBeInTheDocument();
 	} );
@@ -1631,13 +1631,18 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( true );
 
-		const { getByText, waitForRegistry } = render(
+		const { getByRole, getByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
 		await waitForRegistry();
 
 		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Lead generation performance Gathering breakdown data Hide section',
+			} )
+		).toBeInTheDocument();
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
@@ -1647,7 +1652,7 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( false );
 
-		const { queryByText, waitForRegistry } = render(
+		const { getByRole, queryByText, waitForRegistry } = render(
 			<LeadGenerationPerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -1656,6 +1661,11 @@ describe( 'LeadGenerationPerformanceWidget', () => {
 		expect(
 			queryByText( 'Gathering breakdown data' )
 		).not.toBeInTheDocument();
+		expect(
+			getByRole( 'button', {
+				name: 'Lead generation performance Hide section',
+			} )
+		).toBeInTheDocument();
 	} );
 
 	it( 'renders the gathering breakdown data badge alongside the breakdown success notice', async () => {

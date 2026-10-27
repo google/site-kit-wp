@@ -34,6 +34,7 @@ import { __ } from '@wordpress/i18n';
  * Internal dependencies
  */
 import IconWrapper from '@/js/components/IconWrapper';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 
 export interface WidgetProps {
@@ -107,17 +108,10 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 		} );
 
 		// Check if the widget is collapsible and uncontrolled (i.e.
-		// `isCollapsed` prop is not provided). If so, set the appropriate
-		// aria-label for the toggle button.
+		// `isCollapsed` prop is not provided). If so, the header acts as
+		// the toggle button.
 		const collapsibleAndUncontrolled =
 			!! collapsible && isCollapsedProp === undefined;
-
-		let ariaLabel: string | undefined;
-		if ( collapsibleAndUncontrolled ) {
-			ariaLabel = isCollapsed
-				? __( 'Expand section', 'google-site-kit' )
-				: __( 'Hide section', 'google-site-kit' );
-		}
 
 		return (
 			<div
@@ -141,9 +135,6 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 							collapsibleAndUncontrolled
 								? `googlesitekit-widget-body-${ instanceID }`
 								: undefined
-						}
-						aria-label={
-							collapsibleAndUncontrolled ? ariaLabel : undefined
 						}
 						className={ classnames(
 							'googlesitekit-widget__header',
@@ -196,6 +187,13 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 								{ headerContents }
 							</div>
 						</Header>
+						{ collapsibleAndUncontrolled && (
+							<VisuallyHidden>
+								{ isCollapsed
+									? __( 'Expand section', 'google-site-kit' )
+									: __( 'Hide section', 'google-site-kit' ) }
+							</VisuallyHidden>
+						) }
 					</div>
 				) }
 				<div

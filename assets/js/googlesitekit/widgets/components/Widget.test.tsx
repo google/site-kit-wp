@@ -58,10 +58,70 @@ describe( 'Widget', () => {
 
 		expect(
 			getByRole( 'button', {
-				name: 'Hide section',
+				name: 'Collapsible Test Widget Hide section',
 			} )
 		).toBeInTheDocument();
 		expect( getByText( 'Collapsible Widget Body' ) ).toBeInTheDocument();
+	} );
+
+	it( 'should not render a toggle button or toggle text when the widget is not collapsible', () => {
+		const { queryByRole, queryByText } = render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Test Widget"
+				widgetSlug="test-widget"
+			>
+				<div>Widget Body</div>
+			</Widget>
+		);
+
+		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Hide section' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Expand section' ) ).not.toBeInTheDocument();
+	} );
+
+	it( 'should read the collapsible header contents followed by the toggle action', () => {
+		const { getByRole } = render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Collapsible Test Widget"
+				widgetSlug="collapsible-test-widget"
+				collapsible
+			>
+				<div>Collapsible Widget Body</div>
+			</Widget>
+		);
+
+		fireEvent.click(
+			getByRole( 'button', {
+				name: 'Collapsible Test Widget Hide section',
+			} )
+		);
+
+		expect(
+			getByRole( 'button', {
+				name: 'Collapsible Test Widget Expand section',
+			} )
+		).toBeInTheDocument();
+	} );
+
+	it( 'should mark the collapsible header as expanded only while the widget body is shown', () => {
+		const { getByRole } = render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Collapsible Test Widget"
+				widgetSlug="collapsible-test-widget"
+				collapsible
+			>
+				<div>Collapsible Widget Body</div>
+			</Widget>
+		);
+
+		const header = getByRole( 'button', { expanded: true } );
+
+		fireEvent.click( header );
+
+		expect( getByRole( 'button', { expanded: false } ) ).toBe( header );
 	} );
 
 	it( 'should toggle the collapsible widget body when the header is clicked', () => {
@@ -77,7 +137,7 @@ describe( 'Widget', () => {
 		);
 
 		const header = getByRole( 'button', {
-			name: 'Hide section',
+			name: 'Collapsible Test Widget Hide section',
 		} );
 
 		// The body should be visible by default.
@@ -115,7 +175,7 @@ describe( 'Widget', () => {
 		);
 
 		const header = getByRole( 'button', {
-			name: 'Hide section',
+			name: 'Collapsible Test Widget Hide section',
 		} );
 
 		// The body should be visible by default.
@@ -151,7 +211,7 @@ describe( 'Widget', () => {
 		);
 
 		const header = getByRole( 'button', {
-			name: 'Expand section',
+			name: 'Collapsible Test Widget Expand section',
 		} );
 
 		expect(
@@ -167,7 +227,7 @@ describe( 'Widget', () => {
 	} );
 
 	it( 'should allow the parent component to control the collapsed state', () => {
-		const { container, getByRole } = render(
+		const { container, queryByRole, queryByText } = render(
 			<Widget
 				Header={ WidgetHeaderTitle }
 				headerContents="Collapsible Test Widget"
@@ -182,13 +242,9 @@ describe( 'Widget', () => {
 		// When the `isCollapsed` prop is provided, the widget should not
 		// render a button to toggle the collapsed state, as it is controlled
 		// by the parent component.
-		expect( () => {
-			getByRole( 'button', {
-				name: 'Expand section',
-			} );
-		} ).toThrow(
-			'Unable to find an accessible element with the role "button" and name "Expand section"'
-		);
+		expect( queryByRole( 'button' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Hide section' ) ).not.toBeInTheDocument();
+		expect( queryByText( 'Expand section' ) ).not.toBeInTheDocument();
 
 		// The body should not be visible when `isCollapsed` is true.
 		expect(
