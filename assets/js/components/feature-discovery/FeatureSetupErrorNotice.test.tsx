@@ -68,6 +68,9 @@ describe( 'FeatureSetupErrorNotice', () => {
 
 		const learnMoreLink = getByRole( 'link', { name: /learn more/i } );
 		expect( learnMoreLink ).toHaveAttribute( 'href', troubleshootingURL );
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		expect( learnMoreLink ).toHaveAttribute( 'rel', 'noopener noreferrer' );
+		expect( learnMoreLink.querySelector( 'svg' ) ).not.toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );

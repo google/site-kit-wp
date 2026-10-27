@@ -44,7 +44,7 @@ import {
 
 const sanitizeArgs = {
 	ALLOWED_TAGS: [ 'a' ],
-	ALLOWED_ATTR: [ 'href' ],
+	ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
 };
 
 interface FeatureSetupErrorNoticeProps {
@@ -106,7 +106,10 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 		if ( errorTroubleshootingLinkURL ) {
 			description = sprintf(
 				/* translators: 1: Error message 2: Troubleshooting URL. */
-				__( '%1$s <a href="%2$s">Learn more</a>', 'google-site-kit' ),
+				__(
+					'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">Learn more</a>',
+					'google-site-kit'
+				),
 				description,
 				errorTroubleshootingLinkURL
 			);
