@@ -20,12 +20,18 @@ exports[`PopularAuthorsWidget should render correctly with the expected metrics 
             Most popular authors by pageviews
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Authors whose posts got the most visits"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Authors whose posts got the most visits
+            </span>
           </span>
         </div>
         <div
@@ -119,12 +125,18 @@ exports[`PopularAuthorsWidget should render the custom dimension error when ther
           Most popular authors by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-8"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Authors whose posts got the most visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-8"
+          >
+            Authors whose posts got the most visits
+          </span>
         </span>
       </div>
       <div
@@ -198,12 +210,18 @@ exports[`PopularAuthorsWidget should render the generic error variant when the r
           Most popular authors by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Authors whose posts got the most visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Authors whose posts got the most visits
+          </span>
         </span>
       </div>
       <div
@@ -273,12 +291,18 @@ exports[`PopularAuthorsWidget should render the insufficient permissions error v
           Most popular authors by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Authors whose posts got the most visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Authors whose posts got the most visits
+          </span>
         </span>
       </div>
       <div
@@ -344,12 +368,18 @@ exports[`PopularAuthorsWidget should render the loading state while resolving th
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Authors whose posts got the most visits"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Authors whose posts got the most visits
+              </span>
             </span>
           </span>
         </div>
@@ -400,12 +430,18 @@ exports[`PopularAuthorsWidget should render the missing custom dimension error w
           Most popular authors by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-7"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Authors whose posts got the most visits"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-7"
+          >
+            Authors whose posts got the most visits
+          </span>
         </span>
       </div>
       <div

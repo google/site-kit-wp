@@ -20,12 +20,18 @@ exports[`TopCitiesWidget should render correctly with the expected metrics 1`] =
             Top cities driving traffic
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="The cities where most of your visitors came from"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              The cities where most of your visitors came from
+            </span>
           </span>
         </div>
         <div
@@ -119,12 +125,18 @@ exports[`TopCitiesWidget should render the generic error variant when the report
           Top cities driving traffic
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="The cities where most of your visitors came from"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            The cities where most of your visitors came from
+          </span>
         </span>
       </div>
       <div
@@ -194,12 +206,18 @@ exports[`TopCitiesWidget should render the insufficient permissions error varian
           Top cities driving traffic
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="The cities where most of your visitors came from"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            The cities where most of your visitors came from
+          </span>
         </span>
       </div>
       <div
@@ -265,12 +283,18 @@ exports[`TopCitiesWidget should render the loading state while resolving the rep
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="The cities where most of your visitors came from"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                The cities where most of your visitors came from
+              </span>
             </span>
           </span>
         </div>

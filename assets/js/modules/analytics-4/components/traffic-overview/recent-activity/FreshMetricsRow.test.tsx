@@ -122,9 +122,12 @@ describe( 'FreshMetricsRow', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect(
+			screen.getByRole( 'heading', {
+				name: 'Site traffic since yesterday',
+			} )
+		).toBeInTheDocument();
+		expect( container ).toHaveTextContent( '157Total visitors' );
 		expect( container ).toHaveTextContent(
 			'Search performance72Search clicks8KSearch impressions'
 		);
@@ -211,9 +214,7 @@ describe( 'FreshMetricsRow', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday0Total visitors'
-		);
+		expect( container ).toHaveTextContent( '0Total visitors' );
 		expect(
 			screen.queryByText( 'No recent visitor data yet' )
 		).not.toBeInTheDocument();
@@ -322,9 +323,7 @@ describe( 'FreshMetricsRow', () => {
 			screen.getByText( 'Data error in Search Console' )
 		).toBeInTheDocument();
 		expect( screen.queryByText( 'Search clicks' ) ).not.toBeInTheDocument();
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect( container ).toHaveTextContent( '157Total visitors' );
 	} );
 
 	it( 'should request the Search Console report again when "Retry" is clicked', async () => {
@@ -426,9 +425,7 @@ describe( 'FreshMetricsRow', () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Retry' } ) );
 
 		expect( await screen.findByText( '157' ) ).toBeInTheDocument();
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect( container ).toHaveTextContent( '157Total visitors' );
 		expect( fetchMock ).toHaveFetchedTimes( 2, analyticsReportEndpoint );
 	} );
 
@@ -486,9 +483,7 @@ describe( 'FreshMetricsRow', () => {
 		fireEvent.click( screen.getByRole( 'button', { name: 'Retry' } ) );
 
 		expect( await screen.findByText( '157' ) ).toBeInTheDocument();
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect( container ).toHaveTextContent( '157Total visitors' );
 	} );
 
 	it( 'should render both groups for a view-only user who can view Analytics and Search Console', async () => {
@@ -514,9 +509,7 @@ describe( 'FreshMetricsRow', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect( container ).toHaveTextContent( '157Total visitors' );
 		expect( container ).toHaveTextContent(
 			'Search performance72Search clicks8KSearch impressions'
 		);
@@ -542,9 +535,7 @@ describe( 'FreshMetricsRow', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent(
-			'Site traffic since yesterday157Total visitors'
-		);
+		expect( container ).toHaveTextContent( '157Total visitors' );
 		expect(
 			screen.queryByText( 'Search performance' )
 		).not.toBeInTheDocument();
