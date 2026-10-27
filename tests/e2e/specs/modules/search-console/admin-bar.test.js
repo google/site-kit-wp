@@ -1,12 +1,9 @@
 /**
- * WordPress dependencies
- */
-import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
+	activatePlugin,
+	createURL,
 	setEditPostFeature,
 	setSearchConsoleProperty,
 	setSiteVerification,
@@ -127,6 +124,18 @@ describe( 'Site Kit admin bar component display', () => {
 		// Data is requested when the Admin Bar app loads on first hover
 		mockBatchResponse = Object.assign( {}, searchConsole );
 
+		// On some WordPress versions, the Site Kit admin bar item in the editor
+		// sits under the mouse after the "Edit Post" click. The admin bar app
+		// then loads, and requests its data, as soon as the editor loads. Wait
+		// for the request from before the navigation.
+		const searchAnalyticsResponse = page.waitForResponse( ( res ) =>
+			res
+				.url()
+				.match(
+					'google-site-kit/v1/modules/search-console/data/searchanalytics?'
+				)
+		);
+
 		// Navigate to edit view for this post
 		await Promise.all( [
 			expect( page ).toClick( '#wp-admin-bar-edit a', {
@@ -139,16 +148,8 @@ describe( 'Site Kit admin bar component display', () => {
 		await dismissEditorWelcome();
 		await exitFullscreenEditor();
 
-		await Promise.all( [
-			page.hover( '#wp-admin-bar-google-site-kit' ),
-			page.waitForResponse( ( res ) =>
-				res
-					.url()
-					.match(
-						'google-site-kit/v1/modules/search-console/data/searchanalytics?'
-					)
-			),
-		] );
+		await page.hover( '#wp-admin-bar-google-site-kit' );
+		await searchAnalyticsResponse;
 
 		await page.evaluate( () => {
 			// Temporarily replace XMLHttpRequest.send with a no-op to prevent a DOMException on navigation.

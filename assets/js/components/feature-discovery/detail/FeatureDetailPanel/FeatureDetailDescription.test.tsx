@@ -17,8 +17,16 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { createElement, createInterpolateElement } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
+import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
@@ -43,11 +51,14 @@ describe( 'FeatureDetailDescription', () => {
 	it( 'should render catalog descriptions and benefits with markup', () => {
 		feature.detail = {
 			description: {
-				whatIs: (
-					<span>
-						Learn about{ ' ' }
-						<a href="https://example.com/">your audience</a>.
-					</span>
+				whatIs: createInterpolateElement(
+					'<p>Learn about <a>your audience</a>.</p>',
+					{
+						p: createElement( P, { size: SIZE_MEDIUM } ),
+						a: createElement( Link, {
+							href: 'https://example.com/',
+						} ),
+					}
 				),
 				whyUseHeading: 'Why use this feature?',
 				whyUseList: [

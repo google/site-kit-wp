@@ -35,7 +35,7 @@ describe( 'provideBenchmarkingData', () => {
 		registry = createTestRegistry();
 	} );
 
-	it( 'should make `getBenchmarkingData()` return the decoded visitor totals and dimensions of the `benchmarking-data.json` fixture for the start date and the end date when the `response` argument is not passed', () => {
+	it( 'should make `getBenchmarkingData()` return the decoded visit totals and key factor cards of the `benchmarking-data.json` fixture for the start date and the end date when the `response` argument is not passed', () => {
 		provideBenchmarkingData( registry, {
 			startDate: '2026-08-19',
 			endDate: '2026-09-15',
@@ -46,12 +46,11 @@ describe( 'provideBenchmarkingData', () => {
 				.select( MODULES_ANALYTICS_4 )
 				.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 		).toMatchObject( {
-			visitors: { current: 412, previous: 388 },
-			dimensions: [
-				'CONTENT',
-				'SEARCH_QUERIES',
-				'REFERRERS',
-				'CHANNELS',
+			visits: { current: 412, previous: 388 },
+			keyFactors: [
+				expect.objectContaining( { label: 'Facebook' } ),
+				expect.objectContaining( { label: 'Organic Search' } ),
+				expect.objectContaining( { label: '/how-to-plant-garlic/' } ),
 			],
 		} );
 	} );
@@ -61,10 +60,9 @@ describe( 'provideBenchmarkingData', () => {
 			registry,
 			{ startDate: '2026-08-19', endDate: '2026-09-15' },
 			{
-				visitors: { current: 0, previous: 0 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 0 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 0, previous: 0 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+				keyFactors: [],
 			}
 		);
 
@@ -73,10 +71,9 @@ describe( 'provideBenchmarkingData', () => {
 				.select( MODULES_ANALYTICS_4 )
 				.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 		).toEqual( {
-			visitors: { current: 0, previous: 0 },
-			dailyTraffic: [ { date: '2025-08-18', visitors: 0 } ],
-			dimensions: [],
-			contextualData: {},
+			visits: { current: 0, previous: 0 },
+			dailyTraffic: [ { date: '2025-08-18', visits: 0 } ],
+			keyFactors: [],
 		} );
 	} );
 

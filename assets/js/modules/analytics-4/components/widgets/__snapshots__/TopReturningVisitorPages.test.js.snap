@@ -20,12 +20,18 @@ exports[`TopReturningVisitorPages should render correctly with the expected metr
             Top pages by returning visitors
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Pages that attracted the most returning visitors"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Pages that attracted the most returning visitors
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`TopReturningVisitorPages should render the generic error variant when t
           Top pages by returning visitors
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages that attracted the most returning visitors"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Pages that attracted the most returning visitors
+          </span>
         </span>
       </div>
       <div
@@ -221,12 +233,18 @@ exports[`TopReturningVisitorPages should render the insufficient permissions err
           Top pages by returning visitors
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages that attracted the most returning visitors"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Pages that attracted the most returning visitors
+          </span>
         </span>
       </div>
       <div
@@ -292,12 +310,18 @@ exports[`TopReturningVisitorPages should render the loading state while resolvin
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Pages that attracted the most returning visitors"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Pages that attracted the most returning visitors
+              </span>
             </span>
           </span>
         </div>

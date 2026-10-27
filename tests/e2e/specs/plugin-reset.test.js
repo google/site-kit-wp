@@ -1,21 +1,15 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	deactivatePlugin,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	setAuthToken,
 	setClientConfig,
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	visitAdminPage,
 } from '../utils';
 
 describe( 'Plugin Reset', () => {

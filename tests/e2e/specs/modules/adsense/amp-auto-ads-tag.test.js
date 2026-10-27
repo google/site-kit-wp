@@ -17,18 +17,15 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
 	deactivatePlugin,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import { setAMPMode, setupAdSense } from '../../../utils';
+	setAMPMode,
+	setupAdSense,
+} from '../../../utils';
 
 describe( 'AMP <amp-auto-ads> tag', () => {
 	beforeAll( async () => {

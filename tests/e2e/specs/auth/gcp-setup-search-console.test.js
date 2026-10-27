@@ -1,19 +1,13 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	useRequestInterception,
+	visitAdminPage,
 	wpApiFetch,
 } from '../../utils';
 
@@ -71,11 +65,13 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		} );
 		await page.waitForNavigation();
 
-		await page.waitForSelector( '.googlesitekit-setup-module__title' );
+		// The Search Console step can finish before the test sees it, so check
+		// the final step, which confirms that Search Console is connected.
 		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module__title',
+			'.googlesitekit-wizard-step--five',
 			{
-				text: /Search Console/i,
+				text: /connected Search Console/i,
+				timeout: 10_000,
 			}
 		);
 
@@ -109,11 +105,13 @@ describe( 'Site Kit set up flow for the first time with search console setup', (
 		} );
 		await page.waitForNavigation();
 
-		await page.waitForSelector( '.googlesitekit-setup-module__title' );
+		// The Search Console step can finish before the test sees it, so check
+		// the final step, which confirms that Search Console is connected.
 		await expect( page ).toMatchElement(
-			'.googlesitekit-setup-module__title',
+			'.googlesitekit-wizard-step--five',
 			{
-				text: /Search Console/i,
+				text: /connected Search Console/i,
+				timeout: 10_000,
 			}
 		);
 

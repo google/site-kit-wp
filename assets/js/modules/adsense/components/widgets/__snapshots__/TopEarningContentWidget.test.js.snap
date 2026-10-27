@@ -20,12 +20,18 @@ exports[`TopEarningContentWidget should render correctly with the expected metri
             Top earning pages
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Pages that generated the most AdSense revenue"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Pages that generated the most AdSense revenue
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`TopEarningContentWidget should render the generic error variant when th
           Top earning pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages that generated the most AdSense revenue"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Pages that generated the most AdSense revenue
+          </span>
         </span>
       </div>
       <div
@@ -221,12 +233,18 @@ exports[`TopEarningContentWidget should render the insufficient permissions erro
           Top earning pages
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Pages that generated the most AdSense revenue"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Pages that generated the most AdSense revenue
+          </span>
         </span>
       </div>
       <div
@@ -292,12 +310,18 @@ exports[`TopEarningContentWidget should render the loading state while resolving
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Pages that generated the most AdSense revenue"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Pages that generated the most AdSense revenue
+              </span>
             </span>
           </span>
         </div>
