@@ -82,7 +82,7 @@ services:
   fixtures:
     build:
       context: ./docker/fixtures
-    image: site-kit-wp/playwright-node:22-alpine
+    image: site-kit-wp/playwright-node:24-alpine
     command: node --watch index.ts
     volumes:
       - ./docker/fixtures:/fixtures
