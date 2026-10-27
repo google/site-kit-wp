@@ -82,8 +82,11 @@ export default function ActivateAnalyticsCTA( {
 		return select( CORE_USER ).isItemDismissed( dismissedItemSlug );
 	} );
 
+	// This CTA shows its own error state, so the activation error is not also
+	// shown in the `InternalServerError` banner at the top of the page.
 	const activateModuleCallback = useActivateModuleCallback(
-		MODULE_SLUG_ANALYTICS_4
+		MODULE_SLUG_ANALYTICS_4,
+		{ internalServerErrorOptions: { showGlobalNotification: false } }
 	);
 	const completeModuleActivationCallback =
 		useCompleteModuleActivationCallback( MODULE_SLUG_ANALYTICS_4 );

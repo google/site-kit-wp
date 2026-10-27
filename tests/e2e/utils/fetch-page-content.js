@@ -17,7 +17,7 @@
  */
 
 /**
- * Fetches markup for any given URL in the context of Puppeteer.
+ * Fetches markup for any given URL in the context of the test page.
  *
  * @since 1.10.0
  *

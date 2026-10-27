@@ -13,10 +13,12 @@ namespace Google\Site_Kit\Modules\Analytics_4\Benchmarking;
 /**
  * Encodes an assembled benchmarking response for the browser.
  *
- * Thirteen months of daily counts next to seven ranked lists is tens of
- * kilobytes written as objects, and the dashboard keeps one of those per date
- * range in browser storage. The encoded response drops the repeated field
- * names, the date of every day but the first, and every repeated string.
+ * The response has one count for each day of the selected period, up to
+ * `Report_Options::MAXIMUM_PERIOD_DAYS` days. Written as objects, the counts
+ * repeat a field name and a date on every day. The dashboard keeps one
+ * response per date range in browser storage. The encoded response leaves out
+ * the repeated field names and the date of every day but the first, and
+ * stores each string once.
  *
  * @since 1.189.0
  * @access private
@@ -27,9 +29,14 @@ final class Response_Encoder {
 	/**
 	 * Encodes an assembled response.
 	 *
-	 * @since 1.189.0
+	 * A key factor card or an attribute whose kind the format doesn't list is
+	 * left out. A card is left out together with its attributes, so the list of
+	 * cards and the list of their attributes stay the same length.
 	 *
-	 * @param array $response Assembled response, with `visitors`, `dailyTraffic`, `dimensions` and `contextualData`.
+	 * @since 1.189.0
+	 * @since n.e.x.t Encodes the key factor cards in place of the dimension rows, and reads `visits` in place of `visitors`.
+	 *
+	 * @param array $response Assembled response, with `visits`, `dailyTraffic` and `keyFactors`.
 	 * @return array The encoded response.
 	 */
 	public function encode( array $response ) {
@@ -37,29 +44,31 @@ final class Response_Encoder {
 
 		$daily_traffic = isset( $response['dailyTraffic'] ) ? $response['dailyTraffic'] : array();
 		$first_row     = reset( $daily_traffic );
-		$visitors      = isset( $response['visitors'] ) ? $response['visitors'] : array();
-		$dimensions    = isset( $response['dimensions'] ) ? $response['dimensions'] : array();
+		$visits        = isset( $response['visits'] ) ? $response['visits'] : array();
+		$key_factors   = isset( $response['keyFactors'] ) ? $response['keyFactors'] : array();
 
-		$dimension_rows  = array();
-		$dimension_order = array();
+		$encoded_key_factors           = array();
+		$encoded_key_factor_attributes = array();
 
-		foreach ( $dimensions as $dimension ) {
-			if ( ! isset( Wire_Format::DIMENSION_INDEXES[ $dimension ] ) ) {
+		foreach ( $key_factors as $key_factor ) {
+			if ( ! isset( $key_factor['kind'], Wire_Format::KEY_FACTOR_KINDS[ $key_factor['kind'] ] ) ) {
 				continue;
 			}
 
-			$index = Wire_Format::DIMENSION_INDEXES[ $dimension ];
-			$key   = Wire_Format::CONTEXTUAL_DATA_KEYS[ $dimension ];
-			$rows  = isset( $response['contextualData'][ $key ] ) ? $response['contextualData'][ $key ] : array();
+			$encoded_key_factors[] = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_KINDS[ $key_factor['kind'] ], $key_factor, $strings );
 
-			$dimension_rows[ $index ] = array_map(
-				function ( $row ) use ( $dimension, &$strings ) {
-					return $this->encode_row( $dimension, $row, $strings );
-				},
-				$rows
-			);
+			$encoded_attributes = array();
+			$attributes         = isset( $key_factor['attributes'] ) ? $key_factor['attributes'] : array();
 
-			$dimension_order[] = $index;
+			foreach ( $attributes as $attribute ) {
+				if ( ! isset( $attribute['kind'], Wire_Format::KEY_FACTOR_ATTRIBUTE_KINDS[ $attribute['kind'] ] ) ) {
+					continue;
+				}
+
+				$encoded_attributes[] = $this->encode_key_factor_row( Wire_Format::KEY_FACTOR_ATTRIBUTE_KINDS[ $attribute['kind'] ], $attribute, $strings );
+			}
+
+			$encoded_key_factor_attributes[] = $encoded_attributes;
 		}
 
 		$encoded = array();
@@ -68,63 +77,48 @@ final class Response_Encoder {
 		$encoded[ Wire_Format::MEMBER_STRINGS ]    = $strings;
 		$encoded[ Wire_Format::MEMBER_FIRST_DATE ] = isset( $first_row['date'] ) ? $first_row['date'] : null;
 
-		$encoded[ Wire_Format::MEMBER_DAILY_VISITORS ] = array_map(
+		$encoded[ Wire_Format::MEMBER_DAILY_VISITS ] = array_map(
 			function ( $row ) {
-				return $this->encode_int( isset( $row['visitors'] ) ? $row['visitors'] : null );
+				return $this->encode_int( isset( $row['visits'] ) ? $row['visits'] : null );
 			},
 			array_values( $daily_traffic )
 		);
 
-		$encoded[ Wire_Format::MEMBER_VISITOR_TOTALS ] = array(
-			$this->encode_int( isset( $visitors['current'] ) ? $visitors['current'] : null ),
-			$this->encode_int( isset( $visitors['previous'] ) ? $visitors['previous'] : null ),
+		$encoded[ Wire_Format::MEMBER_VISIT_TOTALS ] = array(
+			$this->encode_int( isset( $visits['current'] ) ? $visits['current'] : null ),
+			$this->encode_int( isset( $visits['previous'] ) ? $visits['previous'] : null ),
 		);
 
-		// Cast so the rows travel keyed by dimension index. Left as an array,
-		// indexes that happen to run 0, 1, 2 would serialize as a list instead.
-		$encoded[ Wire_Format::MEMBER_DIMENSION_ROWS ]  = (object) $dimension_rows;
-		$encoded[ Wire_Format::MEMBER_DIMENSION_ORDER ] = $dimension_order;
+		$encoded[ Wire_Format::MEMBER_KEY_FACTORS ]           = $encoded_key_factors;
+		$encoded[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ] = $encoded_key_factor_attributes;
 
 		return $encoded;
 	}
 
 	/**
-	 * Encodes one dimension row in the layout its dimension travels in.
+	 * Encodes a key factor card or one of its attributes, which travel in the
+	 * same layout.
 	 *
-	 * @since 1.189.0
+	 * @since n.e.x.t
 	 *
-	 * @param string $dimension Dimension code the row belongs to.
-	 * @param array  $row       Row to encode.
-	 * @param array  $strings   String table, added to as strings are seen.
-	 * @return array The encoded row.
+	 * @param int   $kind_index The position the card's or the attribute's kind travels as.
+	 * @param array $row        Card or attribute to encode, with `label`, `current`, `previous` and `sharePct`.
+	 * @param array $strings    String table, added to as strings are seen.
+	 * @return array The encoded card or attribute, as the list `[ kind, label, current, previous, sharePct ]`.
 	 */
-	private function encode_row( $dimension, array $row, array &$strings ) {
-		if ( 'CONTENT' === $dimension ) {
-			return array(
-				$this->encode_string( isset( $row['url'] ) ? $row['url'] : null, $strings ),
-				$this->encode_string( isset( $row['title'] ) ? $row['title'] : null, $strings ),
-				$this->encode_int( isset( $row['visitors'] ) ? $row['visitors'] : null ),
-				$this->encode_int( isset( $row['publishedDaysAgo'] ) ? $row['publishedDaysAgo'] : null ),
-			);
-		}
-
-		$encoded = array(
+	private function encode_key_factor_row( $kind_index, array $row, array &$strings ) {
+		return array(
+			$kind_index,
 			$this->encode_string( isset( $row['label'] ) ? $row['label'] : null, $strings ),
 			$this->encode_int( isset( $row['current'] ) ? $row['current'] : null ),
 			$this->encode_int( isset( $row['previous'] ) ? $row['previous'] : null ),
+			$this->encode_share( isset( $row['sharePct'] ) ? $row['sharePct'] : null ),
 		);
-
-		if ( 'SEARCH_QUERIES' === $dimension ) {
-			$encoded[] = $this->encode_position( isset( $row['positionCurrent'] ) ? $row['positionCurrent'] : null );
-			$encoded[] = $this->encode_position( isset( $row['positionPrevious'] ) ? $row['positionPrevious'] : null );
-		}
-
-		return $encoded;
 	}
 
 	/**
 	 * Stores a string in the table and returns its position, so a string two
-	 * rows share travels once.
+	 * cards or attributes share travels once.
 	 *
 	 * @since 1.189.0
 	 *
@@ -162,14 +156,15 @@ final class Response_Encoder {
 	}
 
 	/**
-	 * Encodes an average position, the only number the format keeps decimals for.
+	 * Encodes a share of the site's change, the only number the format keeps
+	 * decimals for.
 	 *
-	 * @since 1.189.0
+	 * @since n.e.x.t
 	 *
 	 * @param mixed $value Value to encode.
 	 * @return float|null The rounded value, or null when there is no value.
 	 */
-	private function encode_position( $value ) {
-		return null === $value ? null : round( (float) $value, Wire_Format::POSITION_DECIMAL_PLACES );
+	private function encode_share( $value ) {
+		return null === $value ? null : round( (float) $value, Wire_Format::SHARE_DECIMAL_PLACES );
 	}
 }

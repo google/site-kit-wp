@@ -203,6 +203,7 @@ export function provideUserAuthentication(
  * Provides site information data to the given registry.
  *
  * @since 1.17.0
+ * @since n.e.x.t Sets `usingPlainPermalinks` to `false` by default.
  * @private
  *
  * @param {Object} registry    Registry object to dispatch to.
@@ -246,6 +247,7 @@ export function provideSiteInfo(
 		],
 		productPostType: 'product',
 		productPathPrefix: null,
+		usingPlainPermalinks: false,
 		keyMetricsSetupCompletedBy: 0,
 		keyMetricsSetupNew: false,
 		anyoneCanRegister: false,

@@ -63,21 +63,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use Ads?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Accelerate growth:', 'google-site-kit' ),
+						term: __( 'Accelerate growth', 'google-site-kit' ),
 						description: __(
 							'Reach your target audience instantly, bypassing organic wait times',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Drive quality traffic:', 'google-site-kit' ),
+						term: __( 'Drive quality traffic', 'google-site-kit' ),
 						description: __(
 							'Send visitors directly to your most important pages',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Scale results:', 'google-site-kit' ),
+						term: __( 'Scale results', 'google-site-kit' ),
 						description: __(
 							'Boost conversions while keeping full control of your budget',
 							'google-site-kit'

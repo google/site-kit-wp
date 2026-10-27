@@ -22,14 +22,10 @@
 import ampHTMLValidator from 'amphtml-validator';
 
 /**
- * WordPress dependencies
- */
-import { createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { fetchPageContent } from '../utils';
+import { createURL } from '../utils/create-url';
 
 /**
  * Determines if the path has valid AMP for users.

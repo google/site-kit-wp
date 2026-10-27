@@ -17,14 +17,9 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
-import { createWaitForFetchRequests } from '../../utils';
+import { createWaitForFetchRequests, visitAdminPage } from '../../utils';
 
 describe( 'dashboard noscript notice', () => {
 	let waitForFetchRequests;

@@ -17,13 +17,10 @@
  */
 
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
-import {
-	switchUserToAdmin,
-	switchUserToTest,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
+import { switchUserToAdmin, switchUserToTest } from './login-user';
+import { visitAdminPage } from './visit-admin-page';
 
 /**
  * Performs an action on provided plugins.

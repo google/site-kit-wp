@@ -229,6 +229,43 @@ describe( 'useActivateModuleCallback', () => {
 			expect.objectContaining( {
 				id: ANALYTICS_SETUP_ERROR,
 				description: 'This is an error',
+				showGlobalNotification: true,
+			} )
+		);
+	} );
+
+	it( 'should set the `internalServerErrorOptions` properties on the internal server error when module activation fails', async () => {
+		const { result } = renderHook(
+			() =>
+				useActivateModuleCallback( MODULE_SLUG_ANALYTICS_4, {
+					internalServerErrorOptions: {
+						showGlobalNotification: false,
+					},
+				} ),
+			{ registry }
+		);
+
+		fetchMock.postOnce(
+			new RegExp( '^/google-site-kit/v1/core/modules/data/activation' ),
+			{
+				body: {
+					code: 'internal_server_error',
+					message: 'This is an error',
+					data: { status: 500 },
+				},
+				status: 500,
+			}
+		);
+
+		await result.current!();
+
+		expect( console ).toHaveErrored();
+
+		expect( registry.select( CORE_SITE ).getInternalServerError() ).toEqual(
+			expect.objectContaining( {
+				id: ANALYTICS_SETUP_ERROR,
+				description: 'This is an error',
+				showGlobalNotification: false,
 			} )
 		);
 	} );

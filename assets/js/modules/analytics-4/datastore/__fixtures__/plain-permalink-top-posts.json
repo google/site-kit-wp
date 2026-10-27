@@ -1,0 +1,26 @@
+{
+	"rows": [
+		{
+			"id": 1,
+			"title": "Travel tips",
+			"url": "http://example.com/?p=1",
+			"pagePath": "/?p=1",
+			"views": 30
+		},
+		{
+			"id": 2,
+			"title": "About",
+			"url": "http://example.com/?page_id=2",
+			"pagePath": "/?page_id=2",
+			"views": 20
+		},
+		{
+			"id": 3,
+			"title": "",
+			"url": "http://example.com/?p=3",
+			"pagePath": "/?p=3",
+			"views": 10
+		}
+	],
+	"total": 100
+}

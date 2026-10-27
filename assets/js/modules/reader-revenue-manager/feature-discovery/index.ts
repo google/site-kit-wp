@@ -69,7 +69,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Earn money:', 'google-site-kit' ),
+						term: __( 'Earn money', 'google-site-kit' ),
 						description: __(
 							'Flexible monetization lets you accept direct contributions or subscriptions from your readers',
 							'google-site-kit'
@@ -77,7 +77,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 					{
 						term: __(
-							'Improved visitor retention:',
+							'Improved visitor retention',
 							'google-site-kit'
 						),
 						description: __(
@@ -86,14 +86,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Easy setup:', 'google-site-kit' ),
+						term: __( 'Easy setup', 'google-site-kit' ),
 						description: __(
 							'Launch the entire platform directly onto your site with zero coding required',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Collect feedback:', 'google-site-kit' ),
+						term: __( 'Collect feedback', 'google-site-kit' ),
 						description: __(
 							'Gather valuable audience insights by running quick, native surveys',
 							'google-site-kit'
@@ -171,7 +171,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					whyUseList: [
 						{
 							term: __(
-								'Drive repeat traffic:',
+								'Drive repeat traffic',
 								'google-site-kit'
 							),
 							description: __(
@@ -180,14 +180,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 							),
 						},
 						{
-							term: __( 'Boost engagement:', 'google-site-kit' ),
+							term: __( 'Boost engagement', 'google-site-kit' ),
 							description: __(
 								'Keep readers coming back with timely updates and exclusive content',
 								'google-site-kit'
 							),
 						},
 						{
-							term: __( 'Own your growth:', 'google-site-kit' ),
+							term: __( 'Own your growth', 'google-site-kit' ),
 							description: __(
 								'Reduce reliance on social media and search algorithms',
 								'google-site-kit'
@@ -195,7 +195,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						},
 						{
 							term: __(
-								'Convert strategically:',
+								'Convert strategically',
 								'google-site-kit'
 							),
 							description: __(

@@ -20,12 +20,18 @@ exports[`TopCitiesDrivingAddToCartWidget should render correctly with the expect
             Top cities driving add to cart
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Cities where visitors most frequently add products to their carts"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Cities where visitors most frequently add products to their carts
+            </span>
           </span>
         </div>
         <div
@@ -119,12 +125,18 @@ exports[`TopCitiesDrivingAddToCartWidget should render the generic error variant
           Top cities driving add to cart
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Cities where visitors most frequently add products to their carts"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Cities where visitors most frequently add products to their carts
+          </span>
         </span>
       </div>
       <div
@@ -194,12 +206,18 @@ exports[`TopCitiesDrivingAddToCartWidget should render the insufficient permissi
           Top cities driving add to cart
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Cities where visitors most frequently add products to their carts"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Cities where visitors most frequently add products to their carts
+          </span>
         </span>
       </div>
       <div
@@ -265,12 +283,18 @@ exports[`TopCitiesDrivingAddToCartWidget should render the loading state while r
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Cities where visitors most frequently add products to their carts"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Cities where visitors most frequently add products to their carts
+              </span>
             </span>
           </span>
         </div>

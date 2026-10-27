@@ -84,6 +84,26 @@ describe( 'BreakdownTabs', () => {
 		).toHaveLength( 1 );
 	} );
 
+	it( 'should name a tab that has an info tooltip by its label only', () => {
+		const { getByRole } = render(
+			<BreakdownTabs
+				tabs={ [
+					{
+						id: 'contact-form',
+						label: 'Contact form',
+						tooltip: 'This form was created with WPForms.',
+					},
+				] }
+				activeTabID="contact-form"
+				onTabChange={ () => {} }
+			/>
+		);
+
+		expect(
+			getByRole( 'tab', { name: 'Contact form' } )
+		).toBeInTheDocument();
+	} );
+
 	it( 'renders every tab when many are present', () => {
 		const manyTabs = Array.from( { length: 12 }, ( _, index ) => ( {
 			id: `form-${ index }`,
