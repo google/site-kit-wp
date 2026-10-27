@@ -20,12 +20,18 @@ exports[`PopularKeywordsWidget should render correctly with the expected metrics
             Top performing keywords
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="The top search queries for your site by highest clickthrough rate"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              The top search queries for your site by highest clickthrough rate
+            </span>
           </span>
         </div>
         <div
@@ -143,12 +149,18 @@ exports[`PopularKeywordsWidget should render the generic error variant when the 
           Top performing keywords
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            The top search queries for your site by highest clickthrough rate
+          </span>
         </span>
       </div>
       <div
@@ -218,12 +230,18 @@ exports[`PopularKeywordsWidget should render the insufficient permissions error 
           Top performing keywords
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="The top search queries for your site by highest clickthrough rate"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            The top search queries for your site by highest clickthrough rate
+          </span>
         </span>
       </div>
       <div
@@ -289,12 +307,18 @@ exports[`PopularKeywordsWidget should render the loading state while resolving t
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="The top search queries for your site by highest clickthrough rate"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                The top search queries for your site by highest clickthrough rate
+              </span>
             </span>
           </span>
         </div>

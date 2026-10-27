@@ -67,7 +67,8 @@ class Migration_1_185_0 {
 	/**
 	 * Registers hooks.
 	 *
-	 * The migration runs at priority 0, so it runs before
+	 * All migrations register at priority 0, so they run in the order
+	 * `Plugin.php` registers them, before
 	 * `Authentication::check_connected_proxy_url()` at priority 10. That check
 	 * reads a plain text value as a URL change, so it needs the stored value
 	 * already encoded.

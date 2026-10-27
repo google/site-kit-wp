@@ -20,12 +20,18 @@ exports[`TopPagesDrivingLeadsWidget should render correctly with the expected me
             Top pages driving leads
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Which pages get people to take action?"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Which pages get people to take action?
+            </span>
           </span>
         </div>
         <div
@@ -146,12 +152,18 @@ exports[`TopPagesDrivingLeadsWidget should render the generic error variant when
           Top pages driving leads
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Which pages get people to take action?"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Which pages get people to take action?
+          </span>
         </span>
       </div>
       <div
@@ -221,12 +233,18 @@ exports[`TopPagesDrivingLeadsWidget should render the insufficient permissions e
           Top pages driving leads
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Which pages get people to take action?"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Which pages get people to take action?
+          </span>
         </span>
       </div>
       <div
@@ -292,12 +310,18 @@ exports[`TopPagesDrivingLeadsWidget should render the loading state while resolv
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
-              title="Which pages get people to take action?"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Which pages get people to take action?
+              </span>
             </span>
           </span>
         </div>

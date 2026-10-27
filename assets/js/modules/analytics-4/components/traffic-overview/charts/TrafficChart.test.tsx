@@ -24,6 +24,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import GoogleChart from '@/js/components/GoogleChart';
 import { getChartOptions } from '@/js/components/GoogleChart/utils';
 import { VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
@@ -40,16 +41,13 @@ import {
 } from '@tests/js/utils';
 import TrafficChart from './TrafficChart';
 
-const mockGoogleChart = jest.fn();
+jest.mock( '@/js/components/GoogleChart', () =>
+	jest
+		.requireActual( '@tests/js/mock-google-chart-utils' )
+		.mockGoogleChartModule()
+);
 
-// Google Charts draws nothing under Jest, so `GoogleChartMock` records the
-// props each test reads.
-jest.mock( '@/js/components/GoogleChart', () => {
-	return function GoogleChartMock( props: Record< string, unknown > ) {
-		mockGoogleChart( props );
-		return <div className="googlesitekit-chart" />;
-	};
-} );
+const mockGoogleChart = jest.mocked( GoogleChart );
 
 describe( 'TrafficChart', () => {
 	let registry: WPDataRegistry;
@@ -270,6 +268,26 @@ describe( 'TrafficChart', () => {
 		expect( dateMarkers ).toEqual( [
 			{
 				date: '2025-01-14',
+				text: 'Google Analytics property created',
+			},
+		] );
+	} );
+
+	it( 'should mark the day the Analytics property was created when that day is the last day of the range', async () => {
+		providePropertyCreateTime( '2025-01-16' );
+
+		render(
+			<TrafficChart
+				report={ getAnalytics4MockResponse( reportOptions ) }
+			/>,
+			{ registry }
+		);
+
+		const { dateMarkers } = await getLastChartProps();
+
+		expect( dateMarkers ).toEqual( [
+			{
+				date: '2025-01-16',
 				text: 'Google Analytics property created',
 			},
 		] );

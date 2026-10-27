@@ -69,16 +69,18 @@ exports[`FeatureDetailDescription should render catalog descriptions and benefit
       <p
         class="googlesitekit-typography googlesitekit-typography--body googlesitekit-typography--medium"
       >
-        <span>
-          Learn about
-           
-          <a
-            href="https://example.com/"
+        Learn about 
+        <a
+          class="googlesitekit-cta-link"
+          href="https://example.com/"
+        >
+          <span
+            class="googlesitekit-cta-link__contents"
           >
             your audience
-          </a>
-          .
-        </span>
+          </span>
+        </a>
+        .
       </p>
     </section>
     <section

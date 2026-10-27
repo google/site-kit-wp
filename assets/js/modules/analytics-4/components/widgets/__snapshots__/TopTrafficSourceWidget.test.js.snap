@@ -20,12 +20,18 @@ exports[`TopTrafficSourceWidget renders correctly with no data in comparison dat
             Top traffic source
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-2"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-2"
+            >
+              Channel (e.g. social, paid, search) that brought in the most visitors to your site
+            </span>
           </span>
         </div>
         <div
@@ -81,12 +87,18 @@ exports[`TopTrafficSourceWidget should render correctly with the expected metric
             Top traffic source
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Channel (e.g. social, paid, search) that brought in the most visitors to your site
+            </span>
           </span>
         </div>
         <div
@@ -139,12 +151,18 @@ exports[`TopTrafficSourceWidget should render the generic error variant when the
           Top traffic source
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-8"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-8"
+          >
+            Channel (e.g. social, paid, search) that brought in the most visitors to your site
+          </span>
         </span>
       </div>
       <div
@@ -214,12 +232,18 @@ exports[`TopTrafficSourceWidget should render the insufficient permissions error
           Top traffic source
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-10"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-10"
+          >
+            Channel (e.g. social, paid, search) that brought in the most visitors to your site
+          </span>
         </span>
       </div>
       <div
@@ -279,12 +303,18 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
           Top traffic source
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Channel (e.g. social, paid, search) that brought in the most visitors to your site
+          </span>
         </span>
       </div>
       <div
@@ -357,12 +387,18 @@ exports[`TopTrafficSourceWidget should retry both reports when an error is encou
             Top traffic source
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-6"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
-            title="Channel (e.g. social, paid, search) that brought in the most visitors to your site"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-6"
+            >
+              Channel (e.g. social, paid, search) that brought in the most visitors to your site
+            </span>
           </span>
         </div>
         <div
