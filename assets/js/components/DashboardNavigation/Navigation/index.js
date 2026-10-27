@@ -234,7 +234,11 @@ export default function Navigation() {
 		// Jump to the default chip until the initial hash's section is visible.
 		if ( ! isValidChipID( initialHash ) ) {
 			setSelectedID( defaultChipID );
-			setTimeout( () => jumpToChip( defaultChipID ), 50 );
+			setTimeout( () => {
+				if ( ! hasScrolledToInitialHash.current ) {
+					jumpToChip( defaultChipID );
+				}
+			}, 50 );
 		}
 	} );
 
@@ -252,8 +256,10 @@ export default function Navigation() {
 		}
 
 		const timeout = setTimeout( () => {
-			hasScrolledToInitialHash.current = true;
-			jumpToChip( initialHash );
+			if ( ! hasScrolledToInitialHash.current ) {
+				hasScrolledToInitialHash.current = true;
+				jumpToChip( initialHash );
+			}
 		}, 50 );
 
 		return () => clearTimeout( timeout );
