@@ -105,13 +105,11 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 
 		if ( errorTroubleshootingLinkURL ) {
 			description = sprintf(
-				/* translators: 1: Error message 2: Troubleshooting URL. */
-				__(
-					'%1$s <a href="%2$s" target="_blank" rel="noopener noreferrer">Learn more</a>',
-					'google-site-kit'
-				),
+				/* translators: 1: Error message, 2: Opening HTML link tag, 3: Closing HTML link tag. */
+				__( '%1$s %2$sLearn more%3$s', 'google-site-kit' ),
 				description,
-				errorTroubleshootingLinkURL
+				`<a href="${ errorTroubleshootingLinkURL }" target="_blank" rel="noopener noreferrer">`,
+				'</a>'
 			);
 		}
 	}
