@@ -638,7 +638,7 @@ describe( 'BreakdownNoticeArea', () => {
 		} );
 	} );
 
-	it( 'renders "Sales plugin breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
+	it( 'should render "Sales plugin breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
@@ -673,7 +673,7 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 	} );
 
-	it( 'renders "Event breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
+	it( 'should render "Event breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
