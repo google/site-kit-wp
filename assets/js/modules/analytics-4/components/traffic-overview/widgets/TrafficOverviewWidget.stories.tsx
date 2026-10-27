@@ -184,13 +184,12 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
-	// The posts column requests its report only once the setting to include
+	// Each column requests its report only once the setting to include
 	// products has loaded.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setFreshDataIncludesWooCommerceProducts( true );
-	// The site had 100 visits, each with one view, and 12 of the visits came
-	// from other sites.
+	// The site had 100 visitors, and 12 of them came from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
 		posts: createBreakdownReport(
 			[

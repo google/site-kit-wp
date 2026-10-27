@@ -106,8 +106,8 @@ function Template( {
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.receiveGetSettings( {} );
-				// The posts column requests its report only once the setting
-				// to include products has loaded.
+				// Each column requests its report only once the setting to
+				// include products has loaded.
 				registry
 					.dispatch( MODULES_ANALYTICS_4 )
 					.setFreshDataIncludesWooCommerceProducts( true );
@@ -225,8 +225,8 @@ OneColumnErrored.scenario = {
 
 /**
  * A report with no rows is what the API returns for a range with no traffic.
- * The site had visits, but none from other sites and no views in the posts
- * report. With no visits in the Recent activity date range, the section
+ * The site had visitors, but none from other sites and none in the posts
+ * report. With no visitors in the Recent activity date range, the section
  * doesn't render.
  */
 export const ZeroRowsInPostsAndReferrals = Template.bind(
