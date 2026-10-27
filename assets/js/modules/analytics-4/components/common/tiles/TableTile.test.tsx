@@ -149,6 +149,28 @@ describe( 'TableTile', () => {
 		).toHaveAttribute( 'href', 'https://example.com/page' );
 	} );
 
+	it( 'should call `onLinkClick` when the link of a row is clicked', () => {
+		const onLinkClick = jest.fn();
+
+		const { getByRole } = render(
+			<TableTile
+				title="Top posts by visitors"
+				rows={ [
+					{
+						label: 'Autumn recipes',
+						value: 82,
+						url: 'https://example.com/autumn-recipes/',
+					},
+				] }
+				onLinkClick={ onLinkClick }
+			/>
+		);
+
+		fireEvent.click( getByRole( 'link', { name: /Autumn recipes/ } ) );
+
+		expect( onLinkClick ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'renders goal-specific zero data message', () => {
 		const { getByText } = render(
 			<TableTile

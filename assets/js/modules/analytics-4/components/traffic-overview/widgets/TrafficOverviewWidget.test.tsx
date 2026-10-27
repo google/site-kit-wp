@@ -27,6 +27,7 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import {
 	VIEW_CONTEXT_ENTITY_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD,
+	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
@@ -38,6 +39,7 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { benchmarkingData } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
 	act,
@@ -76,12 +78,16 @@ describe( 'TrafficOverviewWidget', () => {
 		'^/google-site-kit/v1/modules/search-console/data/searchanalytics'
 	);
 
-	// When Analytics is not connected, the widget renders
-	// `ActivateAnalyticsCTA`, which needs an `IntersectionObserver` that jsdom
-	// doesn't have.
-	mockIntersectionObserver();
+	// The widget, and the `ActivateAnalyticsCTA` it renders when Analytics is
+	// not connected, need an `IntersectionObserver` that jsdom doesn't have.
+	const { simulateIntersection } = mockIntersectionObserver();
+
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
 
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
 		registry.dispatch( CORE_USER ).setDateRange( 'last-28-days' );
@@ -811,5 +817,328 @@ describe( 'TrafficOverviewWidget', () => {
 		expect(
 			screen.queryByRole( 'tabpanel', { name: 'Typical traffic Beta' } )
 		).not.toBeInTheDocument();
+	} );
+
+	it( 'should track `view_widget` labeled `googlesitekit-traffic-overview-tab` once when the card first enters the viewport, and not again on a re-render or a second entry', async () => {
+		const { container, rerender, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		const widget = container.querySelector(
+			'.googlesitekit-widget--analyticsTrafficOverview'
+		) as Element;
+
+		act( () => {
+			simulateIntersection( widget, true );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'view_widget',
+			'googlesitekit-traffic-overview-tab'
+		);
+
+		rerender( <TrafficOverviewWidget { ...widgetComponentProps } /> );
+
+		act( () => {
+			simulateIntersection( widget, false );
+			simulateIntersection( widget, true );
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should not track `view_widget` again when the user selects another tab', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			),
+			{ body: benchmarkingData, status: 200 }
+		);
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		act( () => {
+			simulateIntersection(
+				container.querySelector(
+					'.googlesitekit-widget--analyticsTrafficOverview'
+				) as Element,
+				true
+			);
+		} );
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'view_widget',
+			'googlesitekit-typical-traffic-tab'
+		);
+	} );
+
+	it( 'should track `view_widget` under `entityDashboard_traffic-insights` on the entity dashboard', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_ENTITY_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		act( () => {
+			simulateIntersection(
+				container.querySelector(
+					'.googlesitekit-widget--analyticsTrafficOverview'
+				) as Element,
+				true
+			);
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'entityDashboard_traffic-insights',
+			'view_widget',
+			'googlesitekit-traffic-overview-tab'
+		);
+	} );
+
+	it( 'should not track `view_widget` before the card enters the viewport', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).not.toHaveBeenCalled();
+	} );
+
+	it( 'should track `view_widget` labeled `googlesitekit-recent-activity-tab` when Analytics is not connected', async () => {
+		provideModules( registry, [
+			{
+				slug: MODULE_SLUG_ANALYTICS_4,
+				active: false,
+				connected: false,
+			},
+		] );
+		provideUserAuthentication( registry );
+		provideUserCapabilities( registry );
+		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		act( () => {
+			simulateIntersection(
+				container.querySelector(
+					'.googlesitekit-widget--analyticsTrafficOverview'
+				) as Element,
+				true
+			);
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'view_widget',
+			'googlesitekit-recent-activity-tab'
+		);
+	} );
+
+	it( 'should track `view_widget` when the `freshData` feature flag is off', async () => {
+		const { container, waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		act( () => {
+			simulateIntersection(
+				container.querySelector(
+					'.googlesitekit-widget--analyticsTrafficOverview'
+				) as Element,
+				true
+			);
+		} );
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'view_widget',
+			'googlesitekit-traffic-overview-tab'
+		);
+	} );
+
+	it( 'should track `change_tab` labeled `googlesitekit-recent-activity-tab` when the user selects the Recent activity tab', async () => {
+		registry
+			.dispatch( MODULES_SEARCH_CONSOLE )
+			.setPropertyID( 'https://example.com/' );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 157,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		fetchMock.get( postsEndpoint, {
+			body: [
+				{
+					id: 12,
+					date: '2026-09-24T10:05:00',
+					date_gmt: '2026-09-24T14:05:00',
+					link: 'http://example.com/autumn-recipes/',
+					title: { rendered: 'Autumn recipes' },
+				},
+			],
+			status: 200,
+		} );
+		fetchMock.get( searchAnalyticsEndpoint, { body: [], status: 200 } );
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Recent activity Beta' } )
+		);
+
+		// `RecentActivityPanel` starts requests of its own. A response that
+		// comes back during the next test fails that test on an `act()`
+		// warning, so this waits for them too.
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'change_tab',
+			'googlesitekit-recent-activity-tab'
+		);
+	} );
+
+	it( 'should track `change_tab` under `mainDashboardViewOnly_traffic-insights` for a view-only user', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			),
+			{ body: benchmarkingData, status: 200 }
+		);
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboardViewOnly_traffic-insights',
+			'change_tab',
+			'googlesitekit-typical-traffic-tab'
+		);
+	} );
+
+	it( 'should not track `change_tab` when the user clicks the selected tab', async () => {
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				features: [ 'freshData' ],
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Traffic overview' } )
+		);
+
+		expect( mockTrackEvent ).not.toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'change_tab',
+			expect.anything()
+		);
+	} );
+
+	it( 'should track `change_tab` labeled `googlesitekit-typical-traffic-tab` when the `freshData` feature flag is off and `typicalTraffic` is on', async () => {
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/benchmarking-data'
+			),
+			{ body: benchmarkingData, status: 200 }
+		);
+
+		const { waitForRegistry } = render(
+			<TrafficOverviewWidget { ...widgetComponentProps } />,
+			{
+				registry,
+				features: [ 'typicalTraffic' ],
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			}
+		);
+
+		await waitForRegistry();
+
+		fireEvent.click(
+			screen.getByRole( 'tab', { name: 'Typical traffic Beta' } )
+		);
+
+		await waitForRegistry();
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_traffic-insights',
+			'change_tab',
+			'googlesitekit-typical-traffic-tab'
+		);
 	} );
 } );

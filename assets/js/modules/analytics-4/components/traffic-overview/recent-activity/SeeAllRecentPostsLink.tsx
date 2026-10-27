@@ -29,7 +29,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
-import { Select, useDispatch, useInViewSelect } from 'googlesitekit-data';
+import { Select, useInViewSelect } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
 import { ANCHOR_ID_CONTENT } from '@/js/googlesitekit/constants';
 import { useBreakpoint } from '@/js/hooks/useBreakpoint';
@@ -38,6 +38,7 @@ import {
 	LATEST_CONTENT_RECENT_CONTENT_OPTIONS,
 	LATEST_CONTENT_TAB_ID,
 } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { useChangeContentTab } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/hooks/useChangeContentTab';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
@@ -63,7 +64,7 @@ const SeeAllRecentPostsLink: FC = () => {
 		[ canViewSharedAnalytics4 ]
 	);
 
-	const { setActiveContentTab } = useDispatch( MODULES_ANALYTICS_4 );
+	const changeContentTab = useChangeContentTab();
 
 	if ( recentContent === undefined || recentContent.length < 2 ) {
 		return null;
@@ -75,7 +76,7 @@ const SeeAllRecentPostsLink: FC = () => {
 	const handleClick: React.MouseEventHandler<
 		HTMLAnchorElement | HTMLButtonElement
 	> = ( event ) => {
-		setActiveContentTab( LATEST_CONTENT_TAB_ID );
+		changeContentTab( LATEST_CONTENT_TAB_ID );
 
 		global.history.replaceState( {}, '', contentIDForLink );
 		global.scrollTo( {

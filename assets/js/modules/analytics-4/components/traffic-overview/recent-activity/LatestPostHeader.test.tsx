@@ -24,15 +24,23 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { preventNavigation } from '@/js/event-providers/content-events/test-utils';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
 import { LATEST_POST } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
-import { createTestRegistry, render } from '@tests/js/test-utils';
+import * as tracking from '@/js/util/tracking';
+import { createTestRegistry, fireEvent, render } from '@tests/js/test-utils';
 import { provideSiteInfo, provideTimezone } from '@tests/js/utils';
 import LatestPostHeader from './LatestPostHeader';
 
 describe( 'LatestPostHeader', () => {
 	let registry: WPDataRegistry;
 
+	const mockTrackEvent = jest.spyOn( tracking, 'trackEvent' );
+	mockTrackEvent.mockImplementation( () => Promise.resolve() );
+
 	beforeEach( () => {
+		mockTrackEvent.mockClear();
+
 		registry = createTestRegistry();
 		provideSiteInfo( registry );
 	} );
@@ -48,6 +56,33 @@ describe( 'LatestPostHeader', () => {
 		).toHaveAttribute(
 			'href',
 			'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&permaLink=https%3A%2F%2Fexample.com%2Fice-cream%2F'
+		);
+	} );
+
+	it( 'should track `click_post_link` labeled `latest-post-header` when the post title is clicked', () => {
+		const { getByRole } = render(
+			<LatestPostHeader post={ LATEST_POST } />,
+			{ registry, viewContext: VIEW_CONTEXT_MAIN_DASHBOARD }
+		);
+
+		// jsdom can't open the entity dashboard that the title links to in the
+		// same tab, so it would log "Not implemented: navigation".
+		global.document.addEventListener( 'click', preventNavigation );
+
+		try {
+			fireEvent.click(
+				getByRole( 'link', {
+					name: 'Ice cream is good for your health',
+				} )
+			);
+		} finally {
+			global.document.removeEventListener( 'click', preventNavigation );
+		}
+
+		expect( mockTrackEvent ).toHaveBeenCalledWith(
+			'mainDashboard_recent-activity',
+			'click_post_link',
+			'latest-post-header'
 		);
 	} );
 

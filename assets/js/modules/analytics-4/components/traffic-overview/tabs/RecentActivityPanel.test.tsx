@@ -33,6 +33,7 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { LATEST_POST_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
 import {
 	getSectionClassNames,
 	provideFreshMetricsReports,
@@ -43,6 +44,7 @@ import {
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
@@ -527,5 +529,189 @@ describe( 'RecentActivityPanel', () => {
 			'googlesitekit-traffic-overview__fresh-metrics-row',
 		] );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
+	} );
+
+	describe( 'the `view_all_recent_posts` event', () => {
+		let mockTrackEventOnce: jest.SpiedFunction<
+			typeof tracking.trackEventOnce
+		>;
+
+		beforeEach( () => {
+			jest.useFakeTimers();
+
+			mockTrackEventOnce = jest.spyOn( tracking, 'trackEventOnce' );
+			mockTrackEventOnce.mockImplementation( () => {} );
+
+			// While Analytics gathers data, and with no published posts, the panel
+			// makes no request. So these tests need no `waitForRegistry()`, which
+			// fails with fake timers.
+			registry
+				.dispatch( MODULES_ANALYTICS_4 )
+				.receiveIsGatheringData( true );
+			provideRecentContent(
+				registry,
+				[],
+				LATEST_POST_RECENT_CONTENT_OPTIONS
+			);
+		} );
+
+		afterEach( () => {
+			mockTrackEventOnce.mockRestore();
+			jest.useRealTimers();
+		} );
+
+		it( 'should track `view_all_recent_posts` under `mainDashboard_recent-activity` 3 seconds after the panel mounts in view', () => {
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 2999 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+
+			act( () => {
+				jest.advanceTimersByTime( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledTimes( 1 );
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel unmounts before 3 seconds', () => {
+			const { unmount } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 2999 );
+			} );
+
+			unmount();
+
+			act( () => {
+				jest.advanceTimersByTime( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel mounts out of view', () => {
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				inView: false,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should not track `view_all_recent_posts` when the panel leaves the view before 3 seconds', () => {
+			const { setInView } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 2999 );
+			} );
+			act( () => {
+				setInView!( false );
+			} );
+			act( () => {
+				jest.advanceTimersByTime( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track `view_all_recent_posts` 3 seconds after the panel comes back into view', () => {
+			const { setInView } = render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 2000 );
+			} );
+			act( () => {
+				setInView!( false );
+			} );
+			act( () => {
+				setInView!( true );
+			} );
+			act( () => {
+				jest.advanceTimersByTime( 2999 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+
+			act( () => {
+				jest.advanceTimersByTime( 1 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboard_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
+
+		it( 'should not track `view_all_recent_posts` while Analytics is not connected', () => {
+			provideModules( registry, [
+				{
+					slug: MODULE_SLUG_ANALYTICS_4,
+					active: false,
+					connected: false,
+				},
+			] );
+			provideModuleRegistrations( registry );
+			provideUserAuthentication( registry );
+			provideUserCapabilities( registry );
+			registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).not.toHaveBeenCalled();
+		} );
+
+		it( 'should track `view_all_recent_posts` under `mainDashboardViewOnly_recent-activity` for a view-only user', () => {
+			provideUserCapabilities( registry, {
+				[ getMetaCapabilityPropertyName(
+					PERMISSION_READ_SHARED_MODULE_DATA,
+					MODULE_SLUG_ANALYTICS_4
+				) ]: true,
+			} );
+
+			render( <RecentActivityPanel />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			} );
+
+			act( () => {
+				jest.advanceTimersByTime( 3000 );
+			} );
+
+			expect( mockTrackEventOnce ).toHaveBeenCalledWith(
+				'mainDashboardViewOnly_recent-activity',
+				'view_all_recent_posts'
+			);
+		} );
 	} );
 } );
