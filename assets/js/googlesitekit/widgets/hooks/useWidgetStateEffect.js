@@ -34,8 +34,9 @@ export default function useWidgetStateEffect(
 	metadata
 ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( CORE_WIDGETS );
-	// Ensures an instance only unsets the widget state it set itself, and not
-	// the state set by another instance for the same widget.
+	// Pass the instance ID so the cleanup of an instance only unsets the
+	// widget state it set itself, and not a newer one set by another
+	// instance of the same widget (e.g. when `WidgetNull` remounts).
 	const instanceID = useInstanceId( useWidgetStateEffect );
 
 	useEffect( () => {

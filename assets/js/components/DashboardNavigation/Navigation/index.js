@@ -82,7 +82,7 @@ export default function Navigation() {
 	);
 	const [ isSticky, setIsSticky ] = useState( false );
 	const [ selectedID, setSelectedID ] = useState( initialHash );
-	const hasScrolledToInitialHash = useRef( false );
+	const isInitialHashHandled = useRef( false );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -104,7 +104,7 @@ export default function Navigation() {
 
 			// Prevent a pending scroll to the initial hash's section from
 			// overriding the user's selection.
-			hasScrolledToInitialHash.current = true;
+			isInitialHashHandled.current = true;
 
 			// Update URL and scroll to the selected chip.
 			updateURLHash( chipID );
@@ -231,11 +231,12 @@ export default function Navigation() {
 			return;
 		}
 
-		// Jump to the default chip until the initial hash's section is visible.
+		// Use the default chip while the initial hash's section isn't visible,
+		// as it may still be loading.
 		if ( ! isValidChipID( initialHash ) ) {
 			setSelectedID( defaultChipID );
 			setTimeout( () => {
-				if ( ! hasScrolledToInitialHash.current ) {
+				if ( ! isInitialHashHandled.current ) {
 					jumpToChip( defaultChipID );
 				}
 			}, 50 );
@@ -247,17 +248,14 @@ export default function Navigation() {
 	// if the visible sections change before it runs, so the jump uses the
 	// latest layout.
 	useEffect( () => {
-		if (
-			hasScrolledToInitialHash.current ||
-			! isValidChipID( initialHash )
-		) {
+		if ( isInitialHashHandled.current || ! isValidChipID( initialHash ) ) {
 			// Return noop cleanup function to satisfy consistent-return rule.
 			return () => {};
 		}
 
 		const timeout = setTimeout( () => {
-			if ( ! hasScrolledToInitialHash.current ) {
-				hasScrolledToInitialHash.current = true;
+			if ( ! isInitialHashHandled.current ) {
+				isInitialHashHandled.current = true;
 				jumpToChip( initialHash );
 			}
 		}, 50 );

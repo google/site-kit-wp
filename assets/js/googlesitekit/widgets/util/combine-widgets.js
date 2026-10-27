@@ -46,7 +46,7 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  * @param {Array.<Object>} widgets      List of widgets.
  * @param {Object}         widgetStates Map of widget slug and their
  *                                      state (either an object with
- *                                      `Component` and `metadata`, or
+ *                                      `Component`, `metadata` and `instanceID`, or
  *                                      `null`).
  * @return {boolean} 			Whether all the widgets should be combined.
  */
@@ -91,7 +91,7 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
  * @param {Array.<Object>} widgets             List of widgets.
  * @param {Object}         widgetStates        Map of widget slug and their
  *                                             state (either an object with
- *                                             `Component` and `metadata`, or
+ *                                             `Component`, `metadata` and `instanceID`, or
  *                                             `null`).
  * @param {Object}         layout              Layout arguments from
  *                                             	`getWidgetLayout()`.

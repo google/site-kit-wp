@@ -152,6 +152,7 @@ export const actions = {
 	 * registered widget components.
 	 *
 	 * @since 1.25.0
+	 * @since n.e.x.t Added the `instanceID` parameter.
 	 * @private
 	 *
 	 * @param {string}      slug         Widget slug.
@@ -185,6 +186,7 @@ export const actions = {
 	 * registered widget components.
 	 *
 	 * @since 1.25.0
+	 * @since n.e.x.t Added the `instanceID` parameter.
 	 * @private
 	 *
 	 * @param {string}      slug         Widget slug.
@@ -412,11 +414,12 @@ export const selectors = {
 	 * widgets in special states.
 	 *
 	 * @since 1.25.0
+	 * @since n.e.x.t Added `instanceID` to the returned object.
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget slug.
-	 * @return {Object|null} Object with `Component` and `metadata` properties,
+	 * @return {Object|null} Object with `Component`, `metadata` and `instanceID` properties,
 	 *                       if the widget has a special state, or `null`.
 	 */
 	getWidgetState( state, slug ) {
@@ -430,7 +433,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Widget states, keyed by slug, with a value containing the component and metadata.
+	 * @return {Object} Widget states, keyed by slug, with a value containing the component, metadata and instance ID.
 	 */
 	getWidgetStates( state ) {
 		return state.widgetStates;
