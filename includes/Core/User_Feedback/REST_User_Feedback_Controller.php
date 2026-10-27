@@ -12,6 +12,7 @@ namespace Google\Site_Kit\Core\User_Feedback;
 
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\REST_API\REST_Route;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -93,9 +94,12 @@ class REST_User_Feedback_Controller {
 					'permission_callback' => $can_authenticate,
 					'args'                => array(
 						'data' => array(
-							'type'       => 'object',
-							'required'   => true,
-							'properties' => array(
+							'type'              => 'object',
+							'required'          => true,
+							// WordPress before 5.5 doesn't check the required properties inside `data`,
+							// so they're validated explicitly for a consistent 400 response.
+							'validate_callback' => array( $this, 'validate_feedback_data' ),
+							'properties'        => array(
 								'namespace' => array(
 									'type'     => 'string',
 									'required' => true,
@@ -118,5 +122,39 @@ class REST_User_Feedback_Controller {
 				)
 			),
 		);
+	}
+
+	/**
+	 * Validates the `data` parameter of the feedback route.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param mixed $value The `data` parameter value.
+	 * @return true|WP_Error True if valid, otherwise a WP_Error with a 400 status.
+	 */
+	public function validate_feedback_data( $value ) {
+		if ( ! is_array( $value ) ) {
+			return new WP_Error(
+				'rest_invalid_param',
+				__( 'data must be an object.', 'google-site-kit' ),
+				array( 'status' => 400 )
+			);
+		}
+
+		foreach ( array( 'namespace', 'group', 'key', 'value' ) as $field ) {
+			if ( empty( $value[ $field ] ) || ! is_string( $value[ $field ] ) ) {
+				return new WP_Error(
+					'rest_missing_callback_param',
+					sprintf(
+						/* translators: %s: field name */
+						__( '%s is required and must be a string.', 'google-site-kit' ),
+						$field
+					),
+					array( 'status' => 400 )
+				);
+			}
+		}
+
+		return true;
 	}
 }

@@ -195,6 +195,34 @@ class REST_User_Feedback_ControllerTest extends TestCase {
 		$this->assertEquals( 400, $response->get_status(), "A feedback request missing {$missing_field} should return a 400 status." );
 	}
 
+	/**
+	 * @dataProvider data_missing_required_fields
+	 */
+	public function test_validate_feedback_data__requires_field( $missing_field ) {
+		// This exercises `validate_feedback_data()` directly, rather than through a dispatched
+		// REST request, because WordPress before 5.5 doesn't enforce `required` on the nested
+		// `properties` of an object argument, which would let a request missing one of these
+		// fields reach the controller's callback instead of being rejected with a 400 status.
+		$data = $this->valid_feedback;
+		unset( $data[ $missing_field ] );
+
+		$result = $this->controller->validate_feedback_data( $data );
+
+		$this->assertWPError( $result, "Feedback data missing {$missing_field} should fail validation." );
+		$this->assertEquals( 400, $result->get_error_data()['status'], "Feedback data missing {$missing_field} should fail with a 400 status." );
+	}
+
+	public function test_validate_feedback_data__requires_object() {
+		$result = $this->controller->validate_feedback_data( 'not-an-object' );
+
+		$this->assertWPError( $result, 'A non-object value should fail validation.' );
+		$this->assertEquals( 400, $result->get_error_data()['status'], 'A non-object value should fail with a 400 status.' );
+	}
+
+	public function test_validate_feedback_data__accepts_valid_data() {
+		$this->assertTrue( $this->controller->validate_feedback_data( $this->valid_feedback ), 'Valid feedback data should pass validation.' );
+	}
+
 	public function test_feedback__requires_authentication() {
 		// No access token is set, so the user is not authenticated with the Service.
 		$response = $this->send_feedback_request( $this->valid_feedback );
