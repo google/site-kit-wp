@@ -43,7 +43,9 @@ describe( 'TypicalTrafficChartHeader', () => {
 			)
 		).not.toBeInTheDocument();
 
-		fireEvent.mouseOver( getByRole( 'tooltip' ) );
+		fireEvent.mouseOver(
+			getByRole( 'button', { name: /to estimate a typical range/ } )
+		);
 
 		await waitFor( () => {
 			expect(
