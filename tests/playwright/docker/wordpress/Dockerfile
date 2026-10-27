@@ -52,4 +52,5 @@ RUN set -eux; \
     unzip -o /tmp/amp.zip -d /usr/src/wordpress/wp-content/plugins/; \
     rm /tmp/amp.zip; \
     curl -fsSL "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar" -o /usr/local/bin/wp; \
-    chmod +x /usr/local/bin/wp
+    chmod +x /usr/local/bin/wp; \
+    cp /etc/ssl/certs/ca-certificates.crt /usr/src/wordpress/wp-includes/certificates/ca-bundle.crt
