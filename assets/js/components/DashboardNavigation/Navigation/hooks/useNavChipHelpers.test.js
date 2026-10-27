@@ -180,7 +180,7 @@ describe( 'useNavChipHelpers', () => {
 	} );
 
 	describe( 'calculateScrollPosition', () => {
-		it( 'should calculate the scroll position of the widget context rather than the navigation chip', () => {
+		it( 'should calculate the scroll position of the widget context rather than another element with the same ID', () => {
 			const { result } = renderHook(
 				() =>
 					useNavChipHelpers( {
@@ -205,16 +205,16 @@ describe( 'useNavChipHelpers', () => {
 			document.body.innerHTML = '';
 		} );
 
-		it( 'should find the closest section using the widget context rather than the navigation chip', () => {
-			// The navigation chip shares its ID with the widget context and
-			// precedes it in the DOM.
+		it( 'should find the closest section using the widget context rather than another element with the same ID', () => {
+			// Another element with the same ID that precedes the widget context
+			// in the DOM shouldn't be matched.
 			document.body.innerHTML = `
 				<div id="${ ANCHOR_ID_SPEED }" class="mdc-chip"></div>
 				<div id="${ ANCHOR_ID_SPEED }" class="googlesitekit-widget-context"></div>
 			`;
 
 			// JSDOM doesn't do any rendering, so getBoundingClientRect() always returns 0, 0, 0, 0.
-			// We need to mock it to place the chip above and the widget context below the navigation.
+			// We need to mock it to place the other element above and the widget context below the navigation.
 			const [ chip, widgetContext ] = document.querySelectorAll(
 				`#${ ANCHOR_ID_SPEED }`
 			);

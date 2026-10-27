@@ -419,8 +419,9 @@ export const selectors = {
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget slug.
-	 * @return {Object|null} Object with `Component`, `metadata` and `instanceID` properties,
-	 *                       if the widget has a special state, or `null`.
+	 * @return {Object|null} Object with `Component`, `metadata` and
+	 *                       `instanceID` properties, if the widget has a
+	 *                       special state, or `null`.
 	 */
 	getWidgetState( state, slug ) {
 		return state.widgetStates[ slug ] || null;

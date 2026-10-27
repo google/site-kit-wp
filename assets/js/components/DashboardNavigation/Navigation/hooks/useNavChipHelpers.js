@@ -35,6 +35,9 @@ import { getNavigationalScrollTop } from '@/js/util/scroll';
 /**
  * Gets the selector for the widget context of a given chip ID.
  *
+ * Scopes the ID to the widget context, so another element with the
+ * same ID can't be matched.
+ *
  * @since n.e.x.t
  *
  * @param {string} chipID The chip ID.
