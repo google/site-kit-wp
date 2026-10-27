@@ -211,14 +211,20 @@ describe( 'StepSetupComplete', () => {
 			global.location.href = 'http://example.com/?cta=newsletter-signup';
 			await setPendingSetup( 'newsletter-signup', '/whats-new' );
 
-			const { getByRole } = render(
+			const { findByRole, queryByRole } = render(
 				<StepSetupComplete onComplete={ onComplete } />,
 				{ registry }
 			);
 
 			fireEvent.click(
-				getByRole( 'button', { name: /Return to Dashboard/i } )
+				await findByRole( 'button', {
+					name: /Return to features page/i,
+				} )
 			);
+
+			expect(
+				queryByRole( 'button', { name: /Return to Dashboard/i } )
+			).not.toBeInTheDocument();
 
 			await waitFor( () =>
 				expect( global.location.assign ).toHaveBeenCalledWith( hubURL )

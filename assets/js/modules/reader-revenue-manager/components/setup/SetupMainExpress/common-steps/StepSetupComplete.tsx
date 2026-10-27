@@ -24,7 +24,7 @@ import { FC, ReactNode } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback } from '@wordpress/element';
+import { useCallback, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -52,11 +52,8 @@ import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from '@/js/modules/reader-revenue-manager/feature-discovery/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
-
-// The Feature Discovery catalog's slug for the newsletter sign-up feature.
-// This is the feature slug, not the CTA slug, even though the values match.
-const FEATURE_SLUG_NEWSLETTER_SIGNUP = 'newsletter-signup';
 
 interface StepSetupCompleteProps extends SetupStepProps {
 	title?: string;
@@ -82,29 +79,42 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	// `@wordpress/data` types `useRegistry()` as returning `Function`.
 	const registry = useRegistry() as unknown as Registry;
 
-	// "Return to Dashboard" completes this last step, so the flow can track it
-	// before the page is left.
-	const onReturnToDashboardClick = useCallback( async () => {
+	// Where the newsletter sign-up form was set up from the hub, the user is
+	// returned there rather than to the dashboard.
+	const [ hubURL, setHubURL ] = useState< string | undefined >();
+
+	useEffect( () => {
+		if ( cta !== EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ) {
+			return undefined;
+		}
+
+		let ignore = false;
+
+		getPendingSetupReturnURL(
+			registry.select as Select,
+			FEATURE_SLUG_NEWSLETTER_SIGNUP
+		).then( ( url ) => {
+			if ( ! ignore ) {
+				setHubURL( url );
+			}
+		} );
+
+		return () => {
+			ignore = true;
+		};
+	}, [ cta, registry ] );
+
+	// The button completes this last step, so the flow can track it before the
+	// page is left.
+	const onReturnClick = useCallback( async () => {
 		await onComplete();
 
-		// Where the newsletter sign-up form was set up from the hub, return
-		// the user there rather than to the dashboard.
-		if ( cta === EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ) {
-			const hubURL = await getPendingSetupReturnURL(
-				registry.select as Select,
-				FEATURE_SLUG_NEWSLETTER_SIGNUP
-			);
+		const returnURL = hubURL || dashboardURL;
 
-			if ( hubURL ) {
-				navigateTo( hubURL );
-				return;
-			}
+		if ( returnURL ) {
+			navigateTo( returnURL );
 		}
-
-		if ( dashboardURL ) {
-			navigateTo( dashboardURL );
-		}
-	}, [ cta, dashboardURL, navigateTo, onComplete, registry ] );
+	}, [ dashboardURL, hubURL, navigateTo, onComplete ] );
 
 	// The CTA details only make sense within a CTA-specific setup flow, which
 	// is identified by the `cta` query argument.
@@ -144,8 +154,10 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 			</div>
 			<div className="googlesitekit-rrm-express-setup-complete__actions">
 				{ /* @ts-expect-error `Button` component is not yet typed. */ }
-				<Button onClick={ onReturnToDashboardClick }>
-					{ __( 'Return to Dashboard', 'google-site-kit' ) }
+				<Button onClick={ onReturnClick }>
+					{ hubURL
+						? __( 'Return to features page', 'google-site-kit' )
+						: __( 'Return to Dashboard', 'google-site-kit' ) }
 				</Button>
 				{ secondaryCTA }
 			</div>

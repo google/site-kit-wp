@@ -79,7 +79,9 @@ describe( 'Reader Revenue Manager feature discovery', () => {
 		it( 'should be undefined while the settings are unresolved', () => {
 			provideRRM( true );
 			freezeFetch(
-				/^\/google-site-kit\/v1\/modules\/reader-revenue-manager\/data\/settings/
+				new RegExp(
+					'^/google-site-kit/v1/modules/reader-revenue-manager/data/settings'
+				)
 			);
 
 			expect( isNewsletterFeatureConnected() ).toBeUndefined();
