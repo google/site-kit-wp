@@ -690,11 +690,27 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts and channels columns when the site had no visits', async () => {
+	it( 'should not render the section, and should request the channels report once, when the site had no visits in the Recent activity date range', async () => {
 		mockReportRequests( {
 			posts: { body: {}, status: 200 },
 			channels: { body: {}, status: 200 },
 			referrals: { body: {}, status: 200 },
+		} );
+
+		const { container, waitForRegistry } = render(
+			<RecentTrafficBreakdown />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
+	} );
+
+	it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column, and the rows of the other two columns, when the posts report has no rows', async () => {
+		mockReportRequests( {
+			posts: { body: {}, status: 200 },
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -711,19 +727,15 @@ describe( 'RecentTrafficBreakdown', () => {
 			'No data to display: your site hasn’t received any visitors yet'
 		);
 		expect(
-			getColumn( 'Top channels by visitors' ).querySelector(
-				'.googlesitekit-table-tile__zero-state'
+			within( getColumn( 'Top channels by visitors' ) ).getByText(
+				'Direct'
 			)
-		).toHaveTextContent(
-			'No data to display: your site hasn’t received any visitors yet'
-		);
+		).toBeInTheDocument();
 		expect(
-			getColumn( 'Top referrals by visitors' ).querySelector(
-				'.googlesitekit-table-tile__zero-state'
+			within( getColumn( 'Top referrals by visitors' ) ).getByText(
+				'news.example.com'
 			)
-		).toHaveTextContent(
-			'No data to display: no traffic from other sites to yours'
-		);
+		).toBeInTheDocument();
 	} );
 
 	it( 'should request the posts without the pages under the product path when the setting to include products is off', async () => {
