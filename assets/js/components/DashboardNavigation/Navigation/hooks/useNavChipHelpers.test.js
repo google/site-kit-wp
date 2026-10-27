@@ -28,8 +28,14 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import * as scrollUtils from '@/js/util/scroll';
 import { actHook, renderHook } from '@tests/js/test-utils';
 import useNavChipHelpers from './useNavChipHelpers';
+
+const getNavigationalScrollTopSpy = jest.spyOn(
+	scrollUtils,
+	'getNavigationalScrollTop'
+);
 
 describe( 'useNavChipHelpers', () => {
 	beforeAll( () => {
@@ -169,6 +175,70 @@ describe( 'useNavChipHelpers', () => {
 
 			expect( result.current.isValidChipID( 'not-present' ) ).toBe(
 				false
+			);
+		} );
+	} );
+
+	describe( 'calculateScrollPosition', () => {
+		it( 'should calculate the scroll position of the widget context rather than the navigation chip', () => {
+			const { result } = renderHook(
+				() =>
+					useNavChipHelpers( {
+						visibleSections,
+					} ),
+				{
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			result.current.calculateScrollPosition( ANCHOR_ID_SPEED );
+
+			expect( getNavigationalScrollTopSpy ).toHaveBeenCalledWith(
+				`.googlesitekit-widget-context#${ ANCHOR_ID_SPEED }`,
+				expect.any( String )
+			);
+		} );
+	} );
+
+	describe( 'findClosestSection', () => {
+		afterEach( () => {
+			document.body.innerHTML = '';
+		} );
+
+		it( 'should find the closest section using the widget context rather than the navigation chip', () => {
+			// The navigation chip shares its ID with the widget context and
+			// precedes it in the DOM.
+			document.body.innerHTML = `
+				<div id="${ ANCHOR_ID_SPEED }" class="mdc-chip"></div>
+				<div id="${ ANCHOR_ID_SPEED }" class="googlesitekit-widget-context"></div>
+			`;
+
+			// JSDOM doesn't do any rendering, so getBoundingClientRect() always returns 0, 0, 0, 0.
+			// We need to mock it to place the chip above and the widget context below the navigation.
+			const [ chip, widgetContext ] = document.querySelectorAll(
+				`#${ ANCHOR_ID_SPEED }`
+			);
+			chip.getBoundingClientRect = () => ( { top: -100 } );
+			widgetContext.getBoundingClientRect = () => ( { top: 500 } );
+
+			const { result } = renderHook(
+				() =>
+					useNavChipHelpers( {
+						visibleSections,
+					} ),
+				{
+					viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+				}
+			);
+
+			const navigationRef = {
+				current: { getBoundingClientRect: () => ( { bottom: 0 } ) },
+			};
+
+			// The Speed widget context is below the navigation, so the default
+			// chip should be the closest section.
+			expect( result.current.findClosestSection( navigationRef ) ).toBe(
+				ANCHOR_ID_KEY_METRICS
 			);
 		} );
 	} );

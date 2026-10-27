@@ -27,7 +27,7 @@ import { useEvent, useMount } from 'react-use';
  * WordPress dependencies
  */
 import { useThrottle } from '@wordpress/compose';
-import { useCallback, useRef, useState } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -73,13 +73,16 @@ export default function Navigation() {
 		updateURLHash,
 	} = useNavChipHelpers( { visibleSections } );
 
-	const initialHash = global.location.hash?.substring( 1 );
+	const [ initialHash ] = useState( () =>
+		global.location.hash?.substring( 1 )
+	);
 
 	const [ isJumpingTo, setIsJumpingTo ] = useState(
 		initialHash || undefined
 	);
 	const [ isSticky, setIsSticky ] = useState( false );
 	const [ selectedID, setSelectedID ] = useState( initialHash );
+	const hasScrolledToInitialHash = useRef( false );
 
 	const { setValue } = useDispatch( CORE_UI );
 
@@ -98,6 +101,10 @@ export default function Navigation() {
 				// Uses non-acronym case to meet DOM data attribute standards.
 				// eslint-disable-next-line sitekit/acronym-case
 				chip?.dataset?.contextId;
+
+			// Prevent a pending scroll to the initial hash's section from
+			// overriding the user's selection.
+			hasScrolledToInitialHash.current = true;
 
 			// Update URL and scroll to the selected chip.
 			updateURLHash( chipID );
@@ -188,6 +195,33 @@ export default function Navigation() {
 		]
 	);
 
+	/**
+	 * Selects a chip and scrolls to its section.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {string} chipID The chip ID.
+	 * @return {void}
+	 */
+	const jumpToChip = useCallback(
+		( chipID ) => {
+			setSelectedID( chipID );
+			setIsJumpingTo( chipID );
+			setValue( ACTIVE_CONTEXT_ID, chipID );
+
+			const scrollTo = calculateScrollPosition( chipID );
+
+			if ( global.scrollY === scrollTo ) {
+				setValue( ACTIVE_CONTEXT_ID, undefined );
+				setIsJumpingTo( undefined );
+				return;
+			}
+
+			scrollToChip( chipID );
+		},
+		[ calculateScrollPosition, scrollToChip, setValue ]
+	);
+
 	// Set up initial chip on mount.
 	useMount( () => {
 		// If no initial hash is set, set the default chip as selected.
@@ -197,26 +231,33 @@ export default function Navigation() {
 			return;
 		}
 
-		const chipID = isValidChipID( initialHash )
-			? initialHash
-			: defaultChipID;
-
-		// Set initial/default chip ID in state.
-		setSelectedID( chipID );
-		setValue( ACTIVE_CONTEXT_ID, chipID );
-
-		// Scroll to the chip position.
-		setTimeout( () => {
-			const scrollTo = calculateScrollPosition( chipID );
-
-			if ( global.scrollY === scrollTo ) {
-				setValue( ACTIVE_CONTEXT_ID, undefined );
-				return;
-			}
-
-			scrollToChip( chipID );
-		}, 50 );
+		// Jump to the default chip until the initial hash's section is visible.
+		if ( ! isValidChipID( initialHash ) ) {
+			setSelectedID( defaultChipID );
+			setTimeout( () => jumpToChip( defaultChipID ), 50 );
+		}
 	} );
+
+	// Jump to the initial hash's section once it is visible, as sections can
+	// become visible after the navigation has mounted. The timeout is cleared
+	// if the visible sections change before it runs, so the jump uses the
+	// latest layout.
+	useEffect( () => {
+		if (
+			hasScrolledToInitialHash.current ||
+			! isValidChipID( initialHash )
+		) {
+			// Return noop cleanup function to satisfy consistent-return rule.
+			return () => {};
+		}
+
+		const timeout = setTimeout( () => {
+			hasScrolledToInitialHash.current = true;
+			jumpToChip( initialHash );
+		}, 50 );
+
+		return () => clearTimeout( timeout );
+	}, [ initialHash, isValidChipID, jumpToChip ] );
 
 	const onScroll = useCallback(
 		( event ) => {

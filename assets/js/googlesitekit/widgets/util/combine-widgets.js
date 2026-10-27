@@ -27,7 +27,11 @@ import { isEqual } from 'lodash';
 import { SPECIAL_WIDGET_STATES } from './constants';
 
 function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
-	return rowA === rowB && isEqual( stateA, stateB );
+	return (
+		rowA === rowB &&
+		stateA?.Component === stateB?.Component &&
+		isEqual( stateA?.metadata, stateB?.metadata )
+	);
 }
 
 /**

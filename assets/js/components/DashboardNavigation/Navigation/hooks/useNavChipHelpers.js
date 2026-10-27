@@ -33,6 +33,18 @@ import useViewOnly from '@/js/hooks/useViewOnly';
 import { getNavigationalScrollTop } from '@/js/util/scroll';
 
 /**
+ * Gets the selector for the widget context of a given chip ID.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} chipID The chip ID.
+ * @return {string} The widget context selector.
+ */
+function getWidgetContextSelector( chipID ) {
+	return `.googlesitekit-widget-context#${ chipID }`;
+}
+
+/**
  * Returns helper data and functions for navigation chips.
  *
  * @since 1.159.0
@@ -102,7 +114,10 @@ export default function useNavChipHelpers( { visibleSections } ) {
 	const calculateScrollPosition = useCallback(
 		( chipID ) => {
 			return chipID !== defaultChipID
-				? getNavigationalScrollTop( `#${ chipID }`, breakpoint )
+				? getNavigationalScrollTop(
+						getWidgetContextSelector( chipID ),
+						breakpoint
+				  )
 				: 0;
 		},
 		[ breakpoint, defaultChipID ]
@@ -152,7 +167,9 @@ export default function useNavChipHelpers( { visibleSections } ) {
 			let closestID = defaultChipID;
 
 			for ( const areaID of visibleSections ) {
-				const area = document.getElementById( areaID );
+				const area = document.querySelector(
+					getWidgetContextSelector( areaID )
+				);
 				if ( ! area ) {
 					continue;
 				}

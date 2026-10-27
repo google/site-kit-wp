@@ -19,6 +19,7 @@
 /**
  * WordPress dependencies
  */
+import { useInstanceId } from '@wordpress/compose';
 import { useEffect } from '@wordpress/element';
 
 /**
@@ -33,11 +34,21 @@ export default function useWidgetStateEffect(
 	metadata
 ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( CORE_WIDGETS );
+	// Ensures an instance only unsets the widget state it set itself, and not
+	// the state set by another instance for the same widget.
+	const instanceID = useInstanceId( useWidgetStateEffect );
 
 	useEffect( () => {
-		setWidgetState( widgetSlug, Component, metadata );
+		setWidgetState( widgetSlug, Component, metadata, instanceID );
 		return () => {
-			unsetWidgetState( widgetSlug, Component, metadata );
+			unsetWidgetState( widgetSlug, Component, metadata, instanceID );
 		};
-	}, [ widgetSlug, Component, metadata, setWidgetState, unsetWidgetState ] );
+	}, [
+		widgetSlug,
+		Component,
+		metadata,
+		instanceID,
+		setWidgetState,
+		unsetWidgetState,
+	] );
 }

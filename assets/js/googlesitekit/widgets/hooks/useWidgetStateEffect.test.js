@@ -76,4 +76,33 @@ describe( 'useWidgetStateEffect', () => {
 			registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug )
 		).toBe( null );
 	} );
+
+	it( 'should not unset widget state set by a newer instance for the same widget', () => {
+		const widgetSlug = 'testWidget';
+		function Component() {
+			return null;
+		}
+		const metadata = {};
+
+		const olderHookResult = renderHook(
+			() => useWidgetStateEffect( widgetSlug, Component, metadata ),
+			{ registry }
+		);
+		renderHook(
+			() => useWidgetStateEffect( widgetSlug, Component, metadata ),
+			{ registry }
+		);
+
+		act( () => {
+			olderHookResult.unmount();
+		} );
+
+		// The newer instance's widget state should remain set.
+		expect(
+			registry.select( CORE_WIDGETS ).getWidgetState( widgetSlug )
+		).toMatchObject( {
+			Component,
+			metadata,
+		} );
+	} );
 } );

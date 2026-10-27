@@ -154,18 +154,21 @@ export const actions = {
 	 * @since 1.25.0
 	 * @private
 	 *
-	 * @param {string}      slug       Widget slug.
-	 * @param {WPComponent} Component  Component returned by the widget.
-	 * @param {Object}      [metadata] Relevant metadata / props passed to
-	 *                                 the Component instance.
+	 * @param {string}      slug         Widget slug.
+	 * @param {WPComponent} Component    Component returned by the widget.
+	 * @param {Object}      [metadata]   Relevant metadata / props passed to
+	 *                                   the Component instance.
+	 * @param {number}      [instanceID] ID of the Component instance setting
+	 *                                   the widget state.
 	 * @return {Object} Redux-style action.
 	 */
-	setWidgetState( slug, Component, metadata = {} ) {
+	setWidgetState( slug, Component, metadata = {}, instanceID ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
+				instanceID,
 			},
 			type: SET_WIDGET_STATE,
 		};
@@ -175,7 +178,8 @@ export const actions = {
 	 * Unsets widget state for a given widget.
 	 *
 	 * The widget state will only be unset if the current widget state matches
-	 * exactly the passed parameters.
+	 * exactly the passed parameters. The instance ID is only matched when
+	 * provided.
 	 *
 	 * Used internally by various components that can be returned by
 	 * registered widget components.
@@ -183,18 +187,21 @@ export const actions = {
 	 * @since 1.25.0
 	 * @private
 	 *
-	 * @param {string}      slug       Widget slug.
-	 * @param {WPComponent} Component  Component returned by the widget.
-	 * @param {Object}      [metadata] Relevant metadata / props passed to
-	 *                                 the Component instance.
+	 * @param {string}      slug         Widget slug.
+	 * @param {WPComponent} Component    Component returned by the widget.
+	 * @param {Object}      [metadata]   Relevant metadata / props passed to
+	 *                                   the Component instance.
+	 * @param {number}      [instanceID] ID of the Component instance unsetting
+	 *                                   the widget state.
 	 * @return {Object} Redux-style action.
 	 */
-	unsetWidgetState( slug, Component, metadata = {} ) {
+	unsetWidgetState( slug, Component, metadata = {}, instanceID ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
+				instanceID,
 			},
 			type: UNSET_WIDGET_STATE,
 		};
@@ -237,18 +244,21 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case SET_WIDGET_STATE: {
-			const { slug, Component, metadata } = payload;
+			const { slug, Component, metadata, instanceID } = payload;
 
-			state.widgetStates[ slug ] = { Component, metadata };
+			state.widgetStates[ slug ] = { Component, metadata, instanceID };
 			return state;
 		}
 
 		case UNSET_WIDGET_STATE: {
-			const { slug, Component, metadata } = payload;
+			const { slug, Component, metadata, instanceID } = payload;
 
 			if (
 				state.widgetStates?.[ slug ]?.Component === Component &&
-				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
+				original( state.widgetStates?.[ slug ]?.metadata ) ===
+					metadata &&
+				( instanceID === undefined ||
+					state.widgetStates[ slug ].instanceID === instanceID )
 			) {
 				delete state.widgetStates[ slug ];
 			}
