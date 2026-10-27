@@ -334,6 +334,7 @@ $traffic-overview-column-gap: 42px;
 		// A report error sits under the group heading, so it takes the height
 		// of its content rather than the height of the whole group.
 		.googlesitekit-traffic-overview__fresh-metrics-row .googlesitekit-cta {
+			align-self: start;
 			height: auto;
 		}
 
