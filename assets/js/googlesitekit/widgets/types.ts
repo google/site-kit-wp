@@ -157,7 +157,6 @@ export interface WidgetArea {
 	title?: string;
 	subtitle?: string;
 	pdfTitle?: string;
-	pdfReportTitle?: string;
 	priority?: number;
 	style?: string;
 	Icon?: ComponentType;

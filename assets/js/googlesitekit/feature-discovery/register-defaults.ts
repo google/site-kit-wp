@@ -76,35 +76,35 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Share data safely:', 'google-site-kit' ),
+						term: __( 'Share data safely', 'google-site-kit' ),
 						description: __(
 							'Grant access to Site Kit metrics without sharing your Google account login details',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Role-based access:', 'google-site-kit' ),
+						term: __( 'Role-based access', 'google-site-kit' ),
 						description: __(
 							'Easily manage view-only permissions for specific WordPress roles like Editor or Author',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Client reporting:', 'google-site-kit' ),
+						term: __( 'Client reporting', 'google-site-kit' ),
 						description: __(
 							'Show stakeholders real-time site performance data directly within their WordPress dashboard',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Protect settings:', 'google-site-kit' ),
+						term: __( 'Protect settings', 'google-site-kit' ),
 						description: __(
 							'Keep your connected Google service configurations safe from unauthorized changes',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Streamline reporting:', 'google-site-kit' ),
+						term: __( 'Streamline reporting', 'google-site-kit' ),
 						description: __(
 							'Empower your team with self-service access to insights on their own time',
 							'google-site-kit'
@@ -116,7 +116,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				documentationURL:
 					'https://sitekit.withgoogle.com/documentation/using-site-kit/dashboard-sharing/',
 				serviceRequirements: __(
-					'Dashboard sharing only works with WordPress user roles. This includes any custom user roles',
+					'Dashboard sharing only works with WordPress user roles. This includes any custom user roles.',
 					'google-site-kit'
 				),
 				setupList: [
@@ -130,7 +130,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__(
-						'You’re done! Other users can view the Site Kit dashboard in view-only mode',
+						'You’re done! Other users can view the Site Kit dashboard in view-only mode.',
 						'google-site-kit'
 					),
 				],
@@ -209,35 +209,35 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Automated delivery:', 'google-site-kit' ),
+						term: __( 'Automated delivery', 'google-site-kit' ),
 						description: __(
 							"Get an overview of your site's performance sent to your inbox at your preferred frequency",
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Invite others:', 'google-site-kit' ),
+						term: __( 'Invite others', 'google-site-kit' ),
 						description: __(
 							'Share the insights by easily inviting team members or clients to receive the emails',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'In-box monitoring:', 'google-site-kit' ),
+						term: __( 'In-box monitoring', 'google-site-kit' ),
 						description: __(
 							'Track how your site is doing across key metrics without needing to log into WordPress',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Quick dashboard link:', 'google-site-kit' ),
+						term: __( 'Quick dashboard link', 'google-site-kit' ),
 						description: __(
 							'Jump straight into deeper analysis with a convenient link back to Site Kit in every email',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Easy opt-out:', 'google-site-kit' ),
+						term: __( 'Easy opt-out', 'google-site-kit' ),
 						description: __(
 							'Maintain complete control over your inbox with a simple unsubscribe option available at any time',
 							'google-site-kit'
@@ -266,7 +266,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'google-site-kit'
 					),
 					__(
-						'You’re done! You will receive a confirmation email and the report will be sent automatically per your frequency selection',
+						'You’re done! You will receive a confirmation email and the report will be sent automatically per your frequency selection.',
 						'google-site-kit'
 					),
 				],
@@ -334,21 +334,21 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use PDF reports?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Easy download:', 'google-site-kit' ),
+						term: __( 'Easy download', 'google-site-kit' ),
 						description: __(
 							'Save a clean, instant snapshot of your entire Site Kit dashboard with a single click',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Offline review:', 'google-site-kit' ),
+						term: __( 'Offline review', 'google-site-kit' ),
 						description: __(
 							'Access and analyze your site’s performance data anywhere without needing an internet connection',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Simple sharing:', 'google-site-kit' ),
+						term: __( 'Simple sharing', 'google-site-kit' ),
 						description: __(
 							'Print or email the generated PDF directly to clients, stakeholders, or team members',
 							'google-site-kit'
@@ -368,7 +368,7 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					),
 					__( 'Download your report', 'google-site-kit' ),
 					__(
-						'You’re done! The PDF will be automatically downloaded',
+						'You’re done! The PDF will be automatically downloaded.',
 						'google-site-kit'
 					),
 				],
@@ -380,8 +380,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'PDF report screenshot showing the full report with all selected metrics',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 				{
 					src: splashScreenScreenshotURL,
@@ -389,8 +389,8 @@ export function registerDefaults( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'PDF report screenshot showing the export panel with selected metrics',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},

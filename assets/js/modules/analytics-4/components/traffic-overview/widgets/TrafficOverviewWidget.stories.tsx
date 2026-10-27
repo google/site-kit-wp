@@ -33,6 +33,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -47,6 +48,7 @@ import {
 	EARLIER_POST,
 	LATEST_POST,
 	createBreakdownReport,
+	createDailyTrafficRows,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
@@ -55,7 +57,10 @@ import {
 	provideRecentTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -300,10 +305,21 @@ TypicalTrafficSelected.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
-		provideBenchmarkingData(
-			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
-		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+
+		// The checked-in response has only four days. So the chart gets the 28
+		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
+		// thousands on the value axis, and the reference images show each label
+		// in full.
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			dailyTraffic: createDailyTrafficRows(
+				28,
+				dates.endDate,
+				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
+			),
+		} );
 	},
 };
 TypicalTrafficSelected.parameters = {

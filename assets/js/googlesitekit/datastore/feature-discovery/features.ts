@@ -98,6 +98,7 @@ export const actions = {
 	 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
 	 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
 	 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
+	 * @param {Function}       [settings.EffectComponent]         Optional. Component rendered once on the hub, for setup work that runs on load.
 	 * @return {Object} Redux-style action.
 	 */
 	registerFeature( slug: string, settings: FeatureSettings ) {
@@ -183,13 +184,16 @@ export const actions = {
 	 * For `in-place-panel` features, this closes the feature detail panel and
 	 * opens the feature's existing panel over the hub.
 	 *
+	 * For `background-toggle` features, this runs the feature's own enable
+	 * routine, and the user stays on the hub.
+	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
-	 * @since n.e.x.t Implemented the `in-place-panel` setup type.
+	 * @since n.e.x.t Implemented the `in-place-panel` and `background-toggle` setup types.
 	 * @since n.e.x.t Allowed `setup-flow` features to activate a module and also override its setup URL.
 	 *
 	 * @param {string} slug Feature's slug.
-	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated.
+	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated or the feature could not be enabled.
 	 */
 	setupFeature: createValidatedAction(
 		( slug: string ) => {
@@ -218,6 +222,27 @@ export const actions = {
 					.setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
 
 				feature.setup.open?.( registry );
+
+				return {};
+			}
+
+			if (
+				feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
+			) {
+				if ( ! feature.setup.activate ) {
+					return {};
+				}
+
+				const { error } = ( yield commonActions.await(
+					feature.setup.activate( registry )
+				) ) as SetupFeatureResult;
+
+				if ( error ) {
+					yield setErrorForAction( error, 'setupFeature', [ slug ] );
+					return { error };
+				}
+
+				yield clearActionError( 'setupFeature', [ slug ] );
 
 				return {};
 			}

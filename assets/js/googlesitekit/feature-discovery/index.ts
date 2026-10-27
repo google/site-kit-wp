@@ -73,6 +73,7 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		 * @param {Array.<string>} [settings.badges]                  Optional. Static badges. Default is: `[]`.
 		 * @param {Object}         [settings.successNotice]           Optional. Copy for the notice shown once the feature is set up.
 		 * @param {Object}         [settings.incompleteSetupReminder] Optional. Copy for incomplete setup reminder surfaces.
+		 * @param {Function}       [settings.EffectComponent]         Optional. Component rendered once on the hub, for setup work that runs on load.
 		 * @return {Object} Feature registration action result.
 		 */
 		registerFeature: ( slug: string, settings: FeatureSettings ) => {

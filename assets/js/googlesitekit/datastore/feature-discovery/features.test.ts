@@ -638,6 +638,111 @@ describe( 'core/feature-discovery features', () => {
 				} );
 			} );
 
+			describe( 'for a background-toggle feature', () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				function registerBackgroundToggleFeature(
+					activate?: ( activateRegistry: Registry ) => Promise< {
+						error?: typeof error;
+					} >
+				) {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+								activate,
+							},
+						} )
+					);
+				}
+
+				it( 'should run the activate routine with the registry and keep the user on the hub', async () => {
+					const activate = jest.fn().mockResolvedValue( {} );
+					registerBackgroundToggleFeature( activate );
+
+					const activateModule = jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activate ).toHaveBeenCalledTimes( 1 );
+					expect( activate ).toHaveBeenCalledWith(
+						expect.objectContaining( {
+							select: expect.any( Function ),
+							dispatch: expect.any( Function ),
+						} )
+					);
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it( 'should return the error from the activate routine and store it for the setupFeature action', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( { error } )
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( { error } );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toEqual( error );
+				} );
+
+				it( 'should clear any stale setupFeature action error once the activate routine succeeds', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( {} )
+					);
+
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setErrorForAction( error, 'setupFeature', [
+							'test-feature',
+						] );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toBeUndefined();
+				} );
+
+				it( 'should resolve to an empty object when the feature has no activate routine', async () => {
+					registerBackgroundToggleFeature();
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+				} );
+			} );
+
 			describe( 'for an in-place-panel feature', () => {
 				it( "should close the detail panel before opening the feature's panel", async () => {
 					// Records the detail panel's state at the moment the

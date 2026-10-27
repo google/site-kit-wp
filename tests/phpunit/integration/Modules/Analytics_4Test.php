@@ -2033,6 +2033,24 @@ class Analytics_4Test extends TestCase {
 		);
 	}
 
+	public function test_get_datapoints__fresh_data_enabled() {
+		$this->enable_feature( 'freshData' );
+
+		$this->assertContains(
+			'plain-permalink-top-posts',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should expose the `plain-permalink-top-posts` datapoint with the `freshData` feature flag on.'
+		);
+	}
+
+	public function test_get_datapoints__fresh_data_disabled() {
+		$this->assertNotContains(
+			'plain-permalink-top-posts',
+			$this->analytics->get_datapoints(),
+			'Analytics 4 module should not expose the `plain-permalink-top-posts` datapoint with the `freshData` feature flag off.'
+		);
+	}
+
 	public function test_get_datapoints__conversionReporting() {
 		$this->assertEqualSets(
 			array(

@@ -25,17 +25,159 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import type { Registry, Select } from 'googlesitekit-data';
 import Link from '@/js/components/Link';
+import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
+import P from '@/js/components/Typography/P';
 import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	getCurrentFeatureDiscoveryTabPath,
+	setPendingSetup,
+} from '@/js/googlesitekit/feature-discovery/pending-setup';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
+import EnhancedMeasurementSetupEffect from '@/js/modules/analytics-4/components/feature-discovery/EnhancedMeasurementSetupEffect';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import {
+	EDIT_SCOPE,
+	FORM_SETUP,
+	MODULES_ANALYTICS_4,
+} from '@/js/modules/analytics-4/datastore/constants';
+import {
+	isValidPropertyID,
+	isValidWebDataStreamID,
+} from '@/js/modules/analytics-4/utils/validation';
+import {
+	ERROR_CODE_MISSING_REQUIRED_SCOPE,
+	type ErrorObject,
+} from '@/js/util/errors';
 import kmwWidgetScreenshotURL from '@/svg/graphics/kmw-widget.svg?path';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
 import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
+
+const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
+
+/**
+ * Checks whether enhanced measurement is on for the connected web data stream.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Function} select Registry `select` function.
+ * @return {(boolean|undefined)} Whether enhanced measurement is on, or `undefined` while loading.
+ */
+export function isEnhancedMeasurementEnabled(
+	select: Select
+): boolean | undefined {
+	const isAnalyticsConnected = select( CORE_MODULES ).isModuleConnected(
+		MODULE_SLUG_ANALYTICS_4
+	);
+
+	if ( isAnalyticsConnected === undefined ) {
+		return undefined;
+	}
+
+	if ( ! isAnalyticsConnected ) {
+		return false;
+	}
+
+	const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+	if ( propertyID === undefined || webDataStreamID === undefined ) {
+		return undefined;
+	}
+
+	if (
+		! isValidPropertyID( propertyID ) ||
+		! isValidWebDataStreamID( webDataStreamID )
+	) {
+		return false;
+	}
+
+	// The saved setting is used, so the feature only counts as set up once
+	// the change has been saved.
+	return select(
+		MODULES_ANALYTICS_4
+	).isEnhancedMeasurementStreamAlreadyEnabled( propertyID, webDataStreamID );
+}
+
+/**
+ * Turns on enhanced measurement for the connected web data stream.
+ *
+ * Where the edit scope is missing, this sends the user to grant it instead,
+ * and the save resumes once they return to the hub.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object} registry Registry instance.
+ * @return {Promise<Object>} Empty object, or an object with an `error` if the setting could not be saved.
+ */
+export async function activateEnhancedMeasurement(
+	registry: Registry
+): Promise< { error?: ErrorObject } > {
+	const { dispatch, resolveSelect, select } = registry;
+
+	await resolveSelect( CORE_USER ).getAuthentication();
+
+	if ( ! select( CORE_USER ).hasScope( EDIT_SCOPE ) ) {
+		// Restores the tab the user set out from once they return to the hub.
+		await setPendingSetup(
+			ENHANCED_MEASUREMENT_FEATURE_SLUG,
+			getCurrentFeatureDiscoveryTabPath()
+		);
+
+		dispatch( CORE_FORMS ).setValues( FORM_SETUP, { autoSubmit: true } );
+
+		dispatch( CORE_USER ).setPermissionScopeError( {
+			code: ERROR_CODE_MISSING_REQUIRED_SCOPE,
+			message: __(
+				'Additional permissions are required to enable enhanced measurement for the selected web data stream',
+				'google-site-kit'
+			),
+			data: {
+				status: 403,
+				scopes: [ EDIT_SCOPE ],
+				skipModal: true,
+				redirectURL: global.location.href,
+			},
+		} );
+
+		return {};
+	}
+
+	await resolveSelect( MODULES_ANALYTICS_4 ).getSettings();
+
+	const propertyID = select( MODULES_ANALYTICS_4 ).getPropertyID();
+	const webDataStreamID = select( MODULES_ANALYTICS_4 ).getWebDataStreamID();
+
+	await dispatch( MODULES_ANALYTICS_4 ).setEnhancedMeasurementStreamEnabled( {
+		propertyID,
+		webDataStreamID,
+		enabled: true,
+	} );
+
+	const result = await dispatch(
+		MODULES_ANALYTICS_4
+	).updateEnhancedMeasurementSettings( propertyID, webDataStreamID );
+
+	// Without loaded settings there is nothing to save, and the error is the
+	// one from loading them.
+	const error =
+		result?.error ||
+		( ! result &&
+			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
+				'getEnhancedMeasurementSettings',
+				[ propertyID, webDataStreamID ]
+			) );
+
+	return error ? { error } : {};
+}
 
 /**
  * Registers Analytics module features in the Feature Discovery catalog.
@@ -68,21 +210,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				whyUseHeading: __( 'Why use Analytics?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Decide with data:', 'google-site-kit' ),
+						term: __( 'Decide with data', 'google-site-kit' ),
 						description: __(
 							'Replace guesswork with clear insights',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Track what works:', 'google-site-kit' ),
+						term: __( 'Track what works', 'google-site-kit' ),
 						description: __(
 							'Pinpoint your most popular content and traffic sources',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Boost performance:', 'google-site-kit' ),
+						term: __( 'Boost performance', 'google-site-kit' ),
 						description: __(
 							'Optimize your site based on real visitor behavior',
 							'google-site-kit'
@@ -123,15 +265,15 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
 		successNotice: {
 			title: __( 'Success! Analytics is set up', 'google-site-kit' ),
 			description: __(
-				'Analytics data is now on your dashboard.',
+				'Analytics data is now on your dashboard',
 				'google-site-kit'
 			),
 			cta: {
@@ -166,28 +308,33 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		),
 		detail: {
 			description: {
-				whatIs: __(
-					"Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighting what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals. You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.",
-					'google-site-kit'
+				whatIs: createInterpolateElement(
+					__(
+						"<p>Key metrics allows you to tailor your Site Kit dashboard to show the top metrics most relevant to your site's goals. These are pinned to the top of the Site Kit dashboard, highlighting what's most important for you. After answering a few questions about your site, Site Kit will pre-select a list of key metrics to help you understand how users interact with your site and what drives progress toward your goals.</p><p>You can also customize this widget and define your own metrics in order to focus on the metrics that matter most to you.</p>",
+						'google-site-kit'
+					),
+					{
+						p: createElement( P, { size: SIZE_MEDIUM } ),
+					}
 				),
 				whyUseHeading: __( 'Why use key metrics?', 'google-site-kit' ),
 				whyUseList: [
 					{
-						term: __( 'Pin metrics:', 'google-site-kit' ),
+						term: __( 'Pin metrics', 'google-site-kit' ),
 						description: __(
 							'Attach your most critical GA4 metrics directly to your main WordPress dashboard',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'At-a-glance data:', 'google-site-kit' ),
+						term: __( 'At-a-glance data', 'google-site-kit' ),
 						description: __(
 							'View vital performance stats immediately upon logging in',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Save time:', 'google-site-kit' ),
+						term: __( 'Save time', 'google-site-kit' ),
 						description: __(
 							'Skip navigating through complex external Analytics menus',
 							'google-site-kit'
@@ -195,14 +342,14 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 
 					{
-						term: __( 'Team alignment:', 'google-site-kit' ),
+						term: __( 'Team alignment', 'google-site-kit' ),
 						description: __(
 							'Keep everyone focused on core goals with a simplified performance view',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Spot trends:', 'google-site-kit' ),
+						term: __( 'Spot trends', 'google-site-kit' ),
 						description: __(
 							'Instantly recognize traffic spikes, drops, and changing user patterns',
 							'google-site-kit'
@@ -257,7 +404,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		},
 	} );
 
-	registerFeature( 'enhanced-measurement', {
+	registerFeature( ENHANCED_MEASUREMENT_FEATURE_SLUG, {
 		name: __( 'Enhanced measurement', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_ANALYTICS_4,
 		title: __( 'Enhance your site tracking', 'google-site-kit' ),
@@ -277,28 +424,28 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Saves time:', 'google-site-kit' ),
+						term: __( 'Saves time', 'google-site-kit' ),
 						description: __(
 							'Automates event tracking immediately with a single toggle',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Zero coding:', 'google-site-kit' ),
+						term: __( 'Zero coding', 'google-site-kit' ),
 						description: __(
 							'Tracks file downloads, video plays, and outbound clicks without developer help',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Immediate data:', 'google-site-kit' ),
+						term: __( 'Immediate data', 'google-site-kit' ),
 						description: __(
 							'Collects baseline user behavior data from the moment it is turned on',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'No Tag Manager needed:', 'google-site-kit' ),
+						term: __( 'No Tag Manager needed', 'google-site-kit' ),
 						description: __(
 							'Eliminates complex setup by running directly through your standard tracking',
 							'google-site-kit'
@@ -344,8 +491,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},
@@ -355,7 +502,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				'google-site-kit'
 			),
 			description: __(
-				'You are now automatically tracking valuable interactions like file downloads and video plays.',
+				'You are now automatically tracking valuable interactions like file downloads and video plays',
 				'google-site-kit'
 			),
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
@@ -367,7 +514,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 			ctaLabel: __( 'Enable enhanced measurements', 'google-site-kit' ),
+			isEnabled: isEnhancedMeasurementEnabled,
+			activate: activateEnhancedMeasurement,
 		},
+		EffectComponent: EnhancedMeasurementSetupEffect,
 	} );
 
 	registerFeature( 'visitor-groups', {
@@ -381,10 +531,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			description: {
 				whatIs: createInterpolateElement(
 					__(
-						'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
+						'<p>Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.</p>',
 						'google-site-kit'
 					),
 					{
+						p: createElement( P, { size: SIZE_MEDIUM } ),
 						a: createElement( Link, {
 							href: 'https://support.google.com/analytics/answer/9267572?hl=en#zippy=%2Cin-this-article',
 							external: true,
@@ -398,7 +549,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Segment traffic:', 'google-site-kit' ),
+						term: __( 'Segment traffic', 'google-site-kit' ),
 						description: __(
 							'Group visitors by criteria like traffic source or new versus returning directly in WordPress',
 							'google-site-kit'
@@ -406,7 +557,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 					},
 					{
 						term: __(
-							'Side-by-side comparison:',
+							'Side-by-side comparison',
 							'google-site-kit'
 						),
 						description: __(
@@ -415,21 +566,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						),
 					},
 					{
-						term: __( 'Identify top content:', 'google-site-kit' ),
+						term: __( 'Identify top content', 'google-site-kit' ),
 						description: __(
 							'Pinpoint exactly which posts and pages resonate best with specific audience types',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Tailored insights:', 'google-site-kit' ),
+						term: __( 'Tailored insights', 'google-site-kit' ),
 						description: __(
 							'Uncover deep audience behavior patterns to improve user engagement and retention',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Data-driven decisions:', 'google-site-kit' ),
+						term: __( 'Data-driven decisions', 'google-site-kit' ),
 						description: __(
 							'Optimize your site strategy using segment-specific data without leaving your dashboard',
 							'google-site-kit'
@@ -478,7 +629,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
 		effort: FEATURE_EFFORTS.LOW,
-		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+		goalCategories: [
+			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.ENGAGEMENT,
+			FEATURE_CATEGORIES.TRAFFIC,
+		],
 		prerequisiteModules: [ 'analytics-4' ],
 		addedInVersion: '1.140.0',
 		setup: {
