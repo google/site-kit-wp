@@ -579,34 +579,34 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( self::START_DATE, self::START_DATE ) ), $builder->calls, 'The builder should be called with the single day.' );
 	}
 
-	public function test_rest_endpoint__accepts_a_period_of_197_days() {
+	public function test_rest_endpoint__accepts_a_period_of_90_days() {
 		$builder = $this->enable_datapoint();
 
 		$response = $this->request(
 			array(
-				'startDate' => '2026-03-03',
+				'startDate' => '2026-06-18',
 				'endDate'   => '2026-09-15',
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status(), 'A request for the 197 days from `2026-03-03` to `2026-09-15` should answer 200.' );
-		$this->assertSame( array( array( '2026-03-03', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-03-03` and `2026-09-15`, the first and the last day of the 197 days.' );
+		$this->assertSame( 200, $response->get_status(), 'A request for the 90 days from `2026-06-18` to `2026-09-15` should answer 200.' );
+		$this->assertSame( array( array( '2026-06-18', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-06-18` and `2026-09-15`, the first and the last day of the 90 days.' );
 	}
 
-	public function test_rest_endpoint__refuses_a_period_of_198_days() {
+	public function test_rest_endpoint__refuses_a_period_of_91_days() {
 		$builder = $this->enable_datapoint();
 
 		$response = $this->request(
 			array(
-				'startDate' => '2026-03-02',
+				'startDate' => '2026-06-17',
 				'endDate'   => '2026-09-15',
 			)
 		);
 
-		$this->assertSame( 400, $response->get_status(), 'A request for the 198 days from `2026-03-02` to `2026-09-15` should answer 400.' );
-		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 198 days.' );
-		$this->assertStringContainsString( '197 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 197 days.' );
-		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 198 days.' );
+		$this->assertSame( 400, $response->get_status(), 'A request for the 91 days from `2026-06-17` to `2026-09-15` should answer 400.' );
+		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 91 days.' );
+		$this->assertStringContainsString( '90 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 90 days.' );
+		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 91 days.' );
 	}
 
 	public function test_rest_endpoint__answers_the_same_for_any_other_parameter() {
