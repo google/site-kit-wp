@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC, ReactNode } from 'react';
+import { FC } from 'react';
 
 /**
  * WordPress dependencies
@@ -109,25 +109,24 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 		learnMoreURL = errorTroubleshootingLinkURL;
 	}
 
-	let renderedDescription: ReactNode = (
-		<span
-			dangerouslySetInnerHTML={ sanitizeHTML(
-				description,
-				sanitizeArgs
+	const renderedDescription = (
+		<Fragment>
+			<span
+				dangerouslySetInnerHTML={ sanitizeHTML(
+					description,
+					sanitizeArgs
+				) }
+			/>
+			{ learnMoreURL && (
+				<Fragment>
+					{ ' ' }
+					<Link href={ learnMoreURL } external>
+						{ __( 'Learn more', 'google-site-kit' ) }
+					</Link>
+				</Fragment>
 			) }
-		/>
+		</Fragment>
 	);
-
-	if ( learnMoreURL ) {
-		renderedDescription = (
-			<Fragment>
-				{ renderedDescription }{ ' ' }
-				<Link href={ learnMoreURL } external>
-					{ __( 'Learn more', 'google-site-kit' ) }
-				</Link>
-			</Fragment>
-		);
-	}
 
 	return (
 		<Notice
