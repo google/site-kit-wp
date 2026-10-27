@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -40,6 +35,7 @@ import {
 	setupSiteKit,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../utils';
 import getMultiDimensionalObjectFromParams from '../utils/get-multi-dimensional-object-from-params';
 
@@ -180,7 +176,8 @@ describe( 'User Input Settings', () => {
 			) {
 				request.continue();
 			} else if ( url.match( '/google-site-kit/v1/modules' ) ) {
-				request.respond( { status: 200 } );
+				// Leave other module requests unanswered. These tests do not
+				// need their data, and an empty response would fail JSON parsing.
 			} else {
 				request.continue();
 			}

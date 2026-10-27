@@ -17,20 +17,17 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { activatePlugin, visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import surveyResponse from '@/js/components/surveys/__fixtures__/survey-single-question.json';
 import {
+	activatePlugin,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setupSiteKit,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 // Selectors

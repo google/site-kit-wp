@@ -1,13 +1,10 @@
 /**
- * WordPress dependencies
- */
-import { activatePlugin, createURL } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import { getAnalytics4MockResponse } from '../../../../../assets/js/modules/analytics-4/utils/data-mock';
 import {
+	activatePlugin,
+	createURL,
 	setSearchConsoleProperty,
 	setSiteVerification,
 	setupAnalytics4,

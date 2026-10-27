@@ -64,7 +64,7 @@ only for a rule that must hold even when the skill does not run.
 **Comprehensive multi-layer testing:**
 - **PHP**: PHPUnit with WordPress test suite (`tests/phpunit/`)
 - **JS**: Jest with React Testing Library (`tests/js/`)
-- **E2E**: Puppeteer browser automation (`tests/e2e/`)
+- **E2E**: Playwright browser automation (`tests/playwright/`, plus the legacy Jest suite in `tests/e2e/`)
 - **Visual**: Playwright screenshots of Storybook stories (`tests/vrt/`)
 
 **Key test utilities**: `tests/js/test-utils.js` (JS), `tests/phpunit/includes/TestCase.php` (PHP)

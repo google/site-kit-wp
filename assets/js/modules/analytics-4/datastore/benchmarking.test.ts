@@ -70,7 +70,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 			).toBeUndefined();
 		} );
 
-		it( 'should return the decoded `visitors`, `dailyTraffic`, `dimensions`, and `contextualData` for a start date and an end date', async () => {
+		it( 'should return the decoded `visits`, `dailyTraffic`, and `keyFactors` for a start date and an end date', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
 				body: [
 					1,
@@ -78,8 +78,8 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					'2025-08-18',
 					[ 132, 0, 147 ],
 					[ 412, 388 ],
-					{ 0: [ [ 0, 210, 168 ] ] },
-					[ 0 ],
+					[ [ 0, 0, 210, 222, 40.3 ] ],
+					[ [] ],
 				],
 			} );
 
@@ -99,28 +99,28 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 412, previous: 388 },
+				visits: { current: 412, previous: 388 },
 				dailyTraffic: [
-					{ date: '2025-08-18', visitors: 132 },
-					{ date: '2025-08-19', visitors: 0 },
-					{ date: '2025-08-20', visitors: 147 },
+					{ date: '2025-08-18', visits: 132 },
+					{ date: '2025-08-19', visits: 0 },
+					{ date: '2025-08-20', visits: 147 },
 				],
-				dimensions: [ 'CHANNELS' ],
-				contextualData: {
-					channels: [
-						{
-							label: 'Organic Search',
-							current: 210,
-							previous: 168,
-						},
-					],
-				},
+				keyFactors: [
+					{
+						kind: 'CHANNEL',
+						label: 'Organic Search',
+						current: 210,
+						previous: 222,
+						sharePct: 40.3,
+						attributes: [],
+					},
+				],
 			} );
 		} );
 
 		it( 'should send one request and return the same object when the same start date and end date are selected three times before the request finishes', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			registry
@@ -149,10 +149,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 			expect( fetchMock ).toHaveFetchedTimes( 1 );
 			expect( firstResponse ).toEqual( {
-				visitors: { current: 412, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 			expect( secondResponse ).toBe( firstResponse );
 			expect( thirdResponse ).toBe( firstResponse );
@@ -160,7 +159,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		it( 'should not send another request when the same start date and end date are selected again after the first request finishes', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			registry
@@ -181,7 +180,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		it( 'should not send a request when the next page loads 59 minutes after the first request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			dateNowSpy.mockReturnValue( Date.parse( '2026-09-16T09:00:00Z' ) );
@@ -210,19 +209,18 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 412, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 		} );
 
 		it( 'should send a new request when the next page loads 61 minutes after the first request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 151 ], [ 431, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 151 ], [ 431, 388 ], [], [] ],
 			} );
 
 			dateNowSpy.mockReturnValue( Date.parse( '2026-09-16T09:00:00Z' ) );
@@ -251,22 +249,21 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 431, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 151 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 431, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 151 } ],
+				keyFactors: [],
 			} );
 		} );
 
 		it( 'should send a request for each pair of dates and keep the response of each pair', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 1280, 1195 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 1280, 1195 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 397, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 397, 388 ], [], [] ],
 			} );
 
 			registry
@@ -308,40 +305,36 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 412, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-06-18', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 1280, previous: 1195 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 1280, previous: 1195 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 			expect(
 				registry
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-14' )
 			).toEqual( {
-				visitors: { current: 397, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 397, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 		} );
 
 		it( 'should not send a request when the store already has the response for the start date and the end date', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetBenchmarkingData(
 				{
-					visitors: { current: 412, previous: 388 },
-					dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-					dimensions: [],
-					contextualData: {},
+					visits: { current: 412, previous: 388 },
+					dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+					keyFactors: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
 			);
@@ -399,7 +392,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		it( 'should return `undefined` and store an error when the response has an unrecognized format version, such as `2`', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 2, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 2, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			registry
@@ -430,10 +423,10 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		it( 'should send a new request when the next page loads after the first response has an unrecognized format version, such as `2`', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 2, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 2, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			registry
@@ -460,10 +453,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 412, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 		} );
 
@@ -564,7 +556,7 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 		it( 'should return `false` after the request succeeds', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 
 			registry
@@ -612,10 +604,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 		it( 'should stay `false` when the start date and the end date are selected and the store already has their response', async () => {
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetBenchmarkingData(
 				{
-					visitors: { current: 412, previous: 388 },
-					dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-					dimensions: [],
-					contextualData: {},
+					visits: { current: 412, previous: 388 },
+					dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+					keyFactors: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
 			);
@@ -647,19 +638,17 @@ describe( 'modules/analytics-4 benchmarking', () => {
 
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetBenchmarkingData(
 				{
-					visitors: { current: 412, previous: 388 },
-					dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-					dimensions: [],
-					contextualData: {},
+					visits: { current: 412, previous: 388 },
+					dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+					keyFactors: [],
 				},
 				{ startDate: '2026-08-19', endDate: '2026-09-15' }
 			);
 			registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetBenchmarkingData(
 				{
-					visitors: { current: 1280, previous: 1195 },
-					dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-					dimensions: [],
-					contextualData: {},
+					visits: { current: 1280, previous: 1195 },
+					dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+					keyFactors: [],
 				},
 				{ startDate: '2026-06-18', endDate: '2026-09-15' }
 			);
@@ -669,10 +658,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 412, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 412, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 
 			await registry
@@ -689,19 +677,18 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-06-18', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 1280, previous: 1195 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 1280, previous: 1195 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 		} );
 
 		it( 'should delete the response for the start date and the end date from the API cache and keep the response for another pair of dates', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 1280, 1195 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 1280, 1195 ], [], [] ],
 			} );
 
 			registry
@@ -744,19 +731,18 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-06-18', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 1280, previous: 1195 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 132 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 1280, previous: 1195 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 132 } ],
+				keyFactors: [],
 			} );
 		} );
 
 		it( 'should send a new request to the `benchmarking-data` route when the start date and the end date are selected again', async () => {
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 132 ], [ 412, 388 ], [], [] ],
 			} );
 			fetchMock.getOnce( benchmarkingDataEndpoint, {
-				body: [ 1, [], '2025-08-18', [ 151 ], [ 431, 388 ], {}, [] ],
+				body: [ 1, [], '2025-08-18', [ 151 ], [ 431, 388 ], [], [] ],
 			} );
 
 			registry
@@ -785,10 +771,9 @@ describe( 'modules/analytics-4 benchmarking', () => {
 					.select( MODULES_ANALYTICS_4 )
 					.getBenchmarkingData( '2026-08-19', '2026-09-15' )
 			).toEqual( {
-				visitors: { current: 431, previous: 388 },
-				dailyTraffic: [ { date: '2025-08-18', visitors: 151 } ],
-				dimensions: [],
-				contextualData: {},
+				visits: { current: 431, previous: 388 },
+				dailyTraffic: [ { date: '2025-08-18', visits: 151 } ],
+				keyFactors: [],
 			} );
 		} );
 
