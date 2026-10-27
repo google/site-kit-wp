@@ -101,8 +101,8 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
  *                                             widget.
  * @return {Object} Object with `overrideComponents` property, both of which are a
  * 					list with one item for each widget. Every `overrideComponents`
- * 					entry is either an object with `Component` and `metadata`, or
- * 					`null` (similar to the `widgetStates` parameter).
+ * 					entry is either an object with `Component`, `metadata` and
+ * 					`instanceID`, or `null` (similar to the `widgetStates` parameter).
  */
 export function combineWidgets(
 	widgets,
