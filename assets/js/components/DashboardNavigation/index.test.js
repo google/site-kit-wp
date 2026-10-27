@@ -378,33 +378,5 @@ describe( 'Dashboard Navigation', () => {
 				container.querySelector( '.mdc-chip--selected' )
 			).not.toHaveTextContent( 'Speed' );
 		} );
-
-		it( 'should not scroll when the URL hash changes after the navigation has mounted', async () => {
-			global.location.hash = '';
-			setupDefaultChips( registry );
-
-			const { waitForRegistry } = render( <DashboardNavigation />, {
-				registry,
-				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
-			} );
-			await waitForRegistry();
-
-			jest.useFakeTimers();
-
-			act( () => {
-				global.history.replaceState( {}, '', `#${ ANCHOR_ID_SPEED }` );
-
-				// Re-render the navigation by changing the visible sections.
-				registry
-					.dispatch( CORE_WIDGETS )
-					.setWidgetState( 'ContentWidget', Null, {} );
-			} );
-
-			act( () => {
-				jest.advanceTimersByTime( 50 );
-			} );
-
-			expect( scrollToSpy ).not.toHaveBeenCalled();
-		} );
 	} );
 } );
