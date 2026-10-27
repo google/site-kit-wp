@@ -516,6 +516,36 @@ RecentActivityNoPublishedPosts.scenario = {
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };
 
+export const RecentActivityNoRecentVisits = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityNoRecentVisits.storyName =
+	'Recent Activity, No Recent Visits (freshData enabled)';
+RecentActivityNoRecentVisits.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		provideInsightReport( registry, 0, [ 100, 100, 100, 100 ] );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: {},
+			channels: {},
+			referrals: {},
+		} );
+	},
+};
+RecentActivityNoRecentVisits.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityNoRecentVisits.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
 export default {
 	title: 'Modules/Analytics4/Components/Traffic Overview/TrafficOverviewWidget',
 	component: TrafficOverviewWidget,
