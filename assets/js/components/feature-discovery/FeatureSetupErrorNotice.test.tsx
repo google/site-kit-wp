@@ -51,7 +51,7 @@ describe( 'FeatureSetupErrorNotice', () => {
 		const onRetry = jest.fn();
 		const onDismiss = jest.fn();
 
-		const { getByRole, getByText } = render(
+		const { container, getByRole, getByText } = render(
 			<FeatureSetupErrorNotice
 				error={ error }
 				onDismiss={ onDismiss }
@@ -68,6 +68,11 @@ describe( 'FeatureSetupErrorNotice', () => {
 
 		const learnMoreLink = getByRole( 'link', { name: /learn more/i } );
 		expect( learnMoreLink ).toHaveAttribute( 'href', troubleshootingURL );
+		expect( learnMoreLink ).toHaveAttribute( 'target', '_blank' );
+		expect( learnMoreLink ).toHaveAttribute( 'rel', 'noopener noreferrer' );
+		expect(
+			container.querySelector( '.googlesitekit-cta-link svg' )
+		).toBeInTheDocument();
 
 		fireEvent.click( getByRole( 'button', { name: 'Retry' } ) );
 		expect( onRetry ).toHaveBeenCalledTimes( 1 );

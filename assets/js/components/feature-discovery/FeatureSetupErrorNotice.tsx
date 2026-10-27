@@ -19,7 +19,7 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, Fragment, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
@@ -30,6 +30,7 @@ import { __, sprintf } from '@wordpress/i18n';
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
@@ -82,6 +83,7 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 	}
 
 	let description = '';
+	let learnMoreURL: string | undefined;
 
 	if ( isInsufficientPermissionsError( error ) ) {
 		description = errorTroubleshootingLinkURL
@@ -103,14 +105,27 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 			skipRetryMessage: true,
 		} );
 
-		if ( errorTroubleshootingLinkURL ) {
-			description = sprintf(
-				/* translators: 1: Error message 2: Troubleshooting URL. */
-				__( '%1$s <a href="%2$s">Learn more</a>', 'google-site-kit' ),
+		learnMoreURL = errorTroubleshootingLinkURL;
+	}
+
+	let renderedDescription: ReactNode = (
+		<span
+			dangerouslySetInnerHTML={ sanitizeHTML(
 				description,
-				errorTroubleshootingLinkURL
-			);
-		}
+				sanitizeArgs
+			) }
+		/>
+	);
+
+	if ( learnMoreURL ) {
+		renderedDescription = (
+			<Fragment>
+				{ renderedDescription }{ ' ' }
+				<Link href={ learnMoreURL } external>
+					{ __( 'Learn more', 'google-site-kit' ) }
+				</Link>
+			</Fragment>
+		);
 	}
 
 	return (
@@ -122,14 +137,7 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 				__( '%s setup failed', 'google-site-kit' ),
 				featureTitle
 			) }
-			description={
-				<span
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						description,
-						sanitizeArgs
-					) }
-				/>
-			}
+			description={ renderedDescription }
 			ctaButton={
 				isRetryableErrorType( error )
 					? {
