@@ -388,10 +388,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			description: {
 				whatIs: createInterpolateElement(
 					__(
-						'Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.',
+						'<p>Visitor groups allow you to gain deeper insights into your website visitors. It uses Analytics <a>audiences</a> to allow you to view data for a dynamically grouped subset of your website visitors who share similar behaviors, demographics, or traits that you can define.</p>',
 						'google-site-kit'
 					),
 					{
+						p: createElement( P, { size: SIZE_MEDIUM } ),
 						a: createElement( Link, {
 							href: 'https://support.google.com/analytics/answer/9267572?hl=en#zippy=%2Cin-this-article',
 							external: true,
