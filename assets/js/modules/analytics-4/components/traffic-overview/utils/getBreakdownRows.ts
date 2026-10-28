@@ -102,13 +102,13 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
 }
 
 /**
- * Formats a share that `getRoundedShares()` returned for a part with a count
- * above zero, such as `27%` or `52.2%`.
+ * Formats the share of a part with a count above zero, such as `27%` or
+ * `52.2%`.
  *
  * @since 1.189.0
  * @since n.e.x.t Renamed from `formatWholePercentage()`, and takes the number of steps in the whole, so it formats tenths of a percent too.
  *
- * @param {number} share The share in steps, from `0` to `steps`.
+ * @param {number} share The share in steps, from `0`, and above `steps` where the part counts more than the whole.
  * @param {number} steps The steps in the whole, `100` for whole percents or `1000` for tenths of a percent.
  * @return {string} The formatted share, or one step with `<` before it for `0`, such as `<1%`.
  */

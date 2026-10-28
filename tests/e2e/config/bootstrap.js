@@ -17,41 +17,29 @@
  */
 
 /**
- * External dependencies
- */
-import { setDefaultOptions } from 'expect-puppeteer';
-import { get } from 'lodash';
-import { ConsoleMessage } from 'puppeteer';
-
-/**
- * WordPress dependencies
- */
-import {
-	clearLocalStorage,
-	enablePageDialogAccept,
-	setBrowserViewport,
-} from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import * as customMatchers from '../matchers';
+import { setDefaultOptions } from '../matchers/default-options';
 import {
+	clearLocalStorage,
 	clearSessionStorage,
 	deactivateUtilityPlugins,
+	enablePageDialogAccept,
 	resetSiteKit,
+	setBrowserViewport,
 } from '../utils';
 
 /**
  * Environment variables.
  */
-const { PUPPETEER_TIMEOUT, EXPECT_PUPPETEER_TIMEOUT } = process.env;
+const { E2E_TIMEOUT, E2E_EXPECT_TIMEOUT } = process.env;
 
 /**
  * Set of console logging types observed to protect against unexpected yet
  * handled (i.e. not catastrophic) errors or warnings. Each key corresponds
- * to the Puppeteer ConsoleMessage type, its value the corresponding function
- * on the console global object.
+ * to the Playwright console message type, its value the corresponding
+ * function on the console global object.
  *
  * @since 1.0.0
  *
@@ -134,6 +122,11 @@ const IGNORE_CONSOLE_MESSAGES = [
 		pattern:
 			'No triggers were found in the config. No analytics data will be sent.',
 	},
+	{
+		matcher: 'includes',
+		pattern:
+			'No request strings defined. Analytics data will not be sent from this page.',
+	},
 	// Ignore errors thrown by `@wordpress/api-fetch`. These are actual,
 	// legimate request failures, but they can happen during a navigation
 	// (or when actually offline).
@@ -201,36 +194,15 @@ const IGNORE_CONSOLE_MESSAGES = [
 	},
 ];
 
-/**
- * Array of page event tuples of [ eventName, handler ].
- *
- * @since 1.0.0
- *
- * @type {Array}
- */
-const pageEvents = [];
-
 // The Jest timeout is increased because these tests are a bit slow
-jest.setTimeout( PUPPETEER_TIMEOUT || 100000 );
-// Set default timeout for Puppeteer waits.
+jest.setTimeout( E2E_TIMEOUT || 100000 );
+// Set default timeout for page actions and waits.
 page.setDefaultTimeout( 10_000 );
-// Set default timeout for individual expect-puppeteer assertions.
-setDefaultOptions( { timeout: EXPECT_PUPPETEER_TIMEOUT || 3000 } );
+// Set default timeout for individual element matcher assertions.
+setDefaultOptions( { timeout: E2E_EXPECT_TIMEOUT || 3000 } );
 
 // Add custom matchers specific to Site Kit.
 expect.extend( customMatchers );
-
-/**
- * Adds an event listener to the page to handle additions of page event
- * handlers, to assure that they are removed at test teardown.
- *
- * @since 1.0.0
- */
-function capturePageEventsForTearDown() {
-	page.on( 'newListener', ( eventName, listener ) => {
-		pageEvents.push( [ eventName, listener ] );
-	} );
-}
 
 /**
  * Opts out of all Analytics tracking on page load.
@@ -253,18 +225,6 @@ function optOutOfEventTracking() {
 }
 
 /**
- * Removes all bound page event handlers.
- *
- * @since 1.0.0
- */
-function removePageEvents() {
-	while ( pageEvents.length ) {
-		const [ eventName, handler ] = pageEvents.pop();
-		page.removeListener( eventName, handler );
-	}
-}
-
-/**
  * Adds a page event handler to emit uncaught exception to process if one of
  * the observed console logging types is encountered.
  *
@@ -277,7 +237,7 @@ function observeConsoleLogging() {
 			return;
 		}
 
-		let text = message.text();
+		const text = message.text();
 
 		// Check if the message should be ignored.
 		if (
@@ -308,23 +268,6 @@ function observeConsoleLogging() {
 			logFunction = 'debug';
 		}
 
-		// As of Puppeteer 1.6.1, `message.text()` wrongly returns an object of
-		// type JSHandle for error logging, instead of the expected string.
-		//
-		// See: https://github.com/GoogleChrome/puppeteer/issues/3397
-		//
-		// The recommendation there to asynchronously resolve the error value
-		// upon a console event may be prone to a race condition with the test
-		// completion, leaving a possibility of an error not being surfaced
-		// correctly. Instead, the logic here synchronously inspects the
-		// internal object shape of the JSHandle to find the error text. If it
-		// cannot be found, the default text value is used instead.
-		text = get(
-			message.args(),
-			[ 0, '_remoteObject', 'description' ],
-			text
-		);
-
 		// Disable reason: We intentionally bubble up the console message
 		// which, unless the test explicitly anticipates the logging via
 		// @wordpress/jest-console matchers, will cause the intended test
@@ -340,17 +283,15 @@ function observeConsoleLogging() {
  *
  * @since 1.98.0
  *
- * @param {string}         pluginSlug Plugin slug.
- * @param {ConsoleMessage} message    Console message.
+ * @param {string} pluginSlug Plugin slug.
+ * @param {Object} message    Playwright console message.
  * @return {boolean} Whether or not a match was found.
  */
 function isPluginConsoleMessage( pluginSlug, message ) {
 	return message
-		.stackTrace()
-		.some( ( { url } ) =>
-			url.match(
-				`${ process.env.WP_BASE_URL }/wp-content/plugins/${ pluginSlug }/`
-			)
+		.location()
+		.url.startsWith(
+			`${ process.env.WP_BASE_URL }/wp-content/plugins/${ pluginSlug }/`
 		);
 }
 
@@ -434,7 +375,6 @@ async function observeRestResponse( res ) {
 // other posts/comments/etc. aren't dirtying tests and tests don't depend on
 // each other's side-effects.
 beforeAll( async () => {
-	capturePageEventsForTearDown();
 	optOutOfEventTracking();
 	enablePageDialogAccept();
 	observeConsoleLogging();
@@ -470,6 +410,5 @@ afterEach( async () => {
 afterAll( async () => {
 	await deactivateUtilityPlugins();
 	await resetSiteKit();
-	removePageEvents();
 	await page.setRequestInterception( false );
 } );

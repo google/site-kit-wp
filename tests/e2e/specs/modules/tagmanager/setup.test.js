@@ -17,26 +17,20 @@
  */
 
 /**
- * WordPress dependencies
- */
-import {
-	activatePlugin,
-	createURL,
-	deactivatePlugin,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import liveContainerVersionFixture from '../../../../../assets/js/modules/tagmanager/datastore/__fixtures__/live-container-version.json';
 import {
+	activatePlugin,
+	createURL,
+	deactivatePlugin,
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAMPMode,
 	setupSiteKit,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../../utils';
 
 async function proceedToTagManagerSetup() {
@@ -90,7 +84,9 @@ describe( 'Tag Manager module setup', () => {
 					/^https:\/\/www\.googletagmanager\.com\/(gtm\.js|amp\.json)/
 				)
 			) {
-				request.respond( { status: 200 } );
+				// An empty script for `gtm.js`, and an empty AMP analytics
+				// config for `amp.json`.
+				request.respond( { status: 200, body: '{}' } );
 			} else if ( url.match( 'search-console/data/searchanalytics' ) ) {
 				request.respond( { status: 200, body: '[]' } );
 			} else if ( url.match( 'pagespeed-insights/data/pagespeed' ) ) {

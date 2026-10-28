@@ -82,9 +82,9 @@ describe( 'useFreshDataReport', () => {
 		expect( result.current.reportOptions ).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'sessions' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'sessionDefaultChannelGroup' ],
-			orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs',

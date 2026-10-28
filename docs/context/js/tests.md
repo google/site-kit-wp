@@ -1,6 +1,6 @@
 # JavaScript Testing
 
-Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, Playwright (migrating from legacy Puppeteer) for end-to-end tests, and specialized visual regression testing through Storybook.
+Site Kit uses a comprehensive testing strategy with Jest for unit and integration tests, Playwright for end-to-end tests, and specialized visual regression testing through Storybook.
 
 ## Test Organization
 
@@ -352,7 +352,8 @@ Test title convention: `it(...)`/`test(...)` titles start with "should …" (e.g
 
 ## End-to-End Testing
 
-Site Kit's E2E tests are migrating from the legacy Puppeteer setup to Playwright:
+Site Kit's E2E tests are migrating from the legacy Jest-based suite to Playwright
+Test. Both run in Playwright Chromium:
 
 - **Playwright (current)** — `tests/playwright/`, run with `npm run test:playwright`.
   All new E2E tests are written in Playwright (`*.spec.ts` under
@@ -381,9 +382,13 @@ Site Kit's E2E tests are migrating from the legacy Puppeteer setup to Playwright
   full set of annotations, fixtures, helpers, and the Docker environment. Do not
   duplicate its content.
 
-- **Puppeteer (legacy)** — `tests/e2e/` (specs under `tests/e2e/specs/`), run with
+- **Jest (legacy)** — `tests/e2e/` (specs under `tests/e2e/specs/`), run with
   `npm run test:e2e`. Maintained for existing coverage only; prefer Playwright for
-  new tests.
+  new tests. These specs were written for Puppeteer and now run on Playwright
+  through a compatibility layer, so they keep the Puppeteer-style `page` API
+  (`page.setRequestInterception()`, `useRequestInterception()`) and the
+  `toClick`/`toMatchElement`/`toFill` matchers. Don't extend that layer for new
+  tests; move specs to `tests/playwright/` instead.
 
 ## Visual Regression Testing
 

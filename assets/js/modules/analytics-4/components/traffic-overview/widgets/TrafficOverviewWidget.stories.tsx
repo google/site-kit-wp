@@ -33,6 +33,7 @@ import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
 import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
@@ -47,6 +48,7 @@ import {
 	EARLIER_POST,
 	LATEST_POST,
 	createBreakdownReport,
+	createDailyTrafficRows,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
@@ -55,7 +57,10 @@ import {
 	provideRecentTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -184,13 +189,12 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
-	// The posts column requests its report only once the setting to include
+	// Each column requests its report only once the setting to include
 	// products has loaded.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setFreshDataIncludesWooCommerceProducts( true );
-	// The site had 100 visits, each with one view, and 12 of the visits came
-	// from other sites.
+	// The site had 100 visitors, and 12 of them came from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
 		posts: createBreakdownReport(
 			[
@@ -300,10 +304,21 @@ TypicalTrafficSelected.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
-		provideBenchmarkingData(
-			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
-		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+
+		// The checked-in response has only four days. So the chart gets the 28
+		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
+		// thousands on the value axis, and the reference images show each label
+		// in full.
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			dailyTraffic: createDailyTrafficRows(
+				28,
+				dates.endDate,
+				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
+			),
+		} );
 	},
 };
 TypicalTrafficSelected.parameters = {
@@ -512,6 +527,36 @@ RecentActivityNoPublishedPosts.parameters = {
 	features: [ 'freshData' ],
 };
 RecentActivityNoPublishedPosts.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+export const RecentActivityNoRecentVisits = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityNoRecentVisits.storyName =
+	'Recent Activity, No Recent Visits (freshData enabled)';
+RecentActivityNoRecentVisits.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		provideInsightReport( registry, 0, [ 100, 100, 100, 100 ] );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: {},
+			channels: {},
+			referrals: {},
+		} );
+	},
+};
+RecentActivityNoRecentVisits.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityNoRecentVisits.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };

@@ -17,11 +17,6 @@
  */
 
 /**
- * WordPress dependencies
- */
-import { visitAdminPage } from '@wordpress/e2e-test-utils';
-
-/**
  * Internal dependencies
  */
 import {
@@ -29,6 +24,7 @@ import {
 	safeLoginUser,
 	setupSiteKit,
 	useRequestInterception,
+	visitAdminPage,
 } from '../utils';
 import { deleteAuthCookie } from '../utils/delete-auth-cookie';
 
