@@ -95,8 +95,8 @@ const PDFAudienceTopContentRow: FC< PDFAudienceTopContentRowProps > = ( {
 				 * dashboard tile. When the page has no link, `PDFLink`
 				 * renders the title as plain text instead of as a link.
 				 */ }
-				{ topContent.map( ( content ) => (
-					<View key={ content.title } style={ styles.contentRow }>
+				{ topContent.map( ( content, index ) => (
+					<View key={ content.title + '-' + index } style={ styles.contentRow }>
 						<View style={ styles.contentTitle }>
 							<PDFLink
 								href={ content.serviceURL }
