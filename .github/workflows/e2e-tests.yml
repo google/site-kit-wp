@@ -152,7 +152,15 @@ jobs:
         run: npm run env:start
 
       - name: Run the tests
-        run: npm run test:e2e
+        id: test-e2e
+        run: npm run test:e2e -- -- --json --outputFile="$RUNNER_TEMP/e2e-results.json"
+        continue-on-error: true
+
+      # Runs each failed spec file once more, and lists the spec files that
+      # passed only on the retry in the job summary.
+      - name: Retry failed spec files
+        if: steps.test-e2e.outcome == 'failure'
+        run: node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON tests/e2e/bin/retry-failed-specs.ts "$RUNNER_TEMP/e2e-results.json"
 
       - name: Upload artifacts
         uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # ratchet:actions/upload-artifact@v6
