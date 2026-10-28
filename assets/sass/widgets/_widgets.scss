@@ -75,6 +75,11 @@
 			margin: 0;
 		}
 
+		// A span, since it sits inside the heading.
+		.googlesitekit-widget__header-inner {
+			display: block;
+		}
+
 		&.googlesitekit-widget__header--collapsible {
 			font-weight: $fw-bold;
 			position: relative;

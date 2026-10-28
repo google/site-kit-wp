@@ -161,7 +161,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 						) }
 					>
 						<Header>
-							<div className="googlesitekit-widget__header-inner">
+							<span className="googlesitekit-widget__header-inner">
 								{ collapsibleAndUncontrolled ? (
 									<button
 										type="button"
@@ -187,7 +187,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 									headerTitle
 								) }
 								{ headerBadge }
-							</div>
+							</span>
 						</Header>
 					</div>
 				) }
