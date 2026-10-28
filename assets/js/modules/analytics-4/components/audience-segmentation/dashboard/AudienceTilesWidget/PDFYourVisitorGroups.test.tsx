@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import { AudiencePartialDataFlags } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 
@@ -139,6 +140,66 @@ describe( 'AudienceTilesWidget PDF', () => {
 		// Only the first card is in a partial-data state, so the "Partial data"
 		// badge renders exactly once.
 		expect( json.split( 'Partial data' ).length - 1 ).toBe( 1 );
+	} );
+
+	it( 'renders the four metric rows in order, with the pageviews share label', () => {
+		const json = JSON.stringify(
+			renderWidget( {
+				data: {
+					audiences: [
+						buildAudience( 'New' ),
+						buildAudience( 'Returning' ),
+					],
+				},
+			} )
+		);
+
+		expect( json ).toContain( '50% of total pageviews' );
+		expect( json.indexOf( 'Visitors' ) ).toBeLessThan(
+			json.indexOf( 'Visits per visitor' )
+		);
+		expect( json.indexOf( 'Visits per visitor' ) ).toBeLessThan(
+			json.indexOf( 'Pages per visit' )
+		);
+		expect( json.indexOf( 'Pages per visit' ) ).toBeLessThan(
+			json.indexOf( '50% of total pageviews' )
+		);
+	} );
+
+	it( 'lays the cards out a section at a time, so each section lines up across the cards', () => {
+		const tree = renderWidget( {
+			data: {
+				audiences: [
+					buildAudience( 'New' ),
+					buildAudience( 'Returning' ),
+					buildAudience( 'Purchasers' ),
+				],
+			},
+		} ) as TestRenderer.ReactTestRendererJSON;
+		const [ , grid ] =
+			tree.children as TestRenderer.ReactTestRendererJSON[];
+		const [ cards, ...rows ] =
+			grid.children as TestRenderer.ReactTestRendererJSON[];
+
+		// One card surface per audience, behind the sections.
+		expect( flattenPDFStyle( cards.props.style ) ).toMatchObject( {
+			position: 'absolute',
+		} );
+		expect( cards.children ).toHaveLength( 3 );
+
+		// The header, four metrics, cities, and top content sections, each a
+		// row with one cell per card. A row's cells stretch to the tallest one,
+		// as `alignItems` is left at its `stretch` default.
+		expect( rows ).toHaveLength( 7 );
+		rows.forEach( ( row ) => {
+			expect( flattenPDFStyle( row.props.style ) ).toMatchObject( {
+				flexDirection: 'row',
+			} );
+			expect( flattenPDFStyle( row.props.style ) ).not.toHaveProperty(
+				'alignItems'
+			);
+			expect( row.children ).toHaveLength( 3 );
+		} );
 	} );
 
 	it( 'renders nothing for an empty audiences array', () => {

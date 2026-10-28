@@ -35,25 +35,10 @@ import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-component
 import { PDFChangeType, PDFIcon } from '@/js/components/pdf-export/types';
 import { calculateChange, numFmt } from '@/js/util';
 import type { AudienceTileMetric } from './buildPDFAudienceCard';
+import PDFAudienceCardSection from './PDFAudienceCardSection';
+import { audienceCardStyles } from './pdfAudienceCardStyles';
 
 const styles = createPDFStyles( {
-	// Each metric row is inset from the card edges and draws a divider below it.
-	row: {
-		flexDirection: 'row',
-		alignItems: 'center',
-		marginHorizontal: 24,
-		paddingVertical: 12,
-		borderBottomWidth: 1,
-		borderBottomColor: PDF_COLORS.SURFACES_SURFACE_1,
-	},
-	iconColumn: {
-		width: 52,
-		alignItems: 'center',
-		marginRight: 4,
-	},
-	body: {
-		flex: 1,
-	},
 	metricValue: {
 		lineHeight: 32 / 28,
 	},
@@ -114,11 +99,8 @@ const PDFAudienceMetricRow: FC< PDFAudienceMetricRowProps > = ( {
 	const chip = getChangeChip( metric );
 
 	return (
-		<View style={ styles.row }>
-			<View style={ styles.iconColumn }>
-				<Icon />
-			</View>
-			<View style={ styles.body }>
+		<PDFAudienceCardSection Icon={ Icon }>
+			<View style={ audienceCardStyles.body }>
 				<PDFTypography
 					type="headline"
 					size="medium"
@@ -136,7 +118,7 @@ const PDFAudienceMetricRow: FC< PDFAudienceMetricRowProps > = ( {
 					changeType={ chip.changeType }
 				/>
 			) }
-		</View>
+		</PDFAudienceCardSection>
 	);
 };
 

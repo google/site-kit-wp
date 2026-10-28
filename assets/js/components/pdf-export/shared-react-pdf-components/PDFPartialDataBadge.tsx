@@ -33,17 +33,8 @@ import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFBadge from './PDFBadge';
 
-/**
- * The badge height, in Figma frame pixels: the label's line height plus the
- * vertical padding.
- *
- * @since n.e.x.t
- */
-export const PDF_PARTIAL_DATA_BADGE_HEIGHT = 28;
-
 const styles = createPDFStyles( {
 	badge: {
-		height: PDF_PARTIAL_DATA_BADGE_HEIGHT,
 		paddingVertical: 6,
 		paddingHorizontal: 10,
 	},
