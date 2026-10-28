@@ -34,12 +34,14 @@ import {
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
 import {
+	createBreakdownReport,
 	getSectionClassNames,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -140,6 +142,11 @@ describe( 'RecentActivityPanel', () => {
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		// The recent traffic breakdown doesn't render once its channels report
+		// has loaded with no visits.
+		provideRecentTrafficBreakdownReports( registry, {
+			channels: createBreakdownReport( [ [ 'Direct', 157 ] ], 157 ),
 		} );
 		fetchMock.get( postsEndpoint, {
 			body: [ autumnRecipesPost ],
