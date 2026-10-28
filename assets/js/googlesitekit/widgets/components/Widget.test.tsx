@@ -162,8 +162,8 @@ describe( 'Widget', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should toggle the collapsible widget body when the header is toggled with the keyboard', () => {
-		const { container, getByRole } = render(
+	it( 'should render the collapsible header toggle as a native button', () => {
+		const { getByRole } = render(
 			<Widget
 				Header={ WidgetHeaderTitle }
 				headerContents="Collapsible Test Widget"
@@ -174,24 +174,37 @@ describe( 'Widget', () => {
 			</Widget>
 		);
 
-		const header = getByRole( 'button', {
-			name: 'Collapsible Test Widget Hide section',
-		} );
-
-		// The body should be visible by default.
+		// A native button also toggles with Enter and Space.
 		expect(
-			container.querySelector( '.googlesitekit-widget__body--collapsed' )
-		).not.toBeInTheDocument();
+			getByRole( 'button', {
+				name: 'Collapsible Test Widget Hide section',
+			} )
+		).toBeInstanceOf( HTMLButtonElement );
+	} );
 
-		fireEvent.keyUp( header, { key: 'Enter' } );
-		// Snapshot should mark the body as collapsed.
+	it( 'should render the header badge outside the collapsible header toggle', () => {
+		const { container, getByRole, getByText } = render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Collapsible Test Widget"
+				headerBadge={ <span>Test Badge</span> }
+				widgetSlug="collapsible-test-widget"
+				collapsible
+			>
+				<div>Collapsible Widget Body</div>
+			</Widget>
+		);
+
+		const badge = getByText( 'Test Badge' );
+
 		expect(
-			container.querySelector( '.googlesitekit-widget__body--collapsed' )
-		).toBeInTheDocument();
+			getByRole( 'button', {
+				name: 'Collapsible Test Widget Hide section',
+			} )
+		).not.toContainElement( badge );
 
-		fireEvent.keyUp( header, { key: 'Enter' } );
-		// Snapshot should mark the body as visible again (eg. no collapsed
-		// CSS class).
+		// Clicking the badge should not toggle the body.
+		fireEvent.click( badge );
 		expect(
 			container.querySelector( '.googlesitekit-widget__body--collapsed' )
 		).not.toBeInTheDocument();
@@ -220,7 +233,7 @@ describe( 'Widget', () => {
 
 		// Should expand the body when the header is clicked, even
 		// when `defaultCollapsed` is true.
-		fireEvent.keyUp( header, { key: 'Enter' } );
+		fireEvent.click( header );
 		expect(
 			container.querySelector( '.googlesitekit-widget__body--collapsed' )
 		).not.toBeInTheDocument();

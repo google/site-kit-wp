@@ -47,9 +47,14 @@
 		.googlesitekit-widget__header-inner {
 
 			@media (min-width: $bp-tablet) {
-				align-items: center;
-				display: flex;
-				gap: 10px;
+				// The toggle button holds the chevron and title, so it needs
+				// the same layout as the row.
+				&,
+				.googlesitekit-widget__header-toggle {
+					align-items: center;
+					display: flex;
+					gap: 10px;
+				}
 
 				// The row's gap already adds the space before the title
 				// (the flex `gap: 10px` this rule sets). IconWrapper's inline

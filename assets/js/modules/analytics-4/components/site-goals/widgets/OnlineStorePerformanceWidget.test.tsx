@@ -1031,7 +1031,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		expect(
 			getByRole( 'button', {
-				expanded: true,
+				name: 'Online store performance Hide section',
 			} )
 		).toBeInTheDocument();
 	} );
@@ -1814,12 +1814,11 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		);
 		await waitForRegistry();
 
-		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
 		expect(
 			getByRole( 'button', {
-				name: 'Online store performance Gathering breakdown data Hide section',
+				name: 'Online store performance Hide section',
 			} )
-		).toBeInTheDocument();
+		).not.toContainElement( getByText( 'Gathering breakdown data' ) );
 	} );
 
 	it( 'does not render the gathering breakdown data badge when the dimensions have data available', async () => {
@@ -1829,7 +1828,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		seedReadyReports();
 		seedBreakdownDimensions( false );
 
-		const { getByRole, queryByText, waitForRegistry } = render(
+		const { queryByText, waitForRegistry } = render(
 			<OnlineStorePerformanceWidget { ...widgetProps } />,
 			{ registry }
 		);
@@ -1838,11 +1837,6 @@ describe( 'OnlineStorePerformanceWidget', () => {
 		expect(
 			queryByText( 'Gathering breakdown data' )
 		).not.toBeInTheDocument();
-		expect(
-			getByRole( 'button', {
-				name: 'Online store performance Hide section',
-			} )
-		).toBeInTheDocument();
 	} );
 
 	it( 'renders the gathering breakdown data badge alongside the breakdown success notice', async () => {
