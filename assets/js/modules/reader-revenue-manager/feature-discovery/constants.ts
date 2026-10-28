@@ -16,7 +16,19 @@
  * limitations under the License.
  */
 
+/**
+ * Internal dependencies
+ */
+import { EXPRESS_SETUP_CTAS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+
 // The Feature Discovery catalog's slug for the newsletter sign-up feature. This
 // is the feature slug, not the express setup CTA slug, even though the values
 // match.
 export const FEATURE_SLUG_NEWSLETTER_SIGNUP = 'newsletter-signup';
+
+// Maps each express setup CTA that has a Feature Discovery catalog entry to
+// that feature's slug, so that setup completion can find the feature a CTA's
+// setup was started for. CTAs without a catalog entry are left out.
+export const EXPRESS_SETUP_CTA_TO_FEATURE_SLUG: Record< string, string > = {
+	[ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ]: FEATURE_SLUG_NEWSLETTER_SIGNUP,
+};

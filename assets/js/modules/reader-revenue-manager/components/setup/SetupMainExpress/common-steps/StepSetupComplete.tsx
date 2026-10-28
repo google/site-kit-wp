@@ -48,11 +48,8 @@ import {
 	SetupStep,
 	SetupStepProps,
 } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/types';
-import {
-	EXPRESS_SETUP_CTAS,
-	EXPRESS_SETUP_STEPS,
-} from '@/js/modules/reader-revenue-manager/datastore/constants';
-import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from '@/js/modules/reader-revenue-manager/feature-discovery/constants';
+import { EXPRESS_SETUP_STEPS } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { EXPRESS_SETUP_CTA_TO_FEATURE_SLUG } from '@/js/modules/reader-revenue-manager/feature-discovery/constants';
 import SuccessIcon from '@/svg/graphics/rrm-express-setup-success.svg';
 
 interface StepSetupCompleteProps extends SetupStepProps {
@@ -79,25 +76,28 @@ const StepSetupComplete: FC< StepSetupCompleteProps > = ( {
 	// `@wordpress/data` types `useRegistry()` as returning `Function`.
 	const registry = useRegistry() as unknown as Registry;
 
-	// Where the newsletter sign-up form was set up from the hub, the user is
+	// Where the setup for a feature's CTA was started from the hub, the user is
 	// returned there rather than to the dashboard.
 	const [ hubURL, setHubURL ] = useState< string | undefined >();
 
 	useEffect( () => {
-		if ( cta !== EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP ) {
+		const featureSlug = cta
+			? EXPRESS_SETUP_CTA_TO_FEATURE_SLUG[ cta ]
+			: undefined;
+
+		if ( ! featureSlug ) {
 			return undefined;
 		}
 
 		let ignore = false;
 
-		getPendingSetupReturnURL(
-			registry.select as Select,
-			FEATURE_SLUG_NEWSLETTER_SIGNUP
-		).then( ( url ) => {
-			if ( ! ignore ) {
-				setHubURL( url );
+		getPendingSetupReturnURL( registry.select as Select, featureSlug ).then(
+			( url ) => {
+				if ( ! ignore ) {
+					setHubURL( url );
+				}
 			}
-		} );
+		);
 
 		return () => {
 			ignore = true;
