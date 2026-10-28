@@ -134,6 +134,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [
 			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.MONETIZATION,
 			FEATURE_CATEGORIES.TRAFFIC,
 		],
 		addedInVersion: '1.129.0',

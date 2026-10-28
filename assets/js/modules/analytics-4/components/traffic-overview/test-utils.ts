@@ -91,13 +91,13 @@ export interface RecentTrafficBreakdownReportOptions {
 }
 
 export interface RecentTrafficBreakdownReports {
-	/** The report of views for each page path. */
+	/** The report of visitors for each page path. */
 	posts?: Report;
 	/** The title of each page path, for the pages the posts column shows. */
 	postTitles?: Record< string, string >;
-	/** The report of visits for each channel. */
+	/** The report of visitors for each channel, whose total is the visitors the columns count. */
 	channels?: Report;
-	/** The report of visits for each site that referred them. */
+	/** The report of visitors for each site that referred them. */
 	referrals?: Report;
 }
 
@@ -488,8 +488,8 @@ export function provideFreshMetricsReports(
  * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
  *
- * The posts report leaves out the product pages that `getExcludedProducts()`
- * recognizes, the way the posts column does.
+ * Each report leaves out the product pages that `getExcludedProducts()`
+ * recognizes, the way the columns do.
  *
  * @since n.e.x.t
  *
@@ -502,14 +502,14 @@ export function getRecentTrafficBreakdownReportOptions(
 	const dateRange = getFreshDataDateRange(
 		registry.select( CORE_USER ).getReferenceDate()
 	);
+	const excludedProducts = registry
+		.select( MODULES_ANALYTICS_4 )
+		.getExcludedProducts();
 
 	return {
-		posts: getTopPostsReportOptions(
-			dateRange,
-			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-		),
-		channels: getTopChannelsReportOptions( dateRange ),
-		referrals: getTopReferralsReportOptions( dateRange ),
+		posts: getTopPostsReportOptions( dateRange, excludedProducts ),
+		channels: getTopChannelsReportOptions( dateRange, excludedProducts ),
+		referrals: getTopReferralsReportOptions( dateRange, excludedProducts ),
 	};
 }
 
@@ -523,10 +523,10 @@ export function getRecentTrafficBreakdownReportOptions(
  *
  * @param {Object} registry             The registry, with its reference date and its site info set.
  * @param {Object} reports              The reports.
- * @param {Object} [reports.posts]      Optional. The report of views for each page path.
+ * @param {Object} [reports.posts]      Optional. The report of visitors for each page path.
  * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
- * @param {Object} [reports.channels]   Optional. The report of visits for each channel.
- * @param {Object} [reports.referrals]  Optional. The report of visits for each site that referred them.
+ * @param {Object} [reports.channels]   Optional. The report of visitors for each channel, whose total is the visitors the columns count.
+ * @param {Object} [reports.referrals]  Optional. The report of visitors for each site that referred them.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(

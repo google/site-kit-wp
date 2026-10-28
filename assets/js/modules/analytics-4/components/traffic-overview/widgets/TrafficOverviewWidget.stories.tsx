@@ -189,13 +189,12 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
-	// The posts column requests its report only once the setting to include
+	// Each column requests its report only once the setting to include
 	// products has loaded.
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setFreshDataIncludesWooCommerceProducts( true );
-	// The site had 100 visits, each with one view, and 12 of the visits came
-	// from other sites.
+	// The site had 100 visitors, and 12 of them came from other sites.
 	provideRecentTrafficBreakdownReports( registry, {
 		posts: createBreakdownReport(
 			[
@@ -528,6 +527,36 @@ RecentActivityNoPublishedPosts.parameters = {
 	features: [ 'freshData' ],
 };
 RecentActivityNoPublishedPosts.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+export const RecentActivityNoRecentVisits = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityNoRecentVisits.storyName =
+	'Recent Activity, No Recent Visits (freshData enabled)';
+RecentActivityNoRecentVisits.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		provideInsightReport( registry, 0, [ 100, 100, 100, 100 ] );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: {},
+			channels: {},
+			referrals: {},
+		} );
+	},
+};
+RecentActivityNoRecentVisits.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityNoRecentVisits.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };

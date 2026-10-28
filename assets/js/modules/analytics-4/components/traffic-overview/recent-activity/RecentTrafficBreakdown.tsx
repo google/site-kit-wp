@@ -35,7 +35,10 @@ import Typography from '@/js/components/Typography';
 import { SIZE_MEDIUM, TYPE_TITLE } from '@/js/components/Typography/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
+import { useRecentTrafficBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownReport';
+import { isZeroReport } from '@/js/modules/analytics-4/utils/is-zero-report';
 import PlainPermalinkTopPostsColumn from './PlainPermalinkTopPostsColumn';
+import { getTopChannelsReportOptions } from './reportOptions';
 import TopChannelsColumn from './TopChannelsColumn';
 import TopPostsColumn from './TopPostsColumn';
 import TopReferralsColumn from './TopReferralsColumn';
@@ -60,6 +63,20 @@ const RecentTrafficBreakdown: FC< RecentTrafficBreakdownProps > = ( {
 		( select: Select ) => select( CORE_SITE ).isUsingPlainPermalinks(),
 		[]
 	);
+
+	// The channels report counts every visitor the columns count, so it is
+	// empty when the date range has none. The Figma design leaves the section
+	// out then. With products left out, that includes a range whose visitors
+	// saw only product pages.
+	const { report: channelsReport } = useRecentTrafficBreakdownReport(
+		getTopChannelsReportOptions
+	);
+
+	// The columns render while the report loads, so the posts and referrals
+	// columns request their reports without waiting for it.
+	if ( channelsReport && isZeroReport( channelsReport ) ) {
+		return null;
+	}
 
 	// `isUsingPlainPermalinks()` is `undefined` until the site info loads.
 	// Until then, a loading tile renders in place of either posts column, so
