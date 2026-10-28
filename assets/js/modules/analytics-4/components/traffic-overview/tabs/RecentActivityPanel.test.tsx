@@ -33,21 +33,26 @@ import {
 	PERMISSION_READ_SHARED_MODULE_DATA,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	INSUFFICIENT_PERMISSIONS_ERROR,
 	INTERNAL_SERVER_ERROR,
 	RATE_LIMIT_ERROR,
+	createBreakdownReport,
 	forDimensions,
+	getRecentTrafficBreakdownReportOptions,
 	getSectionClassNames,
 	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
 	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
+import { ErrorObject } from '@/js/util/errors';
 import * as tracking from '@/js/util/tracking';
 import { mockIntersectionObserver } from '@tests/js/mock-browser-utils';
 import {
@@ -108,6 +113,25 @@ describe( 'RecentActivityPanel', () => {
 	 *
 	 * @return {void}
 	 */
+	/**
+	 * Puts an error for the channels report in the store, as if its request
+	 * had failed. The report is already in the store from `beforeEach()`, so
+	 * a mocked request wouldn't be sent.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} error The error of the report.
+	 * @return {void}
+	 */
+	function provideChannelsReportError( error: ErrorObject ) {
+		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
+		const { setErrorForSelector, finishResolution } =
+			registry.dispatch( MODULES_ANALYTICS_4 );
+
+		setErrorForSelector( error, 'getReport', [ channels ] );
+		finishResolution( 'getReport', [ channels, FRESH_DATA_FETCH_OPTIONS ] );
+	}
+
 	function mockLatestPostReports() {
 		fetchMock.get(
 			reportEndpoint,
@@ -155,6 +179,11 @@ describe( 'RecentActivityPanel', () => {
 		provideFreshMetricsReports( registry, {
 			totalVisitors: 157,
 			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		// The recent traffic breakdown doesn't render once its channels report
+		// has loaded with no visits.
+		provideRecentTrafficBreakdownReports( registry, {
+			channels: createBreakdownReport( [ [ 'Direct', 157 ] ], 157 ),
 		} );
 		fetchMock.get( postsEndpoint, {
 			body: [ autumnRecipesPost ],
@@ -590,17 +619,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should keep the other sections and render "Retry" in "Top channels by visitors" when its report fails with an internal server error', async () => {
-		// The latest post's top traffic source report groups by the same
-		// dimension, over other dates.
-		fetchMock.get(
-			( url: string ) =>
-				forDimensions( 'sessionDefaultChannelGroup' )( url ) &&
-				url.includes( 'startDate=2025-02-03' ),
-			{
-				body: INTERNAL_SERVER_ERROR,
-				status: 500,
-			}
-		);
+		provideChannelsReportError( INTERNAL_SERVER_ERROR );
 		mockLatestPostReports();
 
 		const { container, waitForRegistry } = render(
@@ -610,7 +629,6 @@ describe( 'RecentActivityPanel', () => {
 
 		await waitForRegistry();
 
-		expect( console ).toHaveErrored();
 		expect(
 			within(
 				screen
@@ -629,15 +647,7 @@ describe( 'RecentActivityPanel', () => {
 	} );
 
 	it( 'should not render "Retry" in the "Top channels by visitors" column when its report fails with a rate limit error', async () => {
-		fetchMock.get(
-			( url: string ) =>
-				forDimensions( 'sessionDefaultChannelGroup' )( url ) &&
-				url.includes( 'startDate=2025-02-03' ),
-			{
-				body: RATE_LIMIT_ERROR,
-				status: 429,
-			}
-		);
+		provideChannelsReportError( RATE_LIMIT_ERROR );
 		mockLatestPostReports();
 
 		const { waitForRegistry } = render( <RecentActivityPanel />, {
@@ -646,7 +656,6 @@ describe( 'RecentActivityPanel', () => {
 
 		await waitForRegistry();
 
-		expect( console ).toHaveErrored();
 		expect(
 			screen.getByText( 'Something went wrong' )
 		).toBeInTheDocument();

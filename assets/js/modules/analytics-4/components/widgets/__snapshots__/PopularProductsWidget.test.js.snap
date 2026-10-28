@@ -20,11 +20,28 @@ exports[`PopularProductsWidget should render correctly with the expected metrics
             Most popular products by pageviews
           </h3>
           <span
+            aria-labelledby="googlesitekit-info-tooltip-label-1"
             class="googlesitekit-info-tooltip"
-            role="tooltip"
+            role="button"
             tabindex="0"
           >
             <svg />
+            <span
+              hidden=""
+              id="googlesitekit-info-tooltip-label-1"
+            >
+              Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can 
+              <button
+                class="googlesitekit-cta-link"
+              >
+                <span
+                  class="googlesitekit-cta-link__contents"
+                >
+                  replace
+                </span>
+              </button>
+               this with another metric
+            </span>
           </span>
         </div>
         <div
@@ -145,12 +162,18 @@ exports[`PopularProductsWidget should render the custom dimension error when the
           Most popular products by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-8"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Products that brought in the most visitors"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-8"
+          >
+            Products that brought in the most visitors
+          </span>
         </span>
       </div>
       <div
@@ -224,11 +247,28 @@ exports[`PopularProductsWidget should render the generic error variant when the 
           Most popular products by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-4"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-4"
+          >
+            Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can 
+            <button
+              class="googlesitekit-cta-link"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                replace
+              </span>
+            </button>
+             this with another metric
+          </span>
         </span>
       </div>
       <div
@@ -298,11 +338,28 @@ exports[`PopularProductsWidget should render the insufficient permissions error 
           Most popular products by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-6"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-6"
+          >
+            Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can 
+            <button
+              class="googlesitekit-cta-link"
+            >
+              <span
+                class="googlesitekit-cta-link__contents"
+              >
+                replace
+              </span>
+            </button>
+             this with another metric
+          </span>
         </span>
       </div>
       <div
@@ -368,11 +425,28 @@ exports[`PopularProductsWidget should render the loading state while resolving t
             class="screen-reader-text"
           >
             <span
+              aria-labelledby="googlesitekit-info-tooltip-label-2"
               class="googlesitekit-info-tooltip"
-              role="tooltip"
+              role="button"
               tabindex="0"
             >
               <svg />
+              <span
+                hidden=""
+                id="googlesitekit-info-tooltip-label-2"
+              >
+                Products on your site which visitors viewed the most. Site Kit detected these are your product pages. If this is inaccurate, you can 
+                <button
+                  class="googlesitekit-cta-link"
+                >
+                  <span
+                    class="googlesitekit-cta-link__contents"
+                  >
+                    replace
+                  </span>
+                </button>
+                 this with another metric
+              </span>
             </span>
           </span>
         </div>
@@ -423,12 +497,18 @@ exports[`PopularProductsWidget should render the missing custom dimension error 
           Most popular products by pageviews
         </h2>
         <span
+          aria-labelledby="googlesitekit-info-tooltip-label-7"
           class="googlesitekit-info-tooltip"
-          role="tooltip"
+          role="button"
           tabindex="0"
-          title="Products that brought in the most visitors"
         >
           <svg />
+          <span
+            hidden=""
+            id="googlesitekit-info-tooltip-label-7"
+          >
+            Products that brought in the most visitors
+          </span>
         </span>
       </div>
       <div

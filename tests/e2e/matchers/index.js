@@ -18,6 +18,8 @@
 
 // Jest will be extended with all exports from this module automatically.
 export { toBeChecked } from './to-be-checked';
+export { toClick } from './to-click';
+export { toFill } from './to-fill';
 export { toHaveAdsTag } from './to-have-ads-tag';
 export { toHaveAdSenseTag } from './to-have-adsense-tag';
 export { toHaveAMPAutoAdsTag } from './to-have-amp-auto-ads-tag';
@@ -25,3 +27,4 @@ export { toHaveTracking } from './to-have-tracking';
 export { toHaveValidAMPForUser } from './to-have-valid-amp-for-user';
 export { toHaveValidAMPForVisitor } from './to-have-valid-amp-for-visitor';
 export { toHaveValue } from './to-have-value';
+export { toMatchElement } from './to-match-element';

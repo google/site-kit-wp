@@ -136,7 +136,7 @@ describe( 'FeatureCard', () => {
 			getByText( 'Collect enhanced measurement events.' )
 		).toBeInTheDocument();
 
-		expect( getByText( 'A short setup' ) ).toBeInTheDocument();
+		expect( getByText( 'Guided setup' ) ).toBeInTheDocument();
 		expect( getByText( 'Analytics' ) ).toBeInTheDocument();
 
 		expect( AnalyticsIconSpy ).toHaveBeenCalled();

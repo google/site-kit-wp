@@ -1,23 +1,17 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
 	loginUser,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	logoutUser,
 	safeLoginUser,
 	setAuthToken,
 	setSearchConsoleProperty,
 	setSiteVerification,
 	useRequestInterception,
+	visitAdminPage,
 	wpApiFetch,
 } from '../../utils';
 

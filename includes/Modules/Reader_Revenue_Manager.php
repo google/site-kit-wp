@@ -68,6 +68,7 @@ use Google\Site_Kit\Modules\Reader_Revenue_Manager\Subscribe_With_Google_Block;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Post_Product_ID;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Settings;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization;
+use Google\Site_Kit\Modules\Reader_Revenue_Manager\Synchronization\CTA;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Guard;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\Tag_Matchers;
 use Google\Site_Kit\Modules\Reader_Revenue_Manager\User_Settings;
@@ -258,7 +259,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 		// Reader Revenue Manager tag placement logic.
 		add_action( 'template_redirect', array( $this, 'register_tag' ) );
 
-		// If the publication ID changes, clear the dismissed state for notifications.
+		// If the publication ID changes, clear the dismissed state for notifications and reset saved CTAs.
 		$this->get_settings()->on_change(
 			function ( $old_value, $new_value ) {
 				if ( $old_value['publicationID'] !== $new_value['publicationID'] ) {
@@ -270,6 +271,16 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 
 					foreach ( self::POLICY_VIOLATION_NOTIFICATIONS as $notification ) {
 						$dismissed_items->remove( $notification );
+					}
+
+					if ( Feature_Flags::enabled( 'rrmExpressSetup' ) ) {
+						// Clear the previous publication's CTAs immediately so neither
+						// settings screen shows stale data while the sync runs.
+						$this->get_settings()->merge( array( 'configuredCTAs' => array() ) );
+
+						if ( ! empty( $new_value['publicationID'] ) && ! empty( $new_value['organizationID'] ) ) {
+							do_action( CTA::CRON_SYNCHRONIZE_PUBLICATION_CTAS );
+						}
 					}
 				}
 			}
@@ -635,6 +646,7 @@ final class Reader_Revenue_Manager extends Module implements Module_With_Scopes,
 						'googlesitekit-datastore-site',
 						'googlesitekit-datastore-user',
 						'googlesitekit-components',
+						'googlesitekit-widgets',
 					),
 				)
 			),

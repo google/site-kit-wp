@@ -322,11 +322,31 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                           What is an Analytics property?
                         </p>
                         <span
+                          aria-labelledby="googlesitekit-info-tooltip-label-0"
                           class="googlesitekit-info-tooltip"
-                          role="tooltip"
+                          role="button"
                           tabindex="0"
                         >
                           <svg />
+                          <span
+                            hidden=""
+                            id="googlesitekit-info-tooltip-label-0"
+                          >
+                            An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. 
+                            <a
+                              aria-label="Learn more (opens in a new tab)"
+                              class="googlesitekit-cta-link"
+                              href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-property"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Learn more
+                              </span>
+                            </a>
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -382,11 +402,31 @@ exports[`Analytics SetupLayout initial setup flow renders initial setup-specific
                           What is a web data stream?
                         </p>
                         <span
+                          aria-labelledby="googlesitekit-info-tooltip-label-1"
                           class="googlesitekit-info-tooltip"
-                          role="tooltip"
+                          role="button"
                           tabindex="0"
                         >
                           <svg />
+                          <span
+                            hidden=""
+                            id="googlesitekit-info-tooltip-label-1"
+                          >
+                            A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. 
+                            <a
+                              aria-label="Learn more (opens in a new tab)"
+                              class="googlesitekit-cta-link"
+                              href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-data-stream"
+                              rel="noopener noreferrer"
+                              target="_blank"
+                            >
+                              <span
+                                class="googlesitekit-cta-link__contents"
+                              >
+                                Learn more
+                              </span>
+                            </a>
+                          </span>
                         </span>
                       </div>
                     </div>
@@ -812,10 +852,28 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
-                                role="tooltip"
+                                role="button"
                                 tabindex="0"
                               >
                                 <svg />
+                                <span
+                                  hidden=""
+                                >
+                                  An Analytics property is a container for data collected from a website. It represents a specific website, and within a property, you can view reports, manage data collection, attribution, privacy settings, and product links. 
+                                  <a
+                                    aria-label="Learn more (opens in a new tab)"
+                                    class="googlesitekit-cta-link"
+                                    href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-property"
+                                    rel="noopener noreferrer"
+                                    target="_blank"
+                                  >
+                                    <span
+                                      class="googlesitekit-cta-link__contents"
+                                    >
+                                      Learn more
+                                    </span>
+                                  </a>
+                                </span>
                               </span>
                             </div>
                           </div>
@@ -871,10 +929,28 @@ exports[`Analytics SetupLayout renders the standard setup flow and tracks generi
                               </p>
                               <span
                                 class="googlesitekit-info-tooltip"
-                                role="tooltip"
+                                role="button"
                                 tabindex="0"
                               >
                                 <svg />
+                                <span
+                                  hidden=""
+                                >
+                                  A data stream is a flow of data from your visitors to Analytics. When a data stream is created, Analytics generates a snippet of code that is added to your site to collect that data. 
+                                  <a
+                                    aria-label="Learn more (opens in a new tab)"
+                                    class="googlesitekit-cta-link"
+                                    href="https://sitekit.withgoogle.com/support/?doc=what-is-ga4-data-stream"
+                                    rel="noopener noreferrer"
+                                    target="_blank"
+                                  >
+                                    <span
+                                      class="googlesitekit-cta-link__contents"
+                                    >
+                                      Learn more
+                                    </span>
+                                  </a>
+                                </span>
                               </span>
                             </div>
                           </div>

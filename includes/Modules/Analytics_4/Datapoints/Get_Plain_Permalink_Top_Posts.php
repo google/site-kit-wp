@@ -28,10 +28,10 @@ use WP_Error;
 use WP_Post_Type;
 
 /**
- * Class for the datapoint of the most viewed posts on a site with plain permalinks, where the query string tells posts apart, such as `/?p=123`.
+ * Class for the datapoint of the top posts on a site with plain permalinks, where the query string tells posts apart, such as `/?p=123`.
  *
  * `pagePath` leaves out the query string, so the datapoint runs a report of
- * views by `pagePathPlusQueryString` and returns the posts its URLs show.
+ * visitors by `pagePathPlusQueryString` and returns the posts its URLs show.
  *
  * @since n.e.x.t
  * @access private
@@ -64,7 +64,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	private $is_shared_request;
 
 	/**
-	 * Service that finds the post each URL of the report shows, and adds up the views of each post.
+	 * Service that finds the post each URL of the report shows, and adds up the visitors of each post.
 	 *
 	 * @since n.e.x.t
 	 * @var Plain_Permalink_Top_Posts
@@ -174,13 +174,13 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $response Request response.
 	 * @param Data_Request                                   $data     Data request object.
-	 * @return array The posts that `Plain_Permalink_Top_Posts::get()` returns as `rows`, and the views of the whole report as `total`.
+	 * @return array The posts that `Plain_Permalink_Top_Posts::get()` returns as `rows`, and the visitors of the whole report as `total`.
 	 */
 	public function parse_response( $response, Data_Request $data ) {
 		$url_rows = array_map(
 			fn( $row ) => array(
-				'url'   => $row->getDimensionValues()[0]->getValue(),
-				'views' => (int) $row->getMetricValues()[0]->getValue(),
+				'url'      => $row->getDimensionValues()[0]->getValue(),
+				'visitors' => (int) $row->getMetricValues()[0]->getValue(),
 			),
 			(array) $response->getRows()
 		);
@@ -212,7 +212,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	}
 
 	/**
-	 * Gets the data request of the report of views by URL, most first.
+	 * Gets the data request of the report of visitors by URL, most first.
 	 *
 	 * @since n.e.x.t
 	 *
@@ -225,25 +225,25 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 			'startDate'     => $start_date,
 			'endDate'       => $end_date,
 			'dimensions'    => array( 'pagePathPlusQueryString' ),
-			'metrics'       => array( array( 'name' => 'screenPageViews' ) ),
+			'metrics'       => array( array( 'name' => 'totalUsers' ) ),
 			'orderby'       => array(
 				array(
-					'metric' => array( 'metricName' => 'screenPageViews' ),
+					'metric' => array( 'metricName' => 'totalUsers' ),
 					'desc'   => true,
 				),
 			),
 			// Many URLs can show one post, and some show no single post, so the
 			// report asks for many more URLs than posts.
 			'limit'         => 1000,
-			// The report keeps rows with no views by default, which would list
-			// posts with 0 views.
+			// The report keeps rows with no visitors by default, which would list
+			// posts with 0 visitors.
 			'keepEmptyRows' => false,
 		);
 
 		$product_type = Product_Post_Type::get();
 		$settings     = $this->settings->get();
 
-		// Leave product URLs out of the report, so their views count in neither
+		// Leave product URLs out of the report, so their visitors count in neither
 		// the posts nor the total.
 		if ( $product_type && class_exists( 'WooCommerce' ) && empty( $settings[ Settings::FRESH_DATA_INCLUDES_WOOCOMMERCE_PRODUCTS ] ) ) {
 			$report_data['dimensionFilters'] = array(

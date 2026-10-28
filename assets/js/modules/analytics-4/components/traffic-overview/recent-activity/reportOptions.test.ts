@@ -145,7 +145,7 @@ describe( 'getSearchPerformanceReportOptions', () => {
 } );
 
 describe( 'getTopPostsReportOptions', () => {
-	it( 'should build options that request the three pages with the most views over the date range, most views first', () => {
+	it( 'should build options that request the three pages with the most visitors over the date range, most visitors first', () => {
 		expect(
 			getTopPostsReportOptions( {
 				startDate: '2025-02-03',
@@ -154,11 +154,9 @@ describe( 'getTopPostsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'pagePath' ],
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
@@ -174,11 +172,9 @@ describe( 'getTopPostsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'pagePath' ],
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
@@ -194,7 +190,7 @@ describe( 'getTopPostsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'pagePath' ],
 			dimensionFilters: {
 				pagePath: {
@@ -204,16 +200,14 @@ describe( 'getTopPostsReportOptions', () => {
 					notExpression: true,
 				},
 			},
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
 		} );
 	} );
 
-	it( 'should build options that leave out the views of pages whose `googlesitekit_post_type` custom dimension is the product post type', () => {
+	it( 'should build options that leave out the visitors of pages whose `googlesitekit_post_type` custom dimension is the product post type', () => {
 		expect(
 			getTopPostsReportOptions(
 				{ startDate: '2025-02-03', endDate: '2025-02-05' },
@@ -222,7 +216,7 @@ describe( 'getTopPostsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'screenPageViews' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'pagePath' ],
 			dimensionFilters: {
 				'customEvent:googlesitekit_post_type': {
@@ -232,9 +226,7 @@ describe( 'getTopPostsReportOptions', () => {
 					notExpression: true,
 				},
 			},
-			orderby: [
-				{ metric: { metricName: 'screenPageViews' }, desc: true },
-			],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topPostsArgs',
@@ -243,7 +235,7 @@ describe( 'getTopPostsReportOptions', () => {
 } );
 
 describe( 'getTopChannelsReportOptions', () => {
-	it( 'should build options that request the three channels with the most visits over the date range, most visits first', () => {
+	it( 'should build options that request the three channels with the most visitors over the date range, most visitors first', () => {
 		expect(
 			getTopChannelsReportOptions( {
 				startDate: '2025-02-03',
@@ -252,18 +244,34 @@ describe( 'getTopChannelsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'sessions' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'sessionDefaultChannelGroup' ],
-			orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topChannelsArgs',
 		} );
 	} );
+
+	it( 'should build options that leave out the visitors of the pages whose path starts with the path of every product URL', () => {
+		expect(
+			getTopChannelsReportOptions(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				{ by: 'pathPrefix', pathPrefix: '/product/' }
+			).dimensionFilters
+		).toEqual( {
+			pagePath: {
+				filterType: 'stringFilter',
+				matchType: 'BEGINS_WITH',
+				value: '/product/',
+				notExpression: true,
+			},
+		} );
+	} );
 } );
 
 describe( 'getTopReferralsReportOptions', () => {
-	it( 'should build options that request the three sources of the "Referral" channel with the most visits over the date range, most visits first', () => {
+	it( 'should build options that request the three sources of the "Referral" channel with the most visitors over the date range, most visitors first', () => {
 		expect(
 			getTopReferralsReportOptions( {
 				startDate: '2025-02-03',
@@ -272,13 +280,30 @@ describe( 'getTopReferralsReportOptions', () => {
 		).toEqual( {
 			startDate: '2025-02-03',
 			endDate: '2025-02-05',
-			metrics: [ { name: 'sessions' } ],
+			metrics: [ { name: 'totalUsers' } ],
 			dimensions: [ 'sessionSource' ],
 			dimensionFilters: { sessionDefaultChannelGroup: 'Referral' },
-			orderby: [ { metric: { metricName: 'sessions' }, desc: true } ],
+			orderby: [ { metric: { metricName: 'totalUsers' }, desc: true } ],
 			limit: 3,
 			reportID:
 				'analytics-4_recent-traffic-breakdown_widget_topReferralsArgs',
+		} );
+	} );
+
+	it( 'should build options that keep the "Referral" channel alone and leave out the visitors of the pages whose `googlesitekit_post_type` custom dimension is the product post type', () => {
+		expect(
+			getTopReferralsReportOptions(
+				{ startDate: '2025-02-03', endDate: '2025-02-05' },
+				{ by: 'postTypeDimension', postType: 'product' }
+			).dimensionFilters
+		).toEqual( {
+			sessionDefaultChannelGroup: 'Referral',
+			'customEvent:googlesitekit_post_type': {
+				filterType: 'stringFilter',
+				matchType: 'EXACT',
+				value: 'product',
+				notExpression: true,
+			},
 		} );
 	} );
 
