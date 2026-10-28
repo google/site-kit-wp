@@ -124,7 +124,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 							width={ 12 }
 							height={ 12 }
 							className={ classnames(
-								'googlesitekit-widget__header-icon test-mehidi',
+								'googlesitekit-widget__header-icon',
 								{
 									'googlesitekit-widget__header-icon--collapsed':
 										isCollapsed,
