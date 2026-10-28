@@ -67,24 +67,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Boost rankings:', 'google-site-kit' ),
+						term: __( 'Boost rankings', 'google-site-kit' ),
 						description: __(
 							'Improve search visibility and user satisfaction with faster load times',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Retain visitors:', 'google-site-kit' ),
+						term: __( 'Retain visitors', 'google-site-kit' ),
 						description: __(
 							'Reduce bounce rates by keeping your site snappy and responsive',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __(
-							'Fix performance issues:',
-							'google-site-kit'
-						),
+						term: __( 'Fix performance issues', 'google-site-kit' ),
 						description: __(
 							'Quickly identify and resolve bottlenecks for a competitive edge',
 							'google-site-kit'

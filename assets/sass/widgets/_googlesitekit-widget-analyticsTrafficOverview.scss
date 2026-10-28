@@ -77,6 +77,64 @@ $traffic-overview-column-gap: 42px;
 			margin-top: 70px;
 		}
 
+		// The design puts its insight blocks 24px under the tabs, and the chart
+		// 40px under those blocks. Until the blocks exist, the chart's title
+		// takes their place, 24px under the tabs. The 24px is the panel's 20px
+		// top padding plus this 4px, in place of the 70px top margin of
+		// `.googlesitekit-traffic-overview__chart`.
+		.googlesitekit-traffic-overview__chart--typical-traffic {
+			margin-top: 4px;
+		}
+
+		// The title and the info icon flow as one line of text, so the icon
+		// follows the title's last word, even where the title wraps. The 22px
+		// end padding, the icon's 6px start margin plus its 16px width, leaves
+		// room for the icon after any line.
+		.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			// The title is inline, so the header's own font size and line height
+			// set the height of each line too.
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
+
+			// Below `$bp-desktop`, the chart area sits 20px under the title: this
+			// 12px plus the 8px the chart area starts into the chart.
+			margin-bottom: 12px;
+			padding-inline-end: 22px;
+
+			// From `$bp-desktop` up, the chart area sits 10px under the title, as
+			// in the desktop frame.
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 2px;
+			}
+
+			.googlesitekit-typography {
+				color: $c-surfaces-on-surface;
+				display: inline;
+			}
+
+			// The -22px end margin cancels the header's 22px end padding, so the
+			// icon never wraps onto a line of its own. The 2px top margin centers
+			// the 16px icon on the title's 20px line.
+			.googlesitekit-info-tooltip {
+				color: $c-surfaces-on-background-variant;
+				display: inline-flex;
+				height: 16px;
+				margin-inline: 6px -22px;
+				margin-top: 2px;
+				vertical-align: top;
+			}
+		}
+
+		// `GoogleChart` draws a date marker's 18px icon above the chart area, so
+		// from `$bp-desktop` up the icon would cover the title, 10px above it.
+		// A chart that marks a day keeps the 20px it has below `$bp-desktop`.
+		.googlesitekit-traffic-overview__chart--has-date-marker
+			.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 12px;
+			}
+		}
+
 		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
 			margin-left: -$grid-gap-phone;
 		}
@@ -103,6 +161,18 @@ $traffic-overview-column-gap: 42px;
 			list-style: none;
 			margin: 4px 0 0;
 			padding: 0;
+		}
+
+		// From `$bp-desktop` up, the desktop frame centers the legend in a 28px
+		// row that starts 25px under the chart area. The 256px chart ends 24px
+		// under its chart area, which starts 8px in and is 224px tall. So 24px,
+		// plus this 7px, plus half the 16px legend item puts the item's center
+		// 39px under the chart area.
+		.googlesitekit-traffic-overview__chart--typical-traffic
+			.googlesitekit-traffic-overview__chart-legend {
+			@media (min-width: $bp-desktop) {
+				margin-top: 7px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-item {
@@ -329,6 +399,13 @@ $traffic-overview-column-gap: 42px;
 		.googlesitekit-traffic-overview__fresh-metrics-group-heading {
 			color: $c-surfaces-on-surface;
 			margin: 0;
+		}
+
+		// A report error sits under the group heading, so it takes the height
+		// of its content rather than the height of the whole group.
+		.googlesitekit-traffic-overview__fresh-metrics-row .googlesitekit-cta {
+			align-self: start;
+			height: auto;
 		}
 
 		.googlesitekit-traffic-overview__fresh-metrics {
@@ -576,4 +653,15 @@ $traffic-overview-column-gap: 42px;
 // The padding comes on top, so the tooltip is 210px wide as in the design.
 .googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
 	max-width: 186px;
+}
+
+// The info tooltip's popup renders outside the widget, so a rule nested under
+// the widget doesn't reach it. The `.googlesitekit-info-tooltip__content`
+// class makes this selector more specific than the one that sets
+// `max-width: 160px` in `_googlesitekit-info-tooltip.scss`. So this rule
+// applies whatever order the two style sheets load in. With the popup's 12px
+// padding on each side, the popup is at most 235px wide, the width of the
+// design's tooltip.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-info-tooltip__content--typical-traffic {
+	max-width: 211px;
 }

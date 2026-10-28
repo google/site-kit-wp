@@ -83,19 +83,37 @@ jobs:
       matrix:
         amp_version: ['']
         wp_version: ['latest', 'nightly']
-        ca_cert_refresh: ['']
         include:
           - amp_version: '1.5.5'
             wp_version: '5.2.21'
-            ca_cert_refresh: true
     env:
       AMP_VERSION: ${{ matrix.amp_version }}
       WP_VERSION: ${{ matrix.wp_version }}
-      CA_CERT_REFRESH: ${{ matrix.ca_cert_refresh }}
     runs-on: ubuntu-latest
     timeout-minutes: 30
     if: github.event_name == 'push' || github.event.pull_request.draft == false
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
+      - name: Verify the CA store rejects distrusted CAs
+        # The E2E containers use the runner's CA bundle, so fail if the upgrade
+        # didn't take effect (e.g. a stale package mirror). The test hosts serve
+        # certificates from distrusted CAs; any other curl error is only a warning.
+        run: |
+          for h in dv-g3b-emudhra dv-g3b-aaa-emudhra; do
+            rc=0; curl -sS -o /dev/null -m 20 "https://$h.we-have-a-problem.com/" || rc=$?
+            case $rc in
+              60) echo "OK: $h rejected" ;;
+              0)  echo "::error::CA store still trusts $h"; exit 1 ;;
+              *)  echo "::warning::Could not check $h (curl exit $rc)" ;;
+            esac
+          done
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup Node.js (.nvmrc)

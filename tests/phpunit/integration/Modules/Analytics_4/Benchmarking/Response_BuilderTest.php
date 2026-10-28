@@ -208,8 +208,6 @@ class Response_BuilderTest extends TestCase {
 
 		$this->report_rows = array(
 			'date'                                      => array(
-				array( '20250817', 121 ),
-				array( '20250819', 147 ),
 				array( '20260818', 388 ),
 				array( '20260915', 412 ),
 			),
@@ -493,8 +491,8 @@ class Response_BuilderTest extends TestCase {
 	public function test_build__lists_0_visits_for_a_day_analytics_returned_no_row_for() {
 		$this->report_rows = array(
 			'date' => array(
-				array( '20250817', 121 ),
-				array( '20250819', 147 ),
+				array( '20260819', 121 ),
+				array( '20260821', 147 ),
 			),
 		);
 
@@ -503,28 +501,31 @@ class Response_BuilderTest extends TestCase {
 		$this->assertSame(
 			array(
 				array(
-					'date'   => '2025-08-17',
+					'date'   => '2026-08-19',
 					'visits' => 121,
 				),
 				array(
-					'date'   => '2025-08-18',
+					'date'   => '2026-08-20',
 					'visits' => 0,
 				),
 				array(
-					'date'   => '2025-08-19',
+					'date'   => '2026-08-21',
 					'visits' => 147,
 				),
 			),
 			array_slice( $daily_traffic, 0, 3 ),
-			'`dailyTraffic` should list 0 visits for `2025-08-18`, and keep `2025-08-19` as the third day.'
+			'`dailyTraffic` should list 0 visits for `2026-08-20`, and keep `2026-08-21` as the third day.'
 		);
 	}
 
-	public function test_build__lists_all_395_days_ending_on_the_end_date_oldest_first() {
+	public function test_build__lists_the_28_days_of_the_selected_period_oldest_first() {
+		// The report has a row for `2026-08-18`, the last day of the compare
+		// period, which `dailyTraffic` leaves out.
 		$this->report_rows = array(
 			'date' => array(
-				array( '20250817', 121 ),
-				array( '20250819', 147 ),
+				array( '20260818', 388 ),
+				array( '20260819', 121 ),
+				array( '20260915', 412 ),
 			),
 		);
 
@@ -533,15 +534,40 @@ class Response_BuilderTest extends TestCase {
 		$sorted_dates  = $dates;
 		sort( $sorted_dates );
 
-		$this->assertSame( '2025-08-17', $dates[0], '`dailyTraffic` should start on `2025-08-17`.' );
-		$this->assertSame( '2026-09-15', $dates[394], '`dailyTraffic` should end on `2026-09-15`.' );
-		$this->assertCount( 395, array_unique( $dates ), '`dailyTraffic` should have 395 different dates.' );
+		$this->assertCount( 28, $daily_traffic, '`dailyTraffic` should have exactly 28 rows, one for each day of the selected period.' );
+		$this->assertCount( 28, array_unique( $dates ), '`dailyTraffic` should have 28 different dates.' );
+		$this->assertSame(
+			array(
+				'date'   => '2026-08-19',
+				'visits' => 121,
+			),
+			$daily_traffic[0],
+			'`dailyTraffic` should start on `2026-08-19`, the first day of the selected period, with its `121` visits.'
+		);
+		$this->assertSame( '2026-09-15', $dates[27], '`dailyTraffic` should end on `2026-09-15`, the last day of the selected period.' );
 		$this->assertSame( $sorted_dates, $dates, '`dailyTraffic` should list its dates oldest first.' );
+	}
+
+	public function test_build__ends_the_daily_traffic_on_an_end_date_of_9999_12_31() {
+		$daily_traffic = $this->builder->build( '9999-12-31', '9999-12-31' )['dailyTraffic'];
+
+		$this->assertSame(
+			array(
+				array(
+					'date'   => '9999-12-31',
+					'visits' => 0,
+				),
+			),
+			$daily_traffic,
+			'`dailyTraffic` should list `9999-12-31` alone, the one day of the selected period, and end there.'
+		);
 	}
 
 	public function test_build__sums_the_visits_of_each_period_from_the_daily_series() {
 		$this->report_rows = array(
 			'date' => array(
+				// `20250817` and `20260721` sit outside both periods, so neither
+				// total counts them.
 				array( '20250817', 99 ),
 				array( '20260721', 1000 ),
 				array( '20260722', 5 ),
