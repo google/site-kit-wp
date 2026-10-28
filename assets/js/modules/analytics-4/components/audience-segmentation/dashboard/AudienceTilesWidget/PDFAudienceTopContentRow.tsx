@@ -96,7 +96,10 @@ const PDFAudienceTopContentRow: FC< PDFAudienceTopContentRowProps > = ( {
 				 * renders the title as plain text instead of as a link.
 				 */ }
 				{ topContent.map( ( content, index ) => (
-					<View key={ content.title + '-' + index } style={ styles.contentRow }>
+					<View
+						key={ `${ content.title }-${ index }` }
+						style={ styles.contentRow }
+					>
 						<View style={ styles.contentTitle }>
 							<PDFLink
 								href={ content.serviceURL }
