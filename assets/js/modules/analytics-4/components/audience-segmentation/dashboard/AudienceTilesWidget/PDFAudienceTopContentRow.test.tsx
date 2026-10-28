@@ -53,8 +53,8 @@ const TOP_CONTENT = [
  *
  * @since n.e.x.t
  *
- * @param props Props that override the defaults.
- * @return The element.
+ * @param {Object} props Props that override the defaults.
+ * @return {Element} The element.
  */
 function buildRow(
 	props: Partial< ComponentProps< typeof PDFAudienceTopContentRow > > = {}
@@ -69,13 +69,14 @@ function buildRow(
 }
 
 /**
- * Finds every node in a rendered tree that matches the predicate, in render order.
+ * Finds every node in a rendered tree that matches the predicate, in render
+ * order.
  *
  * @since n.e.x.t
  *
- * @param node      The rendered tree, or a node within it.
- * @param predicate Whether a node matches.
- * @return The matching nodes.
+ * @param {Object}   node      The rendered tree, or a node within it.
+ * @param {Function} predicate Whether a node matches.
+ * @return {Array.<Object>} The matching nodes.
  */
 function findNodes(
 	node: TestRenderer.ReactTestRendererJSON,

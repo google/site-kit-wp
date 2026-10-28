@@ -1,5 +1,5 @@
 /**
- * Shared styles for the sections of an audience card in the Your visitor groups PDF widget.
+ * Shared styles for the Your visitor groups PDF audience card.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

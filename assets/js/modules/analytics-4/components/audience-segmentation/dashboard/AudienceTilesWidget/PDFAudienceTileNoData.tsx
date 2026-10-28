@@ -1,5 +1,5 @@
 /**
- * No data message for a section of an audience card in the Your visitor groups PDF widget.
+ * No data message for the Your visitor groups PDF audience card.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

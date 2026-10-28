@@ -22,8 +22,8 @@
  *
  * @since n.e.x.t
  *
- * @param word The word to split.
- * @return The word's characters, with an empty part between each pair.
+ * @param {string} word The word to split.
+ * @return {Array.<string>} The characters, with an empty part between each pair.
  */
 export function splitIntoCharacters( word: string ): string[] {
 	return Array.from( word ).flatMap( ( character, index ) =>
@@ -38,8 +38,8 @@ export function splitIntoCharacters( word: string ): string[] {
  *
  * @since n.e.x.t
  *
- * @param text The text to truncate.
- * @return `splitIntoCharacters` for text without spaces, otherwise `undefined`.
+ * @param {string} text The text to truncate.
+ * @return {Function|undefined} The callback, or `undefined` for text with spaces.
  */
 export function getTruncationHyphenationCallback(
 	text: string

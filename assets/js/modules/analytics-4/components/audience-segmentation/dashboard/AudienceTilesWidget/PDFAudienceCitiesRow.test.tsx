@@ -32,8 +32,8 @@ import PDFAudienceCitiesRow from './PDFAudienceCitiesRow';
  *
  * @since n.e.x.t
  *
- * @param name The city name.
- * @return The text's hyphenation callback, or `undefined` when it has none.
+ * @param {string} name The city name.
+ * @return {Function|undefined} The text's hyphenation callback, if any.
  */
 function getCityNameHyphenationCallback( name: string ) {
 	const renderer = TestRenderer.create(

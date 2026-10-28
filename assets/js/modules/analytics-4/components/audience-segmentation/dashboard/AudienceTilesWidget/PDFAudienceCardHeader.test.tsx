@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import { ComponentProps } from 'react';
 import TestRenderer from 'react-test-renderer';
 
 /**
@@ -38,19 +39,14 @@ import PDFAudienceCardHeader from './PDFAudienceCardHeader';
  *
  * @since n.e.x.t
  *
- * @param audienceName          The audience name.
- * @param isAudiencePartialData Whether to show the Partial data badge.
- * @return The row holding the audience name and the badge.
+ * @param {Object} props Props for the header.
+ * @return {Object} The row holding the audience name and the badge.
  */
 function renderTitleRow(
-	audienceName: string,
-	isAudiencePartialData: boolean
+	props: ComponentProps< typeof PDFAudienceCardHeader >
 ) {
 	const tree = TestRenderer.create(
-		<PDFAudienceCardHeader
-			audienceName={ audienceName }
-			isAudiencePartialData={ isAudiencePartialData }
-		/>
+		<PDFAudienceCardHeader { ...props } />
 	).toJSON() as TestRenderer.ReactTestRendererJSON;
 
 	const [ titleRow ] = tree.children as TestRenderer.ReactTestRendererJSON[];
@@ -102,10 +98,11 @@ describe( 'PDFAudienceCardHeader', () => {
 	} );
 
 	it( 'should wrap a long name in the width the badge leaves, with a gap before the badge', () => {
-		const titleRow = renderTitleRow(
-			'Visitors who completed a purchase in the last thirty days',
-			true
-		);
+		const titleRow = renderTitleRow( {
+			audienceName:
+				'Visitors who completed a purchase in the last thirty days',
+			isAudiencePartialData: true,
+		} );
 		const [ name, badge ] =
 			titleRow.children as TestRenderer.ReactTestRendererJSON[];
 
@@ -122,10 +119,10 @@ describe( 'PDFAudienceCardHeader', () => {
 		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
 
 		for ( const isAudiencePartialData of [ true, false ] ) {
-			const titleRow = renderTitleRow(
-				'New visitors',
-				isAudiencePartialData
-			);
+			const titleRow = renderTitleRow( {
+				audienceName: 'New visitors',
+				isAudiencePartialData,
+			} );
 
 			expect( flattenPDFStyle( titleRow.props.style ) ).toMatchObject( {
 				minHeight,

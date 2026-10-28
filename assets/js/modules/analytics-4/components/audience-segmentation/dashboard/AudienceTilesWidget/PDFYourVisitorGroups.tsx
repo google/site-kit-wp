@@ -88,6 +88,8 @@ interface CardSection {
 
 /**
  * The sections of an audience card, top to bottom.
+ *
+ * @since n.e.x.t
  */
 const CARD_SECTIONS: CardSection[] = [
 	{
