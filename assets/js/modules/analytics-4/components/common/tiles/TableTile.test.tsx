@@ -195,8 +195,8 @@ describe( 'TableTile', () => {
 		provideModuleRegistrations( registry );
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
 
-		// The "Retry" button appears only for an error that the store saved
-		// for a `getReport` call.
+		// The "Retry" button appears only for an error that the store saved for
+		// a selector.
 		const error = {
 			code: 'internal_server_error',
 			message: 'Internal server error',

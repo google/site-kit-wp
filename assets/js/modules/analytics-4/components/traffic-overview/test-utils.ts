@@ -69,8 +69,10 @@ import {
 	Report,
 	ReportOptions,
 } from '@/js/modules/analytics-4/datastore/types';
+import { BenchmarkingDailyTrafficRow } from '@/js/modules/analytics-4/utils/benchmarking/types';
 import { getPageTitlesReportOptions } from '@/js/modules/analytics-4/utils/page-titles-report';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
+import { getDateString, stringToDate } from '@/js/util';
 
 interface FreshMetricsFigures {
 	/** The number of visitors in the Total visitors report. */
@@ -89,13 +91,13 @@ export interface RecentTrafficBreakdownReportOptions {
 }
 
 export interface RecentTrafficBreakdownReports {
-	/** The report of views for each page path. */
+	/** The report of visitors for each page path. */
 	posts?: Report;
 	/** The title of each page path, for the pages the posts column shows. */
 	postTitles?: Record< string, string >;
-	/** The report of visits for each channel. */
+	/** The report of visitors for each channel, whose total is the visitors the columns count. */
 	channels?: Report;
-	/** The report of visits for each site that referred them. */
+	/** The report of visitors for each site that referred them. */
 	referrals?: Report;
 }
 
@@ -486,8 +488,8 @@ export function provideFreshMetricsReports(
  * Gets the options of the reports of the Recent activity tab's traffic
  * breakdown, for the registry's reference date.
  *
- * The posts report leaves out the product pages that `getExcludedProducts()`
- * recognizes, the way the posts column does.
+ * Each report leaves out the product pages that `getExcludedProducts()`
+ * recognizes, the way the columns do.
  *
  * @since n.e.x.t
  *
@@ -500,14 +502,14 @@ export function getRecentTrafficBreakdownReportOptions(
 	const dateRange = getFreshDataDateRange(
 		registry.select( CORE_USER ).getReferenceDate()
 	);
+	const excludedProducts = registry
+		.select( MODULES_ANALYTICS_4 )
+		.getExcludedProducts();
 
 	return {
-		posts: getTopPostsReportOptions(
-			dateRange,
-			registry.select( MODULES_ANALYTICS_4 ).getExcludedProducts()
-		),
-		channels: getTopChannelsReportOptions( dateRange ),
-		referrals: getTopReferralsReportOptions( dateRange ),
+		posts: getTopPostsReportOptions( dateRange, excludedProducts ),
+		channels: getTopChannelsReportOptions( dateRange, excludedProducts ),
+		referrals: getTopReferralsReportOptions( dateRange, excludedProducts ),
 	};
 }
 
@@ -521,10 +523,10 @@ export function getRecentTrafficBreakdownReportOptions(
  *
  * @param {Object} registry             The registry, with its reference date and its site info set.
  * @param {Object} reports              The reports.
- * @param {Object} [reports.posts]      Optional. The report of views for each page path.
+ * @param {Object} [reports.posts]      Optional. The report of visitors for each page path.
  * @param {Object} [reports.postTitles] Optional. The title of each page path. A path with no title here has none in the report of titles.
- * @param {Object} [reports.channels]   Optional. The report of visits for each channel.
- * @param {Object} [reports.referrals]  Optional. The report of visits for each site that referred them.
+ * @param {Object} [reports.channels]   Optional. The report of visitors for each channel, whose total is the visitors the columns count.
+ * @param {Object} [reports.referrals]  Optional. The report of visitors for each site that referred them.
  * @return {void}
  */
 export function provideRecentTrafficBreakdownReports(
@@ -600,4 +602,36 @@ export function forDimensions( ...dimensions: string[] ) {
 			),
 			dimensions
 		);
+}
+
+/**
+ * Builds the daily rows of a benchmarking response, for the given number of
+ * days up to and including the given last day.
+ *
+ * The checked-in `benchmarking-data.json` fixture has only four days.
+ *
+ * @since n.e.x.t
+ *
+ * @param {number}   days      The number of rows, one for each day.
+ * @param {string}   endDate   The last day, as `YYYY-MM-DD`.
+ * @param {Function} getVisits Returns a day's visits, given the day's position in the rows, from `0`.
+ * @return {Array.<Object>} The `{ date, visits }` rows, oldest first.
+ */
+export function createDailyTrafficRows(
+	days: number,
+	endDate: string,
+	getVisits: ( dayIndex: number ) => number
+): BenchmarkingDailyTrafficRow[] {
+	// `setDate()` moves the calendar day and keeps the time of day, so a
+	// daylight-saving change inside the rows doesn't skip or repeat a day.
+	const day = stringToDate( endDate );
+	day.setDate( day.getDate() - days + 1 );
+
+	return Array.from( { length: days }, ( _value, dayIndex ) => {
+		const date = getDateString( day );
+
+		day.setDate( day.getDate() + 1 );
+
+		return { date, visits: getVisits( dayIndex ) };
+	} );
 }

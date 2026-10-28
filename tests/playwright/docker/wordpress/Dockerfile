@@ -1,3 +1,11 @@
+# Debian 11 gets no more certificate updates, so take the system certificates
+# from a supported Debian release instead.
+FROM debian:trixie-slim AS certs
+RUN set -eux; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends ca-certificates; \
+    cp -rL /etc/ssl/certs /tmp/certs
+
 FROM wordpress:php7.4-apache
 
 ARG WP_VERSION=latest
@@ -10,7 +18,12 @@ RUN set -eux; \
     rm -rf /etc/apt/sources.list.d/*; \
     apt-get -o Acquire::Check-Valid-Until=false update; \
     apt-get install -y --no-install-recommends unzip default-mysql-client; \
-    rm -rf /var/lib/apt/lists/*; \
+    rm -rf /var/lib/apt/lists/*
+
+RUN rm -rf /etc/ssl/certs
+COPY --from=certs /tmp/certs /etc/ssl/certs
+
+RUN set -eux; \
     if [ "$WP_VERSION" = "nightly" ]; then \
         curl -fsSL "https://wordpress.org/nightly-builds/wordpress-latest.zip" -o /tmp/wordpress.zip; \
         unzip -o /tmp/wordpress.zip -d /tmp; \
@@ -39,4 +52,5 @@ RUN set -eux; \
     unzip -o /tmp/amp.zip -d /usr/src/wordpress/wp-content/plugins/; \
     rm /tmp/amp.zip; \
     curl -fsSL "https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar" -o /usr/local/bin/wp; \
-    chmod +x /usr/local/bin/wp
+    chmod +x /usr/local/bin/wp; \
+    cp /etc/ssl/certs/ca-certificates.crt /usr/src/wordpress/wp-includes/certificates/ca-bundle.crt

@@ -196,11 +196,12 @@ class RequestHelpers {
 	 *
 	 * @since 1.99.0
 	 * @since 1.130.0 Moved into RequestHelpers for shared use in reports.
+	 * @since n.e.x.t Method changed from protected to public.
 	 *
 	 * @param Google_Service_AnalyticsData_Metric[] $metrics The metrics to validate.
 	 * @throws Invalid_Report_Metrics_Exception Thrown if the metrics are invalid.
 	 */
-	protected function validate_shared_metrics( $metrics ) {
+	public function validate_shared_metrics( $metrics ) {
 		$valid_metrics = apply_filters(
 			'googlesitekit_shareable_analytics_4_metrics',
 			array(
