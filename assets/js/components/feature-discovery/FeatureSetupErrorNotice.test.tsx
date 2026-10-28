@@ -119,6 +119,7 @@ describe( 'FeatureSetupErrorNotice', () => {
 
 		const getHelpLink = getByRole( 'link', { name: /get help/i } );
 		expect( getHelpLink ).toHaveAttribute( 'href', troubleshootingURL );
+		expect( getHelpLink ).toHaveAttribute( 'target', '_blank' );
 
 		expect( getByRole( 'button', { name: 'Got it' } ) ).toBeInTheDocument();
 	} );

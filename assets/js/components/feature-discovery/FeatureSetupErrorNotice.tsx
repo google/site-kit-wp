@@ -19,17 +19,19 @@
 /**
  * External dependencies
  */
-import { FC } from 'react';
+import { FC, ReactNode } from 'react';
 
 /**
  * WordPress dependencies
  */
+import { Fragment, createInterpolateElement } from '@wordpress/element';
 import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import { Select, useSelect } from 'googlesitekit-data';
+import Link from '@/js/components/Link';
 import Notice from '@/js/components/Notice';
 import { NOTICE_TYPES } from '@/js/components/Notice/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
@@ -44,7 +46,7 @@ import {
 
 const sanitizeArgs = {
 	ALLOWED_TAGS: [ 'a' ],
-	ALLOWED_ATTR: [ 'href', 'target', 'rel' ],
+	ALLOWED_ATTR: [ 'href' ],
 };
 
 interface FeatureSetupErrorNoticeProps {
@@ -81,37 +83,57 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 		return null;
 	}
 
-	let description = '';
+	let description: ReactNode;
 
 	if ( isInsufficientPermissionsError( error ) ) {
 		description = errorTroubleshootingLinkURL
-			? sprintf(
-					/* translators: %s: Troubleshooting URL. */
+			? ( createInterpolateElement(
 					__(
-						'The settings could not be configured due to insufficient permissions. To fix this, contact your administrator or <a href="%s">get help</a>.',
+						'The settings could not be configured due to insufficient permissions. To fix this, contact your administrator or <a>get help</a>.',
 						'google-site-kit'
 					),
-					errorTroubleshootingLinkURL
-			  )
+					{
+						a: (
+							<Link
+								href={ errorTroubleshootingLinkURL }
+								external
+								hideExternalIndicator
+							/>
+						),
+					}
+			  ) as ReactNode )
 			: __(
 					'The settings could not be configured due to insufficient permissions. To fix this, contact your administrator.',
 					'google-site-kit'
 			  );
 	} else {
-		description = getErrorNoticeMessage( error.message, error, {
+		const message = getErrorNoticeMessage( error.message, error, {
 			noPrefix: true,
 			skipRetryMessage: true,
 		} );
 
-		if ( errorTroubleshootingLinkURL ) {
-			description = sprintf(
-				/* translators: 1: Error message, 2: Opening HTML link tag, 3: Closing HTML link tag. */
-				__( '%1$s %2$sLearn more%3$s', 'google-site-kit' ),
-				description,
-				`<a href="${ errorTroubleshootingLinkURL }" target="_blank" rel="noopener noreferrer">`,
-				'</a>'
-			);
-		}
+		description = (
+			<Fragment>
+				<span
+					dangerouslySetInnerHTML={ sanitizeHTML(
+						message,
+						sanitizeArgs
+					) }
+				/>
+				{ errorTroubleshootingLinkURL && (
+					<Fragment>
+						{ ' ' }
+						<Link
+							href={ errorTroubleshootingLinkURL }
+							external
+							hideExternalIndicator
+						>
+							{ __( 'Learn more', 'google-site-kit' ) }
+						</Link>
+					</Fragment>
+				) }
+			</Fragment>
+		);
 	}
 
 	return (
@@ -123,14 +145,7 @@ const FeatureSetupErrorNotice: FC< FeatureSetupErrorNoticeProps > = ( {
 				__( '%s setup failed', 'google-site-kit' ),
 				featureTitle
 			) }
-			description={
-				<span
-					dangerouslySetInnerHTML={ sanitizeHTML(
-						description,
-						sanitizeArgs
-					) }
-				/>
-			}
+			description={ description }
 			ctaButton={
 				isRetryableErrorType( error )
 					? {
