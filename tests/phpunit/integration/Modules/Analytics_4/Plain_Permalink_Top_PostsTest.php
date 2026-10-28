@@ -56,21 +56,21 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 	}
 
 	/**
-	 * Gets the top posts of a report with the given views of each URL.
+	 * Gets the top posts of a report with the given visitors of each URL.
 	 *
 	 * @since n.e.x.t
 	 *
-	 * @param array $views_by_url The views of each URL of the report, most viewed first, such as `array( '/?p=123' => 10 )`.
+	 * @param array $visitors_by_url The visitors of each URL of the report, most visitors first, such as `array( '/?p=123' => 10 )`.
 	 * @param int   $limit        Optional. The maximum number of posts. Default 10.
 	 * @return array The top posts.
 	 */
-	private function get( array $views_by_url, $limit = 10 ) {
+	private function get( array $visitors_by_url, $limit = 10 ) {
 		$url_rows = array();
 
-		foreach ( $views_by_url as $url => $views ) {
+		foreach ( $visitors_by_url as $url => $visitors ) {
 			$url_rows[] = array(
-				'url'   => $url,
-				'views' => $views,
+				'url'      => $url,
+				'visitors' => $visitors,
 			);
 		}
 
@@ -97,7 +97,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => $post_args['post_title'],
 					'url'      => "http://example.org$permalink_path",
 					'pagePath' => $permalink_path,
-					'views'    => 10,
+					'visitors' => 10,
 				),
 			),
 			$this->get( array( $page_path => 10 ) ),
@@ -175,7 +175,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Map',
 					'url'      => "http://example.org/?attachment_id=$attachment_id",
 					'pagePath' => "/?attachment_id=$attachment_id",
-					'views'    => 10,
+					'visitors' => 10,
 				),
 			),
 			$this->get( array( "/?attachment_id=$attachment_id" => 10 ) ),
@@ -221,7 +221,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Map',
 					'url'      => "http://example.org/?attachment_id=$attachment_id",
 					'pagePath' => "/?attachment_id=$attachment_id",
-					'views'    => 10,
+					'visitors' => 10,
 				),
 			),
 			$this->get( array( "/?attachment_id=$attachment_id" => 10 ) ),
@@ -229,7 +229,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 	}
 
-	public function test_get__adds_up_the_views_of_each_url_of_a_post() {
+	public function test_get__adds_up_the_visitors_of_each_url_of_a_post() {
 		// `<!--nextpage-->` splits the post into two pages, so `page=2` shows its
 		// second page.
 		$post_id = $this->factory()->post->create(
@@ -246,7 +246,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Travel tips',
 					'url'      => "http://example.org/?p=$post_id",
 					'pagePath' => "/?p=$post_id",
-					'views'    => 28,
+					'visitors' => 28,
 				),
 			),
 			$this->get(
@@ -257,7 +257,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					"/?p=$post_id&page=2"                => 4,
 				)
 			),
-			'A post should count the views of each of its URLs, with a campaign query arg, with `index.php` and on its second page.'
+			'A post should count the visitors of each of its URLs, with a campaign query arg, with `index.php` and on its second page.'
 		);
 	}
 
@@ -286,7 +286,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Travel tips',
 					'url'      => "http://example.org/blog/?p=$post_id",
 					'pagePath' => "/blog/?p=$post_id",
-					'views'    => 15,
+					'visitors' => 15,
 				),
 			),
 			$this->get(
@@ -295,7 +295,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					"/blog/index.php?p=$post_id" => 5,
 				)
 			),
-			'A post at the home path of a site in a subdirectory should count the views of its URLs there, with and without `index.php`.'
+			'A post at the home path of a site in a subdirectory should count the visitors of its URLs there, with and without `index.php`.'
 		);
 	}
 
@@ -313,7 +313,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Travel tips',
 					'url'      => "http://example.org/?p=$post_id",
 					'pagePath' => "/?p=$post_id",
-					'views'    => 15,
+					'visitors' => 15,
 				),
 			),
 			$this->get(
@@ -323,7 +323,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					"/blog/index.php?p=$post_id" => 5,
 				)
 			),
-			'A post should count only the views of its URLs at `/blog/`, the home path of the reference site URL.'
+			'A post should count only the visitors of its URLs at `/blog/`, the home path of the reference site URL.'
 		);
 	}
 
@@ -349,7 +349,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 	}
 
-	public function test_get__adds_up_the_views_of_a_static_homepage() {
+	public function test_get__adds_up_the_visitors_of_a_static_homepage() {
 		$homepage_id = $this->factory()->post->create(
 			array(
 				'post_title' => 'Welcome',
@@ -366,7 +366,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Welcome',
 					'url'      => 'http://example.org/',
 					'pagePath' => '/',
-					'views'    => 65,
+					'visitors' => 65,
 				),
 			),
 			$this->get(
@@ -376,7 +376,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'/?utm_source=newsletter' => 5,
 				)
 			),
-			'A static homepage should count the views of the home path, of its own page path and of a URL with no public query var.'
+			'A static homepage should count the visitors of the home path, of its own page path and of a URL with no public query var.'
 		);
 	}
 
@@ -428,7 +428,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'Checkout',
 					'url'      => "http://example.org/?page_id=$checkout_id",
 					'pagePath' => "/?page_id=$checkout_id",
-					'views'    => 10,
+					'visitors' => 10,
 				),
 			),
 			$this->get( array( "/?page_id=$checkout_id&order-received=123&key=wc_order_Xy7" => 10 ) ),
@@ -562,7 +562,7 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 					'title'    => 'About',
 					'url'      => "http://example.org/?page_id=$page_id",
 					'pagePath' => "/?page_id=$page_id",
-					'views'    => 10,
+					'visitors' => 10,
 				),
 			),
 			$this->get( array( "/?page_id=$page_id" => 10 ) ),
@@ -652,12 +652,12 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 	}
 
-	public function test_get__returns_the_posts_with_the_most_views_first_up_to_the_limit() {
+	public function test_get__returns_the_posts_with_the_most_visitors_first_up_to_the_limit() {
 		$first_post_id  = $this->factory()->post->create();
 		$second_post_id = $this->factory()->post->create();
 		$third_post_id  = $this->factory()->post->create( array( 'post_content' => 'Packing<!--nextpage-->Flights' ) );
 
-		// Each of the third post's two page paths has fewer views than the first
+		// Each of the third post's two page paths has fewer visitors than the first
 		// post's 30, but together they have 31.
 		$top_posts = $this->get(
 			array(
@@ -674,12 +674,12 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 				$third_post_id => 31,
 				$first_post_id => 30,
 			),
-			array_column( $top_posts, 'views', 'id' ),
-			'The posts should come most viewed first, after the views of their page paths add up, and no more of them than the limit.'
+			array_column( $top_posts, 'visitors', 'id' ),
+			'The posts should come most visitors first, after the visitors of their page paths add up, and no more of them than the limit.'
 		);
 	}
 
-	public function test_get__returns_posts_with_equal_views_in_the_order_of_their_page_paths_in_the_report() {
+	public function test_get__returns_posts_with_equal_visitors_in_the_order_of_their_page_paths_in_the_report() {
 		// PHP 7.4 keeps equal items in order in a list of up to 16, so the test
 		// uses 20 posts.
 		$post_ids = $this->factory()->post->create_many( 20 );
@@ -693,16 +693,16 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 			20
 		);
 
-		$this->assertSame( $post_ids, array_column( $top_posts, 'id' ), 'Posts with equal views, each with one page path, should come in the order of their page paths in the report.' );
+		$this->assertSame( $post_ids, array_column( $top_posts, 'id' ), 'Posts with equal visitors, each with one page path, should come in the order of their page paths in the report.' );
 	}
 
-	public function test_get__returns_posts_with_equal_views_in_the_order_of_their_most_viewed_page_paths() {
+	public function test_get__returns_posts_with_equal_visitors_in_the_order_of_their_page_paths_with_the_most_visitors() {
 		// Each post has two pages. The second post is created first, so it has the
 		// lower ID.
 		$second_post_id = $this->factory()->post->create( array( 'post_content' => 'Packing<!--nextpage-->Flights' ) );
 		$first_post_id  = $this->factory()->post->create( array( 'post_content' => 'Packing<!--nextpage-->Flights' ) );
 
-		// Both posts have 8 views. An order by ID, or by the views of the second
+		// Both posts have 8 visitors. An order by ID, or by the visitors of the second
 		// page, would put the second post first.
 		$top_posts = $this->get(
 			array(
@@ -713,31 +713,31 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 			)
 		);
 
-		$this->assertSame( array( $first_post_id, $second_post_id ), array_column( $top_posts, 'id' ), 'Posts with equal views should come in the order of their most viewed page paths.' );
+		$this->assertSame( array( $first_post_id, $second_post_id ), array_column( $top_posts, 'id' ), 'Posts with equal visitors should come in the order of their page paths with the most visitors.' );
 	}
 
 	/**
 	 * @dataProvider data_page_path_positions
 	 *
-	 * @param string $position_label     The position of the post's page path by views, for the assertion message.
-	 * @param int    $missing_page_paths The number of page paths with more views than the post's, each of a missing post.
+	 * @param string $position_label     The position of the post's page path by visitors, for the assertion message.
+	 * @param int    $missing_page_paths The number of page paths with more visitors than the post's, each of a missing post.
 	 * @param bool   $is_looked_up       Whether the post's page path is among those looked up.
 	 */
-	public function test_get__looks_up_only_the_50_page_paths_with_the_most_views( $position_label, $missing_page_paths, $is_looked_up ) {
-		$post_id      = $this->factory()->post->create();
-		$views_by_url = array();
+	public function test_get__looks_up_only_the_50_page_paths_with_the_most_visitors( $position_label, $missing_page_paths, $is_looked_up ) {
+		$post_id         = $this->factory()->post->create();
+		$visitors_by_url = array();
 
 		// No post has an ID from `999901` on.
 		for ( $position = 1; $position <= $missing_page_paths; $position++ ) {
-			$views_by_url[ '/?p=' . ( 999900 + $position ) ] = 1000 - $position;
+			$visitors_by_url[ '/?p=' . ( 999900 + $position ) ] = 1000 - $position;
 		}
 
-		$views_by_url[ "/?p=$post_id" ] = 1;
+		$visitors_by_url[ "/?p=$post_id" ] = 1;
 
 		$this->assertSame(
 			$is_looked_up ? array( $post_id ) : array(),
-			array_column( $this->get( $views_by_url ), 'id' ),
-			"The $position_label most viewed page path should be looked up only where it is among the first 50."
+			array_column( $this->get( $visitors_by_url ), 'id' ),
+			"The $position_label page path by visitors should be looked up only where it is among the first 50."
 		);
 	}
 
@@ -748,19 +748,19 @@ class Plain_Permalink_Top_PostsTest extends TestCase {
 		);
 	}
 
-	public function test_get__adds_up_the_views_of_the_urls_of_a_page_path_before_it_picks_the_50_page_paths_with_the_most_views() {
-		$post_id      = $this->factory()->post->create();
-		$views_by_url = array();
+	public function test_get__adds_up_the_visitors_of_the_urls_of_a_page_path_before_it_picks_the_50_page_paths_with_the_most_visitors() {
+		$post_id         = $this->factory()->post->create();
+		$visitors_by_url = array();
 
 		// No post has an ID from `999901` on.
 		for ( $position = 1; $position <= 50; $position++ ) {
-			$views_by_url[ '/?p=' . ( 999900 + $position ) ] = 10;
+			$visitors_by_url[ '/?p=' . ( 999900 + $position ) ] = 10;
 		}
 
 		for ( $source = 1; $source <= 60; $source++ ) {
-			$views_by_url[ "/?p=$post_id&utm_source=s$source" ] = 1;
+			$visitors_by_url[ "/?p=$post_id&utm_source=s$source" ] = 1;
 		}
 
-		$this->assertSame( array( $post_id ), array_column( $this->get( $views_by_url ), 'id' ), 'A post whose URLs together have the most views should be looked up, even when each of its URLs has fewer views than the 50th page path.' );
+		$this->assertSame( array( $post_id ), array_column( $this->get( $visitors_by_url ), 'id' ), 'A post whose URLs together have the most visitors should be looked up, even when each URL has fewer visitors than the 50th page path.' );
 	}
 }

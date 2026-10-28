@@ -27,6 +27,7 @@ import { getQueryArgs } from '@wordpress/url';
  */
 import { get } from 'googlesitekit-api';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { createBreakdownReport } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { plainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/__fixtures__';
 import {
 	actHook as act,
@@ -52,16 +53,44 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/plain-permalink-top-posts'
 	);
 
+	// The hook also requests the channels report, so the calls of `get()` for
+	// the posts are picked by their datapoint.
+	function getTopPostsCalls() {
+		return jest
+			.mocked( get )
+			.mock.calls.filter(
+				( [ , , datapoint ] ) =>
+					datapoint === 'plain-permalink-top-posts'
+			);
+	}
+
 	beforeEach( () => {
 		registry = createTestRegistry();
 		registry.dispatch( CORE_USER ).setReferenceDate( '2025-02-05' );
+		// The total of the channels report is the 120 visitors that every
+		// share is a percentage of.
+		fetchMock.get(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{
+				body: createBreakdownReport(
+					[
+						[ 'Direct', 100 ],
+						[ 'Referral', 20 ],
+					],
+					120
+				),
+				status: 200,
+			}
+		);
 	} );
 
 	afterEach( () => {
 		jest.mocked( get ).mockClear();
 	} );
 
-	it( 'should request the three posts with the most views in the date range of the Recent activity tab', async () => {
+	it( 'should request the three posts with the most visitors in the date range of the Recent activity tab', async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
 			body: plainPermalinkTopPosts,
 			status: 200,
@@ -97,12 +126,12 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		await waitForRegistry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 1, topPostsEndpoint );
-		expect( jest.mocked( get ).mock.calls[ 0 ][ 4 ] ).toStrictEqual( {
+		expect( getTopPostsCalls()[ 0 ][ 4 ] ).toStrictEqual( {
 			cacheTTL: 300,
 		} );
 	} );
 
-	it( 'should return one row for each post, with its title, or its page path for a post with no title, its views, its share of the views of the report and its link', async () => {
+	it( "should return a row for each post, with its title or path, its visitors, its share of the site's visitors and its link", async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
 			body: plainPermalinkTopPosts,
 			status: 200,
@@ -119,19 +148,19 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 			{
 				label: 'Travel tips',
 				value: '30',
-				secondaryValue: '(30.0%)',
+				secondaryValue: '(25.0%)',
 				url: 'http://example.com/?p=1',
 			},
 			{
 				label: 'About',
 				value: '20',
-				secondaryValue: '(20.0%)',
+				secondaryValue: '(16.7%)',
 				url: 'http://example.com/?page_id=2',
 			},
 			{
 				label: '/?p=3',
 				value: '10',
-				secondaryValue: '(10.0%)',
+				secondaryValue: '(8.3%)',
 				url: 'http://example.com/?p=3',
 			},
 		] );
@@ -145,7 +174,10 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 			{ registry }
 		);
 
-		await waitForDefaultTimeouts();
+		// The channels report answers meanwhile, which updates the hook.
+		await act( async () => {
+			await waitForDefaultTimeouts();
+		} );
 
 		expect( result.current ).toMatchObject( {
 			rows: [],
@@ -248,7 +280,7 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		await waitForRetry();
 
 		expect( fetchMock ).toHaveFetchedTimes( 2, topPostsEndpoint );
-		expect( jest.mocked( get ).mock.calls[ 1 ][ 4 ] ).toStrictEqual( {
+		expect( getTopPostsCalls()[ 1 ][ 4 ] ).toStrictEqual( {
 			cacheTTL: 300,
 		} );
 		expect( result.current ).toMatchObject( {
@@ -262,7 +294,7 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		] );
 	} );
 
-	it( 'should return "No data to display: your posts haven’t received any visitors yet" as the zero message when the report has views but none on a single post', async () => {
+	it( 'should return "No data to display: your posts haven’t received any visitors yet" as the zero message when the report has visitors but none on a single post', async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
 			body: { rows: [], total: 57 },
 			status: 200,
@@ -282,7 +314,7 @@ describe( 'usePlainPermalinkTopPostsColumn', () => {
 		} );
 	} );
 
-	it( 'should return no zero message when the report has no views', async () => {
+	it( 'should return no zero message when the report has no visitors', async () => {
 		fetchMock.getOnce( topPostsEndpoint, {
 			body: { rows: [], total: 0 },
 			status: 200,
