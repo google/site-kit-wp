@@ -139,10 +139,10 @@ Nest a second level when one bullet covers several related behaviors, ending the
 colon:
 
 ```
-  * Submit behavior:
-    * <on click>
-    * <on success>
-    * <on failure>
+* [ ] Submit behavior:
+  * <on click>
+  * <on success>
+  * <on failure>
 ```
 
 ### Content
