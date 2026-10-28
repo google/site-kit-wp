@@ -39,8 +39,8 @@ import useCTAID from './useCTAID';
  *
  * Saves the current time against the setup's entry each time a step begins,
  * and removes the entry once the setup complete step begins. When the setup
- * has a `ctaID`, the same save records it in `completedExpressSetups`. The save is not
- * awaited, so the step works the same whether it succeeds or fails.
+ * has a `ctaID`, the same save records it in `completedExpressSetups`. The save
+ * is not awaited, so the step works the same whether it succeeds or fails.
  *
  * @since n.e.x.t
  *
