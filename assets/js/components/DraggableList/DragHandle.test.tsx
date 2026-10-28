@@ -40,7 +40,7 @@ describe( 'DragHandle', () => {
 					onKeyDown,
 				} }
 			>
-				<DragHandle aria-label="Move Answer 2" />
+				<DragHandle label="Move Answer 2" />
 			</DragHandleContext.Provider>
 		);
 
