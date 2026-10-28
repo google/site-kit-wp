@@ -34,7 +34,15 @@ function Template( args: SurveyQuestionRowProps ) {
 	const [ isExpanded, setIsExpanded ] = useState( args.isExpanded );
 
 	return (
-		<div className="js" style={ { maxWidth: 460 } }>
+		<div
+			className="js"
+			style={ {
+				background: args.onExpand ? '#FFFFFF' : '#F1FFF7',
+				boxSizing: 'content-box',
+				maxWidth: args.onExpand ? 460 : 320,
+				padding: args.onExpand ? 30 : '20px 0',
+			} }
+		>
 			<SurveyQuestionRow
 				{ ...args }
 				isAdded={ isAdded }
@@ -50,6 +58,29 @@ function Template( args: SurveyQuestionRowProps ) {
 		</div>
 	);
 }
+
+export const CollapsedQuestion = Template.bind(
+	{}
+) as Story< SurveyQuestionRowProps >;
+CollapsedQuestion.storyName = 'Collapsed Question';
+CollapsedQuestion.args = {
+	onAdd: () => {},
+	onExpand: () => {},
+	question: 'What is your highest education level?',
+};
+CollapsedQuestion.scenario = {};
+
+export const CollapsedQuestionAdded = Template.bind(
+	{}
+) as Story< SurveyQuestionRowProps >;
+CollapsedQuestionAdded.storyName = 'Collapsed Question, Added';
+CollapsedQuestionAdded.args = {
+	isAdded: true,
+	onAdd: () => {},
+	onExpand: () => {},
+	question: 'What is your highest education level?',
+};
+CollapsedQuestionAdded.scenario = {};
 
 export const PredefinedQuestion = Template.bind(
 	{}
@@ -69,6 +100,7 @@ PredefinedQuestion.args = {
 	onRemove: () => {},
 	question: 'What is your highest education level?',
 };
+PredefinedQuestion.scenario = {};
 
 export const DisabledQuestion = Template.bind(
 	{}
@@ -79,6 +111,7 @@ DisabledQuestion.args = {
 	disabledMessage:
 		'You’ve reached the maximum of 3 questions per survey. To add a question, remove a question first.',
 };
+DisabledQuestion.scenario = {};
 
 export const EditableQuestion = Template.bind(
 	{}
@@ -111,6 +144,7 @@ EditableQuestion.args = {
 		'household-appliances',
 	],
 };
+EditableQuestion.scenario = {};
 
 export const CustomQuestion = Template.bind(
 	{}
@@ -130,6 +164,7 @@ CustomQuestion.args = {
 	onRemove: () => {},
 	question: 'How likely are you to recommend us to a friend?',
 };
+CustomQuestion.scenario = {};
 
 export const SelectedQuestion = Template.bind(
 	{}
@@ -138,8 +173,10 @@ SelectedQuestion.args = {
 	isAdded: true,
 	leadingElement: <DragHandle label="Move" />,
 	onRemove: () => {},
-	question: 'Would you like to share the number of adults in your household?',
+	question:
+		'Are you planning on buying products from the following categories in the next 6 months? Select your top one.',
 };
+SelectedQuestion.scenario = {};
 
 export const SelectedQuestionHighlighted = Template.bind(
 	{}
@@ -149,6 +186,7 @@ SelectedQuestionHighlighted.args = {
 	...SelectedQuestion.args,
 	isExpanded: true,
 };
+SelectedQuestionHighlighted.scenario = {};
 
 export default {
 	title: 'Modules/ReaderRevenueManager/Setup/SetupMainExpress/SetupCTASurvey/SurveyQuestionRow',

@@ -109,94 +109,96 @@ const SurveyQuestionRow: FC< SurveyQuestionRowProps > = ( {
 
 	return (
 		<div className={ classNames }>
-			<div className="googlesitekit-rrm-survey-question-row__actions">
-				{ leadingElement }
+			<div className="googlesitekit-rrm-survey-question-row__inner">
+				<div className="googlesitekit-rrm-survey-question-row__actions">
+					{ leadingElement }
 
-				<SurveyQuestionRowAction
-					aria-describedby={ questionID }
-					disabled={ disabled }
-					disabledMessage={ disabledMessage }
-					isAdded={ isAdded }
-					isExpandable={ isExpandable }
-					onAdd={ onAdd }
-					onRemove={ onRemove }
-				/>
-			</div>
-
-			{ isExpandable ? (
-				<Typography
-					aria-controls={ contentID }
-					aria-expanded={ isExpanded }
-					as="button"
-					asType="button"
-					className="googlesitekit-rrm-survey-question-row__expand"
-					id={ questionID }
-					onClick={ () => onExpand( ! isExpanded ) }
-					size={ SIZE_MEDIUM }
-					type={ TYPE_BODY }
-				>
-					{ question }
-
-					<ChevronDown height={ 18 } width={ 18 } />
-				</Typography>
-			) : (
-				<Typography
-					className="googlesitekit-rrm-survey-question-row__question"
-					id={ questionID }
-					size={ SIZE_SMALL }
-					type={ TYPE_BODY }
-				>
-					{ question }
-				</Typography>
-			) }
-
-			{ isExpandable ? (
-				<div
-					className="googlesitekit-rrm-survey-question-row__content"
-					hidden={ ! isExpanded }
-					id={ contentID }
-				>
-					{ hasAnswers && isChangeable ? (
-						<SurveyQuestionAnswerCheckboxes
-							aria-labelledby={ note ? noteID : undefined }
-							answers={ answers }
-							value={ value }
-							onChange={ onChange }
-						/>
-					) : null }
-
-					{ hasAnswers && ! isChangeable ? (
-						<SurveyQuestionAnswerList answers={ answers } />
-					) : null }
-
-					{ note ? (
-						<P
-							className="googlesitekit-rrm-survey-question-row__note"
-							id={ noteID }
-							size={ SIZE_SMALL }
-						>
-							{ note }
-						</P>
-					) : null }
-
-					{ onEdit ? (
-						<Typography
-							aria-describedby={ questionID }
-							as={ Link }
-							asType="button"
-							className="googlesitekit-rrm-survey-question-row__edit"
-							onClick={ onEdit }
-							size={ SIZE_MEDIUM }
-							trailingIcon={
-								<PencilIcon height={ 10 } width={ 10 } />
-							}
-							type={ TYPE_LABEL }
-						>
-							{ __( 'Edit', 'google-site-kit' ) }
-						</Typography>
-					) : null }
+					<SurveyQuestionRowAction
+						aria-describedby={ questionID }
+						disabled={ disabled }
+						disabledMessage={ disabledMessage }
+						isAdded={ isAdded }
+						isExpandable={ isExpandable }
+						onAdd={ onAdd }
+						onRemove={ onRemove }
+					/>
 				</div>
-			) : null }
+
+				{ isExpandable ? (
+					<Typography
+						aria-controls={ contentID }
+						aria-expanded={ isExpanded }
+						as="button"
+						asType="button"
+						className="googlesitekit-rrm-survey-question-row__expand"
+						id={ questionID }
+						onClick={ () => onExpand( ! isExpanded ) }
+						size={ SIZE_MEDIUM }
+						type={ TYPE_BODY }
+					>
+						{ question }
+
+						<ChevronDown height={ 18 } width={ 18 } />
+					</Typography>
+				) : (
+					<Typography
+						className="googlesitekit-rrm-survey-question-row__question"
+						id={ questionID }
+						size={ SIZE_SMALL }
+						type={ TYPE_BODY }
+					>
+						{ question }
+					</Typography>
+				) }
+
+				{ isExpandable ? (
+					<div
+						className="googlesitekit-rrm-survey-question-row__content"
+						hidden={ ! isExpanded }
+						id={ contentID }
+					>
+						{ hasAnswers && isChangeable ? (
+							<SurveyQuestionAnswerCheckboxes
+								aria-labelledby={ note ? noteID : undefined }
+								answers={ answers }
+								value={ value }
+								onChange={ onChange }
+							/>
+						) : null }
+
+						{ hasAnswers && ! isChangeable ? (
+							<SurveyQuestionAnswerList answers={ answers } />
+						) : null }
+
+						{ note ? (
+							<P
+								className="googlesitekit-rrm-survey-question-row__note"
+								id={ noteID }
+								size={ SIZE_SMALL }
+							>
+								{ note }
+							</P>
+						) : null }
+
+						{ onEdit ? (
+							<Typography
+								aria-describedby={ questionID }
+								as={ Link }
+								asType="button"
+								className="googlesitekit-rrm-survey-question-row__edit"
+								onClick={ onEdit }
+								size={ SIZE_MEDIUM }
+								trailingIcon={
+									<PencilIcon height={ 10 } width={ 10 } />
+								}
+								type={ TYPE_LABEL }
+							>
+								{ __( 'Edit', 'google-site-kit' ) }
+							</Typography>
+						) : null }
+					</div>
+				) : null }
+			</div>
 		</div>
 	);
 };
