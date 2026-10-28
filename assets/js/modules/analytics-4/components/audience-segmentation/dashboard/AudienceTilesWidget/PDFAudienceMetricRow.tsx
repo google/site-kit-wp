@@ -1,7 +1,7 @@
 /**
  * Metric row for the Your visitor groups PDF audience card.
  *
- * `PDFYourVisitorGroupsTile` renders one row per audience metric.
+ * `PDFYourVisitorGroups` renders one row per audience metric.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *

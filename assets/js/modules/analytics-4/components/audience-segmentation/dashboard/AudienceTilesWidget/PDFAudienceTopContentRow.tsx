@@ -33,16 +33,20 @@ import { __ } from '@wordpress/i18n';
 import { PDFAudienceMetricIconTopContent } from '@/js/components/pdf-export/pdf-icons';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import PDFLink from '@/js/components/pdf-export/shared-react-pdf-components/PDFLink';
-import PDFPartialDataBadge from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
+import PDFPartialDataBadge, {
+	PDF_PARTIAL_DATA_BADGE_HEIGHT,
+} from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { numFmt } from '@/js/util';
 import type { AudienceTileTopContent } from './buildPDFAudienceCard';
 import PDFAudienceCardSection from './PDFAudienceCardSection';
 import { audienceCardStyles } from './pdfAudienceCardStyles';
 import PDFAudienceTileNoData from './PDFAudienceTileNoData';
+import { getTruncationHyphenationCallback } from './pdfTextTruncation';
 
 const styles = createPDFStyles( {
 	titleRow: {
+		minHeight: PDF_PARTIAL_DATA_BADGE_HEIGHT,
 		marginBottom: 10,
 	},
 	contentRow: {
@@ -55,8 +59,7 @@ const styles = createPDFStyles( {
 		flex: 1,
 		marginRight: 30,
 	},
-	// A long title truncates to one line with an ellipsis. `@react-pdf`
-	// wraps text by default, so `maxLines` caps it at one line.
+	// `@react-pdf` wraps text by default, so `maxLines` keeps it to one line.
 	contentTitleText: {
 		maxLines: 1,
 		textOverflow: 'ellipsis',
@@ -80,21 +83,21 @@ const PDFAudienceTopContentRow: FC< PDFAudienceTopContentRowProps > = ( {
 				<View
 					style={ [ audienceCardStyles.badgeRow, styles.titleRow ] }
 				>
-					<PDFTypography
-						size="medium"
-						style={ audienceCardStyles.sectionTitle }
-					>
-						{ __( 'Top content by pageviews', 'google-site-kit' ) }
-					</PDFTypography>
+					<View style={ audienceCardStyles.badgeRowTitle }>
+						<PDFTypography
+							size="medium"
+							style={ audienceCardStyles.sectionTitle }
+						>
+							{ __(
+								'Top content by pageviews',
+								'google-site-kit'
+							) }
+						</PDFTypography>
+					</View>
 					{ isTopContentPartialData && <PDFPartialDataBadge /> }
 				</View>
-				{ /* If no content exists, show a "no data" message. */ }
 				{ ! topContent.length && <PDFAudienceTileNoData /> }
-				{ /*
-				 * The page title links to its Analytics report, like the
-				 * dashboard tile. When the page has no link, `PDFLink`
-				 * renders the title as plain text instead of as a link.
-				 */ }
+				{ /* Links to the Analytics report; `PDFLink` falls back to plain text. */ }
 				{ topContent.map( ( content, index ) => (
 					<View
 						key={ `${ content.title }-${ index }` }
@@ -105,6 +108,9 @@ const PDFAudienceTopContentRow: FC< PDFAudienceTopContentRowProps > = ( {
 								href={ content.serviceURL }
 								size="small"
 								style={ styles.contentTitleText }
+								hyphenationCallback={ getTruncationHyphenationCallback(
+									content.title
+								) }
 							>
 								{ content.title }
 							</PDFLink>

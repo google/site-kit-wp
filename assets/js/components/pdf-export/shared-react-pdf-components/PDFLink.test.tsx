@@ -48,7 +48,7 @@ function renderLink(
 }
 
 describe( 'PDFLink', () => {
-	it( 'links to the href with no underline', () => {
+	it( 'should link to the href with no underline', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
 			children: 'View dashboard',
@@ -62,7 +62,7 @@ describe( 'PDFLink', () => {
 		expect( tree.props.style ).not.toHaveProperty( 'flexGrow' );
 	} );
 
-	it( 'uses the link color when no style sets a color', () => {
+	it( 'should use the link color when no style sets a color', () => {
 		const linkJSON = JSON.stringify(
 			renderLink( {
 				href: 'https://example.com/dashboard',
@@ -74,7 +74,7 @@ describe( 'PDFLink', () => {
 		expect( linkJSON ).toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'renders the trailing icon after the link text', () => {
+	it( 'should render the trailing icon after the link text', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
 			trailingIcon: (
@@ -90,7 +90,7 @@ describe( 'PDFLink', () => {
 		expect( JSON.stringify( tree ) ).toContain( 'M1 2 3 4' );
 	} );
 
-	it( 'renders only the link text when no icon is passed', () => {
+	it( 'should render only the link text when no icon is passed', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
 			children: 'View dashboard',
@@ -99,7 +99,7 @@ describe( 'PDFLink', () => {
 		expect( tree.children ).toHaveLength( 1 );
 	} );
 
-	it( 'uses the color from the style prop', () => {
+	it( 'should use the color from the style prop', () => {
 		const linkJSON = JSON.stringify(
 			renderLink( {
 				href: 'https://example.com/dashboard',
@@ -111,7 +111,7 @@ describe( 'PDFLink', () => {
 		expect( linkJSON ).toContain( '#6c726e' );
 	} );
 
-	it( 'renders plain text in the default color when the href is an empty string', () => {
+	it( 'should render plain text in the default color when the href is an empty string', () => {
 		// An empty `href` is means a row with no link, so the text
 		// should render as plain text instead of as a link.
 		const tree = renderLink( { href: '', children: 'View dashboard' } );
@@ -123,7 +123,7 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'renders plain text in the default color when the href is undefined', () => {
+	it( 'should render plain text in the default color when the href is undefined', () => {
 		// An undefined/missing `href` should renders plain text,
 		// the same as an empty string above.
 		const tree = renderLink( {
@@ -138,7 +138,7 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'renders plain text in the default color when the href is null', () => {
+	it( 'should render plain text in the default color when the href is null', () => {
 		const tree = renderLink( { href: null, children: 'View dashboard' } );
 
 		expect( tree.type ).toBe( 'pdf-text' );
@@ -148,7 +148,7 @@ describe( 'PDFLink', () => {
 		expect( treeJSON ).not.toContain( PDF_COLORS.CONTENT_SECONDARY );
 	} );
 
-	it( 'truncates the linked text to one line when truncateContent is set', () => {
+	it( 'should truncate the linked text to one line when truncateContent is set', () => {
 		const tree = renderLink( {
 			href: 'https://example.com/dashboard',
 			truncateContent: true,
@@ -171,7 +171,7 @@ describe( 'PDFLink', () => {
 		);
 	} );
 
-	it( 'truncates the plain text to one line when truncateContent is set and href is empty', () => {
+	it( 'should truncate the plain text to one line when truncateContent is set and href is empty', () => {
 		const json = JSON.stringify(
 			renderLink( {
 				href: '',
@@ -184,7 +184,7 @@ describe( 'PDFLink', () => {
 		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 	} );
 
-	it( 'omits the trailing icon when the href is empty', () => {
+	it( 'should omit the trailing icon when the href is empty', () => {
 		const tree = renderLink( {
 			href: '',
 			trailingIcon: (
@@ -196,5 +196,28 @@ describe( 'PDFLink', () => {
 		} );
 
 		expect( JSON.stringify( tree ) ).not.toContain( 'M1 2 3 4' );
+	} );
+
+	it( 'should pass the hyphenation callback to the text of a link and of plain text', () => {
+		function hyphenationCallback( word: string ) {
+			return [ word ];
+		}
+
+		const linkTree = renderLink( {
+			href: 'https://example.com/dashboard',
+			hyphenationCallback,
+			children: 'View dashboard',
+		} );
+		const [ linkText ] =
+			linkTree.children as TestRenderer.ReactTestRendererJSON[];
+
+		expect( linkText.props.hyphenationCallback ).toBe(
+			hyphenationCallback
+		);
+
+		expect(
+			renderLink( { href: '', hyphenationCallback, children: 'Home' } )
+				.props.hyphenationCallback
+		).toBe( hyphenationCallback );
 	} );
 } );

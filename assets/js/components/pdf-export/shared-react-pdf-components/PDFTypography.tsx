@@ -57,7 +57,7 @@ export interface PDFTypographyProps {
 	maxLines?: number;
 	/** Ends the text in an ellipsis when it's too long, and limits it to one line unless `maxLines` sets another limit. */
 	truncateContent?: boolean;
-	/** Splits each word into the parts the text may wrap between, in place of the font-wide callback. */
+	/** Callback that splits each word into the parts a line can break between. */
 	hyphenationCallback?: ComponentProps<
 		typeof Text
 	>[ 'hyphenationCallback' ];

@@ -1,6 +1,5 @@
 /**
- * Section of an audience card in the Your visitor groups PDF widget: an icon
- * beside the section's content, with a divider below.
+ * Section of an audience card in the Your visitor groups PDF widget.
  *
  * Site Kit by Google, Copyright 2026 Google LLC
  *
@@ -45,14 +44,19 @@ const PDFAudienceCardSection: FC< PDFAudienceCardSectionProps > = ( {
 		<View
 			style={
 				isLast
-					? [ audienceCardStyles.row, audienceCardStyles.lastRow ]
-					: audienceCardStyles.row
+					? [
+							audienceCardStyles.section,
+							audienceCardStyles.lastSection,
+					  ]
+					: audienceCardStyles.section
 			}
 		>
-			<View style={ audienceCardStyles.iconColumn }>
-				<Icon />
+			<View style={ audienceCardStyles.sectionContent }>
+				<View style={ audienceCardStyles.iconColumn }>
+					<Icon />
+				</View>
+				{ children }
 			</View>
-			{ children }
 		</View>
 	);
 };

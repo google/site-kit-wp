@@ -94,7 +94,7 @@ function countCards( json: string ) {
 }
 
 describe( 'AudienceTilesWidget PDF', () => {
-	it( 'renders the heading and two cards for two audiences', () => {
+	it( 'should render the heading and two cards for two audiences', () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -111,7 +111,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( countCards( json ) ).toBe( 2 );
 	} );
 
-	it( 'renders three cards for three audiences', () => {
+	it( 'should render three cards for three audiences', () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -125,7 +125,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( countCards( JSON.stringify( tree ) ) ).toBe( 3 );
 	} );
 
-	it( "gives each card its own audience's partial-data flags", () => {
+	it( "should give each card its own audience's partial-data flags", () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -142,7 +142,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( json.split( 'Partial data' ).length - 1 ).toBe( 1 );
 	} );
 
-	it( 'renders the four metric rows in order, with the pageviews share label', () => {
+	it( 'should render the four metric rows in order, with the pageviews share label', () => {
 		const json = JSON.stringify(
 			renderWidget( {
 				data: {
@@ -166,7 +166,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		);
 	} );
 
-	it( 'lays the cards out a section at a time, so each section lines up across the cards', () => {
+	it( 'should render one row per card section, with a cell per card', () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -202,15 +202,15 @@ describe( 'AudienceTilesWidget PDF', () => {
 		} );
 	} );
 
-	it( 'renders nothing for an empty audiences array', () => {
+	it( 'should render nothing for an empty audiences array', () => {
 		expect( renderWidget( { data: { audiences: [] } } ) ).toBeNull();
 	} );
 
-	it( 'renders nothing when data is null', () => {
+	it( 'should render nothing when data is null', () => {
 		expect( renderWidget( { data: null } ) ).toBeNull();
 	} );
 
-	it( 'renders nothing when data is undefined', () => {
+	it( 'should render nothing when data is undefined', () => {
 		expect( renderWidget( {} ) ).toBeNull();
 	} );
 } );

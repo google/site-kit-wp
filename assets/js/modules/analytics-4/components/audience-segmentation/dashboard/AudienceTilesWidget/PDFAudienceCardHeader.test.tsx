@@ -17,16 +17,49 @@
  */
 
 /**
+ * External dependencies
+ */
+import TestRenderer from 'react-test-renderer';
+
+/**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
+import { PDF_PARTIAL_DATA_BADGE_HEIGHT } from '@/js/components/pdf-export/shared-react-pdf-components/PDFPartialDataBadge';
 import {
+	flattenPDFStyle,
 	renderJSON,
 	renderPDFStyle,
 } from '@/js/components/pdf-export/test-utils';
 import PDFAudienceCardHeader from './PDFAudienceCardHeader';
 
+/**
+ * Renders the header and returns its title row.
+ *
+ * @since n.e.x.t
+ *
+ * @param audienceName          The audience name.
+ * @param isAudiencePartialData Whether to show the Partial data badge.
+ * @return The row holding the audience name and the badge.
+ */
+function renderTitleRow(
+	audienceName: string,
+	isAudiencePartialData: boolean
+) {
+	const tree = TestRenderer.create(
+		<PDFAudienceCardHeader
+			audienceName={ audienceName }
+			isAudiencePartialData={ isAudiencePartialData }
+		/>
+	).toJSON() as TestRenderer.ReactTestRendererJSON;
+
+	const [ titleRow ] = tree.children as TestRenderer.ReactTestRendererJSON[];
+
+	return titleRow;
+}
+
 describe( 'PDFAudienceCardHeader', () => {
-	it( 'renders the audience name', () => {
+	it( 'should render the audience name', () => {
 		expect(
 			renderJSON(
 				<PDFAudienceCardHeader
@@ -37,7 +70,7 @@ describe( 'PDFAudienceCardHeader', () => {
 		).toContain( 'New visitors' );
 	} );
 
-	it( 'shows the Partial data badge only when the audience is in a partial data state', () => {
+	it( 'should show the Partial data badge only when the audience is in a partial data state', () => {
 		expect(
 			renderJSON(
 				<PDFAudienceCardHeader
@@ -57,7 +90,7 @@ describe( 'PDFAudienceCardHeader', () => {
 		).not.toContain( 'Partial data' );
 	} );
 
-	it( 'fills its cell, so its divider lines up with the other cards', () => {
+	it( 'should fill its grid cell', () => {
 		expect(
 			renderPDFStyle(
 				<PDFAudienceCardHeader
@@ -66,5 +99,37 @@ describe( 'PDFAudienceCardHeader', () => {
 				/>
 			)
 		).toMatchObject( { flexGrow: 1 } );
+	} );
+
+	it( 'should wrap a long name in the width the badge leaves, with a gap before the badge', () => {
+		const titleRow = renderTitleRow(
+			'Visitors who completed a purchase in the last thirty days',
+			true
+		);
+		const [ name, badge ] =
+			titleRow.children as TestRenderer.ReactTestRendererJSON[];
+
+		expect( flattenPDFStyle( titleRow.props.style ) ).toMatchObject( {
+			columnGap: scalePDFValue( 10 ),
+		} );
+		expect( flattenPDFStyle( name.props.style ) ).toMatchObject( {
+			flex: 1,
+		} );
+		expect( JSON.stringify( badge ) ).toContain( 'Partial data' );
+	} );
+
+	it( 'should reserve the Partial data badge height on the title row with or without a badge', () => {
+		const minHeight = scalePDFValue( PDF_PARTIAL_DATA_BADGE_HEIGHT );
+
+		for ( const isAudiencePartialData of [ true, false ] ) {
+			const titleRow = renderTitleRow(
+				'New visitors',
+				isAudiencePartialData
+			);
+
+			expect( flattenPDFStyle( titleRow.props.style ) ).toMatchObject( {
+				minHeight,
+			} );
+		}
 	} );
 } );

@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import { scalePDFValue } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import { renderJSON } from '@/js/components/pdf-export/test-utils';
 import PDFPartialDataBadge from './PDFPartialDataBadge';
@@ -30,5 +31,11 @@ describe( 'PDFPartialDataBadge', () => {
 		expect( badgeJSON ).toContain( 'Partial data' );
 		expect( badgeJSON ).toContain( PDF_COLORS.UTILITY_WARNING_CONTAINER );
 		expect( badgeJSON ).toContain( PDF_COLORS.YELLOW_Y_700 );
+	} );
+
+	it( 'should render at a fixed height', () => {
+		expect( renderJSON( <PDFPartialDataBadge /> ) ).toContain(
+			`"height":${ scalePDFValue( 28 ) }`
+		);
 	} );
 } );

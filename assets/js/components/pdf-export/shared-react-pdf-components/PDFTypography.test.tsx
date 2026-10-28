@@ -130,7 +130,7 @@ describe( 'PDFTypography', () => {
 		} );
 	} );
 
-	it( 'passes the hyphenation callback to the Text', () => {
+	it( 'should pass the hyphenation callback to the Text', () => {
 		function hyphenationCallback( word: string ) {
 			return [ word ];
 		}

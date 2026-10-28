@@ -52,26 +52,20 @@ const styles = createPDFStyles( {
 	heading: {
 		marginBottom: 15,
 	},
-	// The cards are laid out a section at a time: each section is a row with
-	// one cell per card. A row stretches every cell to its tallest one, so each
-	// section lines up across the cards whatever its content.
+	// One row per card section, sized to its tallest cell; the card
+	// surfaces sit in a layer behind.
 	grid: {
 		position: 'relative',
 	},
-	// Each section row and the card layer split into the same columns, so every
-	// section sits inside its card.
 	columns: {
 		flexDirection: 'row',
 		columnGap: 24,
 	},
-	// Equal-width columns: every column grows and shrinks from a zero basis.
 	column: {
 		flexGrow: 1,
 		flexShrink: 1,
 		flexBasis: 0,
 	},
-	// The card surfaces are one layer behind the sections, so each card draws
-	// as a single surface.
 	cardLayer: {
 		position: 'absolute',
 		top: 0,
@@ -79,8 +73,6 @@ const styles = createPDFStyles( {
 		bottom: 0,
 		left: 0,
 	},
-	// The dashboard tile gives the card no padding, so each section sets its
-	// own inset.
 	card: {
 		paddingVertical: 0,
 		paddingHorizontal: 0,

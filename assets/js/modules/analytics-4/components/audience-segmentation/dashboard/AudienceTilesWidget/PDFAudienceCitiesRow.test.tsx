@@ -45,7 +45,7 @@ function getCityNameHyphenationCallback( name: string ) {
 }
 
 describe( 'PDFAudienceCitiesRow', () => {
-	it( 'renders each top city with its name and percentage', () => {
+	it( 'should render each top city with its name and percentage', () => {
 		const json = renderJSON(
 			<PDFAudienceCitiesRow
 				topCities={ [
@@ -63,13 +63,13 @@ describe( 'PDFAudienceCitiesRow', () => {
 		expect( json ).toContain( 'New York' );
 	} );
 
-	it( 'shows a no data message when there are no top cities', () => {
+	it( 'should show a no data message when there are no top cities', () => {
 		expect(
 			renderJSON( <PDFAudienceCitiesRow topCities={ [] } /> )
 		).toContain( 'No data to show yet' );
 	} );
 
-	it( 'truncates a long city name to one line with an ellipsis', () => {
+	it( 'should truncate a long city name to one line with an ellipsis', () => {
 		const json = renderJSON(
 			<PDFAudienceCitiesRow
 				topCities={ [
@@ -88,7 +88,7 @@ describe( 'PDFAudienceCitiesRow', () => {
 		expect( json ).toContain( '"textOverflow":"ellipsis"' );
 	} );
 
-	it( 'lets a city name with no space wrap between any two characters', () => {
+	it( 'should let a city name with no space wrap between any two characters', () => {
 		const hyphenationCallback =
 			getCityNameHyphenationCallback( 'Vacoas-Phoenix' );
 
@@ -104,7 +104,7 @@ describe( 'PDFAudienceCitiesRow', () => {
 		] );
 	} );
 
-	it( 'keeps a city name with a space wrapping only at its spaces', () => {
+	it( 'should keep a city name with a space wrapping only at its spaces', () => {
 		expect(
 			getCityNameHyphenationCallback( 'Beau Bassin-Rose Hill' )
 		).toBeUndefined();
