@@ -19,23 +19,27 @@
 /**
  * External dependencies
  */
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 /**
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
+import useQueryArg from '@/js/hooks/useQueryArg';
 import {
+	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import useCTAID from './useCTAID';
 
 /**
  * Records the user's progress through an express setup in their
  * `lastActionedExpressSetups` user setting.
  *
  * Saves the current time against the setup's entry each time a step begins,
- * and removes the entry once the setup complete step begins. The save is not
+ * and removes the entry once the setup complete step begins. When the setup
+ * has a `ctaID`, the same save records it in `completedExpressSetups`. The save is not
  * awaited, so the step works the same whether it succeeds or fails.
  *
  * @since n.e.x.t
@@ -52,6 +56,18 @@ export default function useRecordExpressSetupProgress(
 		MODULES_READER_REVENUE_MANAGER
 	);
 
+	const [ cta ] = useQueryArg< string >( 'cta' );
+	const [ ctaID ] = useCTAID();
+
+	// Read through a ref so a `ctaID` set mid-setup doesn't count as a step
+	// beginning.
+	const ctaIDRef = useRef( ctaID );
+	ctaIDRef.current = ctaID;
+
+	const isSupportedCTA =
+		cta === ctaType &&
+		( Object.values( EXPRESS_SETUP_CTAS ) as string[] ).includes( cta );
+
 	useEffect( () => {
 		if ( stepSlug === undefined ) {
 			return;
@@ -61,14 +77,20 @@ export default function useRecordExpressSetupProgress(
 
 		// The reference date only holds the date, while this records the
 		// actual time the user was last active in the setup.
-		const value =
-			stepSlug === EXPRESS_SETUP_STEPS.SETUP_COMPLETE
-				? null
-				: Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
+		const now = Math.floor( Date.now() / 1000 ); // eslint-disable-line sitekit/no-direct-date
+		const isComplete = stepSlug === EXPRESS_SETUP_STEPS.SETUP_COMPLETE;
+		const completedKey = ctaIDRef.current
+			? `${ ctaType }:${ ctaIDRef.current }`
+			: undefined;
 
 		async function storeProgress() {
 			const { error } = await saveUserSettings( {
-				lastActionedExpressSetups: { [ key ]: value },
+				lastActionedExpressSetups: { [ key ]: isComplete ? null : now },
+				...( isComplete &&
+					isSupportedCTA &&
+					completedKey && {
+						completedExpressSetups: { [ completedKey ]: now },
+					} ),
 			} );
 
 			if ( error ) {
@@ -78,5 +100,11 @@ export default function useRecordExpressSetupProgress(
 		}
 
 		storeProgress();
-	}, [ ctaType, stepSlug, saveUserSettings, clearActionErrors ] );
+	}, [
+		ctaType,
+		stepSlug,
+		isSupportedCTA,
+		saveUserSettings,
+		clearActionErrors,
+	] );
 }

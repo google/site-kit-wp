@@ -51,6 +51,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 	 * Gets the user settings formatted for a REST response.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Returns `completedExpressSetups` as an object.
 	 *
 	 * @return array Reader Revenue Manager user settings.
 	 */
@@ -58,6 +59,7 @@ abstract class User_Settings_Datapoint extends Datapoint implements Executable_D
 		$user_settings = $this->user_settings->get();
 
 		$user_settings['lastActionedExpressSetups'] = (object) $user_settings['lastActionedExpressSetups'];
+		$user_settings['completedExpressSetups']    = (object) $user_settings['completedExpressSetups'];
 
 		return $user_settings;
 	}

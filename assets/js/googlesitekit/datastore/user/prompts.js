@@ -209,6 +209,27 @@ const baseSelectors = {
 	),
 
 	/**
+	 * Determines whether the prompt is dismissed permanently, that is, with an expiry of 0.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Prompt slug.
+	 * @return {(boolean|undefined)} TRUE if dismissed permanently, otherwise FALSE, `undefined` if not resolved yet.
+	 */
+	isPromptDismissedPermanently: createRegistrySelector(
+		( select ) => ( state, slug ) => {
+			const isDismissed = select( CORE_USER ).isPromptDismissed( slug );
+
+			if ( ! isDismissed ) {
+				return isDismissed;
+			}
+
+			return state.dismissedPrompts[ slug ]?.expires === 0;
+		}
+	),
+
+	/**
 	 * Checks whether or not the prompt is being dismissed for the given slug.
 	 *
 	 * @since 1.121.0

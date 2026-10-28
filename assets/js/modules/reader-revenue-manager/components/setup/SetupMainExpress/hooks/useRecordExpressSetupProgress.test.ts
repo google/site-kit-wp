@@ -25,15 +25,20 @@ import {
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
+	actHook as act,
 	createTestRegistry,
 	renderHook,
 	waitFor,
 	waitForDefaultTimeouts,
 } from '@tests/js/test-utils';
+import useCTAID from './useCTAID';
 import useRecordExpressSetupProgress from './useRecordExpressSetupProgress';
 
 describe( 'useRecordExpressSetupProgress', () => {
+	mockLocation();
+
 	const userSettingsEndpoint = new RegExp(
 		'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
 	);
@@ -161,6 +166,125 @@ describe( 'useRecordExpressSetupProgress', () => {
 					},
 				},
 			},
+		} );
+	} );
+
+	describe( 'completedExpressSetups', () => {
+		const CTA_ID = 'a1b2c3';
+
+		beforeEach( () => {
+			global.location.href = `http://example.com/?cta=${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }&ctaID=${ CTA_ID }`;
+		} );
+
+		it( 'should save the completed entry in the same request that removes the last actioned entry', () => {
+			renderHook(
+				() =>
+					useRecordExpressSetupProgress(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+						EXPRESS_SETUP_STEPS.SETUP_COMPLETE
+					),
+				{ registry }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, userSettingsEndpoint );
+			expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+				body: {
+					data: {
+						lastActionedExpressSetups: { [ ENTRY_KEY ]: null },
+						completedExpressSetups: {
+							[ `${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }:${ CTA_ID }` ]:
+								NOW_IN_SECONDS,
+						},
+					},
+				},
+			} );
+		} );
+
+		it( 'should not save a completed entry on steps before setup complete', () => {
+			renderHook(
+				() =>
+					useRecordExpressSetupProgress(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+						EXPRESS_SETUP_STEPS.TERMS_OF_SERVICE
+					),
+				{ registry }
+			);
+
+			expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+				body: {
+					data: {
+						lastActionedExpressSetups: {
+							[ ENTRY_KEY ]: NOW_IN_SECONDS,
+						},
+					},
+				},
+			} );
+		} );
+
+		it( 'should not save a completed entry when there is no ctaID', () => {
+			global.location.href = `http://example.com/?cta=${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }`;
+
+			renderHook(
+				() =>
+					useRecordExpressSetupProgress(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+						EXPRESS_SETUP_STEPS.SETUP_COMPLETE
+					),
+				{ registry }
+			);
+
+			expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+				body: {
+					data: {
+						lastActionedExpressSetups: { [ ENTRY_KEY ]: null },
+					},
+				},
+			} );
+		} );
+
+		it( 'should not save a completed entry when the cta is not supported', () => {
+			global.location.href = `http://example.com/?cta=unsupported&ctaID=${ CTA_ID }`;
+
+			renderHook(
+				() =>
+					useRecordExpressSetupProgress(
+						'unsupported',
+						EXPRESS_SETUP_STEPS.SETUP_COMPLETE
+					),
+				{ registry }
+			);
+
+			expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
+				body: {
+					data: {
+						lastActionedExpressSetups: { 'unsupported:new': null },
+					},
+				},
+			} );
+		} );
+
+		it( 'should not save again when the ctaID is set while on an earlier step', async () => {
+			global.location.href = `http://example.com/?cta=${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }`;
+
+			const { result } = renderHook(
+				() => ( {
+					ctaIDState: useCTAID(),
+					progress: useRecordExpressSetupProgress(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+						EXPRESS_SETUP_STEPS.NEWSLETTER_SIGNUP_FORM
+					),
+				} ),
+				{ registry }
+			);
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, userSettingsEndpoint );
+
+			act( () => {
+				result.current.ctaIDState[ 1 ]( CTA_ID );
+			} );
+			await waitForDefaultTimeouts();
+
+			expect( fetchMock ).toHaveFetchedTimes( 1, userSettingsEndpoint );
 		} );
 	} );
 
