@@ -152,24 +152,20 @@ export const actions = {
 	 * registered widget components.
 	 *
 	 * @since 1.25.0
-	 * @since n.e.x.t Added the `instanceID` parameter.
 	 * @private
 	 *
-	 * @param {string}      slug         Widget slug.
-	 * @param {WPComponent} Component    Component returned by the widget.
-	 * @param {Object}      [metadata]   Relevant metadata / props passed to
-	 *                                   the Component instance.
-	 * @param {number}      [instanceID] ID of the Component instance setting
-	 *                                   the widget state.
+	 * @param {string}      slug       Widget slug.
+	 * @param {WPComponent} Component  Component returned by the widget.
+	 * @param {Object}      [metadata] Relevant metadata / props passed to
+	 *                                 the Component instance.
 	 * @return {Object} Redux-style action.
 	 */
-	setWidgetState( slug, Component, metadata = {}, instanceID ) {
+	setWidgetState( slug, Component, metadata = {} ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
-				instanceID,
 			},
 			type: SET_WIDGET_STATE,
 		};
@@ -179,31 +175,26 @@ export const actions = {
 	 * Unsets widget state for a given widget.
 	 *
 	 * The widget state will only be unset if the current widget state matches
-	 * exactly the passed parameters. The instance ID is only matched when
-	 * provided.
+	 * exactly the passed parameters.
 	 *
 	 * Used internally by various components that can be returned by
 	 * registered widget components.
 	 *
 	 * @since 1.25.0
-	 * @since n.e.x.t Added the `instanceID` parameter.
 	 * @private
 	 *
-	 * @param {string}      slug         Widget slug.
-	 * @param {WPComponent} Component    Component returned by the widget.
-	 * @param {Object}      [metadata]   Relevant metadata / props passed to
-	 *                                   the Component instance.
-	 * @param {number}      [instanceID] ID of the Component instance unsetting
-	 *                                   the widget state.
+	 * @param {string}      slug       Widget slug.
+	 * @param {WPComponent} Component  Component returned by the widget.
+	 * @param {Object}      [metadata] Relevant metadata / props passed to
+	 *                                 the Component instance.
 	 * @return {Object} Redux-style action.
 	 */
-	unsetWidgetState( slug, Component, metadata = {}, instanceID ) {
+	unsetWidgetState( slug, Component, metadata = {} ) {
 		return {
 			payload: {
 				slug,
 				Component,
 				metadata,
-				instanceID,
 			},
 			type: UNSET_WIDGET_STATE,
 		};
@@ -246,21 +237,18 @@ export const reducer = createReducer( ( state, { type, payload } ) => {
 		}
 
 		case SET_WIDGET_STATE: {
-			const { slug, Component, metadata, instanceID } = payload;
+			const { slug, Component, metadata } = payload;
 
-			state.widgetStates[ slug ] = { Component, metadata, instanceID };
+			state.widgetStates[ slug ] = { Component, metadata };
 			return state;
 		}
 
 		case UNSET_WIDGET_STATE: {
-			const { slug, Component, metadata, instanceID } = payload;
+			const { slug, Component, metadata } = payload;
 
 			if (
 				state.widgetStates?.[ slug ]?.Component === Component &&
-				original( state.widgetStates?.[ slug ]?.metadata ) ===
-					metadata &&
-				( instanceID === undefined ||
-					state.widgetStates[ slug ].instanceID === instanceID )
+				original( state.widgetStates?.[ slug ]?.metadata ) === metadata
 			) {
 				delete state.widgetStates[ slug ];
 			}
@@ -414,14 +402,12 @@ export const selectors = {
 	 * widgets in special states.
 	 *
 	 * @since 1.25.0
-	 * @since n.e.x.t Added `instanceID` to the returned object.
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Widget slug.
-	 * @return {Object|null} Object with `Component`, `metadata` and
-	 *                       `instanceID` properties, if the widget has a
-	 *                       special state, or `null`.
+	 * @return {Object|null} Object with `Component` and `metadata` properties,
+	 *                       if the widget has a special state, or `null`.
 	 */
 	getWidgetState( state, slug ) {
 		return state.widgetStates[ slug ] || null;
@@ -434,7 +420,7 @@ export const selectors = {
 	 * @private
 	 *
 	 * @param {Object} state Data store's state.
-	 * @return {Object} Widget states, keyed by slug, with a value containing the component, metadata and instance ID.
+	 * @return {Object} Widget states, keyed by slug, with a value containing the component and metadata.
 	 */
 	getWidgetStates( state ) {
 		return state.widgetStates;

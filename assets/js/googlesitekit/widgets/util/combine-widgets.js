@@ -27,11 +27,7 @@ import { isEqual } from 'lodash';
 import { SPECIAL_WIDGET_STATES } from './constants';
 
 function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
-	return (
-		rowA === rowB &&
-		stateA?.Component === stateB?.Component &&
-		isEqual( stateA?.metadata, stateB?.metadata )
-	);
+	return rowA === rowB && isEqual( stateA, stateB );
 }
 
 /**
@@ -46,8 +42,8 @@ function stateAndRowMatch( stateA, stateB, rowA, rowB ) {
  * @param {Array.<Object>} widgets      List of widgets.
  * @param {Object}         widgetStates Map of widget slug and their
  *                                      state (either an object with
- *                                      `Component`, `metadata` and
- *                                      `instanceID`, or `null`).
+ *                                      `Component` and `metadata`, or
+ *                                      `null`).
  * @return {boolean} 			Whether all the widgets should be combined.
  */
 function shouldCombineAllWidgets( widgets, widgetStates ) {
@@ -91,8 +87,8 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
  * @param {Array.<Object>} widgets             List of widgets.
  * @param {Object}         widgetStates        Map of widget slug and their
  *                                             state (either an object with
- *                                             `Component`, `metadata` and
- *                                             `instanceID`, or `null`).
+ *                                             `Component` and `metadata`, or
+ *                                             `null`).
  * @param {Object}         layout              Layout arguments from
  *                                             	`getWidgetLayout()`.
  * @param {Array.<number>} layout.columnWidths List of column widths for each
@@ -101,8 +97,8 @@ function shouldCombineAllWidgets( widgets, widgetStates ) {
  *                                             widget.
  * @return {Object} Object with `overrideComponents` property, both of which are a
  * 					list with one item for each widget. Every `overrideComponents`
- * 					entry is either an object with `Component`, `metadata` and
- * 					`instanceID`, or `null` (similar to the `widgetStates` parameter).
+ * 					entry is either an object with `Component` and `metadata`, or
+ * 					`null` (similar to the `widgetStates` parameter).
  */
 export function combineWidgets(
 	widgets,

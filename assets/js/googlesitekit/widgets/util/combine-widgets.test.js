@@ -122,34 +122,6 @@ describe( 'combineWidgets', () => {
 		);
 	} );
 
-	it( 'should combine adjacent widgets of the same component and metadata set by different instances', () => {
-		const widgets = [
-			getQuarterWidget( 'test1' ),
-			getQuarterWidget( 'test2' ),
-			getHalfWidget( 'test3' ),
-		];
-		const widgetStates = {
-			test1: {
-				...getReportZeroState( MODULE_SLUG_SEARCH_CONSOLE ),
-				instanceID: 0,
-			},
-			test2: {
-				...getReportZeroState( MODULE_SLUG_SEARCH_CONSOLE ),
-				instanceID: 1,
-			},
-			test3: getRegularState(),
-		};
-		const expected = {
-			gridColumnWidths: [ 0, 6, 6 ],
-			overrideComponents: [ null, widgetStates.test2, null ],
-		};
-
-		const layout = getWidgetLayout( widgets, widgetStates );
-		expect( combineWidgets( widgets, widgetStates, layout ) ).toEqual(
-			expected
-		);
-	} );
-
 	// Every test case below corresponds to a matching story in `stories/widgets.stories.js` under
 	// "Global/Widgets/Widget Area/Special combination states".
 	it( 'does not combine adjacent widgets of different component and metadata', () => {

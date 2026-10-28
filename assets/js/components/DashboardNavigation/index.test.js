@@ -406,5 +406,25 @@ describe( 'Dashboard Navigation', () => {
 
 			expect( scrollToSpy ).not.toHaveBeenCalled();
 		} );
+
+		it( 'should update the URL hash on scroll when the initial hash does not match a section', async () => {
+			global.location.hash = 'foo';
+			setupDefaultChips( registry );
+
+			const { waitForRegistry } = render( <DashboardNavigation />, {
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+			} );
+			await waitForRegistry();
+
+			jest.useFakeTimers();
+
+			act( () => {
+				fireEvent.scroll( global );
+				jest.advanceTimersByTime( 150 );
+			} );
+
+			expect( global.location.hash ).toBe( '#traffic' );
+		} );
 	} );
 } );

@@ -19,7 +19,6 @@
 /**
  * WordPress dependencies
  */
-import { useInstanceId } from '@wordpress/compose';
 import { useEffect } from '@wordpress/element';
 
 /**
@@ -34,22 +33,11 @@ export default function useWidgetStateEffect(
 	metadata
 ) {
 	const { setWidgetState, unsetWidgetState } = useDispatch( CORE_WIDGETS );
-	// Pass the instance ID so the cleanup of an instance only unsets the
-	// widget state it set itself, and not a newer one set by another
-	// instance of the same widget (e.g. when `WidgetNull` remounts).
-	const instanceID = useInstanceId( useWidgetStateEffect );
 
 	useEffect( () => {
-		setWidgetState( widgetSlug, Component, metadata, instanceID );
+		setWidgetState( widgetSlug, Component, metadata );
 		return () => {
-			unsetWidgetState( widgetSlug, Component, metadata, instanceID );
+			unsetWidgetState( widgetSlug, Component, metadata );
 		};
-	}, [
-		widgetSlug,
-		Component,
-		metadata,
-		instanceID,
-		setWidgetState,
-		unsetWidgetState,
-	] );
+	}, [ widgetSlug, Component, metadata, setWidgetState, unsetWidgetState ] );
 }

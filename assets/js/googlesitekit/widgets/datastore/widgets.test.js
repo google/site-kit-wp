@@ -295,47 +295,6 @@ describe( 'core/widgets Widgets', () => {
 				);
 			} );
 		} );
-
-		describe( 'unsetWidgetState', () => {
-			const slug = 'TestWidget';
-			const metadata = {};
-
-			beforeEach( () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.setWidgetState( slug, Null, metadata, 1 );
-			} );
-
-			it( 'should unset the widget state set with the same instance ID', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.unsetWidgetState( slug, Null, metadata, 1 );
-
-				expect(
-					registry.select( CORE_WIDGETS ).getWidgetState( slug )
-				).toBeNull();
-			} );
-
-			it( 'should not unset the widget state set with a different instance ID', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.unsetWidgetState( slug, Null, metadata, 2 );
-
-				expect(
-					registry.select( CORE_WIDGETS ).getWidgetState( slug )
-				).toEqual( { Component: Null, metadata, instanceID: 1 } );
-			} );
-
-			it( 'should unset the widget state regardless of its instance ID when no instance ID is provided', () => {
-				registry
-					.dispatch( CORE_WIDGETS )
-					.unsetWidgetState( slug, Null, metadata );
-
-				expect(
-					registry.select( CORE_WIDGETS ).getWidgetState( slug )
-				).toBeNull();
-			} );
-		} );
 	} );
 
 	describe( 'selectors', () => {

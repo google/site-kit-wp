@@ -248,17 +248,16 @@ export default function Navigation() {
 	// if the visible sections change before it runs, so the jump uses the
 	// latest layout.
 	useEffect( () => {
-		if ( isInitialHashHandled.current || ! isValidChipID( initialHash ) ) {
-			// Return noop cleanup function to satisfy consistent-return rule.
-			return () => {};
-		}
+		let timeout;
 
-		const timeout = setTimeout( () => {
-			if ( ! isInitialHashHandled.current ) {
-				isInitialHashHandled.current = true;
-				jumpToChip( initialHash );
-			}
-		}, 50 );
+		if ( ! isInitialHashHandled.current && isValidChipID( initialHash ) ) {
+			timeout = setTimeout( () => {
+				if ( ! isInitialHashHandled.current ) {
+					isInitialHashHandled.current = true;
+					jumpToChip( initialHash );
+				}
+			}, 50 );
+		}
 
 		return () => clearTimeout( timeout );
 	}, [ initialHash, isValidChipID, jumpToChip ] );
