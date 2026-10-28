@@ -18,6 +18,9 @@ The brief you write is the spec that the `implement-issue` skill executes and th
 skill grades against. Write it so an engineer who has never read the design doc can implement
 the issue from the brief plus the codebase alone.
 
+The brief gives **technical direction, not step-by-step instructions**. Keep it short, but never
+so short that the scope of the work is hidden.
+
 ---
 
 ## Step 1 — Read the issue
@@ -118,28 +121,21 @@ numbers in one message — together with the issue and design doc you already ha
 
 ### Structure
 
-**Group by path.** Every group is headed by the path it changes; the changes hang off it as
-nested bullets. Two shapes are in use — pick one and stay consistent within an issue:
-
 ```
-* [ ] In `path/to/File.php`:
-  * <one change per bullet>
-  * <one change per bullet>
+<one or two sentences of context every checkbox shares, e.g. the action they all call>
+
+* [ ] <one change — it may cover several files>
+* [ ] <one change>
 ```
 
-```
-In `path/to/directory/` (new directory):
+- One checkbox per change, not per file: "Move `FeedbackMenu` and `ThumbsSurveyTrigger` to a new
+  `assets/js/components/feedback/` directory, with their tests and stories".
+- Give a path only where the reader needs it to find the place. Otherwise use the name
+  (`ThumbsFeedback`).
+- Order the checkboxes the way someone would work through them: shared/base changes, then new
+  classes, then registration, then build config, then components, with SCSS last.
 
-* [ ] <one change per bullet>
-* [ ] <one change per bullet>
-```
-
-A group can be headed by a file, a directory, or a path plus a parenthetical note —
-`(new file)`, `(new directory)`, ``(new file, combined into the store in `index.js`)``. Order
-the groups the way someone would work through them: shared/base changes, then new classes, then
-registration, then build config, then components, with SCSS last.
-
-Nest a third level when one bullet covers several related behaviors, ending the parent in a
+Nest a second level when one bullet covers several related behaviors, ending the parent in a
 colon:
 
 ```
@@ -150,6 +146,24 @@ colon:
 ```
 
 ### Content
+
+**Give direction, not steps.** Write only what an engineer who knows Site Kit could not work out
+from the code and the acceptance criteria: the decisions (where code lives, what to reuse or
+replace, new signatures and data shapes) and the places that are not obvious, such as a file the
+acceptance criteria imply but do not name. Leave out:
+
+- follow-on work after a move or rename — imports, usages, tests, stories, story titles;
+- a value the acceptance criteria define — point at the criterion instead;
+- names that no code outside this issue depends on — say what to add and where ("add constants
+  for the feedback namespaces and keys next to the existing vote ID constants in: …"), and let
+  the engineer name them.
+
+**Keep the scope visible.** When one checkbox covers many places, list them, so the reader can
+size the work. Cut the *how* at each place, never the *where*:
+
+- Too short: "Pass the namespace and group wherever `FeedbackPrompt` or `ThumbsFeedback` is used."
+- Right: "…is used: `FeatureRelevancyFeedback`, `OnlineStorePerformanceWidget`,
+  `LeadGenerationPerformanceWidget`, `PrimaryActionRow` and the Recent activity `InsightNotice`."
 
 **Write in plain, simple words — this matters more than anything else in this section.** The
 brief is read by people: the engineer who implements it, the reviewer who grades the PR against
@@ -175,6 +189,9 @@ first language. Every sentence must be clear on the first reading:
   "the usual guards", write out what is in it, inline. A set the reader has to guess at is the
   same as no set at all.
 
+Delete every bullet the engineer would do anyway, and check that every area the change touches
+is named.
+
 Read each bullet once more before you finish, and rewrite every sentence that needs a second
 reading. This applies to your reply to the user (Step 7) as much as to the issue text.
 
@@ -185,14 +202,15 @@ search for something the codebase has already decided.
 **Name the real thing.** Wherever a symbol already exists, name it exactly:
 
 - classes, methods, hooks, filters, constants, script handles, datapoint names (`GET:ctas`);
-- datastore selectors and actions with their signature
-  (`getCTAs( { organizationID, publicationID } )`), and the form/store constants they use;
+- datastore selectors and actions (`getCTAs()`), and the form/store constants they use;
 - components to reuse (`SpinnerButton`, `ProgressBar`, `Notice`), their props (`helperText`),
   and CSS class names (`mdc-text-field--error`);
 - inline-data globals and keys (`wpPrivacyURL` on `_googlesitekitBaseData`).
 
-**Spell out every name you invent.** A brief names things that do not exist yet: constants, config
-keys, event params, methods, variables, types. Write each of them in full words — no abbreviations,
+Give a signature only when the brief adds or changes it.
+
+**Spell out every name you invent.** Name a new thing only when other code depends on the name
+(see *Give direction, not steps*). Write each name you give in full words — no abbreviations,
 no truncations, no initials. `readThresholdPct` and `readMinSeconds` each cost the reader a guess:
 what does `Pct` stand for, and is `Min` "minutes" or "minimum"? `readTimeThresholdPercent` and
 `minimumReadTimeSeconds` cost nothing and can only be read one way. The short forms that stay are
@@ -277,13 +295,16 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
   * <case>
 
 * JS tests in `<file>.test.ts` covering the `<name>` action and the `<name>` selector.
+
+* Update the tests for each component changed above, so that they check <behavior>.
 ```
 
 - One bullet per test file or area, with the cases nested under it. Name the test file when it
   exists or its name follows from the source: co-located next to the source — `*.test.ts` /
   `*.test.tsx` for every new test file, `*.test.js` only when you are adding cases to a JavaScript
   test file that already exists — and `*Test.php` under the mirroring path in
-  `tests/phpunit/integration/`.
+  `tests/phpunit/integration/`. When the same check applies to every file, write one bullet for
+  all of them.
 - Phrase each case as the behavior or outcome, not the mechanics — "the privacy policy field
   falls back to the WordPress privacy policy URL when the publication value is missing", not
   "mock the store and assert the input value".
@@ -294,7 +315,7 @@ Keep it short — a handful of bullets, not a test plan. Two shapes, both in use
 - **VRT belongs here too, not in a section of its own.** Say what the change does to the VRT
   scenarios and the reference images — a new scenario for a new story, new reference images for
   a component whose rendering changes. "No VRT changes expected" is a complete answer when nothing
-  the VRT job renders can move.
+  the VRT job renders can move. Do not give screenshot paths.
 - **Say so when nothing is needed, and say why.** Never leave Test Coverage empty, and never drop
   the Storybook or VRT line in silence. When the change needs no tests or no story, write one
   bullet that says so with the reason — "No tests required because the change only edits
@@ -330,12 +351,14 @@ reply to the user — not in the issue:
 
 - **Write only the two sections.** Leave Feature Description, Acceptance criteria, QA Brief and
   Changelog entry untouched.
+- **Direction, not steps.** Leave out what the engineer would do anyway; name every area the
+  change touches — see Step 5.
 - **Plain, simple words.** No idioms, no metaphors, no unexplained jargon, no half sentences.
   Name who does what to what, and list the members of every set you name — see Step 5.
 - **New frontend files are TypeScript.** `.ts` / `.tsx` sources, `.test.ts` / `.test.tsx` tests,
   and a build-config change whenever the bundle cannot compile them yet.
-- **Names are full words.** Every constant, key, param, method and type the brief invents is
-  spelled out — no `Pct`, no `Min`, no initials — see Step 5.
+- **Names are full words.** Name a new thing only when other code depends on it, in full words
+  — no `Pct`, no `Min`, no initials — see Step 5.
 - **Don't publish.** Do not edit the GitHub issue or post a comment unless the user explicitly
   asks. Produce the text — or update the local issue file you were given — and let them place it.
 - **Don't expand scope.** If a change looks necessary but no acceptance criterion covers it,
