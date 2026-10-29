@@ -53,6 +53,7 @@ import {
 	BreakdownScope,
 	GoalType,
 } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { useShouldShowConversionTrackingDisabledNotice } from '@/js/modules/analytics-4/components/site-goals/hooks/useShouldShowConversionTrackingDisabledNotice';
 import BreakdownErrorNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownErrorNotice';
 import BreakdownNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownNotice';
 import BreakdownSuccessNotice from '@/js/modules/analytics-4/components/site-goals/notifications/BreakdownSuccessNotice';
@@ -115,8 +116,8 @@ interface BreakdownDimensionStateArgs {
 interface BreakdownDimensionState {
 	/**
 	 * Whether the breakdown is enabled: its dimensions exist and plugin
-	 * conversion tracking is on, the same condition the widgets use to show
-	 * the breakdown.
+	 * conversion tracking is on. The widgets show the tabs on the dimensions
+	 * alone, so they keep them when conversion tracking is switched off later.
 	 */
 	hasBreakdownDimensions: boolean | undefined;
 	/**
@@ -241,7 +242,7 @@ function resolveBreakdownNoticeState(
 
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
-	canManageOptions: boolean | undefined;
+	shouldShowConversionTrackingDisabledNotice: boolean | undefined;
 	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
@@ -257,6 +258,7 @@ interface ComputeNoticeStateArgs {
  * Resolves the notice state, gating on the view-only and still-resolving cases.
  *
  * @since 1.182.0
+ * @since n.e.x.t Returned `null` while the conversion tracking disabled notice shows.
  *
  * @param {Object} args Resolver arguments, see `ComputeNoticeStateArgs`.
  * @return {?string} The resolved notice state, or `null` while gated or when no notice applies.
@@ -266,13 +268,21 @@ function computeNoticeState(
 ): BreakdownNoticeState {
 	const {
 		isViewOnly,
-		canManageOptions,
+		shouldShowConversionTrackingDisabledNotice,
 		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
 		isNoticeDismissed,
 		...rest
 	} = args;
+
+	// `ConversionTrackingDisabledNotice` covers the case where conversion
+	// tracking was switched off after the breakdown was in use, so no
+	// breakdown notice competes with it, in the widgets or the Side Panel.
+	// Waiting while it loads avoids a flash of "Get breakdown" first.
+	if ( shouldShowConversionTrackingDisabledNotice !== false ) {
+		return null;
+	}
 
 	// Avoid a flash while any of the gating selectors are still resolving.
 	if (
@@ -285,9 +295,8 @@ function computeNoticeState(
 	}
 
 	// The description says whether the CTA also switches conversion tracking on,
-	// so waiting avoids showing the wrong wording first. Only someone allowed to
-	// read the setting ever gets a value, so nobody else is held back.
-	if ( canManageOptions && isConversionTrackingEnabled === undefined ) {
+	// so waiting avoids showing the wrong wording first.
+	if ( isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -464,8 +473,7 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	);
 
 	const conversionTracking = useConversionTrackingSetting();
-	const { canManageOptions, isConversionTrackingEnabled } =
-		conversionTracking;
+	const { isConversionTrackingEnabled } = conversionTracking;
 
 	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
 		{
@@ -657,9 +665,12 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	// Suppresses "New" once an enable was attempted this session (any scope set).
 	const attempted = Boolean( breakdownScope );
 
+	const shouldShowConversionTrackingDisabledNotice =
+		useShouldShowConversionTrackingDisabledNotice();
+
 	const noticeState = computeNoticeState( {
 		isViewOnly,
-		canManageOptions,
+		shouldShowConversionTrackingDisabledNotice,
 		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,

@@ -180,6 +180,11 @@ function commonSetup( registry: WPDataRegistry ) {
 		.dispatch( CORE_USER )
 		.receiveGetDismissedItems( [ SITE_GOALS_INTRO_MODAL_BANNER ] );
 
+	// The breakdown notice waits for the conversion tracking setting.
+	registry
+		.dispatch( CORE_SITE )
+		.receiveGetConversionTrackingSettings( { enabled: true } );
+
 	provideKeyMetrics( registry );
 
 	const discoveryDimension = 'customEvent:googlesitekit_event_provider';
