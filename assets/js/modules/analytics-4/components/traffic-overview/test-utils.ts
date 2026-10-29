@@ -120,7 +120,7 @@ export const EARLIER_POST: RecentContentItem = {
 /**
  * Gets the report arguments of `LATEST_POST` for the registry's reference date.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry with the reference date.
  * @return {Object} The post's permalink and the post's date range.
@@ -138,7 +138,7 @@ export function getLatestPostReportArgs(
  * Stores `LATEST_POST` as the most recent post, so the latest post
  * performance section renders without a request.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to put the post in.
  * @return {void}
@@ -154,7 +154,7 @@ export function provideLatestPost( registry: WPDataRegistry ) {
 /**
  * Stores a report and marks its request as finished.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry  The registry to put the report in.
  * @param {string} storeName The store with the `getReport` selector.
@@ -176,7 +176,7 @@ function provideReport(
  * Gets the options of the Analytics reports of the latest post performance
  * section for `LATEST_POST`, including its purchases report.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry with the reference date.
  * @return {Object} The report options, keyed by the report.
@@ -202,7 +202,7 @@ export function getLatestPostAnalyticsReportOptions(
  * Stores the Analytics reports of the latest post performance section for
  * `LATEST_POST`, including its purchases report.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to put the reports in.
  * @return {void}
@@ -250,7 +250,7 @@ export function provideLatestPostAnalyticsReports( registry: WPDataRegistry ) {
  * Gets the options of the Search Console report of the latest post
  * performance section for `LATEST_POST`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry with the reference date.
  * @return {Object} The Search Console report options.
@@ -263,7 +263,7 @@ export function getLatestPostKeywordReportOptions( registry: WPDataRegistry ) {
  * Stores the Search Console report of the latest post performance section for
  * `LATEST_POST`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to put the report in.
  * @return {void}
@@ -286,7 +286,7 @@ export function provideLatestPostKeywordReport( registry: WPDataRegistry ) {
  *
  * @since 1.188.0
  * @since 1.189.0 Moved to a shared test helper.
- * @since n.e.x.t Takes an optional total.
+ * @since 1.191.0 Takes an optional total.
  *
  * @param {Array<Array>} pairs   `[ label, visitors ]` pairs.
  * @param {number}       [total] Optional. The visitors of every value of the dimension. Without it, the report has no `totals`.
@@ -318,7 +318,7 @@ export function createBreakdownReport(
  * Builds a report of page titles from page path and title pairs, in the order
  * given.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Array<Array<string>>} pairs `[ pagePath, pageTitle ]` pairs.
  * @return {Object} The report of page titles.
@@ -340,7 +340,7 @@ export function createTitlesReport(
  * window's visitors fall on the window's last day, and every other day has no
  * visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}        dateRange   The Recent activity date range.
  * @param {number}        current     Visitors in the date range.
@@ -375,7 +375,7 @@ export function createInsightReport(
  * Puts the insight notice's report for the reference date's Recent activity
  * date range in the store.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}        registry    The registry to put the report in.
  * @param {number}        current     Visitors in the date range.
@@ -423,7 +423,7 @@ export function getSectionClassNames( container: Element ): string[] {
  * It always puts in the report that gives the `Asia/Tokyo` time zone of the
  * Analytics property, which the Total visitors report needs.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry                    The registry.
  * @param {Object} figures                     The figures the reports give.
@@ -489,7 +489,7 @@ export function provideFreshMetricsReports(
  * Each report leaves out the product pages that `getExcludedProducts()`
  * recognizes, the way the columns do.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry, with its reference date and its site info set.
  * @return {Object} The options of the posts, channels, and referrals reports.
@@ -517,7 +517,7 @@ export function getRecentTrafficBreakdownReportOptions(
  * `reports.posts` is given, the report of titles that the posts column
  * requests goes in the store too.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry             The registry, with its reference date and its site info set.
  * @param {Object} reports              The reports.
@@ -579,7 +579,7 @@ export function provideRecentTrafficBreakdownReports(
  * Gets a matcher for the Analytics report requests that ask for exactly the
  * given dimensions.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {...string} dimensions The dimension names, in order.
  * @return {Function} The matcher, for `fetchMock`.

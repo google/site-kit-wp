@@ -114,7 +114,7 @@ class User_Settings extends User_Setting {
 	 * An entry whose value is `null` removes that key from the current value.
 	 *
 	 * @since 1.185.0
-	 * @since n.e.x.t Removes entries whose new value is `null`.
+	 * @since 1.191.0 Removes entries whose new value is `null`.
 	 *
 	 * @param array $old_value Current value..
 	 * @param mixed $new_value Value to merge.

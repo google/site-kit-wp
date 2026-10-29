@@ -64,7 +64,7 @@ export const FRESH_DATA_FETCH_OPTIONS: ReportFetchOptions = {
  * from the start of the earliest comparison window to the last day of the date
  * range, which covers the date range and every comparison window.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} dateRange           The Recent activity date range.
  * @param {string} dateRange.startDate The first day of the date range.
@@ -97,7 +97,7 @@ export function getInsightReportArgs(
  * property itself. Any report has the time zone, so this one asks for the
  * days of the window in UTC, before the time zone is known.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} windowStart The start of the window, from `getFreshDataWindowStart()`.
  * @return {Object} The report options.
@@ -120,7 +120,7 @@ export function getTimeZoneReportOptions( windowStart: number ): ReportOptions {
  * counts each visitor once. A row for each hour would count a visitor once in
  * every hour they visited.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} windowStart The start of the window, from `getFreshDataWindowStart()`.
  * @param {string} timeZone    The time zone of the Analytics property.
@@ -154,7 +154,7 @@ export function getTotalVisitorsReportOptions(
  * asks Search Console for its `hourly_all` data state. Search Console dates
  * are in Pacific Time.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {number} windowStart The start of the window, from `getFreshDataWindowStart()`.
  * @return {Object} The report options.
@@ -183,7 +183,7 @@ export function getSearchPerformanceReportOptions(
  * The report has only the values with the most visitors, as many as a column
  * shows.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} dateRange           The date range of the Recent activity tab.
  * @param {string} dateRange.startDate The first day of the date range.
@@ -216,7 +216,7 @@ function getColumnReportOptions(
 /**
  * Builds the filter that leaves the product pages out of a column's report.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object|null} excludedProducts The way to recognize a product page, or `null` to keep the product pages.
  * @return {Object} The dimension filters, or an empty object for none.
@@ -252,7 +252,7 @@ function getExcludedProductsFilters(
 /**
  * Builds the options of the report of visitors for each page.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}      dateRange           The date range of the Recent activity tab.
  * @param {string}      dateRange.startDate The first day of the date range.
@@ -279,7 +279,7 @@ export function getTopPostsReportOptions(
  * percentage of it. With products left out, it leaves out the visitors who
  * saw only product pages.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}      dateRange           The date range of the Recent activity tab.
  * @param {string}      dateRange.startDate The first day of the date range.
@@ -306,7 +306,7 @@ export function getTopChannelsReportOptions(
  * The report counts only the "Referral" channel, so the column lists referring
  * sites instead of repeating the channels column.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}      dateRange           The date range of the Recent activity tab.
  * @param {string}      dateRange.startDate The first day of the date range.

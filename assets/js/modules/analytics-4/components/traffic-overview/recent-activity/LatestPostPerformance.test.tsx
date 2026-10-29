@@ -58,7 +58,7 @@ describe( 'LatestPostPerformance', () => {
 	 * Gets the title and the label and value of each row of each tile, in
 	 * the order the tiles appear.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Element} container The element the section rendered into.
 	 * @return {Array<Object>} The title and the rows of each tile.

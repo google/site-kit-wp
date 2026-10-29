@@ -62,7 +62,7 @@ export interface FreshDataReport {
  * `retry` requests the report again, which the "Retry" button of a report
  * error doesn't do for a report with fetch options.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Function} buildReportOptions A function that builds the report options from the tab's date range, or returns `undefined` while the data they need loads. Pass a function defined outside the component, or one that changes only when that data does.
  * @return {Object} The report options, the report, whether it is loading, its error, and a function that requests it again.

@@ -64,7 +64,7 @@ export interface DraftDates {
  * Holds the date range being edited in the picker panel, separately from the
  * range the dashboard is reporting over.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {DraftDates} The draft values with their setters, and the actions to seed, discard and apply the draft.
  */

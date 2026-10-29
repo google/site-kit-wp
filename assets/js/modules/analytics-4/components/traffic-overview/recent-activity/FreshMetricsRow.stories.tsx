@@ -60,7 +60,7 @@ interface FreshMetricsRowStoryProps {
  * Connects Analytics and Search Console, puts in the module data a report
  * error reads, and says Analytics has finished gathering data.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}

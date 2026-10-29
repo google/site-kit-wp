@@ -187,7 +187,7 @@ export const actions = {
 	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
-	 * @since n.e.x.t Implemented the `in-place-panel` and `background-toggle` setup types.
+	 * @since 1.191.0 Implemented the `in-place-panel` and `background-toggle` setup types.
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated or the feature could not be enabled.

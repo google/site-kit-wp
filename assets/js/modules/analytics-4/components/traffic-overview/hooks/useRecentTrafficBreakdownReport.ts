@@ -35,7 +35,7 @@ import { FreshDataReport, useFreshDataReport } from './useFreshDataReport';
  * Resolves a report of the Recent activity tab's traffic breakdown, which
  * leaves out the product pages while the setting to include products is off.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Function} getReportOptions The function that builds the report's options from the tab's date range and the product pages to leave out, such as `getTopChannelsReportOptions()`.
  * @return {Object} The report, its options, whether it is loading, its error, and a function that requests it again, as `useFreshDataReport()` returns them.

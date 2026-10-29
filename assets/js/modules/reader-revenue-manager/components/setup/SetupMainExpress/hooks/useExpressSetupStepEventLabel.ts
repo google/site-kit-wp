@@ -38,7 +38,7 @@ import {
  * when there are none, so the label also covers the moment before the step
  * switches to it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} [slug] Step slug.
  * @return {(string|undefined)} The event label, or `undefined` while the publication setup step is loading its publications.

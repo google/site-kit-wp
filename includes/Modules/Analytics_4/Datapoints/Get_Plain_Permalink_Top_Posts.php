@@ -33,7 +33,7 @@ use WP_Post_Type;
  * `pagePath` leaves out the query string, so the datapoint runs a report of
  * visitors by `pagePathPlusQueryString` and returns the posts its URLs show.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
@@ -42,7 +42,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Module settings instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var Settings
 	 */
 	private $settings;
@@ -50,7 +50,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Context instance.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var Context
 	 */
 	private $context;
@@ -58,7 +58,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Closure that returns whether the current request is for shared data.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var \Closure
 	 */
 	private $is_shared_request;
@@ -66,7 +66,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Service that finds the post each URL of the report shows, and adds up the visitors of each post.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @var Plain_Permalink_Top_Posts
 	 */
 	private $top_posts;
@@ -74,7 +74,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Constructor.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $definition Definition fields.
 	 */
@@ -89,7 +89,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Creates a request object.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return mixed Request object on success, or WP_Error on failure.
@@ -170,7 +170,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Parses a response.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param Google_Service_AnalyticsData_RunReportResponse $response Request response.
 	 * @param Data_Request                                   $data     Data request object.
@@ -202,7 +202,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	 * `ReportParsers::parse_dateranges()` reports on the last 28 days in place of
 	 * a date that `strtotime()` can't read.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param mixed $value The date parameter, as the request sent it.
 	 * @return bool True where the report reads the parameter as a date, false otherwise.
@@ -214,7 +214,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Gets the data request of the report of visitors by URL, most first.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string $start_date The first day of the report, such as `2026-10-21`.
 	 * @param string $end_date   The last day of the report, such as `2026-10-22`.
@@ -262,7 +262,7 @@ class Get_Plain_Permalink_Top_Posts extends Shareable_Datapoint implements Execu
 	/**
 	 * Gets the pattern that matches the query string of a single product's URL, such as `?product=hoodie`, and not the shop's `?post_type=product`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param WP_Post_Type $product_type The site's product post type, whose name and query var the pattern matches.
 	 * @return string The pattern.

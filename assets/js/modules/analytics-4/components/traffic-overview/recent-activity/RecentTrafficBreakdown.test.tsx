@@ -128,7 +128,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * answers first, so a test that needs a request to fail once, or to wait,
 	 * registers that route before it calls `mockReportRequests()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} [responses]           Optional. The responses that replace the reports.
 	 * @param {Object} [responses.posts]     Optional. The response to the request for the posts.
@@ -167,7 +167,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * Gets the `.googlesitekit-table-tile` element of the column whose heading
 	 * is the given title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {string} title The title of the column.
 	 * @return {HTMLDivElement} The column.
@@ -181,7 +181,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	/**
 	 * Gets the text of the label and the value of each row of a column.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {HTMLDivElement} column The column.
 	 * @return {Array<Array<string>>} The label and the value of each row.

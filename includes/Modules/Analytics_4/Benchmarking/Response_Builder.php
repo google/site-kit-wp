@@ -71,7 +71,7 @@ class Response_Builder {
 	 * Nothing is saved to the site, so every call builds the response again.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Returns `visits` in place of `visitors`, and each day's count as `visits`.
+	 * @since 1.191.0 Returns `visits` in place of `visitors`, and each day's count as `visits`.
 	 *
 	 * @param string $start_date The start date, as `YYYY-MM-DD`.
 	 * @param string $end_date   The end date, as `YYYY-MM-DD`.
@@ -310,7 +310,7 @@ class Response_Builder {
 	 * day has to be in the list.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Lists each day's count as `visits` in place of `visitors`.
+	 * @since 1.191.0 Lists each day's count as `visits` in place of `visitors`.
 	 *
 	 * @param array  $report_rows The rows of the daily series report.
 	 * @param string $first_date  The first day of the daily series, as `YYYY-MM-DD`.
@@ -342,7 +342,7 @@ class Response_Builder {
 	 * Adds up each day's visits from one date to another.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Renamed from `sum_visitors()`.
+	 * @since 1.191.0 Renamed from `sum_visitors()`.
 	 *
 	 * @param array  $daily_traffic The days, each with `visits` and a `date` as `YYYY-MM-DD`.
 	 * @param string $start_date    The first day to count, as `YYYY-MM-DD`.

@@ -57,7 +57,7 @@ interface FeedbackPromptProps {
  *
  * @since 1.182.0
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
- * @since n.e.x.t Added the `hideQuestion` prop to show only the thumbs.
+ * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
  *
  * @param props                     Component props.
  * @param props.voteID              Identifier used to build the survey trigger string.
