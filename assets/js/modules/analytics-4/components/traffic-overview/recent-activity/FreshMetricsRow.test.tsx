@@ -41,7 +41,6 @@ import {
 } from '@tests/js/test-utils';
 import {
 	freezeFetch,
-	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserCapabilities,
@@ -95,10 +94,6 @@ describe( 'FreshMetricsRow', () => {
 				shareable: true,
 			},
 		] );
-		// A report error reads the module names and the module settings.
-		provideModuleRegistrations( registry );
-		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-		registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {} );
 		registry
 			.dispatch( MODULES_ANALYTICS_4 )
 			.receiveIsGatheringData( false );
@@ -116,9 +111,14 @@ describe( 'FreshMetricsRow', () => {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -160,9 +160,14 @@ describe( 'FreshMetricsRow', () => {
 			}
 		);
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -183,9 +188,14 @@ describe( 'FreshMetricsRow', () => {
 			},
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -208,9 +218,14 @@ describe( 'FreshMetricsRow', () => {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -226,9 +241,14 @@ describe( 'FreshMetricsRow', () => {
 			searchPerformance: { clicks: 0, impressions: 30 },
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -241,7 +261,12 @@ describe( 'FreshMetricsRow', () => {
 		freezeFetch( analyticsReportEndpoint );
 		freezeFetch( searchConsoleReportEndpoint );
 
-		const { container } = render( <FreshMetricsRow />, { registry } );
+		const { container } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{ registry }
+		);
 
 		expect(
 			container.querySelectorAll(
@@ -251,10 +276,15 @@ describe( 'FreshMetricsRow', () => {
 	} );
 
 	it( 'should not request the reports when the row is out of view', async () => {
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-			inView: false,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+				inView: false,
+			}
+		);
 
 		await waitForRegistry();
 		await waitForDefaultTimeouts();
@@ -281,7 +311,12 @@ describe( 'FreshMetricsRow', () => {
 			status: 200,
 		} );
 
-		const { waitForRegistry } = render( <FreshMetricsRow />, { registry } );
+		const { waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -301,7 +336,7 @@ describe( 'FreshMetricsRow', () => {
 		] );
 	} );
 
-	it( 'should render a report error for the search figures when the Search Console report fails, and keep "Total visitors"', async () => {
+	it( 'should render "Something went wrong" in place of the search figures when the Search Console report fails, and keep "Total visitors"', async () => {
 		provideFreshMetricsReports( registry, { totalVisitors: 157 } );
 		fetchMock.getOnce( searchConsoleReportEndpoint, {
 			body: {
@@ -312,16 +347,21 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
-		expect(
-			screen.getByText( 'Data error in Search Console' )
-		).toBeInTheDocument();
+		expect( container ).toHaveTextContent(
+			'Search performanceSomething went wrong'
+		);
 		expect( screen.queryByText( 'Search clicks' ) ).not.toBeInTheDocument();
 		expect( container ).toHaveTextContent( '157Total visitors' );
 	} );
@@ -337,7 +377,12 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { waitForRegistry } = render( <FreshMetricsRow />, { registry } );
+		const { waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
@@ -365,7 +410,7 @@ describe( 'FreshMetricsRow', () => {
 		);
 	} );
 
-	it( 'should render a report error for "Total visitors" when its report fails, and keep the search figures', async () => {
+	it( 'should render "Something went wrong" in place of "Total visitors" when its report fails, and keep the search figures', async () => {
 		provideFreshMetricsReports( registry, {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
@@ -378,15 +423,20 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
 		expect(
-			screen.getByText( 'Data error in Analytics' )
+			screen.getByText( 'Something went wrong' )
 		).toBeInTheDocument();
 		expect(
 			screen.queryByText( 'Total visitors' )
@@ -409,9 +459,14 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -429,7 +484,7 @@ describe( 'FreshMetricsRow', () => {
 		expect( fetchMock ).toHaveFetchedTimes( 2, analyticsReportEndpoint );
 	} );
 
-	it( 'should render a report error for "Total visitors" when the report that gives the time zone of the Analytics property fails', async () => {
+	it( 'should render "Something went wrong" in place of "Total visitors" when the report that gives the time zone of the Analytics property fails', async () => {
 		freezeFetch( searchConsoleReportEndpoint );
 		fetchMock.getOnce( analyticsReportEndpoint, {
 			body: {
@@ -440,13 +495,18 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { waitForRegistry } = render( <FreshMetricsRow />, { registry } );
+		const { waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{ registry }
+		);
 
 		await waitForRegistry();
 
 		expect( console ).toHaveErrored();
 		expect(
-			screen.getByText( 'Data error in Analytics' )
+			screen.getByText( 'Something went wrong' )
 		).toBeInTheDocument();
 		expect( fetchMock ).toHaveFetchedTimes( 1, analyticsReportEndpoint );
 	} );
@@ -462,9 +522,14 @@ describe( 'FreshMetricsRow', () => {
 			status: 500,
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -502,10 +567,15 @@ describe( 'FreshMetricsRow', () => {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -528,10 +598,15 @@ describe( 'FreshMetricsRow', () => {
 		} );
 		provideFreshMetricsReports( registry, { totalVisitors: 157 } );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+				viewContext: VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
+			}
+		);
 
 		await waitForRegistry();
 
@@ -548,9 +623,14 @@ describe( 'FreshMetricsRow', () => {
 			searchPerformance: { clicks: 72, impressions: 8000 },
 		} );
 
-		const { container, waitForRegistry } = render( <FreshMetricsRow />, {
-			registry,
-		} );
+		const { container, waitForRegistry } = render(
+			<FreshMetricsRow
+				windowStart={ Date.parse( '2026-10-12T09:00:00Z' ) }
+			/>,
+			{
+				registry,
+			}
+		);
 
 		await waitForRegistry();
 

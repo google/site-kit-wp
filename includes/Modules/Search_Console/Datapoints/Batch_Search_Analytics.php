@@ -67,7 +67,7 @@ class Batch_Search_Analytics extends Datapoint implements Executable_Datapoint {
 	 * Creates a request object.
 	 *
 	 * @since 1.170.0
-	 * @since n.e.x.t Sends the batch with the Google client the closure is called with.
+	 * @since 1.191.0 Sends the batch with the Google client the closure is called with.
 	 *
 	 * @param Data_Request $data_request Data request object.
 	 * @return callable Callable to execute the batch request with the given Google client, resolving to an empty array when no entry could be prepared.

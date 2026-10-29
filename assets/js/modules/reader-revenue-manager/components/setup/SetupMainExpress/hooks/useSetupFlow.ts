@@ -85,7 +85,7 @@ export function findBlockingStep(
  * The current step stays `undefined` until the initial step resolves.
  *
  * @since 1.190.0
- * @since n.e.x.t Returns no current step until the initial step resolves.
+ * @since 1.191.0 Returns no current step until the initial step resolves.
  *
  * @param {Array.<Object>} steps Ordered step definitions. Must be referentially stable.
  * @return {Object} The current step definition, and a callback that advances to the next step that is not yet complete.

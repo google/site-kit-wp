@@ -24,6 +24,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import type { Select } from 'googlesitekit-data';
 import { isFeatureEnabled } from '@/js/features';
 import {
 	FEATURE_CATEGORIES,
@@ -31,8 +32,14 @@ import {
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
+import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/components/setup/SetupMainExpress/constants';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import {
+	EXPRESS_SETUP_CTAS,
+	MODULES_READER_REVENUE_MANAGER,
+} from '@/js/modules/reader-revenue-manager/datastore/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
+import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from './constants';
 
 /**
  * Registers Reader Revenue Manager module features in the Feature Discovery catalog.
@@ -134,6 +141,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		effort: FEATURE_EFFORTS.HIGH,
 		goalCategories: [
 			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.MONETIZATION,
 			FEATURE_CATEGORIES.TRAFFIC,
 		],
 		addedInVersion: '1.129.0',
@@ -146,7 +154,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 
 	// Newsletter sign-up sub-feature (only if rrmExpressSetup feature flag is enabled).
 	if ( isFeatureEnabled( 'rrmExpressSetup' ) ) {
-		registerFeature( 'newsletter-signup', {
+		registerFeature( FEATURE_SLUG_NEWSLETTER_SIGNUP, {
 			name: __( 'Newsletter sign-up form', 'google-site-kit' ),
 			moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
 			title: __(
@@ -267,6 +275,32 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			setup: {
 				type: FEATURE_SETUP_TYPES.SETUP_FLOW,
 				ctaLabel: __( 'Set up a sign-up form', 'google-site-kit' ),
+				moduleSlug: MODULE_SLUG_READER_REVENUE_MANAGER,
+				getSetupURL: ( select: Select ) =>
+					select( MODULES_READER_REVENUE_MANAGER ).getAdminReauthURL(
+						{
+							redirectQueryArgs: {
+								expressSetup: 'true',
+								cta: EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP,
+							},
+							additionalScopes: EXPRESS_SETUP_SCOPES,
+						}
+					),
+				// Connecting RRM doesn't mean a newsletter form exists, so
+				// completion is based on the publication's configured CTAs.
+				isEnabled: ( select: Select ) => {
+					const configuredCTAs = select(
+						MODULES_READER_REVENUE_MANAGER
+					).getConfiguredCTAs();
+
+					if ( configuredCTAs === undefined ) {
+						return undefined;
+					}
+
+					return Object.values( configuredCTAs ).includes(
+						EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP
+					);
+				},
 			},
 		} );
 	}

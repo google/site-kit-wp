@@ -35,11 +35,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import { Story } from '@/js/types/Story';
-import {
-	provideModuleRegistrations,
-	provideModules,
-	provideSiteInfo,
-} from '@tests/js/utils';
+import { provideModules, provideSiteInfo } from '@tests/js/utils';
 import WithRegistrySetup from '@tests/js/WithRegistrySetup';
 import FreshMetricsRow from './FreshMetricsRow';
 import {
@@ -57,10 +53,10 @@ interface FreshMetricsRowStoryProps {
 }
 
 /**
- * Connects Analytics and Search Console, puts in the module data a report
- * error reads, and says Analytics has finished gathering data.
+ * Connects Analytics and Search Console, and says Analytics has finished
+ * gathering data.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}
@@ -79,9 +75,6 @@ function commonSetup( registry: WPDataRegistry ) {
 			connected: true,
 		},
 	] );
-	provideModuleRegistrations( registry );
-	registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
-	registry.dispatch( MODULES_SEARCH_CONSOLE ).receiveGetSettings( {} );
 	registry.dispatch( MODULES_ANALYTICS_4 ).receiveIsGatheringData( false );
 }
 
@@ -89,6 +82,10 @@ function Template( {
 	setupRegistry,
 	pauseAnimation = false,
 }: FreshMetricsRowStoryProps ) {
+	// Each story puts in the reports of the last 24 hours from the current
+	// time, as `provideFreshMetricsReports()` does.
+	const windowStart = getFreshDataWindowStart( Date.now() );
+
 	// The row's styles apply only inside the widget and the Recent activity
 	// panel.
 	return (
@@ -108,7 +105,7 @@ function Template( {
 				) }
 			>
 				<div className="googlesitekit-traffic-overview__panel googlesitekit-traffic-overview__panel--recent-activity">
-					<FreshMetricsRow />
+					<FreshMetricsRow windowStart={ windowStart } />
 				</div>
 			</div>
 		</WithRegistrySetup>

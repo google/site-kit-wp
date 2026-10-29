@@ -112,7 +112,6 @@ describe( 'RecentTrafficBreakdown', () => {
 		12
 	);
 
-	// `ReportError` shows the message of an error whose code is `test_error`.
 	const errorResponse = {
 		code: 'test_error',
 		message: 'Test error message',
@@ -128,7 +127,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * answers first, so a test that needs a request to fail once, or to wait,
 	 * registers that route before it calls `mockReportRequests()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} [responses]           Optional. The responses that replace the reports.
 	 * @param {Object} [responses.posts]     Optional. The response to the request for the posts.
@@ -167,7 +166,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * Gets the `.googlesitekit-table-tile` element of the column whose heading
 	 * is the given title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {string} title The title of the column.
 	 * @return {HTMLDivElement} The column.
@@ -181,7 +180,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	/**
 	 * Gets the text of the label and the value of each row of a column.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {HTMLDivElement} column The column.
 	 * @return {Array<Array<string>>} The label and the value of each row.
@@ -420,7 +419,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	} );
 
-	it( 'should render a report error in the column whose report fails, and the rows of the other two columns', async () => {
+	it( 'should render "Something went wrong" in the column whose report fails, and the rows of the other two columns', async () => {
 		mockReportRequests( {
 			channels: { body: errorResponse, status: 500 },
 		} );
@@ -436,7 +435,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			getColumn( 'Top channels by visitors' ).querySelector(
 				'.googlesitekit-table-tile__error'
 			)
-		).toHaveTextContent( 'Test error message' );
+		).toHaveTextContent( 'Something went wrong' );
 		expect(
 			within( getColumn( 'Top posts by visitors' ) ).getAllByRole(
 				'link'
@@ -447,6 +446,37 @@ describe( 'RecentTrafficBreakdown', () => {
 				'news.example.com'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render "Something went wrong" in each of the three columns when all three reports fail', async () => {
+		mockReportRequests( {
+			posts: { body: errorResponse, status: 500 },
+			channels: { body: errorResponse, status: 500 },
+			referrals: { body: errorResponse, status: 500 },
+		} );
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect(
+			getColumn( 'Top posts by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top channels by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top referrals by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
 	} );
 
 	it( 'should request a failed report again, and render its rows, when "Retry" is clicked in its column', async () => {
@@ -925,7 +955,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect( fetchMock ).not.toHaveFetched( titlesRequest );
 		} );
 
-		it( 'should render a report error in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
+		it( 'should render "Something went wrong" in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
@@ -943,7 +973,7 @@ describe( 'RecentTrafficBreakdown', () => {
 				getColumn( 'Top posts by visitors' ).querySelector(
 					'.googlesitekit-table-tile__error'
 				)
-			).toHaveTextContent( 'Test error message' );
+			).toHaveTextContent( 'Something went wrong' );
 			expect(
 				getRowTexts( getColumn( 'Top channels by visitors' ) )
 			).toEqual( [

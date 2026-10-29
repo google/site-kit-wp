@@ -29,6 +29,7 @@ module.exports = babelJest.createTransformer( {
 				alias: {
 					'@': path.resolve( __dirname, '../../assets' ),
 				},
+				extensions: [ '.js', '.jsx', '.ts', '.tsx' ],
 			},
 		],
 	],

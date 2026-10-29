@@ -87,7 +87,7 @@ interface PendingMove {
 /**
  * Provides drag-and-drop and keyboard reordering for a controlled list.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}   options           List options.
  * @param {Array}    options.items     Current ordered items.
