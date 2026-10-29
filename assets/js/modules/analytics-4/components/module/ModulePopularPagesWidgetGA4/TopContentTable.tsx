@@ -52,7 +52,7 @@ import { getPopularPagesReportOptions } from './reportOptions';
 /**
  * Props for the Top content table.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface TopContentTableProps {
 	/** The component the table renders when the report fails. */

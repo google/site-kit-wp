@@ -70,7 +70,7 @@ type EvaluateMethod = ( ...args: any[] ) => Promise< any >;
 /**
  * The methods the wrapper adds, or adapts from Puppeteer.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface CompatOverrides {
 	__interceptionEnabled: boolean;
@@ -118,7 +118,7 @@ export interface CompatOverrides {
 /**
  * A Playwright page with the Puppeteer-style methods the specs use.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export type CompatPage = Omit< Page, keyof CompatOverrides > & CompatOverrides;
 
@@ -139,7 +139,7 @@ const NETWORK_IDLE_MAX_IN_FLIGHT = {
  * arguments. Playwright accepts a single argument, so multiple arguments are
  * passed as an array and spread inside the browser.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param method              Bound Playwright method.
  * @param prefix              Leading arguments, e.g. a selector.
@@ -184,7 +184,7 @@ function callEvaluate(
  * Playwright waits for a visible element by default, while Puppeteer only
  * waits for the element to be attached.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param options Puppeteer options.
  * @return Playwright options.
@@ -204,7 +204,7 @@ function toSelectorOptions( options: SelectorOptions = {} ) {
  * Splits Puppeteer navigation options into Playwright options and a network
  * idle requirement.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param options Puppeteer navigation options.
  * @return Playwright options, and `maxInFlight` when the caller waits for network idle.
@@ -231,7 +231,7 @@ function toNavigationOptions( options: NavigationOptions = {} ): {
  * Methods that Playwright already provides with the same behavior pass
  * through. The wrapper only adds or adapts the methods the specs use.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param page    Playwright page.
  * @param context Playwright browser context.
@@ -276,7 +276,7 @@ export function createCompatPage(
 	 * Runs a Playwright navigation method with Puppeteer options, then waits
 	 * for network idle when the options ask for it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param run     Calls the Playwright method with the given options.
 	 * @param options Puppeteer navigation options.

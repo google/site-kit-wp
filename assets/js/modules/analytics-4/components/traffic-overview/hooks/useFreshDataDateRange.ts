@@ -66,7 +66,7 @@ export function getFreshDataDateRange(
  * The date range stays the same when the user selects another date range for
  * the dashboard. See `getFreshDataDateRange()` for the days it holds.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {Object} The `startDate` and the `endDate` of the date range.
  */

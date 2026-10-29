@@ -61,7 +61,7 @@ interface PlainPermalinkTopPostsColumn {
 /**
  * Builds the rows of the "Top posts by visitors" column on a site with plain permalinks, which has no permalink structure.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {Object} The column's rows, its loading state, its error, a function that requests the posts again, and its zero state message.
  */

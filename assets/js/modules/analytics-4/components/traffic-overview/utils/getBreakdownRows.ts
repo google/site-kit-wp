@@ -46,7 +46,7 @@ export interface TrafficBreakdownRow {
  * Reads the count of a metric in a report row, such as its visitors.
  *
  * @since 1.188.0
- * @since n.e.x.t Renamed from `getVisitors()`, exported, and takes an optional row and the index of the metric to read.
+ * @since 1.191.0 Renamed from `getVisitors()`, exported, and takes an optional row and the index of the metric to read.
  *
  * @param {Object} [row]         Optional. A report row.
  * @param {number} [metricIndex] Optional. The index of the metric in the row's metric values. Default `0`.
@@ -67,7 +67,7 @@ export function getMetricCount( row?: ReportRow, metricIndex = 0 ): number {
  * missing step, so a share never shows the whole beside another share.
  *
  * @since 1.189.0
- * @since n.e.x.t Renamed from `getWholePercentages()`, and takes the number of steps in the whole, so it splits tenths of a percent too.
+ * @since 1.191.0 Renamed from `getWholePercentages()`, and takes the number of steps in the whole, so it splits tenths of a percent too.
  *
  * @param {Array<number>} parts The parts, in display order, adding up to more than zero.
  * @param {number}        steps The steps in the whole, such as `100` for whole percents or `1000` for tenths of a percent.
@@ -106,7 +106,7 @@ export function getRoundedShares( parts: number[], steps: number ): number[] {
  * `52.2%`.
  *
  * @since 1.189.0
- * @since n.e.x.t Renamed from `formatWholePercentage()`, and takes the number of steps in the whole, so it formats tenths of a percent too.
+ * @since 1.191.0 Renamed from `formatWholePercentage()`, and takes the number of steps in the whole, so it formats tenths of a percent too.
  *
  * @param {number} share The share in steps, from `0`, and above `steps` where the part counts more than the whole.
  * @param {number} steps The steps in the whole, `100` for whole percents or `1000` for tenths of a percent.

@@ -95,7 +95,7 @@ export type ExcludedProducts =
 /**
  * One of the published single posts with the most visitors on a site with plain permalinks, as `GET:plain-permalink-top-posts` returns it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPost {
 	/** The ID of the post. */
@@ -113,7 +113,7 @@ export interface PlainPermalinkTopPost {
 /**
  * The response of `GET:plain-permalink-top-posts`, with the posts with the most visitors and the report's total visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPosts {
 	/** The posts, most visitors first. */
@@ -125,7 +125,7 @@ export interface PlainPermalinkTopPosts {
 /**
  * The options of `getPlainPermalinkTopPosts()`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface PlainPermalinkTopPostsOptions {
 	/** The first day of the report, such as `2026-10-21`. */
@@ -368,7 +368,7 @@ const baseSelectors = {
 	 * Read a request error with
 	 * `getErrorForSelector( 'getPlainPermalinkTopPosts', [ options ] )`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state             The data store's state.
 	 * @param {Object} options           The options of the report.
@@ -438,7 +438,7 @@ const baseSelectors = {
 	 * 2. When product URLs share no such path, by the `googlesitekit_post_type`
 	 *    custom dimension, if the Analytics property has it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return {(Object|null|undefined)} The way to recognize a product page, or `null` when the tab counts products or can't recognize them. Returns `undefined` if not yet loaded.
 	 */
