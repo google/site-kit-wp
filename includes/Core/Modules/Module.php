@@ -787,11 +787,11 @@ abstract class Module {
 				$reason = $errors[0]['reason'];
 			}
 		} elseif ( $e instanceof Google_Proxy_Code_Exception ) {
+			// Reconnect through a new setup, not the access code: its proxy session has no nonce for the site to check.
 			$status        = 401;
 			$code          = $message;
 			$auth_client   = $this->authentication->get_oauth_client();
 			$message       = $auth_client->get_error_message( $code );
-			// Not resumed with the access code: the proxy session it names has no nonce for the site to check.
 			$reconnect_url = $this->authentication->get_proxy_setup_url();
 		}
 
