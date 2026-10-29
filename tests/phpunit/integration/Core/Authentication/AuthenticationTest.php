@@ -1112,6 +1112,31 @@ class AuthenticationTest extends TestCase {
 		$this->assertArrayNotHasKey( 'purpose', $query_args, 'The proxy setup URL should not include `purpose` when the request has a value other than `intent`.' );
 	}
 
+	public function test_googlesitekit_inline_base_data__setup_error_redo_url_after_proxy_code_exception() {
+		$admin_id = $this->factory()->user->create( array( 'role' => 'administrator' ) );
+		wp_set_current_user( $admin_id );
+
+		// The proxy rejected a token request for a missing requirement and returned an access code.
+		update_user_option( $admin_id, OAuth_Client::OPTION_ERROR_CODE, 'missing_delegation_consent' );
+		update_user_option( $admin_id, OAuth_Client::OPTION_PROXY_ACCESS_CODE, 'test-access-code' );
+
+		remove_all_filters( 'googlesitekit_inline_base_data' );
+		$this->fake_proxy_site_connection();
+
+		$auth = new Authentication( new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE ) );
+		$auth->register();
+
+		$data = apply_filters( 'googlesitekit_inline_base_data', array() );
+		wp_parse_str( wp_parse_url( $data['setupErrorRedoURL'], PHP_URL_QUERY ), $query_args );
+
+		$this->assertEquals( 'missing_delegation_consent', $data['setupErrorCode'], 'The setup error code should be passed to JS.' );
+		$this->assertEquals( $data['proxySetupURL'], $data['setupErrorRedoURL'], 'The redo URL should start a new setup from the site.' );
+		$this->assertEquals( Google_Proxy::ACTION_SETUP_START, $query_args['action'], 'The redo URL should point at the setup-start action.' );
+		$this->assertNotEmpty( $query_args['nonce'], 'The redo URL should carry a nonce.' );
+		$this->assertArrayNotHasKey( 'code', $query_args, 'The redo URL should not reuse the access code.' );
+		$this->assertFalse( get_user_option( OAuth_Client::OPTION_PROXY_ACCESS_CODE, $admin_id ), 'The access code should be deleted.' );
+	}
+
 	public function test_googlesitekit_inline_js_wp_version_non_standard_version() {
 		$version = '42';
 

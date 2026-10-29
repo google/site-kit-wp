@@ -832,6 +832,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Modifies the base data to pass to JS.
 	 *
 	 * @since 1.2.0
+	 * @since 1.191.0 Redoes setup from the site after a proxy access code.
 	 *
 	 * @param array $data Inline JS data.
 	 * @return array Filtered $data.
@@ -867,21 +868,11 @@ final class Authentication implements Provides_Feature_Metrics {
 				$data['setupErrorCode']    = $error_code;
 				$data['setupErrorMessage'] = $auth_client->get_error_message( $error_code );
 
-				// Get credentials needed to authenticate with the proxy
-				// so we can build a new setup URL.
-				$credentials = $this->credentials->get();
-
 				$access_code = $this->user_options->get( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 
-				// Both the access code and site ID are needed to generate
-				// a setup URL.
-				if ( $access_code && ! empty( $credentials['oauth2_client_id'] ) ) {
-					$setup_url = $this->google_proxy->setup_url(
-						array(
-							'code'    => $access_code,
-							'site_id' => $credentials['oauth2_client_id'],
-						)
-					);
+				// Not resumed with the access code: the proxy session it names has no nonce for the site to check.
+				if ( $access_code ) {
+					$setup_url = $data['proxySetupURL'];
 
 					$this->user_options->delete( OAuth_Client::OPTION_PROXY_ACCESS_CODE );
 				} elseif ( $this->is_authenticated() ) {
@@ -1289,10 +1280,11 @@ final class Authentication implements Provides_Feature_Metrics {
 	 *
 	 * @since 1.17.0
 	 * @since 1.190.0 Added the `purpose=intent` argument when the current request has it.
+	 * @since 1.191.0 Made public.
 	 *
 	 * @return string An URL for googlesitekit_proxy_connect_user action protected with a nonce.
 	 */
-	private function get_proxy_setup_url() {
+	public function get_proxy_setup_url() {
 		$query_args = array(
 			'action' => Google_Proxy::ACTION_SETUP_START,
 			'nonce'  => wp_create_nonce( Google_Proxy::ACTION_SETUP_START ),
