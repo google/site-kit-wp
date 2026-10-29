@@ -254,7 +254,7 @@ export const selectors = {
 	/**
 	 * Determines whether a feature setup is in progress.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
@@ -301,7 +301,7 @@ export const selectors = {
 	 *
 	 * Falls back to the setup URL where no dedicated resume URL exists.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
@@ -373,7 +373,7 @@ export const selectors = {
 	/**
 	 * Gets available features to show under a category for the current filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state              Data store's state.
 	 * @param {string} category           Goal category slug.

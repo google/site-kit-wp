@@ -512,6 +512,132 @@ describe( 'core/feature-discovery features', () => {
 				expect( await consumePendingSetup() ).toBeNull();
 			} );
 
+			describe( 'for a setup-flow feature with both a module and a setup URL', () => {
+				const overrideURL =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&expressSetup=true';
+				const reauthURL = 'http://example.com/reauth';
+
+				function registerFeatureWithOverride() {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => overrideURL,
+							},
+						} )
+					);
+				}
+
+				it( 'should activate the module first, then navigate to the override URL', async () => {
+					registerFeatureWithOverride();
+					global.history.replaceState( {}, '', '/#/whats-new' );
+
+					const activateModule = jest
+						.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						)
+						.mockResolvedValue( {
+							response: {
+								success: true,
+								moduleReauthURL: reauthURL,
+							},
+						} );
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activateModule ).toHaveBeenCalledWith(
+						'test-module'
+					);
+					expect( navigateTo ).toHaveBeenCalledTimes( 1 );
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+					expect(
+						activateModule.mock.invocationCallOrder[ 0 ]
+					).toBeLessThan( navigateTo.mock.invocationCallOrder[ 0 ] );
+					expect( await consumePendingSetup() ).toEqual( {
+						featureSlug: 'test-feature',
+						returnTab: '/whats-new',
+					} );
+				} );
+
+				it( 'should navigate to the override URL even when the module has no setup component', async () => {
+					registerFeatureWithOverride();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+				} );
+
+				it( 'should fall back to the module reauth URL when the override is undefined', async () => {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => undefined,
+							},
+						} )
+					);
+					registerSetupComponent();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
+				} );
+
+				it( 'should not record or navigate when activation fails', async () => {
+					registerFeatureWithOverride();
+
+					const error = {
+						code: 'activation_failed',
+						message: 'Could not activate.',
+						data: { status: 500 },
+					};
+					fetchMock.postOnce( activationEndpoint, {
+						body: error,
+						status: 500,
+					} );
+
+					const result = await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( result ).toEqual( { error } );
+					expect( console ).toHaveErrored();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+			} );
+
 			describe( 'for a background-toggle feature', () => {
 				const error = {
 					code: 'internal_server_error',

@@ -36,7 +36,7 @@ import { RecentContentItem, RecentContentOptions } from './fresh-data';
  * Stores the recently published posts for `getRecentContent( options )` and
  * marks it as resolved, so it renders without a request.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @private
  *
  * @param {Object}   registry      Data registry object.
@@ -64,7 +64,7 @@ export function provideRecentContent(
  * Puts the module list, the site info, and the Analytics settings in the
  * store. The selectors that decide whether to include products read them.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @private
  *
  * @param {Object}  registry                          The registry to put the state in.

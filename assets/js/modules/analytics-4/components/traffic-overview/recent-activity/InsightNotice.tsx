@@ -49,7 +49,7 @@ import MagnifyingGlassIcon from '@/svg/icons/magnifying-glass.svg';
 /**
  * Gets the notice copy for an insight.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} insight                The insight.
  * @param {string} insight.classification `typical`, `up` or `down`.

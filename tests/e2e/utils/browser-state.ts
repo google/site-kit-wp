@@ -33,7 +33,7 @@ const VIEWPORTS = {
 /**
  * Clears the local storage.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return Resolves once the local storage is empty.
  */
@@ -44,7 +44,7 @@ export async function clearLocalStorage() {
 /**
  * Accepts every dialog the page opens, such as the "leave site" prompt.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {void}
  */
@@ -55,7 +55,7 @@ export function enablePageDialogAccept() {
 /**
  * Sets the browser viewport size.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param viewport Viewport name, or `width` and `height`.
  * @return Resolves once the viewport has the new size.

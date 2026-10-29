@@ -62,7 +62,7 @@ interface TrafficSourcesGroupProps {
  * Gets the dimension value of the first row of a report, which is the top
  * value of a report ordered by visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} [report] The report, which is `undefined` while it loads.
  * @return {string} The dimension value, or `NO_VALUE` when the report has no rows.

@@ -30,7 +30,7 @@ import { loginUser } from './login-user';
 /**
  * Matches a PHP error that WordPress displays in the page markup.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @see https://github.com/php/php-src/blob/598175e/main/main.c#L1257-L1297
  */
 const REGEXP_PHP_ERROR =
@@ -41,7 +41,7 @@ const REGEXP_PHP_ERROR =
  *
  * Fails when the page displays a PHP error.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param adminPath Path relative to `wp-admin/`.
  * @param query     Query string, without the leading `?`.

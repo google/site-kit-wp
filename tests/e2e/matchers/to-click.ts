@@ -30,7 +30,7 @@ import {
  * Waits for an element matching the selector, and the text if given, then
  * clicks it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param root           Page or element handle to search in.
  * @param selector       CSS selector.

@@ -49,7 +49,7 @@ const REFERENCE_DATE = '2025-02-05';
 /**
  * Sets the reference date, so every story shows the same days.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry The registry to set up.
  * @return {void}

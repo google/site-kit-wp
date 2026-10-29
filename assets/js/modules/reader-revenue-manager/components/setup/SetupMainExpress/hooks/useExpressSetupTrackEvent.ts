@@ -33,7 +33,7 @@ import useExpressSetupEventCategory from './useExpressSetupEventCategory';
  *
  * Outside a CTA setup flow, the returned function tracks nothing.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {Function} Function that takes the event name and an optional label, and returns a promise that settles once the event is tracked.
  */
