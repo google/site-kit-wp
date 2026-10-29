@@ -110,7 +110,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 	} );
 
-	it( 'renders nothing while conversion tracking is on', () => {
+	it( 'should render nothing while conversion tracking is on', () => {
 		provideState( { conversionTracking: true } );
 
 		const { queryByText } = renderNotice();
@@ -118,7 +118,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders nothing when the widgets have never shown breakdown tabs', () => {
+	it( 'should render nothing when the widgets have never shown breakdown tabs', () => {
 		provideState( { leadBreakdownValues: [] } );
 
 		const { queryByText } = renderNotice();
@@ -126,7 +126,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
 	} );
 
-	it( 'renders the notice with the "Enable tracking" button for an admin', () => {
+	it( 'should render the notice with the "Enable tracking" button for an admin', () => {
 		provideState();
 
 		const { getByText, getByRole, queryByRole, container } = renderNotice();
@@ -151,7 +151,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'renders the notice without a button for a view-only user', () => {
+	it( 'should render the notice without a button for a view-only user', () => {
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
@@ -168,7 +168,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		expect( queryByRole( 'button' ) ).toBeNull();
 	} );
 
-	it( 'switches conversion tracking on and hides the notice when "Enable tracking" is clicked', async () => {
+	it( 'should switch conversion tracking on and hide the notice when "Enable tracking" is clicked', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
 			body: { enabled: true },
@@ -206,7 +206,7 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'resets the setting and keeps the notice when saving fails', async () => {
+	it( 'should reset the setting and keep the notice when saving fails', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
 			body: {

@@ -86,7 +86,7 @@ describe( 'useConversionTrackingSetting', () => {
 	} );
 
 	it.each( [ true, false ] )(
-		'returns the setting for a user who cannot manage options, when conversion tracking is %s',
+		'should return the setting for a user who cannot manage options, when conversion tracking is %s',
 		( enabled ) => {
 			provideUserCapabilities( registry, {
 				[ PERMISSION_MANAGE_OPTIONS ]: false,
@@ -107,7 +107,7 @@ describe( 'useConversionTrackingSetting', () => {
 		}
 	);
 
-	it( 'requests the setting for a user who cannot manage options', async () => {
+	it( 'should request the setting for a user who cannot manage options', async () => {
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );

@@ -179,7 +179,7 @@ describe( 'useSiteGoalsBreakdown', () => {
 		expect( result.current.hasOtherSources ).toBe( false );
 	} );
 
-	it( 'keeps the breakdown tabs while plugin conversion tracking is off', () => {
+	it( 'should keep the breakdown tabs while plugin conversion tracking is off', () => {
 		registry
 			.dispatch( CORE_SITE )
 			.receiveGetConversionTrackingSettings( { enabled: false } );

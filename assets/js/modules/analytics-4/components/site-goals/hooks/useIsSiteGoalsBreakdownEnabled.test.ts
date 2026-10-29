@@ -82,7 +82,7 @@ describe( 'useIsSiteGoalsBreakdownEnabled', () => {
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( 'is not enabled for a user who cannot manage options while conversion tracking is off', () => {
+	it( 'should not be enabled for a user who cannot manage options while conversion tracking is off', () => {
 		provideUserCapabilities( registry, {
 			googlesitekit_manage_options: false,
 		} );

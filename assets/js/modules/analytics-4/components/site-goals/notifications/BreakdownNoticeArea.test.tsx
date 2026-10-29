@@ -1254,7 +1254,7 @@ describe( 'BreakdownNoticeArea', () => {
 					[ GOAL_TYPES.ECOMMERCE, GOAL_TYPES.LEAD ],
 				],
 			] )(
-				'renders nothing in %s while a widget shows breakdown tabs',
+				'should render nothing in %s while a widget shows breakdown tabs',
 				async ( _, origin, goalTypes ) => {
 					await setUpRegistry( { conversionTracking: false } );
 					provideBreakdownInUse( [ '5' ] );
@@ -1271,7 +1271,7 @@ describe( 'BreakdownNoticeArea', () => {
 				}
 			);
 
-			it( 'shows the "Get breakdown" notice with the conversion tracking disclosure when no widget has shown breakdown tabs', async () => {
+			it( 'should show the "Get breakdown" notice with the conversion tracking disclosure when no widget has shown breakdown tabs', async () => {
 				await setUpRegistry( { conversionTracking: false } );
 				provideBreakdownInUse( [] );
 

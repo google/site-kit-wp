@@ -56,7 +56,7 @@ describe( 'isSiteGoalsBreakdownEnabled', () => {
 			false,
 		],
 	] )(
-		'returns the expected state when %s',
+		'should return the expected state when %s',
 		(
 			_,
 			hasBreakdownDimensions,

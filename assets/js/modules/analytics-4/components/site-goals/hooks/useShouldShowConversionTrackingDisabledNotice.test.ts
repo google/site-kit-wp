@@ -100,7 +100,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
 	} );
 
-	it( 'returns false without requesting a report while conversion tracking is on', async () => {
+	it( 'should return false without requesting a report while conversion tracking is on', async () => {
 		provideState( { conversionTracking: true } );
 
 		const { result, waitForRegistry } = renderHook(
@@ -117,7 +117,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( hasRequestedBreakdownValues( GOAL_TYPES.LEAD ) ).toBe( false );
 	} );
 
-	it( 'returns undefined while the conversion tracking setting loads', () => {
+	it( 'should return undefined while the conversion tracking setting loads', () => {
 		freezeFetch(
 			new RegExp(
 				'^/google-site-kit/v1/core/site/data/conversion-tracking'
@@ -132,7 +132,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBeUndefined();
 	} );
 
-	it( 'returns true while conversion tracking is off and the lead generation widget shows breakdown tabs', () => {
+	it( 'should return true while conversion tracking is off and the lead generation widget shows breakdown tabs', () => {
 		provideState();
 		seedSiteGoalsBreakdownValuesReport(
 			registry,
@@ -151,7 +151,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'returns true while conversion tracking is off and the online store widget shows breakdown tabs', () => {
+	it( 'should return true while conversion tracking is off and the online store widget shows breakdown tabs', () => {
 		provideState();
 		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.ECOMMERCE, [
 			'woocommerce',
@@ -166,7 +166,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'returns true for a user who cannot manage options', () => {
+	it( 'should return true for a user who cannot manage options', () => {
 		provideUserCapabilities( registry, {
 			[ PERMISSION_MANAGE_OPTIONS ]: false,
 		} );
@@ -188,7 +188,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( true );
 	} );
 
-	it( 'returns false when the widgets have never shown breakdown tabs', () => {
+	it( 'should return false when the widgets have never shown breakdown tabs', () => {
 		provideState();
 		seedSiteGoalsBreakdownValuesReport(
 			registry,
@@ -205,7 +205,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( 'ignores ecommerce breakdown values outside the supported providers', () => {
+	it( 'should ignore ecommerce breakdown values outside the supported providers', () => {
 		provideState();
 		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.ECOMMERCE, [
 			'some-other-plugin',
@@ -220,7 +220,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( 'ignores breakdown values for a widget that does not render', () => {
+	it( 'should ignore breakdown values for a widget that does not render', () => {
 		provideState( { activeWidgets: [ GOAL_TYPES.ECOMMERCE ] } );
 		seedSiteGoalsBreakdownValuesReport(
 			registry,
@@ -263,7 +263,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( result.current ).toBe( false );
 	} );
 
-	it( 'returns false without requesting a report when the breakdown dimensions are missing', async () => {
+	it( 'should return false without requesting a report when the breakdown dimensions are missing', async () => {
 		provideState( { availableCustomDimensions: [] } );
 
 		const { result, waitForRegistry } = renderHook(
@@ -280,7 +280,7 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 		expect( hasRequestedBreakdownValues( GOAL_TYPES.LEAD ) ).toBe( false );
 	} );
 
-	it( 'returns undefined while a breakdown values report loads', () => {
+	it( 'should return undefined while a breakdown values report loads', () => {
 		provideState();
 		freezeFetch(
 			new RegExp( '^/google-site-kit/v1/modules/analytics-4/data/report' )
