@@ -22,6 +22,7 @@
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
 import { getWelcomeTour } from '@/js/feature-tours/welcome';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -38,6 +39,7 @@ import {
 	render,
 	waitFor,
 } from '@tests/js/test-utils';
+import { HELP_MENU_BUTTON_CLASS } from './constants';
 import HelpMenu from './HelpMenu';
 
 jest.mock( '@/js/feature-tours/hooks/useWelcomeTour' );
@@ -191,6 +193,74 @@ describe( 'HelpMenu', () => {
 			'open_helpmenu'
 		);
 		expect( mockTrackEvent ).toHaveBeenCalledTimes( 1 );
+	} );
+
+	it( 'should clear the admin screen tooltip when the help menu is opened and the tooltip targets the help menu button', () => {
+		registry.dispatch( CORE_UI ).setValue( 'admin-screen-tooltip', {
+			isTooltipVisible: true,
+			target: `.${ HELP_MENU_BUTTON_CLASS }`,
+		} );
+
+		const { getByRole } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
+
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toBeUndefined();
+	} );
+
+	it( 'should not clear the admin screen tooltip when the help menu is opened and the tooltip targets another element', () => {
+		const tooltipValue = {
+			isTooltipVisible: true,
+			target: '#adminmenu [href*="page=googlesitekit-settings"]',
+		};
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( 'admin-screen-tooltip', tooltipValue );
+
+		const { getByRole } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Help' } ) );
+
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toEqual( tooltipValue );
+	} );
+
+	it( 'should not clear the admin screen tooltip when the help menu is closed', () => {
+		const { getByRole } = render( <HelpMenu showFeatureTour />, {
+			registry,
+			viewContext: VIEW_CONTEXT_MAIN_DASHBOARD,
+		} );
+
+		const helpButton = getByRole( 'button', { name: 'Help' } );
+
+		// Open the menu before any tooltip is shown.
+		fireEvent.click( helpButton );
+
+		const tooltipValue = {
+			isTooltipVisible: true,
+			target: `.${ HELP_MENU_BUTTON_CLASS }`,
+		};
+
+		registry
+			.dispatch( CORE_UI )
+			.setValue( 'admin-screen-tooltip', tooltipValue );
+
+		fireEvent.click( helpButton );
+
+		expect( helpButton ).toHaveAttribute( 'aria-expanded', 'false' );
+		expect(
+			registry.select( CORE_UI ).getValue( 'admin-screen-tooltip' )
+		).toEqual( tooltipValue );
 	} );
 
 	it.each( [

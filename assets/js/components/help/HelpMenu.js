@@ -35,6 +35,7 @@ import { ESCAPE, TAB } from '@wordpress/keycodes';
 import { Button, Menu } from 'googlesitekit-components';
 import { useDispatch, useSelect } from 'googlesitekit-data';
 import { useWelcomeTour } from '@/js/feature-tours/hooks/useWelcomeTour';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { useKeyCodesInside } from '@/js/hooks/useKeyCodesInside';
@@ -88,13 +89,29 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 		[ showFeatureTour ]
 	);
 
+	const { isTooltipVisible = false, target } = useSelect(
+		( select ) =>
+			select( CORE_UI ).getValue( 'admin-screen-tooltip' ) || {
+				isTooltipVisible: false,
+			}
+	);
+
+	const { setValue } = useDispatch( CORE_UI );
+
 	const handleMenu = useCallback( () => {
 		if ( ! menuOpen ) {
 			trackEvent( `${ viewContext }_headerbar`, 'open_helpmenu' );
+
+			if (
+				isTooltipVisible &&
+				target === `.${ HELP_MENU_BUTTON_CLASS }`
+			) {
+				setValue( 'admin-screen-tooltip', undefined );
+			}
 		}
 
 		setMenuOpen( ! menuOpen );
-	}, [ menuOpen, viewContext ] );
+	}, [ menuOpen, viewContext, isTooltipVisible, target, setValue ] );
 
 	const handleMenuSelected = useCallback( () => {
 		setMenuOpen( false );
