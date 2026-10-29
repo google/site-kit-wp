@@ -135,7 +135,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Builds the data request of the datapoint with the given parameters.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $params The parameters of the request, such as `array( 'limit' => 3 )`.
 	 * @return Data_Request The data request.
@@ -147,7 +147,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Sends the report request of the datapoint to the fake Analytics, and gets the body Analytics receives.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $params The parameters of the request, such as `array( 'limit' => 3 )`.
 	 * @return array The body of the report request, decoded from JSON.
@@ -163,7 +163,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Gets the product filter of a report request, the `notExpression` on `pagePathPlusQueryString`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $body The body of the report request, decoded from JSON.
 	 * @return array|null The expression, or `null` where the report has none.
@@ -184,7 +184,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * Analytics reads the pattern as RE2, and `preg_match()` matches these URLs
 	 * the same way.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array    $product_filter The product filter, as `get_product_filter()` returns it.
 	 * @param string[] $urls           The URLs, each a path with its query string, such as `/?product=hoodie`.
@@ -202,7 +202,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * `class_alias()` can't be undone, so each test that calls this runs in a
 	 * process of its own.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	private function activate_woocommerce() {
 		class_alias( __CLASS__, 'WooCommerce' );
@@ -211,7 +211,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Builds a report response with the visitors of each URL and the total visitors of the report.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $visitors_by_url The visitors of each URL, most visitors first, such as `array( '/?p=123' => 10 )`.
 	 * @param int   $total        The visitors of every URL of the report.
@@ -253,7 +253,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * The REST route then answers from `$this->modules`, so a test calls
 	 * `switch_to_user()` before each request.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int $owner_id The ID of the administrator who owns Analytics.
 	 */
@@ -286,7 +286,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	 * The module's reports go to a fake Analytics, which answers with the given
 	 * visitors and saves each `Authorization` header in `$google_api_authorizations`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int   $user_id      The ID of the user to switch to.
 	 * @param array $visitors_by_url The visitors of each URL that the fake Analytics answers with, most visitors first, such as `array( '/?p=123' => 10 )`.
@@ -315,7 +315,7 @@ class Get_Plain_Permalink_Top_PostsTest extends TestCase {
 	/**
 	 * Sends a request to the `plain-permalink-top-posts` REST route for the three posts with the most visitors on 2026-10-21 and 2026-10-22.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return \WP_REST_Response The response.
 	 */

@@ -33,7 +33,7 @@ final class Wire_Format {
 	 * Envelope members, by position.
 	 *
 	 * @since 1.189.0
-	 * @since n.e.x.t Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
+	 * @since 1.191.0 Renamed the constants of members `3` and `4` from visitors to visits, and replaced members `5` and `6` with the key factor cards and their attributes.
 	 */
 	const MEMBER_VERSION               = 0;
 	const MEMBER_STRINGS               = 1;
@@ -47,7 +47,7 @@ final class Wire_Format {
 	 * The position each driver kind of a key factor card travels as. A kind is
 	 * only ever added at the end, so a position never changes meaning.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	const KEY_FACTOR_KINDS = array(
 		'CHANNEL'        => 0,
@@ -61,7 +61,7 @@ final class Wire_Format {
 	 * The position each kind of a key factor card's attribute travels as. A
 	 * kind is only ever added at the end, so a position never changes meaning.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	const KEY_FACTOR_ATTRIBUTE_KINDS = array(
 		'TRAFFIC_CHANNEL' => 0,
@@ -106,7 +106,7 @@ final class Wire_Format {
 	 * The decimal places a share of the site's change keeps. Every other number
 	 * the format carries is an integer.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 */
 	const SHARE_DECIMAL_PLACES = 1;
 }

@@ -46,7 +46,7 @@ export interface ReportState< ReportType > {
  * Gets a report with its loading state and its error. The report is requested
  * once the component is in view.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} storeName The store with the `getReport` selector, e.g. `MODULES_ANALYTICS_4`.
  * @param {Object} [options] The report options. Without options, the hook requests no report.

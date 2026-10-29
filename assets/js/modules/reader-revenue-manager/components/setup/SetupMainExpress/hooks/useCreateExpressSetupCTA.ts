@@ -45,7 +45,7 @@ type CreateExpressSetupCTACallback = (
  * saved earlier in the flow can be out of date, and the new CTA is missing
  * from the saved `configuredCTAs`.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {Function} Callback that takes the `createCTA()` params and resolves
  *                    to the `createCTA()` result.

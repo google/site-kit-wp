@@ -40,7 +40,7 @@ const EMPTY_SCOPES: string[] = [];
  * Requests missing permissions on entry to an express setup flow.
  *
  * @since 1.189.0
- * @since n.e.x.t Returns whether the required scopes are granted.
+ * @since 1.191.0 Returns whether the required scopes are granted.
  *
  * @param {string[]} [additionalScopes] Scopes required by the specific flow.
  * @return {(boolean|undefined)} Whether all required scopes are granted, or `undefined` while the granted scopes are loading.

@@ -105,7 +105,7 @@ if ( ! function_exists( 'wc_get_page_id' ) ) {
 	 * and runs the `woocommerce_get_<page>_page_id` filter. A test can set either
 	 * one, such as the shop page through the `woocommerce_shop_page_id` option.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param string $page The WooCommerce page, such as `shop` or `checkout`.
 	 * @return int The page's ID, or `-1` where the store has no such page.

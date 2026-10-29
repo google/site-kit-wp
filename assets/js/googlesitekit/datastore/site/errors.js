@@ -45,7 +45,7 @@ const baseActions = {
 	 * Sets the internal server error.
 	 *
 	 * @since 1.38.0
-	 * @since n.e.x.t Added the `showGlobalNotification` property.
+	 * @since 1.191.0 Added the `showGlobalNotification` property.
 	 *
 	 * @param {Object}  error                          Internal server error object.
 	 * @param {string}  error.id                       Error notification ID.

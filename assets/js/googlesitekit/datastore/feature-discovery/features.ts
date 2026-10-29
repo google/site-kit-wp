@@ -189,7 +189,7 @@ export const actions = {
 	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
-	 * @since n.e.x.t Implemented the `in-place-panel` and `background-toggle` setup types.
+	 * @since 1.191.0 Implemented the `in-place-panel` and `background-toggle` setup types.
 	 * @since n.e.x.t Allowed `setup-flow` features to activate a module and also override its setup URL.
 	 *
 	 * @param {string} slug Feature's slug.
