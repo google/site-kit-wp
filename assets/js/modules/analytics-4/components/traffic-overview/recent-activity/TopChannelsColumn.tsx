@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
  */
 import { TableTile } from '@/js/modules/analytics-4/components/common/tiles';
 import { useRecentTrafficBreakdownColumn } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentTrafficBreakdownColumn';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 import { getTopChannelsReportOptions } from './reportOptions';
 
 const TopChannelsColumn: FC = () => {
@@ -46,6 +47,7 @@ const TopChannelsColumn: FC = () => {
 			loading={ loading }
 			error={ error }
 			onRetry={ retry }
+			ErrorComponent={ RecentActivityErrorNotice }
 		/>
 	);
 };
