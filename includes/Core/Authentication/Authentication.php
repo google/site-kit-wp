@@ -263,6 +263,7 @@ final class Authentication implements Provides_Feature_Metrics {
 	 * Registers functionality through WordPress hooks.
 	 *
 	 * @since 1.0.0
+	 * @since 1.191.0 Skips syncing site fields when the site URL differs from the connected URL.
 	 */
 	public function register() {
 		$this->credentials()->register();
@@ -339,6 +340,12 @@ final class Authentication implements Provides_Feature_Metrics {
 				}
 				// This method should run no more than once per request.
 				$this->did_sync_fields = true;
+
+				// Don't sync from a site whose URL differs from the one it connected with, such as a copy of the site.
+				$connected_url = $this->connected_proxy_url->get();
+				if ( $connected_url && ! $this->connected_proxy_url->matches_url( $this->context->get_canonical_home_url() ) ) {
+					return;
+				}
 
 				if ( $this->credentials->using_proxy() ) {
 					$this->google_proxy->sync_site_fields( $this->credentials() );

@@ -259,6 +259,67 @@ class AuthenticationTest extends TestCase {
 		$this->assertCount( 0, $synced_bodies, 'Writing the plugin version should not send the site fields.' );
 	}
 
+	public function data_connected_proxy_urls() {
+		return array(
+			'matching the site URL' => array( 'site', 1 ),
+			'not stored'            => array( null, 1 ),
+			'for a different site'  => array( 'https://other.example.com/', 0 ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_connected_proxy_urls
+	 * @param string|null $connected_url  Connected proxy URL to store, `site` for the site's URL, or null for none.
+	 * @param int         $expected_syncs Number of site field syncs expected.
+	 */
+	public function test_register__syncs_site_fields_only_from_the_connected_url( $connected_url, $expected_syncs ) {
+		$this->fake_proxy_site_connection();
+
+		$context             = new Context( GOOGLESITEKIT_PLUGIN_MAIN_FILE );
+		$connected_proxy_url = new Connected_Proxy_URL( new Options( $context ) );
+		if ( 'site' === $connected_url ) {
+			$connected_proxy_url->set( $context->get_canonical_home_url() );
+		} elseif ( null === $connected_url ) {
+			$connected_proxy_url->delete();
+		} else {
+			$connected_proxy_url->set( $connected_url );
+		}
+
+		$auth = new Authentication( $context );
+		remove_all_actions( 'update_option_blogname' );
+		remove_all_actions( 'shutdown' );
+		$auth->register();
+
+		$synced_bodies = array();
+		add_filter(
+			'pre_http_request',
+			function ( $preempt, $args, $url ) use ( &$synced_bodies ) {
+				if ( false === strpos( $url, Google_Proxy::OAUTH2_SITE_URI ) ) {
+					return $preempt;
+				}
+
+				$synced_bodies[] = $args['body'];
+
+				return array(
+					'headers'  => array(),
+					'body'     => '{}',
+					'response' => array(
+						'code'    => 200,
+						'message' => get_status_header_desc( 200 ),
+					),
+				);
+			},
+			10,
+			3
+		);
+
+		update_option( 'blogname', 'A new site title ' . wp_generate_password( 6, false ) );
+
+		do_action( 'shutdown' );
+
+		$this->assertCount( $expected_syncs, $synced_bodies, 'The site fields should only be sent when the connected URL is not stored or matches the site URL.' );
+	}
+
 	protected function assertAdminDataExtended() {
 		$data = apply_filters( 'googlesitekit_admin_data', array() );
 
