@@ -130,6 +130,22 @@ describe( 'PDFTypography', () => {
 		} );
 	} );
 
+	it( 'should pass the hyphenation callback to the Text', () => {
+		function hyphenationCallback( word: string ) {
+			return [ word ];
+		}
+		const tree = TestRenderer.create(
+			<PDFTypography hyphenationCallback={ hyphenationCallback }>
+				Vacoas-Phoenix
+			</PDFTypography>
+		).toJSON();
+		if ( ! tree || Array.isArray( tree ) ) {
+			throw new Error( 'Unexpected render output.' );
+		}
+
+		expect( tree.props.hyphenationCallback ).toBe( hyphenationCallback );
+	} );
+
 	it( 'truncates the text to one line with an ellipsis when truncateContent is true', () => {
 		const json = renderJSON(
 			<PDFTypography truncateContent>

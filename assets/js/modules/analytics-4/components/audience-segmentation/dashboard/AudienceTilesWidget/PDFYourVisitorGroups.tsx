@@ -20,43 +20,157 @@
  * External dependencies
  */
 import { View } from '@react-pdf/renderer';
-import { FC } from 'react';
+import { FC, ReactElement } from 'react';
 
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
+import {
+	PDFAudienceMetricIconPagesPerVisit,
+	PDFAudienceMetricIconPageviews,
+	PDFAudienceMetricIconVisitors,
+	PDFAudienceMetricIconVisitsPerVisitor,
+} from '@/js/components/pdf-export/pdf-icons';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
+import PDFCard from '@/js/components/pdf-export/shared-react-pdf-components/PDFCard';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
 import { PDFWidgetComponentProps } from '@/js/googlesitekit/widgets/types';
+import { numFmt } from '@/js/util';
+import type { AudienceTilePDFData } from './buildPDFAudienceCard';
 import type { AudienceTilesPDFData } from './getPDFData';
-import PDFYourVisitorGroupsTile from './PDFYourVisitorGroupsTile';
+import PDFAudienceCardHeader from './PDFAudienceCardHeader';
+import PDFAudienceCitiesRow from './PDFAudienceCitiesRow';
+import PDFAudienceMetricRow from './PDFAudienceMetricRow';
+import PDFAudienceTopContentRow from './PDFAudienceTopContentRow';
 
 const styles = createPDFStyles( {
 	heading: {
 		marginBottom: 15,
 	},
-	row: {
-		flexDirection: 'row',
-		// Stretch every card to the tallest card's height, for equal-height
-		// columns.
-		alignItems: 'stretch',
+	// One row per card section, sized to its tallest cell; the card
+	// surfaces sit in a layer behind.
+	grid: {
+		position: 'relative',
 	},
-	card: {
-		// Equal-width columns: every card grows and shrinks from a zero basis.
+	columns: {
+		flexDirection: 'row',
+		columnGap: 24,
+	},
+	column: {
 		flexGrow: 1,
 		flexShrink: 1,
 		flexBasis: 0,
 	},
-	cardGap: {
-		width: 24,
+	cardLayer: {
+		position: 'absolute',
+		top: 0,
+		right: 0,
+		bottom: 0,
+		left: 0,
+	},
+	card: {
+		paddingVertical: 0,
+		paddingHorizontal: 0,
 	},
 } );
+
+interface CardSection {
+	/** A key unique among the sections. */
+	key: string;
+	/** Renders the section for one audience's card. */
+	render: ( audience: AudienceTilePDFData ) => ReactElement;
+}
+
+/**
+ * The sections of an audience card, top to bottom.
+ *
+ * @since n.e.x.t
+ */
+const CARD_SECTIONS: CardSection[] = [
+	{
+		key: 'header',
+		render: ( audience ) => (
+			<PDFAudienceCardHeader
+				audienceName={ audience.audienceName }
+				isAudiencePartialData={ audience.isAudiencePartialData }
+			/>
+		),
+	},
+	{
+		key: 'visitors',
+		render: ( { metrics } ) => (
+			<PDFAudienceMetricRow
+				Icon={ PDFAudienceMetricIconVisitors }
+				label={ __( 'Visitors', 'google-site-kit' ) }
+				value={ numFmt( metrics.visitors.current ) }
+				metric={ metrics.visitors }
+			/>
+		),
+	},
+	{
+		key: 'visits-per-visitor',
+		render: ( { metrics } ) => (
+			<PDFAudienceMetricRow
+				Icon={ PDFAudienceMetricIconVisitsPerVisitor }
+				label={ __( 'Visits per visitor', 'google-site-kit' ) }
+				value={ numFmt( metrics.visitsPerVisitor.current ) }
+				metric={ metrics.visitsPerVisitor }
+			/>
+		),
+	},
+	{
+		key: 'pages-per-visit',
+		render: ( { metrics } ) => (
+			<PDFAudienceMetricRow
+				Icon={ PDFAudienceMetricIconPagesPerVisit }
+				label={ __( 'Pages per visit', 'google-site-kit' ) }
+				value={ numFmt( metrics.pagesPerVisit.current, {
+					style: 'decimal',
+					maximumFractionDigits: 2,
+				} ) }
+				metric={ metrics.pagesPerVisit }
+			/>
+		),
+	},
+	{
+		key: 'pageviews',
+		render: ( { metrics } ) => (
+			<PDFAudienceMetricRow
+				Icon={ PDFAudienceMetricIconPageviews }
+				label={ sprintf(
+					/* translators: %s: a percentage value such as "33.3%". */
+					__( '%s of total pageviews', 'google-site-kit' ),
+					numFmt( metrics.pageviews.percentageOfTotalPageViews, {
+						style: 'percent',
+						maximumFractionDigits: 1,
+					} )
+				) }
+				value={ numFmt( metrics.pageviews.current ) }
+				metric={ metrics.pageviews }
+			/>
+		),
+	},
+	{
+		key: 'cities',
+		render: ( audience ) => (
+			<PDFAudienceCitiesRow topCities={ audience.topCities } />
+		),
+	},
+	{
+		key: 'top-content',
+		render: ( audience ) => (
+			<PDFAudienceTopContentRow
+				topContent={ audience.topContent }
+				isTopContentPartialData={ audience.isTopContentPartialData }
+			/>
+		),
+	},
+];
 
 const PDFYourVisitorGroups: FC< PDFWidgetComponentProps > = ( { data } ) => {
 	const audienceData = data as AudienceTilesPDFData[ 'data' ] | undefined;
@@ -72,25 +186,26 @@ const PDFYourVisitorGroups: FC< PDFWidgetComponentProps > = ( { data } ) => {
 			<PDFTypography size="large" style={ styles.heading }>
 				{ __( 'Your visitor groups', 'google-site-kit' ) }
 			</PDFTypography>
-			<View style={ styles.row }>
-				{ audiences.map( ( audience, index ) => (
-					<Fragment key={ audience.audienceResourceName }>
-						{ index > 0 && <View style={ styles.cardGap } /> }
-						<View style={ styles.card }>
-							<PDFYourVisitorGroupsTile
-								audienceName={ audience.audienceName }
-								metrics={ audience.metrics }
-								topCities={ audience.topCities }
-								topContent={ audience.topContent }
-								isAudiencePartialData={
-									audience.isAudiencePartialData
-								}
-								isTopContentPartialData={
-									audience.isTopContentPartialData
-								}
-							/>
-						</View>
-					</Fragment>
+			<View style={ styles.grid }>
+				<View style={ [ styles.columns, styles.cardLayer ] }>
+					{ audiences.map( ( audience ) => (
+						<PDFCard
+							key={ audience.audienceResourceName }
+							style={ [ styles.column, styles.card ] }
+						/>
+					) ) }
+				</View>
+				{ CARD_SECTIONS.map( ( section ) => (
+					<View key={ section.key } style={ styles.columns }>
+						{ audiences.map( ( audience ) => (
+							<View
+								key={ audience.audienceResourceName }
+								style={ styles.column }
+							>
+								{ section.render( audience ) }
+							</View>
+						) ) }
+					</View>
 				) ) }
 			</View>
 		</View>

@@ -22,7 +22,7 @@
  */
 import { Text, View } from '@react-pdf/renderer';
 import type { Style } from '@react-pdf/stylesheet';
-import { FC } from 'react';
+import { ComponentProps, FC } from 'react';
 
 /**
  * Internal dependencies
@@ -57,6 +57,10 @@ export interface PDFTypographyProps {
 	maxLines?: number;
 	/** Ends the text in an ellipsis when it's too long, and limits it to one line unless `maxLines` sets another limit. */
 	truncateContent?: boolean;
+	/** Callback that splits each word into the parts a line can break between. */
+	hyphenationCallback?: ComponentProps<
+		typeof Text
+	>[ 'hyphenationCallback' ];
 }
 
 const PDFTypography: FC< PDFTypographyProps > = ( {
@@ -65,6 +69,7 @@ const PDFTypography: FC< PDFTypographyProps > = ( {
 	style,
 	maxLines,
 	truncateContent = false,
+	hyphenationCallback,
 	children,
 } ) => {
 	const baseStyles: Style[] = [
@@ -85,7 +90,10 @@ const PDFTypography: FC< PDFTypographyProps > = ( {
 	}
 
 	const text = (
-		<Text style={ style ? baseStyles.concat( style ) : baseStyles }>
+		<Text
+			style={ style ? baseStyles.concat( style ) : baseStyles }
+			hyphenationCallback={ hyphenationCallback }
+		>
 			{ children }
 		</Text>
 	);

@@ -30,6 +30,7 @@ import { FC, ReactNode } from 'react';
 import { createPDFStyles } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography, {
+	PDFTypographyProps,
 	PDFTypographySize,
 	PDFTypographyType,
 } from './PDFTypography';
@@ -60,6 +61,8 @@ export interface PDFLinkProps {
 	style?: Style | Style[];
 	/** Ends the text in an ellipsis when it's too long, and limits it to one line unless the text's own `maxLines` sets another limit. */
 	truncateContent?: boolean;
+	/** Callback that splits each word into the parts a line can break between. */
+	hyphenationCallback?: PDFTypographyProps[ 'hyphenationCallback' ];
 }
 
 const PDFLink: FC< PDFLinkProps > = ( {
@@ -69,6 +72,7 @@ const PDFLink: FC< PDFLinkProps > = ( {
 	trailingIcon,
 	style,
 	truncateContent,
+	hyphenationCallback,
 	children,
 } ) => {
 	if ( ! href ) {
@@ -78,6 +82,7 @@ const PDFLink: FC< PDFLinkProps > = ( {
 				size={ size }
 				style={ style }
 				truncateContent={ truncateContent }
+				hyphenationCallback={ hyphenationCallback }
 			>
 				{ children }
 			</PDFTypography>
@@ -96,6 +101,7 @@ const PDFLink: FC< PDFLinkProps > = ( {
 				size={ size }
 				style={ style ? [ linkColor ].concat( style ) : linkColor }
 				truncateContent={ truncateContent }
+				hyphenationCallback={ hyphenationCallback }
 			>
 				{ children }
 			</PDFTypography>

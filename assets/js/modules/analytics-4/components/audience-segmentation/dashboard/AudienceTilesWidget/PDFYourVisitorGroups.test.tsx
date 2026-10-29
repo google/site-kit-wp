@@ -25,6 +25,7 @@ import TestRenderer from 'react-test-renderer';
 /**
  * Internal dependencies
  */
+import { flattenPDFStyle } from '@/js/components/pdf-export/test-utils';
 import { AudiencePartialDataFlags } from '@/js/modules/analytics-4/components/audience-segmentation/dashboard/AudienceTilesWidget/getPDFData';
 import PDFYourVisitorGroups from './PDFYourVisitorGroups';
 
@@ -93,7 +94,7 @@ function countCards( json: string ) {
 }
 
 describe( 'AudienceTilesWidget PDF', () => {
-	it( 'renders the heading and two cards for two audiences', () => {
+	it( 'should render the heading and two cards for two audiences', () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -110,7 +111,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( countCards( json ) ).toBe( 2 );
 	} );
 
-	it( 'renders three cards for three audiences', () => {
+	it( 'should render three cards for three audiences', () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -124,7 +125,7 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( countCards( JSON.stringify( tree ) ) ).toBe( 3 );
 	} );
 
-	it( "gives each card its own audience's partial-data flags", () => {
+	it( "should give each card its own audience's partial-data flags", () => {
 		const tree = renderWidget( {
 			data: {
 				audiences: [
@@ -141,15 +142,75 @@ describe( 'AudienceTilesWidget PDF', () => {
 		expect( json.split( 'Partial data' ).length - 1 ).toBe( 1 );
 	} );
 
-	it( 'renders nothing for an empty audiences array', () => {
+	it( 'should render the four metric rows in order, with the pageviews share label', () => {
+		const json = JSON.stringify(
+			renderWidget( {
+				data: {
+					audiences: [
+						buildAudience( 'New' ),
+						buildAudience( 'Returning' ),
+					],
+				},
+			} )
+		);
+
+		expect( json ).toContain( '50% of total pageviews' );
+		expect( json.indexOf( 'Visitors' ) ).toBeLessThan(
+			json.indexOf( 'Visits per visitor' )
+		);
+		expect( json.indexOf( 'Visits per visitor' ) ).toBeLessThan(
+			json.indexOf( 'Pages per visit' )
+		);
+		expect( json.indexOf( 'Pages per visit' ) ).toBeLessThan(
+			json.indexOf( '50% of total pageviews' )
+		);
+	} );
+
+	it( 'should render one row per card section, with a cell per card', () => {
+		const tree = renderWidget( {
+			data: {
+				audiences: [
+					buildAudience( 'New' ),
+					buildAudience( 'Returning' ),
+					buildAudience( 'Purchasers' ),
+				],
+			},
+		} ) as TestRenderer.ReactTestRendererJSON;
+		const [ , grid ] =
+			tree.children as TestRenderer.ReactTestRendererJSON[];
+		const [ cards, ...rows ] =
+			grid.children as TestRenderer.ReactTestRendererJSON[];
+
+		// One card surface per audience, behind the sections.
+		expect( flattenPDFStyle( cards.props.style ) ).toMatchObject( {
+			position: 'absolute',
+		} );
+		expect( cards.children ).toHaveLength( 3 );
+
+		// The header, four metrics, cities, and top content sections, each a
+		// row with one cell per card. A row's cells stretch to the tallest one,
+		// as `alignItems` is left at its `stretch` default.
+		expect( rows ).toHaveLength( 7 );
+		rows.forEach( ( row ) => {
+			expect( flattenPDFStyle( row.props.style ) ).toMatchObject( {
+				flexDirection: 'row',
+			} );
+			expect( flattenPDFStyle( row.props.style ) ).not.toHaveProperty(
+				'alignItems'
+			);
+			expect( row.children ).toHaveLength( 3 );
+		} );
+	} );
+
+	it( 'should render nothing for an empty audiences array', () => {
 		expect( renderWidget( { data: { audiences: [] } } ) ).toBeNull();
 	} );
 
-	it( 'renders nothing when data is null', () => {
+	it( 'should render nothing when data is null', () => {
 		expect( renderWidget( { data: null } ) ).toBeNull();
 	} );
 
-	it( 'renders nothing when data is undefined', () => {
+	it( 'should render nothing when data is undefined', () => {
 		expect( renderWidget( {} ) ).toBeNull();
 	} );
 } );
