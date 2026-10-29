@@ -13,12 +13,10 @@ use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
 use Google\Site_Kit\Core\Conversion_Tracking\Conversion_Tracking_Settings;
 use Google\Site_Kit\Core\Conversion_Tracking\REST_Conversion_Tracking_Controller;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
-use Google\Site_Kit\Core\Storage\User_Options;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
 use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\TestCase;
@@ -26,6 +24,7 @@ use WP_REST_Request;
 
 class REST_Conversion_Tracking_ControllerTest extends TestCase {
 
+	use Dashboard_Sharing_Trait;
 	use Fake_Site_Connection_Trait;
 	use RestTestTrait;
 
@@ -291,20 +290,8 @@ class REST_Conversion_Tracking_ControllerTest extends TestCase {
 		// A view-only user can view the dashboard only after setup is complete.
 		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
 
-		( new Module_Sharing_Settings( new Options( $this->context ) ) )->set(
-			array(
-				'analytics-4' => array(
-					'sharedRoles' => array( 'editor' ),
-					'management'  => 'all_admins',
-				),
-			)
-		);
-
-		$user_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		wp_set_current_user( $user_id );
-
-		// A view-only user can view the dashboard only after they dismiss the splash screen.
-		( new Dismissed_Items( new User_Options( $this->context, $user_id ) ) )->add( 'shared_dashboard_splash' );
+		$this->share_modules_with_editors( array( 'analytics-4' ) );
+		wp_set_current_user( $this->create_view_only_reader() );
 
 		$this->assertTrue( current_user_can( Permissions::VIEW_DASHBOARD ), 'The editor should be able to view the shared dashboard.' );
 		$this->assertFalse( current_user_can( Permissions::MANAGE_OPTIONS ), 'The editor should not be able to manage options.' );
