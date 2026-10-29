@@ -33,6 +33,7 @@ import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-
 import {
 	buildSiteGoalsBreakdownValuesReportOptions,
 	seedSiteGoalsBreakdownValuesReport,
+	seedSiteGoalsEventCountReport,
 } from '@/js/modules/analytics-4/components/site-goals/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
@@ -40,6 +41,7 @@ import {
 	createTestRegistry,
 	freezeFetch,
 	provideModules,
+	provideSiteInfo,
 	provideUserCapabilities,
 	renderHook,
 } from '@tests/js/test-utils';
@@ -220,6 +222,30 @@ describe( 'useShouldShowConversionTrackingDisabledNotice', () => {
 
 	it( 'ignores breakdown values for a widget that does not render', () => {
 		provideState( { activeWidgets: [ GOAL_TYPES.ECOMMERCE ] } );
+		seedSiteGoalsBreakdownValuesReport(
+			registry,
+			GOAL_TYPES.ECOMMERCE,
+			[]
+		);
+		seedSiteGoalsBreakdownValuesReport( registry, GOAL_TYPES.LEAD, [
+			'5',
+		] );
+
+		const { result } = renderHook(
+			() => useShouldShowConversionTrackingDisabledNotice(),
+			{ registry }
+		);
+
+		expect( result.current ).toBe( false );
+	} );
+
+	it( 'should return false when the widget with breakdown values shows the removal notice', () => {
+		provideState();
+		// No form plugin is active and the selected range has no lead
+		// events, so the lead widget shows the removal notice instead of its
+		// tabs.
+		provideSiteInfo( registry, { hasActiveLeadEventProviders: false } );
+		seedSiteGoalsEventCountReport( registry, GOAL_TYPES.LEAD, '0' );
 		seedSiteGoalsBreakdownValuesReport(
 			registry,
 			GOAL_TYPES.ECOMMERCE,

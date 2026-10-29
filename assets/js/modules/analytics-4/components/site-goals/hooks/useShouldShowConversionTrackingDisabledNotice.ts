@@ -26,6 +26,7 @@ import {
 } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
 import { GoalType } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/types';
+import { isSiteGoalsWidgetShowingContent } from '@/js/modules/analytics-4/components/site-goals/utils/isSiteGoalsWidgetShowingContent';
 import {
 	CONVERSION_REPORTING_ECOMMERCE_EVENTS,
 	MODULES_ANALYTICS_4,
@@ -48,11 +49,15 @@ function hasBreakdownTabs(
 	select: Select,
 	goalType: GoalType
 ): boolean | undefined {
-	const isRenderable =
-		select( MODULES_ANALYTICS_4 ).isSiteGoalsWidgetRenderable( goalType );
+	// A widget that shows the removal notice shows no tabs, even when the
+	// 90-day discovery window still holds breakdown values.
+	const isShowingContent = isSiteGoalsWidgetShowingContent(
+		select,
+		goalType
+	);
 
-	if ( isRenderable !== true ) {
-		return isRenderable;
+	if ( isShowingContent !== true ) {
+		return isShowingContent;
 	}
 
 	const breakdownDimension =
