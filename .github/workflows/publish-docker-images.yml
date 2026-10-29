@@ -119,7 +119,7 @@ jobs:
 
 
   publish-playwright-wp-fixed:
-    name: Playwright WP 5.2.21
+    name: Playwright WP 5.2.30
     runs-on: ubuntu-latest
     needs: changes
     permissions:
@@ -143,9 +143,9 @@ jobs:
         uses: ./.github/actions/build-push-docker-image
         with:
           context: tests/playwright/docker/wordpress
-          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.21-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
-          build-args: WP_VERSION=5.2.21
-          labels: org.opencontainers.image.description=WordPress 5.2.21 Docker image (with bundled test plugins, e.g. WooCommerce) for Site Kit Playwright tests.
+          tags: ghcr.io/google/site-kit-wp/playwright-wp:5.2.30-${{ env.PLAYWRIGHT_WP_DATE_SUFFIX }}
+          build-args: WP_VERSION=5.2.30
+          labels: org.opencontainers.image.description=WordPress 5.2.30 Docker image (with bundled test plugins, e.g. WooCommerce) for Site Kit Playwright tests.
           registry-username: "github-actions[bot]"
           registry-password: ${{ secrets.GITHUB_TOKEN }}
           push: ${{ github.event_name != 'pull_request' }}
