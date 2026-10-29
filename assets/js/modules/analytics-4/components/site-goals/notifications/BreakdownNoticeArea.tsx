@@ -116,8 +116,8 @@ interface BreakdownDimensionStateArgs {
 interface BreakdownDimensionState {
 	/**
 	 * Whether the breakdown is enabled: its dimensions exist and plugin
-	 * conversion tracking is on, the same condition the widgets use to show
-	 * the breakdown.
+	 * conversion tracking is on. The widgets show the tabs on the dimensions
+	 * alone, so they keep them when conversion tracking is switched off later.
 	 */
 	hasBreakdownDimensions: boolean | undefined;
 	/**
@@ -243,7 +243,6 @@ function resolveBreakdownNoticeState(
 interface ComputeNoticeStateArgs {
 	isViewOnly: boolean;
 	shouldShowConversionTrackingDisabledNotice: boolean | undefined;
-	canManageOptions: boolean | undefined;
 	isConversionTrackingEnabled: boolean | undefined;
 	hasBreakdownDimensions: boolean | undefined;
 	isIntroModalDismissed: boolean | undefined;
@@ -270,7 +269,6 @@ function computeNoticeState(
 	const {
 		isViewOnly,
 		shouldShowConversionTrackingDisabledNotice,
-		canManageOptions,
 		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
@@ -297,9 +295,8 @@ function computeNoticeState(
 	}
 
 	// The description says whether the CTA also switches conversion tracking on,
-	// so waiting avoids showing the wrong wording first. Only someone allowed to
-	// read the setting ever gets a value, so nobody else is held back.
-	if ( canManageOptions && isConversionTrackingEnabled === undefined ) {
+	// so waiting avoids showing the wrong wording first.
+	if ( isConversionTrackingEnabled === undefined ) {
 		return null;
 	}
 
@@ -476,8 +473,7 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	);
 
 	const conversionTracking = useConversionTrackingSetting();
-	const { canManageOptions, isConversionTrackingEnabled } =
-		conversionTracking;
+	const { isConversionTrackingEnabled } = conversionTracking;
 
 	const { hasBreakdownDimensions, missingScope } = getBreakdownDimensionState(
 		{
@@ -675,7 +671,6 @@ const BreakdownNoticeArea: FC< BreakdownNoticeAreaProps > = ( {
 	const noticeState = computeNoticeState( {
 		isViewOnly,
 		shouldShowConversionTrackingDisabledNotice,
-		canManageOptions,
 		isConversionTrackingEnabled,
 		hasBreakdownDimensions,
 		isIntroModalDismissed,
