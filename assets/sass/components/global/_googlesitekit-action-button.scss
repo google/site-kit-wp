@@ -18,6 +18,11 @@
 
 .googlesitekit-plugin {
 
+	.googlesitekit-action-button {
+		display: flex;
+		justify-content: center;
+	}
+
 	.googlesitekit-action-button__button {
 		align-items: center;
 		appearance: none;
