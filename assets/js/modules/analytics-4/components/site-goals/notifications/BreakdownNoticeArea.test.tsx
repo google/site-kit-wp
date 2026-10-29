@@ -414,7 +414,7 @@ describe( 'BreakdownNoticeArea', () => {
 			{ registry }
 		);
 		expect(
-			ecommerce.getByText( /Event breakdown is now active/ )
+			ecommerce.getByText( /Sales plugin breakdown is now active/ )
 		).toBeInTheDocument();
 		ecommerce.unmount();
 
@@ -638,7 +638,7 @@ describe( 'BreakdownNoticeArea', () => {
 		} );
 	} );
 
-	it( 'renders "Event breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
+	it( 'should render "Sales plugin breakdown setup failed" title for ECOMMERCE permissions error in widget and panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
@@ -665,7 +665,7 @@ describe( 'BreakdownNoticeArea', () => {
 				);
 
 				expect(
-					getByText( 'Event breakdown setup failed' )
+					getByText( 'Sales plugin breakdown setup failed' )
 				).toBeInTheDocument();
 
 				unmount();
@@ -673,7 +673,7 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 	} );
 
-	it( 'renders "Sales plugin breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
+	it( 'should render "Event breakdown setup failed" title for BREAKDOWN_SCOPE_BOTH permissions error in the panel', () => {
 		seedAvailableCustomDimensions( [] );
 		provideCustomDimensionError( registry, {
 			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
@@ -698,8 +698,52 @@ describe( 'BreakdownNoticeArea', () => {
 		);
 
 		expect(
-			getByText( 'Sales plugin breakdown setup failed' )
+			getByText( 'Event breakdown setup failed' )
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render each widget the error title of its own scope after a Side Panel permissions error', () => {
+		seedAvailableCustomDimensions( [] );
+		provideCustomDimensionError( registry, {
+			customDimension: ALL_CUSTOM_DIMENSIONS[ 0 ],
+			error: {
+				code: 'insufficient_permissions',
+				message: 'Insufficient permissions',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+		} );
+		registry
+			.dispatch( CORE_FORMS )
+			.setValues( FORM_CUSTOM_DIMENSIONS_CREATE, {
+				[ BREAKDOWN_ORIGIN_FORM_KEY ]: BREAKDOWN_ORIGIN_PANEL,
+				[ BREAKDOWN_SCOPE_FORM_KEY ]: BREAKDOWN_SCOPE_BOTH,
+			} );
+
+		[
+			{
+				goalType: GOAL_TYPES.ECOMMERCE,
+				title: 'Sales plugin breakdown setup failed',
+			},
+			{
+				goalType: GOAL_TYPES.LEAD,
+				title: 'Individual form tracking setup failed',
+			},
+		].forEach( ( { goalType, title } ) => {
+			const { getByText, queryByText, unmount } = render(
+				<BreakdownNoticeArea
+					origin={ BREAKDOWN_ORIGIN_WIDGET }
+					goalTypes={ [ goalType ] }
+				/>,
+				{ registry }
+			);
+
+			expect( getByText( title ) ).toBeInTheDocument();
+			expect(
+				queryByText( 'Event breakdown setup failed' )
+			).not.toBeInTheDocument();
+
+			unmount();
+		} );
 	} );
 
 	it( 'does not render the error notice for a section whose dimension already exists', () => {
@@ -795,7 +839,7 @@ describe( 'BreakdownNoticeArea', () => {
 			);
 
 			expect(
-				getByText( /Breakdown is now active/ )
+				getByText( /Event breakdown is now active/ )
 			).toBeInTheDocument();
 		} );
 	} );

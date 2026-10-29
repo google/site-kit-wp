@@ -1859,7 +1859,7 @@ describe( 'OnlineStorePerformanceWidget', () => {
 
 		expect( getByText( 'Gathering breakdown data' ) ).toBeInTheDocument();
 		expect(
-			getByText( /Event breakdown is now active/i )
+			getByText( /Sales plugin breakdown is now active/i )
 		).toBeInTheDocument();
 	} );
 
