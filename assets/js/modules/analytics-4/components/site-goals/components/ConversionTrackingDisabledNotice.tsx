@@ -49,6 +49,9 @@ const ConversionTrackingDisabledNotice: FC<
 	const { canManageOptions } = useConversionTrackingSetting();
 
 	const [ isSaving, setIsSaving ] = useState( false );
+	const [ saveError, setSaveError ] = useState< { message?: string } | null >(
+		null
+	);
 
 	const {
 		resetConversionTrackingSettings,
@@ -66,6 +69,7 @@ const ConversionTrackingDisabledNotice: FC<
 			resetConversionTrackingSettings();
 		}
 
+		setSaveError( error || null );
 		setIsSaving( false );
 	}, [
 		resetConversionTrackingSettings,
@@ -77,6 +81,28 @@ const ConversionTrackingDisabledNotice: FC<
 	// it stays while saving to show the button's progress, and any failure.
 	if ( shouldShowNotice !== true && ! isSaving ) {
 		return <WidgetNull />;
+	}
+
+	if ( saveError ) {
+		return (
+			<Widget noPadding>
+				<Notice
+					className="googlesitekit-site-goals-conversion-tracking-disabled-notice"
+					type={ NOTICE_TYPES.ERROR }
+					title={ __(
+						"Plugin conversion tracking couldn't be enabled",
+						'google-site-kit'
+					) }
+					description={ saveError.message }
+					ctaButton={ {
+						label: __( 'Retry', 'google-site-kit' ),
+						onClick: handleEnableTracking,
+						inProgress: isSaving,
+						disabled: isSaving,
+					} }
+				/>
+			</Widget>
+		);
 	}
 
 	const description = canManageOptions

@@ -17,6 +17,11 @@
  */
 
 /**
+ * External dependencies
+ */
+import fetchMock from 'fetch-mock';
+
+/**
  * WordPress dependencies
  */
 import { WPDataRegistry } from '@wordpress/data/build-types/registry';
@@ -46,10 +51,27 @@ const WidgetWithComponentProps = withWidgetComponentProps(
 interface TemplateProps {
 	/** Whether the user can manage options, and so gets the "Enable tracking" button. */
 	canManageOptions: boolean;
+	/** Whether saving the setting fails, so "Enable tracking" leads to the error notice. */
+	saveFails?: boolean;
 }
 
-function Template( { canManageOptions }: TemplateProps ) {
+function Template( { canManageOptions, saveFails }: TemplateProps ) {
 	function setupRegistry( registry: WPDataRegistry ) {
+		if ( saveFails ) {
+			fetchMock.post(
+				/^\/google-site-kit\/v1\/core\/site\/data\/conversion-tracking/,
+				{
+					body: {
+						code: 'internal_server_error',
+						message: 'Internal server error',
+						data: { status: 500 },
+					},
+					status: 500,
+				},
+				{ overwriteRoutes: true }
+			);
+		}
+
 		provideModules( registry, [
 			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
 		] );
@@ -101,6 +123,22 @@ export const ViewOnly = Template.bind( {} ) as Story< TemplateProps >;
 ViewOnly.storyName = 'View-only';
 ViewOnly.args = {
 	canManageOptions: false,
+};
+
+export const SaveError = Template.bind( {} ) as Story< TemplateProps >;
+SaveError.storyName = 'Save error';
+SaveError.args = {
+	canManageOptions: true,
+	saveFails: true,
+};
+SaveError.play = async () => {
+	await new Promise( ( resolve ) => setTimeout( resolve, 100 ) );
+
+	document
+		.querySelector< HTMLButtonElement >(
+			'.googlesitekit-site-goals-conversion-tracking-disabled-notice button'
+		)
+		?.click();
 };
 
 export default {

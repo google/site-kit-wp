@@ -57,6 +57,13 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 	);
 
 	const TITLE = 'Plugin conversion tracking is disabled';
+	const ERROR_TITLE = "Plugin conversion tracking couldn't be enabled";
+
+	const SAVE_ERROR = {
+		code: 'internal_server_error',
+		message: 'Internal server error',
+		data: { status: 500 },
+	};
 
 	function provideState( {
 		conversionTracking = false,
@@ -206,31 +213,56 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		).toBeDisabled();
 	} );
 
-	it( 'should reset the setting and keep the notice when saving fails', async () => {
+	it( 'should reset the setting and show an error notice with a Retry button when saving fails', async () => {
 		provideState();
 		fetchMock.postOnce( conversionTrackingEndpoint, {
-			body: {
-				code: 'internal_server_error',
-				message: 'Internal server error',
-				data: { status: 500 },
-			},
+			body: SAVE_ERROR,
 			status: 500,
 		} );
 
-		const { getByRole, getByText } = renderNotice();
+		const { getByRole, findByText, getByText, queryByText } =
+			renderNotice();
 
 		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
 
-		await waitFor( () => {
-			expect(
-				getByRole( 'button', { name: 'Enable tracking' } )
-			).not.toBeDisabled();
-		} );
-
+		expect( await findByText( ERROR_TITLE ) ).toBeInTheDocument();
 		expect( console ).toHaveErrored();
-		expect( getByText( TITLE ) ).toBeInTheDocument();
+		expect( getByText( 'Internal server error' ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: 'Retry' } ) ).not.toBeDisabled();
+		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
 		expect(
 			registry.select( CORE_SITE ).isConversionTrackingEnabled()
 		).toBe( false );
+	} );
+
+	it( 'should switch conversion tracking on and hide the notice when Retry succeeds', async () => {
+		provideState();
+		fetchMock.postOnce( conversionTrackingEndpoint, {
+			body: SAVE_ERROR,
+			status: 500,
+		} );
+
+		const { getByRole, findByRole, queryByText } = renderNotice();
+
+		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
+
+		const retryButton = await findByRole( 'button', { name: 'Retry' } );
+		expect( console ).toHaveErrored();
+
+		fetchMock.postOnce( conversionTrackingEndpoint, {
+			body: { enabled: true },
+			status: 200,
+		} );
+
+		fireEvent.click( retryButton );
+
+		await waitFor( () => {
+			expect( queryByText( ERROR_TITLE ) ).not.toBeInTheDocument();
+		} );
+
+		expect( queryByText( TITLE ) ).not.toBeInTheDocument();
+		expect(
+			registry.select( CORE_SITE ).isConversionTrackingEnabled()
+		).toBe( true );
 	} );
 } );
