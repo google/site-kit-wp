@@ -27,9 +27,11 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { SITE_GOALS_BREAKDOWN_CUSTOM_DIMENSION_BY_GOAL_TYPE } from '@/js/modules/analytics-4/components/site-goals/constants';
 import { GOAL_TYPES } from '@/js/modules/analytics-4/components/site-goals/goal-drivers/constants';
+import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import {
 	createTestRegistry,
+	provideModules,
 	provideUserCapabilities,
 	renderHook,
 } from '@tests/js/test-utils';
@@ -43,6 +45,9 @@ describe( 'useSiteGoalsWidgetViewAction', () => {
 
 	beforeEach( () => {
 		registry = createTestRegistry();
+		provideModules( registry, [
+			{ slug: MODULE_SLUG_ANALYTICS_4, active: true, connected: true },
+		] );
 		provideUserCapabilities( registry );
 
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
