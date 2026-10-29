@@ -258,7 +258,7 @@ interface ComputeNoticeStateArgs {
  * Resolves the notice state, gating on the view-only and still-resolving cases.
  *
  * @since 1.182.0
- * @since n.e.x.t Gated on the conversion tracking disabled notice too.
+ * @since n.e.x.t Returned `null` while the conversion tracking disabled notice shows.
  *
  * @param {Object} args Resolver arguments, see `ComputeNoticeStateArgs`.
  * @return {?string} The resolved notice state, or `null` while gated or when no notice applies.
