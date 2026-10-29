@@ -212,7 +212,7 @@ class AuthenticationTest extends TestCase {
 	 * @dataProvider data_plugin_version_writes
 	 * @param string|null $stored_version Version stored before the write, or null for none.
 	 */
-	public function test_register__syncs_site_fields_when_the_plugin_version_is_written( $stored_version ) {
+	public function test_register__does_not_sync_site_fields_when_the_plugin_version_is_written( $stored_version ) {
 		$this->fake_proxy_site_connection();
 
 		// Set up the stored version before registering the listeners, so they only see the write
@@ -256,8 +256,7 @@ class AuthenticationTest extends TestCase {
 
 		do_action( 'shutdown' );
 
-		$this->assertCount( 1, $synced_bodies, 'Writing the plugin version should send the site fields once.' );
-		$this->assertArrayHasKey( 'intent_uri', $synced_bodies[0], 'The synced site fields should include the intent URI.' );
+		$this->assertCount( 0, $synced_bodies, 'Writing the plugin version should not send the site fields.' );
 	}
 
 	protected function assertAdminDataExtended() {
