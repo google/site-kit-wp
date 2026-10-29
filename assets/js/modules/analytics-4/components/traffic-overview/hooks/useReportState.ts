@@ -17,9 +17,19 @@
  */
 
 /**
+ * WordPress dependencies
+ */
+import { useCallback } from '@wordpress/element';
+
+/**
  * Internal dependencies
  */
-import { Select, useInViewSelect, useSelect } from 'googlesitekit-data';
+import {
+	Select,
+	useDispatch,
+	useInViewSelect,
+	useSelect,
+} from 'googlesitekit-data';
 
 export interface ReportState< ReportType > {
 	/** The report, or `undefined` until it loads. */
@@ -28,6 +38,8 @@ export interface ReportState< ReportType > {
 	loading: boolean;
 	/** The error of the report request, if it failed. */
 	error?: object;
+	/** Requests the report again. */
+	retry: () => void;
 }
 
 /**
@@ -38,7 +50,7 @@ export interface ReportState< ReportType > {
  *
  * @param {string} storeName The store with the `getReport` selector, e.g. `MODULES_ANALYTICS_4`.
  * @param {Object} [options] The report options. Without options, the hook requests no report.
- * @return {Object} The report, whether it is loading, and its error.
+ * @return {Object} The report, whether it is loading, its error, and a function that requests it again.
  */
 export function useReportState< ReportType >(
 	storeName: string,
@@ -69,5 +81,11 @@ export function useReportState< ReportType >(
 		[ storeName, options ]
 	);
 
-	return { report, loading, error };
+	const { invalidateResolution } = useDispatch( storeName );
+
+	const retry = useCallback( () => {
+		invalidateResolution( 'getReport', [ options ] );
+	}, [ invalidateResolution, options ] );
+
+	return { report, loading, error, retry };
 }

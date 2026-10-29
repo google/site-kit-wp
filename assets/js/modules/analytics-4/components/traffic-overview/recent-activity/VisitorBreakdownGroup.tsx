@@ -74,7 +74,7 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 		[ reportArgs ]
 	);
 
-	const { report, loading, error } = useReportState< Report >(
+	const { report, loading, error, retry } = useReportState< Report >(
 		MODULES_ANALYTICS_4,
 		reportOptions
 	);
@@ -82,7 +82,7 @@ const VisitorBreakdownGroup: FC< VisitorBreakdownGroupProps > = ( {
 	return (
 		<LatestPostTile title={ __( 'Visitor breakdown', 'google-site-kit' ) }>
 			{ ! loading && !! error ? (
-				<LatestPostReportError error={ error } />
+				<LatestPostReportError error={ error } onRetry={ retry } />
 			) : (
 				<Fragment>
 					<LatestPostMetricRow
