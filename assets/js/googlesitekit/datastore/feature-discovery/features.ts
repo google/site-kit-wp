@@ -176,8 +176,10 @@ export const actions = {
 	 *
 	 * For `setup-flow` features that activate a module, this activates the
 	 * module, records that the user left the hub to set it up, and takes them
-	 * into the module's setup. Where the module has no setup screen, it is
-	 * simply activated and the user stays on the hub.
+	 * into the module's setup, or to the descriptor's own `getSetupURL()`
+	 * target where it provides one. Where the module has no setup screen, it is
+	 * simply activated and the user stays on the hub. Features with only a
+	 * `getSetupURL()` go straight to that target.
 	 *
 	 * For `in-place-panel` features, this closes the feature detail panel and
 	 * opens the feature's existing panel over the hub.
@@ -188,6 +190,7 @@ export const actions = {
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
 	 * @since n.e.x.t Implemented the `in-place-panel` and `background-toggle` setup types.
+	 * @since n.e.x.t Allowed `setup-flow` features to activate a module and also override its setup URL.
 	 *
 	 * @param {string} slug Feature's slug.
 	 * @return {Object} Empty object, or an object with an `error` if the module could not be activated or the feature could not be enabled.
@@ -250,8 +253,9 @@ export const actions = {
 
 			const { moduleSlug, getSetupURL } = feature.setup;
 
-			if ( getSetupURL ) {
-				const setupURL = getSetupURL( registry.select );
+			// A flow with no module to activate goes straight to its own URL.
+			if ( ! moduleSlug ) {
+				const setupURL = getSetupURL?.( registry.select );
 
 				if ( ! setupURL ) {
 					return {};
@@ -265,10 +269,6 @@ export const actions = {
 					registry.dispatch( CORE_LOCATION ).navigateTo( setupURL )
 				);
 
-				return {};
-			}
-
-			if ( ! moduleSlug ) {
 				return {};
 			}
 
@@ -286,10 +286,15 @@ export const actions = {
 
 			yield clearActionError( 'setupFeature', [ slug ] );
 
+			// The descriptor's target takes precedence over the module's own
+			// reauth URL, once the module has been activated.
+			const overrideURL = getSetupURL?.( registry.select );
+
 			// Modules with no setup screen, such as PageSpeed Insights, are
 			// connected as soon as they are activated, so the user stays on
 			// the hub.
 			if (
+				! overrideURL &&
 				! registry.select( CORE_MODULES ).getModule( moduleSlug )
 					?.SetupComponent
 			) {
@@ -305,7 +310,9 @@ export const actions = {
 			yield commonActions.await(
 				registry
 					.dispatch( CORE_LOCATION )
-					.navigateTo( response?.moduleReauthURL as string )
+					.navigateTo(
+						overrideURL ?? ( response?.moduleReauthURL as string )
+					)
 			);
 
 			return {};
