@@ -39,6 +39,8 @@ interface LatestPostMetricRowProps {
 	error?: object;
 	/** The module the metric's report comes from. Defaults to Analytics. */
 	moduleSlug?: string;
+	/** Requests the metric's report again, from the "Retry" of its error. */
+	onRetry?: () => void;
 }
 
 const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
@@ -47,6 +49,7 @@ const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
 	loading = false,
 	error,
 	moduleSlug,
+	onRetry,
 } ) => {
 	const hasError = ! loading && !! error;
 
@@ -64,6 +67,7 @@ const LatestPostMetricRow: FC< LatestPostMetricRowProps > = ( {
 				<LatestPostReportError
 					error={ error }
 					moduleSlug={ moduleSlug }
+					onRetry={ onRetry }
 				/>
 			) : (
 				<div

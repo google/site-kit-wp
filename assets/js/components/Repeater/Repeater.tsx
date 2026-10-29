@@ -35,11 +35,9 @@ import AddButton from './AddButton';
 import RemoveButton from './RemoveButton';
 import { RemoveButtonContext } from './RemoveButtonContext';
 import { RepeaterContext } from './RepeaterContext';
+import useRepeaterFocus, { RepeaterInputElement } from './useRepeaterFocus';
 
-export type RepeaterInputElement =
-	| HTMLInputElement
-	| HTMLTextAreaElement
-	| HTMLSelectElement;
+export type { RepeaterInputElement } from './useRepeaterFocus';
 
 export interface RepeaterFieldRenderOptions< Item > {
 	item: Item;
@@ -78,17 +76,6 @@ export interface RepeaterProps< Item > {
 	className?: string;
 }
 
-interface InputBinding {
-	element: RepeaterInputElement | null;
-	ref: RefCallback< RepeaterInputElement >;
-}
-
-interface PendingFocus {
-	initialIDs: string[];
-	expectedIDs: string[];
-	itemID: string | null;
-}
-
 function Repeater< Item >( {
 	className,
 	getItemID,
@@ -101,10 +88,6 @@ function Repeater< Item >( {
 }: RepeaterProps< Item > ) {
 	const itemIDs = items.map( getItemID );
 
-	const addButtonRef = useRef< HTMLButtonElement >( null );
-	const bindingsRef = useRef( new Map< string, InputBinding >() );
-	const pendingFocusRef = useRef< PendingFocus | null >( null );
-
 	const currentDataRef = useRef( {
 		items,
 		getItemID,
@@ -112,6 +95,13 @@ function Repeater< Item >( {
 		onChange,
 		maxItems,
 	} );
+
+	const {
+		addButtonRef,
+		getInputRef,
+		requestFocusAfterAdd,
+		requestFocusAfterRemove,
+	} = useRepeaterFocus( itemIDs );
 
 	useLayoutEffect( () => {
 		currentDataRef.current = {
@@ -121,41 +111,6 @@ function Repeater< Item >( {
 			onChange,
 			maxItems,
 		};
-
-		bindingsRef.current.forEach( ( binding, itemID ) => {
-			if ( ! itemIDs.includes( itemID ) ) {
-				bindingsRef.current.delete( itemID );
-			}
-		} );
-
-		const pendingFocus = pendingFocusRef.current;
-
-		if ( ! pendingFocus ) {
-			return;
-		}
-
-		function matchesOrder( ids: string[] ) {
-			return (
-				ids.length === itemIDs.length &&
-				ids.every( ( id, index ) => id === itemIDs[ index ] )
-			);
-		}
-
-		if ( matchesOrder( pendingFocus.expectedIDs ) ) {
-			const element =
-				pendingFocus.itemID === null
-					? addButtonRef.current
-					: bindingsRef.current.get( pendingFocus.itemID )?.element;
-
-			if ( element ) {
-				element.focus();
-				pendingFocusRef.current = null;
-			}
-		} else if ( ! matchesOrder( pendingFocus.initialIDs ) ) {
-			// A different structural change supersedes this request. Value-only
-			// updates may arrive while the parent is still deferring the change.
-			pendingFocusRef.current = null;
-		}
 	} );
 
 	function addItem() {
@@ -168,11 +123,7 @@ function Repeater< Item >( {
 		const newItem = current.getNewItem( current.items.length );
 		const nextItems = [ ...current.items, newItem ];
 
-		pendingFocusRef.current = {
-			initialIDs: current.items.map( current.getItemID ),
-			expectedIDs: nextItems.map( current.getItemID ),
-			itemID: current.getItemID( newItem ),
-		};
+		requestFocusAfterAdd( current.getItemID( newItem ) );
 
 		current.onChange( nextItems );
 	}
@@ -180,8 +131,9 @@ function Repeater< Item >( {
 	function removeItem( itemID: string ) {
 		const current = currentDataRef.current;
 
-		const ids = current.items.map( current.getItemID );
-		const index = ids.indexOf( itemID );
+		const index = current.items.findIndex(
+			( item ) => current.getItemID( item ) === itemID
+		);
 
 		if ( index === -1 ) {
 			return;
@@ -191,11 +143,7 @@ function Repeater< Item >( {
 			( _, itemIndex ) => itemIndex !== index
 		);
 
-		pendingFocusRef.current = {
-			initialIDs: ids,
-			expectedIDs: nextItems.map( current.getItemID ),
-			itemID: ids[ index - 1 ] ?? ids[ index + 1 ] ?? null,
-		};
+		requestFocusAfterRemove( itemID );
 
 		current.onChange( nextItems );
 	}
@@ -221,21 +169,6 @@ function Repeater< Item >( {
 	function renderItemField( item: Item, index: number ) {
 		const itemID = getItemID( item );
 
-		let binding = bindingsRef.current.get( itemID );
-
-		if ( ! binding ) {
-			const newBinding: InputBinding = {
-				element: null,
-				ref: ( element ) => {
-					newBinding.element = element;
-				},
-			};
-
-			bindingsRef.current.set( itemID, newBinding );
-
-			binding = newBinding;
-		}
-
 		return (
 			<RemoveButtonContext.Provider
 				key={ itemID }
@@ -246,7 +179,7 @@ function Repeater< Item >( {
 						item,
 						updateItem: ( updatedItem ) =>
 							updateItem( itemID, updatedItem ),
-						inputRef: binding.ref,
+						inputRef: getInputRef( itemID ),
 						RemoveButton,
 					},
 					index

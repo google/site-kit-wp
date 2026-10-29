@@ -114,12 +114,14 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 				value={ getTopDimensionValue( topChannel.report ) }
 				loading={ topChannel.loading }
 				error={ topChannel.error }
+				onRetry={ topChannel.retry }
 			/>
 			<LatestPostMetricRow
 				label={ __( 'Top referring site', 'google-site-kit' ) }
 				value={ getTopDimensionValue( topReferrer.report ) }
 				loading={ topReferrer.loading }
 				error={ topReferrer.error }
+				onRetry={ topReferrer.retry }
 			/>
 			{ canViewSearchConsole && (
 				<LatestPostMetricRow
@@ -128,6 +130,7 @@ const TrafficSourcesGroup: FC< TrafficSourcesGroupProps > = ( {
 					loading={ topKeyword.loading }
 					error={ topKeyword.error }
 					moduleSlug={ MODULE_SLUG_SEARCH_CONSOLE }
+					onRetry={ topKeyword.retry }
 				/>
 			) }
 		</LatestPostTile>

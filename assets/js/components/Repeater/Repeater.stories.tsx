@@ -100,9 +100,9 @@ export const WithRemoveButton = Template.bind( {} ) as Story< StoryArgs >;
 WithRemoveButton.storyName = 'With Remove Button';
 WithRemoveButton.args = { ...Default.args, removable: true };
 
-export const WithMaxLength = Template.bind( {} ) as Story< StoryArgs >;
-WithMaxLength.storyName = 'With Max Length';
-WithMaxLength.args = {
+export const WithMaximumItems = Template.bind( {} ) as Story< StoryArgs >;
+WithMaximumItems.storyName = 'With Maximum Items';
+WithMaximumItems.args = {
 	...WithRemoveButton.args,
 	initialCount: 5,
 	maxItems: 5,
