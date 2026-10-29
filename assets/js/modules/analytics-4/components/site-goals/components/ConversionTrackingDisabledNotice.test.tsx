@@ -37,6 +37,7 @@ import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constant
 import {
 	createTestRegistry,
 	fireEvent,
+	freezeFetch,
 	provideModules,
 	provideUserCapabilities,
 	render,
@@ -189,6 +190,20 @@ describe( 'ConversionTrackingDisabledNotice', () => {
 		expect(
 			registry.select( CORE_SITE ).isConversionTrackingEnabled()
 		).toBe( true );
+	} );
+
+	it( 'should keep the notice with a disabled button while saving', () => {
+		provideState();
+		freezeFetch( conversionTrackingEndpoint );
+
+		const { getByRole, getByText } = renderNotice();
+
+		fireEvent.click( getByRole( 'button', { name: 'Enable tracking' } ) );
+
+		expect( getByText( TITLE ) ).toBeInTheDocument();
+		expect(
+			getByRole( 'button', { name: 'Enable tracking' } )
+		).toBeDisabled();
 	} );
 
 	it( 'resets the setting and keeps the notice when saving fails', async () => {

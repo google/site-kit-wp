@@ -73,7 +73,9 @@ const ConversionTrackingDisabledNotice: FC<
 		setConversionTrackingEnabled,
 	] );
 
-	if ( shouldShowNotice !== true ) {
+	// Switching the setting on hides the notice before the save finishes, so
+	// it stays while saving to show the button's progress, and any failure.
+	if ( shouldShowNotice !== true && ! isSaving ) {
 		return <WidgetNull />;
 	}
 
