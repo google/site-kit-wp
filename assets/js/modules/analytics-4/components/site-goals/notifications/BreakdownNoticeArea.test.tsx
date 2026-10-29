@@ -74,6 +74,7 @@ describe( 'BreakdownNoticeArea', () => {
 		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
 			propertyID: '12345',
 			availableCustomDimensions,
+			detectedEvents: [],
 		} );
 	}
 
@@ -1288,6 +1289,36 @@ describe( 'BreakdownNoticeArea', () => {
 						/Enabling this breakdown will also enable conversion tracking for your forms\./
 					)
 				).toBeInTheDocument();
+			} );
+
+			it( 'should render nothing while the breakdown values report loads', async () => {
+				await setUpRegistry( { conversionTracking: false } );
+				registry.dispatch( CORE_USER ).setReferenceDate( '2020-09-08' );
+				registry
+					.dispatch( MODULES_ANALYTICS_4 )
+					.receiveGetSiteGoalsSettings( {
+						activeWidgets: [ GOAL_TYPES.LEAD ],
+					} );
+				registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {
+					propertyID: '12345',
+					availableCustomDimensions: ALL_CUSTOM_DIMENSIONS,
+					detectedEvents: [ 'contact' ],
+				} );
+				freezeFetch(
+					new RegExp(
+						'^/google-site-kit/v1/modules/analytics-4/data/report'
+					)
+				);
+
+				const { container } = render(
+					<BreakdownNoticeArea
+						origin={ BREAKDOWN_ORIGIN_WIDGET }
+						goalTypes={ [ GOAL_TYPES.LEAD ] }
+					/>,
+					{ registry }
+				);
+
+				expect( container ).toBeEmptyDOMElement();
 			} );
 		} );
 	} );

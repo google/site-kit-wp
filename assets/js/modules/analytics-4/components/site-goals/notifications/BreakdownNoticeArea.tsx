@@ -281,7 +281,8 @@ function computeNoticeState(
 	// `ConversionTrackingDisabledNotice` covers the case where conversion
 	// tracking was switched off after the breakdown was in use, so no
 	// breakdown notice competes with it, in the widgets or the Side Panel.
-	if ( shouldShowConversionTrackingDisabledNotice ) {
+	// Waiting while it loads avoids a flash of "Get breakdown" first.
+	if ( shouldShowConversionTrackingDisabledNotice !== false ) {
 		return null;
 	}
 
