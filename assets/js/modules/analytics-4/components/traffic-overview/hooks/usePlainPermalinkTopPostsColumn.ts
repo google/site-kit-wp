@@ -33,15 +33,20 @@ import {
 } from 'googlesitekit-data';
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
 import { RECENT_TRAFFIC_BREAKDOWN_MAX_ROWS } from '@/js/modules/analytics-4/components/traffic-overview/constants';
-import { FRESH_DATA_FETCH_OPTIONS } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
+import {
+	FRESH_DATA_FETCH_OPTIONS,
+	getTopChannelsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { PlainPermalinkTopPosts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ErrorObject } from '@/js/util/errors';
 import { useFreshDataDateRange } from './useFreshDataDateRange';
+import { useRecentTrafficBreakdownReport } from './useRecentTrafficBreakdownReport';
 
 interface PlainPermalinkTopPostsColumn {
-	/** The rows the column renders, one for each post. */
+	/** The rows the column renders, one for each post, each with its share of the visitors the columns count. */
 	rows: TableTileRow[];
 	/** `true` until the request for the posts finishes, whether it succeeded or failed. */
 	loading: boolean;
@@ -49,14 +54,14 @@ interface PlainPermalinkTopPostsColumn {
 	error?: ErrorObject;
 	/** Sends the request for the posts again. */
 	retry: () => void;
-	/** The message the column shows with no rows where the report has views, or `undefined` for the default message, which says the site had no visitors. */
+	/** The message the column shows with no rows where the report has visitors, or `undefined` for the default message, which says the site had no visitors. */
 	zeroState?: string;
 }
 
 /**
  * Builds the rows of the "Top posts by visitors" column on a site with plain permalinks, which has no permalink structure.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return {Object} The column's rows, its loading state, its error, a function that requests the posts again, and its zero state message.
  */
@@ -105,27 +110,33 @@ export function usePlainPermalinkTopPostsColumn(): PlainPermalinkTopPostsColumn 
 		] );
 	}, [ invalidateResolution, options ] );
 
+	const { report: channelsReport } = useRecentTrafficBreakdownReport(
+		getTopChannelsReportOptions
+	);
+
 	const rows = useMemo( () => {
 		if ( ! topPosts ) {
 			return [];
 		}
 
-		// The server returns only posts with views, most viewed first, so
+		// The server returns only posts with visitors, most first, so
 		// `getRecentTrafficBreakdownRows()` keeps each row at the index of
 		// its post.
-		return getRecentTrafficBreakdownRows( {
-			rows: topPosts.rows.map( ( { title, pagePath, views } ) => ( {
-				dimensionValues: [ { value: title || pagePath } ],
-				metricValues: [ { value: String( views ) } ],
-			} ) ),
-			totals: [
-				{ metricValues: [ { value: String( topPosts.total ) } ] },
-			],
-		} ).map( ( row, index ) => ( {
+		return getRecentTrafficBreakdownRows(
+			{
+				rows: topPosts.rows.map(
+					( { title, pagePath, visitors } ) => ( {
+						dimensionValues: [ { value: title || pagePath } ],
+						metricValues: [ { value: String( visitors ) } ],
+					} )
+				),
+			},
+			getMetricCount( channelsReport?.totals?.[ 0 ] )
+		).map( ( row, index ) => ( {
 			...row,
 			url: topPosts.rows[ index ].url,
 		} ) );
-	}, [ topPosts ] );
+	}, [ topPosts, channelsReport ] );
 
 	return {
 		rows,

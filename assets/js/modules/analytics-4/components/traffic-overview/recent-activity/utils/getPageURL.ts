@@ -24,7 +24,7 @@
  * `/\example.org/`. The function returns `undefined` for both, so a link
  * never leaves the site.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} siteURL  The URL of the site, such as `https://example.com`.
  * @param {string} pagePath The page path, such as `/hello-world/`.

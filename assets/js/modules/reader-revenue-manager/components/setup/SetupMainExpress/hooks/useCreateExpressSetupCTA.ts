@@ -46,9 +46,8 @@ type CreateExpressSetupCTACallback = (
  * saved earlier in the flow can be out of date, and the new CTA is missing
  * from the saved `configuredCTAs`.
  *
- * Once the CTA is created, its identifier is set as the `ctaID` query arg.
- *
- * @since n.e.x.t
+ * @since 1.191.0
+ * @since n.e.x.t Sets the created CTA's identifier as the `ctaID` query arg.
  *
  * @return {Function} Callback that takes the `createCTA()` params and resolves
  *                    to the `createCTA()` result.

@@ -26,8 +26,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  */
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
-import { createTestRegistry, renderHook } from '@tests/js/test-utils';
 import {
+	actHook as act,
+	createTestRegistry,
+	renderHook,
+} from '@tests/js/test-utils';
+import {
+	createWaitForRegistry,
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
@@ -66,6 +71,7 @@ describe( 'useReportState', () => {
 			report: undefined,
 			loading: false,
 			error: undefined,
+			retry: expect.any( Function ),
 		} );
 		expect( fetchMock ).not.toHaveFetched( reportEndpoint );
 	} );
@@ -89,6 +95,7 @@ describe( 'useReportState', () => {
 			report: undefined,
 			loading: true,
 			error: undefined,
+			retry: expect.any( Function ),
 		} );
 	} );
 
@@ -122,7 +129,53 @@ describe( 'useReportState', () => {
 				message: 'The report is unavailable.',
 				data: { status: 500 },
 			},
+			retry: expect.any( Function ),
 		} );
 		expect( console ).toHaveErrored();
+	} );
+
+	it( 'should request the report again when `retry` is called after the request fails', async () => {
+		fetchMock.getOnce( reportEndpoint, {
+			body: {
+				code: 'internal_server_error',
+				message: 'The report is unavailable.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+		fetchMock.getOnce( reportEndpoint, {
+			body: { totals: [ { metricValues: [ { value: '94' } ] } ] },
+			status: 200,
+		} );
+		const reportOptions = {
+			startDate: '2026-09-17',
+			endDate: '2026-10-08',
+			metrics: [ { name: 'totalUsers' } ],
+		};
+
+		const { result, waitForRegistry } = renderHook(
+			() => useReportState( MODULES_ANALYTICS_4, reportOptions ),
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		const waitForRetry = createWaitForRegistry( registry );
+
+		act( () => {
+			result.current.retry();
+		} );
+
+		await waitForRetry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 2, reportEndpoint );
+		expect( result.current ).toEqual( {
+			report: { totals: [ { metricValues: [ { value: '94' } ] } ] },
+			loading: false,
+			error: undefined,
+			retry: expect.any( Function ),
+		} );
 	} );
 } );

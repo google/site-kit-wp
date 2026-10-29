@@ -25,16 +25,19 @@ import { useMemo } from '@wordpress/element';
  * Internal dependencies
  */
 import { TableTileRow } from '@/js/modules/analytics-4/components/common/tiles';
+import { getTopChannelsReportOptions } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import { getRecentTrafficBreakdownRows } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getRecentTrafficBreakdownRows';
+import { getMetricCount } from '@/js/modules/analytics-4/components/traffic-overview/utils/getBreakdownRows';
+import { ExcludedProducts } from '@/js/modules/analytics-4/datastore/fresh-data';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
 import { ErrorObject } from '@/js/util/errors';
 import { FreshDataDateRange } from './useFreshDataDateRange';
-import { useFreshDataReport } from './useFreshDataReport';
+import { useRecentTrafficBreakdownReport } from './useRecentTrafficBreakdownReport';
 
 export interface RecentTrafficBreakdownColumn {
 	/** The options of the column's report, or `undefined` until the options can be built. */
 	reportOptions?: ReportOptions;
-	/** The rows the column renders, each with its share of the report's total. */
+	/** The rows the column renders, each with its share of the visitors the columns count. */
 	rows: TableTileRow[];
 	/** `true` until the request for the column's report has finished. */
 	loading: boolean;
@@ -48,22 +51,34 @@ export interface RecentTrafficBreakdownColumn {
  * Resolves the report of a column of the Recent activity tab's traffic
  * breakdown, and builds the column's rows from it.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
- * @param {Function} buildReportOptions The function that builds the column's report options from the tab's date range, as `useFreshDataReport()` expects.
+ * @param {Function} getReportOptions The function that builds the column's report options, such as `getTopPostsReportOptions()`. It takes the tab's date range and the product pages to leave out.
  * @return {Object} The column's report options, its rows, whether it is loading, its error, and a function that requests its report again.
  */
 export function useRecentTrafficBreakdownColumn(
-	buildReportOptions: (
-		dateRange: FreshDataDateRange
-	) => ReportOptions | undefined
+	getReportOptions: (
+		dateRange: FreshDataDateRange,
+		excludedProducts: ExcludedProducts | null
+	) => ReportOptions
 ): RecentTrafficBreakdownColumn {
 	const { reportOptions, report, loading, error, retry } =
-		useFreshDataReport( buildReportOptions );
+		useRecentTrafficBreakdownReport( getReportOptions );
+
+	// Every column reads the same channels report, which the store requests
+	// once. The rows don't wait for it, so when it fails, the other columns
+	// keep their rows, with no shares.
+	const { report: channelsReport } = useRecentTrafficBreakdownReport(
+		getTopChannelsReportOptions
+	);
 
 	const rows = useMemo(
-		() => getRecentTrafficBreakdownRows( report ),
-		[ report ]
+		() =>
+			getRecentTrafficBreakdownRows(
+				report,
+				getMetricCount( channelsReport?.totals?.[ 0 ] )
+			),
+		[ report, channelsReport ]
 	);
 
 	return { reportOptions, rows, loading, error, retry };

@@ -42,7 +42,7 @@ import useCTAID from './useCTAID';
  * has a `ctaID`, the same save records it in `completedExpressSetups`. The save
  * is not awaited, so the step works the same whether it succeeds or fails.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string}                          ctaType  The CTA type being set up.
  * @param {EXPRESS_SETUP_STEPS | undefined} stepSlug The current step's slug, or `undefined` while it is resolving.

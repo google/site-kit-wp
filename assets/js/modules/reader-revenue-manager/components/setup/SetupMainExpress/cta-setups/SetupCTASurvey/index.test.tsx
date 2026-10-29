@@ -96,7 +96,7 @@ const publicationWithoutTerms = publications[ 2 ] as Publication;
 /**
  * Connects the given publication with no CTAs.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @private
  *
  * @param {Object} registry    Registry to seed.

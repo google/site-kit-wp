@@ -45,7 +45,7 @@ import TopContentTable from './TopContentTable';
 /**
  * Props for the Popular content widget.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 interface ModulePopularPagesWidgetGA4Props {
 	/** The widget wrapper component. */

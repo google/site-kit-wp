@@ -64,7 +64,11 @@ class Migration_1_129_0Test extends TestCase {
 
 		$migration->register();
 
-		$this->assertTrue( has_action( 'admin_init' ), 'Migration_1_129_0 should register admin_init action.' );
+		$this->assertSame(
+			0,
+			has_action( 'admin_init', array( $migration, 'migrate' ) ),
+			'The migration should add `migrate()` to the `admin_init` action at priority 0, so it runs in `Plugin.php` registration order.'
+		);
 	}
 
 	// If the Analytics module is not active, the migration should not
@@ -190,6 +194,39 @@ class Migration_1_129_0Test extends TestCase {
 
 		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
 		$this->assertTrue( in_array( 'ads', $active_modules, true ), 'Ads module should remain active after migration if it already has conversionID.' );
+	}
+
+	// When the Analytics module has an adsConversionID set and no Ads option
+	// is stored, the migration should move the conversionID to the Ads module.
+	public function test_migration_with_analytics_ads_conversion_id_and_no_ads_option() {
+		$migration = $this->get_new_migration_instance();
+
+		$this->options->set(
+			Modules::OPTION_ACTIVE_MODULES,
+			array( 'analytics-4' )
+		);
+
+		$this->configure_analytics_module( '1234567890' );
+
+		// Remove the stored Ads option and its default filters, so `get()` returns
+		// `false`, as it does when Ads is removed through `googlesitekit_available_modules`.
+		$this->options->delete( Ads_Settings::OPTION );
+		remove_all_filters( 'option_' . Ads_Settings::OPTION );
+		remove_all_filters( 'default_option_' . Ads_Settings::OPTION );
+
+		$migration->migrate();
+
+		$this->assertSame(
+			array( 'conversionID' => '1234567890' ),
+			$this->ads_settings->get(),
+			'The Ads settings should hold only the moved conversionID when no Ads option is stored.'
+		);
+
+		$analytics_4_settings = $this->analytics_settings->get();
+		$this->assertTrue( empty( $analytics_4_settings['adsConversionID'] ), 'adsConversionID should be removed from the Analytics settings after migration.' );
+
+		$active_modules = $this->options->get( Modules::OPTION_ACTIVE_MODULES );
+		$this->assertTrue( in_array( 'ads', $active_modules, true ), 'Ads module should be activated after migration.' );
 	}
 
 	protected function configure_analytics_module( $adsConversionID ) {

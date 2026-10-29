@@ -47,7 +47,7 @@ export const actions = {
 	/**
 	 * Sets the active tab of the Content card.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {string} tabID ID of the tab to select.
 	 * @return {Object} Redux-style action.
@@ -86,7 +86,7 @@ export const selectors = {
 	/**
 	 * Gets the active tab of the Content card.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @return {string} ID of the active tab.

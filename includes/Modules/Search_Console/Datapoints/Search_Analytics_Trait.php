@@ -93,7 +93,7 @@ trait Search_Analytics_Trait {
 	 * Creates a new Search Console analytics request for the current site and given arguments.
 	 *
 	 * @since 1.186.0
-	 * @since n.e.x.t Requests the `hourly_all` data state when grouping by the `hour` dimension.
+	 * @since 1.191.0 Requests the `hourly_all` data state when grouping by the `hour` dimension.
 	 *
 	 * @param array $args {
 	 *     Optional. Additional arguments.
