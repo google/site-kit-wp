@@ -50,6 +50,7 @@ import DocumentationIcon from '@/svg/icons/documentation.svg';
 import FeedbackIcon from '@/svg/icons/feedback.svg';
 import HelpIcon from '@/svg/icons/help.svg';
 import SupportIcon from '@/svg/icons/support.svg';
+import { HELP_MENU_BUTTON_CLASS } from './constants';
 import HelpMenuLink from './HelpMenuLink';
 
 export default function HelpMenu( { children, showFeatureTour = false } ) {
@@ -164,7 +165,7 @@ export default function HelpMenu( { children, showFeatureTour = false } ) {
 				aria-expanded={ menuOpen }
 				aria-label={ __( 'Help', 'google-site-kit' ) }
 				aria-haspopup="menu"
-				className="googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon googlesitekit-help-menu__button mdc-button--dropdown"
+				className={ `googlesitekit-header__dropdown googlesitekit-border-radius-round googlesitekit-button-icon ${ HELP_MENU_BUTTON_CLASS } mdc-button--dropdown` }
 				icon={ <HelpIcon width="20" height="20" /> }
 				onClick={ handleMenu }
 				tooltipEnterDelayInMS={ 500 }
