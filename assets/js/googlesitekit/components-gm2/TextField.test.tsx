@@ -19,7 +19,7 @@
 /**
  * Internal dependencies
  */
-import { render } from '@tests/js/test-utils';
+import { act, render } from '@tests/js/test-utils';
 import TextField from './TextField';
 
 describe( 'TextField', () => {
@@ -245,6 +245,53 @@ describe( 'TextField', () => {
 		expect(
 			container.querySelector( '.googlesitekit-text-field-icon--error' )
 		).not.toBeInTheDocument();
+	} );
+
+	it.each( [ 'input', 'textarea' ] as const )(
+		'should float the label when the %s receives focus during mounting',
+		( inputType ) => {
+			const { container, getByRole } = render(
+				<TextField
+					{ ...defaultProps }
+					inputRef={ ( element ) => element?.focus() }
+					inputType={ inputType }
+					textarea={ inputType === 'textarea' }
+					value=""
+					outlined
+				/>
+			);
+
+			const input = getByRole( 'textbox' );
+			const label = container.querySelector( '.mdc-floating-label' );
+
+			expect( input ).toHaveFocus();
+			expect( label ).toHaveClass( 'mdc-floating-label--float-above' );
+
+			expect(
+				container.querySelector( '.mdc-notched-outline' )
+			).toHaveClass( 'mdc-notched-outline--notched' );
+
+			act( () => input.blur() );
+
+			expect( label ).not.toHaveClass(
+				'mdc-floating-label--float-above'
+			);
+			expect(
+				container.querySelector( '.mdc-notched-outline' )
+			).not.toHaveClass( 'mdc-notched-outline--notched' );
+		}
+	);
+
+	it( 'should leave an empty, unfocused field label in place', () => {
+		const { container, getByRole } = render(
+			<TextField { ...defaultProps } value="" outlined />
+		);
+
+		expect( getByRole( 'textbox' ) ).not.toHaveFocus();
+
+		expect(
+			container.querySelector( '.mdc-floating-label' )
+		).not.toHaveClass( 'mdc-floating-label--float-above' );
 	} );
 
 	it.each( [ 'input', 'textarea' ] as const )(

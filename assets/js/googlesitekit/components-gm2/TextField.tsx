@@ -38,7 +38,12 @@ import {
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { Fragment, useCallback } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useLayoutEffect,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -126,6 +131,10 @@ const TextField: FC< TextFieldProps > = ( {
 	onChange,
 	onKeyDown,
 } ) => {
+	const [ inputElement, setInputElement ] = useState< Input<
+		HTMLInputElement | HTMLTextAreaElement
+	> | null >( null );
+
 	// For accessibility, provide a generated id fallback if an id
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the input.
@@ -156,9 +165,20 @@ const TextField: FC< TextFieldProps > = ( {
 	const captureInput = useCallback(
 		( input: Input< HTMLInputElement | HTMLTextAreaElement > | null ) => {
 			inputRef?.( input?.inputElement ?? null );
+			setInputElement( input );
 		},
 		[ inputRef ]
 	);
+
+	// Schedule a render after Material creates its foundation in componentDidMount.
+	// Focus received in the initial commit still needs to activate the foundation.
+	useLayoutEffect( () => {
+		const element = inputElement?.inputElement;
+
+		if ( element && element === element.ownerDocument.activeElement ) {
+			inputElement?.props.foundation?.activateFocus();
+		}
+	}, [ inputElement ] );
 
 	return (
 		<Fragment>
