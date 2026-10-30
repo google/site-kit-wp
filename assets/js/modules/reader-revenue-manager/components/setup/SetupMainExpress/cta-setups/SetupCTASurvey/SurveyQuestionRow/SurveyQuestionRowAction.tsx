@@ -56,18 +56,19 @@ const SurveyQuestionRowAction: FC< SurveyQuestionRowActionProps > = ( {
 	disabledMessage,
 	...props
 } ) => {
-	const disabledMessageID = useInstanceId(
+	const descriptionID = useInstanceId(
 		SurveyQuestionRowAction,
 		'googlesitekit-rrm-survey-question-row-action'
 	) as string;
+
+	const description =
+		disabled && disabledMessage ? disabledMessage : undefined;
 
 	const label = isAdded
 		? __( 'Remove question', 'google-site-kit' )
 		: __( 'Add question', 'google-site-kit' );
 
 	const RemoveIcon = isExpandable ? CheckColor : MinusCircle;
-
-	const tooltip = disabled && disabledMessage ? disabledMessage : undefined;
 
 	const classNames = classnames(
 		'googlesitekit-rrm-survey-question-row__action',
@@ -77,18 +78,18 @@ const SurveyQuestionRowAction: FC< SurveyQuestionRowActionProps > = ( {
 	return (
 		<Fragment>
 			<ActionButton
-				aria-describedby={ `${ disabledMessageID } ${ ariaDescribedBy }` }
+				aria-describedby={ `${ descriptionID } ${ ariaDescribedBy }` }
 				className={ classNames }
 				disabled={ disabled }
 				Icon={ isAdded ? RemoveIcon : PlusCircle }
 				iconSize={ 18 }
 				label={ label }
 				onClick={ isAdded ? onRemove : onAdd }
-				tooltip={ tooltip }
+				tooltip={ description }
 				{ ...props }
 			/>
-			<span id={ disabledMessageID } hidden>
-				{ disabledMessage }
+			<span id={ descriptionID } hidden>
+				{ description }
 			</span>
 		</Fragment>
 	);

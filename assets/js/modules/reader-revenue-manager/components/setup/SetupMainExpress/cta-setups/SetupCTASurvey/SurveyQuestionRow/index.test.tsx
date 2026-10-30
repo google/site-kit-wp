@@ -93,6 +93,26 @@ describe( 'SurveyQuestionRow', () => {
 		);
 	} );
 
+	it( 'only uses the disabledMessage as the description and tooltip if disabled', async () => {
+		const disabledMessage = 'something';
+
+		renderRow( { disabled: false, disabledMessage } );
+
+		const button = screen.getByRole( 'button', { name: 'Add question' } );
+
+		expect( button ).toBeEnabled();
+
+		expect( button ).not.toHaveAccessibleDescription(
+			new RegExp( disabledMessage )
+		);
+
+		expect( screen.queryByText( disabledMessage ) ).not.toBeInTheDocument();
+
+		fireEvent.mouseOver( button );
+
+		await expect( screen.findByRole( 'tooltip' ) ).rejects.toThrow();
+	} );
+
 	it( 'renders a plain row without an expand button or content when onExpand is absent', () => {
 		const { container } = renderRow();
 		const row = container.firstElementChild;
