@@ -73,6 +73,13 @@ jobs:
     outputs:
       playwright-version: ${{ steps.playwright.outputs.version }}
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
           persist-credentials: false
@@ -154,6 +161,13 @@ jobs:
       # For the flaky screenshots check.
       checks: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
         with:
           persist-credentials: false
@@ -359,6 +373,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path

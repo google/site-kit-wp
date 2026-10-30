@@ -60,7 +60,7 @@ describe( 'classifyInsight', () => {
 	/**
 	 * Builds report rows from day and visitor pairs.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} visitorsByDate Visitors keyed by `date` dimension value, e.g. `20250203`.
 	 * @return {Array<Object>} The report rows.
@@ -79,7 +79,7 @@ describe( 'classifyInsight', () => {
 	/**
 	 * Classifies the date range for a report with the given visitors.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {number}        current     Visitors in the date range.
 	 * @param {Array<number>} comparisons Visitors in the same date range one, two, three and four weeks earlier.

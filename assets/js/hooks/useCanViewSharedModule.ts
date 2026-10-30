@@ -28,7 +28,7 @@ import useViewOnly from './useViewOnly';
  *
  * Outside a view-only dashboard, the user can view the data of every module.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} moduleSlug The module slug.
  * @return {(boolean|undefined)} Whether the user can view the module's data, or `undefined` while the user's capabilities load.

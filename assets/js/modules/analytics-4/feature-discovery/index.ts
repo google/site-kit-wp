@@ -71,7 +71,7 @@ const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
 /**
  * Checks whether enhanced measurement is on for the connected web data stream.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Function} select Registry `select` function.
  * @return {(boolean|undefined)} Whether enhanced measurement is on, or `undefined` while loading.
@@ -118,7 +118,7 @@ export function isEnhancedMeasurementEnabled(
  * Where the edit scope is missing, this sends the user to grant it instead,
  * and the save resumes once they return to the hub.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry Registry instance.
  * @return {Promise<Object>} Empty object, or an object with an `error` if the setting could not be saved.
@@ -408,7 +408,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
 		effort: FEATURE_EFFORTS.MEDIUM,
-		goalCategories: [ FEATURE_CATEGORIES.AUDIENCE ],
+		goalCategories: [
+			FEATURE_CATEGORIES.AUDIENCE,
+			FEATURE_CATEGORIES.TRAFFIC,
+		],
 		prerequisiteModules: [ 'analytics-4' ],
 		addedInVersion: '1.114.0',
 		setup: {

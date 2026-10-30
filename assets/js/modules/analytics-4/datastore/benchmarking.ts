@@ -251,7 +251,7 @@ const baseSelectors = {
 	 * Gets the decoded benchmarking response for a date range.
 	 *
 	 * @since 1.190.0
-	 * @since n.e.x.t Returns `visits` and `keyFactors` in place of `visitors`, `dimensions`, and `contextualData`.
+	 * @since 1.191.0 Returns `visits` and `keyFactors` in place of `visitors`, `dimensions`, and `contextualData`.
 	 *
 	 * @param {Object} state     The data store's state.
 	 * @param {string} startDate The first day of the date range, as `YYYY-MM-DD`.

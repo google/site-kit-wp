@@ -78,8 +78,8 @@ describe( 'RecentTrafficBreakdown', () => {
 		'^/google-site-kit/v1/modules/analytics-4/data/settings'
 	);
 
-	// The site had 120 visits and 200 views, and 12 of the visits came from
-	// other sites.
+	// The site had 120 visitors, 12 of them from other sites. Every column
+	// divides by those 120.
 	const postsReport = createBreakdownReport(
 		[
 			[ '/ice-cream/', 82 ],
@@ -112,7 +112,6 @@ describe( 'RecentTrafficBreakdown', () => {
 		12
 	);
 
-	// `ReportError` shows the message of an error whose code is `test_error`.
 	const errorResponse = {
 		code: 'test_error',
 		message: 'Test error message',
@@ -128,7 +127,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * answers first, so a test that needs a request to fail once, or to wait,
 	 * registers that route before it calls `mockReportRequests()`.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} [responses]           Optional. The responses that replace the reports.
 	 * @param {Object} [responses.posts]     Optional. The response to the request for the posts.
@@ -167,7 +166,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	 * Gets the `.googlesitekit-table-tile` element of the column whose heading
 	 * is the given title.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {string} title The title of the column.
 	 * @return {HTMLDivElement} The column.
@@ -181,7 +180,7 @@ describe( 'RecentTrafficBreakdown', () => {
 	/**
 	 * Gets the text of the label and the value of each row of a column.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {HTMLDivElement} column The column.
 	 * @return {Array<Array<string>>} The label and the value of each row.
@@ -257,7 +256,7 @@ describe( 'RecentTrafficBreakdown', () => {
 		] );
 	} );
 
-	it( "should render each row's share of the total of its column's report", async () => {
+	it( "should render each row's share of the site's visitors, the total of the channels report", async () => {
 		mockReportRequests();
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -266,13 +265,12 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		await waitForRegistry();
 
-		// The posts column divides by the site's 200 views, the channels column
-		// by its 120 visits, and the referrals column by the 12 visits from
-		// other sites.
+		// Every column divides by the channels report's 120 visitors, not by
+		// the posts report's 200 or the referrals report's 12.
 		expect( getRowTexts( getColumn( 'Top posts by visitors' ) ) ).toEqual( [
-			[ 'Ice cream is good for your health', '82(41.0%)' ],
-			[ 'Use SPF every day & in winter', '21(10.5%)' ],
-			[ 'Stay hydrated', '8(4.0%)' ],
+			[ 'Ice cream is good for your health', '82(68.3%)' ],
+			[ 'Use SPF every day & in winter', '21(17.5%)' ],
+			[ 'Stay hydrated', '8(6.7%)' ],
 		] );
 		expect(
 			getRowTexts( getColumn( 'Top channels by visitors' ) )
@@ -284,8 +282,8 @@ describe( 'RecentTrafficBreakdown', () => {
 		expect(
 			getRowTexts( getColumn( 'Top referrals by visitors' ) )
 		).toEqual( [
-			[ 'news.example.com', '8(66.7%)' ],
-			[ 'forum.example.com', '4(33.3%)' ],
+			[ 'news.example.com', '8(6.7%)' ],
+			[ 'forum.example.com', '4(3.3%)' ],
 		] );
 	} );
 
@@ -320,9 +318,9 @@ describe( 'RecentTrafficBreakdown', () => {
 		).not.toBeInTheDocument();
 	} );
 
-	it( 'should not request a title for a page that had no views', async () => {
-		// A report includes values with no views, so one of its three rows can
-		// be a page with none.
+	it( 'should not request a title for a page that had no visitors', async () => {
+		// A report includes values with no visitors, so one of its three rows
+		// can be a page with none.
 		mockReportRequests( {
 			posts: {
 				body: createBreakdownReport( [
@@ -416,12 +414,12 @@ describe( 'RecentTrafficBreakdown', () => {
 		expect(
 			getRowTexts( getColumn( 'Top referrals by visitors' ) )
 		).toEqual( [
-			[ 'news.example.com', '8(66.7%)' ],
-			[ 'forum.example.com', '4(33.3%)' ],
+			[ 'news.example.com', '8(6.7%)' ],
+			[ 'forum.example.com', '4(3.3%)' ],
 		] );
 	} );
 
-	it( 'should render a report error in the column whose report fails, and the rows of the other two columns', async () => {
+	it( 'should render "Something went wrong" in the column whose report fails, and the rows of the other two columns', async () => {
 		mockReportRequests( {
 			channels: { body: errorResponse, status: 500 },
 		} );
@@ -437,7 +435,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			getColumn( 'Top channels by visitors' ).querySelector(
 				'.googlesitekit-table-tile__error'
 			)
-		).toHaveTextContent( 'Test error message' );
+		).toHaveTextContent( 'Something went wrong' );
 		expect(
 			within( getColumn( 'Top posts by visitors' ) ).getAllByRole(
 				'link'
@@ -448,6 +446,37 @@ describe( 'RecentTrafficBreakdown', () => {
 				'news.example.com'
 			)
 		).toBeInTheDocument();
+	} );
+
+	it( 'should render "Something went wrong" in each of the three columns when all three reports fail', async () => {
+		mockReportRequests( {
+			posts: { body: errorResponse, status: 500 },
+			channels: { body: errorResponse, status: 500 },
+			referrals: { body: errorResponse, status: 500 },
+		} );
+
+		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
+			registry,
+		} );
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+		expect(
+			getColumn( 'Top posts by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top channels by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
+		expect(
+			getColumn( 'Top referrals by visitors' ).querySelector(
+				'.googlesitekit-table-tile__error'
+			)
+		).toHaveTextContent( 'Something went wrong' );
 	} );
 
 	it( 'should request a failed report again, and render its rows, when "Retry" is clicked in its column', async () => {
@@ -516,11 +545,13 @@ describe( 'RecentTrafficBreakdown', () => {
 				'.googlesitekit-table-tile__loading'
 			)
 		).not.toBeInTheDocument();
+		// The shares wait for the channels report, whose total is the site's
+		// visitors.
 		expect(
 			getRowTexts( getColumn( 'Top referrals by visitors' ) )
 		).toEqual( [
-			[ 'news.example.com', '8(66.7%)' ],
-			[ 'forum.example.com', '4(33.3%)' ],
+			[ 'news.example.com', '8' ],
+			[ 'forum.example.com', '4' ],
 		] );
 	} );
 
@@ -690,11 +721,27 @@ describe( 'RecentTrafficBreakdown', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts and channels columns when the site had no visits', async () => {
+	it( 'should not render the section, and should request the channels report once, when the site had no visits in the Recent activity date range', async () => {
 		mockReportRequests( {
 			posts: { body: {}, status: 200 },
 			channels: { body: {}, status: 200 },
 			referrals: { body: {}, status: 200 },
+		} );
+
+		const { container, waitForRegistry } = render(
+			<RecentTrafficBreakdown />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( container ).toBeEmptyDOMElement();
+		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
+	} );
+
+	it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column, and the rows of the other two columns, when the posts report has no rows', async () => {
+		mockReportRequests( {
+			posts: { body: {}, status: 200 },
 		} );
 
 		const { waitForRegistry } = render( <RecentTrafficBreakdown />, {
@@ -711,22 +758,18 @@ describe( 'RecentTrafficBreakdown', () => {
 			'No data to display: your site hasn’t received any visitors yet'
 		);
 		expect(
-			getColumn( 'Top channels by visitors' ).querySelector(
-				'.googlesitekit-table-tile__zero-state'
+			within( getColumn( 'Top channels by visitors' ) ).getByText(
+				'Direct'
 			)
-		).toHaveTextContent(
-			'No data to display: your site hasn’t received any visitors yet'
-		);
+		).toBeInTheDocument();
 		expect(
-			getColumn( 'Top referrals by visitors' ).querySelector(
-				'.googlesitekit-table-tile__zero-state'
+			within( getColumn( 'Top referrals by visitors' ) ).getByText(
+				'news.example.com'
 			)
-		).toHaveTextContent(
-			'No data to display: no traffic from other sites to yours'
-		);
+		).toBeInTheDocument();
 	} );
 
-	it( 'should request the posts without the pages under the product path when the setting to include products is off', async () => {
+	it( "should request each column's report without the pages under the product path when the setting to include products is off", async () => {
 		provideIncludeProductsState( registry, {
 			setting: false,
 			productPathPrefix: '/product/',
@@ -757,9 +800,35 @@ describe( 'RecentTrafficBreakdown', () => {
 				'link'
 			)
 		).toHaveLength( 3 );
+
+		// The section and the channels column share one request.
+		expect( fetchMock ).toHaveFetchedTimes( 1, channelsRequest );
+
+		const [ [ channelsURL ] ] = fetchMock.calls( channelsRequest );
+
+		expect( getQueryArg( channelsURL, 'dimensionFilters' ) ).toEqual( {
+			pagePath: {
+				filterType: 'stringFilter',
+				matchType: 'BEGINS_WITH',
+				value: '/product/',
+				notExpression: 'true',
+			},
+		} );
+
+		const [ [ referralsURL ] ] = fetchMock.calls( referralsRequest );
+
+		expect( getQueryArg( referralsURL, 'dimensionFilters' ) ).toEqual( {
+			sessionDefaultChannelGroup: 'Referral',
+			pagePath: {
+				filterType: 'stringFilter',
+				matchType: 'BEGINS_WITH',
+				value: '/product/',
+				notExpression: 'true',
+			},
+		} );
 	} );
 
-	it( 'should render the loading state in the posts column, and should not request the posts, while the setting to include products loads', async () => {
+	it( 'should render the loading state in each column, and should not request any of their reports, while the setting to include products loads', async () => {
 		// The registry from `beforeEach()` has the Analytics settings, so this
 		// test builds one without them.
 		registry = createTestRegistry();
@@ -788,14 +857,21 @@ describe( 'RecentTrafficBreakdown', () => {
 
 		expect( fetchMock ).toHaveFetched( settingsEndpoint );
 		expect( fetchMock ).not.toHaveFetched( postsRequest );
+		expect( fetchMock ).not.toHaveFetched( channelsRequest );
+		expect( fetchMock ).not.toHaveFetched( referralsRequest );
 		expect(
 			getColumn( 'Top posts by visitors' ).querySelector(
 				'.googlesitekit-table-tile__loading'
 			)
 		).toBeInTheDocument();
 		expect(
-			within( getColumn( 'Top channels by visitors' ) ).getByText(
-				'Direct'
+			getColumn( 'Top channels by visitors' ).querySelector(
+				'.googlesitekit-table-tile__loading'
+			)
+		).toBeInTheDocument();
+		expect(
+			getColumn( 'Top referrals by visitors' ).querySelector(
+				'.googlesitekit-table-tile__loading'
 			)
 		).toBeInTheDocument();
 	} );
@@ -831,7 +907,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			provideSiteInfo( registry, { usingPlainPermalinks: true } );
 		} );
 
-		it( 'should render the title of each post, each linking to its post, with its share of the views of the report', async () => {
+		it( "should render the title of each post, each linking to its post, with its share of the site's visitors", async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: plainPermalinkTopPosts,
 				status: 200,
@@ -847,9 +923,9 @@ describe( 'RecentTrafficBreakdown', () => {
 			const postsColumn = getColumn( 'Top posts by visitors' );
 
 			expect( getRowTexts( postsColumn ) ).toEqual( [
-				[ 'Travel tips', '30(30.0%)' ],
-				[ 'About', '20(20.0%)' ],
-				[ '/?p=3', '10(10.0%)' ],
+				[ 'Travel tips', '30(25.0%)' ],
+				[ 'About', '20(16.7%)' ],
+				[ '/?p=3', '10(8.3%)' ],
 			] );
 			expect(
 				within( postsColumn )
@@ -862,7 +938,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			] );
 		} );
 
-		it( 'should not request the report of views by `pagePath` or the report of page titles', async () => {
+		it( 'should not request the report of visitors by `pagePath` or the report of page titles', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: plainPermalinkTopPosts,
 				status: 200,
@@ -879,7 +955,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect( fetchMock ).not.toHaveFetched( titlesRequest );
 		} );
 
-		it( 'should render a report error in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
+		it( 'should render "Something went wrong" in the posts column, and the rows of the other two columns, when the request for the posts fails', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: errorResponse,
 				status: 500,
@@ -897,7 +973,7 @@ describe( 'RecentTrafficBreakdown', () => {
 				getColumn( 'Top posts by visitors' ).querySelector(
 					'.googlesitekit-table-tile__error'
 				)
-			).toHaveTextContent( 'Test error message' );
+			).toHaveTextContent( 'Something went wrong' );
 			expect(
 				getRowTexts( getColumn( 'Top channels by visitors' ) )
 			).toEqual( [
@@ -908,8 +984,8 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect(
 				getRowTexts( getColumn( 'Top referrals by visitors' ) )
 			).toEqual( [
-				[ 'news.example.com', '8(66.7%)' ],
-				[ 'forum.example.com', '4(33.3%)' ],
+				[ 'news.example.com', '8(6.7%)' ],
+				[ 'forum.example.com', '4(3.3%)' ],
 			] );
 		} );
 
@@ -947,9 +1023,9 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect(
 				getRowTexts( getColumn( 'Top posts by visitors' ) )
 			).toEqual( [
-				[ 'Travel tips', '30(30.0%)' ],
-				[ 'About', '20(20.0%)' ],
-				[ '/?p=3', '10(10.0%)' ],
+				[ 'Travel tips', '30(25.0%)' ],
+				[ 'About', '20(16.7%)' ],
+				[ '/?p=3', '10(8.3%)' ],
 			] );
 		} );
 
@@ -978,12 +1054,12 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect(
 				getRowTexts( getColumn( 'Top referrals by visitors' ) )
 			).toEqual( [
-				[ 'news.example.com', '8(66.7%)' ],
-				[ 'forum.example.com', '4(33.3%)' ],
+				[ 'news.example.com', '8(6.7%)' ],
+				[ 'forum.example.com', '4(3.3%)' ],
 			] );
 		} );
 
-		it( 'should render "No data to display: your posts haven’t received any visitors yet" in the posts column when the report had views but none on a single post', async () => {
+		it( 'should render "No data to display: your posts haven’t received any visitors yet" in the posts column when the report had visitors but none on a single post', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: { rows: [], total: 75 },
 				status: 200,
@@ -1005,7 +1081,7 @@ describe( 'RecentTrafficBreakdown', () => {
 			);
 		} );
 
-		it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column when the report had no views', async () => {
+		it( 'should render "No data to display: your site hasn’t received any visitors yet" in the posts column when the report had no visitors', async () => {
 			fetchMock.get( topPostsEndpoint, {
 				body: { rows: [], total: 0 },
 				status: 200,
@@ -1078,9 +1154,9 @@ describe( 'RecentTrafficBreakdown', () => {
 			expect(
 				getRowTexts( getColumn( 'Top posts by visitors' ) )
 			).toEqual( [
-				[ 'Travel tips', '30(30.0%)' ],
-				[ 'About', '20(20.0%)' ],
-				[ '/?p=3', '10(10.0%)' ],
+				[ 'Travel tips', '30(25.0%)' ],
+				[ 'About', '20(16.7%)' ],
+				[ '/?p=3', '10(8.3%)' ],
 			] );
 		} );
 

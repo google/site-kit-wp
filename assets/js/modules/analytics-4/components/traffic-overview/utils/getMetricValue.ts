@@ -26,7 +26,7 @@ import { ReportRow } from '@/js/modules/analytics-4/datastore/types';
  *
  * The API returns metric values as strings.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} [row]   A report row, which is `undefined` while the report loads.
  * @param {number} [index] The index of the metric in the row. Defaults to the first metric.

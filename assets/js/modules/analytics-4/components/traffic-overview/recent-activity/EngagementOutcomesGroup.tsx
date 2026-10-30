@@ -99,7 +99,10 @@ const EngagementOutcomesGroup: FC< EngagementOutcomesGroupProps > = ( {
 			title={ __( 'Engagement & outcomes', 'google-site-kit' ) }
 		>
 			{ ! engagement.loading && !! engagement.error ? (
-				<LatestPostReportError error={ engagement.error } />
+				<LatestPostReportError
+					error={ engagement.error }
+					onRetry={ engagement.retry }
+				/>
 			) : (
 				<Fragment>
 					<LatestPostMetricRow
@@ -130,6 +133,9 @@ const EngagementOutcomesGroup: FC< EngagementOutcomesGroupProps > = ( {
 						purchases.loading
 					}
 					error={ settingsError || purchases.error }
+					// `retry` requests the purchases report, and not the
+					// settings.
+					onRetry={ settingsError ? undefined : purchases.retry }
 				/>
 			) }
 		</LatestPostTile>

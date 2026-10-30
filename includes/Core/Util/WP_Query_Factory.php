@@ -33,7 +33,7 @@ final class WP_Query_Factory {
 	 * majority of the code is a direct copy of certain parts of these functions.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
+	 * @since 1.191.0 Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
 	 * @param string $url URL to get WordPress query object for, or a page path with no host, such as `/?p=123`.
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
@@ -67,7 +67,7 @@ final class WP_Query_Factory {
 	 * They include the query var of each post type that `is_post_type_viewable()` accepts, and each query var that a
 	 * plugin adds through the `query_vars` filter.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @return string[] The public query vars.
 	 */
@@ -83,7 +83,7 @@ final class WP_Query_Factory {
 	 * Normalizes the URL for further processing.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
+	 * @since 1.191.0 Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
 	 * @param string $url URL to normalize, or a page path with no host, such as `/?p=123`.
 	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.
@@ -224,7 +224,7 @@ final class WP_Query_Factory {
 	 * into query arguments in a similar way.
 	 *
 	 * @since 1.15.0
-	 * @since n.e.x.t Reads the public query vars through `get_public_query_vars()`, in place of reading and filtering `$wp->public_query_vars` itself.
+	 * @since 1.191.0 Reads the public query vars through `get_public_query_vars()`, in place of reading and filtering `$wp->public_query_vars` itself.
 	 *
 	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
 	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.

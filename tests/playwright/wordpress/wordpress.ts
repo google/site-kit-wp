@@ -198,7 +198,7 @@ export class WordPress {
 	 * @return Whether the entry should be ignored.
 	 */
 	private isIgnoredError( entry: PHPErrorLogEntry ): boolean {
-		const wpVersion = process.env.WP_VERSION || '5.2.21';
+		const wpVersion = process.env.WP_VERSION || '5.2.30';
 		const ignoredEntries = [
 			...( errorLogIgnoreList.ALL || [] ),
 			...( errorLogIgnoreList[ wpVersion ] || [] ),

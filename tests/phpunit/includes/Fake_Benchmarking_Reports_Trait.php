@@ -15,7 +15,7 @@ use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 /**
  * Trait for answering the benchmarking reports with a fake Analytics API.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @access private
  * @ignore
  */
@@ -35,7 +35,7 @@ trait Fake_Benchmarking_Reports_Trait {
 	 * Builds the response the fake Analytics API returns for a `batchRunReports`
 	 * request, with one report for each report request in it.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $batch_request The body of the batch request.
 	 * @return Response The response, in the shape Analytics returns it.
@@ -60,7 +60,7 @@ trait Fake_Benchmarking_Reports_Trait {
 	 * Builds the report the fake Analytics API returns for one report request,
 	 * from the rows in `$report_rows` for the report's first dimension.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $report_request The report request, as the batch call sent it.
 	 * @return array The report, in the shape Analytics returns it.

@@ -28,7 +28,7 @@ const defaultOptions: DefaultOptions = { timeout: 500, polling: 100 };
 /**
  * Sets the default options for the element matchers.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param  options Options to merge into the defaults.
  * @return {void}
@@ -40,7 +40,7 @@ export function setDefaultOptions( options: Partial< DefaultOptions > ) {
 /**
  * Gets the default options for the element matchers.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @return Default options.
  */

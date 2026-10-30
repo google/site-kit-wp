@@ -24,23 +24,30 @@ import { FC } from 'react';
 /**
  * Internal dependencies
  */
-import ReportError from '@/js/components/ReportError';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
+import RecentActivityErrorNotice from './RecentActivityErrorNotice';
 
 interface LatestPostReportErrorProps {
 	/** The error of the failed request. */
 	error: object;
 	/** The module the failed request belongs to. Defaults to Analytics. */
 	moduleSlug?: string;
+	/** Requests the failed report again. Without it, the error shows no "Retry". */
+	onRetry?: () => void;
 }
 
 const LatestPostReportError: FC< LatestPostReportErrorProps > = ( {
 	error,
 	moduleSlug = MODULE_SLUG_ANALYTICS_4,
+	onRetry,
 } ) => {
 	return (
 		<div className="googlesitekit-table-tile__error">
-			<ReportError moduleSlug={ moduleSlug } error={ error } />
+			<RecentActivityErrorNotice
+				moduleSlug={ moduleSlug }
+				error={ error }
+				onRetry={ onRetry }
+			/>
 		</div>
 	);
 };
