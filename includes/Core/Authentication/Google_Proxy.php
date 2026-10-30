@@ -25,33 +25,35 @@ use WP_Error;
  */
 class Google_Proxy {
 
-	const PRODUCTION_BASE_URL       = 'https://sitekit.withgoogle.com';
-	const STAGING_BASE_URL          = 'https://site-kit-dev.appspot.com';
-	const DEVELOPMENT_BASE_URL      = 'https://site-kit-local.appspot.com';
-	const OAUTH2_SITE_URI           = '/o/oauth2/site/';
-	const OAUTH2_REVOKE_URI         = '/o/oauth2/revoke/';
-	const OAUTH2_TOKEN_URI          = '/o/oauth2/token/';
-	const OAUTH2_AUTH_URI           = '/o/oauth2/auth/';
-	const OAUTH2_DELETE_SITE_URI    = '/o/oauth2/delete-site/';
-	const SETUP_V3_URI              = '/v3/site-management/setup/';
-	const PERMISSIONS_URI           = '/site-management/permissions/';
-	const FEATURES_URI              = '/site-management/features/';
-	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
-	const SURVEY_EVENT_URI          = '/survey/event/';
-	const SUPPORT_LINK_URI          = '/support';
-	const INTENT_URI                = '/intent/%s/';
-	const INTENT_COMPLETE_URI       = '/intent/%s/complete/';
-	const ACTION_EXCHANGE_SITE_CODE = 'googlesitekit_proxy_exchange_site_code';
-	const ACTION_SETUP              = 'googlesitekit_proxy_setup';
-	const ACTION_SETUP_START        = 'googlesitekit_proxy_setup_start';
-	const ACTION_PERMISSIONS        = 'googlesitekit_proxy_permissions';
-	const ACTION_VERIFY             = 'googlesitekit_proxy_verify';
-	const NONCE_ACTION              = 'googlesitekit_proxy_nonce';
-	const HEADER_REDIRECT_TO        = 'Redirect-To';
-	const PARAM_PURPOSE             = 'purpose';
-	const PURPOSE_INTENT            = 'intent';
-	const SETUP_MODE_ANALYTICS_STEP = 'analytics-step';
-	const SETUP_MODE_INTENT_STEP    = 'intent-step';
+	const PRODUCTION_BASE_URL                = 'https://sitekit.withgoogle.com';
+	const STAGING_BASE_URL                   = 'https://site-kit-dev.appspot.com';
+	const DEVELOPMENT_BASE_URL               = 'https://site-kit-local.appspot.com';
+	const OAUTH2_SITE_URI                    = '/o/oauth2/site/';
+	const OAUTH2_REVOKE_URI                  = '/o/oauth2/revoke/';
+	const OAUTH2_TOKEN_URI                   = '/o/oauth2/token/';
+	const OAUTH2_AUTH_URI                    = '/o/oauth2/auth/';
+	const OAUTH2_DELETE_SITE_URI             = '/o/oauth2/delete-site/';
+	const SETUP_V3_URI                       = '/v3/site-management/setup/';
+	const PERMISSIONS_URI                    = '/site-management/permissions/';
+	const FEATURES_URI                       = '/site-management/features/';
+	const SURVEY_TRIGGER_URI                 = '/survey/trigger/';
+	const SURVEY_EVENT_URI                   = '/survey/event/';
+	const SUPPORT_LINK_URI                   = '/support';
+	const INTENT_URI                         = '/intent/%s/';
+	const INTENT_COMPLETE_URI                = '/intent/%s/complete/';
+	const BENCHMARKING_INSIGHT_URI           = '/v1/ai/benchmarking';
+	const BENCHMARKING_INSIGHT_OPERATION_URI = '/v1/ai/operations/%s';
+	const ACTION_EXCHANGE_SITE_CODE          = 'googlesitekit_proxy_exchange_site_code';
+	const ACTION_SETUP                       = 'googlesitekit_proxy_setup';
+	const ACTION_SETUP_START                 = 'googlesitekit_proxy_setup_start';
+	const ACTION_PERMISSIONS                 = 'googlesitekit_proxy_permissions';
+	const ACTION_VERIFY                      = 'googlesitekit_proxy_verify';
+	const NONCE_ACTION                       = 'googlesitekit_proxy_nonce';
+	const HEADER_REDIRECT_TO                 = 'Redirect-To';
+	const PARAM_PURPOSE                      = 'purpose';
+	const PURPOSE_INTENT                     = 'intent';
+	const SETUP_MODE_ANALYTICS_STEP          = 'analytics-step';
+	const SETUP_MODE_INTENT_STEP             = 'intent-step';
 
 	/**
 	 * Plugin context.
@@ -270,9 +272,10 @@ class Google_Proxy {
 	}
 
 	/**
-	 * Sends a POST request to the Google Proxy server.
+	 * Sends a request to the Google Proxy server.
 	 *
 	 * @since 1.27.0
+	 * @since n.e.x.t Added the `method` argument.
 	 *
 	 * @param string      $uri Endpoint to send the request to.
 	 * @param Credentials $credentials Credentials instance.
@@ -286,6 +289,8 @@ class Google_Proxy {
 			'timeout' => isset( $args['timeout'] ) ? $args['timeout'] : 15,
 		);
 
+		$method = isset( $args['method'] ) && 'GET' === $args['method'] ? 'GET' : 'POST';
+
 		if ( $credentials && $credentials instanceof Credentials ) {
 			if ( ! $credentials->has() ) {
 				return new WP_Error(
@@ -295,9 +300,12 @@ class Google_Proxy {
 				);
 			}
 
-			$creds                               = $credentials->get();
-			$request_args['body']['site_id']     = $creds['oauth2_client_id'];
-			$request_args['body']['site_secret'] = $creds['oauth2_client_secret'];
+			$creds                           = $credentials->get();
+			$request_args['body']['site_id'] = $creds['oauth2_client_id'];
+
+			if ( 'POST' === $method ) {
+				$request_args['body']['site_secret'] = $creds['oauth2_client_secret'];
+			}
 		}
 
 		if ( ! empty( $args['access_token'] ) && is_string( $args['access_token'] ) ) {
@@ -309,13 +317,23 @@ class Google_Proxy {
 			$request_args['blocking'] = false;
 		}
 
-		if ( ! empty( $args['json_request'] ) ) {
-			$request_args['headers']['Content-Type'] = 'application/json';
-			$request_args['body']                    = wp_json_encode( $request_args['body'] );
+		$url = $this->url( $uri );
+
+		if ( 'GET' === $method ) {
+			$url = add_query_arg( urlencode_deep( $request_args['body'] ), $url );
+			unset( $request_args['body'] );
+
+			// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.wp_remote_get_wp_remote_get
+			$response = wp_remote_get( $url, $request_args );
+		} else {
+			if ( ! empty( $args['json_request'] ) ) {
+				$request_args['headers']['Content-Type'] = 'application/json';
+				$request_args['body']                    = wp_json_encode( $request_args['body'] );
+			}
+
+			$response = wp_remote_post( $url, $request_args );
 		}
 
-		$url      = $this->url( $uri );
-		$response = wp_remote_post( $url, $request_args );
 		if ( is_wp_error( $response ) ) {
 			return $response;
 		}
@@ -730,6 +748,50 @@ class Google_Proxy {
 					'session' => $session,
 					'event'   => $event,
 				),
+			)
+		);
+	}
+
+	/**
+	 * Sends a benchmarking insight request to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array       $payload      Benchmarking insight request payload.
+	 * @param string      $language_tag Language tag for the generated insight.
+	 * @return array|WP_Error Operation, or generated insight when the proxy returns it from its cache, or WP_Error on failure.
+	 */
+	public function send_benchmarking_insight_request( Credentials $credentials, $access_token, array $payload, $language_tag ) {
+		return $this->request(
+			add_query_arg( 'hl', $language_tag, self::BENCHMARKING_INSIGHT_URI ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array_merge( $payload, array( 'async' => true ) ),
+			)
+		);
+	}
+
+	/**
+	 * Gets a benchmarking insight operation from the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param string      $operation_id Operation ID.
+	 * @return array|WP_Error Operation, or WP_Error on failure.
+	 */
+	public function get_benchmarking_insight_operation( Credentials $credentials, $access_token, $operation_id ) {
+		return $this->request(
+			sprintf( self::BENCHMARKING_INSIGHT_OPERATION_URI, rawurlencode( $operation_id ) ),
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'method'       => 'GET',
 			)
 		);
 	}
