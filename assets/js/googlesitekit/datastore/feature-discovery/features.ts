@@ -180,7 +180,6 @@ export const actions = {
 
 	/**
 	 * Starts the setup for the feature registered under a given slug.
-	 * Closes the feature detail panel before starting any setup type.
 	 *
 	 * For `setup-flow` features that activate a module, this activates the
 	 * module, records that the user left the hub to set it up, and takes them
@@ -217,16 +216,33 @@ export const actions = {
 				return {};
 			}
 
+			// A setup can take the user away from the hub, such as to grant
+			// extra scopes, and the detail panel must not reopen on their
+			// return, whether or not it has closed by the time the snapshot
+			// is taken.
 			registry
 				.dispatch( CORE_UI )
-				.setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+				.omitKeysFromSnapshot( [
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+				] );
 
 			yield { type: START_FEATURE_SETUP, payload: { slug } };
 
 			try {
+				// In-place features open their existing panel over the hub,
+				// which does its own saving, so the user never leaves the hub.
 				if (
 					feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL
 				) {
+					// The detail panel is closed first so that the feature's
+					// own panel opens on its own over the hub.
+					registry
+						.dispatch( CORE_UI )
+						.setValue(
+							FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+							false
+						);
+
 					feature.setup.open?.( registry );
 					return {};
 				}

@@ -37,10 +37,15 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface FeatureCTAProps {
 	isTertiary?: boolean;
+	onSetupComplete?: () => void;
 	slug: string;
 }
 
-const FeatureCTA: FC< FeatureCTAProps > = ( { isTertiary = false, slug } ) => {
+const FeatureCTA: FC< FeatureCTAProps > = ( {
+	isTertiary = false,
+	onSetupComplete,
+	slug,
+} ) => {
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
@@ -79,11 +84,14 @@ const FeatureCTA: FC< FeatureCTAProps > = ( { isTertiary = false, slug } ) => {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 
-	const onClick = useCallback( () => {
+	const onClick = useCallback( async () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
-		setupFeature( slug );
-	}, [ setupFeature, slug, triggerSurvey ] );
+
+		await setupFeature( slug );
+
+		onSetupComplete?.();
+	}, [ onSetupComplete, setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
