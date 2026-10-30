@@ -30,7 +30,7 @@ services:
       - sitekit
 
   wp:
-    image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_IMAGE_TAG:-5.2.21-20261026}
+    image: ghcr.io/google/site-kit-wp/playwright-wp:${WP_IMAGE_TAG:-5.2.30-20261026}
     ports:
       - 9002:80
     volumes:
@@ -42,7 +42,7 @@ services:
         target: /var/www/html/wp-content/plugins/google-site-kit
         read_only: true
     environment:
-      WP_VERSION: ${WP_VERSION:-5.2.21}
+      WP_VERSION: ${WP_VERSION:-5.2.30}
       WORDPRESS_DB_HOST: mysql
       WORDPRESS_DB_USER: root
       WORDPRESS_DB_PASSWORD: example
