@@ -34,6 +34,7 @@ import GenericErrorHandlerActions from '@/js/components/GenericErrorHandlerActio
 import ViewContextContext from '@/js/components/Root/ViewContextContext';
 import BannerNotification from '@/js/googlesitekit/notifications/components/layout/BannerNotification';
 import { trackEvent } from '@/js/util';
+import { reportError } from '@/js/util/otel';
 
 class ErrorHandler extends Component {
 	constructor( props ) {
@@ -57,6 +58,12 @@ class ErrorHandler extends Component {
 			// label has a max-length of 500 bytes.
 			`${ error?.message }\n${ info?.componentStack }`.slice( 0, 500 )
 		);
+
+		// Sent alongside the event above, with the full message and stack.
+		reportError( error, {
+			viewContext: this.context,
+			componentStack: info?.componentStack,
+		} );
 	}
 
 	render() {
