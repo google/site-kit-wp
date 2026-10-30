@@ -151,7 +151,6 @@ Please create a new topic on our [WordPress.org support forum](https://wordpress
 * Prevent unnecessary notifications from appearing after completing a newsletter setup. See [#13885](https://github.com/google/site-kit-wp/issues/13885).
 * Scroll Reader Revenue Manager express setup error notices into view. See [#13874](https://github.com/google/site-kit-wp/issues/13874).
 * Fix an issue displaying CTAs from the previously connected publication in Reader Revenue Manager settings. See [#13872](https://github.com/google/site-kit-wp/issues/13872).
-* Improve settings migration handling during upgrades. See [#13829](https://github.com/google/site-kit-wp/issues/13829).
 * Fix the Partial data badge pushing its card's rows out of line with the other card in the Your visitor groups section of the PDF report. See [#13221](https://github.com/google/site-kit-wp/issues/13221).
 
 [See changelog for all versions](https://raw.githubusercontent.com/google/site-kit-wp/main/changelog.txt).
