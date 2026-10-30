@@ -38,6 +38,7 @@ class Google_Proxy {
 	const FEATURES_URI              = '/site-management/features/';
 	const SURVEY_TRIGGER_URI        = '/survey/trigger/';
 	const SURVEY_EVENT_URI          = '/survey/event/';
+	const FEEDBACK_URI              = '/feedback/';
 	const SUPPORT_LINK_URI          = '/support';
 	const INTENT_URI                = '/intent/%s/';
 	const INTENT_COMPLETE_URI       = '/intent/%s/complete/';
@@ -729,6 +730,34 @@ class Google_Proxy {
 				'body'         => array(
 					'session' => $session,
 					'event'   => $event,
+				),
+			)
+		);
+	}
+
+	/**
+	 * Sends feedback to the proxy.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param Credentials $credentials  Credentials instance.
+	 * @param string      $access_token Access token.
+	 * @param array       $feedback     Feedback data, with `namespace`, `group`, `key`, and `value` keys.
+	 * @return array|WP_Error Response of the wp_remote_post request.
+	 */
+	public function send_feedback( Credentials $credentials, $access_token, array $feedback ) {
+		return $this->request(
+			self::FEEDBACK_URI,
+			$credentials,
+			array(
+				'access_token' => $access_token,
+				'json_request' => true,
+				'body'         => array_merge(
+					$feedback,
+					array(
+						'language'       => get_user_locale(),
+						'plugin_version' => GOOGLESITEKIT_VERSION,
+					)
 				),
 			)
 		);
