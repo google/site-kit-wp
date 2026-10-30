@@ -30,11 +30,16 @@ import Link from '@/js/components/Link';
 import { SIZE_MEDIUM } from '@/js/components/Typography/constants';
 import P from '@/js/components/Typography/P';
 import {
+	ANCHOR_ID_KEY_METRICS,
+	ANCHOR_ID_TRAFFIC,
+} from '@/js/googlesitekit/constants';
+import {
 	FEATURE_CATEGORIES,
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import {
 	getCurrentFeatureDiscoveryTabPath,
@@ -66,7 +71,7 @@ const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
 /**
  * Checks whether enhanced measurement is on for the connected web data stream.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Function} select Registry `select` function.
  * @return {(boolean|undefined)} Whether enhanced measurement is on, or `undefined` while loading.
@@ -113,7 +118,7 @@ export function isEnhancedMeasurementEnabled(
  * Where the edit scope is missing, this sends the user to grant it instead,
  * and the save resumes once they return to the hub.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} registry Registry instance.
  * @return {Promise<Object>} Empty object, or an object with an `error` if the setting could not be saved.
@@ -278,6 +283,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_TRAFFIC }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},
@@ -391,6 +400,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			title: __( 'Success! Key metrics are set up', 'google-site-kit' ),
 			cta: {
 				label: __( 'Show me', 'google-site-kit' ),
+				getURL: ( select ) =>
+					`${ select( CORE_SITE ).getAdminURL(
+						'googlesitekit-dashboard'
+					) }#${ ANCHOR_ID_KEY_METRICS }`,
 			},
 			dismissLabel: __( 'Got it', 'google-site-kit' ),
 		},

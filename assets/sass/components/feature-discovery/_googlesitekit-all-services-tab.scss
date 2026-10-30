@@ -24,6 +24,16 @@
 		padding-block: 10px;
 	}
 
+	.googlesitekit-all-services-tab__notifications {
+		// Offsets the tab's gap to provide a fixed 24px above and below the notice.
+		margin-block: calc(24px - var(--googlesitekit-feature-discovery-padding-l));
+
+		// Collapsed while empty, so it adds no gap above the feature list.
+		&:empty {
+			display: none;
+		}
+	}
+
 	// 5px of leading above and below the heading text, per the design.
 	.googlesitekit-feature-goal-group__heading {
 		margin: 0;

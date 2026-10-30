@@ -155,8 +155,8 @@ jobs:
         wp_version: ["latest", "nightly"]
         include:
           # Update wp_image_tag's date suffix (YYYYMMDD) whenever the bundled plugins in the fixed WordPress image change.
-          - wp_version: "5.2.21"
-            wp_image_tag: "5.2.21-20261026"
+          - wp_version: "5.2.30"
+            wp_image_tag: "5.2.30-20261026"
     env:
       WP_VERSION: ${{ matrix.wp_version }}
       WP_IMAGE_TAG: ${{ matrix.wp_image_tag || matrix.wp_version }}

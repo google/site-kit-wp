@@ -46,7 +46,7 @@ export interface PageTitles {
  * A page that Analytics has no title for has no title in `titles`. When the
  * request for the titles fails, no page path has a title.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Array<string>} pagePaths       The page paths, such as `/hello-world/`. With none, the hook requests no titles.
  * @param {Object}        [reportOptions] Optional. The options of the report the page paths come from, which set the date range.

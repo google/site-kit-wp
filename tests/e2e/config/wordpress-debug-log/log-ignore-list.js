@@ -4,7 +4,7 @@
  * @type {Object} WordPress debug log entries to ignore, keyed by WordPress version.
  */
 export const logIgnoreList = {
-	'5.2.21': [
+	'5.2.30': [
 		// Deprecated syntax or function calls which are fixed in later WP versions.
 		'PHP Deprecated:  Function get_magic_quotes_gpc() is deprecated in /var/www/html/wp-includes/load.php',
 		'PHP Deprecated:  Function get_magic_quotes_gpc() is deprecated in /var/www/html/wp-includes/formatting.php',

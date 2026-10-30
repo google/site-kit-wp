@@ -136,7 +136,7 @@ const userSettingsEndpoint = new RegExp(
 /**
  * Connects the given publication with no CTAs.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @private
  *
  * @param {Object} registry    Registry to seed.
@@ -160,7 +160,7 @@ function connectPublication( registry: Registry, publication: Publication ) {
 /**
  * Gets the `lastActionedExpressSetups` entries sent by each user settings save.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  * @private
  *
  * @return {Array.<Object>} The entries sent by each save, in order.
@@ -202,7 +202,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 	/**
 	 * Sets up a new registry with the ready publication connected.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 * @private
 	 *
 	 * @param {Object}         [options]             Optional. Registry options.
@@ -408,7 +408,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		/**
 		 * Sets up a registry without resolved settings or publication.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {Object}         [options]               Optional. Options.
@@ -442,7 +442,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		/**
 		 * Resolves the settings with the given publication ID.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {string} publicationID Publication ID.
@@ -461,7 +461,7 @@ describe( 'SetupCTANewsletterSignup', () => {
 		/**
 		 * Asserts that only the progress bar is rendered.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {Element} container Rendered container.

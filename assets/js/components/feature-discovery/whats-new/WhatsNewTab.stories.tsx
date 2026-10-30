@@ -31,8 +31,13 @@ import {
 	provideFeatures,
 	provideWhatsNewState,
 } from '@/js/components/feature-discovery/__fixtures__/whats-new';
+import { WHATS_NEW_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { Provider as ViewContextProvider } from '@/js/components/Root/ViewContextContext';
 import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { MODULE_SLUG_ADS } from '@/js/modules/ads/constants';
 import { Story } from '@/js/types/Story';
 import {
@@ -92,6 +97,50 @@ WithAutoUpdatesNotice.args = {
 			googlesitekit_update_plugins: true,
 		} );
 		provideNotifications( registry, [] );
+	},
+};
+
+export const WithSetupSuccessNotice = Template.bind( {} ) as Story< StoryArgs >;
+WithSetupSuccessNotice.storyName = 'With Setup Success Notice';
+WithSetupSuccessNotice.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		provideFeatures( registry, [
+			...WHATS_NEW_FEATURES,
+			{
+				slug: 'set-up-feature',
+				title: 'Set up feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+					ctaLabel: 'Set up a sign-up form',
+					isEnabled: () => true,
+				},
+				successNotice: {
+					title: 'Success! Your Newsletter sign-up form by Reader Revenue Manager is set up',
+					description:
+						'You can always update your sign-up form settings in Publisher center',
+					cta: {
+						label: 'Go to Publisher center',
+						getURL: () => 'https://publishercenter.google.com/',
+						external: true,
+					},
+				},
+			},
+		] );
+		provideWhatsNewState( registry, PARTIALLY_SEEN_TIMERS );
+		// The auto-updates notice also qualifies, so the story shows the
+		// success notice taking precedence over it.
+		provideSiteInfo( registry, {
+			changePluginAutoUpdatesCapacity: true,
+			siteKitAutoUpdatesEnabled: false,
+		} );
+		provideUserCapabilities( registry, {
+			googlesitekit_update_plugins: true,
+		} );
+		provideNotifications( registry, [] );
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+			featureSlug: 'set-up-feature',
+			returnTab: WHATS_NEW_TAB_PATH,
+		} );
 	},
 };
 

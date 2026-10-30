@@ -37,7 +37,7 @@ export function getFeatureDismissalKey( slug: string ) {
 /**
  * Gets the incomplete setup reminder dismissal key for a feature.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string} slug Feature slug.
  * @return {string} Feature incomplete setup reminder dismissal key.

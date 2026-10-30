@@ -19,6 +19,10 @@
 /**
  * Internal dependencies
  */
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
 import { FEATURE_DISCOVERY_CALLOUT_NOTIFICATION } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
 import { FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG } from '@/js/components/notifications/EnableAutoUpdateBannerNotification';
 import { WELCOME_MODAL_NOTIFICATION } from '@/js/components/WelcomeModal';
@@ -30,6 +34,9 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
 	PERMISSION_MANAGE_OPTIONS,
@@ -38,18 +45,26 @@ import {
 	WELCOME_GATHERING_DATA_DISMISSED_ITEM_SLUG,
 } from '@/js/googlesitekit/datastore/user/constants';
 import { getMetaCapabilityPropertyName } from '@/js/googlesitekit/datastore/util/permissions';
+import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
 import {
 	createTestRegistry,
+	provideModuleRegistrations,
 	provideModules,
 	provideSiteInfo,
 	provideUserAuthentication,
 	provideUserCapabilities,
 	provideUserInfo,
 } from '@tests/js/test-utils';
+import {
+	FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+} from './constants';
 import { DEFAULT_NOTIFICATIONS } from './register-defaults';
 
 describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
@@ -521,6 +536,244 @@ describe( 'DEFAULT_NOTIFICATIONS checkRequirements', () => {
 			} );
 
 			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+	} );
+
+	describe.each( [
+		[
+			FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
+			WHATS_NEW_TAB_PATH,
+			ALL_SERVICES_TAB_PATH,
+		],
+		[
+			FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+			ALL_SERVICES_TAB_PATH,
+			WHATS_NEW_TAB_PATH,
+		],
+	] )( '%s', ( notificationID, returnTab, otherTab ) => {
+		const { checkRequirements } = DEFAULT_NOTIFICATIONS[ notificationID ];
+
+		function providePendingSetup( pendingSetup ) {
+			registry
+				.dispatch( CORE_FEATURE_DISCOVERY )
+				.receivePendingSetup( pendingSetup );
+		}
+
+		const successNotice = { title: 'Success! Test feature is set up' };
+
+		function provideFeature( { isEnabled } ) {
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: { isEnabled: () => isEnabled },
+					successNotice,
+				},
+			] );
+		}
+
+		beforeEach( () => {
+			provideModules( registry );
+		} );
+
+		it( 'should not be active when there is no pending setup', async () => {
+			provideFeature( { isEnabled: true } );
+			providePendingSetup( null );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the user returned to the other tab', async () => {
+			provideFeature( { isEnabled: true } );
+			providePendingSetup( {
+				featureSlug: 'test-feature',
+				returnTab: otherTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the pending feature is unknown', async () => {
+			providePendingSetup( {
+				featureSlug: 'unknown-feature',
+				returnTab,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should not be active when the pending feature has no success notice', async () => {
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: { isEnabled: () => true },
+				},
+			] );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should be active when the pending feature is now set up', async () => {
+			provideFeature( { isEnabled: true } );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+		} );
+
+		it( 'should not be active when the pending feature is not set up', async () => {
+			provideFeature( { isEnabled: false } );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( "should not be active when the pending feature's setup state is unresolved", async () => {
+			provideFeature( { isEnabled: undefined } );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			expect( await checkRequirements( registry ) ).toBe( false );
+		} );
+
+		it( 'should wait for the modules, module settings and site info before checking', async () => {
+			// Only reports the feature as set up once the module's settings
+			// have loaded, so this passes only if they're waited for.
+			function isEnabled( select ) {
+				return (
+					select( MODULES_ANALYTICS_4 ).getSettings()?.propertyID ===
+					'12345'
+				);
+			}
+
+			provideModuleRegistrations( registry );
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					setup: {
+						moduleSlug: MODULE_SLUG_ANALYTICS_4,
+						isEnabled,
+					},
+					successNotice,
+				},
+			] );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			);
+			fetchMock.getOnce( settingsEndpoint, {
+				body: { propertyID: '12345' },
+				status: 200,
+			} );
+
+			expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.hasFinishedResolution( 'getModules' )
+			).toBe( false );
+			expect(
+				registry
+					.select( CORE_SITE )
+					.hasFinishedResolution( 'getSiteInfo' )
+			).toBe( false );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+			expect(
+				registry
+					.select( CORE_MODULES )
+					.hasFinishedResolution( 'getModules' )
+			).toBe( true );
+			expect(
+				registry
+					.select( CORE_SITE )
+					.hasFinishedResolution( 'getSiteInfo' )
+			).toBe( true );
+		} );
+
+		it( 'should wait for a prerequisite module’s settings before checking', async () => {
+			// Only reports the feature as set up once the prerequisite
+			// module's settings have loaded, so this passes only if they're
+			// waited for.
+			function isEnabled( select ) {
+				return (
+					select( MODULES_ANALYTICS_4 ).getSettings()?.propertyID ===
+					'12345'
+				);
+			}
+
+			provideModuleRegistrations( registry );
+			provideFeatures( registry, [
+				{
+					slug: 'test-feature',
+					prerequisiteModules: [ MODULE_SLUG_ANALYTICS_4 ],
+					setup: { isEnabled },
+					successNotice,
+				},
+			] );
+			providePendingSetup( { featureSlug: 'test-feature', returnTab } );
+
+			const settingsEndpoint = new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/settings'
+			);
+			fetchMock.getOnce( settingsEndpoint, {
+				body: { propertyID: '12345' },
+				status: 200,
+			} );
+
+			expect( await checkRequirements( registry ) ).toBe( true );
+			expect( fetchMock ).toHaveFetched( settingsEndpoint );
+		} );
+	} );
+
+	describe( 'feature discovery setup success placements', () => {
+		it( 'should take precedence over the auto-updates notice in the same area', () => {
+			const successNotification =
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION
+				];
+			const autoUpdatesNotification =
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+				];
+
+			expect( successNotification.areaSlug ).toBe(
+				NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP
+			);
+			expect( autoUpdatesNotification.areaSlug ).toBe(
+				successNotification.areaSlug
+			);
+			expect( successNotification.groupID ).toBe(
+				NOTIFICATION_GROUPS.SETUP_CTAS
+			);
+			expect( autoUpdatesNotification.groupID ).toBe(
+				successNotification.groupID
+			);
+			expect( successNotification.priority ).toBeLessThan(
+				autoUpdatesNotification.priority
+			);
+		} );
+
+		it( 'should keep the "All services" notice out of the auto-updates notice’s queue', () => {
+			const successNotification =
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION
+				];
+			const autoUpdatesNotification =
+				DEFAULT_NOTIFICATIONS[
+					FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG
+				];
+
+			expect( successNotification.areaSlug ).toBe(
+				NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP
+			);
+			expect( successNotification.groupID ).toBe(
+				NOTIFICATION_GROUPS.DEFAULT
+			);
+			expect( successNotification.groupID ).not.toBe(
+				autoUpdatesNotification.groupID
+			);
 		} );
 	} );
 

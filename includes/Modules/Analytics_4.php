@@ -798,7 +798,7 @@ final class Analytics_4 extends Module implements Module_With_Inline_Data, Modul
 	 * Gets map of datapoint to definition data for each.
 	 *
 	 * @since 1.30.0
-	 * @since n.e.x.t Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
+	 * @since 1.191.0 Registers `GET:plain-permalink-top-posts` with the `freshData` feature flag on.
 	 *
 	 * @return array Map of datapoints to their definitions.
 	 */
