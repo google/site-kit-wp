@@ -130,7 +130,7 @@ export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 		 * Omits the given state keys from any snapshot of this store created
 		 * from now on, for the rest of the page load.
 		 *
-		 * @since n.e.x.t
+		 * @since 1.191.0
 		 * @private
 		 *
 		 * @param {string[]} keys Property path(s) to omit from snapshots.

@@ -299,7 +299,7 @@ export const selectors = {
 	/**
 	 * Checks whether the feature's setup action is currently running.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Object} state Data store's state.
 	 * @param {string} slug  Feature's slug.
