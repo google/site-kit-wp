@@ -278,6 +278,39 @@ describe( 'core/feature-discovery features', () => {
 				).toThrow( 'slug is required to set up a feature.' );
 			} );
 
+			it( 'should omit the detail panel from UI snapshots so that it does not reopen on return', async () => {
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate: () => Promise.resolve( {} ),
+						},
+					} )
+				);
+
+				registry
+					.dispatch( CORE_UI )
+					.setValue(
+						FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+						'test-feature'
+					);
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				await registry.dispatch( CORE_UI ).createSnapshot();
+
+				const { value: snapshot } = await getItem(
+					`datastore::cache::${ CORE_UI }`
+				);
+
+				expect( snapshot ).not.toHaveProperty(
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+				);
+			} );
+
 			describe.each( [
 				FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 				FEATURE_SETUP_TYPES.SETUP_FLOW,
@@ -300,14 +333,7 @@ describe( 'core/feature-discovery features', () => {
 							}
 						);
 
-						let panelSlugOnActivation: unknown;
-
 						function activate() {
-							panelSlugOnActivation = registry
-								.select( CORE_UI )
-								.getValue(
-									FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
-								);
 							return activation;
 						}
 
@@ -329,13 +355,6 @@ describe( 'core/feature-discovery features', () => {
 							'activateModule'
 						).mockImplementation( activate );
 
-						registry
-							.dispatch( CORE_UI )
-							.setValue(
-								FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
-								'test-feature'
-							);
-
 						const { isSetupInProgress } = registry.select(
 							CORE_FEATURE_DISCOVERY
 						);
@@ -347,8 +366,6 @@ describe( 'core/feature-discovery features', () => {
 						const setup = registry
 							.dispatch( CORE_FEATURE_DISCOVERY )
 							.setupFeature( 'test-feature' );
-
-						expect( panelSlugOnActivation ).toBe( false );
 
 						expect( isSetupInProgress( 'test-feature' ) ).toBe(
 							true

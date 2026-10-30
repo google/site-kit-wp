@@ -322,6 +322,32 @@ describe( 'FeatureCTA', () => {
 				'googlesitekit-button-icon--spinner__running'
 			);
 		} );
+
+		it( 'should fire the setup complete callback when setup completes', async () => {
+			fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+			const onSetupComplete = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureCTA
+					slug="test-feature"
+					onSetupComplete={ onSetupComplete }
+				/>,
+				{ registry }
+			);
+
+			fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
+
+			expect( onSetupComplete ).not.toHaveBeenCalled();
+
+			await waitFor( () =>
+				expect(
+					getByRole( 'button', { name: 'Set up now' } )
+				).not.toBeDisabled()
+			);
+
+			expect( onSetupComplete ).toHaveBeenCalledTimes( 1 );
+		} );
 	} );
 
 	it( 'should complete the click handler and expose an activation rejection as a setup error', async () => {
@@ -441,16 +467,20 @@ describe( 'FeatureCTA', () => {
 				},
 			] );
 
-			const { getByRole } = render( <FeatureCTA slug="test-feature" />, {
-				registry,
-			} );
+			const onSetupComplete = jest.fn();
+
+			const { getByRole } = render(
+				<FeatureCTA
+					slug="test-feature"
+					onSetupComplete={ onSetupComplete }
+				/>,
+				{ registry }
+			);
 
 			fireEvent.click( getByRole( 'button', { name: 'Try it now' } ) );
 
 			await waitFor( () =>
-				expect(
-					registry.select( CORE_UI ).getValue( 'testPanelOpened' )
-				).toBe( true )
+				expect( onSetupComplete ).toHaveBeenCalledTimes( 1 )
 			);
 
 			expect(

@@ -334,10 +334,12 @@ describe( 'FeatureDetailPanel', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should close the panel immediately while background setup continues', async () => {
+	it( 'should keep the panel open during setup and close after it completes', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
+
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
 		let finishSetup!: ( value: Record< string, never > ) => void;
@@ -364,6 +366,7 @@ describe( 'FeatureDetailPanel', () => {
 		);
 
 		setFeature( 'background' );
+
 		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
 			registry,
 		} );
@@ -371,18 +374,14 @@ describe( 'FeatureDetailPanel', () => {
 		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
 		expect( setupFeature ).toHaveBeenCalledWith( 'background' );
-		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+		expect( getByRole( 'dialog' ) ).toBeInTheDocument();
+		expect( getByRole( 'button', { name: 'Set up now' } ) ).toBeDisabled();
 
 		expect(
 			registry
 				.select( CORE_UI )
 				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
-		).toBe( false );
-		expect(
-			registry
-				.select( CORE_FEATURE_DISCOVERY )
-				.isSetupInProgress( 'background' )
-		).toBe( true );
+		).toBe( 'background' );
 
 		await act( async () => {
 			finishSetup( {} );
@@ -390,11 +389,13 @@ describe( 'FeatureDetailPanel', () => {
 		} );
 
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+
 		expect(
 			registry
-				.select( CORE_FEATURE_DISCOVERY )
-				.isSetupInProgress( 'background' )
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
 		).toBe( false );
+
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: { data: { triggerID: 'setup:feature_setup_background' } },
