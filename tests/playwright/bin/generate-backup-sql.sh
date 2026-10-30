@@ -5,7 +5,7 @@
 #   npm run playwright:generate-backup
 #
 # This script:
-# 1. Starts Docker services with WP 5.2.21 (oldest supported version)
+# 1. Starts Docker services with WP 5.2.30 (oldest supported version)
 # 2. Installs WordPress and configures it via WP-CLI
 # 3. Seeds WPForms forms and their frontend pages
 # 4. Exports the database to backup.sql
@@ -18,7 +18,7 @@ PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_DIR"
 
 # Use the oldest supported WordPress version for maximum forward-compatibility.
-export WP_VERSION=5.2.21
+export WP_VERSION=5.2.30
 
 BACKUP_DIR="$PROJECT_DIR/docker/mariadb"
 BACKUP_FILE="$BACKUP_DIR/backup.sql"

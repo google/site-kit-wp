@@ -30,17 +30,23 @@ import {
 	secondAudienceFeature,
 	setupModuleFeature,
 } from '@/js/components/feature-discovery/__fixtures__/all-services';
+import { ALL_SERVICES_TAB_PATH } from '@/js/components/feature-discovery/constants';
 import { Registry } from '@/js/googlesitekit-data';
+import { VIEW_CONTEXT_FEATURE_DISCOVERY } from '@/js/googlesitekit/constants';
 import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import type { Feature } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureDismissalKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import { FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION } from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { DEFAULT_NOTIFICATIONS } from '@/js/googlesitekit/notifications/register-defaults';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import {
 	createTestRegistry,
 	fireEvent,
 	provideModules,
+	provideSiteInfo,
 	render,
 } from '@tests/js/test-utils';
 import AllServicesTab from './AllServicesTab';
@@ -86,6 +92,7 @@ describe( 'AllServicesTab', () => {
 		registry = createTestRegistry() as Registry;
 
 		registry.dispatch( CORE_USER ).receiveGetDismissedItems( [] );
+		registry.dispatch( CORE_USER ).receiveGetDismissedPrompts( {} );
 		registry.dispatch( CORE_USER ).receiveGetExpirableItems( {} );
 		registry
 			.dispatch( CORE_USER )
@@ -101,6 +108,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -117,6 +125,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -138,6 +147,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -154,7 +164,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -171,7 +181,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getAllByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -193,7 +203,7 @@ describe( 'AllServicesTab', () => {
 
 		const { getByText, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -218,7 +228,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getAllByRole, getByText, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -247,7 +257,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getByText, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -270,7 +280,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getByText, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -287,7 +297,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, getByText, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -308,6 +318,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -329,6 +340,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -342,6 +354,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -355,6 +368,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -368,6 +382,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, waitForRegistry } = render( <AllServicesTab />, {
 			registry,
+			viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY,
 		} );
 
 		await waitForRegistry();
@@ -383,7 +398,7 @@ describe( 'AllServicesTab', () => {
 
 		const { container, queryByRole, waitForRegistry } = render(
 			<AllServicesTab />,
-			{ registry }
+			{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
 		);
 
 		await waitForRegistry();
@@ -393,5 +408,103 @@ describe( 'AllServicesTab', () => {
 		expect(
 			queryByRole( 'button', { name: /^Dismiss/ } )
 		).not.toBeInTheDocument();
+	} );
+
+	describe( 'setup success notice', () => {
+		const SUCCESS_TITLE = 'Success! Set up feature is set up';
+
+		beforeEach( () => {
+			provideSiteInfo( registry );
+			provideModules( registry );
+
+			provideFeatures( registry, [
+				audienceFeature,
+				{
+					slug: 'set-up-feature',
+					title: 'Set up feature',
+					setup: {
+						...audienceFeature.setup,
+						isEnabled: () => true,
+					},
+					successNotice: { title: SUCCESS_TITLE },
+				} as Partial< Feature >,
+			] );
+
+			registry
+				.dispatch( CORE_NOTIFICATIONS )
+				.registerNotification(
+					FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+					DEFAULT_NOTIFICATIONS[
+						FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION
+					]
+				);
+		} );
+
+		it( 'should render the notice between the category filters and the feature list on return from a setup', async () => {
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'set-up-feature',
+				returnTab: ALL_SERVICES_TAB_PATH,
+			} );
+
+			const { container, getByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( getByText( SUCCESS_TITLE ) ).toBeInTheDocument();
+
+			const filters = container.querySelector(
+				'.googlesitekit-category-filter-chips'
+			) as Element;
+			const noticeContainer = container.querySelector(
+				'.googlesitekit-all-services-tab__notifications'
+			) as Element;
+			const featureCard = container.querySelector(
+				'.googlesitekit-feature-card'
+			) as Element;
+
+			expect( filters.compareDocumentPosition( noticeContainer ) ).toBe(
+				Node.DOCUMENT_POSITION_FOLLOWING
+			);
+			expect(
+				noticeContainer.compareDocumentPosition( featureCard )
+			).toBe( Node.DOCUMENT_POSITION_FOLLOWING );
+		} );
+
+		it( 'should not render the notice when the user has not returned from a setup', async () => {
+			const { container, queryByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			expect( queryByText( SUCCESS_TITLE ) ).not.toBeInTheDocument();
+			expect(
+				container.querySelector(
+					'.googlesitekit-all-services-tab__notifications'
+				)
+			).toBeEmptyDOMElement();
+		} );
+
+		it( 'should remove the notice once it is dismissed', async () => {
+			registry.dispatch( CORE_FEATURE_DISCOVERY ).receivePendingSetup( {
+				featureSlug: 'set-up-feature',
+				returnTab: ALL_SERVICES_TAB_PATH,
+			} );
+
+			const { getByRole, queryByText, waitForRegistry } = render(
+				<AllServicesTab />,
+				{ registry, viewContext: VIEW_CONTEXT_FEATURE_DISCOVERY }
+			);
+
+			await waitForRegistry();
+
+			fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+			expect( queryByText( SUCCESS_TITLE ) ).not.toBeInTheDocument();
+		} );
 	} );
 } );
