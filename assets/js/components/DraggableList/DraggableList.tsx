@@ -109,7 +109,7 @@ function DraggableList< Item >( {
 						>
 							{ showHandle && (
 								<DragHandle
-									aria-label={ sprintf(
+									label={ sprintf(
 										/* translators: %d: Item position. */
 										__( 'Move item %d', 'google-site-kit' ),
 										index + 1

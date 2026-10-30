@@ -79,6 +79,31 @@ describe( 'Typography', () => {
 		);
 	} );
 
+	it( 'forwards the underlying type and size independently of typography modifiers', () => {
+		const { getByRole } = render(
+			<Typography
+				as="input"
+				asType="text"
+				asSize={ 30 }
+				type="body"
+				size="medium"
+			/>
+		);
+
+		const input = getByRole( 'textbox' );
+
+		expect( input ).toHaveAttribute( 'type', 'text' );
+		expect( input ).toHaveAttribute( 'size', '30' );
+
+		expect( input ).toHaveClass(
+			'googlesitekit-typography--body',
+			'googlesitekit-typography--medium'
+		);
+
+		expect( input ).not.toHaveAttribute( 'asType' );
+		expect( input ).not.toHaveAttribute( 'asSize' );
+	} );
+
 	it.each( [
 		[ 'display' ],
 		[ 'headline' ],

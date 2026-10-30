@@ -65,7 +65,7 @@ function renderField(
 				ref={ inputRef }
 				value={ item.value }
 			/>
-			<RemoveButton aria-label={ `Remove Answer ${ index + 1 }` } />
+			<RemoveButton label={ `Remove Answer ${ index + 1 }` } />
 		</div>
 	);
 }
@@ -416,7 +416,7 @@ describe( 'Repeater', () => {
 							value={ item.value }
 						/>
 						<RemoveButton
-							aria-label={ `Remove Answer ${ index + 1 }` }
+							label={ `Remove Answer ${ index + 1 }` }
 						/>
 					</div>
 				),

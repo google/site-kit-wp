@@ -19,6 +19,7 @@
 /**
  * External dependencies
  */
+import classnames from 'classnames';
 import { FC } from 'react';
 
 /**
@@ -29,39 +30,30 @@ import { useContext } from '@wordpress/element';
 /**
  * Internal dependencies
  */
-import { Button } from 'googlesitekit-components';
+import ActionButton, { ActionButtonProps } from '@/js/components/ActionButton';
 import TrashIcon from '@/svg/icons/trash-outlined.svg';
 import { RemoveButtonContext } from './RemoveButtonContext';
 
-export interface RemoveButtonProps {
-	'aria-label': string;
-}
+export type RemoveButtonProps = Omit< ActionButtonProps, 'Icon' >;
 
-const RemoveButton: FC< RemoveButtonProps > = ( {
-	'aria-label': ariaLabel,
-} ) => {
+const RemoveButton: FC< RemoveButtonProps > = ( { className, ...props } ) => {
 	const context = useContext( RemoveButtonContext );
 
 	if ( ! context ) {
 		return null;
 	}
 
+	const classNames = classnames(
+		'googlesitekit-repeater__remove',
+		className
+	);
+
 	return (
-		<Button
-			aria-label={ ariaLabel }
-			// @ts-expect-error - `Button` component typing is incomplete.
-			className="googlesitekit-repeater__remove"
-			icon={
-				<TrashIcon
-					aria-hidden="true"
-					focusable="false"
-					height={ 24 }
-					width={ 24 }
-				/>
-			}
+		<ActionButton
+			Icon={ TrashIcon }
 			onClick={ context.removeItem }
-			type="button"
-			tertiary
+			className={ classNames }
+			{ ...props }
 		/>
 	);
 };

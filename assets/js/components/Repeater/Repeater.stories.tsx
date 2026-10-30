@@ -83,7 +83,7 @@ function Template( {
 					/>
 					{ removable && (
 						<RemoveButton
-							aria-label={ `Remove Answer ${ index + 1 }` }
+							label={ `Remove Answer ${ index + 1 }` }
 						/>
 					) }
 				</div>

@@ -19,9 +19,6 @@
 .googlesitekit-plugin .googlesitekit-repeater {
 
 	.googlesitekit-repeater__remove {
-		border-radius: $br-xxs;
-		min-block-size: 0;
-		min-inline-size: 0;
-		padding: 0;
+		color: $c-surfaces-on-surface-variant;
 	}
 }

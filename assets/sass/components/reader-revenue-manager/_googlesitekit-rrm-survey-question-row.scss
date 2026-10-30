@@ -1,0 +1,138 @@
+/**
+ * Survey question row styles.
+ *
+ * Site Kit by Google, Copyright 2026 Google LLC
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+.googlesitekit-plugin {
+
+	.googlesitekit-rrm-survey-question-row {
+		--googlesitekit-rrm-survey-question-row-divider-color: #{$c-site-kit-sk-100};
+		--googlesitekit-rrm-survey-question-row-gap-block: 8px;
+		--googlesitekit-rrm-survey-question-row-gap-inline: 18px;
+		--googlesitekit-rrm-survey-question-row-padding: 16px;
+
+		padding-inline: var(--googlesitekit-rrm-survey-question-row-padding);
+	}
+
+	.googlesitekit-rrm-survey-question-row--is-expandable {
+		--googlesitekit-rrm-survey-question-row-divider-color: #{$c-utility-divider};
+		--googlesitekit-rrm-survey-question-row-gap-inline: 12px;
+		--googlesitekit-rrm-survey-question-row-padding: 12px;
+
+		padding-inline: 0;
+	}
+
+	.googlesitekit-rrm-survey-question-row--is-highlighted {
+		background: rgb(from var(--googlesitekit-rrm-survey-question-row-divider-color) r g b / 0.5);
+	}
+
+	.googlesitekit-rrm-survey-question-row__inner {
+		border-block-end: 1px solid var(--googlesitekit-rrm-survey-question-row-divider-color);
+		column-gap: var(--googlesitekit-rrm-survey-question-row-gap-inline);
+		display: grid;
+		grid-template-columns: max-content auto;
+		padding-block: var(--googlesitekit-rrm-survey-question-row-padding);
+	}
+
+	.googlesitekit-rrm-survey-question-row__actions {
+		align-items: center;
+		column-gap: var(--googlesitekit-rrm-survey-question-row-gap-inline);
+		display: flex;
+	}
+
+	.googlesitekit-rrm-survey-question-row__expand {
+		align-items: center;
+		appearance: none;
+		border-radius: $br-xxs;
+		color: inherit;
+		display: flex;
+		gap: var(--googlesitekit-rrm-survey-question-row-gap-inline);
+		justify-content: space-between;
+		padding: 0;
+		text-align: start;
+
+		&:hover {
+			cursor: pointer;
+			text-decoration: none;
+		}
+
+		&:focus {
+			outline-offset: 0;
+
+			&:not(:focus-visible) {
+				outline: none;
+			}
+		}
+
+		svg {
+			flex-shrink: 0;
+		}
+
+		&[aria-expanded="true"] svg {
+			rotate: z 180deg;
+		}
+	}
+
+	.googlesitekit-rrm-survey-question-row__content {
+		display: grid;
+		gap: var(--googlesitekit-rrm-survey-question-row-gap-block);
+		grid-column: 2;
+		padding-block: var(--googlesitekit-rrm-survey-question-row-gap-block);
+
+		&[hidden] {
+			display: none;
+		}
+	}
+
+	.googlesitekit-rrm-survey-question-row__answer-checkboxes {
+
+		.mdc-form-field {
+			display: flex;
+		}
+
+		.mdc-checkbox {
+			margin-block: -5px;
+		}
+
+		label {
+			padding: 0;
+		}
+	}
+
+	.googlesitekit-rrm-survey-question-row__answer-list {
+		display: grid;
+		gap: 4px;
+		list-style: disc;
+		margin: 0;
+		padding-inline-start: 2ch;
+
+		li {
+			margin: 0;
+		}
+	}
+
+	.googlesitekit-rrm-survey-question-row__edit {
+		justify-self: start;
+		margin-block: 6px;
+	}
+
+	.googlesitekit-rrm-survey-question-row__note {
+		color: $c-surfaces-on-background-variant;
+		margin: 0;
+		padding-block-start: 14px;
+		padding-inline-end: 30px;
+	}
+}
