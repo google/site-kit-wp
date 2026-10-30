@@ -334,52 +334,43 @@ describe( 'FeatureDetailPanel', () => {
 		).toBeInTheDocument();
 	} );
 
-	it( 'should keep the panel open during setup and close after it completes', async () => {
+	it( 'should close the panel immediately while background setup continues', async () => {
 		provideSiteInfo( registry );
 		provideUserAuthentication( registry );
-
 		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
-
 		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
 
-		let finishSetup: ( value: Record< string, never > ) => void;
+		let finishSetup!: ( value: Record< string, never > ) => void;
 
-		const setupFeature = jest
-			.spyOn(
-				registry.dispatch( CORE_FEATURE_DISCOVERY ),
-				'setupFeature'
-			)
-			.mockImplementation(
-				() =>
-					new Promise( ( resolve ) => {
-						finishSetup = resolve;
-					} )
-			);
+		const activation = new Promise< Record< string, never > >(
+			( resolve ) => {
+				finishSetup = resolve;
+			}
+		);
 
-		setFeature( 'first' );
+		provideFeatures( registry, [
+			{
+				slug: 'background',
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					activate: () => activation,
+				},
+			},
+		] );
 
+		const setupFeature = jest.spyOn(
+			registry.dispatch( CORE_FEATURE_DISCOVERY ),
+			'setupFeature'
+		);
+
+		setFeature( 'background' );
 		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
 			registry,
 		} );
 
 		fireEvent.click( getByRole( 'button', { name: 'Set up now' } ) );
 
-		expect( setupFeature ).toHaveBeenCalledWith( 'first' );
-		expect( getByRole( 'dialog' ) ).toBeInTheDocument();
-		expect( getByRole( 'button', { name: 'Set up now' } ) ).toBeDisabled();
-
-		expect(
-			registry
-				.select( CORE_UI )
-				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
-		).toBe( 'first' );
-
-		await act( () => {
-			finishSetup( {} );
-
-			return Promise.resolve();
-		} );
-
+		expect( setupFeature ).toHaveBeenCalledWith( 'background' );
 		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
 
 		expect(
@@ -387,10 +378,26 @@ describe( 'FeatureDetailPanel', () => {
 				.select( CORE_UI )
 				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY )
 		).toBe( false );
+		expect(
+			registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.isSetupInProgress( 'background' )
+		).toBe( true );
 
+		await act( async () => {
+			finishSetup( {} );
+			await setupFeature.mock.results[ 0 ].value;
+		} );
+
+		expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument();
+		expect(
+			registry
+				.select( CORE_FEATURE_DISCOVERY )
+				.isSetupInProgress( 'background' )
+		).toBe( false );
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
-				body: { data: { triggerID: 'setup:feature_setup_first' } },
+				body: { data: { triggerID: 'setup:feature_setup_background' } },
 			} )
 		);
 	} );

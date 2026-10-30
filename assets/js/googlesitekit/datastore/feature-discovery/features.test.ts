@@ -278,6 +278,163 @@ describe( 'core/feature-discovery features', () => {
 				).toThrow( 'slug is required to set up a feature.' );
 			} );
 
+			describe.each( [
+				FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+				FEATURE_SETUP_TYPES.SETUP_FLOW,
+			] )( '%s setup progress', ( setupType ) => {
+				it.each( [ 'success', 'error', 'rejection' ] )(
+					'should track progress for the feature and clear it on %s',
+					async ( outcome ) => {
+						const error = new Error( 'Setup failed' );
+
+						let resolveSetup!: ( result: {
+							error?: Error;
+						} ) => void;
+
+						let rejectSetup!: ( reason: Error ) => void;
+
+						const activation = new Promise< { error?: Error } >(
+							( resolve, reject ) => {
+								resolveSetup = resolve;
+								rejectSetup = reject;
+							}
+						);
+
+						let panelSlugOnActivation: unknown;
+
+						function activate() {
+							panelSlugOnActivation = registry
+								.select( CORE_UI )
+								.getValue(
+									FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+								);
+							return activation;
+						}
+
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.registerFeature(
+								'test-feature',
+								createSettings( {
+									setup: {
+										type: setupType,
+										moduleSlug: 'test-module',
+										activate,
+									},
+								} )
+							);
+
+						jest.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						).mockImplementation( activate );
+
+						registry
+							.dispatch( CORE_UI )
+							.setValue(
+								FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+								'test-feature'
+							);
+
+						const { isSetupInProgress } = registry.select(
+							CORE_FEATURE_DISCOVERY
+						);
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						const setup = registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' );
+
+						expect( panelSlugOnActivation ).toBe( false );
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							true
+						);
+
+						expect( isSetupInProgress( 'other-feature' ) ).toBe(
+							false
+						);
+
+						if ( outcome === 'rejection' ) {
+							rejectSetup( error );
+
+							await expect( setup ).resolves.toEqual( { error } );
+						} else {
+							const result = outcome === 'error' ? { error } : {};
+
+							resolveSetup( result );
+
+							await expect( setup ).resolves.toEqual( result );
+						}
+
+						expect( isSetupInProgress( 'test-feature' ) ).toBe(
+							false
+						);
+
+						expect(
+							registry
+								.select( CORE_FEATURE_DISCOVERY )
+								.getErrorForAction( 'setupFeature', [
+									'test-feature',
+								] )
+						).toEqual( outcome === 'success' ? undefined : error );
+					}
+				);
+			} );
+
+			it( 'should store a synchronous activation error and clear it after a successful retry', async () => {
+				const error = new Error( 'Activation failed' );
+
+				const activate = jest
+					.fn()
+					.mockResolvedValue( {} )
+					.mockImplementationOnce( () => {
+						throw error;
+					} );
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+							activate,
+						},
+					} )
+				);
+
+				const { setupFeature } = registry.dispatch(
+					CORE_FEATURE_DISCOVERY
+				);
+
+				const { getErrorForAction, isSetupInProgress } =
+					registry.select( CORE_FEATURE_DISCOVERY );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{
+						error,
+					}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBe( error );
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
+
+				await expect( setupFeature( 'test-feature' ) ).resolves.toEqual(
+					{}
+				);
+
+				expect(
+					getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
+
+				expect( isSetupInProgress( 'test-feature' ) ).toBe( false );
+			} );
+
 			it( 'should resolve for a registered feature', async () => {
 				registry
 					.dispatch( CORE_FEATURE_DISCOVERY )

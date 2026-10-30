@@ -60,7 +60,7 @@ const PanelFooter: FC< PanelFooterProps > = ( { feature, onClose } ) => (
 				{ __( 'Cancel', 'google-site-kit' ) }
 			</Button>
 
-			<FeatureCTA slug={ feature.slug } onSetupComplete={ onClose } />
+			<FeatureCTA slug={ feature.slug } />
 		</div>
 	</footer>
 );

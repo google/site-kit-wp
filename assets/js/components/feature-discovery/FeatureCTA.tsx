@@ -20,12 +20,6 @@
  * External dependencies
  */
 import { FC, useCallback } from 'react';
-import { useMountedState } from 'react-use';
-
-/**
- * WordPress dependencies
- */
-import { useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -43,21 +37,19 @@ import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 
 export interface FeatureCTAProps {
 	isTertiary?: boolean;
-	onSetupComplete?: () => void;
 	slug: string;
 }
 
-const FeatureCTA: FC< FeatureCTAProps > = ( {
-	isTertiary = false,
-	onSetupComplete,
-	slug,
-} ) => {
-	const [ isBusy, setIsBusy ] = useState( false );
-	const isMounted = useMountedState();
-
+const FeatureCTA: FC< FeatureCTAProps > = ( { isTertiary = false, slug } ) => {
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
 			select( CORE_FEATURE_DISCOVERY ).getFeature( slug ),
+		[ slug ]
+	);
+
+	const isSetupInProgress = useSelect(
+		( select: Select ) =>
+			select( CORE_FEATURE_DISCOVERY ).isSetupInProgress( slug ),
 		[ slug ]
 	);
 
@@ -87,28 +79,11 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 	const { triggerSurvey } = useDispatch( CORE_USER );
 	const { setupFeature } = useDispatch( CORE_FEATURE_DISCOVERY );
 
-	const onClick = useCallback( async () => {
-		setIsBusy( true );
-
+	const onClick = useCallback( () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
-
-		// An in-place setup closes the detail panel this CTA may be rendered
-		// in, which unmounts it before the setup resolves.
-		try {
-			await setupFeature( slug );
-
-			if ( isMounted() ) {
-				setIsBusy( false );
-			}
-
-			onSetupComplete?.();
-		} catch {
-			if ( isMounted() ) {
-				setIsBusy( false );
-			}
-		}
-	}, [ isMounted, onSetupComplete, setupFeature, slug, triggerSurvey ] );
+		setupFeature( slug );
+	}, [ setupFeature, slug, triggerSurvey ] );
 
 	if ( ! feature?.setup?.ctaLabel ) {
 		return null;
@@ -128,7 +103,7 @@ const FeatureCTA: FC< FeatureCTAProps > = ( {
 
 	return (
 		<FeatureCTAButton
-			isBusy={ isBusy }
+			isBusy={ isSetupInProgress }
 			isTertiary={ isTertiary }
 			onClick={ onClick }
 		>
