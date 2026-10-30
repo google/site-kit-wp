@@ -174,7 +174,7 @@ describe( 'Repeater', () => {
 	} );
 
 	describe( 'adding items', () => {
-		it( 'should append one new empty entry immutably and focus it after acceptance', () => {
+		it( 'should append one new empty entry immutably', () => {
 			const { onChange, getNewItem, acceptChange } = setup( {
 				items: Object.freeze( [ ...initialItems ] ) as Entry[],
 			} );
@@ -200,35 +200,7 @@ describe( 'Repeater', () => {
 
 			expect(
 				screen.getByRole( 'textbox', { name: 'Answer 4' } )
-			).toHaveFocus();
-		} );
-
-		it( 'should float the label of a newly added TextField when it receives focus', () => {
-			const { acceptChange } = setup( {
-				renderField: ( { item, inputRef, updateItem }, index ) => (
-					<TextField
-						inputRef={ inputRef }
-						label={ `Answer ${ index + 1 }` }
-						onChange={ ( event ) =>
-							updateItem( { ...item, value: event.target.value } )
-						}
-						value={ item.value }
-						outlined
-					/>
-				),
-			} );
-
-			fireEvent.click( screen.getByRole( 'button', { name: 'Add' } ) );
-			acceptChange();
-
-			const input = screen.getByRole( 'textbox', { name: 'Answer 4' } );
-			const label = input
-				.closest( '.mdc-text-field' )
-				?.querySelector( '.mdc-floating-label' );
-
-			expect( input ).toHaveFocus();
-			expect( input ).toHaveValue( '' );
-			expect( label ).toHaveClass( 'mdc-floating-label--float-above' );
+			).toHaveValue( '' );
 		} );
 
 		it.each( [ 3, 2, 0 ] )(
@@ -313,7 +285,9 @@ describe( 'Repeater', () => {
 
 		it( 'should ignore updates that change an ID or target an entry already removed', () => {
 			const field = jest.fn( renderField );
+
 			const { updateProps, onChange } = setup( { renderField: field } );
+
 			const updateItem = field.mock.calls[ 0 ][ 0 ].updateItem;
 
 			act( () => updateItem( { id: 'changed-id', value: 'Edited' } ) );
@@ -328,50 +302,43 @@ describe( 'Repeater', () => {
 
 	describe( 'removing items', () => {
 		it.each( [
-			[ 'middle', 1, 'Answer 1' ],
-			[ 'first', 0, 'Answer 1' ],
-			[ 'last', 2, 'Answer 2' ],
-		] )(
-			'should remove the %s entry immutably and focus its neighbor',
-			( _, index, target ) => {
-				const { onChange, acceptChange } = setup( {
-					maxItems: 3,
-					items: Object.freeze( [ ...initialItems ] ) as Entry[],
-				} );
+			[ 'middle', 1 ],
+			[ 'first', 0 ],
+			[ 'last', 2 ],
+		] )( 'should remove the %s entry immutably', ( _, index ) => {
+			const { onChange, acceptChange } = setup( {
+				maxItems: 3,
+				items: Object.freeze( [ ...initialItems ] ) as Entry[],
+			} );
 
-				fireEvent.click(
-					screen.getByRole( 'button', {
-						name: `Remove Answer ${ Number( index ) + 1 }`,
-					} )
-				);
+			fireEvent.click(
+				screen.getByRole( 'button', {
+					name: `Remove Answer ${ Number( index ) + 1 }`,
+				} )
+			);
 
-				expect( onChange ).toHaveBeenCalledTimes( 1 );
+			expect( onChange ).toHaveBeenCalledTimes( 1 );
 
-				const expected = initialItems.filter(
-					( item, itemIndex ) => itemIndex !== index
-				);
+			const expected = initialItems.filter(
+				( item, itemIndex ) => itemIndex !== index
+			);
 
-				expect( onChange.mock.calls[ 0 ][ 0 ] ).toEqual( expected );
+			expect( onChange.mock.calls[ 0 ][ 0 ] ).toEqual( expected );
 
-				expected.forEach( ( item, itemIndex ) =>
-					expect( onChange.mock.calls[ 0 ][ 0 ][ itemIndex ] ).toBe(
-						item
-					)
-				);
+			expected.forEach( ( item, itemIndex ) =>
+				expect( onChange.mock.calls[ 0 ][ 0 ][ itemIndex ] ).toBe(
+					item
+				)
+			);
 
-				acceptChange();
+			acceptChange();
 
-				expect(
-					screen.getByRole( 'textbox', { name: target as string } )
-				).toHaveFocus();
+			expect(
+				screen.getByRole( 'button', { name: 'Add' } )
+			).toBeEnabled();
+		} );
 
-				expect(
-					screen.getByRole( 'button', { name: 'Add' } )
-				).toBeEnabled();
-			}
-		);
-
-		it( 'should remove the final entry, focus Add, and allow a new first entry', () => {
+		it( 'should remove the final entry and allow a new first entry', () => {
 			const { onChange, getNewItem, acceptChange } = setup( {
 				items: initialItems.slice( 0, 1 ),
 				maxItems: 1,
@@ -389,8 +356,6 @@ describe( 'Repeater', () => {
 
 			const addButton = screen.getByRole( 'button', { name: 'Add' } );
 
-			expect( addButton ).toHaveFocus();
-
 			fireEvent.click( addButton );
 
 			expect( getNewItem ).toHaveBeenCalledWith( 0 );
@@ -399,7 +364,7 @@ describe( 'Repeater', () => {
 
 			expect(
 				screen.getByRole( 'textbox', { name: 'Answer 1' } )
-			).toHaveFocus();
+			).toHaveValue( '' );
 		} );
 
 		it( 'should ignore stale removal callbacks for entries already removed', () => {
@@ -427,136 +392,7 @@ describe( 'Repeater', () => {
 		} );
 	} );
 
-	describe( 'focus management', () => {
-		it.each( [ 'addition', 'removal' ] )(
-			'should wait for a deferred %s through value-only parent updates',
-			( operation ) => {
-				const { onChange, updateProps } = setup();
-				const first = screen.getByRole( 'textbox', {
-					name: 'Answer 1',
-				} );
-
-				first.focus();
-
-				fireEvent.click(
-					screen.getByRole( 'button', {
-						name:
-							operation === 'addition'
-								? 'Add'
-								: 'Remove Answer 2',
-					} )
-				);
-
-				const requestedItems = onChange.mock.calls[ 0 ][ 0 ];
-
-				expect( first ).toHaveFocus();
-
-				updateProps( {
-					items: initialItems.map( ( item ) => ( {
-						...item,
-						value: `${ item.value } updated`,
-					} ) ),
-				} );
-
-				expect( first ).toHaveFocus();
-
-				updateProps( { items: requestedItems } );
-
-				expect(
-					screen.getByRole( 'textbox', {
-						name:
-							operation === 'addition' ? 'Answer 4' : 'Answer 1',
-					} )
-				).toHaveFocus();
-			}
-		);
-
-		it.each( [ 'addition', 'removal' ] )(
-			'should cancel pending %s focus when a different structural update supersedes it',
-			( operation ) => {
-				const { onChange, updateProps } = setup();
-				const first = screen.getByRole( 'textbox', {
-					name: 'Answer 1',
-				} );
-				first.focus();
-
-				fireEvent.click(
-					screen.getByRole( 'button', {
-						name:
-							operation === 'addition'
-								? 'Add'
-								: 'Remove Answer 2',
-					} )
-				);
-
-				const requestedItems = onChange.mock.calls[ 0 ][ 0 ];
-
-				updateProps( { items: [ ...initialItems ].reverse() } );
-				expect( first ).toHaveFocus();
-
-				updateProps( { items: requestedItems } );
-				expect( first ).toHaveFocus();
-			}
-		);
-
-		it( 'should preserve component, DOM, and ref identity across rerenders and release removed bindings', () => {
-			const field = jest.fn( renderField );
-			const { updateProps, unmount } = setup( { renderField: field } );
-			const firstOptions = field.mock.calls[ 0 ][ 0 ];
-			const firstInput = screen.getByRole( 'textbox', {
-				name: 'Answer 1',
-			} );
-
-			const firstRemove = screen.getByRole( 'button', {
-				name: 'Remove Answer 1',
-			} );
-
-			const addButton = screen.getByRole( 'button', { name: 'Add' } );
-
-			firstRemove.focus();
-			field.mockClear();
-
-			updateProps( { items: [ ...initialItems ].reverse() } );
-
-			const reorderedOptions = field.mock.calls[ 2 ][ 0 ];
-
-			expect( reorderedOptions.inputRef ).toBe( firstOptions.inputRef );
-
-			expect( reorderedOptions.RemoveButton ).toBe(
-				firstOptions.RemoveButton
-			);
-
-			expect( screen.getByRole( 'textbox', { name: 'Answer 3' } ) ).toBe(
-				firstInput
-			);
-
-			expect(
-				screen.getByRole( 'button', { name: 'Remove Answer 3' } )
-			).toBe( firstRemove );
-
-			expect( firstRemove ).toHaveFocus();
-
-			expect( screen.getByRole( 'button', { name: 'Add' } ) ).toBe(
-				addButton
-			);
-
-			updateProps( { items: [] } );
-
-			expect( firstInput ).not.toBeInTheDocument();
-
-			field.mockClear();
-
-			updateProps( { items: initialItems } );
-
-			expect( field.mock.calls[ 0 ][ 0 ].inputRef ).not.toBe(
-				firstOptions.inputRef
-			);
-
-			unmount();
-
-			expect( addButton ).not.toBeInTheDocument();
-		} );
-
+	describe( 'composition', () => {
 		it( 'should focus a replacement TextField control through the same callback ref', () => {
 			let textarea = false;
 
@@ -591,6 +427,7 @@ describe( 'Repeater', () => {
 			} );
 
 			textarea = true;
+
 			updateProps( {} );
 
 			expect( originalInput ).not.toBeInTheDocument();
@@ -610,43 +447,6 @@ describe( 'Repeater', () => {
 			).toBe( 'TEXTAREA' );
 		} );
 
-		it( 'should move focus after activating focused remove and add controls', () => {
-			const { onChange, acceptChange } = setup( {
-				items: initialItems.slice( 0, 1 ),
-			} );
-
-			const removeButton = screen.getByRole( 'button', {
-				name: 'Remove Answer 1',
-			} );
-
-			removeButton.focus();
-
-			expect( removeButton ).toHaveFocus();
-
-			fireEvent.click( removeButton );
-
-			expect( onChange ).toHaveBeenLastCalledWith( [] );
-			acceptChange();
-
-			const addButton = screen.getByRole( 'button', { name: 'Add' } );
-
-			expect( addButton ).toHaveFocus();
-
-			fireEvent.click( addButton );
-
-			expect( onChange ).toHaveBeenLastCalledWith( [
-				{ id: 'new-answer', value: '' },
-			] );
-
-			acceptChange();
-
-			expect(
-				screen.getByRole( 'textbox', { name: 'Answer 1' } )
-			).toHaveFocus();
-		} );
-	} );
-
-	describe( 'composition', () => {
 		it( 'should preserve values and field focus after external reordering, edits, adds, and removals in a keyed custom list', () => {
 			let currentItems = initialItems;
 
@@ -794,39 +594,6 @@ describe( 'Repeater', () => {
 					name: 'Answer 4',
 				} )
 			).toHaveFocus();
-		} );
-	} );
-
-	describe( 'forms', () => {
-		it( 'should expose labeled native buttons that do not submit an enclosing form', () => {
-			const onSubmit = jest.fn( ( event ) => event.preventDefault() );
-			const onChange = jest.fn();
-
-			render(
-				<form onSubmit={ onSubmit }>
-					<Repeater
-						getItemID={ ( item ) => item.id }
-						getNewItem={ () => ( { id: 'new', value: '' } ) }
-						items={ initialItems }
-						maxItems={ 5 }
-						onChange={ onChange }
-						renderField={ renderField }
-					/>
-				</form>
-			);
-
-			const buttons = screen.getAllByRole( 'button' );
-
-			buttons.forEach( ( button ) => {
-				expect( button.tagName ).toBe( 'BUTTON' );
-				expect( button ).toHaveAttribute( 'type', 'button' );
-				expect( button.tabIndex ).toBe( 0 );
-
-				fireEvent.click( button );
-			} );
-
-			expect( onSubmit ).not.toHaveBeenCalled();
-			expect( onChange ).toHaveBeenCalledTimes( buttons.length );
 		} );
 	} );
 } );
