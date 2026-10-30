@@ -123,5 +123,13 @@
 		flex-grow: 1;
 		gap: var(--googlesitekit-feature-card-gap-m);
 		justify-content: end;
+
+		.MuiCircularProgress-colorPrimary {
+			color: inherit;
+
+			svg circle {
+				stroke: currentColor;
+			}
+		}
 	}
 }

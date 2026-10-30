@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { pick } from 'lodash';
+import { omit, pick, uniq } from 'lodash';
 
 /**
  * Internal dependencies
@@ -34,6 +34,11 @@ const CREATE_SNAPSHOT = 'CREATE_SNAPSHOT';
 const DELETE_SNAPSHOT = 'DELETE_SNAPSHOT';
 const RESTORE_SNAPSHOT = 'RESTORE_SNAPSHOT';
 const SET_STATE_FROM_SNAPSHOT = 'SET_STATE_FROM_SNAPSHOT';
+const OMIT_KEYS_FROM_SNAPSHOT = 'OMIT_KEYS_FROM_SNAPSHOT';
+
+// State key under which the keys to omit from snapshots are kept. It is never
+// itself included in a snapshot.
+const KEYS_TO_OMIT_STATE_KEY = 'keysToOmitFromSnapshot';
 
 /**
  * Creates a store object that includes actions and controls for restoring/creating state snapshots.
@@ -120,6 +125,25 @@ export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 
 			return cacheResult;
 		},
+
+		/**
+		 * Omits the given state keys from any snapshot of this store created
+		 * from now on, for the rest of the page load.
+		 *
+		 * @since n.e.x.t
+		 * @private
+		 *
+		 * @param {string[]} keys Property path(s) to omit from snapshots.
+		 * @return {Object} Redux-style action.
+		 */
+		omitKeysFromSnapshot( keys ) {
+			invariant( Array.isArray( keys ), 'keys must be an array.' );
+
+			return {
+				payload: { keys },
+				type: OMIT_KEYS_FROM_SNAPSHOT,
+			};
+		},
 	};
 
 	const controls = {
@@ -128,10 +152,14 @@ export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 		},
 		[ CREATE_SNAPSHOT ]: createRegistryControl( ( registry ) => () => {
 			const state = registry.stores[ storeName ].store.getState();
-			const stateToSnapshot =
+			const pickedState =
 				keysToSnapshot?.length > 0
 					? pick( state, keysToSnapshot )
 					: state;
+			const stateToSnapshot = omit( pickedState, [
+				KEYS_TO_OMIT_STATE_KEY,
+				...( state[ KEYS_TO_OMIT_STATE_KEY ] || [] ),
+			] );
 
 			return setItem(
 				`datastore::cache::${ storeName }`,
@@ -164,6 +192,18 @@ export function createSnapshotStore( storeName, { keysToSnapshot } = {} ) {
 				}
 
 				return newState;
+			}
+
+			case OMIT_KEYS_FROM_SNAPSHOT: {
+				const { keys } = payload;
+
+				return {
+					...state,
+					[ KEYS_TO_OMIT_STATE_KEY ]: uniq( [
+						...( state[ KEYS_TO_OMIT_STATE_KEY ] || [] ),
+						...keys,
+					] ),
+				};
 			}
 
 			default: {
