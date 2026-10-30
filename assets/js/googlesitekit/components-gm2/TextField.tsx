@@ -131,7 +131,7 @@ const TextField: FC< TextFieldProps > = ( {
 	onChange,
 	onKeyDown,
 } ) => {
-	const [ inputElement, setInputElement ] = useState< Input<
+	const [ inputComponent, setInputComponent ] = useState< Input<
 		HTMLInputElement | HTMLTextAreaElement
 	> | null >( null );
 
@@ -164,8 +164,12 @@ const TextField: FC< TextFieldProps > = ( {
 
 	const captureInput = useCallback(
 		( input: Input< HTMLInputElement | HTMLTextAreaElement > | null ) => {
-			inputRef?.( input?.inputElement ?? null );
-			setInputElement( input );
+			const inputElement = input?.inputElement ?? null;
+
+			if ( inputRef ) {
+				inputRef( inputElement );
+				setInputComponent( input );
+			}
 		},
 		[ inputRef ]
 	);
@@ -173,12 +177,12 @@ const TextField: FC< TextFieldProps > = ( {
 	// Schedule a render after Material creates its foundation in componentDidMount.
 	// Focus received in the initial commit still needs to activate the foundation.
 	useLayoutEffect( () => {
-		const element = inputElement?.inputElement;
+		const element = inputComponent?.inputElement;
 
 		if ( element && element === element.ownerDocument.activeElement ) {
-			inputElement?.props.foundation?.activateFocus();
+			inputComponent?.props.handleFocusChange?.( true );
 		}
-	}, [ inputElement ] );
+	}, [ inputComponent ] );
 
 	return (
 		<Fragment>
