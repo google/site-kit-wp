@@ -47,7 +47,7 @@
 				content: counters(list-item, ".", decimal) ". ";
 			}
 
-			&.alpha-list  {
+			&.alpha-list {
 				list-style-type: lower-alpha;
 
 				> li::marker {
