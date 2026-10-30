@@ -124,6 +124,28 @@ describe( 'Widget', () => {
 		expect( getByRole( 'button', { expanded: false } ) ).toBe( header );
 	} );
 
+	it( 'should point the collapsible header toggle at the widget body', () => {
+		const { container, getByRole } = render(
+			<Widget
+				Header={ WidgetHeaderTitle }
+				headerContents="Collapsible Test Widget"
+				widgetSlug="collapsible-test-widget"
+				collapsible
+			>
+				<div>Collapsible Widget Body</div>
+			</Widget>
+		);
+
+		expect(
+			getByRole( 'button', {
+				name: 'Collapsible Test Widget Hide section',
+			} )
+		).toHaveAttribute(
+			'aria-controls',
+			container.querySelector( '.googlesitekit-widget__body' )?.id
+		);
+	} );
+
 	it( 'should toggle the collapsible widget body when the header is clicked', () => {
 		const { container, getByRole } = render(
 			<Widget
