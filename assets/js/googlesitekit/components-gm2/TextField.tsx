@@ -25,13 +25,25 @@ import MaterialTextField, {
 	Input,
 } from '@material/react-text-field';
 import classnames from 'classnames';
-import { ChangeEvent, FC, KeyboardEvent, ReactElement, ReactNode } from 'react';
+import {
+	ChangeEvent,
+	FC,
+	KeyboardEvent,
+	ReactElement,
+	ReactNode,
+	RefCallback,
+} from 'react';
 
 /**
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { Fragment } from '@wordpress/element';
+import {
+	Fragment,
+	useCallback,
+	useLayoutEffect,
+	useState,
+} from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -75,6 +87,8 @@ export interface TextFieldProps {
 	id?: string;
 	/** The element the field renders for the input, either `input` or `textarea`. */
 	inputType?: 'input' | 'textarea';
+	/** Receives the native form control on attachment and null on detachment. */
+	inputRef?: RefCallback< HTMLInputElement | HTMLTextAreaElement >;
 	/** The input's current value. */
 	value?: string | number;
 	/** The input's `size` attribute, which sets how wide the input is in characters. */
@@ -107,6 +121,7 @@ const TextField: FC< TextFieldProps > = ( {
 	hasError,
 	id,
 	inputType,
+	inputRef,
 	value,
 	size,
 	maxLength,
@@ -116,6 +131,10 @@ const TextField: FC< TextFieldProps > = ( {
 	onChange,
 	onKeyDown,
 } ) => {
+	const [ inputComponent, setInputComponent ] = useState< Input<
+		HTMLInputElement | HTMLTextAreaElement
+	> | null >( null );
+
 	// For accessibility, provide a generated id fallback if an id
 	// is not supplied. Adding an id is mandatory because otherwise the label
 	// is not able to associate with the input.
@@ -142,6 +161,28 @@ const TextField: FC< TextFieldProps > = ( {
 	} else if ( helperText ) {
 		helperTextToShow = <HelperText persistent>{ helperText }</HelperText>;
 	}
+
+	const captureInput = useCallback(
+		( input: Input< HTMLInputElement | HTMLTextAreaElement > | null ) => {
+			const inputElement = input?.inputElement ?? null;
+
+			if ( inputRef ) {
+				inputRef( inputElement );
+				setInputComponent( input );
+			}
+		},
+		[ inputRef ]
+	);
+
+	// Schedule a render after Material creates its foundation in componentDidMount.
+	// Focus received in the initial commit still needs to activate the foundation.
+	useLayoutEffect( () => {
+		const element = inputComponent?.inputElement;
+
+		if ( element && element === element.ownerDocument.activeElement ) {
+			inputComponent?.props.handleFocusChange?.( true );
+		}
+	}, [ inputComponent ] );
 
 	return (
 		<Fragment>
@@ -184,6 +225,9 @@ const TextField: FC< TextFieldProps > = ( {
 					aria-invalid={ isInvalid || undefined }
 					aria-errormessage={ linkedErrorMessageID }
 					aria-describedby={ linkedErrorMessageID }
+					key={ textarea ? 'textarea' : 'input' }
+					// @ts-expect-error - Material Input types combine component and native element refs.
+					ref={ captureInput }
 				/>
 			</MaterialTextField>
 			{ isErrorMessageHidden && (
