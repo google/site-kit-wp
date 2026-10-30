@@ -19,7 +19,11 @@
 /**
  * WordPress dependencies
  */
-import { createElement, createInterpolateElement } from '@wordpress/element';
+import {
+	createElement,
+	createInterpolateElement,
+	lazy,
+} from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -62,6 +66,19 @@ import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.s
 import visitorGroupsScreenshotURL from '@/svg/graphics/visitor-groups.svg?path';
 
 const ENHANCED_MEASUREMENT_FEATURE_SLUG = 'enhanced-measurement';
+
+const LazyVisitorGroupsFeatureSetup = lazy(
+	() =>
+		import(
+			'@/js/modules/analytics-4/components/feature-discovery/VisitorGroupsFeatureSetup'
+		)
+);
+
+// The lazy component is wrapped in a function because the catalog is kept in
+// state that freezes what it stores, which would stop React from resolving it.
+function VisitorGroupsFeatureSetup( props: Record< string, unknown > ) {
+	return createElement( LazyVisitorGroupsFeatureSetup, props );
+}
 
 /**
  * Checks whether enhanced measurement is on for the connected web data stream.
@@ -642,6 +659,11 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 		setup: {
 			type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
 			ctaLabel: __( 'Enable visitor groups', 'google-site-kit' ),
+			isEnabled: ( select: Select ) =>
+				select(
+					MODULES_ANALYTICS_4
+				).isAudienceSegmentationSetupCompleted(),
+			SetupComponent: VisitorGroupsFeatureSetup,
 		},
 	} );
 }

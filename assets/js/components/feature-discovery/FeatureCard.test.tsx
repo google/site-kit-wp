@@ -301,6 +301,33 @@ describe( 'FeatureCard', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'should render the CTA given by renderCTA in place of the default one', () => {
+		provideFeatures( registry, [
+			{
+				...TEST_FEATURE,
+				setup: {
+					type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+					ctaLabel: 'Try it now',
+				},
+			},
+		] );
+
+		const { getByRole, queryByRole } = render(
+			<FeatureCard
+				slug="test-feature"
+				renderCTA={ () => <button>Custom CTA</button> }
+			/>,
+			{ registry }
+		);
+
+		expect(
+			getByRole( 'button', { name: 'Custom CTA' } )
+		).toBeInTheDocument();
+		expect(
+			queryByRole( 'button', { name: 'Try it now' } )
+		).not.toBeInTheDocument();
+	} );
+
 	it( 'should render the dismiss control only when the card is dismissible', () => {
 		provideFeatures( registry, [ TEST_FEATURE ] );
 
