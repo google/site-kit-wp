@@ -29,6 +29,7 @@ import {
 	FEATURE_EFFORTS,
 	FEATURE_SETUP_TYPES,
 } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import type { FeatureDiscoveryAPI } from '@/js/googlesitekit/feature-discovery/types';
 import { MODULE_SLUG_SIGN_IN_WITH_GOOGLE } from '@/js/modules/sign-in-with-google/constants';
 import splashScreenScreenshotURL from '@/svg/graphics/splash-screenshot-mobile.svg?path';
@@ -132,6 +133,10 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 			),
 			cta: {
 				label: __( 'Customize settings', 'google-site-kit' ),
+				getURL: ( select ) =>
+					select( CORE_SITE ).getModuleSettingsEditURL(
+						MODULE_SLUG_SIGN_IN_WITH_GOOGLE
+					),
 			},
 			dismissLabel: __( 'Maybe later', 'google-site-kit' ),
 		},

@@ -30,9 +30,14 @@ import ModuleRecoveryAlert from '@/js/components/dashboard-sharing/ModuleRecover
 import SetUpEmailReportingOverlayNotification, {
 	SET_UP_EMAIL_REPORTING_OVERLAY_NOTIFICATION,
 } from '@/js/components/email-reporting/SetUpEmailReportingOverlayNotification';
+import {
+	ALL_SERVICES_TAB_PATH,
+	WHATS_NEW_TAB_PATH,
+} from '@/js/components/feature-discovery/constants';
 import FeatureDiscoveryCallout, {
 	FEATURE_DISCOVERY_CALLOUT_NOTIFICATION,
 } from '@/js/components/feature-discovery/FeatureDiscoveryCallout';
+import FeatureDiscoverySetupSuccessNotification from '@/js/components/feature-discovery/FeatureDiscoverySetupSuccessNotification';
 import ActivateAnalyticsNotification from '@/js/components/notifications/ActivateAnalyticsNotification';
 import AuthError from '@/js/components/notifications/AuthError';
 import ConnectMoreServicesNotification from '@/js/components/notifications/ConnectMoreServicesNotification';
@@ -99,6 +104,7 @@ import {
 	requireUnsatisfiedScopesCount,
 	requireViewOnlyContext,
 } from '@/js/googlesitekit/data-requirements';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { CORE_FORMS } from '@/js/googlesitekit/datastore/forms/constants';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
@@ -126,6 +132,8 @@ import { isInitialWelcomeModalActive } from '@/js/util/welcome-modal';
 import {
 	ACTIVATE_ANALYTICS_NOTIFICATION,
 	CONNECT_MORE_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION,
+	FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION,
 	GTG_HEALTH_CHECK_WARNING_NOTIFICATION_ID,
 	GTG_SETUP_CTA_BANNER_NOTIFICATION,
 	NOTIFICATION_AREAS,
@@ -191,6 +199,70 @@ function requireModuleDataAvailable( slug ) {
 		requireModuleConnected( slug ),
 		requireModuleDataViewable( slug )
 	);
+}
+
+/**
+ * Requires the hub visit to be a return from a feature setup that has
+ * completed, to the given tab.
+ *
+ * Both tabs' notification areas share a single queue, which only shows its
+ * first notification in the area it belongs to, so each placement is limited
+ * to the tab the user is returned to.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} returnTab Path of the hub tab the notification is shown on.
+ * @return {function(): Promise<boolean>} Whether the user has returned to the tab from a completed feature setup or not.
+ */
+function requireFeatureDiscoverySetupSuccess( returnTab ) {
+	return async ( { select, resolveSelect } ) => {
+		const pendingSetup = select( CORE_FEATURE_DISCOVERY ).getPendingSetup();
+
+		if ( ! pendingSetup || pendingSetup.returnTab !== returnTab ) {
+			return false;
+		}
+
+		const { featureSlug } = pendingSetup;
+		const feature = select( CORE_FEATURE_DISCOVERY ).getFeature(
+			featureSlug
+		);
+
+		if ( ! feature?.successNotice ) {
+			return false;
+		}
+
+		// Wait for the state the feature's connection check may depend on.
+		await resolveSelect( CORE_MODULES ).getModules();
+
+		// A feature's completion can depend on the settings of the module it
+		// sets up, or of a prerequisite module it configures, as for ad
+		// blocking recovery in AdSense.
+		const moduleSlugs = [
+			feature.setup?.moduleSlug,
+			...( feature.prerequisiteModules || [] ),
+		].filter( Boolean );
+
+		for ( const moduleSlug of moduleSlugs ) {
+			const module = select( CORE_MODULES ).getModule( moduleSlug );
+
+			if (
+				module?.storeName &&
+				typeof resolveSelect( module.storeName )?.getSettings ===
+					'function'
+			) {
+				await resolveSelect( module.storeName ).getSettings();
+			}
+		}
+
+		await resolveSelect( CORE_SITE ).getSiteInfo();
+
+		// Confirm the feature is actually set up, so we don't show the notice for an abandoned setup.
+		return (
+			select( CORE_FEATURE_DISCOVERY ).isFeatureConnected(
+				featureSlug
+			) === true
+		);
+	};
 }
 
 export const DEFAULT_NOTIFICATIONS = {
@@ -468,6 +540,29 @@ export const DEFAULT_NOTIFICATIONS = {
 			asyncRequire( false, requireSiteKitAutoUpdatesEnabled() )
 		),
 		isDismissible: true,
+	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_WHATS_NEW_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_WHATS_NEW_TOP,
+		groupID: NOTIFICATION_GROUPS.SETUP_CTAS,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements:
+			requireFeatureDiscoverySetupSuccess( WHATS_NEW_TAB_PATH ),
+		isDismissible: false,
+	},
+	[ FEATURE_DISCOVERY_SETUP_SUCCESS_ALL_SERVICES_NOTIFICATION ]: {
+		Component: FeatureDiscoverySetupSuccessNotification,
+		priority: PRIORITY.SETUP_CTA_HIGH,
+		areaSlug: NOTIFICATION_AREAS.FEATURE_DISCOVERY_ALL_SERVICES_TOP,
+		// Use the DEFAULT group so the notification doesn't block the auto-updates banner
+		// from being shown on the "What's new" tab.
+		groupID: NOTIFICATION_GROUPS.DEFAULT,
+		viewContexts: [ VIEW_CONTEXT_FEATURE_DISCOVERY ],
+		checkRequirements: requireFeatureDiscoverySetupSuccess(
+			ALL_SERVICES_TAB_PATH
+		),
+		isDismissible: false,
 	},
 	[ FEATURE_DISCOVERY_AUTO_UPDATES_BANNER_SLUG ]: {
 		Component: EnableAutoUpdateBannerNotification,
