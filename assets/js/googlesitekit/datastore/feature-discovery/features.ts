@@ -20,7 +20,7 @@
  * External dependencies
  */
 import invariant from 'invariant';
-import { isPlainObject } from 'lodash';
+import { isObject, isPlainObject } from 'lodash';
 
 /**
  * Internal dependencies
@@ -52,6 +52,8 @@ import type {
 
 const REGISTER_FEATURE = 'REGISTER_FEATURE' as const;
 const RECEIVE_PENDING_SETUP = 'RECEIVE_PENDING_SETUP' as const;
+const START_FEATURE_SETUP = 'START_FEATURE_SETUP' as const;
+const FINISH_FEATURE_SETUP = 'FINISH_FEATURE_SETUP' as const;
 
 type Action =
 	| {
@@ -61,11 +63,16 @@ type Action =
 	| {
 			type: typeof RECEIVE_PENDING_SETUP;
 			payload: { pendingSetup: PendingSetup | null };
+	  }
+	| {
+			type: typeof START_FEATURE_SETUP | typeof FINISH_FEATURE_SETUP;
+			payload: { slug: string };
 	  };
 
 export const initialState: FeatureDiscoveryState = {
 	features: {},
 	pendingSetup: null,
+	setupInProgress: {},
 };
 
 const effortLevels = Object.values( FEATURE_EFFORTS );
@@ -212,30 +219,98 @@ export const actions = {
 				return {};
 			}
 
-			// In-place features open their existing panel over the hub, which
-			// does its own saving, so the user never leaves the hub.
-			if ( feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL ) {
-				// The detail panel is closed first so that the feature's own
-				// panel opens on its own over the hub.
-				registry
-					.dispatch( CORE_UI )
-					.setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+			// A setup can take the user away from the hub, such as to grant
+			// extra scopes, and the detail panel must not reopen on their
+			// return, whether or not it has closed by the time the snapshot
+			// is taken.
+			registry
+				.dispatch( CORE_UI )
+				.omitKeysFromSnapshot( [
+					FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+				] );
 
-				feature.setup.open?.( registry );
+			yield { type: START_FEATURE_SETUP, payload: { slug } };
 
-				return {};
-			}
+			try {
+				// In-place features open their existing panel over the hub,
+				// which does its own saving, so the user never leaves the hub.
+				if (
+					feature.setup.type === FEATURE_SETUP_TYPES.IN_PLACE_PANEL
+				) {
+					// The detail panel is closed first so that the feature's
+					// own panel opens on its own over the hub.
+					registry
+						.dispatch( CORE_UI )
+						.setValue(
+							FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+							false
+						);
 
-			if (
-				feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
-			) {
-				if ( ! feature.setup.activate ) {
+					feature.setup.open?.( registry );
 					return {};
 				}
 
-				const { error } = ( yield commonActions.await(
-					feature.setup.activate( registry )
-				) ) as SetupFeatureResult;
+				if (
+					feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
+				) {
+					if ( ! feature.setup.activate ) {
+						return {};
+					}
+
+					const { error } = ( yield commonActions.await(
+						feature.setup.activate( registry )
+					) ) as SetupFeatureResult;
+
+					if ( error ) {
+						yield setErrorForAction( error, 'setupFeature', [
+							slug,
+						] );
+						return { error };
+					}
+
+					yield clearActionError( 'setupFeature', [ slug ] );
+
+					return {};
+				}
+
+				if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
+					return {};
+				}
+
+				const { moduleSlug, getSetupURL } = feature.setup;
+
+				// A flow with no module to activate goes straight to its own URL.
+				if ( ! moduleSlug ) {
+					const setupURL = getSetupURL?.( registry.select );
+
+					if ( ! setupURL ) {
+						return {};
+					}
+
+					yield commonActions.await(
+						setPendingSetup(
+							slug,
+							getCurrentFeatureDiscoveryTabPath()
+						)
+					);
+
+					yield commonActions.await(
+						registry
+							.dispatch( CORE_LOCATION )
+							.navigateTo( setupURL )
+					);
+
+					return {};
+				}
+
+				const { response, error } = ( yield commonActions.await(
+					registry
+						.dispatch( CORE_MODULES )
+						.activateModule( moduleSlug )
+				) ) as {
+					response?: { moduleReauthURL: string };
+					error?: unknown;
+				};
 
 				if ( error ) {
 					yield setErrorForAction( error, 'setupFeature', [ slug ] );
@@ -244,78 +319,48 @@ export const actions = {
 
 				yield clearActionError( 'setupFeature', [ slug ] );
 
-				return {};
-			}
+				// The descriptor's target takes precedence over the module's own
+				// reauth URL, once the module has been activated.
+				const overrideURL = getSetupURL?.( registry.select );
 
-			if ( feature.setup.type !== FEATURE_SETUP_TYPES.SETUP_FLOW ) {
-				return {};
-			}
-
-			const { moduleSlug, getSetupURL } = feature.setup;
-
-			// A flow with no module to activate goes straight to its own URL.
-			if ( ! moduleSlug ) {
-				const setupURL = getSetupURL?.( registry.select );
-
-				if ( ! setupURL ) {
+				// Modules with no setup screen, such as PageSpeed Insights, are
+				// connected as soon as they are activated, so the user stays on
+				// the hub.
+				if (
+					! overrideURL &&
+					! registry.select( CORE_MODULES ).getModule( moduleSlug )
+						?.SetupComponent
+				) {
 					return {};
 				}
 
+				// The record must be written before navigating so that it survives
+				// the OAuth round trip.
 				yield commonActions.await(
 					setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
 				);
 
 				yield commonActions.await(
-					registry.dispatch( CORE_LOCATION ).navigateTo( setupURL )
+					registry
+						.dispatch( CORE_LOCATION )
+						.navigateTo(
+							overrideURL ??
+								( response?.moduleReauthURL as string )
+						)
 				);
 
 				return {};
-			}
+			} catch ( caughtError: unknown ) {
+				const error = isObject( caughtError )
+					? caughtError
+					: new Error( String( caughtError ) );
 
-			const { response, error } = ( yield commonActions.await(
-				registry.dispatch( CORE_MODULES ).activateModule( moduleSlug )
-			) ) as {
-				response?: { moduleReauthURL: string };
-				error?: unknown;
-			};
-
-			if ( error ) {
 				yield setErrorForAction( error, 'setupFeature', [ slug ] );
+
 				return { error };
+			} finally {
+				yield { type: FINISH_FEATURE_SETUP, payload: { slug } };
 			}
-
-			yield clearActionError( 'setupFeature', [ slug ] );
-
-			// The descriptor's target takes precedence over the module's own
-			// reauth URL, once the module has been activated.
-			const overrideURL = getSetupURL?.( registry.select );
-
-			// Modules with no setup screen, such as PageSpeed Insights, are
-			// connected as soon as they are activated, so the user stays on
-			// the hub.
-			if (
-				! overrideURL &&
-				! registry.select( CORE_MODULES ).getModule( moduleSlug )
-					?.SetupComponent
-			) {
-				return {};
-			}
-
-			// The record must be written before navigating so that it survives
-			// the OAuth round trip.
-			yield commonActions.await(
-				setPendingSetup( slug, getCurrentFeatureDiscoveryTabPath() )
-			);
-
-			yield commonActions.await(
-				registry
-					.dispatch( CORE_LOCATION )
-					.navigateTo(
-						overrideURL ?? ( response?.moduleReauthURL as string )
-					)
-			);
-
-			return {};
 		}
 	),
 
@@ -364,6 +409,14 @@ export const reducer = createReducer(
 
 			case RECEIVE_PENDING_SETUP: {
 				state.pendingSetup = payload.pendingSetup;
+
+				return state;
+			}
+
+			case START_FEATURE_SETUP:
+			case FINISH_FEATURE_SETUP: {
+				state.setupInProgress[ payload.slug ] =
+					type === START_FEATURE_SETUP;
 
 				return state;
 			}

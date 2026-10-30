@@ -158,4 +158,5 @@ export interface PendingSetup {
 export interface FeatureDiscoveryState {
 	features: Record< string, Feature >;
 	pendingSetup: PendingSetup | null;
+	setupInProgress: Record< string, boolean >;
 }

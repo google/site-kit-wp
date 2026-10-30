@@ -297,6 +297,21 @@ export const selectors = {
 	),
 
 	/**
+	 * Checks whether the feature's setup action is currently running.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param {Object} state Data store's state.
+	 * @param {string} slug  Feature's slug.
+	 * @return {boolean} Whether setup is running for the feature.
+	 */
+	isSetupInProgress( state: FeatureDiscoveryState, slug: string ): boolean {
+		invariant( slug, 'slug is required to check setup progress.' );
+
+		return !! state.setupInProgress[ slug ];
+	},
+
+	/**
 	 * Gets the resume URL for a feature setup.
 	 *
 	 * Falls back to the setup URL where no dedicated resume URL exists.
