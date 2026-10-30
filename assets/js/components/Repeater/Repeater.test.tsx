@@ -596,4 +596,37 @@ describe( 'Repeater', () => {
 			).toHaveFocus();
 		} );
 	} );
+
+	describe( 'forms', () => {
+		it( 'should expose labeled native buttons that do not submit an enclosing form', () => {
+			const onSubmit = jest.fn( ( event ) => event.preventDefault() );
+			const onChange = jest.fn();
+
+			render(
+				<form onSubmit={ onSubmit }>
+					<Repeater
+						getItemID={ ( item ) => item.id }
+						getNewItem={ () => ( { id: 'new', value: '' } ) }
+						items={ initialItems }
+						maxItems={ 5 }
+						onChange={ onChange }
+						renderField={ renderField }
+					/>
+				</form>
+			);
+
+			const buttons = screen.getAllByRole( 'button' );
+
+			buttons.forEach( ( button ) => {
+				expect( button.tagName ).toBe( 'BUTTON' );
+				expect( button ).toHaveAttribute( 'type', 'button' );
+				expect( button.tabIndex ).toBe( 0 );
+
+				fireEvent.click( button );
+			} );
+
+			expect( onSubmit ).not.toHaveBeenCalled();
+			expect( onChange ).toHaveBeenCalledTimes( buttons.length );
+		} );
+	} );
 } );
