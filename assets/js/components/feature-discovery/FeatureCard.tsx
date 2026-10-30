@@ -20,7 +20,7 @@
  * External dependencies
  */
 import classnames from 'classnames';
-import { FC, useCallback } from 'react';
+import { FC, ReactNode, useCallback } from 'react';
 
 /**
  * WordPress dependencies
@@ -67,6 +67,9 @@ export interface FeatureCardProps {
 	isDismissible?: boolean;
 	hideNewBadge?: boolean;
 	hideUnreadDot?: boolean;
+	// Replaces the card's call to action, for features that bring their own
+	// setup.
+	renderCTA?: () => ReactNode;
 }
 
 const FeatureCard: FC< FeatureCardProps > = ( {
@@ -74,6 +77,7 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 	isDismissible = false,
 	hideNewBadge = false,
 	hideUnreadDot = false,
+	renderCTA,
 } ) => {
 	const [ showUnreadDot, setShowUnreadDot ] = useState( false );
 	const [ isFeedbackMenuOpen, setIsFeedbackMenuOpen ] = useState( false );
@@ -278,7 +282,11 @@ const FeatureCard: FC< FeatureCardProps > = ( {
 				<FeatureServiceIdentity feature={ feature } />
 
 				<div className="googlesitekit-feature-card__actions">
-					<FeatureCTA slug={ slug } isTertiary />
+					{ renderCTA ? (
+						renderCTA()
+					) : (
+						<FeatureCTA slug={ slug } isTertiary />
+					) }
 
 					{ /* @ts-expect-error - The `Button` component is not typed yet. */ }
 					<Button onClick={ onClickReadMore }>

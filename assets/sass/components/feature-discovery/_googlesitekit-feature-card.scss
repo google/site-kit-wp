@@ -37,6 +37,18 @@
 		border-bottom: none;
 	}
 
+	// A feature's own setup failure takes the place of its card in the list, so
+	// it keeps the card's row spacing instead of the dashboard widget's box.
+	.googlesitekit-feature-discovery__content .googlesitekit-audience-segmentation-setup-error-widget {
+		background: none;
+		border-bottom: 1px solid $c-neutral-n-100;
+		border-radius: 0;
+		height: auto;
+		overflow: visible;
+		padding-block: 30px;
+		padding-inline-end: $grid-gap-phone;
+	}
+
 	.googlesitekit-feature-card__status {
 		grid-row: span 2;
 		padding-block: var(--googlesitekit-feature-card-gap-s);

@@ -26,7 +26,10 @@ import { isPlainObject } from 'lodash';
  * Internal dependencies
  */
 import { Registry, commonActions, createReducer } from 'googlesitekit-data';
-import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import {
+	FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+	FEATURE_DISCOVERY_SETUP_REQUEST_KEY,
+} from '@/js/components/feature-discovery/constants';
 import { actions as errorStoreActions } from '@/js/googlesitekit/data/create-error-store';
 import { createValidatedAction } from '@/js/googlesitekit/data/utils';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
@@ -185,7 +188,9 @@ export const actions = {
 	 * opens the feature's existing panel over the hub.
 	 *
 	 * For `background-toggle` features, this runs the feature's own enable
-	 * routine, and the user stays on the hub.
+	 * routine, and the user stays on the hub. Where the feature brings its own
+	 * setup component, this instead requests that component to run the setup
+	 * and closes the feature detail panel.
 	 *
 	 * @since 1.189.0
 	 * @since 1.190.0 Implemented the `setup-flow` setup type.
@@ -229,6 +234,18 @@ export const actions = {
 			if (
 				feature.setup.type === FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE
 			) {
+				// A feature with its own setup component runs its setup in the
+				// list, so the request is handed over and the detail panel
+				// this was triggered from is closed.
+				if ( feature.setup.SetupComponent ) {
+					const { setValue } = registry.dispatch( CORE_UI );
+
+					setValue( FEATURE_DISCOVERY_SETUP_REQUEST_KEY, slug );
+					setValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY, false );
+
+					return {};
+				}
+
 				if ( ! feature.setup.activate ) {
 					return {};
 				}
