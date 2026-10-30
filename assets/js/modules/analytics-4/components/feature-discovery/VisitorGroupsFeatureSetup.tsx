@@ -190,10 +190,15 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		failedAudiences.length > 0 && ! isFailedAudiencesDismissed;
 
 	if ( ( setupError || hasFailedAudiences ) && ! isSaving ) {
+		// A failure kept in the error store outlives the hook's own state, so it
+		// is the one reported once this component has been remounted.
+		const errors =
+			apiErrors.length || ! setupError ? apiErrors : [ setupError ];
+
 		return (
 			<AudienceSegmentationSetupErrorWidget
 				Widget={ Widget }
-				errors={ apiErrors }
+				errors={ errors }
 				isAudienceCreationVariant={ isAudienceCreationError }
 				onRetry={ handleRetry }
 				onDismiss={ handleDismiss }

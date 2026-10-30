@@ -244,6 +244,27 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 		).toBeInTheDocument();
 	} );
 
+	it( 'reports a stored failure with the wording for its error once the component has been remounted', () => {
+		registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+			{
+				code: 'forbidden',
+				message: 'Forbidden.',
+				data: { status: 403, reason: 'insufficientPermissions' },
+			},
+			'setupFeature',
+			[ SLUG ]
+		);
+
+		const { getByText } = render(
+			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+			{ registry }
+		);
+
+		expect(
+			getByText( /required permissions to set up visitor groups/ )
+		).toBeInTheDocument();
+	} );
+
 	it( 'clears the stored failure once a later attempt succeeds', async () => {
 		registry
 			.dispatch( CORE_FEATURE_DISCOVERY )
