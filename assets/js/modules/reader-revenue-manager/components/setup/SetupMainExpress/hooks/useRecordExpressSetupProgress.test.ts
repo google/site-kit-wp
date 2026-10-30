@@ -242,27 +242,6 @@ describe( 'useRecordExpressSetupProgress', () => {
 			} );
 		} );
 
-		it( 'should not save a completed entry when the cta is not supported', () => {
-			global.location.href = `http://example.com/?cta=unsupported&ctaID=${ CTA_ID }`;
-
-			renderHook(
-				() =>
-					useRecordExpressSetupProgress(
-						'unsupported',
-						EXPRESS_SETUP_STEPS.SETUP_COMPLETE
-					),
-				{ registry }
-			);
-
-			expect( fetchMock ).toHaveFetched( userSettingsEndpoint, {
-				body: {
-					data: {
-						lastActionedExpressSetups: { 'unsupported:new': null },
-					},
-				},
-			} );
-		} );
-
 		it( 'should not save again when the ctaID is set while on an earlier step', async () => {
 			global.location.href = `http://example.com/?cta=${ EXPRESS_SETUP_CTAS.NEWSLETTER_SIGNUP }`;
 

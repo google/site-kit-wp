@@ -231,6 +231,7 @@ describe( 'useCreateExpressSetupCTA', () => {
 		expect( fetchMock ).not.toHaveFetched( settingsEndpoint );
 		expect( console ).toHaveErrored();
 	} );
+
 	describe( 'ctaID', () => {
 		it( 'should set the ctaID query argument from the created CTA name', async () => {
 			global.location.href = 'http://example.com/?cta=newsletter-signup';

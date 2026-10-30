@@ -25,9 +25,7 @@ import { useEffect, useRef } from 'react';
  * Internal dependencies
  */
 import { useDispatch } from 'googlesitekit-data';
-import useQueryArg from '@/js/hooks/useQueryArg';
 import {
-	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 	MODULES_READER_REVENUE_MANAGER,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
@@ -43,6 +41,7 @@ import useCTAID from './useCTAID';
  * is not awaited, so the step works the same whether it succeeds or fails.
  *
  * @since 1.191.0
+ * @since n.e.x.t Records the completed setup in `completedExpressSetups`.
  *
  * @param {string}                          ctaType  The CTA type being set up.
  * @param {EXPRESS_SETUP_STEPS | undefined} stepSlug The current step's slug, or `undefined` while it is resolving.
@@ -56,17 +55,12 @@ export default function useRecordExpressSetupProgress(
 		MODULES_READER_REVENUE_MANAGER
 	);
 
-	const [ cta ] = useQueryArg< string >( 'cta' );
 	const [ ctaID ] = useCTAID();
 
 	// Read through a ref so a `ctaID` set mid-setup doesn't count as a step
 	// beginning.
 	const ctaIDRef = useRef( ctaID );
 	ctaIDRef.current = ctaID;
-
-	const isSupportedCTA =
-		cta === ctaType &&
-		( Object.values( EXPRESS_SETUP_CTAS ) as string[] ).includes( cta );
 
 	useEffect( () => {
 		if ( stepSlug === undefined ) {
@@ -87,7 +81,6 @@ export default function useRecordExpressSetupProgress(
 			const { error } = await saveUserSettings( {
 				lastActionedExpressSetups: { [ key ]: isComplete ? null : now },
 				...( isComplete &&
-					isSupportedCTA &&
 					completedKey && {
 						completedExpressSetups: { [ completedKey ]: now },
 					} ),
@@ -100,11 +93,5 @@ export default function useRecordExpressSetupProgress(
 		}
 
 		storeProgress();
-	}, [
-		ctaType,
-		stepSlug,
-		isSupportedCTA,
-		saveUserSettings,
-		clearActionErrors,
-	] );
+	}, [ ctaType, stepSlug, saveUserSettings, clearActionErrors ] );
 }

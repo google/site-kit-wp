@@ -27,6 +27,7 @@ import { useCallback } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import type { CreateCTAParams } from '@/js/modules/reader-revenue-manager/datastore/ctas';
+import { getCTAID } from '@/js/modules/reader-revenue-manager/utils/ctas';
 import useCTAID from './useCTAID';
 
 interface CreateExpressSetupCTAResult {
@@ -71,11 +72,9 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 				return result;
 			}
 
-			// The CTA's resource name ends with its identifier.
-			const name = ( result.response as { name?: unknown } | undefined )
-				?.name;
-			const ctaID =
-				typeof name === 'string' ? name.split( '/' ).pop() : undefined;
+			const ctaID = getCTAID(
+				( result.response as { name?: string } | undefined )?.name
+			);
 
 			if ( ctaID ) {
 				setCTAID( ctaID );

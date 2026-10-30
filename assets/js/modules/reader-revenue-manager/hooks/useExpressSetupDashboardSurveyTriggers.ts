@@ -47,6 +47,24 @@ const CTA_NOTIFICATION_IDS: Record< string, string > = {
 };
 
 /**
+ * Checks whether any entry belongs to the given CTA.
+ *
+ * @since n.e.x.t
+ *
+ * @param {Object|undefined} entries Express setup entries keyed by `<cta>:<id>`.
+ * @param {string}           cta     The CTA to look for.
+ * @return {boolean} `true` if an entry exists for the CTA, `false` otherwise.
+ */
+function hasEntryForCTA(
+	entries: Record< string, unknown > | undefined,
+	cta: string
+): boolean {
+	return Object.keys( entries || {} ).some( ( key ) =>
+		key.startsWith( `${ cta }:` )
+	);
+}
+
+/**
  * Triggers the express setup survey matching the user's progress.
  *
  * On the main dashboard, selects at most one survey trigger per CTA, in order:
@@ -91,17 +109,19 @@ export default function useExpressSetupDashboardSurveyTriggers(): void {
 			return Object.entries( CTA_NOTIFICATION_IDS ).map(
 				( [ cta, notificationID ] ) => {
 					if (
-						Object.keys(
-							userSettings?.completedExpressSetups || {}
-						).some( ( key ) => key.startsWith( `${ cta }:` ) )
+						hasEntryForCTA(
+							userSettings?.completedExpressSetups,
+							cta
+						)
 					) {
 						return `view_rrm_${ cta }_published`;
 					}
 
 					if (
-						userSettings?.lastActionedExpressSetups?.[
-							`${ cta }:new`
-						] !== undefined
+						hasEntryForCTA(
+							userSettings?.lastActionedExpressSetups,
+							cta
+						)
 					) {
 						return `view_rrm_${ cta }_incomplete`;
 					}
@@ -124,14 +144,11 @@ export default function useExpressSetupDashboardSurveyTriggers(): void {
 		[ isEnabled ]
 	);
 
-	const triggerKey = triggerIDs.join( ',' );
-
 	useEffect( () => {
-		triggerKey
-			.split( ',' )
-			.filter( Boolean )
+		triggerIDs
+			.filter( ( triggerID ): triggerID is string => !! triggerID )
 			.forEach( ( triggerID ) => {
 				triggerSurvey( triggerID, { ttl: DAY_IN_SECONDS } );
 			} );
-	}, [ triggerKey, triggerSurvey ] );
+	}, [ triggerIDs, triggerSurvey ] );
 }
