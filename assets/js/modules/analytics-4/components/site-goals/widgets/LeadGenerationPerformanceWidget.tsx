@@ -260,6 +260,7 @@ const LeadGenerationPerformanceWidget = forwardRef<
 			ref?: Ref< HTMLDivElement >;
 			Header?: unknown;
 			headerContents?: ReactNode;
+			headerBadge?: ReactNode;
 			collapsible?: boolean;
 			onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 		} >;
@@ -597,18 +598,18 @@ const LeadGenerationPerformanceWidget = forwardRef<
 				onToggleCollapsed={ handleToggleCollapsed }
 				Header={ WidgetHeaderTitle }
 				headerContents={
-					<Fragment>
-						<span>
-							{ __(
-								'Lead generation performance',
-								'google-site-kit'
-							) }
-						</span>
-						<GatheringBreakdownDataBadge
-							goalType={ GOAL_TYPES.LEAD }
-							variant="widget"
-						/>
-					</Fragment>
+					<span>
+						{ __(
+							'Lead generation performance',
+							'google-site-kit'
+						) }
+					</span>
+				}
+				headerBadge={
+					<GatheringBreakdownDataBadge
+						goalType={ GOAL_TYPES.LEAD }
+						variant="widget"
+					/>
 				}
 				collapsible
 			>

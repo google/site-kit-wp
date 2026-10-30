@@ -75,18 +75,49 @@
 			margin: 0;
 		}
 
+		// A span, since it sits inside the heading.
+		.googlesitekit-widget__header-inner {
+			display: block;
+		}
+
 		&.googlesitekit-widget__header--collapsible {
-			cursor: pointer;
 			font-weight: $fw-bold;
+			position: relative;
 
 			.googlesitekit-widget__header-inner  {
 				padding: 4px;
 			}
+		}
 
-			&:focus .googlesitekit-widget__header-inner  {
-				box-shadow: none;
-				outline: 1px dotted $c-interactive-focus;
-				outline-offset: 0;
+		.googlesitekit-widget__header-toggle {
+			border-radius: 0;
+			color: inherit;
+			cursor: pointer;
+			font: inherit;
+			letter-spacing: inherit;
+			padding: 0;
+			text-align: inherit;
+
+			&:hover {
+				text-decoration: none;
+			}
+
+			// Matches the header's inner padding.
+			&:focus {
+				outline-offset: 4px;
+			}
+
+			// Makes the whole header clickable.
+			&::after {
+				content: "";
+				inset: 0;
+				position: absolute;
+			}
+
+			// Keeps the badge clickable without toggling the section.
+			~ * {
+				position: relative;
+				z-index: 1;
 			}
 		}
 	}

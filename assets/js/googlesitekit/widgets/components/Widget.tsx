@@ -27,13 +27,14 @@ import { useMount } from 'react-use';
  * WordPress dependencies
  */
 import { useInstanceId } from '@wordpress/compose';
-import { forwardRef, useEffect, useState } from '@wordpress/element';
+import { Fragment, forwardRef, useEffect, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
  * Internal dependencies
  */
 import IconWrapper from '@/js/components/IconWrapper';
+import VisuallyHidden from '@/js/components/VisuallyHidden';
 import ChevronDown from '@/svg/icons/chevron-down-v2.svg';
 
 export interface WidgetProps {
@@ -44,6 +45,7 @@ export interface WidgetProps {
 	onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 	Header?: ElementType;
 	headerContents?: ReactNode;
+	headerBadge?: ReactNode;
 	Footer?: ElementType;
 	noPadding?: boolean;
 	widgetSlug: string;
@@ -60,6 +62,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			onToggleCollapsed,
 			Header,
 			headerContents,
+			headerBadge,
 			Footer,
 			noPadding = false,
 			widgetSlug,
@@ -69,6 +72,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 		const [ isCollapsed, setIsCollapsed ] = useState( !! defaultCollapsed );
 
 		const instanceID = useInstanceId( Widget );
+		const bodyID = `googlesitekit-widget-body-${ instanceID }`;
 
 		// If the `isCollapsed` prop is provided, it will control the collapsed
 		// state of the widget. This allows the parent component to manage the
@@ -107,17 +111,31 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 		} );
 
 		// Check if the widget is collapsible and uncontrolled (i.e.
-		// `isCollapsed` prop is not provided). If so, set the appropriate
-		// aria-label for the toggle button.
+		// `isCollapsed` prop is not provided). If so, the header title is
+		// wrapped in a button that toggles the widget body.
 		const collapsibleAndUncontrolled =
 			!! collapsible && isCollapsedProp === undefined;
 
-		let ariaLabel: string | undefined;
-		if ( collapsibleAndUncontrolled ) {
-			ariaLabel = isCollapsed
-				? __( 'Expand section', 'google-site-kit' )
-				: __( 'Hide section', 'google-site-kit' );
-		}
+		const headerTitle = (
+			<Fragment>
+				{ !! collapsible && (
+					<IconWrapper marginLeft={ 4 } marginRight={ 10 }>
+						<ChevronDown
+							width={ 12 }
+							height={ 12 }
+							className={ classnames(
+								'googlesitekit-widget__header-icon',
+								{
+									'googlesitekit-widget__header-icon--collapsed':
+										isCollapsed,
+								}
+							) }
+						/>
+					</IconWrapper>
+				) }
+				{ headerContents }
+			</Fragment>
+		);
 
 		return (
 			<div
@@ -132,19 +150,6 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 			>
 				{ Header && (
 					<div
-						aria-expanded={
-							collapsibleAndUncontrolled
-								? ! isCollapsed
-								: undefined
-						}
-						aria-controls={
-							collapsibleAndUncontrolled
-								? `googlesitekit-widget-body-${ instanceID }`
-								: undefined
-						}
-						aria-label={
-							collapsibleAndUncontrolled ? ariaLabel : undefined
-						}
 						className={ classnames(
 							'googlesitekit-widget__header',
 							{
@@ -154,47 +159,35 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 									isCollapsed,
 							}
 						) }
-						onClick={
-							collapsibleAndUncontrolled
-								? toggleIsCollapsed
-								: undefined
-						}
-						onKeyUp={
-							collapsibleAndUncontrolled
-								? ( event ) => {
-										if ( event.key === 'Enter' ) {
-											toggleIsCollapsed();
-										}
-								  }
-								: undefined
-						}
-						role={
-							collapsibleAndUncontrolled ? 'button' : undefined
-						}
-						tabIndex={ collapsibleAndUncontrolled ? 0 : undefined }
 					>
 						<Header>
-							<div className="googlesitekit-widget__header-inner">
-								{ !! collapsible && (
-									<IconWrapper
-										marginLeft={ 4 }
-										marginRight={ 10 }
+							<span className="googlesitekit-widget__header-inner">
+								{ collapsibleAndUncontrolled ? (
+									<button
+										type="button"
+										className="googlesitekit-widget__header-toggle"
+										aria-expanded={ ! isCollapsed }
+										aria-controls={ bodyID }
+										onClick={ toggleIsCollapsed }
 									>
-										<ChevronDown
-											width={ 12 }
-											height={ 12 }
-											className={ classnames(
-												'googlesitekit-widget__header-icon',
-												{
-													'googlesitekit-widget__header-icon--collapsed':
-														isCollapsed,
-												}
-											) }
-										/>
-									</IconWrapper>
+										{ headerTitle }
+										<VisuallyHidden>
+											{ isCollapsed
+												? __(
+														'Expand section',
+														'google-site-kit'
+												  )
+												: __(
+														'Hide section',
+														'google-site-kit'
+												  ) }
+										</VisuallyHidden>
+									</button>
+								) : (
+									headerTitle
 								) }
-								{ headerContents }
-							</div>
+								{ headerBadge }
+							</span>
 						</Header>
 					</div>
 				) }
@@ -202,11 +195,7 @@ const Widget: FC< WidgetProps > = forwardRef< HTMLDivElement, WidgetProps >(
 					className={ classnames( 'googlesitekit-widget__body', {
 						'googlesitekit-widget__body--collapsed': !! isCollapsed,
 					} ) }
-					id={
-						!! collapsible
-							? `googlesitekit-widget-body-${ instanceID }`
-							: undefined
-					}
+					id={ !! collapsible ? bodyID : undefined }
 				>
 					{ children }
 				</div>

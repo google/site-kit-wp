@@ -213,6 +213,7 @@ const OnlineStorePerformanceWidget = forwardRef<
 			children?: ReactNode;
 			Header?: unknown;
 			headerContents?: ReactNode;
+			headerBadge?: ReactNode;
 			collapsible?: boolean;
 			onToggleCollapsed?: ( isCollapsed: boolean ) => void;
 		} >;
@@ -517,18 +518,15 @@ const OnlineStorePerformanceWidget = forwardRef<
 				onToggleCollapsed={ handleToggleCollapsed }
 				Header={ WidgetHeaderTitle }
 				headerContents={
-					<Fragment>
-						<span>
-							{ __(
-								'Online store performance',
-								'google-site-kit'
-							) }
-						</span>
-						<GatheringBreakdownDataBadge
-							goalType={ GOAL_TYPES.ECOMMERCE }
-							variant="widget"
-						/>
-					</Fragment>
+					<span>
+						{ __( 'Online store performance', 'google-site-kit' ) }
+					</span>
+				}
+				headerBadge={
+					<GatheringBreakdownDataBadge
+						goalType={ GOAL_TYPES.ECOMMERCE }
+						variant="widget"
+					/>
 				}
 				collapsible
 			>
