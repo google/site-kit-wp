@@ -290,4 +290,38 @@ describe( 'VisitorGroupsFeatureSetup', () => {
 				.getErrorForAction( 'setupFeature', [ SLUG ] )
 		).toBeUndefined();
 	} );
+
+	it( 'dismisses a failure of some audiences with "Got it", until the setup is attempted again', () => {
+		hookState.failedAudiences = [ 'new-visitors' ];
+		hookState.isAudienceCreationError = true;
+
+		jest.spyOn(
+			registry.dispatch( CORE_USER ),
+			'triggerSurvey'
+		).mockResolvedValue( undefined );
+
+		const { getByText, getByRole, queryByText } = render(
+			<VisitorGroupsFeatureSetup slug={ SLUG } hideUnreadDot />,
+			{ registry }
+		);
+
+		expect(
+			getByText( 'Creating visitor groups failed' )
+		).toBeInTheDocument();
+
+		fireEvent.click( getByRole( 'button', { name: 'Got it' } ) );
+
+		expect(
+			queryByText( 'Creating visitor groups failed' )
+		).not.toBeInTheDocument();
+
+		fireEvent.click(
+			getByRole( 'button', { name: 'Enable visitor groups' } )
+		);
+
+		expect( onEnableGroups ).toHaveBeenCalledTimes( 1 );
+		expect(
+			getByText( 'Creating visitor groups failed' )
+		).toBeInTheDocument();
+	} );
 } );

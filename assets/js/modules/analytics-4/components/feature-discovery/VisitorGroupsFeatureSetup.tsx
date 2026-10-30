@@ -24,7 +24,7 @@ import type { ElementType, FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { useCallback, useEffect, useRef } from '@wordpress/element';
+import { useCallback, useEffect, useRef, useState } from '@wordpress/element';
 import { __ } from '@wordpress/i18n';
 
 /**
@@ -48,14 +48,6 @@ import AudienceSegmentationSetupErrorWidget from '@/js/modules/analytics-4/compo
 import useEnableAudienceGroup from '@/js/modules/analytics-4/hooks/useEnableAudienceGroup';
 import type { ErrorObject } from '@/js/util/errors';
 
-// Stands in for the failure of audiences that were not created, which carries
-// no error of its own.
-const AUDIENCE_CREATION_ERROR: ErrorObject = {
-	code: 'audience_creation_failed',
-	message: 'Some visitor groups could not be created.',
-	data: { status: 500 },
-};
-
 interface VisitorGroupsFeatureSetupProps extends FeatureCardProps {
 	Widget: ElementType;
 	isSetupRequested?: boolean;
@@ -70,6 +62,12 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 	...cardProps
 } ) => {
 	const handledRequestRef = useRef( false );
+
+	// Audiences that were not created are reported by the hook without an error
+	// of their own, so there is nothing to keep in the error store for them and
+	// their notice is dismissed here instead.
+	const [ isFailedAudiencesDismissed, setIsFailedAudiencesDismissed ] =
+		useState( false );
 
 	const feature = useSelect(
 		( select: Select ): Feature | null =>
@@ -131,34 +129,30 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 	// The failure is kept in the feature's error store, so it outlives this
 	// component being unmounted and remounted.
 	useEffect( () => {
-		if ( isSaving ) {
-			return;
-		}
-
-		if ( apiErrors.length ) {
+		if ( ! isSaving && apiErrors.length ) {
 			setErrorForAction( apiErrors[ 0 ], 'setupFeature', [ slug ] );
-		} else if ( failedAudiences.length ) {
-			setErrorForAction( AUDIENCE_CREATION_ERROR, 'setupFeature', [
-				slug,
-			] );
 		}
-	}, [ apiErrors, failedAudiences, isSaving, setErrorForAction, slug ] );
+	}, [ apiErrors, isSaving, setErrorForAction, slug ] );
 
 	const handleClick = useCallback( () => {
 		// Not awaited: recording the setup must never block or fail it.
 		triggerSurvey( getFeatureSetupSurveyTriggerID( slug ) );
 
+		setIsFailedAudiencesDismissed( false );
 		onEnableGroups();
 	}, [ onEnableGroups, slug, triggerSurvey ] );
 
 	const handleRetry = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );
 
+		setIsFailedAudiencesDismissed( false );
 		onEnableGroups();
 	}, [ clearActionError, onEnableGroups, slug ] );
 
 	const handleDismiss = useCallback( () => {
 		clearActionError( 'setupFeature', [ slug ] );
+
+		setIsFailedAudiencesDismissed( true );
 	}, [ clearActionError, slug ] );
 
 	// Setup requested from the detail panel behaves as if the card's CTA had
@@ -192,7 +186,10 @@ const VisitorGroupsFeatureSetup: FC< VisitorGroupsFeatureSetupProps > = ( {
 		[ feature?.setup?.ctaLabel, handleClick, isSaving ]
 	);
 
-	if ( setupError && ! isSaving ) {
+	const hasFailedAudiences =
+		failedAudiences.length > 0 && ! isFailedAudiencesDismissed;
+
+	if ( ( setupError || hasFailedAudiences ) && ! isSaving ) {
 		return (
 			<AudienceSegmentationSetupErrorWidget
 				Widget={ Widget }
