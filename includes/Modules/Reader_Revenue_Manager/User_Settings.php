@@ -111,7 +111,10 @@ class User_Settings extends User_Setting {
 	/**
 	 * Merges the last actioned express setups.
 	 *
+	 * An entry whose value is `null` removes that key from the current value.
+	 *
 	 * @since 1.185.0
+	 * @since 1.191.0 Removes entries whose new value is `null`.
 	 *
 	 * @param array $old_value Current value..
 	 * @param mixed $new_value Value to merge.
@@ -120,6 +123,12 @@ class User_Settings extends User_Setting {
 	private function merge_last_actioned_express_setups( $old_value, $new_value ) {
 		if ( ! is_array( $new_value ) ) {
 			return $old_value;
+		}
+
+		foreach ( $new_value as $key => $timestamp ) {
+			if ( null === $timestamp ) {
+				unset( $old_value[ $key ], $new_value[ $key ] );
+			}
 		}
 
 		return array_merge( $old_value, $new_value );

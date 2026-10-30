@@ -29,7 +29,6 @@ import {
 	registerWidgets as registerDefaultWidgets,
 } from '@/js/googlesitekit/widgets';
 import { CORE_WIDGETS } from '@/js/googlesitekit/widgets/datastore/constants';
-import { AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY } from '@/js/googlesitekit/widgets/default-areas';
 import getModuleOverviewPDFData from '@/js/modules/adsense/components/module/ModuleOverviewWidget/getPDFData';
 import { createTestRegistry } from '@tests/js/utils';
 import { registerWidgets } from './index';
@@ -56,13 +55,5 @@ describe( 'AdSense widget registrations', () => {
 		// The PDF component loads on demand and exposes `preload`, so the
 		// orchestrator can load its chunk before it renders.
 		expect( typeof widget.pdf.Component.preload ).toBe( 'function' );
-	} );
-
-	it( 'should set the "Revenue" PDF section title through the area pdfTitle', () => {
-		const area = registry
-			.select( CORE_WIDGETS )
-			.getWidgetArea( AREA_MAIN_DASHBOARD_MONETIZATION_PRIMARY );
-
-		expect( area.pdfTitle ).toBe( 'Revenue' );
 	} );
 } );

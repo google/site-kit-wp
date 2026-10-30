@@ -49,6 +49,7 @@ import { Report } from '@/js/modules/analytics-4/datastore/types';
 import { numFmt } from '@/js/util';
 import { formatDate } from '@/js/util/dates';
 import { getLocale } from '@/js/util/i18n';
+import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from './constants';
 import { getLatestContentReportArgs } from './latestContentReportOptions';
 import NoPublishedContentMessage from './NoPublishedContentMessage';
 import {
@@ -56,8 +57,6 @@ import {
 	hasUniquePagePath,
 	joinLatestContentRows,
 } from './utils/joinLatestContentRows';
-
-const RECENT_CONTENT_OPTIONS = { count: 10 };
 
 const COLUMN_HEADER_CLASS_NAME =
 	'googlesitekit-typography googlesitekit-typography--title googlesitekit-typography--small';
@@ -87,7 +86,7 @@ function formatPublishedTime( item: RecentContentItem ): string {
 /**
  * Props for the Latest content table.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  */
 export interface LatestContentTableProps {
 	/** The component the table renders when a request fails. */
@@ -114,7 +113,7 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 	const recentContent: RecentContentItem[] | undefined = useInViewSelect(
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getRecentContent(
-				RECENT_CONTENT_OPTIONS
+				LATEST_CONTENT_RECENT_CONTENT_OPTIONS
 			),
 		[]
 	);
@@ -123,7 +122,7 @@ const LatestContentTable: FC< LatestContentTableProps > = ( {
 		( select: Select ) =>
 			select( MODULES_ANALYTICS_4 ).getErrorForSelector(
 				'getRecentContent',
-				[ RECENT_CONTENT_OPTIONS ]
+				[ LATEST_CONTENT_RECENT_CONTENT_OPTIONS ]
 			),
 		[]
 	);

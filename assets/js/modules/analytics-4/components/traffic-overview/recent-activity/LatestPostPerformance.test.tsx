@@ -41,8 +41,14 @@ import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { MODULE_SLUG_SEARCH_CONSOLE } from '@/js/modules/search-console/constants';
 import { MODULES_SEARCH_CONSOLE } from '@/js/modules/search-console/datastore/constants';
-import { createTestRegistry, render } from '@tests/js/test-utils';
 import {
+	createTestRegistry,
+	fireEvent,
+	render,
+	within,
+} from '@tests/js/test-utils';
+import {
+	createWaitForRegistry,
 	freezeFetch,
 	provideModules,
 	provideSiteInfo,
@@ -58,7 +64,7 @@ describe( 'LatestPostPerformance', () => {
 	 * Gets the title and the label and value of each row of each tile, in
 	 * the order the tiles appear.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param {Element} container The element the section rendered into.
 	 * @return {Array<Object>} The title and the rows of each tile.
@@ -251,7 +257,7 @@ describe( 'LatestPostPerformance', () => {
 			}
 		);
 
-		const { container, waitForRegistry } = render(
+		const { container, queryByRole, waitForRegistry } = render(
 			<LatestPostPerformance />,
 			{ registry }
 		);
@@ -263,9 +269,12 @@ describe( 'LatestPostPerformance', () => {
 			[ 'Engaged sessions', '18' ],
 			[
 				'Purchases affected by post',
-				expect.stringContaining( 'Data error in Analytics' ),
+				expect.stringContaining( 'Something went wrong' ),
 			],
 		] );
+		expect(
+			queryByRole( 'button', { name: 'Retry' } )
+		).not.toBeInTheDocument();
 		expect( console ).toHaveErrored();
 	} );
 
@@ -304,12 +313,15 @@ describe( 'LatestPostPerformance', () => {
 			[ 'Top referring site', 'substack.com' ],
 			[
 				'Top keyword',
-				expect.stringContaining( 'Search Console is unavailable.' ),
+				expect.stringContaining( 'Something went wrong' ),
 			],
 		] );
 		expect(
-			container.querySelectorAll( '.googlesitekit-cta--error' )
+			container.querySelectorAll( '.googlesitekit-notice--error' )
 		).toHaveLength( 1 );
+		expect(
+			within( container ).getByRole( 'button', { name: 'Retry' } )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render a report error in place of the visitor breakdown rows only, and should keep the other tiles, when the visitors report fails', async () => {
@@ -338,7 +350,7 @@ describe( 'LatestPostPerformance', () => {
 			container.querySelectorAll(
 				'.googlesitekit-traffic-overview__latest-post-tile'
 			)[ 0 ]
-		).toHaveTextContent( 'The visitors report is unavailable.' );
+		).toHaveTextContent( 'Something went wrong' );
 		expect( tiles[ 1 ].rows ).toEqual( [
 			[ 'Top traffic source', 'Organic Social' ],
 			[ 'Top referring site', 'substack.com' ],
@@ -350,8 +362,68 @@ describe( 'LatestPostPerformance', () => {
 			[ 'Purchases affected by post', '4' ],
 		] );
 		expect(
-			container.querySelectorAll( '.googlesitekit-cta--error' )
+			container.querySelectorAll( '.googlesitekit-notice--error' )
 		).toHaveLength( 1 );
+	} );
+
+	it( 'should request the visitors report again, and render its rows, when "Retry" is clicked in the visitor breakdown tile', async () => {
+		registry = createTestRegistry();
+		provideSiteInfo( registry );
+		provideModules( registry );
+		registry.dispatch( CORE_USER ).setReferenceDate( '2026-10-08' );
+		registry.dispatch( MODULES_ANALYTICS_4 ).receiveGetSettings( {} );
+		provideLatestPost( registry );
+		provideLatestPostKeywordReport( registry );
+		const visitorsRequest = new RegExp(
+			'^/google-site-kit/v1/modules/analytics-4/data/report.*newVsReturning'
+		);
+		fetchMock.getOnce( visitorsRequest, {
+			body: {
+				code: 'internal_server_error',
+				message: 'The visitors report is unavailable.',
+				data: { status: 500 },
+			},
+			status: 500,
+		} );
+		fetchMock.getOnce( visitorsRequest, {
+			body: { totals: [ { metricValues: [ { value: '94' } ] } ] },
+			status: 200,
+		} );
+		// The top channel, top referrer and engagement reports stay loading.
+		freezeFetch(
+			new RegExp(
+				'^/google-site-kit/v1/modules/analytics-4/data/report'
+			),
+			{ repeat: 3 }
+		);
+
+		const { container, waitForRegistry } = render(
+			<LatestPostPerformance />,
+			{ registry }
+		);
+
+		await waitForRegistry();
+
+		expect( console ).toHaveErrored();
+
+		const waitForRetry = createWaitForRegistry( registry );
+
+		fireEvent.click(
+			within(
+				container.querySelector(
+					'.googlesitekit-traffic-overview__latest-post-tile'
+				) as HTMLDivElement
+			).getByRole( 'button', { name: 'Retry' } )
+		);
+
+		await waitForRetry();
+
+		expect( fetchMock ).toHaveFetchedTimes( 2, visitorsRequest );
+		expect( getTiles( container )[ 0 ].rows ).toEqual( [
+			[ 'Total visitors', '94' ],
+			[ 'New visitors', '0' ],
+			[ 'Returning visitors', '0' ],
+		] );
 	} );
 
 	it( 'should render a report error in place of the engagement rows only, and should keep the purchases row, when the engagement report fails', async () => {
@@ -392,10 +464,13 @@ describe( 'LatestPostPerformance', () => {
 			container.querySelectorAll(
 				'.googlesitekit-traffic-overview__latest-post-tile'
 			)[ 2 ]
-		).toHaveTextContent( 'The engagement report is unavailable.' );
+		).toHaveTextContent( 'Something went wrong' );
 		expect(
-			container.querySelectorAll( '.googlesitekit-cta--error' )
+			container.querySelectorAll( '.googlesitekit-notice--error' )
 		).toHaveLength( 1 );
+		expect(
+			within( container ).getByRole( 'button', { name: 'Retry' } )
+		).toBeInTheDocument();
 	} );
 
 	it( 'should render a report error in the top traffic source and top referring site rows only, and should keep the top keyword row, when their reports fail', async () => {
@@ -438,15 +513,11 @@ describe( 'LatestPostPerformance', () => {
 		expect( tiles[ 1 ].rows ).toEqual( [
 			[
 				'Top traffic source',
-				expect.stringContaining(
-					'The top channel report is unavailable.'
-				),
+				expect.stringContaining( 'Something went wrong' ),
 			],
 			[
 				'Top referring site',
-				expect.stringContaining(
-					'The top referrer report is unavailable.'
-				),
+				expect.stringContaining( 'Something went wrong' ),
 			],
 			[ 'Top keyword', 'healthy ice cream' ],
 		] );
@@ -456,7 +527,10 @@ describe( 'LatestPostPerformance', () => {
 			[ 'Purchases affected by post', '4' ],
 		] );
 		expect(
-			container.querySelectorAll( '.googlesitekit-cta--error' )
+			container.querySelectorAll( '.googlesitekit-notice--error' )
+		).toHaveLength( 2 );
+		expect(
+			within( container ).getAllByRole( 'button', { name: 'Retry' } )
 		).toHaveLength( 2 );
 	} );
 
@@ -518,7 +592,7 @@ describe( 'LatestPostPerformance', () => {
 
 		await waitForRegistry();
 
-		expect( container ).toHaveTextContent( 'Data error in Analytics' );
+		expect( container ).toHaveTextContent( 'Something went wrong' );
 		expect( getTiles( container ) ).toEqual( [] );
 		expect(
 			container.querySelector( '.googlesitekit-preview-block' )

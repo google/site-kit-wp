@@ -16,7 +16,6 @@ on:
       - "assets/**"
       - "includes/**"
       - "*.php"
-      - "jest-puppeteer.config.js"
       - "composer.json"
       - "composer.lock"
       - "php-scoper/composer.lock"
@@ -48,7 +47,6 @@ on:
       - "assets/**"
       - "includes/**"
       - "*.php"
-      - "jest-puppeteer.config.js"
       - "composer.json"
       - "composer.lock"
       - "php-scoper/composer.lock"
@@ -80,7 +78,7 @@ env:
   FORBID_ONLY: true
   RETRIES: 2
   WORKERS: 4
-  CAN_UPLOAD_PLAYWRIGHT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false ) }}
+  CAN_UPLOAD_PLAYWRIGHT_REPORTS: ${{ github.event_name != 'pull_request' || ( ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.full_name == github.repository ) }}
 
 jobs:
   build:
@@ -91,6 +89,13 @@ jobs:
     permissions:
       contents: read
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
@@ -150,8 +155,8 @@ jobs:
         wp_version: ["latest", "nightly"]
         include:
           # Update wp_image_tag's date suffix (YYYYMMDD) whenever the bundled plugins in the fixed WordPress image change.
-          - wp_version: "5.2.21"
-            wp_image_tag: "5.2.21-20260715"
+          - wp_version: "5.2.30"
+            wp_image_tag: "5.2.30-20261026"
     env:
       WP_VERSION: ${{ matrix.wp_version }}
       WP_IMAGE_TAG: ${{ matrix.wp_image_tag || matrix.wp_version }}
@@ -162,6 +167,13 @@ jobs:
       contents: read
       actions: read
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - name: Setup Node.js (.nvmrc)
@@ -246,7 +258,7 @@ jobs:
     name: Add comment to PR
     runs-on: ubuntu-latest
     needs: playwright-tests
-    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.fork == false
+    if: always() && github.event_name == 'pull_request' && ! contains( github.head_ref, 'dependabot/' ) && github.event.pull_request.head.repo.full_name == github.repository
     permissions:
       contents: read
       pull-requests: write
@@ -284,6 +296,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path

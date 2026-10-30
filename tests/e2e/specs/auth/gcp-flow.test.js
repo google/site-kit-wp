@@ -1,16 +1,9 @@
 /**
- * WordPress dependencies
+ * Internal dependencies
  */
 import {
 	activatePlugin,
 	createURL,
-	visitAdminPage,
-} from '@wordpress/e2e-test-utils';
-
-/**
- * Internal dependencies
- */
-import {
 	deactivateUtilityPlugins,
 	resetSiteKit,
 	setAuthToken,
@@ -18,6 +11,7 @@ import {
 	setSiteVerification,
 	step,
 	useRequestInterception,
+	visitAdminPage,
 } from '../../utils';
 
 function handleRequest( request ) {

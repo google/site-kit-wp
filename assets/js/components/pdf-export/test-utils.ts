@@ -163,6 +163,19 @@ export function renderPDFText( element: ReactElement ): string[] {
 }
 
 /**
+ * Flattens a `@react-pdf` style, given as one object or as an array of them,
+ * into a single object.
+ *
+ * @since 1.191.0
+ *
+ * @param style The style a node renders with.
+ * @return The flattened style.
+ */
+export function flattenPDFStyle( style: unknown ): Record< string, unknown > {
+	return Object.assign( {}, ...[ style ].flat() );
+}
+
+/**
  * Renders a PDF element and flattens the style of its root node.
  *
  * A `@react-pdf` primitive takes its style as one object or as an array of
@@ -180,7 +193,7 @@ export function renderPDFStyle(
 		element
 	).toJSON() as TestRenderer.ReactTestRendererJSON;
 
-	return Object.assign( {}, ...[ tree.props.style ].flat() );
+	return flattenPDFStyle( tree.props.style );
 }
 
 /**
@@ -199,11 +212,8 @@ export function renderPDFChildStyles(
 	).toJSON() as TestRenderer.ReactTestRendererJSON;
 
 	return ( tree.children ?? [] ).map( ( child ) =>
-		Object.assign(
-			{},
-			...[
-				( child as TestRenderer.ReactTestRendererJSON ).props.style,
-			].flat()
+		flattenPDFStyle(
+			( child as TestRenderer.ReactTestRendererJSON ).props.style
 		)
 	);
 }

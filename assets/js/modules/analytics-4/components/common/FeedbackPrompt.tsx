@@ -45,6 +45,11 @@ interface FeedbackPromptProps {
 	 */
 	gaTrackingEventArgs: Required< Pick< GATrackingEventArgs, 'category' > > &
 		Pick< GATrackingEventArgs, 'label' >;
+	/**
+	 * Whether to hide the "Is this section helpful?" text, which the thumbs
+	 * keep as their accessible name.
+	 */
+	hideQuestion?: boolean;
 }
 
 /**
@@ -52,15 +57,18 @@ interface FeedbackPromptProps {
  *
  * @since 1.182.0
  * @since 1.190.0 Replaced the `goalType` prop with `gaTrackingEventArgs`.
+ * @since 1.191.0 Added the `hideQuestion` prop to show only the thumbs.
  *
  * @param props                     Component props.
  * @param props.voteID              Identifier used to build the survey trigger string.
  * @param props.gaTrackingEventArgs Category and label used to track the vote event.
+ * @param [props.hideQuestion]      Optional. Whether to hide the "Is this section helpful?" text.
  * @return React element.
  */
 const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 	voteID,
 	gaTrackingEventArgs,
+	hideQuestion,
 } ) => {
 	const breakpoint = useBreakpoint();
 	// On mobile the feedback row isn't right-aligned, so `top-end` pushes the
@@ -76,6 +84,18 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 		);
 	}
 
+	const thumbsSurveyTrigger = (
+		<ThumbsSurveyTrigger
+			voteID={ voteID }
+			onVote={ handleVote }
+			popperPlacement={ popperPlacement }
+		/>
+	);
+
+	if ( hideQuestion ) {
+		return thumbsSurveyTrigger;
+	}
+
 	return (
 		<div className="googlesitekit-site-goals-widget__feedback">
 			<Typography
@@ -85,11 +105,7 @@ const FeedbackPrompt: FC< FeedbackPromptProps > = ( {
 			>
 				{ __( 'Is this section helpful?', 'google-site-kit' ) }
 			</Typography>
-			<ThumbsSurveyTrigger
-				voteID={ voteID }
-				onVote={ handleVote }
-				popperPlacement={ popperPlacement }
-			/>
+			{ thumbsSurveyTrigger }
 		</div>
 	);
 };

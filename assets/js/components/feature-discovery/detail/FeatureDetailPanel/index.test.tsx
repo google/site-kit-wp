@@ -26,12 +26,16 @@ import { ESCAPE } from '@wordpress/keycodes';
  */
 import { Registry } from 'googlesitekit-data';
 import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
-import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import {
+	CORE_FEATURE_DISCOVERY,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
 import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import AnalyticsIcon from '@/svg/graphics/analytics.svg';
+import { mockBrowserScrolling } from '@tests/js/mock-browser-utils';
 import { surveyTriggerEndpoint } from '@tests/js/mock-survey-endpoints';
 import {
 	act,
@@ -49,6 +53,8 @@ import FeatureDetailPanel from './';
 
 describe( 'FeatureDetailPanel', () => {
 	let registry: Registry;
+
+	mockBrowserScrolling();
 
 	beforeEach( () => {
 		registry = createTestRegistry() as Registry;
@@ -385,6 +391,71 @@ describe( 'FeatureDetailPanel', () => {
 		await waitFor( () =>
 			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
 				body: { data: { triggerID: 'setup:feature_setup_first' } },
+			} )
+		);
+	} );
+
+	it( 'should close and open an in-place feature’s panel over the hub, as the card does', async () => {
+		provideSiteInfo( registry );
+		provideUserAuthentication( registry );
+
+		registry.dispatch( CORE_USER ).receiveGetSurveyTimeouts( [] );
+
+		fetchMock.post( surveyTriggerEndpoint, { body: {} } );
+
+		const setupFeature = jest.spyOn(
+			registry.dispatch( CORE_FEATURE_DISCOVERY ),
+			'setupFeature'
+		);
+
+		let detailPanelSlugOnOpen;
+
+		const open = jest.fn( ( panelRegistry: Registry ) => {
+			detailPanelSlugOnOpen = panelRegistry
+				.select( CORE_UI )
+				.getValue( FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY );
+
+			panelRegistry
+				.dispatch( CORE_UI )
+				.setValue( 'testPanelOpened', true );
+		} );
+
+		provideFeatures( registry, [
+			{
+				slug: 'in-place',
+				title: 'In-place feature',
+				setup: {
+					type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+					ctaLabel: 'Try it now',
+					open,
+				},
+			},
+		] );
+
+		setFeature( 'in-place' );
+
+		const { getByRole, queryByRole } = render( <FeatureDetailPanel />, {
+			registry,
+		} );
+
+		fireEvent.click( getByRole( 'button', { name: 'Try it now' } ) );
+
+		await waitFor( () =>
+			expect( queryByRole( 'dialog' ) ).not.toBeInTheDocument()
+		);
+
+		expect( setupFeature ).toHaveBeenCalledWith( 'in-place' );
+		expect( open ).toHaveBeenCalledTimes( 1 );
+
+		// The detail panel was already closed when the feature's panel opened.
+		expect( detailPanelSlugOnOpen ).toBe( false );
+		expect( registry.select( CORE_UI ).getValue( 'testPanelOpened' ) ).toBe(
+			true
+		);
+
+		await waitFor( () =>
+			expect( fetchMock ).toHaveFetched( surveyTriggerEndpoint, {
+				body: { data: { triggerID: 'setup:feature_setup_in-place' } },
 			} )
 		);
 	} );

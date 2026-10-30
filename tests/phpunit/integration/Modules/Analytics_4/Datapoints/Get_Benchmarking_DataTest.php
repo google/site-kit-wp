@@ -12,10 +12,7 @@ namespace Google\Site_Kit\Tests\Modules\Analytics_4\Datapoints;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Dismissals\Dismissed_Items;
-use Google\Site_Kit\Core\Modules\Module_Sharing_Settings;
 use Google\Site_Kit\Core\Modules\Modules;
-use Google\Site_Kit\Core\Modules\REST_Modules_Controller;
 use Google\Site_Kit\Core\Permissions\Permissions;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\Storage\Options;
@@ -28,15 +25,11 @@ use Google\Site_Kit\Modules\Analytics_4\Custom_Dimensions_Data_Available;
 use Google\Site_Kit\Modules\Search_Console;
 use Google\Site_Kit\Modules\Search_Console\Settings as Search_Console_Settings;
 use Google\Site_Kit\Tests\Authenticated_Search_Console_Trait;
-use Google\Site_Kit\Tests\FakeHttp;
+use Google\Site_Kit\Tests\Dashboard_Sharing_Trait;
 use Google\Site_Kit\Tests\Fake_Benchmarking_Reports_Trait;
-use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
-use Google\Site_Kit\Tests\RestTestTrait;
 use Google\Site_Kit\Tests\Saved_Site_Data_Trait;
 use Google\Site_Kit\Tests\TestCase;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Promise\FulfilledPromise;
 use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Request;
-use Google\Site_Kit_Dependencies\GuzzleHttp\Psr7\Response;
 use WP_Error;
 use WP_REST_Request;
 
@@ -48,9 +41,8 @@ use WP_REST_Request;
 class Get_Benchmarking_DataTest extends TestCase {
 
 	use Authenticated_Search_Console_Trait;
+	use Dashboard_Sharing_Trait;
 	use Fake_Benchmarking_Reports_Trait;
-	use Fake_Site_Connection_Trait;
-	use RestTestTrait;
 	use Saved_Site_Data_Trait;
 
 	const START_DATE = '2026-08-19';
@@ -92,12 +84,12 @@ class Get_Benchmarking_DataTest extends TestCase {
 	private $admin_id;
 
 	/**
-	 * The `Authorization` header of each `batchRunReports` request the fake
-	 * Analytics API answered.
+	 * The `contextualData` keys the builder had rows for, after the Search
+	 * Console module added its search query rows.
 	 *
 	 * @var array
 	 */
-	private $report_authorizations = array();
+	private $contextual_data_keys = array();
 
 	public function set_up() {
 		parent::set_up();
@@ -109,19 +101,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->options = new Options( $this->context );
 		$user_options  = new User_Options( $this->context, $this->admin_id );
 
-		$this->fake_proxy_site_connection();
-		add_filter( 'googlesitekit_setup_complete', '__return_true', 100 );
+		$this->authenticate_user( $this->admin_id, array( Analytics_4::READONLY_SCOPE ) );
 
-		$authentication = new Authentication( $this->context, $this->options, $user_options );
-		$authentication->verification()->set( true );
-		$authentication->get_oauth_client()->set_token( array( 'access_token' => 'valid-token' ) );
-		$authentication->get_oauth_client()->set_granted_scopes(
-			array_merge(
-				$authentication->get_oauth_client()->get_required_scopes(),
-				array( Analytics_4::READONLY_SCOPE )
-			)
-		);
-
+		$authentication  = new Authentication( $this->context, $this->options, $user_options );
 		$this->analytics = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
 		$this->modules   = new Modules( $this->context, $this->options, $user_options, $authentication );
 
@@ -130,43 +112,8 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->force_set_property( $this->modules, 'modules', array( Analytics_4::MODULE_SLUG => $this->analytics ) );
 		$this->options->set( Modules::OPTION_ACTIVE_MODULES, array( Analytics_4::MODULE_SLUG ) );
 
-		$this->register_permissions_for_user( $this->admin_id );
-
-		// A REST server left behind by an earlier test class still holds that
-		// class's routes, and the request would reach its module rather than
-		// the one built above.
-		unset( $GLOBALS['wp_rest_server'] );
-
-		remove_all_filters( 'googlesitekit_rest_routes' );
-		( new REST_Modules_Controller( $this->modules ) )->register();
-		$this->register_rest_routes();
-	}
-
-	/**
-	 * Registers the capability map for a user.
-	 *
-	 * The instance the plugin registered at bootstrap stays bound to the user
-	 * it was built for, so a test that switches users needs its own.
-	 *
-	 * @since 1.190.0
-	 *
-	 * @param int $user_id The user the capabilities are resolved for.
-	 */
-	private function register_permissions_for_user( $user_id ) {
-		remove_all_filters( 'map_meta_cap' );
-		remove_all_filters( 'user_has_cap' );
-
-		$user_options = new User_Options( $this->context, $user_id );
-
-		// Authentication reads the token of the user it was built for, so a
-		// reader checked against the administrator's would look authenticated.
-		( new Permissions(
-			$this->context,
-			new Authentication( $this->context, $this->options, $user_options ),
-			$this->modules,
-			$user_options,
-			new Dismissed_Items( $user_options )
-		) )->register();
+		$this->register_permissions_for_user( $this->admin_id, $this->modules );
+		$this->register_modules_rest_routes( $this->modules );
 	}
 
 	public function tear_down() {
@@ -211,10 +158,9 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 				if ( null === $this->result ) {
 					return array(
-						'visitors'       => array(),
-						'dailyTraffic'   => array(),
-						'dimensions'     => array(),
-						'contextualData' => array(),
+						'visits'       => array(),
+						'dailyTraffic' => array(),
+						'keyFactors'   => array(),
 					);
 				}
 
@@ -248,7 +194,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * administrator's account, gives every report a row, and shares the given
 	 * modules with the Editor role.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param array $shared_module_slugs The modules shared with the Editor role, such as `array( Analytics_4::MODULE_SLUG )`.
 	 */
@@ -256,13 +202,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->enable_feature( 'typicalTraffic' );
 
 		// `set_up()` grants the administrator the Analytics scope only.
-		$oauth_client = ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $this->admin_id ) ) )->get_oauth_client();
-		$oauth_client->set_granted_scopes(
-			array_merge(
-				$oauth_client->get_required_scopes(),
-				array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/webmasters' )
-			)
-		);
+		$this->authenticate_user( $this->admin_id, array( Analytics_4::READONLY_SCOPE, 'https://www.googleapis.com/auth/webmasters' ) );
 
 		$this->analytics->get_settings()->merge(
 			array(
@@ -280,9 +220,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 				'ownerID'    => $this->admin_id,
 			)
 		);
-		( new Module_Sharing_Settings( $this->options ) )->set(
-			array_fill_keys( $shared_module_slugs, array( 'sharedRoles' => array( 'editor' ) ) )
-		);
+		$this->share_modules_with_editors( $shared_module_slugs );
 
 		// The site doubles, from 200 visitors in the compare period to 400 in
 		// the selected one, while each row grows from 200 to 240. That change is
@@ -319,7 +257,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 	 * A module reads the token of the user it was built for, so the
 	 * administrator and the reader each need modules built for them.
 	 *
-	 * @since n.e.x.t
+	 * @since 1.191.0
 	 *
 	 * @param int $user_id The user the modules are built for.
 	 */
@@ -331,31 +269,24 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$analytics      = new Analytics_4( $this->context, $this->options, $user_options, $authentication );
 		$search_console = new Search_Console( $this->context, $this->options, $user_options, $authentication );
 
-		$handler = function ( Request $request ) {
-			if ( '' === $request->getHeaderLine( 'Authorization' ) ) {
-				return new FulfilledPromise( new Response( 401 ) );
-			}
-
-			if ( 'analyticsdata.googleapis.com' === $request->getUri()->getHost() ) {
-				$this->report_authorizations[] = $request->getHeaderLine( 'Authorization' );
-
-				return new FulfilledPromise( $this->create_analytics_batch_response( json_decode( (string) $request->getBody(), true ) ) );
-			}
-
-			return new FulfilledPromise( $this->create_plant_garlic_batch_response( $request ) );
-		};
-
 		// A module sends a request with the current user's token, or with its
 		// owner's token when the current user reads a shared module. Both
 		// modules send the current user's requests through the same client, so
 		// faking the Analytics module's client covers Search Console too.
-		foreach ( array(
-			$analytics->get_client(),
-			$analytics->get_owner_oauth_client()->get_client(),
-			$search_console->get_owner_oauth_client()->get_client(),
-		) as $client ) {
-			FakeHttp::fake_google_http_handler( $client, $handler );
-		}
+		$this->fake_google_api(
+			array(
+				$analytics->get_client(),
+				$analytics->get_owner_oauth_client()->get_client(),
+				$search_console->get_owner_oauth_client()->get_client(),
+			),
+			function ( Request $request ) {
+				if ( 'analyticsdata.googleapis.com' === $request->getUri()->getHost() ) {
+					return $this->create_analytics_batch_response( json_decode( (string) $request->getBody(), true ) );
+				}
+
+				return $this->create_plant_garlic_batch_response( $request );
+			}
+		);
 
 		$this->force_set_property(
 			$this->modules,
@@ -371,22 +302,28 @@ class Get_Benchmarking_DataTest extends TestCase {
 		remove_all_filters( 'googlesitekit_benchmarking_contextual_data' );
 		$search_console->register();
 
-		$this->register_permissions_for_user( $user_id );
+		$this->register_permissions_for_user( $user_id, $this->modules );
 	}
 
 	/**
-	 * Creates an editor who can view the shared dashboard without an account of
-	 * their own.
+	 * Records the `contextualData` keys the builder has rows for, after the
+	 * Search Console module adds its search query rows.
 	 *
-	 * @since n.e.x.t
+	 * The encoded response doesn't carry these rows, so the test reads them
+	 * here, before they are ranked.
 	 *
-	 * @return int The editor's user ID.
+	 * @since 1.191.0
 	 */
-	private function create_view_only_reader() {
-		$reader_id = $this->factory()->user->create( array( 'role' => 'editor' ) );
-		( new Dismissed_Items( new User_Options( $this->context, $reader_id ) ) )->add( 'shared_dashboard_splash', 0 );
+	private function record_contextual_data_keys() {
+		add_filter(
+			'googlesitekit_benchmarking_contextual_data',
+			function ( $contextual_data ) {
+				$this->contextual_data_keys = array_keys( $contextual_data );
 
-		return $reader_id;
+				return $contextual_data;
+			},
+			20
+		);
 	}
 
 	/**
@@ -414,28 +351,28 @@ class Get_Benchmarking_DataTest extends TestCase {
 	public function test_rest_endpoint__answers_with_the_encoded_response() {
 		$builder = $this->enable_datapoint(
 			array(
-				'visitors'       => array(
+				'visits'       => array(
 					'current'  => 1200,
 					'previous' => 1000,
 				),
-				'dailyTraffic'   => array(
+				'dailyTraffic' => array(
 					array(
-						'date'     => '2026-08-19',
-						'visitors' => 40,
+						'date'   => '2026-08-19',
+						'visits' => 40,
 					),
 					array(
-						'date'     => '2026-08-20',
-						'visitors' => 55,
+						'date'   => '2026-08-20',
+						'visits' => 55,
 					),
 				),
-				'dimensions'     => array( 'CHANNELS' ),
-				'contextualData' => array(
-					'channels' => array(
-						array(
-							'label'    => 'Organic Search',
-							'current'  => 700,
-							'previous' => 600,
-						),
+				'keyFactors'   => array(
+					array(
+						'kind'       => 'CHANNEL',
+						'label'      => 'Organic Search',
+						'current'    => 700,
+						'previous'   => 600,
+						'sharePct'   => 58.3,
+						'attributes' => array(),
 					),
 				),
 			)
@@ -454,10 +391,11 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// The response travels in the wire format rather than as named fields.
 		$this->assertSame( Wire_Format::FORMAT_VERSION, $data[ Wire_Format::MEMBER_VERSION ], 'The response should carry the wire format version.' );
 		$this->assertSame( '2026-08-19', $data[ Wire_Format::MEMBER_FIRST_DATE ], 'The response should carry the first daily traffic date.' );
-		$this->assertSame( array( 40, 55 ), $data[ Wire_Format::MEMBER_DAILY_VISITORS ], 'The response should carry the daily visitor counts.' );
-		$this->assertSame( array( 1200, 1000 ), $data[ Wire_Format::MEMBER_VISITOR_TOTALS ], 'The response should carry the two visitor totals.' );
-		$this->assertSame( array( Wire_Format::DIMENSION_INDEXES['CHANNELS'] ), $data[ Wire_Format::MEMBER_DIMENSION_ORDER ], 'The response should carry the dimension order.' );
-		$this->assertContains( 'Organic Search', $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the row values in its string table.' );
+		$this->assertSame( array( 40, 55 ), $data[ Wire_Format::MEMBER_DAILY_VISITS ], 'The response should carry the daily visit counts.' );
+		$this->assertSame( array( 1200, 1000 ), $data[ Wire_Format::MEMBER_VISIT_TOTALS ], 'The response should carry the two visit totals.' );
+		$this->assertSame( array( 'Organic Search' ), $data[ Wire_Format::MEMBER_STRINGS ], 'The response should carry the card label in its string table.' );
+		$this->assertSame( array( array( 0, 0, 700, 600, 58.3 ) ), $data[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry the `CHANNEL` card as a list of its kind, label, counts and share.' );
+		$this->assertSame( array( array() ), $data[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry one empty list of attributes for the card.' );
 	}
 
 	public function test_rest_endpoint__is_not_registered_without_the_feature_flag() {
@@ -641,34 +579,34 @@ class Get_Benchmarking_DataTest extends TestCase {
 		$this->assertSame( array( array( self::START_DATE, self::START_DATE ) ), $builder->calls, 'The builder should be called with the single day.' );
 	}
 
-	public function test_rest_endpoint__accepts_a_period_of_197_days() {
+	public function test_rest_endpoint__accepts_a_period_of_90_days() {
 		$builder = $this->enable_datapoint();
 
 		$response = $this->request(
 			array(
-				'startDate' => '2026-03-03',
+				'startDate' => '2026-06-18',
 				'endDate'   => '2026-09-15',
 			)
 		);
 
-		$this->assertSame( 200, $response->get_status(), 'A request for the 197 days from `2026-03-03` to `2026-09-15` should answer 200.' );
-		$this->assertSame( array( array( '2026-03-03', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-03-03` and `2026-09-15`, the first and the last day of the 197 days.' );
+		$this->assertSame( 200, $response->get_status(), 'A request for the 90 days from `2026-06-18` to `2026-09-15` should answer 200.' );
+		$this->assertSame( array( array( '2026-06-18', '2026-09-15' ) ), $builder->calls, 'The `build()` method should be called with `2026-06-18` and `2026-09-15`, the first and the last day of the 90 days.' );
 	}
 
-	public function test_rest_endpoint__refuses_a_period_of_198_days() {
+	public function test_rest_endpoint__refuses_a_period_of_91_days() {
 		$builder = $this->enable_datapoint();
 
 		$response = $this->request(
 			array(
-				'startDate' => '2026-03-02',
+				'startDate' => '2026-06-17',
 				'endDate'   => '2026-09-15',
 			)
 		);
 
-		$this->assertSame( 400, $response->get_status(), 'A request for the 198 days from `2026-03-02` to `2026-09-15` should answer 400.' );
-		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 198 days.' );
-		$this->assertStringContainsString( '197 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 197 days.' );
-		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 198 days.' );
+		$this->assertSame( 400, $response->get_status(), 'A request for the 91 days from `2026-06-17` to `2026-09-15` should answer 400.' );
+		$this->assertSame( 'invalid_param', $response->get_data()['code'], 'The error code should be `invalid_param` for a period of 91 days.' );
+		$this->assertStringContainsString( '90 days', $response->get_data()['message'], 'The error message should name the longest period the datapoint accepts, 90 days.' );
+		$this->assertSame( array(), $builder->calls, 'No report should run for a period of 91 days.' );
 	}
 
 	public function test_rest_endpoint__answers_the_same_for_any_other_parameter() {
@@ -717,28 +655,26 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$this->assertFalse( ( new Authentication( $this->context, $this->options, new User_Options( $this->context, $reader_id ) ) )->is_authenticated(), 'The reader should not have connected a Google account of their own.' );
 
+		$this->record_contextual_data_keys();
 		$reader_response = $this->request();
-		$dimension_order = $reader_response->get_data()[ Wire_Format::MEMBER_DIMENSION_ORDER ];
-		sort( $dimension_order );
 
 		$this->assertSame( 200, $reader_response->get_status(), 'A view-only reader should get the benchmarking data.' );
-		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->report_authorizations, 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
+		$this->assertSame( array( 'Bearer valid-token', 'Bearer valid-token' ), $this->google_api_authorizations['analyticsdata.googleapis.com'], 'The reports of the owner and of the reader should both run under the token of the administrator who owns Analytics.' );
 		$this->assertEquals( $owner_response->get_data(), $reader_response->get_data(), 'The reader should get the response the owner gets.' );
-		$this->assertSame( array( 0, 1, 2, 3, 4 ), $dimension_order, 'The response should list the channels, devices, visitor mix, referrers, and search queries.' );
+		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers', 'searchQueries' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, referrers, and search queries for the reader.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTORS ], 'The response should carry no key factor cards, since the builder returns no cards.' );
+		$this->assertSame( array(), $reader_response->get_data()[ Wire_Format::MEMBER_KEY_FACTOR_ATTRIBUTES ], 'The response should carry no key factor attributes, since the builder returns no cards.' );
 	}
 
-	public function test_rest_endpoint__answers_a_view_only_reader_without_search_console_shared_with_every_dimension_except_the_search_queries() {
+	public function test_rest_endpoint__builds_every_dimension_except_the_search_queries_for_a_view_only_reader_without_search_console_shared() {
 		$this->set_up_shared_dashboard( array( Analytics_4::MODULE_SLUG ) );
 		$this->switch_to_user( $this->create_view_only_reader() );
+		$this->record_contextual_data_keys();
 
-		$response        = $this->request();
-		$data            = $response->get_data();
-		$dimension_order = $data[ Wire_Format::MEMBER_DIMENSION_ORDER ];
-		sort( $dimension_order );
+		$response = $this->request();
 
 		$this->assertSame( 200, $response->get_status(), 'A reader without Search Console shared should get the benchmarking data.' );
-		$this->assertSame( array( 0, 1, 2, 3 ), $dimension_order, 'The response should list the channels, devices, visitor mix, and referrers, without the search queries.' );
-		$this->assertNotContains( 'plant garlic', $data[ Wire_Format::MEMBER_STRINGS ], 'The response should not contain any search query.' );
+		$this->assertSame( array( 'channels', 'devices', 'visitorMix', 'referrers' ), $this->contextual_data_keys, 'The builder should have the channels, devices, visitor mix, and referrers for the reader, without the search queries.' );
 	}
 
 	public function test_rest_endpoint__refuses_an_administrator_who_is_not_authenticated() {
@@ -748,7 +684,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 		// about the dashboard instead. This administrator is where they disagree.
 		$other_admin = $this->factory()->user->create( array( 'role' => 'administrator' ) );
 		wp_set_current_user( $other_admin );
-		$this->register_permissions_for_user( $other_admin );
+		$this->register_permissions_for_user( $other_admin, $this->modules );
 
 		$this->assertTrue( current_user_can( Permissions::SETUP ), 'The administrator should be able to run setup, which is what the route default accepts.' );
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The administrator should not be able to view the dashboard without an account of their own.' );
@@ -764,7 +700,7 @@ class Get_Benchmarking_DataTest extends TestCase {
 
 		$subscriber_id = $this->factory()->user->create( array( 'role' => 'subscriber' ) );
 		wp_set_current_user( $subscriber_id );
-		$this->register_permissions_for_user( $subscriber_id );
+		$this->register_permissions_for_user( $subscriber_id, $this->modules );
 
 		$this->assertFalse( current_user_can( Permissions::VIEW_DASHBOARD ), 'The subscriber should not be able to view the dashboard.' );
 

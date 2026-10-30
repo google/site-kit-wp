@@ -24,12 +24,20 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import { Registry } from 'googlesitekit-data';
+import { SETTINGS_DIALOG } from '@/js/components/dashboard-sharing/DashboardSharingSettings/constants';
+import { USER_SETTINGS_SELECTION_PANEL_OPENED_KEY } from '@/js/components/email-reporting/constants';
+import { FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY } from '@/js/components/feature-discovery/constants';
+import { PDF_DOWNLOAD_PANEL_OPENED_KEY } from '@/js/components/pdf-export/constants';
 import { getItem } from '@/js/googlesitekit/api/cache';
 import { CORE_LOCATION } from '@/js/googlesitekit/datastore/location/constants';
+import { CORE_UI } from '@/js/googlesitekit/datastore/ui/constants';
+import { createFeatureDiscovery } from '@/js/googlesitekit/feature-discovery';
 import {
 	FEATURE_DISCOVERY_SETUP_CACHE_KEY,
 	consumePendingSetup,
 } from '@/js/googlesitekit/feature-discovery/pending-setup';
+import { registerDefaults } from '@/js/googlesitekit/feature-discovery/register-defaults';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
 import {
 	createTestRegistry,
@@ -308,6 +316,11 @@ describe( 'core/feature-discovery features', () => {
 				expect(
 					registry.dispatch( CORE_MODULES ).activateModule
 				).toHaveBeenCalledWith( 'test-module' );
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
 				expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
 
 				// The record is stored (and so would survive the OAuth round trip).
@@ -364,8 +377,54 @@ describe( 'core/feature-discovery features', () => {
 
 				expect( result ).toEqual( { error } );
 				expect( console ).toHaveErrored();
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toEqual( error );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should clear any stale setupFeature action error once setup succeeds', async () => {
+				registerSetupFlowFeature();
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).setErrorForAction(
+					{
+						code: 'activation_failed',
+						message: 'Old error',
+						data: { status: 500 },
+					},
+					'setupFeature',
+					[ 'test-feature' ]
+				);
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeDefined();
+
+				jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				).mockResolvedValue( {
+					response: {
+						success: true,
+						moduleReauthURL: 'http://example.com/reauth',
+					},
+				} );
+
+				await registry
+					.dispatch( CORE_FEATURE_DISCOVERY )
+					.setupFeature( 'test-feature' );
+
+				expect(
+					registry
+						.select( CORE_FEATURE_DISCOVERY )
+						.getErrorForAction( 'setupFeature', [ 'test-feature' ] )
+				).toBeUndefined();
+				expect( navigateTo ).not.toHaveBeenCalled();
 			} );
 
 			it( 'should stop without recording or navigating when the module has no setup component', async () => {
@@ -391,6 +450,430 @@ describe( 'core/feature-discovery features', () => {
 				).toHaveBeenCalledWith( 'test-module' );
 				expect( navigateTo ).not.toHaveBeenCalled();
 				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			it( 'should record pending setup and navigate when setup provides a URL', async () => {
+				global.history.replaceState( {}, '', '/#/whats-new' );
+				const setupURL =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-ad-blocking-recovery';
+				const activateModuleSpy = jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				);
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+							getSetupURL: () => setupURL,
+						},
+					} )
+				);
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect( activateModuleSpy ).not.toHaveBeenCalled();
+				expect( navigateTo ).toHaveBeenCalledWith( setupURL );
+				expect( await consumePendingSetup() ).toEqual( {
+					featureSlug: 'test-feature',
+					returnTab: '/whats-new',
+				} );
+			} );
+
+			it( 'should not record pending setup or navigate when setup URL is undefined', async () => {
+				const activateModuleSpy = jest.spyOn(
+					registry.dispatch( CORE_MODULES ),
+					'activateModule'
+				);
+
+				registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+					'test-feature',
+					createSettings( {
+						setup: {
+							type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+							getSetupURL: () => undefined,
+						},
+					} )
+				);
+
+				await expect(
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' )
+				).resolves.toEqual( {} );
+
+				expect( activateModuleSpy ).not.toHaveBeenCalled();
+				expect( navigateTo ).not.toHaveBeenCalled();
+				expect( await consumePendingSetup() ).toBeNull();
+			} );
+
+			describe( 'for a setup-flow feature with both a module and a setup URL', () => {
+				const overrideURL =
+					'http://example.com/wp-admin/admin.php?page=googlesitekit-dashboard&expressSetup=true';
+				const reauthURL = 'http://example.com/reauth';
+
+				function registerFeatureWithOverride() {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => overrideURL,
+							},
+						} )
+					);
+				}
+
+				it( 'should activate the module first, then navigate to the override URL', async () => {
+					registerFeatureWithOverride();
+					global.history.replaceState( {}, '', '/#/whats-new' );
+
+					const activateModule = jest
+						.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						)
+						.mockResolvedValue( {
+							response: {
+								success: true,
+								moduleReauthURL: reauthURL,
+							},
+						} );
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activateModule ).toHaveBeenCalledWith(
+						'test-module'
+					);
+					expect( navigateTo ).toHaveBeenCalledTimes( 1 );
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+					expect(
+						activateModule.mock.invocationCallOrder[ 0 ]
+					).toBeLessThan( navigateTo.mock.invocationCallOrder[ 0 ] );
+					expect( await consumePendingSetup() ).toEqual( {
+						featureSlug: 'test-feature',
+						returnTab: '/whats-new',
+					} );
+				} );
+
+				it( 'should navigate to the override URL even when the module has no setup component', async () => {
+					registerFeatureWithOverride();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( overrideURL );
+				} );
+
+				it( 'should fall back to the module reauth URL when the override is undefined', async () => {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.SETUP_FLOW,
+								moduleSlug: 'test-module',
+								getSetupURL: () => undefined,
+							},
+						} )
+					);
+					registerSetupComponent();
+					jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					).mockResolvedValue( {
+						response: {
+							success: true,
+							moduleReauthURL: reauthURL,
+						},
+					} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( navigateTo ).toHaveBeenCalledWith( reauthURL );
+				} );
+
+				it( 'should not record or navigate when activation fails', async () => {
+					registerFeatureWithOverride();
+
+					const error = {
+						code: 'activation_failed',
+						message: 'Could not activate.',
+						data: { status: 500 },
+					};
+					fetchMock.postOnce( activationEndpoint, {
+						body: error,
+						status: 500,
+					} );
+
+					const result = await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( result ).toEqual( { error } );
+					expect( console ).toHaveErrored();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+			} );
+
+			describe( 'for a background-toggle feature', () => {
+				const error = {
+					code: 'internal_server_error',
+					message: 'Internal server error',
+					data: { status: 500 },
+				};
+
+				function registerBackgroundToggleFeature(
+					activate?: ( activateRegistry: Registry ) => Promise< {
+						error?: typeof error;
+					} >
+				) {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.BACKGROUND_TOGGLE,
+								activate,
+							},
+						} )
+					);
+				}
+
+				it( 'should run the activate routine with the registry and keep the user on the hub', async () => {
+					const activate = jest.fn().mockResolvedValue( {} );
+					registerBackgroundToggleFeature( activate );
+
+					const activateModule = jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+
+					expect( activate ).toHaveBeenCalledTimes( 1 );
+					expect( activate ).toHaveBeenCalledWith(
+						expect.objectContaining( {
+							select: expect.any( Function ),
+							dispatch: expect.any( Function ),
+						} )
+					);
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it( 'should return the error from the activate routine and store it for the setupFeature action', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( { error } )
+					);
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( { error } );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toEqual( error );
+				} );
+
+				it( 'should clear any stale setupFeature action error once the activate routine succeeds', async () => {
+					registerBackgroundToggleFeature(
+						jest.fn().mockResolvedValue( {} )
+					);
+
+					registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setErrorForAction( error, 'setupFeature', [
+							'test-feature',
+						] );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect(
+						registry
+							.select( CORE_FEATURE_DISCOVERY )
+							.getErrorForAction( 'setupFeature', [
+								'test-feature',
+							] )
+					).toBeUndefined();
+				} );
+
+				it( 'should resolve to an empty object when the feature has no activate routine', async () => {
+					registerBackgroundToggleFeature();
+
+					await expect(
+						registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( 'test-feature' )
+					).resolves.toEqual( {} );
+				} );
+			} );
+
+			describe( 'for an in-place-panel feature', () => {
+				it( "should close the detail panel before opening the feature's panel", async () => {
+					// Records the detail panel's state at the moment the
+					// feature's panel opens.
+					let detailPanelSlugOnOpen: unknown;
+
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								open: ( openRegistry: Registry ) => {
+									detailPanelSlugOnOpen = openRegistry
+										.select( CORE_UI )
+										.getValue(
+											FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY
+										);
+
+									openRegistry
+										.dispatch( CORE_UI )
+										.setValue( 'testPanelOpened', true );
+								},
+							},
+						} )
+					);
+
+					registry
+						.dispatch( CORE_UI )
+						.setValue(
+							FEATURE_DETAIL_PANEL_FEATURE_SLUG_KEY,
+							'test-feature'
+						);
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect(
+						registry.select( CORE_UI ).getValue( 'testPanelOpened' )
+					).toBe( true );
+					expect( detailPanelSlugOnOpen ).toBe( false );
+				} );
+
+				it( 'should not activate a module or record a pending setup', async () => {
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								open: jest.fn(),
+							},
+						} )
+					);
+					const activateModule = jest.spyOn(
+						registry.dispatch( CORE_MODULES ),
+						'activateModule'
+					);
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it( 'should keep the user on the hub even when the feature names a module with a setup screen', async () => {
+					const open = jest.fn();
+
+					registry.dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+						'test-feature',
+						createSettings( {
+							setup: {
+								type: FEATURE_SETUP_TYPES.IN_PLACE_PANEL,
+								moduleSlug: 'test-module',
+								open,
+							},
+						} )
+					);
+					registerSetupComponent();
+
+					// Were this treated as a `setup-flow` feature, it would
+					// navigate to this URL.
+					const activateModule = jest
+						.spyOn(
+							registry.dispatch( CORE_MODULES ),
+							'activateModule'
+						)
+						.mockResolvedValue( {
+							response: {
+								success: true,
+								moduleReauthURL: 'http://example.com/reauth',
+							},
+						} );
+
+					await registry
+						.dispatch( CORE_FEATURE_DISCOVERY )
+						.setupFeature( 'test-feature' );
+
+					expect( open ).toHaveBeenCalledTimes( 1 );
+					expect( activateModule ).not.toHaveBeenCalled();
+					expect( navigateTo ).not.toHaveBeenCalled();
+					expect( await consumePendingSetup() ).toBeNull();
+				} );
+
+				it.each( [
+					[ 'dashboard-sharing', SETTINGS_DIALOG ],
+					[
+						'email-reports',
+						USER_SETTINGS_SELECTION_PANEL_OPENED_KEY,
+					],
+					[ 'pdf-report', PDF_DOWNLOAD_PANEL_OPENED_KEY ],
+				] )(
+					'should open the existing panel for the %s feature',
+					async ( slug, uiKey ) => {
+						registerDefaults( createFeatureDiscovery( registry ) );
+
+						expect(
+							registry.select( CORE_UI ).getValue( uiKey )
+						).toBeUndefined();
+
+						await registry
+							.dispatch( CORE_FEATURE_DISCOVERY )
+							.setupFeature( slug );
+
+						expect(
+							registry.select( CORE_UI ).getValue( uiKey )
+						).toBe( true );
+						expect( await consumePendingSetup() ).toBeNull();
+					}
+				);
 			} );
 		} );
 

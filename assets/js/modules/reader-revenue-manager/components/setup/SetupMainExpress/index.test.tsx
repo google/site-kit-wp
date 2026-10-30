@@ -21,6 +21,7 @@
  */
 import { Registry } from '@/js/googlesitekit-data';
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
+import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
@@ -41,6 +42,10 @@ jest.mock( './PoweredBy', () => () => null );
 describe( 'SetupMainExpress', () => {
 	mockLocation();
 
+	const userSettingsEndpoint = new RegExp(
+		'^/google-site-kit/v1/modules/reader-revenue-manager/data/user-settings'
+	);
+
 	let registry: Registry;
 
 	beforeEach( () => {
@@ -48,6 +53,11 @@ describe( 'SetupMainExpress', () => {
 		provideUserAuthentication( registry );
 		provideSiteInfo( registry );
 		mockSurveyEndpoints();
+
+		fetchMock.post( userSettingsEndpoint, {
+			body: { lastActionedExpressSetups: {} },
+			status: 200,
+		} );
 
 		provideUserAuthentication( registry, {
 			grantedScopes: EXPRESS_SETUP_SCOPES,
@@ -66,7 +76,7 @@ describe( 'SetupMainExpress', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( { publicationID: '' } );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
@@ -78,6 +88,20 @@ describe( 'SetupMainExpress', () => {
 	it( 'renders the newsletter CTA component for newsletter-signup CTA', async () => {
 		global.location.href =
 			'http://example.com/?cta=newsletter-signup&step=newsletter-signup-form';
+
+		// Has accepted the terms of service and set both policy URLs.
+		const publication = publications[ 3 ];
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			.setPublicationID( publication.publicationId );
+
+		providePublications( registry, [ publication ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetCTAs( { ctas: [], params: {} } );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -91,6 +115,20 @@ describe( 'SetupMainExpress', () => {
 	it( 'renders the survey CTA component for survey CTA when rrmSurveyCTA is enabled', async () => {
 		global.location.href =
 			'http://example.com/?cta=survey&step=survey-questions';
+
+		// Has accepted the terms of service and set both policy URLs.
+		const publication = publications[ 3 ];
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+			.setPublicationID( publication.publicationId );
+
+		providePublications( registry, [ publication ] );
+
+		registry
+			.dispatch( MODULES_READER_REVENUE_MANAGER )
+			.receiveGetCTAs( { ctas: [], params: {} } );
 
 		const { getByText, waitForRegistry } = render( <SetupMainExpress />, {
 			registry,
@@ -138,6 +176,8 @@ describe( 'SetupMainExpress', () => {
 		expect(
 			container.querySelectorAll( '.googlesitekit-stepper__step' )
 		).toHaveLength( 4 );
+
+		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
 	} );
 
 	it( 'renders the default express setup for an unknown CTA', async () => {
@@ -155,5 +195,7 @@ describe( 'SetupMainExpress', () => {
 		expect(
 			queryByText( 'Set up a sign-up form' )
 		).not.toBeInTheDocument();
+
+		expect( fetchMock ).not.toHaveFetched( userSettingsEndpoint );
 	} );
 } );

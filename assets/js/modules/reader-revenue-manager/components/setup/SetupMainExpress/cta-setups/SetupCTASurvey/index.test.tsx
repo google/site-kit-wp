@@ -24,6 +24,7 @@ import { EXPRESS_SETUP_SCOPES } from '@/js/modules/reader-revenue-manager/compon
 import { MODULE_SLUG_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/constants';
 import { publications } from '@/js/modules/reader-revenue-manager/datastore/__fixtures__';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { Publication } from '@/js/modules/reader-revenue-manager/datastore/publications';
 import { providePublications } from '@/js/modules/reader-revenue-manager/utils/test-utils';
 import { mockLocation } from '@tests/js/mock-browser-utils';
 import {
@@ -86,6 +87,36 @@ const STEP_CONTENT = {
 	'setup-complete': 'Your survey is published!',
 };
 
+// Has accepted the terms of service and set both policy URLs.
+const completePublication = publications[ 3 ] as Publication;
+
+// Has not accepted the terms of service.
+const publicationWithoutTerms = publications[ 2 ] as Publication;
+
+/**
+ * Connects the given publication with no CTAs.
+ *
+ * @since 1.191.0
+ * @private
+ *
+ * @param {Object} registry    Registry to seed.
+ * @param {Object} publication Publication to connect.
+ * @return {void}
+ */
+function connectPublication( registry: Registry, publication: Publication ) {
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
+		.setPublicationID( publication.publicationId );
+
+	providePublications( registry, [ publication ] );
+
+	// CTAs are keyed by the publication ID, so receive them after setting it.
+	registry
+		.dispatch( MODULES_READER_REVENUE_MANAGER )
+		.receiveGetCTAs( { ctas: [], params: {} } );
+}
+
 describe( 'SetupCTASurvey', () => {
 	mockLocation();
 
@@ -110,19 +141,27 @@ describe( 'SetupCTASurvey', () => {
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
-			.receiveGetSettings( {} );
+			.receiveGetSettings( { publicationID: '' } );
 
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.finishResolution( 'getSettings', [] );
 
 		providePublications( registry, [] );
+
+		provideSiteInfo( registry );
 	} );
 
-	it( 'renders its steps in order, with the survey steps before setup complete', () => {
-		const { container } = render( <SetupCTASurvey />, {
+	it( 'renders its steps in order, with the survey steps before setup complete', async () => {
+		global.location.href = 'http://example.com/';
+
+		connectPublication( registry, publicationWithoutTerms );
+
+		const { container, waitForRegistry } = render( <SetupCTASurvey />, {
 			registry,
 		} );
+
+		await waitForRegistry();
 
 		const steps = container.querySelectorAll(
 			'.googlesitekit-stepper__step'
@@ -155,14 +194,7 @@ describe( 'SetupCTASurvey', () => {
 			global.location.href =
 				'http://example.com/?cta=survey&step=connect-publication';
 
-			// eslint-disable-next-line sitekit/acronym-case -- `Id` is the identifier used by the API.
-			const publicationID = publication.publicationId;
-
-			registry
-				.dispatch( MODULES_READER_REVENUE_MANAGER )
-				.receiveGetSettings( { publicationID } );
-
-			providePublications( registry, [ publication ] );
+			connectPublication( registry, publication as Publication );
 
 			const { getByRole, getByText, waitForRegistry } = render(
 				<SetupCTASurvey />,
@@ -185,6 +217,13 @@ describe( 'SetupCTASurvey', () => {
 		'renders the %s step content',
 		async ( step, content ) => {
 			global.location.href = `http://example.com/?step=${ step }`;
+
+			// Each step's copy depends on the connected publication.
+			if ( step === 'terms-of-service' ) {
+				connectPublication( registry, publicationWithoutTerms );
+			} else if ( step !== 'connect-publication' ) {
+				connectPublication( registry, completePublication );
+			}
 
 			const { getByText, queryByText } = render( <SetupCTASurvey />, {
 				registry,
@@ -227,11 +266,11 @@ describe( 'SetupCTASurvey', () => {
 	it( 'renders the "View on your site" CTA on the setup complete step', async () => {
 		global.location.href = 'http://example.com/?step=setup-complete';
 
-		provideSiteInfo( registry );
-
 		registry
 			.dispatch( MODULES_READER_REVENUE_MANAGER )
 			.receiveGetSettings( { snippetMode: 'sitewide', postTypes: [] } );
+
+		connectPublication( registry, completePublication );
 
 		const { getByRole } = render( <SetupCTASurvey />, { registry } );
 

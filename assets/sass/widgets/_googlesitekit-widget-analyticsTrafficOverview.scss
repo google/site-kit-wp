@@ -18,6 +18,10 @@
 
 @use "sass:map";
 
+// The space between the columns of a breakdown and between the groups of fresh
+// figures, so the groups line up with the columns below them.
+$traffic-overview-column-gap: 42px;
+
 .googlesitekit-plugin {
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__panel {
 		display: flex;
@@ -73,6 +77,64 @@
 			margin-top: 70px;
 		}
 
+		// The design puts its insight blocks 24px under the tabs, and the chart
+		// 40px under those blocks. Until the blocks exist, the chart's title
+		// takes their place, 24px under the tabs. The 24px is the panel's 20px
+		// top padding plus this 4px, in place of the 70px top margin of
+		// `.googlesitekit-traffic-overview__chart`.
+		.googlesitekit-traffic-overview__chart--typical-traffic {
+			margin-top: 4px;
+		}
+
+		// The title and the info icon flow as one line of text, so the icon
+		// follows the title's last word, even where the title wraps. The 22px
+		// end padding, the icon's 6px start margin plus its 16px width, leaves
+		// room for the icon after any line.
+		.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			// The title is inline, so the header's own font size and line height
+			// set the height of each line too.
+			font-size: $fs-title-md;
+			line-height: $lh-title-md;
+
+			// Below `$bp-desktop`, the chart area sits 20px under the title: this
+			// 12px plus the 8px the chart area starts into the chart.
+			margin-bottom: 12px;
+			padding-inline-end: 22px;
+
+			// From `$bp-desktop` up, the chart area sits 10px under the title, as
+			// in the desktop frame.
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 2px;
+			}
+
+			.googlesitekit-typography {
+				color: $c-surfaces-on-surface;
+				display: inline;
+			}
+
+			// The -22px end margin cancels the header's 22px end padding, so the
+			// icon never wraps onto a line of its own. The 2px top margin centers
+			// the 16px icon on the title's 20px line.
+			.googlesitekit-info-tooltip {
+				color: $c-surfaces-on-background-variant;
+				display: inline-flex;
+				height: 16px;
+				margin-inline: 6px -22px;
+				margin-top: 2px;
+				vertical-align: top;
+			}
+		}
+
+		// `GoogleChart` draws a date marker's 18px icon above the chart area, so
+		// from `$bp-desktop` up the icon would cover the title, 10px above it.
+		// A chart that marks a day keeps the 20px it has below `$bp-desktop`.
+		.googlesitekit-traffic-overview__chart--has-date-marker
+			.googlesitekit-traffic-overview__typical-traffic-chart-header {
+			@media (min-width: $bp-desktop) {
+				margin-bottom: 12px;
+			}
+		}
+
 		.googlesitekit-traffic-overview__chart .googlesitekit-chart {
 			margin-left: -$grid-gap-phone;
 		}
@@ -99,6 +161,18 @@
 			list-style: none;
 			margin: 4px 0 0;
 			padding: 0;
+		}
+
+		// From `$bp-desktop` up, the desktop frame centers the legend in a 28px
+		// row that starts 25px under the chart area. The 256px chart ends 24px
+		// under its chart area, which starts 8px in and is 224px tall. So 24px,
+		// plus this 7px, plus half the 16px legend item puts the item's center
+		// 39px under the chart area.
+		.googlesitekit-traffic-overview__chart--typical-traffic
+			.googlesitekit-traffic-overview__chart-legend {
+			@media (min-width: $bp-desktop) {
+				margin-top: 7px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__chart-legend-item {
@@ -138,7 +212,7 @@
 			margin-top: 18px;
 
 			@media (min-width: $bp-desktop) {
-				gap: 42px;
+				gap: $traffic-overview-column-gap;
 
 				// Equal fractions, so a column with no rows keeps its width.
 				grid-template-columns: repeat(3, 1fr);
@@ -156,29 +230,7 @@
 			padding: 8px 0 8px 19px;
 			position: relative;
 
-			// The rail is a `::before` rather than a border, so it and the dot
-			// centered on it both sit inside the column's own box. `left`
-			// centers the 2px rail in the 9px dot: (9px - 2px) / 2.
-			&::before {
-				background: $c-utility-divider;
-				bottom: 0;
-				content: "";
-				left: 3.5px;
-				position: absolute;
-				top: 0;
-				width: 2px;
-			}
-
-			&::after {
-				background: $c-utility-divider;
-				border-radius: 50%;
-				content: "";
-				height: 9px;
-				left: 0;
-				position: absolute;
-				top: 15px;
-				width: 9px;
-			}
+			@include tile-connector(15px);
 		}
 
 		// The typography classes carry the font; only colour and spacing here.
@@ -239,15 +291,70 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__fresh-metrics-row {
+			display: grid;
+			gap: 32px;
+			grid-template-columns: minmax(0, 1fr);
+
+			// Each group takes a third of the row, the width of a column of
+			// the traffic breakdown below.
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+		}
+
+		// The notice in place of the visitors figure spans the whole row, above
+		// the search figures.
+		.googlesitekit-traffic-overview__fresh-metrics-notice {
+			grid-column: 1 / -1;
+		}
+
 		.googlesitekit-traffic-overview__insight-notice-content {
-			align-items: center;
 			background-color: $c-blue-b-50;
 			border-radius: $br-xxs;
 			color: $c-blue-b-700;
 			display: flex;
-			gap: 16px;
+			flex-direction: column;
+			gap: 10px;
 			min-height: 72px;
-			padding: 16px 24px;
+			padding: 12px $grid-gap-phone;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex-direction: row;
+				gap: 48px;
+				padding: 16px $grid-gap-desktop;
+			}
+
+			.googlesitekit-thumbs-survey-trigger {
+				align-self: flex-end;
+
+				// The thumb buttons are 32px around 20px icons. This margin
+				// trims each button to its icon, plus 4px at the top and bottom.
+				margin: -2px -6px;
+
+				@media (min-width: $bp-tablet) {
+					align-self: auto;
+				}
+			}
+
+			.googlesitekit-thumbs-survey-trigger__button.mdc-button {
+				@include mdc-button-ink-color( $c-blue-b-700 );
+			}
+		}
+
+		.googlesitekit-traffic-overview__insight-notice-message {
+			display: flex;
+			flex-direction: column;
+			gap: 6px;
+
+			@media (min-width: $bp-tablet) {
+				align-items: center;
+				flex: 1;
+				flex-direction: row;
+				gap: 16px;
+			}
 		}
 
 		.googlesitekit-traffic-overview__insight-notice-text {
@@ -274,6 +381,76 @@
 			}
 		}
 
+		.googlesitekit-traffic-overview__fresh-metrics-group-header {
+			align-items: center;
+			display: flex;
+			gap: 6px;
+
+			// The gap applies to the figures and to a report error alike.
+			margin-bottom: 12px;
+
+			// The icon's line box would make this header taller than the one
+			// without a tooltip.
+			.googlesitekit-info-tooltip {
+				height: 16px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics-group-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		// A report error sits under the group heading, so it takes the height
+		// of its content rather than the height of the whole group.
+		.googlesitekit-traffic-overview__fresh-metrics-row .googlesitekit-cta {
+			align-self: start;
+			height: auto;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metrics {
+			display: flex;
+			gap: 24px;
+
+			@media (min-width: $bp-tablet) {
+				gap: 48px;
+			}
+		}
+
+		// On phones the figures of a group share its width.
+		.googlesitekit-traffic-overview__fresh-metric {
+			color: $c-surfaces-on-surface;
+			flex: 1 1 0;
+
+			@media (min-width: $bp-tablet) {
+				flex: none;
+				min-width: 120px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric:not(:last-child) {
+			border-right: 1px solid $c-utility-divider;
+		}
+
+		.googlesitekit-traffic-overview__fresh-metric-label {
+			margin: 0;
+		}
+
+		// The notice takes the height of the figures it replaces.
+		.googlesitekit-traffic-overview__fresh-metrics-empty {
+			color: $c-surfaces-on-surface-variant;
+			display: flex;
+			flex-direction: column;
+			gap: 2px;
+			min-height: 80px;
+			padding-top: 6px;
+
+			.googlesitekit-typography {
+				color: inherit;
+				margin: 0;
+			}
+		}
+
 		.googlesitekit-traffic-overview__recent-traffic-breakdown {
 			margin-top: 50px;
 
@@ -287,6 +464,93 @@
 
 			@media (min-width: $bp-desktop) {
 				margin-top: 80px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__see-all-recent-posts {
+			@include googlesitekit-typography(label, small);
+			margin-top: 16px;
+
+			.googlesitekit-icon-wrapper {
+				background-color: $c-teal-t-10;
+				border-radius: 50%;
+				height: 20px;
+				justify-content: center;
+				margin-left: 8px !important; // To override the inline set margin.
+				width: 20px;
+			}
+		}
+
+		// The access error and the zero data state, in place of the tab's
+		// sections.
+		.googlesitekit-traffic-overview__recent-activity-message {
+			align-items: center;
+			display: flex;
+			flex-direction: column;
+			padding-top: 20px;
+			text-align: center;
+
+			@media (min-width: $bp-desktop) {
+				padding-top: 0;
+			}
+		}
+
+		// Where the message is the whole tab body, the design leaves 100px
+		// under it on phones. From `$bp-desktop` up, it centers the message in
+		// a body 813px high. Where the latest post follows the message, the
+		// latest post's top margin sets the gap instead.
+		.googlesitekit-traffic-overview__recent-activity-message:last-child {
+			padding-bottom: 100px;
+
+			@media (min-width: $bp-desktop) {
+				justify-content: center;
+				min-height: 813px;
+				padding-bottom: 0;
+			}
+		}
+
+		// The design draws each illustration 162px high on phones and 192px
+		// high on desktop, and its width follows its own ratio.
+		.googlesitekit-traffic-overview__recent-activity-message-illustration svg {
+			display: block;
+			height: 162px;
+			width: auto;
+
+			@media (min-width: $bp-desktop) {
+				height: 192px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-activity-message-title {
+			color: $c-surfaces-on-surface;
+			margin: 19px 0 12px;
+
+			@media (min-width: $bp-desktop) {
+				margin-top: 9px;
+			}
+		}
+
+		.googlesitekit-traffic-overview__recent-activity-message-description {
+			color: $c-surfaces-on-surface;
+
+			.googlesitekit-typography {
+				margin: 0;
+			}
+
+			// The design draws "get help" in the color of the text around it,
+			// underlined.
+			.googlesitekit-cta-link {
+				color: inherit;
+				text-decoration: underline;
+			}
+		}
+
+		// The design puts each sentence on a line of its own from
+		// `$bp-desktop` up, and flows them as one paragraph below it.
+		.googlesitekit-traffic-overview__recent-activity-message-sentence {
+
+			@media (min-width: $bp-desktop) {
+				display: block;
 			}
 		}
 	}
@@ -380,6 +644,72 @@
 		}
 	}
 
+	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__recent-traffic-breakdown {
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-heading {
+			color: $c-surfaces-on-surface;
+			margin: 0;
+		}
+
+		.googlesitekit-traffic-overview__recent-traffic-breakdown-columns {
+			display: grid;
+			gap: 8px;
+
+			// The design stacks the columns on tablets too.
+			grid-template-columns: minmax(0, 1fr);
+			margin-top: 12px;
+
+			@media (min-width: $bp-desktop) {
+				gap: $traffic-overview-column-gap;
+
+				// Without the posts column, the other two stay a third wide.
+				grid-template-columns: repeat(3, minmax(0, 1fr));
+			}
+
+			// The left padding makes room for the rail and its dot.
+			.googlesitekit-table-tile {
+				padding: 8px 16px 8px $tile-content-offset;
+				position: relative;
+
+				@include tile-connector(15px);
+			}
+
+			.googlesitekit-table-tile__title.googlesitekit-typography {
+				line-height: $lh-body-md;
+			}
+
+			.googlesitekit-table-tile__row + .googlesitekit-table-tile__row {
+				margin-top: 4px;
+			}
+
+			// The 4px padding keeps a post link's focus outline visible, and
+			// the -4px margin cancels it, so the text stays in place.
+			.googlesitekit-table-tile__cell--label {
+				margin: -4px;
+				padding: 4px;
+			}
+
+			.googlesitekit-table-tile__cell--label .googlesitekit-cta-link__contents {
+				font-weight: $fw-medium;
+			}
+
+			.googlesitekit-table-tile__cell--value {
+				font-variant-numeric: tabular-nums;
+				letter-spacing: $ls-s;
+			}
+
+			// The fixed width fits the widest share, such as `(99.9%)`, so the
+			// counts line up.
+			.googlesitekit-table-tile__secondary-value {
+				color: $c-surfaces-on-surface;
+				display: inline-block;
+				margin-left: 5px;
+				min-width: 7ch;
+				text-align: right;
+			}
+		}
+	}
+
 	.googlesitekit-widget--analyticsTrafficOverview .googlesitekit-traffic-overview__sources {
 		align-items: center;
 		display: flex;
@@ -391,4 +721,20 @@
 			margin-left: 4px;
 		}
 	}
+}
+
+// The padding comes on top, so the tooltip is 210px wide as in the design.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-traffic-overview__fresh-metrics-tooltip {
+	max-width: 186px;
+}
+
+// The info tooltip's popup renders outside the widget, so a rule nested under
+// the widget doesn't reach it. The `.googlesitekit-info-tooltip__content`
+// class makes this selector more specific than the one that sets
+// `max-width: 160px` in `_googlesitekit-info-tooltip.scss`. So this rule
+// applies whatever order the two style sheets load in. With the popup's 12px
+// padding on each side, the popup is at most 235px wide, the width of the
+// design's tooltip.
+.googlesitekit-tooltip.MuiTooltip-tooltip.googlesitekit-info-tooltip__content.googlesitekit-info-tooltip__content--typical-traffic {
+	max-width: 211px;
 }

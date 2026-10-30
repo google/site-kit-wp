@@ -33,8 +33,9 @@ final class WP_Query_Factory {
 	 * majority of the code is a direct copy of certain parts of these functions.
 	 *
 	 * @since 1.15.0
+	 * @since 1.191.0 Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
-	 * @param string $url URL to get WordPress query object for.
+	 * @param string $url URL to get WordPress query object for, or a page path with no host, such as `/?p=123`.
 	 * @return WP_Query|null WordPress query instance, or null if unable to parse query from URL.
 	 */
 	public static function from_url( $url ) {
@@ -61,17 +62,38 @@ final class WP_Query_Factory {
 	}
 
 	/**
+	 * Gets the public query vars, the query vars that WordPress reads from a URL, such as `p` and `page_id`.
+	 *
+	 * They include the query var of each post type that `is_post_type_viewable()` accepts, and each query var that a
+	 * plugin adds through the `query_vars` filter.
+	 *
+	 * @since 1.191.0
+	 *
+	 * @return string[] The public query vars.
+	 */
+	public static function get_public_query_vars() {
+		global $wp;
+
+		// `WP::parse_request()` applies the `query_vars` filter to `$wp->public_query_vars`, so we apply it here only
+		// before that runs. A second run would add another copy of each query var a plugin appends.
+		return did_action( 'parse_request' ) ? $wp->public_query_vars : apply_filters( 'query_vars', $wp->public_query_vars );
+	}
+
+	/**
 	 * Normalizes the URL for further processing.
 	 *
 	 * @since 1.15.0
+	 * @since 1.191.0 Reads a page path with no host, such as `/?p=123`, with no deprecation notice on PHP 8.1 and later, where `str_replace()` raised one before.
 	 *
-	 * @param string $url URL to normalize.
+	 * @param string $url URL to normalize, or a page path with no host, such as `/?p=123`.
 	 * @return string Normalized URL, or empty string if URL is irrelevant for parsing into `WP_Query` arguments.
 	 */
 	private static function normalize_url( $url ) {
 		global $wp_rewrite;
 
-		$url_host      = str_replace( 'www.', '', URL::parse( $url, PHP_URL_HOST ) );
+		// A page path, such as `/?p=123`, has no host, so `URL::parse()` returns `null`, which `str_replace()`
+		// deprecates on PHP 8.1 and later.
+		$url_host      = str_replace( 'www.', '', (string) URL::parse( $url, PHP_URL_HOST ) );
 		$home_url_host = str_replace( 'www.', '', URL::parse( home_url(), PHP_URL_HOST ) );
 
 		// Bail early if the URL does not belong to this site.
@@ -202,14 +224,13 @@ final class WP_Query_Factory {
 	 * into query arguments in a similar way.
 	 *
 	 * @since 1.15.0
+	 * @since 1.191.0 Reads the public query vars through `get_public_query_vars()`, in place of reading and filtering `$wp->public_query_vars` itself.
 	 *
 	 * @param array $url_path_vars  Associative array as returned from {@see WP_Query_Factory::get_url_path_vars()}.
 	 * @param array $url_query_vars Associative array as returned from {@see WP_Query_Factory::get_url_query_vars()}.
 	 * @return array Associative array of arguments to pass to a `WP_Query` instance.
 	 */
 	private static function parse_wp_query_args( array $url_path_vars, array $url_query_vars ) {
-		global $wp;
-
 		// Determine available post type query vars.
 		$post_type_query_vars = array();
 		foreach ( get_post_types( array(), 'objects' ) as $post_type => $post_type_obj ) {
@@ -218,17 +239,9 @@ final class WP_Query_Factory {
 			}
 		}
 
-		// Depending on whether WordPress already parsed the main request (and thus filtered 'query_vars'), we should
-		// either manually trigger the filter or not.
-		if ( did_action( 'parse_request' ) ) {
-			$public_query_vars = $wp->public_query_vars;
-		} else {
-			$public_query_vars = apply_filters( 'query_vars', $wp->public_query_vars );
-		}
-
 		// Populate `WP_Query` arguments.
 		$query_args = array();
-		foreach ( $public_query_vars as $wpvar ) {
+		foreach ( self::get_public_query_vars() as $wpvar ) {
 			if ( isset( $url_query_vars[ $wpvar ] ) ) {
 				$query_args[ $wpvar ] = $url_query_vars[ $wpvar ];
 			} elseif ( isset( $url_path_vars[ $wpvar ] ) ) {

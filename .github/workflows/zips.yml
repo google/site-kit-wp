@@ -94,9 +94,16 @@ jobs:
             contains( github.head_ref, 'dependabot/' )
           )
         ) ||
-        github.event.pull_request.head.repo.fork
+        ( github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name != github.repository )
       )
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
       - uses: shivammathur/setup-php@7c071dfe9dc99bdf297fa79cb49ea005b9fcadbc # ratchet:shivammathur/setup-php@v2
         with:
@@ -147,6 +154,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # ratchet:actions/download-artifact@v7
@@ -179,6 +193,13 @@ jobs:
       contents: read
       pull-requests: write
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # ratchet:actions/checkout@v6
 
       - uses: ./.github/actions/remove-gcs-path
@@ -237,6 +258,13 @@ jobs:
     timeout-minutes: 20
     permissions: {}
     steps:
+      - name: Upgrade ca-certificates
+        # Temporary: the runner images trust some distrusted CAs. Remove once
+        # GitHub's runner images ship an up-to-date ca-certificates package.
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes --only-upgrade ca-certificates
+
       - name: Install SVN ( Subversion )
         run: |
           sudo apt-get update

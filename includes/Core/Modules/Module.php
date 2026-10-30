@@ -436,7 +436,7 @@ abstract class Module {
 	 *
 	 * @since 1.0.0
 	 * @since 1.190.0 Validates the parameters of a `Schema_Aware_Datapoint` before running it.
-	 * @since n.e.x.t Passes the Google client the request is sent with to a closure request.
+	 * @since 1.191.0 Passes the Google client the request is sent with to a closure request.
 	 *
 	 * @param Data_Request $data Data request object.
 	 * @return mixed Data on success, or WP_Error on failure.

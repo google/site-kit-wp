@@ -43,7 +43,7 @@ export interface SearchConsoleReportOptions extends PostWindow {
 /**
  * Gets the permalink and the date range of the reports about a post.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} post          The post, with its permalink and its publish time.
  * @param {string} referenceDate The reference date, e.g. `2026-10-08`.
@@ -66,7 +66,7 @@ export function getPostReportArgs(
  * so it is matched by its path and query string. Any other permalink is matched
  * by its path alone, so a view with campaign parameters still counts.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {string}  permalink                  The URL of the post.
  * @param {Object}  [options]                  Options.
@@ -94,7 +94,7 @@ function getPostFilter(
  * Gets the options of the report that counts the post's visitors, split into
  * new and returning visitors. The report's totals hold the total visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Analytics report options.
@@ -116,7 +116,7 @@ export function getVisitorsReportOptions(
  * Gets the options of the report that finds the channel that brought the post
  * the most visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Analytics report options.
@@ -140,7 +140,7 @@ export function getTopChannelReportOptions(
  * Gets the options of the report that finds the referring site that brought
  * the post the most visitors.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Analytics report options.
@@ -167,7 +167,7 @@ export function getTopReferrerReportOptions(
  * Gets the options of the report that measures the post's average session
  * duration and its engaged sessions.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Analytics report options.
@@ -194,7 +194,7 @@ export function getEngagementReportOptions(
  * A purchase event is sent from the checkout page, so the report filters by
  * the page the session started on rather than by the page of the event.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Analytics report options.
@@ -219,7 +219,7 @@ export function getPurchasesReportOptions(
  * Gets the options of the Search Console report that finds the search query
  * that brought the post the most clicks.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object} args The post's permalink and date range.
  * @return {Object} The Search Console report options.

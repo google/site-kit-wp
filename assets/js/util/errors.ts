@@ -24,7 +24,8 @@ import { isPlainObject } from 'lodash';
 /**
  * WordPress dependencies
  */
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
+import { isURL } from '@wordpress/url';
 
 // Error codes and reasons.
 export const ERROR_CODE_MISSING_REQUIRED_SCOPE = 'missing_required_scopes'; // When scopes are missing.
@@ -52,6 +53,11 @@ export interface ErrorObject {
 interface SelectorData {
 	storeName?: string;
 	name?: string;
+}
+
+interface ErrorNoticeMessageOptions {
+	noPrefix?: boolean;
+	skipRetryMessage?: boolean;
 }
 
 /**
@@ -143,6 +149,23 @@ export function isRateLimitError( error: unknown ): boolean {
 }
 
 /**
+ * Checks if the given error type can be retried.
+ *
+ * @since 1.191.0
+ *
+ * @param {Object} error The error object to check.
+ * @return {boolean} TRUE if the error type is retryable, otherwise FALSE.
+ */
+export function isRetryableErrorType( error: unknown ): boolean {
+	return (
+		! isInsufficientPermissionsError( error ) &&
+		! isPermissionScopeError( error ) &&
+		! isAuthError( error ) &&
+		! isRateLimitError( error )
+	);
+}
+
+/**
  * Checks if the given error can be retried.
  *
  * @since 1.86.0
@@ -156,13 +179,62 @@ export function isErrorRetryable(
 	error: unknown,
 	selectorData?: SelectorData
 ): boolean {
-	return (
-		!! selectorData?.storeName &&
-		! isInsufficientPermissionsError( error ) &&
-		! isPermissionScopeError( error ) &&
-		! isAuthError( error ) &&
-		! isRateLimitError( error )
-	);
+	return !! selectorData?.storeName && isRetryableErrorType( error );
+}
+
+/**
+ * Formats an error message for display in UI notices.
+ *
+ * @since 1.191.0
+ *
+ * @param {(string|undefined)} message                    Error message to format.
+ * @param {Object}             error                      Error object.
+ * @param {Object}             options                    Formatting options.
+ * @param {boolean}            [options.noPrefix]         Whether to omit the "Error:" prefix.
+ * @param {boolean}            [options.skipRetryMessage] Whether to omit the "Please try again" suffix.
+ * @return {string} Formatted error message.
+ */
+export function getErrorNoticeMessage(
+	message: string | undefined,
+	error: unknown,
+	{
+		noPrefix = false,
+		skipRetryMessage = false,
+	}: ErrorNoticeMessageOptions = {}
+): string {
+	let errorMessage = message || '';
+
+	if ( ! skipRetryMessage ) {
+		errorMessage = sprintf(
+			/* translators: %s: Error message from Google API. */
+			__( '%s (Please try again.)', 'google-site-kit' ),
+			errorMessage
+		);
+	}
+
+	if ( ! noPrefix ) {
+		errorMessage = sprintf(
+			/* translators: %s: Error message. */
+			__( 'Error: %s', 'google-site-kit' ),
+			errorMessage
+		);
+	}
+
+	const reconnectURL = ( error as ErrorObject )?.data?.reconnectURL;
+
+	if ( reconnectURL && isURL( reconnectURL ) ) {
+		errorMessage = sprintf(
+			/* translators: 1: Original error message 2: Reconnect URL. */
+			__(
+				'%1$s To fix this, <a href="%2$s">redo the plugin setup</a>.',
+				'google-site-kit'
+			),
+			errorMessage,
+			reconnectURL
+		);
+	}
+
+	return errorMessage;
 }
 
 /**

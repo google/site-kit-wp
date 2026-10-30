@@ -32,24 +32,44 @@ import {
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { withWidgetComponentProps } from '@/js/googlesitekit/widgets/util';
+import { LATEST_CONTENT_RECENT_CONTENT_OPTIONS } from '@/js/modules/analytics-4/components/module/ModulePopularPagesWidgetGA4/constants';
+import { DESIGN_DAILY_VISITS } from '@/js/modules/analytics-4/components/traffic-overview/__fixtures__';
 import { TRAFFIC_BREAKDOWN_COLUMNS } from '@/js/modules/analytics-4/components/traffic-overview/breakdown/columns';
 import {
 	LATEST_POST_RECENT_CONTENT_OPTIONS,
 	TRAFFIC_OVERVIEW_WIDGET_SLUG,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { getFreshDataDateRange } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useFreshDataDateRange';
+import {
+	FRESH_DATA_FETCH_OPTIONS,
+	getSiteVisitorsReportOptions,
+} from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/reportOptions';
 import {
 	getBreakdownReportArgs,
 	getGraphReportArgs,
 	getTotalsReportArgs,
 } from '@/js/modules/analytics-4/components/traffic-overview/reportOptions';
 import {
+	EARLIER_POST,
+	INSUFFICIENT_PERMISSIONS_ERROR,
+	INTERNAL_SERVER_ERROR,
+	LATEST_POST,
+	createBreakdownReport,
+	createDailyTrafficRows,
+	getRecentTrafficBreakdownReportOptions,
+	provideFreshMetricsReports,
 	provideInsightReport,
 	provideLatestPost,
 	provideLatestPostAnalyticsReports,
 	provideLatestPostKeywordReport,
+	provideRecentTrafficBreakdownReports,
+	provideSiteVisitorsReport,
 } from '@/js/modules/analytics-4/components/traffic-overview/test-utils';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
-import { provideBenchmarkingData } from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
+import {
+	decodedBenchmarkingResponse,
+	provideBenchmarkingData,
+} from '@/js/modules/analytics-4/datastore/__factories__/benchmarking';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { provideRecentContent } from '@/js/modules/analytics-4/datastore/test-utils';
 import { ReportOptions } from '@/js/modules/analytics-4/datastore/types';
@@ -166,23 +186,74 @@ function provideTrafficOverviewReports( registry: WPDataRegistry ) {
 }
 
 /**
- * Puts the Search Console property, the site's latest post and its reports,
- * and the insight report in the store, so the Recent activity tab renders
- * without sending a request.
+ * Puts the Search Console property, the reports of the fresh figures, the
+ * site's recent posts, the latest post's reports, the insight report, the
+ * reports of the recent traffic breakdown, and the report of the site's
+ * visitors in the store, so the Recent activity tab renders without sending a
+ * request.
  *
  * @since 1.190.0
+ * @since 1.191.0 Puts the reports of the recent traffic breakdown in the store too.
+ * @since n.e.x.t Puts the reports of the recent traffic breakdown and of the site's visitors in the store too.
  *
- * @param {Object} registry The registry to put the property, the post and the reports in.
+ * @param {Object} registry The registry to put the property, the post, and the reports in.
  * @return {void}
  */
 function provideRecentActivityData( registry: WPDataRegistry ) {
+	// Each column requests its report only once the setting to include
+	// products has loaded.
+	registry
+		.dispatch( MODULES_ANALYTICS_4 )
+		.setFreshDataIncludesWooCommerceProducts( true );
+	// The site had 100 visitors, and 12 of them came from other sites.
+	provideRecentTrafficBreakdownReports( registry, {
+		posts: createBreakdownReport(
+			[
+				[ '/autumn-recipes/', 64 ],
+				[ '/winter-soups/', 23 ],
+				[ '/spring-salads/', 9 ],
+			],
+			100
+		),
+		postTitles: {
+			'/autumn-recipes/': 'Autumn recipes',
+			'/winter-soups/': 'Winter soups',
+			'/spring-salads/': 'Spring salads',
+		},
+		channels: createBreakdownReport(
+			[
+				[ 'Direct', 52 ],
+				[ 'Organic Search', 31 ],
+				[ 'Referral', 12 ],
+			],
+			100
+		),
+		referrals: createBreakdownReport(
+			[
+				[ 'substack.com', 7 ],
+				[ 'reddit.com', 3 ],
+				[ 'medium.com', 2 ],
+			],
+			12
+		),
+	} );
 	registry
 		.dispatch( MODULES_SEARCH_CONSOLE )
 		.setPropertyID( 'https://example.com/' );
+	provideFreshMetricsReports( registry, {
+		totalVisitors: 157,
+		searchPerformance: { clicks: 72, impressions: 8000 },
+	} );
+	provideSiteVisitorsReport( registry, 412 );
 	registry
 		.dispatch( MODULES_ANALYTICS_4 )
 		.setDetectedEvents( [ 'purchase' ] );
 	provideLatestPost( registry );
+	provideRecentContent(
+		registry,
+		[ LATEST_POST, EARLIER_POST ],
+		LATEST_CONTENT_RECENT_CONTENT_OPTIONS
+	);
 	provideLatestPostAnalyticsReports( registry );
 	provideLatestPostKeywordReport( registry );
 	provideInsightReport( registry, 110, [ 100, 100, 100, 100 ] );
@@ -245,10 +316,21 @@ TypicalTrafficSelected.args = {
 	setupRegistry: ( registry: WPDataRegistry ) => {
 		commonSetup( registry );
 		provideTrafficOverviewReports( registry );
-		provideBenchmarkingData(
-			registry,
-			registry.select( CORE_USER ).getDateRangeDates()
-		);
+
+		const dates = registry.select( CORE_USER ).getDateRangeDates();
+
+		// The checked-in response has only four days. So the chart gets the 28
+		// days of `DESIGN_DAILY_VISITS` times 100, which puts labels in the
+		// thousands on the value axis, and the reference images show each label
+		// in full.
+		provideBenchmarkingData( registry, dates, {
+			...decodedBenchmarkingResponse,
+			dailyTraffic: createDailyTrafficRows(
+				28,
+				dates.endDate,
+				( dayIndex ) => DESIGN_DAILY_VISITS[ dayIndex ] * 100
+			),
+		} );
 	},
 };
 TypicalTrafficSelected.parameters = {
@@ -457,6 +539,141 @@ RecentActivityNoPublishedPosts.parameters = {
 	features: [ 'freshData' ],
 };
 RecentActivityNoPublishedPosts.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+/**
+ * The report of the site's visitors fails with a permissions error, so the
+ * tab shows only the access error, over the sources footer.
+ */
+export const RecentActivityAccessError = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityAccessError.storyName =
+	'Recent Activity, Access Error (freshData enabled)';
+RecentActivityAccessError.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+
+		const options = getSiteVisitorsReportOptions(
+			getFreshDataDateRange(
+				registry.select( CORE_USER ).getReferenceDate()
+			)
+		);
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector( INSUFFICIENT_PERMISSIONS_ERROR, 'getReport', [
+				options,
+			] );
+	},
+};
+RecentActivityAccessError.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityAccessError.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+/**
+ * Neither Analytics nor Search Console has recent data. So the zero data
+ * message takes the place of the insight notice, the fresh figures and the
+ * recent traffic breakdown. The latest post performance still shows under it.
+ */
+export const RecentActivityZeroData = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityZeroData.storyName =
+	'Recent Activity, Zero Data (freshData enabled)';
+RecentActivityZeroData.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		provideSiteVisitorsReport( registry, 0 );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 0, impressions: 0 },
+		} );
+	},
+};
+RecentActivityZeroData.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityZeroData.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+/**
+ * The report of "Top channels by visitors" fails, so that column shows the
+ * "Something went wrong" banner with "Retry", and every other section keeps
+ * its data.
+ */
+export const RecentActivitySectionError = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivitySectionError.storyName =
+	'Recent Activity, Section Error (freshData enabled)';
+RecentActivitySectionError.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+
+		const { channels } = getRecentTrafficBreakdownReportOptions( registry );
+
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.setErrorForSelector( INTERNAL_SERVER_ERROR, 'getReport', [
+				channels,
+			] );
+		registry
+			.dispatch( MODULES_ANALYTICS_4 )
+			.finishResolution( 'getReport', [
+				channels,
+				FRESH_DATA_FETCH_OPTIONS,
+			] );
+	},
+};
+RecentActivitySectionError.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivitySectionError.scenario = {
+	viewport: 'large',
+	clickSelector: '#googlesitekit-recent-activity-tab',
+};
+
+export const RecentActivityNoRecentVisits = Template.bind(
+	{}
+) as Story< TrafficOverviewWidgetStoryProps >;
+RecentActivityNoRecentVisits.storyName =
+	'Recent Activity, No Recent Visits (freshData enabled)';
+RecentActivityNoRecentVisits.args = {
+	setupRegistry: ( registry: WPDataRegistry ) => {
+		commonSetup( registry );
+		provideTrafficOverviewReports( registry );
+		provideRecentActivityData( registry );
+		provideInsightReport( registry, 0, [ 100, 100, 100, 100 ] );
+		provideFreshMetricsReports( registry, {
+			totalVisitors: 0,
+			searchPerformance: { clicks: 72, impressions: 8000 },
+		} );
+		provideRecentTrafficBreakdownReports( registry, {
+			posts: {},
+			channels: {},
+			referrals: {},
+		} );
+	},
+};
+RecentActivityNoRecentVisits.parameters = {
+	features: [ 'freshData' ],
+};
+RecentActivityNoRecentVisits.scenario = {
 	viewport: 'large',
 	clickSelector: '#googlesitekit-recent-activity-tab',
 };

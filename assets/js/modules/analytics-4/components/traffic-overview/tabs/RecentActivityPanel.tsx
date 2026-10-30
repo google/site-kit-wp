@@ -24,7 +24,7 @@ import { FC } from 'react';
 /**
  * WordPress dependencies
  */
-import { Fragment } from '@wordpress/element';
+import { Fragment, useState } from '@wordpress/element';
 
 /**
  * Internal dependencies
@@ -41,15 +41,28 @@ import {
 	RECENT_ACTIVITY_ANALYTICS_SETUP_CTA_SLUG,
 	RECENT_ACTIVITY_TAB_ID,
 } from '@/js/modules/analytics-4/components/traffic-overview/constants';
+import { useRecentActivityPanelState } from '@/js/modules/analytics-4/components/traffic-overview/hooks/useRecentActivityPanelState';
 import FreshMetricsRow from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/FreshMetricsRow';
 import InsightNotice from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/InsightNotice';
 import LatestPostPerformance from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/LatestPostPerformance';
+import RecentActivityAccessError from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityAccessError';
+import RecentActivityZeroData from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentActivityZeroData';
 import RecentTrafficBreakdown from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/RecentTrafficBreakdown';
+import SeeAllRecentPostsLink from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/SeeAllRecentPostsLink';
+import { getFreshDataWindowStart } from '@/js/modules/analytics-4/components/traffic-overview/recent-activity/utils/getFreshDataWindow';
 import { MODULE_SLUG_ANALYTICS_4 } from '@/js/modules/analytics-4/constants';
 import { MODULES_ANALYTICS_4 } from '@/js/modules/analytics-4/datastore/constants';
 import { RecentContentItem } from '@/js/modules/analytics-4/datastore/fresh-data';
 
 const RecentActivityPanel: FC = () => {
+	const [ windowStart ] = useState( () =>
+		// The reference date has no time of day, so the last 24 hours are
+		// counted back from the current time. It is read once, so the report
+		// options don't change between renders.
+		// eslint-disable-next-line sitekit/no-direct-date
+		getFreshDataWindowStart( Date.now() )
+	);
+
 	const isAnalyticsConnected = useSelect(
 		( select: Select ) =>
 			select( CORE_MODULES ).isModuleConnected( MODULE_SLUG_ANALYTICS_4 ),
@@ -59,6 +72,8 @@ const RecentActivityPanel: FC = () => {
 	const canViewSharedAnalytics4 = useCanViewSharedModule(
 		MODULE_SLUG_ANALYTICS_4
 	);
+
+	const panelState = useRecentActivityPanelState( windowStart );
 
 	const isGatheringData = useInViewSelect< boolean | undefined >(
 		( select: Select ) =>
@@ -97,16 +112,36 @@ const RecentActivityPanel: FC = () => {
 					}
 				/>
 			) }
-			{ isAnalyticsConnected && (
+			{ isAnalyticsConnected && panelState === 'access-error' && (
+				<RecentActivityAccessError />
+			) }
+			{ isAnalyticsConnected && panelState !== 'access-error' && (
 				<Fragment>
 					{ isGatheringData === true && (
 						<GatheringDataNotice style={ NOTICE_STYLE.LARGE } />
 					) }
-					{ isGatheringData === false && <InsightNotice /> }
-					<FreshMetricsRow />
-					{ isGatheringData === false && <RecentTrafficBreakdown /> }
+					{ panelState === 'zero-data' && <RecentActivityZeroData /> }
+					{ panelState === 'default' && (
+						<Fragment>
+							{ isGatheringData === false && <InsightNotice /> }
+							<FreshMetricsRow windowStart={ windowStart } />
+							{ isGatheringData === false && (
+								<RecentTrafficBreakdown
+									hasNoPublishedPosts={ hasNoPublishedPosts }
+								/>
+							) }
+						</Fragment>
+					) }
+					{ /*
+					 * The latest post's own date range starts the day before
+					 * the post was published. So it can have data when the
+					 * tab's three days have none.
+					 */ }
 					{ canViewSharedAnalytics4 && ! hasNoPublishedPosts && (
-						<LatestPostPerformance />
+						<Fragment>
+							<LatestPostPerformance />
+							<SeeAllRecentPostsLink />
+						</Fragment>
 					) }
 				</Fragment>
 			) }

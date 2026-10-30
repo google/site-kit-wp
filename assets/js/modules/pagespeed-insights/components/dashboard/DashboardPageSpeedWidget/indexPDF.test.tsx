@@ -28,7 +28,10 @@ import TestRenderer from 'react-test-renderer';
 import { PDF_SCALE } from '@/js/components/pdf-export/pdf-scale';
 import { PDF_COLORS } from '@/js/components/pdf-export/pdf-theme';
 import PDFTypography from '@/js/components/pdf-export/shared-react-pdf-components/PDFTypography';
-import { findTextStrings } from '@/js/components/pdf-export/test-utils';
+import {
+	findTextStrings,
+	flattenPDFStyle,
+} from '@/js/components/pdf-export/test-utils';
 import {
 	ScoredMetric,
 	extractFieldMetrics,
@@ -179,7 +182,7 @@ function getRowStyle(
 ): Record< string, unknown > {
 	const [ view ] = row.children as TestRenderer.ReactTestInstance[];
 
-	return Object.assign( {}, ...[ view.props.style ].flat() );
+	return flattenPDFStyle( view.props.style );
 }
 
 describe( 'DashboardPageSpeedWidgetPDF', () => {

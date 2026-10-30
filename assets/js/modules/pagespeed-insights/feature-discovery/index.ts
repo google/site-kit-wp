@@ -45,6 +45,7 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 	const { registerFeature } = featureDiscoveryAPI;
 
 	registerFeature( 'pagespeed-insights', {
+		name: __( 'PageSpeed Insights', 'google-site-kit' ),
 		moduleSlug: MODULE_SLUG_PAGESPEED_INSIGHTS,
 		title: __(
 			'Make your web pages fast on all devices',
@@ -66,24 +67,21 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 				),
 				whyUseList: [
 					{
-						term: __( 'Boost rankings:', 'google-site-kit' ),
+						term: __( 'Boost rankings', 'google-site-kit' ),
 						description: __(
 							'Improve search visibility and user satisfaction with faster load times',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __( 'Retain visitors:', 'google-site-kit' ),
+						term: __( 'Retain visitors', 'google-site-kit' ),
 						description: __(
 							'Reduce bounce rates by keeping your site snappy and responsive',
 							'google-site-kit'
 						),
 					},
 					{
-						term: __(
-							'Fix performance issues:',
-							'google-site-kit'
-						),
+						term: __( 'Fix performance issues', 'google-site-kit' ),
 						description: __(
 							'Quickly identify and resolve bottlenecks for a competitive edge',
 							'google-site-kit'
@@ -116,8 +114,8 @@ export function registerFeatures( featureDiscoveryAPI: FeatureDiscoveryAPI ) {
 						'Analytics 4 Key Metrics widget showing selected key metrics and trends',
 						'google-site-kit'
 					),
-					width: 659,
-					height: 577,
+					width: 292,
+					height: 210,
 				},
 			],
 		},

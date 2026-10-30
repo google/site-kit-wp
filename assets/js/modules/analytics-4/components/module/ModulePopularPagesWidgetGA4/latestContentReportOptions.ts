@@ -27,7 +27,7 @@ export const LATEST_CONTENT_REPORT_ID =
 /**
  * Builds the GA4 `getReport` args for the Latest content table.
  *
- * @since n.e.x.t
+ * @since 1.191.0
  *
  * @param {Object}   dates           Report date range.
  * @param {string}   dates.startDate Report start date (YYYY-MM-DD).
