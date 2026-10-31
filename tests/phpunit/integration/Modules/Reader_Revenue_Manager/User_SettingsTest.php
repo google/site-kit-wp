@@ -37,13 +37,21 @@ class User_SettingsTest extends TestCase {
 		$this->user_settings->register();
 	}
 
+	private function get_defaults() {
+		return array(
+			'lastActionedExpressSetups' => array(),
+			'completedExpressSetups'    => array(),
+		);
+	}
+
 	public function test_get_default() {
 		$this->assertEquals(
 			array(
 				'lastActionedExpressSetups' => array(),
+				'completedExpressSetups'    => array(),
 			),
 			$this->user_settings->get(),
-			'Reader Revenue Manager should have no actioned express setups by default.'
+			'Reader Revenue Manager should have no actioned or completed express setups by default.'
 		);
 	}
 
@@ -66,11 +74,14 @@ class User_SettingsTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex(
-			array(
-				'lastActionedExpressSetups' => array(
-					'publicationSetup' => 1752624000,
-					'productSetup'     => 1752537600,
-				),
+			array_merge(
+				$this->get_defaults(),
+				array(
+					'lastActionedExpressSetups' => array(
+						'publicationSetup' => 1752624000,
+						'productSetup'     => 1752537600,
+					),
+				)
 			),
 			$this->user_settings->get(),
 			'Merge should update action timestamps while preserving other express setup timestamps.'
@@ -96,10 +107,13 @@ class User_SettingsTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex(
-			array(
-				'lastActionedExpressSetups' => array(
-					'productSetup' => 1752537600,
-				),
+			array_merge(
+				$this->get_defaults(),
+				array(
+					'lastActionedExpressSetups' => array(
+						'productSetup' => 1752537600,
+					),
+				)
 			),
 			$this->user_settings->get(),
 			'Merge should remove an express setup set to null while preserving other express setup timestamps.'
@@ -115,8 +129,11 @@ class User_SettingsTest extends TestCase {
 		);
 
 		$this->assertEqualSetsWithIndex(
-			array(
-				'lastActionedExpressSetups' => array( 'publicationSetup' => 1752451200 ),
+			array_merge(
+				$this->get_defaults(),
+				array(
+					'lastActionedExpressSetups' => array( 'publicationSetup' => 1752451200 ),
+				)
 			),
 			$this->user_settings->get(),
 			'Merge should ignore unsupported Reader Revenue Manager user setting keys.'
@@ -131,7 +148,87 @@ class User_SettingsTest extends TestCase {
 		$this->user_settings->merge( $settings );
 		$this->user_settings->merge( array( 'lastActionedExpressSetups' => null ) );
 
-		$this->assertEqualSetsWithIndex( $settings, $this->user_settings->get(), 'Merge should ignore null express setup timestamps.' );
+		$this->assertEqualSetsWithIndex( array_merge( $this->get_defaults(), $settings ), $this->user_settings->get(), 'Merge should ignore null express setup timestamps.' );
+	}
+
+	public function test_get__defaults_completed_express_setups_when_missing_from_saved_value() {
+		$this->user_settings->set( array( 'lastActionedExpressSetups' => array( 'newsletter-signup:new' => 1752451200 ) ) );
+
+		$this->assertEquals(
+			array(
+				'lastActionedExpressSetups' => array( 'newsletter-signup:new' => 1752451200 ),
+				'completedExpressSetups'    => array(),
+			),
+			$this->user_settings->get(),
+			'Missing keys in the saved value should fall back to their defaults.'
+		);
+	}
+
+	public function test_merge__adds_completed_express_setups_and_preserves_existing_entries() {
+		$this->user_settings->merge(
+			array(
+				'completedExpressSetups' => array( 'newsletter-signup:a1b2c3' => 1752451200 ),
+			)
+		);
+
+		$this->user_settings->merge(
+			array(
+				'completedExpressSetups' => array(
+					'newsletter-signup:a1b2c3' => 1752624000,
+					'newsletter-signup:d4e5f6' => 1752537600,
+				),
+			)
+		);
+
+		$this->assertEquals(
+			array(
+				'newsletter-signup:a1b2c3' => 1752451200,
+				'newsletter-signup:d4e5f6' => 1752537600,
+			),
+			$this->user_settings->get()['completedExpressSetups'],
+			'Merge should add new completed setups and keep the original timestamp of existing ones.'
+		);
+	}
+
+	public function test_merge__updates_each_express_setups_key_independently() {
+		$this->user_settings->merge(
+			array(
+				'lastActionedExpressSetups' => array( 'newsletter-signup:new' => 1752451200 ),
+				'completedExpressSetups'    => array( 'newsletter-signup:a1b2c3' => 1752451200 ),
+			)
+		);
+
+		$this->user_settings->merge(
+			array(
+				'completedExpressSetups' => array( 'newsletter-signup:d4e5f6' => 1752537600 ),
+			)
+		);
+
+		$this->assertEquals(
+			array( 'newsletter-signup:new' => 1752451200 ),
+			$this->user_settings->get()['lastActionedExpressSetups'],
+			'Merging completed setups should not affect last actioned setups.'
+		);
+
+		$this->user_settings->merge(
+			array(
+				'lastActionedExpressSetups' => array( 'newsletter-signup:new' => null ),
+			)
+		);
+
+		$this->assertEquals(
+			array(),
+			$this->user_settings->get()['lastActionedExpressSetups'],
+			'Removing a last actioned setup should work.'
+		);
+		$this->assertEquals(
+			array(
+				'newsletter-signup:a1b2c3' => 1752451200,
+				'newsletter-signup:d4e5f6' => 1752537600,
+			),
+			$this->user_settings->get()['completedExpressSetups'],
+			'Merging last actioned setups should not affect completed setups.'
+		);
 	}
 
 	public function data_user_settings() {
@@ -162,6 +259,20 @@ class User_SettingsTest extends TestCase {
 					),
 				),
 			),
+			'sanitizes completed express setups the same way' => array(
+				array(
+					'completedExpressSetups' => array(
+						'newsletter-signup:a1b2c3' => 1752451200,
+						'stringTimestamp'          => '1752537600',
+						123                        => 1752624000,
+					),
+				),
+				array(
+					'completedExpressSetups' => array(
+						'newsletter-signup:a1b2c3' => 1752451200,
+					),
+				),
+			),
 			'drops non-string keys and non-integer timestamps' => array(
 				array(
 					'lastActionedExpressSetups' => array(
@@ -187,6 +298,6 @@ class User_SettingsTest extends TestCase {
 	 */
 	public function test_get_sanitize_callback( $input, $expected ) {
 		$this->user_settings->set( $input );
-		$this->assertEquals( $expected, $this->user_settings->get(), 'Express setup timestamps should retain only string keys with integer values.' );
+		$this->assertEquals( array_merge( $this->get_defaults(), $expected ), $this->user_settings->get(), 'Express setup timestamps should retain only string keys with integer values.' );
 	}
 }

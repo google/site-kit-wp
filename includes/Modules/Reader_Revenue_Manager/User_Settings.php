@@ -28,7 +28,7 @@ class User_Settings extends User_Setting {
 	/**
 	 * Allowed top-level setting keys.
 	 */
-	const SETTING_KEYS = array( 'lastActionedExpressSetups' );
+	const SETTING_KEYS = array( 'lastActionedExpressSetups', 'completedExpressSetups' );
 
 	/**
 	 * Gets the expected value type.
@@ -45,19 +45,41 @@ class User_Settings extends User_Setting {
 	 * Gets the default value.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Added the `completedExpressSetups` setting.
 	 *
 	 * @return array The default value.
 	 */
 	protected function get_default() {
 		return array(
 			'lastActionedExpressSetups' => array(),
+			'completedExpressSetups'    => array(),
 		);
+	}
+
+	/**
+	 * Gets the value of the setting.
+	 *
+	 * Keys missing from the saved value fall back to their defaults.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @return array The settings.
+	 */
+	public function get() {
+		$settings = parent::get();
+
+		if ( ! is_array( $settings ) ) {
+			return $this->get_default();
+		}
+
+		return array_merge( $this->get_default(), $settings );
 	}
 
 	/**
 	 * Merges an array of settings to update.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Merges the `completedExpressSetups` setting.
 	 *
 	 * @param array $partial Partial settings array to save.
 	 * @return bool True on success, false on failure.
@@ -73,6 +95,8 @@ class User_Settings extends User_Setting {
 
 			if ( 'lastActionedExpressSetups' === $key ) {
 				$updated[ $key ] = $this->merge_last_actioned_express_setups( $old_value, $new_value );
+			} elseif ( 'completedExpressSetups' === $key ) {
+				$updated[ $key ] = $this->merge_completed_express_setups( $old_value, $new_value );
 			}
 		}
 
@@ -95,12 +119,8 @@ class User_Settings extends User_Setting {
 			$sanitized_settings = array();
 
 			foreach ( self::SETTING_KEYS as $key ) {
-				if ( ! isset( $settings[ $key ] ) ) {
-					continue;
-				}
-
-				if ( 'lastActionedExpressSetups' === $key ) {
-					$sanitized_settings[ $key ] = $this->sanitize_last_actioned_express_setups( $settings[ $key ] );
+				if ( isset( $settings[ $key ] ) ) {
+					$sanitized_settings[ $key ] = $this->sanitize_express_setups( $settings[ $key ] );
 				}
 			}
 
@@ -135,14 +155,35 @@ class User_Settings extends User_Setting {
 	}
 
 	/**
-	 * Sanitizes the last actioned express setups.
+	 * Merges the completed express setups.
+	 *
+	 * Entries are only ever added: a key that already exists keeps its
+	 * original timestamp.
+	 *
+	 * @since n.e.x.t
+	 *
+	 * @param array $old_value Current value.
+	 * @param mixed $new_value Value to merge.
+	 * @return array The merged express setup timestamps.
+	 */
+	private function merge_completed_express_setups( $old_value, $new_value ) {
+		if ( ! is_array( $new_value ) ) {
+			return $old_value;
+		}
+
+		return $old_value + $new_value;
+	}
+
+	/**
+	 * Sanitizes express setup timestamps, keeping only string keys with integer values.
 	 *
 	 * @since 1.185.0
+	 * @since n.e.x.t Renamed from `sanitize_last_actioned_express_setups()`, as it also sanitizes the completed express setups.
 	 *
 	 * @param mixed $value Value to sanitize.
 	 * @return array The sanitized express setup timestamps.
 	 */
-	private function sanitize_last_actioned_express_setups( $value ) {
+	private function sanitize_express_setups( $value ) {
 		if ( ! is_array( $value ) ) {
 			return array();
 		}

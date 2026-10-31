@@ -27,6 +27,8 @@ import { useCallback } from '@wordpress/element';
 import { useDispatch } from 'googlesitekit-data';
 import { MODULES_READER_REVENUE_MANAGER } from '@/js/modules/reader-revenue-manager/datastore/constants';
 import type { CreateCTAParams } from '@/js/modules/reader-revenue-manager/datastore/ctas';
+import { getCTAID } from '@/js/modules/reader-revenue-manager/utils/ctas';
+import useCTAID from './useCTAID';
 
 interface CreateExpressSetupCTAResult {
 	response?: unknown;
@@ -46,6 +48,7 @@ type CreateExpressSetupCTACallback = (
  * from the saved `configuredCTAs`.
  *
  * @since 1.191.0
+ * @since n.e.x.t Sets the created CTA's identifier as the `ctaID` query arg.
  *
  * @return {Function} Callback that takes the `createCTA()` params and resolves
  *                    to the `createCTA()` result.
@@ -59,12 +62,22 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 		saveSettings,
 	} = useDispatch( MODULES_READER_REVENUE_MANAGER );
 
+	const [ , setCTAID ] = useCTAID();
+
 	return useCallback(
 		async ( params: CreateCTAParams ) => {
 			const result = await createCTA( params );
 
 			if ( result.error ) {
 				return result;
+			}
+
+			const ctaID = getCTAID(
+				( result.response as { name?: string } | undefined )?.name
+			);
+
+			if ( ctaID ) {
+				setCTAID( ctaID );
 			}
 
 			// Dispatch the fetch actions rather than reading the selectors:
@@ -84,6 +97,7 @@ export default function useCreateExpressSetupCTA(): CreateExpressSetupCTACallbac
 			fetchGetCTAs,
 			fetchGetPublication,
 			saveSettings,
+			setCTAID,
 			setPublicationOnboardingStateChanged,
 		]
 	);
