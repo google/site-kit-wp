@@ -115,6 +115,9 @@ HeaderWithAddFeaturesButton.args = {
 HeaderWithAddFeaturesButton.parameters = {
 	features: [ 'featureDiscoveryHub' ],
 };
+HeaderWithHelpMenuSFR.scenario = {
+	clickSelector: '.googlesitekit-help-menu__button',
+};
 
 export const HeaderWithHelpMenuDateRangeSelector = Template.bind( {} );
 HeaderWithHelpMenuDateRangeSelector.storyName =
