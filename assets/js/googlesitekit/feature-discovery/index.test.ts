@@ -24,9 +24,23 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
 /**
  * Internal dependencies
  */
+import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
 import { enabledFeatures } from '@/js/features';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	FEATURE_CATEGORIES,
+	FEATURE_EFFORTS,
+	FEATURE_SETUP_TYPES,
+} from '@/js/googlesitekit/datastore/feature-discovery/constants';
+import { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
 import {
 	createTestRegistry,
 	freezeFetch,
@@ -48,6 +62,63 @@ describe( 'createFeatureDiscovery', () => {
 
 	afterEach( () => {
 		enabledFeatures.delete( 'featureDiscoveryHub' );
+	} );
+
+	describe( 'registerFeature', () => {
+		const slug = 'test-feature';
+
+		const settings: FeatureSettings = {
+			title: 'Test feature',
+			shortDescription: 'Test feature description',
+			effort: FEATURE_EFFORTS.LOW,
+			goalCategories: [ FEATURE_CATEGORIES.ENGAGEMENT ],
+			addedInVersion: '1.191.0',
+			setup: { type: FEATURE_SETUP_TYPES.SETUP_FLOW },
+		};
+
+		it( 'registers a reminder notification for a feature with incompleteSetupReminder', () => {
+			createFeatureDiscovery( registry ).registerFeature( slug, {
+				...settings,
+				incompleteSetupReminder: {
+					title: 'Finish setting up this feature',
+					description: 'Complete setup to start using it.',
+					tooltip: '',
+					resolveRequirements: () => Promise.resolve(),
+				},
+			} );
+
+			expect(
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					)
+			).toMatchObject( {
+				Component: IncompleteSetupReminderNotification,
+				priority: PRIORITY.REMINDER,
+				areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+				groupID: NOTIFICATION_GROUPS.DEFAULT,
+				viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+				isDismissible: true,
+				featureFlag: 'featureDiscoveryHub',
+				checkRequirements: expect.any( Function ),
+			} );
+		} );
+
+		it( 'does not register a reminder notification for a feature without incompleteSetupReminder', () => {
+			createFeatureDiscovery( registry ).registerFeature(
+				slug,
+				settings
+			);
+
+			expect(
+				registry
+					.select( CORE_NOTIFICATIONS )
+					.getNotification(
+						getFeatureIncompleteSetupReminderKey( slug )
+					)
+			).toBeUndefined();
+		} );
 	} );
 
 	describe( 'resetIncompleteSetupReminder', () => {

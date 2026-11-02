@@ -23,6 +23,7 @@ import {
 	VIEW_CONTEXT_MAIN_DASHBOARD,
 	VIEW_CONTEXT_MAIN_DASHBOARD_VIEW_ONLY,
 } from '@/js/googlesitekit/constants';
+import { provideFeatures } from '@/js/googlesitekit/datastore/feature-discovery/test-utils';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import {
 	CORE_USER,
@@ -54,6 +55,7 @@ import {
 	requireConsentModeDisabled,
 	requireDataGatheringCompleteModalActive,
 	requireEmailReportingSubscribed,
+	requireFeatureInProgress,
 	requireGTGHealthy,
 	requireGTGScriptAccessEnabled,
 	requireGoogleTagGatewayEnabled,
@@ -845,6 +847,27 @@ describe( 'data requirements', () => {
 				false
 			);
 		} );
+	} );
+
+	describe( 'requireFeatureInProgress', () => {
+		it.each( [ true, false, undefined ] )(
+			'should return the feature progress state',
+			( isInProgress ) => {
+				provideFeatures( registry, [
+					{
+						slug: 'test-feature',
+						setup: {
+							isEnabled: () => false,
+							isInProgress: () => isInProgress,
+						},
+					},
+				] );
+
+				expect(
+					requireFeatureInProgress( 'test-feature' )( registry )
+				).toBe( isInProgress );
+			}
+		);
 	} );
 
 	describe( 'requireQueryArg', () => {

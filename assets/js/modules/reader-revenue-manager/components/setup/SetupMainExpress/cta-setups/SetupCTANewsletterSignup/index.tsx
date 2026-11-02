@@ -31,6 +31,7 @@ import { __ } from '@wordpress/i18n';
 /**
  * Internal dependencies
  */
+import FeatureDiscovery from 'googlesitekit-feature-discovery';
 import {
 	publicationPoliciesStep,
 	publicationSetupStep,
@@ -53,6 +54,7 @@ import {
 	EXPRESS_SETUP_CTAS,
 	EXPRESS_SETUP_STEPS,
 } from '@/js/modules/reader-revenue-manager/datastore/constants';
+import { FEATURE_SLUG_NEWSLETTER_SIGNUP } from '@/js/modules/reader-revenue-manager/feature-discovery/constants';
 import StepSetupCompleteNewsletterSignup from './StepSetupCompleteNewsletterSignup';
 import { signupFormStep } from './StepSignupForm';
 import ViewOnSiteCTANewsletterSignup from './ViewOnSiteCTANewsletterSignup';
@@ -108,6 +110,18 @@ const SetupCTANewsletterSignup: FC = () => {
 			trackEvent( 'complete_setup' );
 		}
 	}, [ currentStep?.slug, stepEventLabel, stepInView, trackEvent ] );
+
+	useEffect( () => {
+		const slug = currentStep?.slug;
+
+		if ( ! slug || slug === EXPRESS_SETUP_STEPS.SETUP_COMPLETE ) {
+			return;
+		}
+
+		FeatureDiscovery.resetIncompleteSetupReminder(
+			FEATURE_SLUG_NEWSLETTER_SIGNUP
+		);
+	}, [ currentStep?.slug ] );
 
 	const onStepInView = useCallback( () => {
 		setStepInView( currentStep?.slug );

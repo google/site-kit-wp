@@ -25,7 +25,13 @@ import { WPDataRegistry } from '@wordpress/data/build-types/registry';
  * Internal dependencies
  */
 import { Registry } from 'googlesitekit-data';
+import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
 import { isFeatureEnabled } from '@/js/features';
+import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
+import {
+	requireCapability,
+	requireFeatureInProgress,
+} from '@/js/googlesitekit/data-requirements';
 import {
 	CORE_FEATURE_DISCOVERY,
 	actions,
@@ -34,7 +40,17 @@ import {
 } from '@/js/googlesitekit/datastore/feature-discovery';
 import type { FeatureSettings } from '@/js/googlesitekit/datastore/feature-discovery/types';
 import { getFeatureIncompleteSetupReminderKey } from '@/js/googlesitekit/datastore/feature-discovery/utils';
-import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
+import {
+	CORE_USER,
+	PERMISSION_MANAGE_OPTIONS,
+} from '@/js/googlesitekit/datastore/user/constants';
+import {
+	NOTIFICATION_AREAS,
+	NOTIFICATION_GROUPS,
+	PRIORITY,
+} from '@/js/googlesitekit/notifications/constants';
+import { CORE_NOTIFICATIONS } from '@/js/googlesitekit/notifications/datastore/constants';
+import { asyncRequireAll } from '@/js/util/async';
 
 export { actions, registerStore, selectors };
 
@@ -77,10 +93,34 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 		 * @return {Object} Feature registration action result.
 		 */
 		registerFeature: ( slug: string, settings: FeatureSettings ) => {
-			return dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
+			const result = dispatch( CORE_FEATURE_DISCOVERY ).registerFeature(
 				slug,
 				settings
 			);
+
+			if ( settings.incompleteSetupReminder ) {
+				const notificationID =
+					getFeatureIncompleteSetupReminderKey( slug );
+
+				dispatch( CORE_NOTIFICATIONS ).registerNotification(
+					notificationID,
+					{
+						Component: IncompleteSetupReminderNotification,
+						priority: PRIORITY.REMINDER,
+						areaSlug: NOTIFICATION_AREAS.DASHBOARD_TOP,
+						groupID: NOTIFICATION_GROUPS.DEFAULT,
+						viewContexts: [ VIEW_CONTEXT_MAIN_DASHBOARD ],
+						isDismissible: true,
+						featureFlag: 'featureDiscoveryHub',
+						checkRequirements: asyncRequireAll(
+							requireCapability( PERMISSION_MANAGE_OPTIONS ),
+							requireFeatureInProgress( slug )
+						),
+					}
+				);
+			}
+
+			return result;
 		},
 
 		/**

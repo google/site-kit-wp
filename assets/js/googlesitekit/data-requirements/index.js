@@ -24,6 +24,7 @@ import { getQueryArg } from '@wordpress/url';
  */
 import { WPDataRegistry } from 'googlesitekit-data';
 import { SITE_KIT_VIEW_ONLY_CONTEXTS } from '@/js/googlesitekit/constants';
+import { CORE_FEATURE_DISCOVERY } from '@/js/googlesitekit/datastore/feature-discovery';
 import { CORE_SITE } from '@/js/googlesitekit/datastore/site/constants';
 import { CORE_USER } from '@/js/googlesitekit/datastore/user/constants';
 import { CORE_MODULES } from '@/js/googlesitekit/modules/datastore/constants';
@@ -623,4 +624,17 @@ export function requireHomeURLUsingHTTPS() {
 
 		return isURLUsingHTTPS( select( CORE_SITE ).getHomeURL() );
 	};
+}
+
+/**
+ * Returns a function that checks if a feature is in progress.
+ *
+ * @since n.e.x.t
+ *
+ * @param {string} slug Feature slug.
+ * @return {function(WPDataRegistry): Promise<boolean>} Whether the feature is in progress.
+ */
+export function requireFeatureInProgress( slug ) {
+	return ( { select } ) =>
+		select( CORE_FEATURE_DISCOVERY ).isFeatureInProgress( slug );
 }

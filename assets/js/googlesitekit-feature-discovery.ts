@@ -19,6 +19,7 @@
 /**
  * Internal dependencies
  */
+import 'googlesitekit-notifications';
 import Data from 'googlesitekit-data';
 import {
 	createFeatureDiscovery,
