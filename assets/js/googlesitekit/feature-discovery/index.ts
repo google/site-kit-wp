@@ -28,10 +28,7 @@ import { Registry } from 'googlesitekit-data';
 import IncompleteSetupReminderNotification from '@/js/components/feature-discovery/IncompleteSetupReminderNotification';
 import { isFeatureEnabled } from '@/js/features';
 import { VIEW_CONTEXT_MAIN_DASHBOARD } from '@/js/googlesitekit/constants';
-import {
-	requireCapability,
-	requireFeatureInProgress,
-} from '@/js/googlesitekit/data-requirements';
+import { requireCapability } from '@/js/googlesitekit/data-requirements';
 import {
 	CORE_FEATURE_DISCOVERY,
 	actions,
@@ -98,7 +95,9 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 				settings
 			);
 
-			if ( settings.incompleteSetupReminder ) {
+			const { incompleteSetupReminder } = settings;
+
+			if ( incompleteSetupReminder ) {
 				const notificationID =
 					getFeatureIncompleteSetupReminderKey( slug );
 
@@ -114,7 +113,15 @@ export function createFeatureDiscovery( registry: WPDataRegistry ) {
 						featureFlag: 'featureDiscoveryHub',
 						checkRequirements: asyncRequireAll(
 							requireCapability( PERMISSION_MANAGE_OPTIONS ),
-							requireFeatureInProgress( slug )
+							async ( data: Registry ) => {
+								await incompleteSetupReminder.resolveRequirements(
+									data
+								);
+
+								return data
+									.select( CORE_FEATURE_DISCOVERY )
+									.isFeatureInProgress( slug );
+							}
 						),
 					}
 				);
