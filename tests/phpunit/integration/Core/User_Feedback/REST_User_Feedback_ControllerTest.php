@@ -12,7 +12,6 @@ namespace Google\Site_Kit\Tests\Core\User_Feedback;
 
 use Google\Site_Kit\Context;
 use Google\Site_Kit\Core\Authentication\Authentication;
-use Google\Site_Kit\Core\Authentication\Google_Proxy;
 use Google\Site_Kit\Core\REST_API\REST_Routes;
 use Google\Site_Kit\Core\User_Feedback\REST_User_Feedback_Controller;
 use Google\Site_Kit\Tests\Fake_Site_Connection_Trait;
@@ -145,7 +144,7 @@ class REST_User_Feedback_ControllerTest extends TestCase {
 		$response = $this->send_feedback_request( $this->valid_feedback );
 
 		$this->assertEquals( 200, $response->get_status(), 'A valid feedback request should return a 200 status.' );
-		$this->assertEqualSets( array( 'success' => true ), $response->get_data(), 'A successful feedback request should return a success response.' );
+		$this->assertEqualSetsWithIndex( array( 'success' => true ), $response->get_data(), 'A successful feedback request should return a success response.' );
 	}
 
 	public function test_feedback__returns_service_error() {
@@ -221,6 +220,43 @@ class REST_User_Feedback_ControllerTest extends TestCase {
 
 	public function test_validate_feedback_data__accepts_valid_data() {
 		$this->assertTrue( $this->controller->validate_feedback_data( $this->valid_feedback ), 'Valid feedback data should pass validation.' );
+	}
+
+	public function test_validate_feedback_data__accepts_the_string_zero() {
+		foreach ( array( 'namespace', 'group', 'key', 'value' ) as $field ) {
+			$data           = $this->valid_feedback;
+			$data[ $field ] = '0';
+
+			$this->assertTrue(
+				$this->controller->validate_feedback_data( $data ),
+				"Feedback data with {$field} set to the string '0' should pass validation."
+			);
+		}
+	}
+
+	public function data_non_string_values() {
+		return array(
+			'an integer'   => array( 123 ),
+			'a boolean'    => array( true ),
+			'an array'     => array( array( 'nested' ) ),
+			'null'         => array( null ),
+			'empty string' => array( '' ),
+		);
+	}
+
+	/**
+	 * @dataProvider data_non_string_values
+	 */
+	public function test_validate_feedback_data__requires_string( $invalid_value ) {
+		foreach ( array( 'namespace', 'group', 'key', 'value' ) as $field ) {
+			$data           = $this->valid_feedback;
+			$data[ $field ] = $invalid_value;
+
+			$result = $this->controller->validate_feedback_data( $data );
+
+			$this->assertWPError( $result, "Feedback data with a non-string {$field} should fail validation." );
+			$this->assertEquals( 400, $result->get_error_data()['status'], "Feedback data with a non-string {$field} should fail with a 400 status." );
+		}
 	}
 
 	public function test_feedback__requires_authentication() {

@@ -142,7 +142,7 @@ class REST_User_Feedback_Controller {
 		}
 
 		foreach ( array( 'namespace', 'group', 'key', 'value' ) as $field ) {
-			if ( empty( $value[ $field ] ) || ! is_string( $value[ $field ] ) ) {
+			if ( ! isset( $value[ $field ] ) || ! is_string( $value[ $field ] ) || '' === $value[ $field ] ) {
 				return new WP_Error(
 					'rest_missing_callback_param',
 					sprintf(
